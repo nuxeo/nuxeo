@@ -232,7 +232,7 @@
         <property name="styleClass">
           #{nxu:test(layoutValue.data.expired, 'error', '')}
         </property>
-        <property name="pattern">#{nxu:dateAndTimeFormater('medium')}</property>
+        <property name="pattern">#{nxu:dateAndTimeFormatter('medium')}</property>
       </properties>
     </widget>
 
@@ -245,7 +245,7 @@
         <field>data.startDate</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:dateAndTimeFormater('medium')}</property>
+        <property name="pattern">#{nxu:dateAndTimeFormatter('medium')}</property>
       </properties>
     </widget>
 
@@ -283,7 +283,7 @@
         <field>data.processInstanceStartDate</field>
       </fields>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:dateAndTimeFormater('medium')}</property>
+        <property name="pattern">#{nxu:dateAndTimeFormatter('medium')}</property>
       </properties>
     </widget>
 
