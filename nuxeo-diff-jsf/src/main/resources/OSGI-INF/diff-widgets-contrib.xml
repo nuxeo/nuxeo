@@ -198,7 +198,7 @@
       </labels>
       <translated>true</translated>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}
         </property>
       </properties>
     </widget>
@@ -212,7 +212,7 @@
       </labels>
       <translated>true</translated>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}
         </property>
       </properties>
     </widget>
@@ -226,7 +226,7 @@
       </labels>
       <translated>true</translated>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}
         </property>
       </properties>
     </widget>
@@ -240,7 +240,7 @@
       </labels>
       <translated>true</translated>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}
         </property>
       </properties>
     </widget>
@@ -254,7 +254,7 @@
       </labels>
       <translated>true</translated>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateAndTimeFormater()}
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}
         </property>
       </properties>
     </widget>

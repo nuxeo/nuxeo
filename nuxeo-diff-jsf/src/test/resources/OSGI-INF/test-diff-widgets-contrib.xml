@@ -18,7 +18,7 @@
       </labels>
       <translated>true</translated>
       <properties widgetMode="any">
-        <property name="pattern">#{nxu:basicDateFormater()}</property>
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
       </properties>
     </widget>
 
