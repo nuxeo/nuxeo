@@ -41,9 +41,9 @@ public abstract class AbstractImporterExecutor {
 
     protected static ImporterLogger log;
 
-    protected Thread executorMainThread;
+    protected static Thread executorMainThread;
 
-    protected ImporterRunner runner;
+    protected static ImporterRunner lastRunner;
 
     protected ImporterThreadingPolicy threadPolicy;
 
@@ -64,7 +64,7 @@ public abstract class AbstractImporterExecutor {
         }
     }
 
-    public Boolean isRunning() {
+    public boolean isRunning() {
         if (executorMainThread == null) {
             return false;
         } else {
@@ -74,7 +74,9 @@ public abstract class AbstractImporterExecutor {
 
     public String kill() {
         if (executorMainThread != null) {
-            runner.stopImportProcrocess();
+            if (lastRunner!=null) {
+                lastRunner.stopImportProcrocess();
+            }
             executorMainThread.interrupt();
             return "Importer killed";
         }
@@ -99,6 +101,7 @@ public abstract class AbstractImporterExecutor {
         if (interactive == null) {
             interactive = false;
         }
+        lastRunner = runner;
         startTask(runner, interactive);
 
         if (interactive) {
