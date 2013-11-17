@@ -1,9 +1,12 @@
 package org.nuxeo.ecm.platform.importer.executor.jaxrs;
 
+import java.io.InputStream;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
 import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
@@ -18,6 +21,14 @@ public abstract class AbstractJaxRSImporterExecutor extends
             log = new BufferredLogger(getJavaLogger());
         }
         return log;
+    }
+
+    @GET
+    @Produces("text/html; charset=UTF-8")
+    public String index() throws Exception {
+        try (InputStream stream = this.getClass().getResource("/static/importForm.html").openStream()) {
+            return IOUtils.toString(stream, "UTF-8");
+        }
     }
 
     @GET
@@ -47,9 +58,9 @@ public abstract class AbstractJaxRSImporterExecutor extends
     }
 
     @GET
-    @Path("isRunning")
-    public Boolean isRunning() {
-        return super.isRunning();
+    @Path("running")
+    public String running() {
+        return Boolean.toString(super.isRunning());
     }
 
     @GET
