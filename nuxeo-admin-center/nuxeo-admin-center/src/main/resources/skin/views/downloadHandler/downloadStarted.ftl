@@ -18,8 +18,9 @@ function back() {
  stopRefresh=true;
  var url = document.location.href;
  var idx = url.indexOf("/download/");
- url = url.substring(0,idx) + "/packages/${source}"
- document.location.href=url;
+ var idParam = url.indexOf("?");
+ var returnUrl = url.substring(0,idx) + "/packages/${source}?filterOnPlatform=${filterOnPlatform}&amp;type=${type}&amp;onlyRemote=${onlyRemote}" + url.substring(iParam,url.length);
+ document.location.href=returnUrl;
 }
 
 function install() {

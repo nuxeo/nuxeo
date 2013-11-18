@@ -87,7 +87,10 @@ public class DownloadHandler extends DefaultObject {
     public Object getDownloadProgressPage(@PathParam("pkgId") String pkgId,
             @QueryParam("source") String source,
             @QueryParam("install") Boolean install,
-            @QueryParam("depCheck") Boolean depCheck) {
+            @QueryParam("depCheck") Boolean depCheck,
+            @QueryParam("type") String pkgType,
+            @QueryParam("onlyRemote") Boolean onlyRemote,
+            @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         DownloadablePackage pkg = getDownloadingPackage(pkgId);
         boolean downloadOver = false;
         // flag to start install after download
@@ -106,7 +109,10 @@ public class DownloadHandler extends DefaultObject {
         }
         return getView("downloadStarted").arg("pkg", pkg).arg("source", source).arg(
                 "over", downloadOver).arg("install", install).arg("depCheck",
-                depCheck);
+                depCheck).arg(
+                        "filterOnPlatform", filterOnPlatform.toString()).arg(
+                                "type", pkgType.toString()).arg(
+                                        "onlyRemote", onlyRemote.toString());
     }
 
     protected DownloadingPackage getDownloadingPackage(String pkgId) {
@@ -126,7 +132,10 @@ public class DownloadHandler extends DefaultObject {
     public Object startDownload(@PathParam("pkgId") String pkgId,
             @QueryParam("source") String source,
             @QueryParam("install") Boolean install,
-            @QueryParam("depCheck") Boolean depCheck) {
+            @QueryParam("depCheck") Boolean depCheck,
+            @QueryParam("type") String pkgType,
+            @QueryParam("onlyRemote") Boolean onlyRemote,
+            @QueryParam("filterOnPlatform") Boolean filterOnPlatform) {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         // flag to start install after download
         if (install == null) {
@@ -153,7 +162,10 @@ public class DownloadHandler extends DefaultObject {
         }
         return getView("downloadStarted").arg("pkg",
                 getDownloadingPackage(pkgId)).arg("source", source).arg("over",
-                false).arg("install", install).arg("depCheck", depCheck);
+                false).arg("install", install).arg("depCheck", depCheck).arg(
+                        "filterOnPlatform", filterOnPlatform.toString()).arg(
+                                "type", pkgType.toString()).arg(
+                                        "onlyRemote", onlyRemote.toString());
     }
 
     @GET

@@ -81,7 +81,7 @@
     <#else>
       <td>  </td>
     </#if>
-    
+
     <#if This.getStateLabel(pkg) = "downloaded">
       <td>${Context.getMessage('label.pkgDetails.pkgState.downloaded')}</td>
     <#elseif This.getStateLabel(pkg) = "downloading">
@@ -99,10 +99,10 @@
     <#else>
       <td>${This.getStateLabel(pkg)}</td>
     </#if>
-    
+
     <td class="alignCenter">
          <#if This.canDownload(pkg)>
-           <a class="button download" href="${Root.path}/download/start/${pkg.id}?source=${source}">${Context.getMessage('label.simpleListing.links.download')}</a>
+           <a class="button download" href="${Root.path}/download/start/${pkg.id}?source=${source}&amp;filterOnPlatform=${filterOnPlatform}&amp;type=${type}&amp;onlyRemote=${onlyRemote}">${Context.getMessage('label.simpleListing.links.download')}</a>
          </#if>
          <#if This.registrationRequired(pkg)>${Context.getMessage('label.simpleListing.messages.registrationrequired')}</#if>
          <#if This.canCancel(pkg)>

@@ -214,7 +214,9 @@ public class PackageListingProvider extends DefaultObject {
         }
         return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg(
                 "showCommunityInfo", false).arg("source", "remote").arg(
-                "filterOnPlatform", filterOnPlatform);
+                "filterOnPlatform", filterOnPlatform.toString()).arg(
+                        "type", pkgType.toString()).arg(
+                                "onlyRemote", onlyRemote.toString());
     }
 
     /**
