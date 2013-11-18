@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.forms.layout.service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -293,15 +294,21 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         if (BuiltinWidgetModes.HIDDEN.equals(wMode)) {
             return null;
         }
+
+        List<Integer> indexesRemoved = new ArrayList<Integer>();
         List<Widget> subWidgets = new ArrayList<Widget>();
         WidgetDefinition[] swDefs = wDef.getSubWidgetDefinitions();
         if (swDefs != null) {
+            int index = 0;
             for (WidgetDefinition swDef : swDefs) {
                 Widget subWidget = getWidget(context, layoutName, layoutDef,
                         swDef, wMode, valueName, level + 1);
                 if (subWidget != null) {
                     subWidgets.add(subWidget);
+                } else {
+                    indexesRemoved.add(Integer.valueOf(index));
                 }
+                index++;
             }
         }
 
@@ -324,13 +331,41 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
             }
         }
 
+        // handle properties index switch in case of the container widget (see
+        // NXP-13205)
+        Map<String, Serializable> props = wDef.getProperties(layoutMode, wMode);
+        if (props != null && !indexesRemoved.isEmpty()) {
+            // rearrange props to make sure indexes are ok
+            Map<String, Serializable> newProps = new HashMap<String, Serializable>();
+            List<String> keys = new ArrayList<String>();
+            keys.addAll(props.keySet());
+            Collections.sort(keys);
+            List<Serializable> values = new ArrayList<Serializable>();
+            for (String key : keys) {
+                if (key != null && key.startsWith("nxw_addForm_")) {
+                    values.add(props.get(key));
+                } else {
+                    newProps.put(key, props.get(key));
+                }
+            }
+            int j = 0;
+            for (int i = 0; i < values.size(); i++) {
+                if (!indexesRemoved.contains(Integer.valueOf(i))) {
+                    newProps.put(
+                            String.format("nxw_addForm_%s", Integer.valueOf(j)),
+                            values.get(i));
+                    j++;
+                }
+            }
+            props = newProps;
+        }
+
         boolean required = getBooleanValue(context,
                 wDef.getRequired(layoutMode, wMode)).booleanValue();
         Widget widget = new WidgetImpl(layoutName, wDef.getName(), wMode,
                 wDef.getType(), valueName, wDef.getFieldDefinitions(),
                 wDef.getLabel(layoutMode), wDef.getHelpLabel(layoutMode),
-                wDef.isTranslated(), wDef.isHandlingLabels(),
-                wDef.getProperties(layoutMode, wMode), required,
+                wDef.isTranslated(), wDef.isHandlingLabels(), props, required,
                 subWidgets.toArray(new Widget[] {}), level,
                 wDef.getSelectOptions(),
                 LayoutFunctions.computeWidgetDefinitionId(wDef),
@@ -539,8 +574,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
                         WidgetDefinition.REQUIRED_PROPERTY_NAME, requiredProp));
             }
         }
-        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(type, type,
-                label, helpLabel, Boolean.TRUE.equals(translated), null,
+        WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(type, type, label,
+                helpLabel, Boolean.TRUE.equals(translated), null,
                 fieldDefinitions, properties, null);
         Widget widget = new WidgetImpl("layout", wDef.getName(), mode,
                 wDef.getType(), valueName, wDef.getFieldDefinitions(), label,

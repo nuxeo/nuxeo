@@ -514,4 +514,24 @@ public class TestLayoutService extends NXRuntimeTestCase {
         layout = service.getLayoutDefinition("testLayout");
         assertFalse(layout.isEmpty());
     }
+
+    // test for NXP-13205
+    @Test
+    public void testLayoutWithContainerWidget() throws Exception {
+        deployContrib("org.nuxeo.ecm.platform.forms.layout.client.tests",
+                "layouts-test-contrib.xml");
+        Layout layout = service.getLayout(null, "TabWithHiddenSubs@tabLayout",
+                BuiltinModes.VIEW, null);
+        assertEquals(1, layout.getRows().length);
+        LayoutRow row = layout.getRows()[0];
+        assertEquals(1, row.getWidgets().length);
+        Widget widget = row.getWidgets()[0];
+        assertEquals("container", widget.getType());
+        Map<String, Serializable> props = widget.getProperties();
+        assertEquals(3, props.size());
+        assertEquals("bar", props.get("foo"));
+        assertEquals("true", props.get("nxw_addForm_0"));
+        assertEquals("false", props.get("nxw_addForm_1"));
+    }
+
 }
