@@ -27,7 +27,11 @@ public class VideoConstants {
 
     public static final String STORYBOARD_PROPERTY = "vid:storyboard";
 
+    public static final String INFO_PROPERTY = "vid:info";
+
     public static final String DURATION_PROPERTY = "vid:info/duration";
+
+    public static final String TRANSCODED_VIDEOS_PROPERTY = "vid:transcodedVideos";
 
     public static final String HAS_STORYBOARD_FACET = "HasStoryboard";
 

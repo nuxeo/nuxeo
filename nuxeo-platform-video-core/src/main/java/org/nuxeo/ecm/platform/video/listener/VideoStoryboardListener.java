@@ -63,7 +63,6 @@ public class VideoStoryboardListener implements
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(HAS_STORYBOARD_FACET)) {
             BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
-            VideoHelper.updateVideoInfo(doc, blobHolder.getBlob());
             VideoHelper.updateStoryboard(doc, blobHolder.getBlob());
             try {
                 VideoHelper.updatePreviews(doc, blobHolder.getBlob());
