@@ -71,7 +71,7 @@ public class SetDocumentACE {
         acp.addACL(acl);
         ACE ace = new ACE(user, permission, grant);
         acl.add(ace);
-        session.setACP(ref, acp, false);
+        session.setACP(ref, acp, overwrite);
     }
 
 }
