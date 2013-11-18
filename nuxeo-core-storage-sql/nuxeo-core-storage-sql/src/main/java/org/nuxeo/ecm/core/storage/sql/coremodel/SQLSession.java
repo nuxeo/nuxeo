@@ -32,6 +32,9 @@ import java.util.regex.Pattern;
 import javax.resource.ResourceException;
 import javax.transaction.xa.XAResource;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -80,6 +83,8 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  * @author Florent Guillaume
  */
 public class SQLSession implements Session {
+
+    protected final Log log = LogFactory.getLog(SQLSession.class);
 
     private final Repository repository;
 
@@ -686,11 +691,14 @@ public class SQLSession implements Session {
         List<Document> docs = new ArrayList<Document>(ids.size());
         try {
             List<Node> nodes = session.getNodesByIds(ids);
-            for (Node node : nodes) {
-                if (node == null) {
+            for (int index = 0; index < ids.size(); ++index) {
+                Node eachNode = nodes.get(index);
+                if (eachNode == null) {
+                    Serializable eachId = ids.get(index);
+                    log.warn("Cannot fetch document by id " + eachId, new Throwable("debug stack trace"));
                     continue;
                 }
-                docs.add(newDocument(node));
+                docs.add(newDocument(eachNode));
             }
         } catch (StorageException e) {
             throw new DocumentException(e.toString(), e);
