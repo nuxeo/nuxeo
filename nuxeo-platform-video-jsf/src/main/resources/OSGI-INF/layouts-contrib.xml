@@ -248,6 +248,9 @@
       <controls mode="any">
         <control name="handleLabels">true</control>
       </controls>
+      <widgetModes>
+        <mode value="any">#{not empty currentDocumentAsBlobHolder.blob ? 'view' : 'hidden'}</mode>
+      </widgetModes>
     </widget>
 
     <widget name="summary_video_conversions" type="video_conversions">
@@ -258,6 +261,9 @@
         <control name="requireSurroundingForm">true</control>
         <control name="handleLabels">true</control>
       </controls>
+      <widgetModes>
+        <mode value="any">#{not empty  currentDocumentAsBlobHolder.blob ? 'view' : 'hidden'}</mode>
+      </widgetModes>
     </widget>
 
     <widget name="summary_video_info" type="video_info">

@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.platform.video.adapter;
 
+import static org.nuxeo.ecm.platform.video.VideoConstants.INFO_PROPERTY;
+import static org.nuxeo.ecm.platform.video.VideoConstants.TRANSCODED_VIDEOS_PROPERTY;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -33,7 +36,6 @@ import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoConstants;
 import org.nuxeo.ecm.platform.video.VideoDocument;
-import org.nuxeo.ecm.platform.video.VideoHelper;
 import org.nuxeo.ecm.platform.video.VideoInfo;
 
 import com.google.common.collect.Maps;
@@ -64,19 +66,7 @@ public class VideoDocumentAdapter implements VideoDocument {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             Blob blob = bh.getBlob();
 
-            Map<String, Serializable> videoInfoMap = (Map<String, Serializable>) doc.getPropertyValue("vid:info");
-            if (videoInfoMap == null || videoInfoMap.get("duration") == null) {
-                // Lazy extraction of video info if missing.
-                try {
-                    VideoHelper.updateVideoInfo(doc, blob);
-                    videoInfoMap = (Map<String, Serializable>) doc.getPropertyValue("vid:info");
-                } catch (ClientException e) {
-                    // may happen if ffmpeg is not installed
-                    log.error(String.format(
-                            "Unable to retrieve video info: %s", e.getMessage()));
-                    log.debug(e, e);
-                }
-            }
+            Map<String, Serializable> videoInfoMap = (Map<String, Serializable>) doc.getPropertyValue(INFO_PROPERTY);
             VideoInfo videoInfo = VideoInfo.fromMap(videoInfoMap);
             video = Video.fromBlobAndInfo(blob, videoInfo);
         } catch (ClientException e) {
@@ -109,7 +99,7 @@ public class VideoDocumentAdapter implements VideoDocument {
         try {
             if (transcodedVideos == null) {
                 @SuppressWarnings("unchecked")
-                List<Map<String, Serializable>> videos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
+                List<Map<String, Serializable>> videos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
                 transcodedVideos = Maps.newHashMap();
                 for (int i = 0; i < videos.size(); i++) {
                     TranscodedVideo transcodedVideo = TranscodedVideo.fromMapAndPosition(

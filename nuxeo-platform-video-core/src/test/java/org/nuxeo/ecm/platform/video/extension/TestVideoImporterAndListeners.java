@@ -145,7 +145,6 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         docModel.setPropertyValue("dc:title", "testTitle");
         docModel.setPropertyValue("picture:credit", "testUser");
         docModel.setPropertyValue("uid:uid", "testUid");
-        docModel.setPropertyValue(DURATION_PROPERTY, 133);
 
         DocumentModel docModelResult = session.createDocument(docModel);
         assertNotNull(docModelResult);
@@ -156,7 +155,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         assertEquals("testUser",
                 docModelResult.getPropertyValue("picture:credit"));
         assertEquals("testUid", docModelResult.getPropertyValue("uid:uid"));
-        assertEquals("133.0",
+        assertEquals("0.0",
                 docModelResult.getPropertyValue(DURATION_PROPERTY).toString());
 
     }
