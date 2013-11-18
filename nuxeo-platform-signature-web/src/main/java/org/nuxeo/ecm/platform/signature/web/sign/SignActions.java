@@ -156,7 +156,7 @@ public class SignActions implements Serializable {
      * @throws ClientException
      */
     public void signCurrentDoc(String signingReason, String password)
-            throws SignException, ClientException {
+            throws ClientException {
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         DocumentModel currentUserModel = getCurrentUserModel();

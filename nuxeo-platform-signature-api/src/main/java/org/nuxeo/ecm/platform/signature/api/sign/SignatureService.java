@@ -157,7 +157,7 @@ public interface SignatureService {
     Blob signDocument(DocumentModel doc, DocumentModel user,
             String userKeyPassword, String reason, boolean pdfa,
             SigningDisposition disposition, String archiveFilename)
-            throws SignException, ConversionException, ClientException;
+            throws ClientException;
 
     /**
      * Signs a PDF document with a user certificate. Requires a password to

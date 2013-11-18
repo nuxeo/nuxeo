@@ -243,7 +243,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
     public Blob signDocument(DocumentModel doc, DocumentModel user,
             String keyPassword, String reason, boolean pdfa,
             SigningDisposition disposition, String archiveFilename)
-            throws SignException, ConversionException, ClientException {
+            throws ClientException {
 
         StatusWithBlob blobAndStatus = getSignedPdfBlobAndStatus(doc, user);
         if (blobAndStatus != null) {
@@ -272,9 +272,13 @@ public class SignatureServiceImpl extends DefaultComponent implements
             if (pdfa) {
                 parameters.put(PDFA1_PARAM, Boolean.TRUE);
             }
-            BlobHolder holder = conversionService.convert("any2pdf",
-                    new SimpleBlobHolder(originalBlob), parameters);
-            pdfBlob = holder.getBlob();
+            try {
+                BlobHolder holder = conversionService.convert("any2pdf",
+                        new SimpleBlobHolder(originalBlob), parameters);
+                pdfBlob = holder.getBlob();
+            } catch (ConversionException conversionException) {
+                throw new SignException(conversionException);
+            }
         }
 
         Blob signedBlob = signPDF(pdfBlob, user, keyPassword, reason);
