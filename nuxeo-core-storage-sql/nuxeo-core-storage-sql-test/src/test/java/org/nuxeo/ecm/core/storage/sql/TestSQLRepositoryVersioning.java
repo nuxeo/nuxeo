@@ -218,7 +218,17 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
             assertTrue(ver.isVersion());
             actual.add(ver.getVersionLabel());
         }
-        assertEquals(Arrays.asList(labels), actual);
+        // build a debug list of versions and creation times
+        // in case of failure
+        StringBuilder buf = new StringBuilder("version time: ");
+        for (VersionModel vm : session.getVersionsForDocument(doc.getRef())) {
+            buf.append(vm.getLabel());
+            buf.append("=");
+            buf.append(vm.getCreated().getTimeInMillis());
+            buf.append(", ");
+        }
+        buf.setLength(buf.length() - 2);
+        assertEquals(buf.toString(), Arrays.asList(labels), actual);
         List<DocumentRef> versionsRefs = session.getVersionsRefs(doc.getRef());
         assertEquals(labels.length, versionsRefs.size());
     }
