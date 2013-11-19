@@ -360,7 +360,7 @@ public class TestNuxeoDriveManager {
     public void testSyncRootCacheInvalidation() throws ClientException {
         Principal user1Principal = user1Session.getPrincipal();
         // No roots => no sync roots
-        Set<String> expectedSyncRootPaths = new HashSet<>();
+        Set<String> expectedSyncRootPaths = new HashSet<String>();
         checkRoots(user1Principal, 0, expectedSyncRootPaths);
 
         // Register sync roots => registration should invalidate the cache
@@ -368,7 +368,6 @@ public class TestNuxeoDriveManager {
                 workspace_1, user1Session);
         nuxeoDriveManager.registerSynchronizationRoot(user1Principal,
                 workspace_2, user1Session);
-        expectedSyncRootPaths = new HashSet<>();
         expectedSyncRootPaths.add("/default-domain/workspaces/workspace-1");
         expectedSyncRootPaths.add("/default-domain/workspaces/workspace-2");
         checkRoots(user1Principal, 2, expectedSyncRootPaths);
