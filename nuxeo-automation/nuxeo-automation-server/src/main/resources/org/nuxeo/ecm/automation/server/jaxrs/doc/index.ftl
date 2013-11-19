@@ -187,6 +187,12 @@
     font-weight: bold;
     padding: 0 .3em;
     text-transform: uppercase;}
+  .sticker-deprecated {
+    background-color: #fffbca;
+    border-color: #efe257;}
+  .sticker-studio {
+    background-color: #dfffc5;
+    border-color: #bbf18f;}
   footer {
     background-color: #3670b9;
     box-shadow: 0 6px 5px rgba(0, 0, 0, 0.2) inset;
@@ -272,9 +278,7 @@
 
             <h3>General Information</h3>
             <div class="info">
-              <#if operation.addToStudio>
-                <div><span class="sticker">Exposed in Studio</span></div>
-              </#if>
+              <div><span class="sticker sticker-studio">Exposed in Studio</span> <#if operation.addToStudio>Yes</#if><#if !operation.addToStudio>No</#if></div>
               <div><span class="sticker">Category</span> ${operation.category?xml}</div>
               <div><span class="sticker">Operation Id</span> ${operation.id}</div>
               <div><span class="sticker">Operation Class</span> ${operation.implementationClass}</div>
@@ -282,7 +286,7 @@
                 <div><span class="sticker">Available Since</span> ${operation.since}</div>
               </#if>
               <#if operation.deprecatedSince?has_content>
-                <div><span class="sticker">Deprecated Since</span> ${operation.deprecatedSince}</div>
+                <div><span class="sticker sticker-deprecated">Deprecated Since</span> ${operation.deprecatedSince}</div>
               </#if>
             </div>
 
