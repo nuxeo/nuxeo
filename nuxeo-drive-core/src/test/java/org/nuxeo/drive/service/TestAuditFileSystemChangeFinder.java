@@ -872,6 +872,103 @@ public class TestAuditFileSystemChangeFinder {
         }
     }
 
+    @Test
+    public void testSyncUnsyncRootsAsAnotherUser() throws Exception {
+        Principal user1Principal = user1Session.getPrincipal();
+        List<FileSystemItemChange> changes;
+        FileSystemItemChange change;
+
+        TransactionHelper.startTransaction();
+        try {
+            // No sync roots expected for user1
+            changes = getChanges(user1Principal);
+            assertNotNull(changes);
+            assertTrue(changes.isEmpty());
+
+            // Register sync roots for user1 as Administrator
+            nuxeoDriveManager.registerSynchronizationRoot(user1Principal,
+                    folder1, session);
+            nuxeoDriveManager.registerSynchronizationRoot(user1Principal,
+                    folder2, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            // user1 should have 2 sync roots
+            Set<IdRef> activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(user1Session);
+            assertNotNull(activeRootRefs);
+            assertEquals(2, activeRootRefs.size());
+            assertTrue(activeRootRefs.contains(folder1.getRef()));
+            assertTrue(activeRootRefs.contains(folder2.getRef()));
+
+            // There should be 2 changes detected in the audit
+            changes = getChanges(user1Principal);
+            assertEquals(2, changes.size());
+
+            change = changes.get(0);
+            assertEquals("documentModified", change.getEventId());
+            assertEquals(folder2.getId(), change.getDocUuid());
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
+                    change.getFileSystemItemId());
+            assertEquals("folder2", change.getFileSystemItemName());
+            assertNotNull(change.getFileSystemItem());
+
+            change = changes.get(1);
+            assertEquals("documentModified", change.getEventId());
+            assertEquals(folder1.getId(), change.getDocUuid());
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
+                    change.getFileSystemItemId());
+            assertEquals("folder1", change.getFileSystemItemName());
+            assertNotNull(change.getFileSystemItem());
+
+            // Unregister sync roots for user1 as Administrator
+            nuxeoDriveManager.unregisterSynchronizationRoot(user1Principal,
+                    folder1, session);
+            nuxeoDriveManager.unregisterSynchronizationRoot(user1Principal,
+                    folder2, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            // user1 should have no sync roots
+            Set<IdRef> activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(user1Session);
+            assertNotNull(activeRootRefs);
+            assertTrue(activeRootRefs.isEmpty());
+
+            // There should be 2 changes detected in the audit
+            changes = getChanges(user1Principal);
+            assertEquals(2, changes.size());
+
+            change = changes.get(0);
+            assertEquals("deleted", change.getEventId());
+            assertEquals(folder2.getId(), change.getDocUuid());
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
+                    change.getFileSystemItemId());
+            assertEquals("folder2", change.getFileSystemItemName());
+            // Not adaptable as a FileSystemItem since unregistered
+            assertNull(change.getFileSystemItem());
+
+            change = changes.get(1);
+            assertEquals("deleted", change.getEventId());
+            assertEquals(folder1.getId(), change.getDocUuid());
+            assertEquals(
+                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
+                    change.getFileSystemItemId());
+            assertEquals("folder1", change.getFileSystemItemName());
+            // Not adaptable as a FileSystemItem since unregistered
+            assertNull(change.getFileSystemItem());
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
     /**
      * Gets the document changes for the given user's synchronization roots
      * using the {@link AuditChangeFinder} and updates the
