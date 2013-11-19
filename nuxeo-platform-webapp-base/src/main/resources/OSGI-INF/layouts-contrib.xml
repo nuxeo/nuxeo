@@ -569,6 +569,47 @@
       </fields>
     </widget>
 
+    <widget name="select2_directorySuggestion_canAddNewEntry" type="textarea">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Can add new entry</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean stating if user should be able to add a new
+          entry on the directory from this widget. Available since 5.9.1,
+          defaults to "false".
+        </label>
+      </helpLabels>
+      <fields>
+        <field>canAddNewEntry</field>
+      </fields>
+    </widget>
+
+    <widget name="select2_directorySuggestion_addNewEntryFilter" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Filter for adding a new entry</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The action filter id used to check whether user should
+          be presented the 'add new entry' action on the suggestion widget.
+          The
+          variable 'directoryName' is available in context for this filter
+          evaluation. Available since 5.9.1, defaults to
+          'canAddEntryFromSuggestDirectoryWidget'.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>addNewEntryFilter</field>
+      </fields>
+    </widget>
+
     <widget name="documentSuggestion_tab" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -1259,6 +1300,12 @@
                 <row>
                   <widget category="widgetTypeConf">select2_suggestionFormatter</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_directorySuggestion_canAddNewEntry</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_directorySuggestion_addNewEntryFilter</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -1388,6 +1435,12 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_suggestionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_directorySuggestion_canAddNewEntry</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_directorySuggestion_addNewEntryFilter</widget>
                 </row>
               </rows>
             </layout>
