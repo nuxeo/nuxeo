@@ -334,28 +334,33 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements
         // handle properties index switch in case of the container widget (see
         // NXP-13205)
         Map<String, Serializable> props = wDef.getProperties(layoutMode, wMode);
-        if (props != null && !indexesRemoved.isEmpty()) {
+        final String prefix = "nxw_addForm_";
+        if (props != null && props.containsKey(prefix + 0)
+                && !indexesRemoved.isEmpty()) {
             // rearrange props to make sure indexes are ok
             Map<String, Serializable> newProps = new HashMap<String, Serializable>();
-            List<String> keys = new ArrayList<String>();
-            keys.addAll(props.keySet());
-            Collections.sort(keys);
             List<Serializable> values = new ArrayList<Serializable>();
-            for (String key : keys) {
-                if (key != null && key.startsWith("nxw_addForm_")) {
-                    values.add(props.get(key));
-                } else {
-                    newProps.put(key, props.get(key));
+            for (int i = 0; i < props.size(); i++) {
+                String key = prefix + i;
+                if (!props.containsKey(key)) {
+                    break;
                 }
+                values.add(props.get(key));
             }
             int j = 0;
             for (int i = 0; i < values.size(); i++) {
                 if (!indexesRemoved.contains(Integer.valueOf(i))) {
-                    newProps.put(
-                            String.format("nxw_addForm_%s", Integer.valueOf(j)),
-                            values.get(i));
+                    newProps.put(prefix + j, values.get(i));
                     j++;
                 }
+            }
+            // add back all other props
+            for (Map.Entry<String, Serializable> item : props.entrySet()) {
+                String key = item.getKey();
+                if (key != null && key.startsWith(prefix)) {
+                    continue;
+                }
+                newProps.put(key, item.getValue());
             }
             props = newProps;
         }
