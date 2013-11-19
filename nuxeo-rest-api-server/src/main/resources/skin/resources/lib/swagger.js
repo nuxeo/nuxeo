@@ -831,6 +831,7 @@
           if (args[param.name]) {
             reg = new RegExp('\{' + param.name + '[^\}]*\}', 'gi');
             url = url.replace(reg, encodeURIComponent(args[param.name]));
+            url = url.replace("%2F","/");
             delete args[param.name];
           } else {
             throw "" + param.name + " is a required path param.";
