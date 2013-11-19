@@ -16,8 +16,8 @@
       </action>
     -->
 
-    <action id="addEntryFromSuggestDirectoryWidget" label="add new entry"
-      type="template">
+    <action id="addEntryFromSuggestDirectoryWidget" type="template"
+      label="label.directorySuggestion.addNewEntry">
       <properties>
         <property name="template">
           /incl/action/suggest_add_new_directory_entry_action.xhtml
