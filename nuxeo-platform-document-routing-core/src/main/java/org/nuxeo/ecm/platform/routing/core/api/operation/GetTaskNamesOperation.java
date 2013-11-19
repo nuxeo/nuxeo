@@ -36,15 +36,18 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
- *
- * Returns a list of current user open tasks where their translated name matches
- * ( partially or fully ) the 'searchTerm' parameter. This operation is invoked
- * from a select2widget and the number of returned results is limited to 15.
+ * Returns a list of current user open tasks where their translated name
+ * matches (partially or fully) the 'searchTerm' parameter. This operation is
+ * invoked from a select2widget and the number of returned results is limited
+ * to 15.
  *
  * @since 5.8
  */
-@Operation(id = GetTaskNamesOperation.ID, category = Constants.CAT_WORKFLOW, label = "Get Task Translated Names", description = "Returns a list of current user open tasks where their translated name matches "
-        + " ( partially or fully ) the 'searchTerm' parameter. This operation is invoked from a select2widget and")
+@Operation(id = GetTaskNamesOperation.ID, category = Constants.CAT_WORKFLOW, label = "Get Task Translated Names", description = "Returns a "
+        + "list of current user open tasks where their translated name matches "
+        + "(partially or fully ) the 'searchTerm' parameter. This operation is "
+        + "invoked from a select2widget and the number of returned results is "
+        + "limited to 15.", addToStudio = false)
 public class GetTaskNamesOperation {
 
     public static final String ID = "Context.GetTaskNames";
@@ -86,7 +89,6 @@ public class GetTaskNamesOperation {
     /**
      * Returns all user tasks having their translated name matching ( partially
      * or fully ) the given label.
-     *
      */
     protected DocumentModelList getAllUserOpenTask(CoreSession session,
             Locale locale, String searchTerm, boolean partialMatch) {

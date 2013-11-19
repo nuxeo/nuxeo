@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.routing.api.helper.ConditionalFolderUpdateRunner;
  *
  * @since 5.5
  */
-@Operation(id = SetNextStepOnConditionalFolderOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Choose branch", description = "Update branch to be executed ")
+@Operation(id = SetNextStepOnConditionalFolderOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Choose branch", description = "Update branch to be executed ", addToStudio = false)
 public class SetNextStepOnConditionalFolderOperation {
 
     public static final String ID = "Update.NextStep.ConditionalFolder";
