@@ -14,7 +14,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Paginable;
-import org.nuxeo.ecm.automation.core.util.PaginablePageProvider;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.jaxrs.io.audit.LogEntryList;
@@ -40,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 @Operation(id = AuditPageProviderOperation.ID, category = Constants.CAT_FETCH, label = "AuditPageProvider", description = "Perform "
         + "a query or a named provider query against Audit logs. Result is "
         + "paginated. The query result will become the input for the next "
-        + "operation. If no query or provider name is given, a query based on default Audit page provider will be executed.")
+        + "operation. If no query or provider name is given, a query based on default Audit page provider will be executed.", addToStudio=false)
 public class AuditPageProviderOperation {
 
     public static final String ID = "Audit.PageProvider";
