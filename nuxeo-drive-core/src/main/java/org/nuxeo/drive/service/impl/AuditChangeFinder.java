@@ -77,14 +77,20 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         List<LogEntry> entries = queryAuditEntries(session, activeRoots,
                 lastSuccessfulSyncDate, syncDate, limit);
 
-        // First pass over the entries: check that there was no root
-        // registration / un-registration during that period.
+        // First pass over the entries to check if a "NuxeoDrive" event has
+        // occurred during that period.
+        // This event can be:
+        // - a root unregistration
+        // - a "deleted" transition
+        // - an "undeleted" transition
+        // - a removal
+        // - a move to an non synchronization root
+        // - a security update
+        // Thus the list of active roots may have changed and the cache might
+        // need to be invalidated: let's make sure we perform a
+        // query with the actual active roots.
         for (LogEntry entry : entries) {
             if (NuxeoDriveEvents.EVENT_CATEGORY.equals(entry.getCategory())) {
-                // This is a root registration event for the current user:
-                // the list of active roots has changed and the cache might
-                // need to be invalidated: let's make sure we perform a
-                // query with the actual active roots
                 log.debug(String.format(
                         "Detected sync root change for user '%s' in audit log:"
                                 + " invalidating the root cache and refetching the changes.",
