@@ -17,6 +17,7 @@
       priority="300">
       <event>lifecycle_transition_event</event>
       <event>documentRemoved</event>
+      <event>documentSecurityUpdated</event>
     </listener>
 
     <documentation>

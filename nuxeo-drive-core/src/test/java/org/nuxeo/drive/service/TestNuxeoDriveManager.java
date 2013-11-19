@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -353,6 +354,67 @@ public class TestNuxeoDriveManager {
         folder_2_1 = user1Session.getDocument(new PathRef(
                 "/default-domain/workspaces/workspace-2/folder-2-1"));
         assertFalse(isUserSubscribed("user1", folder_2_1));
+    }
+
+    @Test
+    public void testSyncRootCacheInvalidation() throws ClientException {
+        Principal user1Principal = user1Session.getPrincipal();
+        // No roots => no sync roots
+        Set<String> expectedSyncRootPaths = new HashSet<>();
+        checkRoots(user1Principal, 0, expectedSyncRootPaths);
+
+        // Register sync roots => registration should invalidate the cache
+        nuxeoDriveManager.registerSynchronizationRoot(user1Principal,
+                workspace_1, user1Session);
+        nuxeoDriveManager.registerSynchronizationRoot(user1Principal,
+                workspace_2, user1Session);
+        expectedSyncRootPaths = new HashSet<>();
+        expectedSyncRootPaths.add("/default-domain/workspaces/workspace-1");
+        expectedSyncRootPaths.add("/default-domain/workspaces/workspace-2");
+        checkRoots(user1Principal, 2, expectedSyncRootPaths);
+
+        // Delete sync root => nuxeoDriveCacheInvalidationListener should
+        // invalidate the cache
+        session.followTransition(workspace_2.getRef(), "delete");
+        session.save();
+        expectedSyncRootPaths.remove("/default-domain/workspaces/workspace-2");
+        checkRoots(user1Principal, 1, expectedSyncRootPaths);
+
+        // Undelete sync root => nuxeoDriveCacheInvalidationListener should
+        // invalidate the cache
+        session.followTransition(workspace_2.getRef(), "undelete");
+        session.save();
+        expectedSyncRootPaths.add("/default-domain/workspaces/workspace-2");
+        checkRoots(user1Principal, 2, expectedSyncRootPaths);
+
+        // Deny Read permission => nuxeoDriveCacheInvalidationListener should
+        // invalidate the cache
+        Map<String, Boolean> permissions = new HashMap<String, Boolean>();
+        permissions.put(SecurityConstants.READ_WRITE, false);
+        permissions.put(SecurityConstants.READ, false);
+        setPermissions(workspace_2, "user1", permissions);
+        expectedSyncRootPaths.remove("/default-domain/workspaces/workspace-2");
+        checkRoots(user1Principal, 1, expectedSyncRootPaths);
+
+        // Grant Read permission back => nuxeoDriveCacheInvalidationListener
+        // should invalidate the cache
+        permissions.put(SecurityConstants.READ_WRITE, true);
+        permissions.put(SecurityConstants.READ, true);
+        setPermissions(workspace_2, "user1", permissions);
+        expectedSyncRootPaths.add("/default-domain/workspaces/workspace-2");
+        checkRoots(user1Principal, 2, expectedSyncRootPaths);
+
+        // Remove sync root => nuxeoDriveCacheInvalidationListener should
+        // invalidate the cache
+        session.removeDocument(workspace_2.getRef());
+        expectedSyncRootPaths.remove("/default-domain/workspaces/workspace-2");
+        checkRoots(user1Principal, 1, expectedSyncRootPaths);
+
+        // Unregister sync root=> unregistration should invalidate the cache
+        nuxeoDriveManager.unregisterSynchronizationRoot(user1Principal,
+                workspace_1, user1Session);
+        expectedSyncRootPaths.remove("/default-domain/workspaces/workspace-1");
+        checkRoots(user1Principal, 0, expectedSyncRootPaths);
     }
 
     protected DocumentModel doc(String path) throws ClientException {
