@@ -4,18 +4,6 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <!--
-      <action id="addEntryFromSuggestDirectoryWidget" label="add new entry"
-      type="fancybox" enabled="false">
-      <properties>
-      <property name="include">
-      /widgets/suggest_add_new_directory_entry_popup.xhtml
-      </property>
-      <property name="ajaxSupport">true</property>
-      </properties>
-      </action>
-    -->
-
     <action id="addEntryFromSuggestDirectoryWidget" type="template"
       label="label.directorySuggestion.addNewEntry">
       <properties>
