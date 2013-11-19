@@ -28,7 +28,13 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = CreateDocument.ID, category = Constants.CAT_DOCUMENT, label = "Create", description = "Create a new document in the input folder. You can initialize the document properties using the 'properties' parameter. The properties are specified as <i>key=value</i> pairs separated by a new line. The key used for a property is the property xpath. To specify multi-line values you can use a \\ charcater followed by a new line. <p>Example:<pre>dc:title=The Document Title<br>dc:description=foo bar</pre>. Returns the created document.")
+@Operation(id = CreateDocument.ID, category = Constants.CAT_DOCUMENT, label = "Create", description = "Create a new document "
+        + "in the input folder. You can initialize the document properties using the "
+        + "'properties' parameter. The properties are specified as <i>key=value</i> pairs "
+        + "separated by a new line. The key used for a property is the property xpath. To "
+        + "specify multi-line values, you can use a \\ character followed by a new line. "
+        + "<p>Example:<pre>dc:title=The Document Title<br>dc:description=foo bar</pre>. "
+        + "Returns the created document.")
 public class CreateDocument {
 
     public static final String ID = "Document.Create";
@@ -45,7 +51,7 @@ public class CreateDocument {
     @Param(name = "properties", required = false)
     protected Properties content;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         if (name == null) {
             name = "Untitled";
@@ -58,7 +64,7 @@ public class CreateDocument {
         return session.createDocument(newDoc);
     }
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef doc) throws Exception {
         return run(session.getDocument(doc));
     }
