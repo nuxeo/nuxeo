@@ -272,8 +272,18 @@
 
             <h3>General Information</h3>
             <div class="info">
+              <#if operation.addToStudio>
+                <div><span class="sticker">Exposed in Studio</span></div>
+              </#if>
               <div><span class="sticker">Category</span> ${operation.category?xml}</div>
               <div><span class="sticker">Operation Id</span> ${operation.id}</div>
+              <div><span class="sticker">Operation Class</span> ${operation.implementationClass}</div>
+              <#if operation.since?has_content>
+                <div><span class="sticker">Available Since</span> ${operation.since}</div>
+              </#if>
+              <#if operation.deprecatedSince?has_content>
+                <div><span class="sticker">Deprecated Since</span> ${operation.deprecatedSince}</div>
+              </#if>
             </div>
 
             <h3>Parameters</h3>

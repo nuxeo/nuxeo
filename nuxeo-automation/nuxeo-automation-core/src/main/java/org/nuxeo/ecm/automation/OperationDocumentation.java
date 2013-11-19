@@ -43,6 +43,21 @@ public class OperationDocumentation implements
 
     public String since;
 
+    /**
+     * @since 5.9.1
+     */
+    public String deprecatedSince;
+
+    /**
+     * @since 5.9.1
+     */
+    public boolean addToStudio;
+
+    /**
+     * @since 5.9.1
+     */
+    public String implementationClass;
+
     public String description;
 
     public Param[] params;
@@ -152,6 +167,34 @@ public class OperationDocumentation implements
 
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public String getSince() {
+        return since;
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public String getDeprecatedSince() {
+        return deprecatedSince;
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public boolean isAddToStudio() {
+        return addToStudio;
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public String getImplementationClass() {
+        return implementationClass;
     }
 
     public String[] getSignature() {

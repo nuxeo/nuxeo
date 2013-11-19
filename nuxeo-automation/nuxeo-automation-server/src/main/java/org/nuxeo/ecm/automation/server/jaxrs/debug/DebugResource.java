@@ -70,6 +70,16 @@ public class DebugResource {
         return getOperationsListAsJson();
     }
 
+    /**
+     * @since 5.9.1
+     */
+    @GET
+    @Produces("text/plain")
+    @Path("studioDoc")
+    public Object doGetStudioDoc() throws Exception {
+        return JsonWriter.exportOperations(true);
+    }
+
     @GET
     @Produces("application/json")
     public Object doGetJSON() throws Exception {

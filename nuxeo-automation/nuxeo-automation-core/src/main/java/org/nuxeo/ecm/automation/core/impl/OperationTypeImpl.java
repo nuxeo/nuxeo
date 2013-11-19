@@ -190,8 +190,8 @@ public class OperationTypeImpl implements OperationType {
             if (obj instanceof Expression) {
                 obj = ((Expression) obj).eval(ctx);
             }
-            // Trying to fallback on Chain Parameters sub context if cannot find
-            // it
+            // Trying to fallback on Chain Parameters sub context if cannot
+            // find it
             if (obj == null) {
                 if (ctx.containsKey(Constants.VAR_RUNTIME_CHAIN)) {
                     obj = ((Map) ctx.get(Constants.VAR_RUNTIME_CHAIN)).get(entry.getKey());
@@ -253,6 +253,9 @@ public class OperationTypeImpl implements OperationType {
         doc.requires = op.requires();
         doc.category = op.category();
         doc.since = op.since();
+        doc.deprecatedSince = op.deprecatedSince();
+        doc.addToStudio = op.addToStudio();
+        doc.implementationClass = type.getName();
         if (doc.requires.length() == 0) {
             doc.requires = null;
         }
@@ -327,7 +330,6 @@ public class OperationTypeImpl implements OperationType {
         }
         return t;
     }
-
 
     @Override
     public String toString() {

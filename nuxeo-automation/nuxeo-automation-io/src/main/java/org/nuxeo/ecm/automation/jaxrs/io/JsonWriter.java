@@ -39,10 +39,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JsonWriter {
-
 
     private static JsonFactory getFactory() {
         return Framework.getLocalService(JsonFactoryManager.class).getJsonFactory();
@@ -92,7 +90,20 @@ public class JsonWriter {
     /**
      * Used to export operations to studio
      */
-    public static String exportOperations() throws IOException, OperationException {
+    public static String exportOperations() throws IOException,
+            OperationException {
+        return exportOperations(false);
+    }
+
+    /**
+     * Used to export operations to studio
+     *
+     * @param filterNotInStudio if true, operation types not exposed in Studio
+     *            will be filtered.
+     * @since 5.9.1
+     */
+    public static String exportOperations(boolean filterNotInStudio)
+            throws IOException, OperationException {
         List<OperationDocumentation> ops = Framework.getLocalService(
                 AutomationService.class).getDocumentation();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -101,7 +112,13 @@ public class JsonWriter {
         jg.writeStartObject();
         jg.writeArrayFieldStart("operations");
         for (OperationDocumentation op : ops) {
-            writeOperation(jg, op);
+            if (filterNotInStudio) {
+                if (op.addToStudio && !"chain".equals(op.category)) {
+                    writeOperation(jg, op);
+                }
+            } else {
+                writeOperation(jg, op);
+            }
         }
         jg.writeEndArray();
         jg.writeEndObject();
