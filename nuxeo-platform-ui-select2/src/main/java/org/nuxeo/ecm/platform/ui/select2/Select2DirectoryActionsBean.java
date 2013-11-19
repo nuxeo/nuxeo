@@ -88,7 +88,6 @@ public class Select2DirectoryActionsBean {
         return null;
     }
 
-
     public void createDirectoryEntry() throws ClientException {
         Session dirSession = null;
         try {
@@ -100,7 +99,8 @@ public class Select2DirectoryActionsBean {
             Object id = newDirectoryEntry.getProperty(schema, idField);
             dirSession = dirService.open(dirName);
             if (id instanceof String && dirSession.hasEntry((String) id)) {
-                facesMessages.add(
+                facesMessages.addToControl(
+                        "suggestAddNewDirectoryEntry",
                         StatusMessage.Severity.ERROR,
                         messages.get("vocabulary.entry.identifier.already.exists"));
                 return;

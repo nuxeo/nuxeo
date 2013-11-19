@@ -25,6 +25,15 @@
 
   </extension>
 
+  <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
+    <application root="${org.nuxeo.ecm.contextPath}"
+      template-engine="jsf-facelets">
+      <view id="/widgets/suggest_add_new_directory_entry_iframe.xhtml">
+        <theme>galaxy/popup</theme>
+      </view>
+    </application>
+  </extension>
+
   <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
     <resource name="select2.css">
       <path>css/select2.css</path>
