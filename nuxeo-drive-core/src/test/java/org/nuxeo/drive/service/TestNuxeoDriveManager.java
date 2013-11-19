@@ -136,11 +136,10 @@ public class TestNuxeoDriveManager {
         folder_2_1 = session.createDocument(session.createDocumentModel(
                 "/default-domain/workspaces/workspace-2", "folder-2-1",
                 "Folder"));
-        ACP acp = session.getACP(workspace_2.getRef());
-        ACL acl = acp.getOrCreateACL();
-        acl.add(new ACE("members", SecurityConstants.READ_WRITE, true));
-        session.setACP(workspace_2.getRef(), acp, true);
-        session.save();
+        Map<String, Boolean> permissions = new HashMap<String, Boolean>();
+        permissions.put(SecurityConstants.READ_WRITE, true);
+        setPermissions(workspace_1, "members", permissions);
+        setPermissions(workspace_2, "members", permissions);
 
         user1Session = repository.openSessionAs("user1");
         user2Session = repository.openSessionAs("user2");
@@ -179,28 +178,10 @@ public class TestNuxeoDriveManager {
         nuxeoDriveManager.handleFolderDeletion((IdRef) doc("/").getRef());
     }
 
-    protected void checkRootsCount(Principal principal, int expectedCount)
-            throws ClientException {
-        assertEquals(
-                expectedCount,
-                nuxeoDriveManager.getSynchronizationRoots(principal).get(
-                        session.getRepositoryName()).refs.size());
-    }
-
-    public DocumentModel doc(String path) throws ClientException {
-        return doc(session, path);
-    }
-
-    public DocumentModel doc(CoreSession session, String path)
-            throws ClientException {
-        return session.getDocument(new PathRef(path));
-    }
-
     @Test
     public void testGetSynchronizationRoots() throws Exception {
 
         // Register synchronization roots
-
         nuxeoDriveManager.registerSynchronizationRoot(
                 user1Session.getPrincipal(),
                 user1Session.getDocument(user1Workspace), user1Session);
@@ -374,6 +355,33 @@ public class TestNuxeoDriveManager {
         assertFalse(isUserSubscribed("user1", folder_2_1));
     }
 
+    protected DocumentModel doc(String path) throws ClientException {
+        return doc(session, path);
+    }
+
+    protected DocumentModel doc(CoreSession session, String path)
+            throws ClientException {
+        return session.getDocument(new PathRef(path));
+    }
+
+    protected void checkRootsCount(Principal principal, int expectedCount)
+            throws ClientException {
+        assertEquals(
+                expectedCount,
+                nuxeoDriveManager.getSynchronizationRoots(principal).get(
+                        "default").refs.size());
+    }
+
+    protected void checkRoots(Principal principal, int expectedCount,
+            Set<String> expectedRootPaths) throws ClientException {
+        Map<String, SynchronizationRoots> syncRoots = nuxeoDriveManager.getSynchronizationRoots(principal);
+        Set<String> syncRootPaths = syncRoots.get("default").paths;
+        assertEquals(expectedCount, syncRootPaths.size());
+        for (String syncRootPath : expectedRootPaths) {
+            assertTrue(syncRootPaths.contains(syncRootPath));
+        }
+    }
+
     @SuppressWarnings("unchecked")
     protected boolean isUserSubscribed(String userName, DocumentModel container)
             throws ClientException {
@@ -391,6 +399,18 @@ public class TestNuxeoDriveManager {
             }
         }
         return false;
+    }
+
+    protected void setPermissions(DocumentModel doc, String userName,
+            Map<String, Boolean> permissions) throws ClientException {
+        ACP acp = session.getACP(doc.getRef());
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        for (String permission : permissions.keySet()) {
+            localACL.add(0,
+                    new ACE(userName, permission, permissions.get(permission)));
+        }
+        session.setACP(doc.getRef(), acp, true);
+        session.save();
     }
 
 }
