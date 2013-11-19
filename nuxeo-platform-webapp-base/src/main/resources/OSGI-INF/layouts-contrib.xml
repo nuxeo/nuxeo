@@ -497,17 +497,17 @@
       </labels>
       <helpLabels>
         <label mode="any">
-            Name of the JavaScript function that
-            will be
-            called by select2 to do the formatting of the
-            suggestedentries.
-            The
-            target function should take as input
-            the javascript Document as
-            returned by Automation and should
-            return some Html.
-            Use the "Inline Javascript" property field to define your own
-            formatter.
+          Name of the JavaScript function that
+          will be
+          called by select2 to do the formatting of the
+          suggestedentries.
+          The
+          target function should take as input
+          the javascript Document as
+          returned by Automation and should
+          return some Html.
+          Use the "Inline Javascript" property field to define your own
+          formatter.
         </label>
       </helpLabels>
       <fields>
@@ -524,17 +524,17 @@
       </labels>
       <helpLabels>
         <label mode="any">
-            Name of the JavaScript function that
-            will be
-            called by the widget to do the formatting of the
-            selected entries.
-            The
-            target function should take as input
-            the javascript Document as
-            returned by Automation and should
-            return some Html.
-            Use the "Inline Javascript" property field to define your own
-            formatter.
+          Name of the JavaScript function that
+          will be
+          called by the widget to do the formatting of the
+          selected entries.
+          The
+          target function should take as input
+          the javascript Document as
+          returned by Automation and should
+          return some Html.
+          Use the "Inline Javascript" property field to define your own
+          formatter.
         </label>
       </helpLabels>
       <fields>
@@ -552,16 +552,17 @@
       <helpLabels>
         <label mode="any">
           Javascript to be injected in the page with
-          the Widget. You can define here custom formatters
-          referenced in "Selection Formatter" and
-           "Suggestion Formatter" fields. Example:
+          the Widget.
+          You can define here custom formatters
+          referenced in "Selection
+          Formatter" and
+          "Suggestion Formatter" fields. Example:
           &lt;pre&gt;
-            function myFormatter(entry) {
-              var markup = entry.displayLabel;
-              return markup;
-            }
-          &lt;/pre&gt;
-        </label>
+          function myFormatter(entry) {
+          var markup = entry.displayLabel;
+          return markup;
+          }
+          &lt;/pre&gt; </label>
       </helpLabels>
       <fields>
         <field>inlinejs</field>
@@ -634,12 +635,15 @@
       </labels>
       <helpLabels>
         <label mode="any">
-          NXQL Query to fetch the suggestions. This property is ignored if a
+          NXQL Query to fetch the suggestions. This property is
+          ignored if a
           Page Provider name is given.
           &lt;p&gt;
-          Example: select * from Document where dc:title LIKE ?
+          Example: select *
+          from Document where dc:title LIKE ?
           &lt;/p&gt;
-          The widget appends a '%' wildcard to the parameter passed to query.
+          The widget appends a '%'
+          wildcard to the parameter passed to query.
         </label>
       </helpLabels>
       <fields>
@@ -657,11 +661,11 @@
       <helpLabels>
         <label mode="any">
           Document Schemas that should be fetched and
-          sent to the JS client side. You can enter comma separated values.
+          sent to the
+          JS client side. You can enter comma separated values.
           &lt;p&gt;
           Example: dublincore,common
-          &lt;/p&gt;
-        </label>
+          &lt;/p&gt; </label>
       </helpLabels>
       <fields>
         <field>documentSchemas</field>
@@ -941,7 +945,7 @@
             </layout>
           </layouts>
           <layouts mode="edit">
-                        <layout name="singleUserSuggestion_widget_type_properties_edit">
+            <layout name="singleUserSuggestion_widget_type_properties_edit">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">required</widget>
@@ -1069,7 +1073,7 @@
             </layout>
           </layouts>
           <layouts mode="edit">
-                        <layout name="multipleUsersSuggestion_widget_type_properties_edit">
+            <layout name="multipleUsersSuggestion_widget_type_properties_edit">
               <rows>
                 <row>
                   <widget category="widgetTypeConf">required</widget>
