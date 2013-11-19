@@ -208,6 +208,12 @@ public class SQLInfo {
         selectVersionIdByLabelWhatColumn = null;
 
         initSQL();
+
+        try {
+            initSQLStatements();
+        } catch (IOException e) {
+            throw new StorageException(e);
+        }
     }
 
     public Database getDatabase() {
