@@ -38,6 +38,8 @@ import org.nuxeo.ecm.automation.jaxrs.io.operations.AutomationInfo;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Json writer for operations export.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class JsonWriter {
@@ -88,7 +90,7 @@ public class JsonWriter {
     }
 
     /**
-     * Used to export operations to studio
+     * Used to export operations to studio.
      */
     public static String exportOperations() throws IOException,
             OperationException {
@@ -96,7 +98,7 @@ public class JsonWriter {
     }
 
     /**
-     * Used to export operations to studio
+     * Used to export operations to studio.
      *
      * @param filterNotInStudio if true, operation types not exposed in Studio
      *            will be filtered.

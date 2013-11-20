@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.ui.select2;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.jboss.seam.ScopeType;
@@ -37,13 +38,15 @@ import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
- * Helper class for directory select2 widgets
+ * Helper class for directory select2 widgets.
  *
  * @since 5.9.1
  */
 @Name("select2DirectoryActions")
 @Scope(ScopeType.PAGE)
-public class Select2DirectoryActionsBean {
+public class Select2DirectoryActionsBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @In(create = true)
     protected FacesMessages facesMessages;

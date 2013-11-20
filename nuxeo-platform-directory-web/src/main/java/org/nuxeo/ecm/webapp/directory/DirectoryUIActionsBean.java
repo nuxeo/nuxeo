@@ -346,12 +346,12 @@ public class DirectoryUIActionsBean implements Serializable {
 
             // Check DirectoryUI ReadOnly Status
             boolean dirUIReadOnly;
-            DirectoryUI currentDirectoryInfo = directoryUIManager.getDirectoryInfo(directoryName);
-            if (currentDirectoryInfo == null) {
+            DirectoryUI dirInfo = directoryUIManager.getDirectoryInfo(directoryName);
+            if (dirInfo == null) {
                 // assume read-only
                 dirUIReadOnly = true;
             } else {
-                dirUIReadOnly = Boolean.TRUE.equals(currentDirectoryInfo.isReadOnly());
+                dirUIReadOnly = Boolean.TRUE.equals(dirInfo.isReadOnly());
             }
 
             isReadOnly = dirReadOnly || dirUIReadOnly;
