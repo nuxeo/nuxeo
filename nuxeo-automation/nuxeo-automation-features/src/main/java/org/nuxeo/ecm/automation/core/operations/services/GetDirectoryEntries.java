@@ -44,7 +44,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
  */
-@Operation(id = GetDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Get directory entries", description = "Get the entries of a directory. This is returning a blob containing a serialized JSON array. The input document, if specified, is used as a context for a potential local configuration of the directory.")
+@Operation(id = GetDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Get directory entries", description = "Get the entries of a directory. This is returning a blob containing a serialized JSON array. The input document, if specified, is used as a context for a potential local configuration of the directory.", addToStudio = false)
 public class GetDirectoryEntries {
 
     private static final Log log = LogFactory.getLog(GetDirectoryEntries.class);
