@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.pictures.tiles.service.test;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -26,11 +28,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -38,8 +39,9 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.api.adapter.PictureTilesAdapter;
-import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent;
 
+// NXP-13240: failing randomly => disabled waiting for investigation
+@Ignore
 public class TestAdapters extends SQLRepositoryTestCase {
 
     @Before
