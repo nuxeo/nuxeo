@@ -76,6 +76,7 @@ import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageState;
+import org.nuxeo.connect.update.Version;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.connect.ConnectBroker;
@@ -174,6 +175,13 @@ public abstract class NuxeoLauncher {
 
     private static final String OPTION_ACCEPT_DESC = "Accept, refuse or ask confirmation for all changes (default: "
             + ConnectBroker.OPTION_ACCEPT_DEFAULT + ").";
+
+    /**
+     * @since 5.9.1
+     */
+    protected static final String OPTION_SNAPSHOT = "snapshot";
+
+    private static final String OPTION_SNAPSHOT_DESC = "Allow use of SNAPSHOT Marketplace packages.";
 
     /**
      * @since 5.6
@@ -542,7 +550,6 @@ public abstract class NuxeoLauncher {
 
         protected List<String> execute(String... command) throws IOException {
             Process process = new ProcessBuilder(command).start();
-            @SuppressWarnings("unchecked")
             List<String> lines = IOUtils.readLines(process.getInputStream());
             return lines;
         }
@@ -819,6 +826,10 @@ public abstract class NuxeoLauncher {
             OptionBuilder.withArgName("true|false|ask");
             OptionBuilder.withDescription(OPTION_ACCEPT_DESC);
             launcherOptions.addOption(OptionBuilder.create());
+            // Allow SNAPSHOT option
+            OptionBuilder.withLongOpt(OPTION_SNAPSHOT);
+            OptionBuilder.withDescription(OPTION_SNAPSHOT_DESC);
+            launcherOptions.addOption(OptionBuilder.create("s"));
         }
     }
 
@@ -1456,6 +1467,7 @@ public abstract class NuxeoLauncher {
             this.launcher = launcher;
         }
 
+        @Override
         public void run() {
             log.debug("Shutting down...");
             if (launcher.isRunning()) {
@@ -1909,16 +1921,26 @@ public abstract class NuxeoLauncher {
             PackageException {
         if (connectBroker == null) {
             connectBroker = new ConnectBroker(configurationGenerator.getEnv());
-            if (cmdLine.hasOption(OPTION_ACCEPT)) {
+            if (hasOption(OPTION_ACCEPT)) {
                 connectBroker.setAccept(cmdLine.getOptionValue(OPTION_ACCEPT,
                         ConnectBroker.OPTION_ACCEPT_DEFAULT));
             }
-            if (cmdLine.hasOption(OPTION_RELAX)) {
+            if (hasOption(OPTION_RELAX)) {
                 connectBroker.setRelax(cmdLine.getOptionValue(OPTION_RELAX));
+            }
+            if (hasOption(OPTION_SNAPSHOT) || isSNAPSHOTDistribution()) {
+                connectBroker.setAllowSNAPSHOT(true);
             }
             cset = connectBroker.getCommandSet();
         }
         return connectBroker;
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    private boolean isSNAPSHOTDistribution() {
+        return new Version(getDistributionInfo().version).isSnapshot();
     }
 
     /**
@@ -2029,29 +2051,14 @@ public abstract class NuxeoLauncher {
             log.info("Instance CLID: " + nxInstance.clid);
         } catch (NoCLID e) {
             // leave nxInstance.clid unset
-        } catch (Exception e) {
+        } catch (PackageException e) {
             // something went wrong in the NuxeoConnectClient initialization
             errorValue = EXIT_CODE_UNAUTHORIZED;
             log.error("Could not initialize NuxeoConnectClient", e);
             return false;
         }
         // distribution.properties
-        DistributionInfo nxDistrib;
-        File distFile = new File(configurationGenerator.getConfigDir(),
-                "distribution.properties");
-        if (!distFile.exists()) {
-            // fallback in the file in templates
-            distFile = new File(configurationGenerator.getNuxeoHome(),
-                    "templates");
-            distFile = new File(distFile, "common");
-            distFile = new File(distFile, "config");
-            distFile = new File(distFile, "distribution.properties");
-        }
-        try {
-            nxDistrib = new DistributionInfo(distFile);
-        } catch (IOException e) {
-            nxDistrib = new DistributionInfo();
-        }
+        DistributionInfo nxDistrib = getDistributionInfo();
         nxInstance.distribution = nxDistrib;
         log.info("** Distribution");
         log.info("- name: " + nxDistrib.name);
@@ -2137,6 +2144,29 @@ public abstract class NuxeoLauncher {
         log.info("****************************************");
         printInstanceXMLOutput(nxInstance);
         return true;
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    protected DistributionInfo getDistributionInfo() {
+        File distFile = new File(configurationGenerator.getConfigDir(),
+                "distribution.properties");
+        if (!distFile.exists()) {
+            // fallback in the file in templates
+            distFile = new File(configurationGenerator.getNuxeoHome(),
+                    "templates");
+            distFile = new File(distFile, "common");
+            distFile = new File(distFile, "config");
+            distFile = new File(distFile, "distribution.properties");
+        }
+        DistributionInfo nxDistrib;
+        try {
+            nxDistrib = new DistributionInfo(distFile);
+        } catch (IOException e) {
+            nxDistrib = new DistributionInfo();
+        }
+        return nxDistrib;
     }
 
     /**
