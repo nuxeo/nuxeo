@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -39,6 +40,8 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.api.adapter.PictureTilesAdapter;
 
+// NXP-13240: temporarily disabled
+@Ignore
 public class TestAdapters extends SQLRepositoryTestCase {
 
     @Before
