@@ -57,6 +57,7 @@ import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.packages.PackageManager;
+import org.nuxeo.connect.packages.dependencies.CUDFHelper;
 import org.nuxeo.connect.packages.dependencies.DependencyResolution;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.Package;
@@ -111,6 +112,8 @@ public class ConnectBroker {
     public static final String OPTION_RELAX_DEFAULT = "ask";
 
     private String accept = OPTION_ACCEPT_DEFAULT;
+
+    private boolean allowSNAPSHOT = CUDFHelper.defaultAllowSNAPSHOT;
 
     public static final String OPTION_ACCEPT_DEFAULT = "ask";
 
@@ -1179,7 +1182,7 @@ public class ConnectBroker {
                 log.debug("solverUpgrade: " + solverUpgrade);
                 DependencyResolution resolution = getPackageManager().resolveDependencies(
                         solverInstall, solverRemove, solverUpgrade,
-                        requestPlatform);
+                        requestPlatform, allowSNAPSHOT);
                 log.info(resolution);
                 if (resolution.isFailed()) {
                     return false;
@@ -1442,6 +1445,14 @@ public class ConnectBroker {
                 "Couldn't find a remote or local (relative to "
                         + "current directory or to NUXEO_HOME) "
                         + "package with name or ID " + pkg);
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public void setAllowSNAPSHOT(boolean allow) {
+        CUDFHelper.defaultAllowSNAPSHOT = allow;
+        allowSNAPSHOT = allow;
     }
 
 }
