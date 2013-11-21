@@ -37,6 +37,8 @@ import org.nuxeo.ecm.webengine.jaxrs.servlet.ApplicationServlet;
  */
 public class WebEngineServlet extends ApplicationServlet {
 
+    protected final String MIME_TYPE = "X-File-Type";
+
     private final class DefaultContentTypeRequestWrapper extends
             HttpServletRequestWrapper {
 
@@ -44,16 +46,17 @@ public class WebEngineServlet extends ApplicationServlet {
 
         protected final String lCONTENT_TYPE = HttpHeaders.CONTENT_TYPE.toLowerCase();
 
-        protected final String lFILE_TYPE = "X-File-Type".toLowerCase();
+        protected final String lFILE_TYPE = MIME_TYPE.toLowerCase();
 
-
-        protected DefaultContentTypeRequestWrapper(HttpServletRequest request) {
+        protected DefaultContentTypeRequestWrapper(HttpServletRequest request,
+                boolean patchCType, boolean patchMType) {
             super(request);
-            headers = patchHeaders(request);
+            headers = patchHeaders(request, patchCType, patchMType);
         }
 
-
-        protected Hashtable<String,String[]> patchHeaders(HttpServletRequest request) {
+        protected Hashtable<String, String[]> patchHeaders(
+                HttpServletRequest request, boolean patchCType,
+                boolean patchMType) {
             Hashtable<String, String[]> headers = new Hashtable<String,String[]>();
             // collect headers from request
             Enumeration<String> eachNames = request.getHeaderNames();
@@ -66,14 +69,17 @@ public class WebEngineServlet extends ApplicationServlet {
                 }
                 headers.put(name, values.toArray(new String[values.size()]));
             }
-            // patch content type
-            String ctype = request.getContentType();
-            if (ctype == null || ctype.isEmpty()) {
-                String[] ctypes = new String[] { "application/octet-stream" };
-                headers.put(lCONTENT_TYPE, ctypes );
-                headers.put(lFILE_TYPE, ctypes );
-            } else {
-                patchContentTypes(headers.get(lCONTENT_TYPE));
+            if (patchCType) {
+                // patch content type
+                String ctype = request.getContentType();
+                if (ctype == null || ctype.isEmpty()) {
+                    String[] ctypes = new String[] { "application/octet-stream" };
+                    headers.put(lCONTENT_TYPE, ctypes);
+                } else {
+                    patchContentTypes(headers.get(lCONTENT_TYPE));
+                }
+            }
+            if (patchMType) {
                 patchContentTypes(headers.get(lFILE_TYPE));
             }
             return headers;
@@ -160,8 +166,13 @@ public class WebEngineServlet extends ApplicationServlet {
             request.getParameterMap();
         }
         final String ctype = request.getHeader(HttpHeaders.CONTENT_TYPE);
-        if (ctype == null || ctype.length() == 0 || !ctype.contains("/")) {
-            request = new DefaultContentTypeRequestWrapper(request);
+        final String mtype = request.getHeader(MIME_TYPE);
+        boolean patchCType = ctype == null || ctype.length() == 0
+                || !ctype.contains("/");
+        boolean patchMMType = mtype != null && !mtype.contains("/");
+        if (patchCType || patchMMType) {
+            request = new DefaultContentTypeRequestWrapper(request, patchCType,
+                    patchMMType);
         }
         container.service(request, response);
     }
