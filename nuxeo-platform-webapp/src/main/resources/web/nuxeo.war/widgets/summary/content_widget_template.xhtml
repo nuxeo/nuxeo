@@ -124,7 +124,7 @@
                 </h:panelGroup>
               </nxu:methodResult>
               <c:if test="#{previewActions != null}">
-                <nxh:outputLink value="javascript:openFancyBox('${previewActions.getPreviewURL(currentDocument, nxd:propertyPath('files:files', model.rowIndex, 'file'))}'); return false;">
+                <nxh:outputLink value="javascript:openFancyBox('${previewActions.getPreviewURL(currentDocument, nxd:propertyPath('files:files', model.rowIndex, 'file'))}');">
                   <nxh:graphicImage value="/icons/preview.png"
                     title="#{messages['label.document.preview']}"
                     alt="#{messages['label.document.preview']}"/>
