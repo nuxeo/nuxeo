@@ -136,6 +136,7 @@ BEGIN
     JOIN sys.types types ON types.user_type_id = col.user_type_id
     WHERE t.type_desc = 'USER_TABLE' AND types.name = 'varchar'
       AND t.name NOT LIKE 'NXP_%'
+      AND t.name NOT LIKE 'JBPM_%'
     ORDER BY t.name, col.name
   -- SELECT * FROM @vccol
 
@@ -213,6 +214,7 @@ BEGIN
     JOIN sys.index_columns ic ON ic.object_id = ind.object_id AND ic.index_id = ind.index_id
     WHERE ind.is_primary_key = 1
       AND OBJECT_NAME(ic.object_id) NOT LIKE 'NXP_%'
+      AND OBJECT_NAME(ic.object_id) NOT LIKE 'JBPM_%'
   -- SELECT * FROM @rpkinfo
 
 
