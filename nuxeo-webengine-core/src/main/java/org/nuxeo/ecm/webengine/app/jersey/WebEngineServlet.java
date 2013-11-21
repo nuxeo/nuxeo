@@ -29,7 +29,6 @@ import javax.ws.rs.core.HttpHeaders;
 import org.nuxeo.ecm.webengine.jaxrs.Activator;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.ApplicationServlet;
 
-
 /**
  * WebEngine integration with OSGi JAX-RS model from ECR.
  *
@@ -42,7 +41,7 @@ public class WebEngineServlet extends ApplicationServlet {
     private final class DefaultContentTypeRequestWrapper extends
             HttpServletRequestWrapper {
 
-        protected final Hashtable<String,String[]> headers;
+        protected final Hashtable<String, String[]> headers;
 
         protected final String lCONTENT_TYPE = HttpHeaders.CONTENT_TYPE.toLowerCase();
 
@@ -57,7 +56,7 @@ public class WebEngineServlet extends ApplicationServlet {
         protected Hashtable<String, String[]> patchHeaders(
                 HttpServletRequest request, boolean patchCType,
                 boolean patchMType) {
-            Hashtable<String, String[]> headers = new Hashtable<String,String[]>();
+            Hashtable<String, String[]> headers = new Hashtable<String, String[]>();
             // collect headers from request
             Enumeration<String> eachNames = request.getHeaderNames();
             while (eachNames.hasMoreElements()) {
@@ -84,7 +83,6 @@ public class WebEngineServlet extends ApplicationServlet {
             }
             return headers;
         }
-
 
         protected void patchContentTypes(String[] ctypes) {
             for (int index = 0; index < ctypes.length; ++index) {
@@ -119,7 +117,9 @@ public class WebEngineServlet extends ApplicationServlet {
             }
             return new Enumeration<String>() {
                 String[] values = headers.get(lname);
+
                 int index = 0;
+
                 @Override
                 public boolean hasMoreElements() {
                     return index < values.length;
@@ -128,7 +128,8 @@ public class WebEngineServlet extends ApplicationServlet {
                 @Override
                 public String nextElement() {
                     if (index >= values.length) {
-                        throw new NoSuchElementException(index + " is higher than " + values.length);
+                        throw new NoSuchElementException(index
+                                + " is higher than " + values.length);
                     }
                     return values[index++];
                 }
@@ -139,7 +140,6 @@ public class WebEngineServlet extends ApplicationServlet {
 
     private static final long serialVersionUID = 1L;
 
-
     @Override
     public void init(ServletConfig config) throws ServletException {
         bundle = Activator.getInstance().getContext().getBundle();
@@ -148,13 +148,13 @@ public class WebEngineServlet extends ApplicationServlet {
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         containerService(request, response);
     }
 
     @Override
-    protected void containerService(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+    protected void containerService(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException, IOException {
         if (isDirty) {
             reloadContainer();
         }
@@ -176,6 +176,4 @@ public class WebEngineServlet extends ApplicationServlet {
         }
         container.service(request, response);
     }
-
-
 }
