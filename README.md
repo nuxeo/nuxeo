@@ -53,35 +53,31 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
 
 ### Available Maven profiles
 
- * nuxeo-coreserver, nuxeo-cap, nuxeo-dm, nuxeo-dam, nuxeo-cmf, ...: build the corresponding application/module
- * tomcat, jboss: build the corresponding server
+ * nuxeo-coreserver, nuxeo-cap, nuxeo-dm, nuxeo-dam, ...: build the corresponding application/module
+ * tomcat: build the corresponding server
  * all-distributions: full build
  * itest: run integration tests
- * ftest-dm, ftest-dam, ftest-cmf, ftest-sc, ...: run functional tests against the corresponding application/module
+ * ftest-dm, ftest-dam, ftest-sc, ...: run functional tests against the corresponding application/module
  * fltest-dm: run functional Funkload tests against DM
  * sdk: build SDK distributions for use in Nuxeo IDE
 
 ## Modules listing
 
- * nuxeo-distribution-cap: Content Application Platform EAR
+ * nuxeo-distribution-cap: Content Application Platform NXR
  * nuxeo-distribution-tomcat-wizard-tests: WebDriver tests for Tomcat wizard
- * nuxeo-distribution-cmf: Case Management EAR
-    * ftest/selenium: Selenium tests for CMF
- * nuxeo-distribution-coreserver: CoreServer EAR
- * nuxeo-distribution-dm: Document Management EAR
+ * nuxeo-distribution-coreserver: CoreServer NXR
+ * nuxeo-distribution-dm: Document Management NXR
     * ftest/cmis: CMIS tests for DM
     * ftest/funkload: Funkload tests for DM
     * ftest/selenium: Selenium tests for DM
     * ftest/webdriver: WebDriver tests for DM
- * nuxeo-distribution-jboss: JBoss distributions
  * nuxeo-distribution-resources: Resources archives used in other packagings (doc, binaries, templates).
- * nuxeo-distribution-social-collaboration: Social Collaboration EAR
+ * nuxeo-distribution-social-collaboration: Social Collaboration NXR
     * ftest/selenium: Selenium tests for SC
  * nuxeo-distribution-tests: Helper POM with Nuxeo test dependencies
  * nuxeo-distribution-tomcat: Tomcat distributions
  * nuxeo-functional-tests: Framework for testing nuxeo distributions
  * nuxeo-launcher: Control Panel and launcher
- * nuxeo-marketplace-cmf: Marketplace package of CMF
  * nuxeo-marketplace-dam: Marketplace package of DAM
     * ftest/webdriver: WebDriver tests for DAM
  * nuxeo-marketplace-dm: Marketplace package of DM
@@ -90,15 +86,13 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
 
 ## Produced packages
 
- * standalone EAR-like packages
+ * NXR packages
      * Content Application Platform (CAP)
      * Advanced Document Management (DM)
      * Digital Assets Management (DAM)
-     * Case Management (CMF)
      * Social Collaboration
  * Marketplace packages
  * Tomcat packages
- * JBoss packages
 
 
 ## Understanding Maven profiles and classifiers
@@ -151,13 +145,13 @@ install/deploy to m2 repository, then you can use the dedicated profiles.
 
 ### Nuxeo Core Server
 
-A minimal server EAR. An embedded repository will be started. No other  platform services are available.
+A minimal server NXR. An embedded repository will be started. No other  platform services are available.
 
 This application can be used to debug, test or develop nuxeo components that need a repository connection.
 
 Remoting will be also available in the future via Nuxeo Runtime.
 
-Built EAR is in `nuxeo-distribution-coreserver/target/`.
+Built NXR is in `nuxeo-distribution-coreserver/target/`.
 
 It is available within Tomcat in `nuxeo-distribution-tomcat/target/`.
 
@@ -166,7 +160,7 @@ It is available within Tomcat in `nuxeo-distribution-tomcat/target/`.
 
 Basic document management features.
 
-Built EAR is in `nuxeo-distribution-cap/target/`.
+Built NXR is in `nuxeo-distribution-cap/target/`.
 
 This is the default available application in `nuxeo-distribution-tomcat/target/`.
 
@@ -174,7 +168,7 @@ This is the default available application in `nuxeo-distribution-tomcat/target/`
 
 Advanced document management features.
 
-Built EAR is in `nuxeo-distribution-dm/target/`.
+Built NXR is in `nuxeo-distribution-dm/target/`.
 
 It is installable in the default available application in `nuxeo-distribution-tomcat/target/` when running the wizard and selecting DM (for users), or by activating the "nuxeo-dm" preset (for developers).
 
@@ -184,7 +178,7 @@ Multimedia document collection management features.
 
 Based on the addon <https://github.com/nuxeo/nuxeo-dam>.
 
-Built EAR is in `nuxeo-distribution-dam/target/`.
+Built NXR is in `nuxeo-distribution-dam/target/`.
 
 It is installable in the default available application in `nuxeo-distribution-tomcat/target/` when running the wizard and selecting DAM (for users), or by activating the "nuxeo-dam" preset (for developers).
 
@@ -194,20 +188,9 @@ Social network features (social workspaces, user relationships, mini-messages, u
 
 Based on the addon <https://github.com/nuxeo/nuxeo-social-collaboration>.
 
-Built EAR is in `nuxeo-distribution-social-collaboration/target/`.
+Built NXR is in `nuxeo-distribution-social-collaboration/target/`.
 
 It is installable in the default available application in `nuxeo-distribution-tomcat/target/` when running the wizard and selecting SC (for users), or by activating the "nuxeo-sc" preset (for developers).
-
-### Nuxeo Case Management
-
-Case Management features (management of documents composed of items that evolve by being transfered to different persons responsible for their review or approval. A case can be for instance: a loan case composed of the different documents required for loan processing; a mail envelope with one or several documents; a legal case, etc.).
-
-Based on the addon <https://github.com/nuxeo/nuxeo-cmf>.
-
-Built EAR is in `nuxeo-distribution-cmf/target/`.
-
-It is installable in the default available application in `nuxeo-distribution-tomcat/target/` when running the wizard and selecting CMF (for users), or by activating the "nuxeo-cmf" preset (for developers).
-
 
 ### Other applications
 

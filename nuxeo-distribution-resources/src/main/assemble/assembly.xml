@@ -40,11 +40,6 @@
       <param name="distribution" value="templates-common-dm" />
     </antcall>
     <antcall target="copy-resources-with-jdbc-lib">
-      <param name="distribution" value="templates-jboss" />
-      <param name="h2-lib-dir" value="lib" />
-      <param name="derby-lib-dir" value="lib" />
-    </antcall>
-    <antcall target="copy-resources-with-jdbc-lib">
       <param name="distribution" value="templates-tomcat" />
       <param name="h2-lib-dir" value="lib" />
       <param name="derby-lib-dir" value="lib" />

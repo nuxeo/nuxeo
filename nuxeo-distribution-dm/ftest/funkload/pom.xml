@@ -75,9 +75,6 @@
       </activation>
     </profile>
     <profile>
-      <id>jboss</id>
-    </profile>
-    <profile>
       <id>pgsql</id>
     </profile>
     <profile>

@@ -68,9 +68,6 @@
         <activeByDefault>true</activeByDefault>
       </activation>
     </profile>
-    <profile>
-      <id>jboss</id>
-    </profile>
   </profiles>
 
 </project>

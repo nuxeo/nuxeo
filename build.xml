@@ -41,14 +41,12 @@
 
   <target name="list-available-distributions">
     <echo message="Available distributions are:" />
-    <echo message="jboss                - build all JBoss distributions" />
-    <echo message="jetty                - build all Jetty distributions (DEPRECATED)" />
+    <echo message="all-distributions    - build all available distributions (default)" />
     <echo message="tomcat               - build all Tomcat distribution" />
-    <echo message="all-distributions    - build all available distributions" />
   </target>
   <target name="choose-distrib" unless="distrib">
     <input message="Which distribution do you want to build?"
-           validargs="jboss,jetty,tomcat,all-distributions"
+           validargs="tomcat,all-distributions"
            addproperty="distrib" />
   </target>
   <target name="distrib"
