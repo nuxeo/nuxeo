@@ -10,7 +10,6 @@
       <label>SmartFolder</label>
       <icon>/icons/smart_folder.png</icon>
       <bigIcon>/icons/smart_folder_100.png</bigIcon>
-      <icon-expanded>/icons/smart_folder_expanded.png</icon-expanded>
       <category>Collaborative</category>
       <description>SmartFolder.description</description>
       <default-view>view_documents</default-view>
