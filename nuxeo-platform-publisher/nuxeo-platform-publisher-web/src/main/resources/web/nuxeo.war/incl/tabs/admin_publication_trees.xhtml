@@ -33,7 +33,7 @@
           <dd class="menuForm">
             <h:panelGroup id="sectionTree">
               <rich:tree
-                      icon="#{nodeState.isExpanded(rowKey)?nxd:iconExpandedPath(node.document):nxd:iconPath(node.document)}"
+                      icon="#{nxd:iconPath(node.document)}"
                       iconLeaf="#{nxd:iconPath(node.document)}"
                       iconExpanded="/icons/toggle_minus.png"
                       iconCollapsed="/icons/toggle_plus.png"
