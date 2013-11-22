@@ -166,7 +166,6 @@
       <label>ImportFolder</label>
       <icon>/icons/import_folder_closed.png</icon>
       <bigIcon>/icons/import_folder_closed_100.png</bigIcon>
-      <icon-expanded>/icons/import_folder_open.png</icon-expanded>
       <category>DAM</category>
       <description>ImportFolder.description</description>
       <default-view>view_documents</default-view>
