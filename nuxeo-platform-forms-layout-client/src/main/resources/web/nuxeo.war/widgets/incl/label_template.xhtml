@@ -32,7 +32,7 @@ Accepted parameters:
           styleClass="widgetLabel #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
       </div>
       <div class="tooltip">
-        #{translatedHelpLabel}
+        <h:outputText value="#{translatedHelpLabel}" escape="false" />
       </div>
     </c:if>
 
