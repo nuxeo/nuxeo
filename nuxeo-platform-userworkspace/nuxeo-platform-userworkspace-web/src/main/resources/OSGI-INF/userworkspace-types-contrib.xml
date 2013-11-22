@@ -10,7 +10,6 @@
       <bigIcon>/icons/workspace_100.png</bigIcon>
       <category>SuperDocument</category>
       <description>UserWorkspacesRoot.description</description>
-      <icon-expanded>/icons/workspace_open.gif</icon-expanded>
       <default-view>view_documents</default-view>
       <subtypes>
         <type>Workspace</type>
