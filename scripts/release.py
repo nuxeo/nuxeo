@@ -85,11 +85,6 @@ import time
 import urllib
 
 PKG_RENAMINGS = {
-    # JBoss packages
-    "nuxeo-distribution/nuxeo-distribution-jboss/target/"
-    "nuxeo-distribution-jboss-%s-nuxeo-cap.zip": "nuxeo-cap-%s-jboss",
-    "nuxeo-distribution/nuxeo-distribution-jboss/target/"
-    "nuxeo-distribution-jboss-%s-nuxeo-cap-ear.zip": "nuxeo-cap-%s-jboss-ear",
     # Tomcat packages
     "nuxeo-distribution/nuxeo-distribution-tomcat/target/"
     "nuxeo-distribution-tomcat-%s-coreserver.zip":
@@ -364,7 +359,7 @@ class Release(object):
         if version is None:
             version = self.tag
 
-        # Tomcat and JBoss packages
+        # Default packages
         for old, new in PKG_RENAMINGS.items():
             self.package(old % version, new % version)
         # Tomcat SDK packages
