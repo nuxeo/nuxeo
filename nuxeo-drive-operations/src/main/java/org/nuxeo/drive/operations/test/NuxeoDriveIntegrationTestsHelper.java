@@ -16,6 +16,8 @@
  */
 package org.nuxeo.drive.operations.test;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -35,18 +37,17 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class NuxeoDriveIntegrationTestsHelper {
 
-    static final String TEST_USER_NAME_PREFIX = "nuxeoDriveTestUser_";
+    static final Log log = LogFactory.getLog(NuxeoDriveIntegrationTestsHelper.class);
 
-    static final String TEST_WORKSPACE_PARENT_PATH = "/default-domain/workspaces";
+    public static final String TEST_USER_NAME_PREFIX = "nuxeoDriveTestUser_";
 
-    static final String TEST_WORKSPACE_NAME = "nuxeo-drive-test-workspace";
+    public static final String TEST_WORKSPACE_PARENT_NAME = "workspaces";
 
-    static final String TEST_WORKSPACE_TITLE = "Nuxeo Drive Test Workspace";
+    public static final String TEST_WORKSPACE_NAME = "nuxeo-drive-test-workspace";
 
-    public static final String TEST_WORKSPACE_PATH = TEST_WORKSPACE_PARENT_PATH
-            + "/" + TEST_WORKSPACE_NAME;
+    public static final String TEST_WORKSPACE_TITLE = "Nuxeo Drive Test Workspace";
 
-    public static final String USER_WORKSPACE_PARENT_PATH = "/default-domain/UserWorkspaces";
+    public static final String USER_WORKSPACE_PARENT_NAME = "UserWorkspaces";
 
     private NuxeoDriveIntegrationTestsHelper() {
         // Helper class
@@ -65,8 +66,10 @@ public final class NuxeoDriveIntegrationTestsHelper {
             }
             String testUserWorkspaceName = IdUtils.generateId(testUserName,
                     "-", false, 30);
+            String testUserWorkspacePath = getDefaultDomainPath(session) + "/"
+                    + USER_WORKSPACE_PARENT_NAME + "/" + testUserWorkspaceName;
             DocumentRef testUserWorkspaceRef = new PathRef(
-                    USER_WORKSPACE_PARENT_PATH + "/" + testUserWorkspaceName);
+                    testUserWorkspacePath);
             if (session.exists(testUserWorkspaceRef)) {
                 session.removeDocument(testUserWorkspaceRef);
                 session.save();
@@ -74,10 +77,33 @@ public final class NuxeoDriveIntegrationTestsHelper {
         }
 
         // Delete test workspace if exists
-        DocumentRef testWorkspaceDocRef = new PathRef(TEST_WORKSPACE_PATH);
+        String testWorkspacePath = getDefaultDomainPath(session) + "/"
+                + TEST_WORKSPACE_PARENT_NAME + "/" + TEST_WORKSPACE_NAME;
+        DocumentRef testWorkspaceDocRef = new PathRef(testWorkspacePath);
         if (session.exists(testWorkspaceDocRef)) {
             session.removeDocument(testWorkspaceDocRef);
             session.save();
         }
     }
+
+    public static String getDefaultDomainPath(CoreSession session)
+            throws ClientException {
+        String query = "SELECT * FROM Document where ecm:primaryType = 'Domain'";
+        DocumentModelList results = session.query(query);
+        if (results.isEmpty()) {
+            throw new ClientException(String.format(
+                    "Found no domains in repository %s",
+                    session.getRepositoryName()));
+        }
+        if (results.size() > 1) {
+            log.debug(String.format(
+                    "Found more than one domain in repository %s, using first one.",
+                    session.getRepositoryName()));
+        }
+        DocumentModel defaultDomain = results.get(0);
+        String defaultDomainPath = defaultDomain.getPathAsString();
+        log.debug(String.format("Using default domain %s", defaultDomainPath));
+        return defaultDomainPath;
+    }
+
 }
