@@ -49,7 +49,7 @@ import com.google.inject.Inject;
 @Deploy( { "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.localconfiguration.simple",
+        "org.nuxeo.ecm.localconf",
         "org.nuxeo.ecm.platform.usermanager",
         "org.nuxeo.ecm.platform.usermanager.api",
         "org.nuxeo.ecm.directory.api",

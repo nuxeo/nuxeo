@@ -18,7 +18,7 @@
 package org.nuxeo.ecm.platform.userpreferences;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.localconfiguration.simple.SimpleConfigurationAdapter;
+import org.nuxeo.ecm.localconf.SimpleConfigurationAdapter;
 
 /**
  * An object that stores simple key/value user preferences.
