@@ -18,8 +18,6 @@ package org.nuxeo.drive.operations.test;
 
 import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.TEST_USER_NAME_PREFIX;
 import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.TEST_WORKSPACE_NAME;
-import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.TEST_WORKSPACE_PARENT_PATH;
-import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.TEST_WORKSPACE_PATH;
 import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.TEST_WORKSPACE_TITLE;
 
 import java.util.UUID;
@@ -142,13 +140,18 @@ public class NuxeoDriveSetupIntegrationTests {
             throws ClientException {
 
         // Create test workspace
+        String testWorkspaceParentPath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session)
+                + "/"
+                + NuxeoDriveIntegrationTestsHelper.TEST_WORKSPACE_PARENT_NAME;
         DocumentModel testWorkspace = session.createDocumentModel(
-                TEST_WORKSPACE_PARENT_PATH, TEST_WORKSPACE_NAME, "Workspace");
+                testWorkspaceParentPath, TEST_WORKSPACE_NAME, "Workspace");
         testWorkspace.setPropertyValue("dc:title", TEST_WORKSPACE_TITLE);
         session.createDocument(testWorkspace);
 
         // Grant WRITE permission to the test users on the test workspace
-        DocumentRef testWorkspaceDocRef = new PathRef(TEST_WORKSPACE_PATH);
+        String testWorkspacePath = testWorkspaceParentPath + "/"
+                + TEST_WORKSPACE_NAME;
+        DocumentRef testWorkspaceDocRef = new PathRef(testWorkspacePath);
         ACP acp = session.getACP(testWorkspaceDocRef);
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         for (String testUserName : testUserNames) {

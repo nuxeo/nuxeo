@@ -22,8 +22,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.TEST_WORKSPACE_PATH;
-import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.USER_WORKSPACE_PARENT_PATH;
+import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.TEST_WORKSPACE_NAME;
+import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.TEST_WORKSPACE_PARENT_NAME;
+import static org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper.USER_WORKSPACE_PARENT_NAME;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +32,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper;
 import org.nuxeo.drive.operations.test.NuxeoDriveSetupIntegrationTests;
 import org.nuxeo.drive.operations.test.NuxeoDriveTearDownIntegrationTests;
 import org.nuxeo.ecm.automation.client.Session;
@@ -83,12 +85,21 @@ public class TestIntegrationTestOperations {
     @Inject
     protected HttpAutomationClient automationClient;
 
+    protected String testWorkspacePath;
+
+    protected String userWorkspaceParentPath;
+
     protected Session clientSession;
 
     protected ObjectMapper mapper;
 
     @Before
     public void init() throws Exception {
+
+        testWorkspacePath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session)
+                + "/" + TEST_WORKSPACE_PARENT_NAME + "/" + TEST_WORKSPACE_NAME;
+        userWorkspaceParentPath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session)
+                + "/" + USER_WORKSPACE_PARENT_NAME;
 
         // Get an Automation client session as Administrator
         clientSession = automationClient.getSession("Administrator",
@@ -127,7 +138,7 @@ public class TestIntegrationTestOperations {
         assertFalse(jackPrincipal.getGroups().contains("members"));
 
         // Check test workspace
-        DocumentRef testWorkspaceRef = new PathRef(TEST_WORKSPACE_PATH);
+        DocumentRef testWorkspaceRef = new PathRef(testWorkspacePath);
         DocumentModel testWorkspace = session.getDocument(testWorkspaceRef);
         assertEquals("Workspace", testWorkspace.getType());
         assertEquals("Nuxeo Drive Test Workspace", testWorkspace.getTitle());
@@ -141,10 +152,10 @@ public class TestIntegrationTestOperations {
                 session.getRootDocument());
         userWorkspaceService.getUserPersonalWorkspace(
                 "nuxeoDriveTestUser_jack", session.getRootDocument());
-        assertNotNull(session.getDocument(new PathRef(
-                USER_WORKSPACE_PARENT_PATH + "/nuxeoDriveTestUser-joe")));
-        assertNotNull(session.getDocument(new PathRef(
-                USER_WORKSPACE_PARENT_PATH + "/nuxeoDriveTestUser-jack")));
+        assertNotNull(session.getDocument(new PathRef(userWorkspaceParentPath
+                + "/nuxeoDriveTestUser-joe")));
+        assertNotNull(session.getDocument(new PathRef(userWorkspaceParentPath
+                + "/nuxeoDriveTestUser-jack")));
         // Save personal workspaces
         session.save();
 
@@ -163,19 +174,19 @@ public class TestIntegrationTestOperations {
         // Process invalidations
         session.save();
         try {
-            session.getDocument(new PathRef(USER_WORKSPACE_PARENT_PATH
+            session.getDocument(new PathRef(userWorkspaceParentPath
                     + "/nuxeoDriveTestUser-joe"));
             fail("User workspace should not exist.");
         } catch (ClientException e) {
-            assertEquals("Failed to get document " + USER_WORKSPACE_PARENT_PATH
+            assertEquals("Failed to get document " + userWorkspaceParentPath
                     + "/nuxeoDriveTestUser-joe", e.getMessage());
         }
         try {
-            session.getDocument(new PathRef(USER_WORKSPACE_PARENT_PATH
+            session.getDocument(new PathRef(userWorkspaceParentPath
                     + "/nuxeoDriveTestUser-jack"));
             fail("User workspace should not exist.");
         } catch (ClientException e) {
-            assertEquals("Failed to get document " + USER_WORKSPACE_PARENT_PATH
+            assertEquals("Failed to get document " + userWorkspaceParentPath
                     + "/nuxeoDriveTestUser-jack", e.getMessage());
         }
 
@@ -200,8 +211,8 @@ public class TestIntegrationTestOperations {
         // Create test users' personal workspaces for cleanup check
         userWorkspaceService.getUserPersonalWorkspace(
                 "nuxeoDriveTestUser_sarah", session.getRootDocument());
-        assertNotNull(session.getDocument(new PathRef(
-                USER_WORKSPACE_PARENT_PATH + "/nuxeoDriveTestUser-sarah")));
+        assertNotNull(session.getDocument(new PathRef(userWorkspaceParentPath
+                + "/nuxeoDriveTestUser-sarah")));
         // Save personal workspaces
         session.save();
 
@@ -241,11 +252,11 @@ public class TestIntegrationTestOperations {
         // Process invalidations
         session.save();
         try {
-            session.getDocument(new PathRef(USER_WORKSPACE_PARENT_PATH
+            session.getDocument(new PathRef(userWorkspaceParentPath
                     + "/nuxeoDriveTestUser-sarah"));
             fail("User workspace should not exist.");
         } catch (ClientException e) {
-            assertEquals("Failed to get document " + USER_WORKSPACE_PARENT_PATH
+            assertEquals("Failed to get document " + userWorkspaceParentPath
                     + "/nuxeoDriveTestUser-sarah", e.getMessage());
         }
         assertFalse(session.exists(testWorkspaceRef));
