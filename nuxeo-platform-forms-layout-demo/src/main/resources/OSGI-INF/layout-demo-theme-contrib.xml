@@ -12,7 +12,7 @@
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.CookieValue</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.ViewId</scheme>
       <!-- local theme (specific to nuxeo5) -->
-      <scheme>org.nuxeo.ecm.platform.localconfiguration.theme.negociation.LocalTheme</scheme>
+      <scheme>org.nuxeo.ecm.localconf.LocalTheme</scheme>
       <!-- popup theme (specific to layoutDemo) -->
       <scheme>org.nuxeo.ecm.platform.forms.layout.demo.jsf.LayoutDemoTheme</scheme>
     </negotiation>
