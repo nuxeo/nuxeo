@@ -39,7 +39,7 @@
                 <rich:treeNode
                   highlightedClass="treeNodeHighlightedClass"
                   selectedClass="treeNodeSelectedClass"
-                  oncomplete="jQuery('span.popupTarget').contextMenu('popupMenu');">
+                  oncomplete="jQuery('span.popupTarget').contextMenu('treeExplorer_popupMenu');">
                   <div id="nodeRefTarget:#{node.document.id}"
                     class="nxDropTarget#{node.isSelected(currentDocument) ? ' selected' : ''}">
                     <span class="popupTarget" docRef="#{node.document.ref}">
@@ -69,14 +69,16 @@
 
 </c:if>
 
-<ui:include src="/incl/popupMenu.xhtml"/>
+<ui:include src="/incl/popupMenu.xhtml">
+  <ui:param name="popupMenuId" value="treeExplorer" />
+</ui:include>
 <script>
   if (window.addEventListener) {
     window.addEventListener("load", function (e) {window.loaded = true}, true);
   } else if (window.attachEvent) {
     window.attachEvent("onload", function (e) {window.loaded = true});
   }
-  setupContextMenu("span.popupTarget");
+  setupContextMenu("span.popupTarget", "treeExplorer_popupMenu");
 </script>
 
 </div>
