@@ -44,6 +44,7 @@ import org.nuxeo.runtime.api.Framework;
 class CompiledChainImpl implements CompiledChain {
 
     protected final OperationType op;
+    protected static String opId;
     protected OperationContext context;
     protected AutomationService service;
     protected Map<String, Object> compileParameters; // argument references
@@ -61,6 +62,7 @@ class CompiledChainImpl implements CompiledChain {
         }
         this.op = op;
         compileParameters = args;
+        opId = op != null ? op.getId() : "null";
     }
 
     public final InvokableMethod method() {
@@ -157,7 +159,9 @@ class CompiledChainImpl implements CompiledChain {
         // find the best matching path in the chain
         if (!invocation.initializePath(in)) {
             throw new InvalidChainException(
-                    "Cannot find any valid path in operation chain");
+                    "Cannot find any valid path in operation chain - no method found for operation "
+                            + opId + " and for first input type: " + in != null ? in.getName()
+                            : "null");
         }
         return invocation;
     }
