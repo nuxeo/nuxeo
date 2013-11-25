@@ -485,7 +485,7 @@
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.CookieValue</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.ViewId</scheme>
       <!-- local theme (specific to nuxeo5) -->
-      <scheme>org.nuxeo.ecm.platform.localconfiguration.theme.negociation.LocalTheme</scheme>
+      <scheme>org.nuxeo.ecm.localconf.LocalTheme</scheme>
       <scheme>org.nuxeo.theme.jsf.negotiation.theme.DefaultTheme</scheme>
     </negotiation>
 
@@ -497,7 +497,7 @@
       <scheme>org.nuxeo.theme.jsf.negotiation.perspective.ViewId</scheme>
       <!-- local perspective (specific to nuxeo5) -->
       <scheme>
-        org.nuxeo.ecm.platform.localconfiguration.theme.negociation.LocalPerspective
+        org.nuxeo.ecm.localconf.LocalPerspective
       </scheme>
       <scheme>
         org.nuxeo.theme.jsf.negotiation.perspective.DefaultPerspective
@@ -519,7 +519,7 @@
       </scheme>
       <!-- local flavor/collection (specific to nuxeo5) -->
       <scheme>
-        org.nuxeo.ecm.platform.localconfiguration.theme.negociation.LocalThemeFlavor
+        org.nuxeo.ecm.localconf.LocalThemeFlavor
       </scheme>
       <!-- default flavor/collection (specific to nuxeo5) -->
       <scheme>
