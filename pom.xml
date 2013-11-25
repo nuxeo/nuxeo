@@ -1070,13 +1070,13 @@
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-localconfiguration-simple</artifactId>
+        <groupId>org.nuxeo.ecm.localconf</groupId>
+        <artifactId>nuxeo-localconf-simple</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-localconfiguration-web</artifactId>
+        <groupId>org.nuxeo.ecm.localconf</groupId>
+        <artifactId>nuxeo-localconf-web</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
