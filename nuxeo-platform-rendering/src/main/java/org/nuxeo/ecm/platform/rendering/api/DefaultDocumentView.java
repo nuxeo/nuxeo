@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -159,7 +158,7 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            return CoreInstance.getInstance().getSession(doc.getSessionId());
+            return doc.getCoreSession();
         }
     };
 
@@ -388,8 +387,7 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            CoreSession session = CoreInstance.getInstance().getSession(
-                    doc.getSessionId());
+            CoreSession session = doc.getCoreSession();
             return session.getParentDocument(doc.getRef());
         }
     };
@@ -400,8 +398,7 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            CoreSession session = CoreInstance.getInstance().getSession(
-                    doc.getSessionId());
+            CoreSession session = doc.getCoreSession();
             return session.getChildren(doc.getRef());
         }
     };
@@ -422,8 +419,8 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            return CoreInstance.getInstance().getSession(doc.getSessionId()).getVersions(
-                    doc.getRef());
+            CoreSession session = doc.getCoreSession();
+            return session.getVersions(doc.getRef());
         }
     };
 
@@ -433,8 +430,8 @@ public class DefaultDocumentView implements DocumentView {
         }
 
         public Object getValue(DocumentModel doc) throws Exception {
-            return CoreInstance.getInstance().getSession(doc.getSessionId()).getProxies(
-                    doc.getRef(), null);
+            CoreSession session = doc.getCoreSession();
+            return session.getProxies(doc.getRef(), null);
         }
     };
 

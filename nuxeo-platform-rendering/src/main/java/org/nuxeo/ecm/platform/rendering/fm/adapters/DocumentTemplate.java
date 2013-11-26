@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.DefaultDocumentView;
@@ -34,9 +33,9 @@ import freemarker.template.TemplateModelException;
 
 /**
  * TODO document template should not be aware of rendering context ?
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class DocumentTemplate implements TemplateHashModelEx,
         AdapterTemplateModel {
@@ -75,7 +74,7 @@ public class DocumentTemplate implements TemplateHashModelEx,
     }
 
     public CoreSession getSession() {
-        return CoreInstance.getInstance().getSession(doc.getSessionId());
+        return doc.getCoreSession();
     }
 
     /**
