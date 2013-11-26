@@ -25,10 +25,4 @@ derby.log
 nuxeo-*/META-INF
 nuxeo-*/OSGI-INF
 *.bak
-nuxeo-platform-document-routing-distribution/ftest/selenium/ffprofile/prefs.js
-nuxeo-platform-document-routing-distribution/ftest/selenium/log.txt
-nuxeo-platform-document-routing-distribution/ftest/selenium/result-suite.html
-nuxeo-platform-document-routing-distribution/ftest/selenium/run.conf.sample
-nuxeo-platform-document-routing-distribution/ftest/selenium/user-extensions.js
-nuxeo-platform-document-routing-distribution/ftest/selenium/selenium-server.jar
 integration-lib.sh

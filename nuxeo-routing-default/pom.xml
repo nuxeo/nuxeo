@@ -2,13 +2,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-platform-document-routing</artifactId>
+    <groupId>org.nuxeo.ecm.routing</groupId>
+    <artifactId>parent</artifactId>
     <version>5.9.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-document-routing-default</artifactId>
-  <name>Nuxeo Platform Document Routing Addon Default Workflows</name>
+  <groupId>org.nuxeo.ecm.routing</groupId>
+  <artifactId>nuxeo-routing-default</artifactId>
+  <name>Nuxeo Routing Default Workflows</name>
 
 </project>

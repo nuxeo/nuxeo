@@ -2,15 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-platform-document-routing</artifactId>
+    <groupId>org.nuxeo.ecm.routing</groupId>
+    <artifactId>parent</artifactId>
     <version>5.9.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-document-routing-dashboard</artifactId>
-  <name>Nuxeo Platform Document Routing Addon Dashboard</name>
-  <description>Nuxeo Platform Document Routing Dashboard</description>
+  <groupId>org.nuxeo.ecm.routing</groupId>
+  <artifactId>nuxeo-routing-dashboard</artifactId>
+  <name>Nuxeo Routing Dashboard</name>
 
   <dependencies>
 
