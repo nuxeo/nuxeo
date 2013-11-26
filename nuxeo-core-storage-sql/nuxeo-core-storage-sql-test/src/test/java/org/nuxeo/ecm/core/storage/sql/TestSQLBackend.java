@@ -538,10 +538,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testBinaryGC() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
         if (System.getProperty("os.name").startsWith("Windows")) {
             // windows doesn't have enough time granularity for such a test
             return;
@@ -1306,10 +1302,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testClustering() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
         if (!DatabaseHelper.DATABASE.supportsClustering()) {
             System.out.println("Skipping clustering test for unsupported database: "
                     + DatabaseHelper.DATABASE.getClass().getName());
@@ -2695,10 +2687,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testFulltextDisabled() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
         // reconfigure repository with fulltext disabled
         repository.close();
         boolean fulltextDisabled = true;
@@ -2780,10 +2768,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         if ("sequence".equals(DatabaseHelper.DEF_ID_TYPE)) {
             return;
         }
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_VERSIONS, Boolean.TRUE);
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR,
@@ -2833,10 +2817,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
     @Test
     public void testLastContributorUpgrade() throws StorageException {
         if ("sequence".equals(DatabaseHelper.DEF_ID_TYPE)) {
-            return;
-        }
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
             return;
         }
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
@@ -3163,10 +3143,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testLockingParallelClustered() throws Throwable {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
         if (!DatabaseHelper.DATABASE.supportsClustering()) {
             System.out.println("Skipping clustered locking test for unsupported database: "
                     + DatabaseHelper.DATABASE.getClass().getName());
@@ -3324,10 +3300,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         if ("sequence".equals(DatabaseHelper.DEF_ID_TYPE)) {
             return;
         }
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_LOCKS, Boolean.TRUE);
         JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE_VERSIONS,
@@ -3363,10 +3335,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testJDBCConnectionPropagatorLeak() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
         assertEquals(0, getJDBCConnectionPropagatorSize());
         repository.getConnection().close();
         // 1 connection remains for the lock manager
@@ -3393,10 +3361,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testCacheInvalidationsPropagatorLeak() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
         assertEquals(0, getCacheInvalidationsPropagatorSize());
         Session session = repository.getConnection();
         assertEquals(1, getCacheInvalidationsPropagatorSize());
@@ -3421,10 +3385,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testClusterInvalidationsPropagatorLeak() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
         if (!DatabaseHelper.DATABASE.supportsClustering()) {
             System.out.println("Skipping clustering test for unsupported database: "
                     + DatabaseHelper.DATABASE.getClass().getName());
@@ -3461,10 +3421,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testClusterInvalidationsQueueNotNeeded() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
         if (!DatabaseHelper.DATABASE.supportsClustering()) {
             System.out.println("Skipping clustering test for unsupported database: "
                     + DatabaseHelper.DATABASE.getClass().getName());
@@ -3571,11 +3527,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testQueryComplexMakeDoc() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
-
         Session session = repository.getConnection();
         List<Serializable> oneDoc = makeComplexDoc(session);
 
@@ -3604,11 +3555,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testQueryComplexWhere() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
-
         Session session = repository.getConnection();
         List<Serializable> oneDoc = makeComplexDoc(session);
 
@@ -3739,11 +3685,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testQueryComplexPrefix() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
-
         Session session = repository.getConnection();
         List<Serializable> oneDoc = makeComplexDoc(session);
         String clause;
@@ -3776,11 +3717,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testQueryComplexReturned() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
-
         Session session = repository.getConnection();
         List<Serializable> oneDoc = makeComplexDoc(session);
 
@@ -3833,11 +3769,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testQueryComplexListElement() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
-
         Session session = repository.getConnection();
         List<Serializable> oneDoc = makeComplexDoc(session);
 
@@ -3919,11 +3850,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testQueryComplexOrderBy() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
-
         Session session = repository.getConnection();
         List<Serializable> oneDoc = makeComplexDoc(session);
 
@@ -4014,11 +3940,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testQueryComplexOrderByProxies() throws Exception {
-        if (this instanceof TestSQLBackendNet
-                || this instanceof ITSQLBackendNet) {
-            return;
-        }
-
         Session session = repository.getConnection();
         List<Serializable> oneDoc = makeComplexDoc(session);
 

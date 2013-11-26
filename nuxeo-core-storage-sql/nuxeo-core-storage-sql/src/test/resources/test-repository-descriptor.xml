@@ -2,21 +2,6 @@
 <repository name="foo">
   <binaryStore path="/foo/bar" />
   <clustering enabled="true" delay="1234" />
-  <listen>
-    <host>localhost0</host>
-    <port>81810</port>
-    <path>/nuxeo0</path>
-  </listen>
-  <connect>
-    <host>localhost1</host>
-    <port>81811</port>
-    <path>/nuxeo1</path>
-  </connect>
-  <connect>
-    <host>localhost2</host>
-    <port>81812</port>
-    <path>/nuxeo2</path>
-  </connect>
   <schema>
     <field type="biig">my:bignote</field> <!-- old syntax -->
     <field name="foo" type="xyz" /> <!-- new syntax -->

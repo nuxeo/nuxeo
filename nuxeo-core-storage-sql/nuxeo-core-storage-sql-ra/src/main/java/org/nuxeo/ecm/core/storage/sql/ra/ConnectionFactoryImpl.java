@@ -14,7 +14,6 @@ package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Map;
 
 import javax.naming.Reference;
@@ -40,7 +39,6 @@ import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSecurityManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
-import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
@@ -324,33 +322,6 @@ public class ConnectionFactoryImpl implements Repository,
     @Override
     public int cleanupDeletedDocuments(int max, Calendar beforeTime) {
         return managedConnectionFactory.cleanupDeletedDocuments(max, beforeTime);
-    }
-
-    @Override
-    public void activateServer() {
-        managedConnectionFactory.activateServer();
-
-    }
-
-    @Override
-    public void deactivateServer() {
-        managedConnectionFactory.deactivateServer();
-
-    }
-
-    @Override
-    public Collection<MapperClientInfo> getClientInfos() {
-        return managedConnectionFactory.getClientInfos();
-    }
-
-    @Override
-    public boolean isServerActivated() {
-        return managedConnectionFactory.isServerActivated();
-    }
-
-    @Override
-    public String getServerURL() {
-        return managedConnectionFactory.getServerURL();
     }
 
 }

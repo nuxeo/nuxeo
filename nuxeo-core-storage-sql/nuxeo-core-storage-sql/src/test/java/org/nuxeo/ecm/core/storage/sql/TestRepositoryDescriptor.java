@@ -121,24 +121,4 @@ public class TestRepositoryDescriptor {
         assertEquals("/foo/bar", desc.binaryStorePath);
     }
 
-    @Test
-    public void testListenConnect() throws Exception {
-        ServerDescriptor s;
-        s = desc.listen;
-        assertEquals("localhost0", s.host);
-        assertEquals(81810, s.port);
-        assertEquals("/nuxeo0", s.path);
-
-        assertNotNull(desc.connect);
-        assertEquals(2, desc.connect.size());
-        s = desc.connect.get(0);
-        assertEquals("localhost1", s.host);
-        assertEquals(81811, s.port);
-        assertEquals("/nuxeo1", s.path);
-        s = desc.connect.get(1);
-        assertEquals("localhost2", s.host);
-        assertEquals(81812, s.port);
-        assertEquals("/nuxeo2", s.path);
-    }
-
 }

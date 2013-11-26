@@ -13,9 +13,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Calendar;
-import java.util.Collection;
-
-import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
 
 /**
  * @author Florent Guillaume
@@ -62,33 +59,6 @@ public interface RepositoryManagement {
      * Makes sure that the next transaction will process cluster invalidations.
      */
     void processClusterInvalidationsNext();
-
-    /**
-     * Is the server available remotely ?
-     */
-    boolean isServerActivated();
-
-    /**
-     * Which is the remote location ?
-     * TODO this info would be better served by a provisioning service.
-     * The remote location is dependent to the context of access.
-     */
-    String getServerURL();
-
-    /**
-     * Activates the VCS server used for remote connections.
-     */
-    void activateServer();
-
-    /**
-     * Deactivates the VCS server used for remote connections.
-     */
-    void deactivateServer();
-
-    /**
-     * Get info about current VCS server clients
-     */
-    Collection<MapperClientInfo> getClientInfos();
 
     /**
      * Gets the binary GC for this repository.

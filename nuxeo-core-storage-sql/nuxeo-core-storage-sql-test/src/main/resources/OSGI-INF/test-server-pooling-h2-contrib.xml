@@ -9,12 +9,6 @@
     <repository name="test"
       factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
       <repository>
-        <listen>
-          <host>localhost</host>
-          <port>8181</port>
-          <path>/nuxeo</path>
-        </listen>
-        <binaryManager listen="true"/>
         <schema>
           <field type="largetext">note</field>
           <field type="largetext">relatedtext</field>

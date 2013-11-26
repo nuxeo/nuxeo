@@ -15,8 +15,6 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -27,9 +25,6 @@ import javax.resource.cci.ConnectionSpec;
 import javax.resource.cci.RecordFactory;
 import javax.resource.cci.ResourceAdapterMetaData;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,15 +33,8 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend.MapperKind;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
-import org.nuxeo.ecm.core.storage.sql.net.BinaryManagerClient;
-import org.nuxeo.ecm.core.storage.sql.net.BinaryManagerServlet;
-import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
-import org.nuxeo.ecm.core.storage.sql.net.MapperServlet;
-import org.nuxeo.ecm.core.storage.sql.net.NetBackend;
-import org.nuxeo.ecm.core.storage.sql.net.NetServer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
@@ -67,17 +55,7 @@ public class RepositoryImpl implements Repository {
 
     private static final Log log = LogFactory.getLog(RepositoryImpl.class);
 
-    public static final String RUNTIME_SERVER_HOST = "org.nuxeo.runtime.server.host";
-
-    public static final String SERVER_PATH_VCS = "vcs";
-
-    public static final String SERVER_PATH_BINARY = "binary";
-
     protected final RepositoryDescriptor repositoryDescriptor;
-
-    protected final MultiThreadedHttpConnectionManager connectionManager;
-
-    protected final HttpClient httpClient;
 
     protected final SchemaManager schemaManager;
 
@@ -115,10 +93,6 @@ public class RepositoryImpl implements Repository {
     public final Lock updateReadAclsLock = new ReentrantLock(true);
 
     private Model model;
-
-    private boolean serverStarted;
-
-    private boolean binaryServerStarted;
 
     /**
      * Transient id for this repository assigned by the server on first
@@ -163,14 +137,8 @@ public class RepositoryImpl implements Repository {
         }
         fulltextParserClass = (Class<? extends FulltextParser>) klass;
 
-        connectionManager = new MultiThreadedHttpConnectionManager();
-        HttpConnectionManagerParams params = connectionManager.getParams();
-        params.setDefaultMaxConnectionsPerHost(20);
-        params.setMaxTotalConnections(20);
-        httpClient = new HttpClient(connectionManager);
         binaryManager = createBinaryManager();
         backend = createBackend();
-        createServer();
         repositoryUp = registry.counter(MetricRegistry.name("nuxeo",
                 "repositories", repositoryDescriptor.name, "instance-up"));
         repositoryUp.inc();
@@ -219,10 +187,6 @@ public class RepositoryImpl implements Repository {
         });
     }
 
-    public HttpClient getHttpClient() {
-        return httpClient;
-    }
-
     protected BinaryManager createBinaryManager() throws StorageException {
         try {
             Class<? extends BinaryManager> klass = repositoryDescriptor.binaryManagerClass;
@@ -231,20 +195,6 @@ public class RepositoryImpl implements Repository {
             }
             BinaryManager binaryManager = klass.newInstance();
             binaryManager.initialize(repositoryDescriptor);
-            if (repositoryDescriptor.binaryManagerConnect) {
-                List<ServerDescriptor> connect = repositoryDescriptor.connect;
-                if (connect.isEmpty() || connect.get(0).disabled) {
-                    log.error("Repository descriptor specifies binaryManager connect "
-                            + "without a global connect");
-                } else {
-                    binaryManager = new BinaryManagerClient(binaryManager,
-                            httpClient);
-                    binaryManager.initialize(repositoryDescriptor);
-                }
-            }
-            if (repositoryDescriptor.binaryManagerListen) {
-                activateBinaryManagerServlet(binaryManager);
-            }
             return binaryManager;
         } catch (Exception e) {
             throw new StorageException(e);
@@ -253,18 +203,8 @@ public class RepositoryImpl implements Repository {
 
     protected RepositoryBackend createBackend() throws StorageException {
         Class<? extends RepositoryBackend> backendClass = repositoryDescriptor.backendClass;
-        List<ServerDescriptor> connect = repositoryDescriptor.connect;
         if (backendClass == null) {
-            if (!connect.isEmpty()) {
-                backendClass = NetBackend.class;
-            } else {
-                backendClass = JDBCBackend.class;
-            }
-        } else {
-            if (!connect.isEmpty()) {
-                log.error("Repository descriptor specifies both backendClass and connect,"
-                        + " only the backend will be used.");
-            }
+            backendClass = JDBCBackend.class;
         }
         try {
             RepositoryBackend backend = backendClass.newInstance();
@@ -304,102 +244,6 @@ public class RepositoryImpl implements Repository {
             cachingMapperClass = SoftRefCachingMapper.class;
         }
         return cachingMapperClass;
-    }
-
-    protected void createServer() {
-        ServerDescriptor serverDescriptor = repositoryDescriptor.listen;
-        if (serverDescriptor != null && !serverDescriptor.disabled) {
-            activateServletMapper();
-        }
-    }
-
-    protected void activateServletMapper() {
-        if (!serverStarted) {
-            MapperServlet servlet = new MapperServlet(repositoryDescriptor.name);
-            String servletName = MapperServlet.getName(repositoryDescriptor.name);
-            String url = NetServer.add(repositoryDescriptor.listen,
-                    servletName, servlet, SERVER_PATH_VCS);
-            log.info(String.format(
-                    "VCS server for repository '%s' started on: %s",
-                    repositoryDescriptor.name, url));
-            serverStarted = true;
-        }
-    }
-
-    protected void deactivateServletMapper() {
-        if (serverStarted) {
-            String servletName = MapperServlet.getName(repositoryDescriptor.name);
-            NetServer.remove(repositoryDescriptor.listen, servletName);
-            serverStarted = false;
-        }
-    }
-
-    protected void activateBinaryManagerServlet(BinaryManager binaryManager) {
-        if (!binaryServerStarted) {
-            ServerDescriptor serverDescriptor = repositoryDescriptor.listen;
-            if (serverDescriptor == null || serverDescriptor.disabled) {
-                log.error("Repository descriptor specifies binaryManager listen "
-                        + "without a global listen");
-            } else {
-                BinaryManagerServlet servlet = new BinaryManagerServlet(
-                        binaryManager);
-                String servletName = BinaryManagerServlet.getName(binaryManager);
-                String url = NetServer.add(serverDescriptor, servletName,
-                        servlet, SERVER_PATH_BINARY);
-                log.info(String.format(
-                        "VCS server for binary manager of repository '%s' started on: %s",
-                        repositoryDescriptor.name, url));
-                binaryServerStarted = true;
-            }
-        }
-    }
-
-    protected void deactivateBinaryManagerServlet() {
-        if (binaryServerStarted) {
-            String servletName = BinaryManagerServlet.getName(binaryManager);
-            NetServer.remove(repositoryDescriptor.listen, servletName);
-            binaryServerStarted = false;
-        }
-    }
-
-    @Override
-    public boolean isServerActivated() {
-        return serverStarted;
-    }
-
-    @Override
-    public String getServerURL() {
-        String host = Framework.getProperty(RUNTIME_SERVER_HOST, "localhost");
-        if (repositoryDescriptor.listen != null) {
-            return String.format("http://%s:%d/%s", host,
-                    repositoryDescriptor.listen.port,
-                    repositoryDescriptor.listen.path);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public void activateServer() {
-        activateServletMapper();
-        activateBinaryManagerServlet(binaryManager);
-    }
-
-    @Override
-    public void deactivateServer() {
-        deactivateServletMapper();
-        deactivateBinaryManagerServlet();
-    }
-
-    @Override
-    public Collection<MapperClientInfo> getClientInfos() {
-        if (!serverStarted) {
-            return Collections.emptyList();
-        }
-        MapperServlet servlet = (MapperServlet) NetServer.get(
-                repositoryDescriptor.listen,
-                MapperServlet.getName(repositoryDescriptor.name));
-        return servlet.getClientInfos();
     }
 
     public RepositoryDescriptor getRepositoryDescriptor() {
@@ -558,11 +402,7 @@ public class RepositoryImpl implements Repository {
 
         model = null;
 
-        deactivateServletMapper();
-        deactivateBinaryManagerServlet();
-
         backend.shutdown();
-        connectionManager.shutdown();
         registry.remove(MetricRegistry.name(RepositoryImpl.class, getName(),
                 "cache-size"));
         registry.remove(MetricRegistry.name(PersistenceContext.class,

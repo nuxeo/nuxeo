@@ -129,12 +129,6 @@ public class RepositoryDescriptor {
     @XNode("@name")
     public String name;
 
-    @XNode("listen")
-    public ServerDescriptor listen;
-
-    @XNodeList(value = "connect", type = ArrayList.class, componentType = ServerDescriptor.class)
-    public List<ServerDescriptor> connect = Collections.emptyList();
-
     @XNode("backendClass")
     public Class<? extends RepositoryBackend> backendClass;
 
@@ -224,12 +218,6 @@ public class RepositoryDescriptor {
     @XNode("binaryManager@key")
     public String binaryManagerKey;
 
-    @XNode("binaryManager@listen")
-    public boolean binaryManagerListen;
-
-    @XNode("binaryManager@connect")
-    public boolean binaryManagerConnect;
-
     @XNode("binaryStore@path")
     public String binaryStorePath;
 
@@ -238,8 +226,6 @@ public class RepositoryDescriptor {
 
     /** Merges only non-JCA properties. */
     public void mergeFrom(RepositoryDescriptor other) {
-        listen = other.listen;
-        connect = other.connect;
         backendClass = other.backendClass;
         cachingMapperClass = other.cachingMapperClass;
         cachingMapperEnabled = other.cachingMapperEnabled;
@@ -262,8 +248,6 @@ public class RepositoryDescriptor {
         binaryStorePath = other.binaryStorePath;
         binaryManagerClass = other.binaryManagerClass;
         binaryManagerKey = other.binaryManagerKey;
-        binaryManagerListen = other.binaryManagerListen;
-        binaryManagerConnect = other.binaryManagerConnect;
         sendInvalidationEvents = other.sendInvalidationEvents;
         usersSeparatorKey = other.usersSeparatorKey;
     }

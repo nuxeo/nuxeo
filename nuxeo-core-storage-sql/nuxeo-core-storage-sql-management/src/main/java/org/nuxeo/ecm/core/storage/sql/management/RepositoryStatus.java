@@ -22,14 +22,11 @@ import javax.naming.InitialContext;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.sql.BinaryManagerStatus;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.RepositoryResolver;
-import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
 
 /**
  * An MBean to manage SQL storage repositories.
@@ -37,8 +34,6 @@ import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
  * @author Florent Guillaume
  */
 public class RepositoryStatus implements RepositoryStatusMBean {
-
-    private static final Log log = LogFactory.getLog(RepositoryStatus.class);
 
     protected List<RepositoryManagement> getRepositories() throws NamingException {
         List<RepositoryManagement> list = new LinkedList<RepositoryManagement>();
@@ -151,21 +146,6 @@ public class RepositoryStatus implements RepositoryStatusMBean {
         buf.append("Actives remote session for SQL repositories:<br />");
         for (RepositoryManagement repository : repositories) {
             buf.append("<b>").append(repository.getName()).append("</b>");
-            if (repository.getServerURL()==null) {
-                buf.append(" Server mode not activated");
-            } else {
-                buf.append(repository.getServerURL()).append("<br/>");
-                if (repository.getClientInfos().size()==0) {
-                    buf.append("No client connected").append("<br/>");
-                }else {
-                    buf.append("<ul>");
-                    for (MapperClientInfo info : repository.getClientInfos()) {
-                        buf.append("  <li>").append(info.getRemoteUser()).append("  :");
-                        buf.append(info.getRemoteIP()).append("  </li>");
-                    }
-                    buf.append("</ul>");
-                }
-            }
             buf.append("<br/>");
         }
         return buf.toString();
