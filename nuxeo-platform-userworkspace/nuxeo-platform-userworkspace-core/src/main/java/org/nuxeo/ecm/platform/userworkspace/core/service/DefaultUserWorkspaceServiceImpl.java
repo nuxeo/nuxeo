@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -121,11 +120,8 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
         if (currentDocument == null) {
             return null;
         }
-        CoreSession userCoreSession = CoreInstance.getInstance().getSession(
-                currentDocument.getSessionId());
-
-        return getCurrentUserPersonalWorkspace(null, userName, userCoreSession,
-                currentDocument);
+        return getCurrentUserPersonalWorkspace(null, userName,
+                currentDocument.getCoreSession(), currentDocument);
     }
 
     @Override
