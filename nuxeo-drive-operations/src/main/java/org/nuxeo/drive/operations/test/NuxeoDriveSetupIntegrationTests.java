@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -51,7 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  * <li>Cleaning it up</li>
  * <li>Creating test users belonging to the members group</li>
  * <li>Creating a test workspace</li>
- * <li>Granting WRITE permission to the test users on the test workspace</li>
+ * <li>Granting the given permission to the test users on the test workspace</li>
  * </ul>
  * Returns the test users' passwords as a JSON comma separated string.
  *
@@ -68,6 +67,10 @@ public class NuxeoDriveSetupIntegrationTests {
     // Comma separated list of user names
     @Param(name = "userNames")
     protected String userNames;
+
+    // Permission granted to the test users on test workspace
+    @Param(name = "permission")
+    protected String permission;
 
     // Put the test users in the members group to enable Read permission to the
     // whole repository.
@@ -148,15 +151,14 @@ public class NuxeoDriveSetupIntegrationTests {
         testWorkspace.setPropertyValue("dc:title", TEST_WORKSPACE_TITLE);
         session.createDocument(testWorkspace);
 
-        // Grant WRITE permission to the test users on the test workspace
+        // Grant the given permission to the test users on the test workspace
         String testWorkspacePath = testWorkspaceParentPath + "/"
                 + TEST_WORKSPACE_NAME;
         DocumentRef testWorkspaceDocRef = new PathRef(testWorkspacePath);
         ACP acp = session.getACP(testWorkspaceDocRef);
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         for (String testUserName : testUserNames) {
-            localACL.add(new ACE(testUserName, SecurityConstants.READ_WRITE,
-                    true));
+            localACL.add(new ACE(testUserName, permission, true));
         }
         session.setACP(testWorkspaceDocRef, acp, false);
     }
