@@ -114,7 +114,8 @@ public class TestIntegrationTestOperations {
         // Setup the integration tests environment as Administrator
         // ---------------------------------------------------------
         Blob testUserCredentialsBlob = (Blob) clientSession.newRequest(
-                NuxeoDriveSetupIntegrationTests.ID).set("userNames", "joe,jack").execute();
+                NuxeoDriveSetupIntegrationTests.ID).set("userNames", "joe,jack").set(
+                "permission", "ReadWrite").execute();
         assertNotNull(testUserCredentialsBlob);
         // Invalidate VCS cache
         session.save();
@@ -165,7 +166,7 @@ public class TestIntegrationTestOperations {
         // ----------------------------------------------------------------------
         testUserCredentialsBlob = (Blob) clientSession.newRequest(
                 NuxeoDriveSetupIntegrationTests.ID).set("userNames", "sarah").set(
-                "useMembersGroup", true).execute();
+                "useMembersGroup", true).set("permission", "ReadWrite").execute();
         assertNotNull(testUserCredentialsBlob);
 
         // Check cleanup
@@ -226,7 +227,7 @@ public class TestIntegrationTestOperations {
                 "nuxeoDriveTestUser_sarah", sarahPassword);
         try {
             unauthorizedSession.newRequest(NuxeoDriveSetupIntegrationTests.ID).set(
-                    "userNames", "john,bob").execute();
+                    "userNames", "john,bob").set("permission", "ReadWrite").execute();
             fail("NuxeoDrive.SetupIntegrationTests operation should not be callable by a non administrator.");
         } catch (Exception e) {
             // Expected
