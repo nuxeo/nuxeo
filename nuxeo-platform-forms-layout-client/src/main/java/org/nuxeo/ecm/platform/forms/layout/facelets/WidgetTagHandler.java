@@ -205,14 +205,19 @@ public class WidgetTagHandler extends MetaTagHandler {
         }
         if (widgetInstance != null) {
             // add additional properties put on tag
+            String widgetPropertyMarker = RenderVariables.widgetVariables.widgetProperty.name()
+                    + "_";
             List<String> reservedVars = Arrays.asList(reservedVarsArray);
             for (TagAttribute var : vars) {
                 String localName = var.getLocalName();
                 if (!reservedVars.contains(localName)) {
+                    if (localName != null
+                            && localName.startsWith(widgetPropertyMarker)) {
+                        localName = localName.substring(widgetPropertyMarker.length());
+                    }
                     widgetInstance.setProperty(localName, var.getValue());
                 }
             }
-
             VariableMapper orig = ctx.getVariableMapper();
             if (widgetInstanceBuilt) {
                 // expose widget variable to the context as layout row has not
