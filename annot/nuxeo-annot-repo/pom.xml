@@ -1,22 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-platform-annotations-parent</artifactId>
+    <groupId>org.nuxeo.ecm.annot</groupId>
+    <artifactId>parent</artifactId>
     <version>5.9.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-annotations-repository-plugin</artifactId>
-  <name>Nuxeo Platform Annotations Repository Plugin</name>
+  <groupId>org.nuxeo.ecm.annot</groupId>
+  <artifactId>nuxeo-annot-repo</artifactId>
+  <name>Nuxeo Platform Annotation Repository Plugin</name>
   
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-annotations-api</artifactId>
+      <groupId>org.nuxeo.ecm.annot</groupId>
+      <artifactId>nuxeo-annot-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-annotations-core</artifactId>
+      <groupId>org.nuxeo.ecm.annot</groupId>
+      <artifactId>nuxeo-annot-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -68,8 +68,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-annotations-core-contrib</artifactId>
+      <groupId>org.nuxeo.ecm.annot</groupId>
+      <artifactId>nuxeo-annot-contrib</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
