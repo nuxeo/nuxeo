@@ -182,8 +182,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
                 }
 
                 DocumentTreeNode treeRoot = null;
-                treeRoot = new DocumentTreeNodeImpl(
-                        documentManager.getSessionId(), firstAccessibleParent,
+                treeRoot = new DocumentTreeNodeImpl(firstAccessibleParent,
                         filter, leafFilter, sorter, pageProvider);
                 currentTree.add(treeRoot);
                 log.debug("Tree initialized with document: "

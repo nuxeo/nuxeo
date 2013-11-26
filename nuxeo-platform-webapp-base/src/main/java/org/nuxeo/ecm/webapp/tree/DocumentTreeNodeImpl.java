@@ -28,8 +28,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.Component;
+import org.jboss.seam.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
@@ -60,8 +61,6 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     protected final DocumentModel document;
 
-    protected final String sessionId;
-
     protected final Filter filter;
 
     protected final Filter leafFilter;
@@ -74,11 +73,9 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     protected Map<Object, DocumentTreeNodeImpl> children;
 
-    public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
-            Filter filter, Filter leafFilter, Sorter sorter,
-            String pageProviderName) {
+    public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
+            Filter leafFilter, Sorter sorter, String pageProviderName) {
         this.document = document;
-        this.sessionId = sessionId;
         this.filter = filter;
         this.leafFilter = leafFilter;
         this.sorter = sorter;
@@ -86,18 +83,27 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
     }
 
     /**
-     * This constructor assumes that a valid session id is held by the document
-     * model.
+     * @deprecated since 5.9.1, sessionId not used.
      */
-    public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
-            Sorter sorter) {
-        this(document.getSessionId(), document, filter, null, sorter,
-                (String) null);
+    @Deprecated
+    public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
+            Filter filter, Filter leafFilter, Sorter sorter,
+            String pageProviderName) {
+        this(document, filter, leafFilter, sorter, pageProviderName);
     }
 
-    public DocumentTreeNodeImpl(String sessionId, DocumentModel document,
-            Filter filter, Sorter sorter) {
-        this(sessionId, document, filter, null, sorter, (String) null);
+    /**
+     * @deprecated since 5.9.1, sessionId not used.
+     */
+    @Deprecated
+    public DocumentTreeNodeImpl(String sessionId, DocumentModel document, Filter filter,
+            Sorter sorter) {
+        this(document, filter, null, sorter, null);
+    }
+
+    public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
+            Sorter sorter) {
+        this(document, filter, null, sorter, (String) null);
     }
 
     public List<DocumentTreeNode> getChildren() {
@@ -165,8 +171,11 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
                 // filter says this is a leaf, don't look at children
                 return;
             }
-            CoreSession session = CoreInstance.getInstance().getSession(
-                    sessionId);
+            CoreSession session = getCoreSession();
+            if (session == null) {
+                log.error("Cannot retrieve CoreSession for " + document);
+                return;
+            }
             List<DocumentModel> documents;
             boolean isOrderable = document.hasFacet(FacetNames.ORDERABLE);
             if (pageProviderName == null) {
@@ -201,13 +210,22 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
             for (DocumentModel child : documents) {
                 String identifier = child.getId();
                 DocumentTreeNodeImpl childNode;
-                childNode = new DocumentTreeNodeImpl(session.getSessionId(),
-                        child, filter, leafFilter, sorter, pageProviderName);
+                childNode = new DocumentTreeNodeImpl(child, filter, leafFilter,
+                        sorter, pageProviderName);
                 children.put(identifier, childNode);
             }
         } catch (ClientException e) {
             log.error(e);
         }
+    }
+
+    protected CoreSession getCoreSession() {
+        CoreSession session = document.getCoreSession();
+        if (session == null) {
+            session = (CoreSession) Component.getInstance(
+                    "documentManager", ScopeType.CONVERSATION);
+        }
+        return session;
     }
 
     protected List<DocumentModel> filterAndSort(List<DocumentModel> docs,

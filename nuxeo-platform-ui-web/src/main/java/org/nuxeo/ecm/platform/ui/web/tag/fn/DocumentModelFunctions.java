@@ -42,7 +42,6 @@ import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -388,42 +387,16 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (document == null) {
             return false;
         }
-
-        CoreSession session = (CoreSession) Component.getInstance(
-                "documentManager", ScopeType.CONVERSATION);
-
-        boolean sessionOpened = false;
+        CoreSession session = document.getCoreSession();
         if (session == null) {
-            String sid = document.getSessionId();
-            if (sid != null) {
-                session = CoreInstance.getInstance().getSession(sid);
-            } else {
-                String repositoryName = document.getRepositoryName();
-                if (repositoryName != null) {
-                    session = CoreInstance.getInstance().open(repositoryName,
-                            null);
-                    sessionOpened = true;
-                } else {
-                    throw new ClientException(
-                            "Cannot reconnect to Nuxeo core: no "
-                                    + "repository name for document model");
-                }
-            }
-
-            if (null == session) {
-                log.error("Cannot retrieve CoreSession for document "
-                        + document.getTitle() + " with sid=" + sid);
-                return false;
-            }
+            session = (CoreSession) Component.getInstance(
+                "documentManager", ScopeType.CONVERSATION);
         }
-
+        if (session == null) {
+            log.error("Cannot retrieve CoreSession for " + document);
+            return false;
+        }
         boolean granted = session.hasPermission(document.getRef(), permission);
-
-        // close the session if we just opened it.
-        if (sessionOpened) {
-            CoreInstance.getInstance().close(session);
-        }
-
         return granted;
     }
 
