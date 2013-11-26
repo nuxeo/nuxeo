@@ -702,7 +702,7 @@ public class DialectOracle extends Dialect {
         if (cause == null || cause == t) {
             return false;
         }
-        return isSocketError(cause);
+        return isSocketError(t);
     }
 
     protected boolean isConnectionClosed(int oracleError) {
