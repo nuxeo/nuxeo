@@ -6,7 +6,7 @@
   <property name="jboss.config" value="default" />
   <property name="jboss.dir" value="/opt/jboss" />
   <property name="jboss.nuxeo.ear" value="${jboss.dir}/server/${jboss.config}/deploy/nuxeo.ear" />
-  <property name="project.name" value="nuxeo-platform-annotations" />
+  <property name="project.name" value="nuxeo-annot" />
 
   <target name="copy-gwt" depends="make-gwt" description="Copy gwt's javascript to the JBoss server.">
     <copy todir="${jboss.nuxeo.ear}/nuxeo.war" overwrite="true">
