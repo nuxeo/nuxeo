@@ -159,9 +159,10 @@ class CompiledChainImpl implements CompiledChain {
         // find the best matching path in the chain
         if (!invocation.initializePath(in)) {
             throw new InvalidChainException(
-                    "Cannot find any valid path in operation chain - no method found for operation "
-                            + opId + " and for first input type: " + in != null ? in.getName()
-                            : "null");
+                    "Cannot find any valid path in operation chain - no method found for operation '"
+                            + opId
+                            + "' and for first input type '"
+                            + in.getName() + "'");
         }
         return invocation;
     }
