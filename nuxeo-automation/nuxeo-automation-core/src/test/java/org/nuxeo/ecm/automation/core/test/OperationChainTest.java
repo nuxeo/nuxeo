@@ -303,7 +303,8 @@ public class OperationChainTest {
             service.run(ctx, chain);
             fail("Invalid chain not detected!");
         } catch (OperationException e) {
-            assertEquals("Cannot find any valid path in operation chain",
+            assertEquals(
+                    "Cannot find any valid path in operation chain - no method found for operation 'unmatched' and for first input type 'org.nuxeo.ecm.core.api.impl.DocumentModelImpl'",
                     e.getCause().getMessage());
         }
     }
