@@ -137,9 +137,6 @@ public class DialectOracle extends Dialect {
     protected XAErrorLogger newXAErrorLogger() throws StorageException {
         try {
             return new XAErrorLogger();
-        } catch (ClassNotFoundException e) {
-            log.warn("Cannot initialize xa error loggger", e);
-            return null;
         } catch (Exception e) {
             throw new StorageException("Cannot introspect oracle driver classes", e);
         }
