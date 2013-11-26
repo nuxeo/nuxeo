@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.localconf.simple" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+      point="schema">
+
+    <schema name="simpleconfiguration" src="schemas/simpleconfiguration.xsd" prefix="sconf"/>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+      point="doctype">
+
+    <!-- facet to be used on documents handling simple configuration
+      (list of parameters key -> value) -->
+    <facet name="SimpleConfiguration">
+      <schema name="simpleconfiguration" />
+    </facet>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService" point="adapters">
+
+    <adapter class="org.nuxeo.ecm.localconf.SimpleConfiguration"
+      factory="org.nuxeo.ecm.localconf.SimpleConfigurationFactory"/>
+
+  </extension>
+
+</component>

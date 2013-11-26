@@ -41,7 +41,7 @@
     <module>nuxeo-admin-center</module>
     <module>nuxeo-platform-forms-layout-io-plugins</module>
     <module>nuxeo-platform-forms-layout-export</module>
-    <module>nuxeo-platform-localconfiguration</module>
+    <module>localconf</module>
     <module>nuxeo-platform-directory-web</module>
     <module>nuxeo-platform-userpreferences</module>
     <module>nuxeo-platform-ui-select2</module>
