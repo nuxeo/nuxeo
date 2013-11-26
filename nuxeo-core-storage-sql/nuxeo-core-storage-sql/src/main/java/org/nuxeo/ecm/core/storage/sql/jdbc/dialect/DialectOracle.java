@@ -379,9 +379,9 @@ public class DialectOracle extends Dialect {
             String indexName, int nthMatch, Column mainColumn, Model model,
             Database database) {
         String indexSuffix = model.getFulltextIndexSuffix(indexName);
-        Table ft = database.getTable(Model.FULLTEXT_TABLE_NAME);
-        Column ftMain = ft.getColumn(Model.MAIN_KEY);
-        Column ftColumn = ft.getColumn(Model.FULLTEXT_FULLTEXT_KEY
+        Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+        Column ftMain = ft.getColumn(model.MAIN_KEY);
+        Column ftColumn = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY
                 + indexSuffix);
         String score = String.format("SCORE(%d)", nthMatch);
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
@@ -618,16 +618,16 @@ public class DialectOracle extends Dialect {
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         if (!fulltextDisabled) {
-            Table ft = database.getTable(Model.FULLTEXT_TABLE_NAME);
+            Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
             properties.put("fulltextTable", ft.getQuotedName());
             ModelFulltext fti = model.getFulltextInfo();
             List<String> lines = new ArrayList<String>(fti.indexNames.size());
             for (String indexName : fti.indexNames) {
                 String suffix = model.getFulltextIndexSuffix(indexName);
-                Column ftft = ft.getColumn(Model.FULLTEXT_FULLTEXT_KEY + suffix);
-                Column ftst = ft.getColumn(Model.FULLTEXT_SIMPLETEXT_KEY
+                Column ftft = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY + suffix);
+                Column ftst = ft.getColumn(model.FULLTEXT_SIMPLETEXT_KEY
                         + suffix);
-                Column ftbt = ft.getColumn(Model.FULLTEXT_BINARYTEXT_KEY
+                Column ftbt = ft.getColumn(model.FULLTEXT_BINARYTEXT_KEY
                         + suffix);
                 String line = String.format(
                         "  :NEW.%s := :NEW.%s || ' ' || :NEW.%s; ",
@@ -698,7 +698,7 @@ public class DialectOracle extends Dialect {
         if (cause == null || cause == t) {
             return false;
         }
-        return isSocketError(cause);
+        return isSocketError(t);
     }
 
     protected boolean isConnectionClosed(int oracleError) {
