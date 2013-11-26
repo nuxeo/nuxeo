@@ -351,28 +351,28 @@
 
     <!-- Document Routing -->
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-document-routing-api</artifactId>
+      <groupId>org.nuxeo.ecm.routing</groupId>
+      <artifactId>nuxeo-routing-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-document-routing-core</artifactId>
+      <groupId>org.nuxeo.ecm.routing</groupId>
+      <artifactId>nuxeo-routing-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-document-routing-web</artifactId>
+      <groupId>org.nuxeo.ecm.routing</groupId>
+      <artifactId>nuxeo-routing-web</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-document-routing-dm</artifactId>
+      <groupId>org.nuxeo.ecm.routing</groupId>
+      <artifactId>nuxeo-routing-dm</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-document-routing-dashboard</artifactId>
+      <groupId>org.nuxeo.ecm.routing</groupId>
+      <artifactId>nuxeo-routing-dashboard</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-document-routing-default</artifactId>
+      <groupId>org.nuxeo.ecm.routing</groupId>
+      <artifactId>nuxeo-routing-default</artifactId>
     </dependency>
 
     <!-- Scope test -->
