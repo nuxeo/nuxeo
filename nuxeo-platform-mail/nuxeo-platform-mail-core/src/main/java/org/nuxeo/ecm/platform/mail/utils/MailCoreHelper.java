@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.platform.mail.utils;
 
-import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CORE_SESSION_ID_KEY;
+import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CORE_SESSION_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.EMAIL_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.EMAILS_LIMIT_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.HOST_PROPERTY_NAME;
@@ -137,8 +137,7 @@ public final class MailCoreHelper {
             initialExecutionContext.put(PARENT_PATH_KEY,
                     currentMailFolder.getPathAsString());
 
-            initialExecutionContext.put(CORE_SESSION_ID_KEY,
-                    coreSession.getSessionId());
+            initialExecutionContext.put(CORE_SESSION_KEY, coreSession);
 
             initialExecutionContext.put(LEAVE_ON_SERVER_KEY, Boolean.TRUE); // TODO should be an attribute in 'protocol' schema
 

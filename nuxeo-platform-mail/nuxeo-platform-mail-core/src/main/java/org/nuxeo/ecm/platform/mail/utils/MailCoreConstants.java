@@ -66,7 +66,7 @@ public final class MailCoreConstants {
 
     public static final String MAIL_RECEIVED_EVENT = "MailReceivedEvent";
 
-    public static final String CORE_SESSION_ID_KEY = "sessionId";
+    public static final String CORE_SESSION_KEY = "session";
 
     public static final String PARENT_PATH_KEY = "parentPath";
 

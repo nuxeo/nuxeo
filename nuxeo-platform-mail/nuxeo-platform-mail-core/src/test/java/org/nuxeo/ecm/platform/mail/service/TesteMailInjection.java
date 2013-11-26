@@ -116,9 +116,7 @@ public class TesteMailInjection extends
         Visitor visitor = new Visitor(pipe);
         ExecutionContext initialExecutionContext = new ExecutionContext();
         assertNotNull(session.getSessionId());
-        initialExecutionContext.put(
-                MailCoreConstants.CORE_SESSION_ID_KEY,
-                session.getSessionId());
+        initialExecutionContext.put(MailCoreConstants.CORE_SESSION_KEY, session);
         initialExecutionContext.put(
                 MailCoreConstants.MIMETYPE_SERVICE_KEY,
                 Framework.getLocalService(MimetypeRegistry.class));
