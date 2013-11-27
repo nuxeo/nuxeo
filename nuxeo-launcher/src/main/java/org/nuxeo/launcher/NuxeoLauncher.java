@@ -184,6 +184,13 @@ public abstract class NuxeoLauncher {
     private static final String OPTION_SNAPSHOT_DESC = "Allow use of SNAPSHOT Marketplace packages.";
 
     /**
+     * @since 5.9.1
+     */
+    protected static final String OPTION_FORCE = "force";
+
+    private static final String OPTION_FORCE_DESC = "Force option can be used on start command to return an error if a server is already running.";
+
+    /**
      * @since 5.6
      */
     protected static final String OPTION_HIDE_DEPRECATION = "hide-deprecation-warnings";
@@ -379,6 +386,8 @@ public abstract class NuxeoLauncher {
     private static boolean quiet = false;
 
     private static boolean debug = false;
+
+    private static boolean force = false;
 
     private boolean xmlOutput = false;
 
@@ -830,6 +839,10 @@ public abstract class NuxeoLauncher {
             OptionBuilder.withLongOpt(OPTION_SNAPSHOT);
             OptionBuilder.withDescription(OPTION_SNAPSHOT_DESC);
             launcherOptions.addOption(OptionBuilder.create("s"));
+            // Force option
+            OptionBuilder.withLongOpt(OPTION_FORCE);
+            OptionBuilder.withDescription(OPTION_FORCE_DESC);
+            launcherOptions.addOption(OptionBuilder.create("f"));
         }
     }
 
@@ -1358,6 +1371,11 @@ public abstract class NuxeoLauncher {
             log.error("Could not start process: " + e.getMessage());
             log.debug(e, e);
         } catch (IllegalStateException e) {
+            if (force) {
+                // assume program is not configured because of http port binding
+                // conflict
+                errorValue = EXIT_CODE_NOT_CONFIGURED;
+            }
             log.error(e.getMessage());
         }
         return serverStarted;
@@ -1677,6 +1695,9 @@ public abstract class NuxeoLauncher {
             setDebug(cmdLine.getOptionValue(OPTION_DEBUG_CATEGORY,
                     "org.nuxeo.launcher"));
         }
+        if (cmdLine.hasOption(OPTION_FORCE)) {
+            setForce(true);
+        }
         NuxeoLauncher launcher;
         ConfigurationGenerator cg = new ConfigurationGenerator(quiet, debug);
         if (cmdLine.hasOption(OPTION_HIDE_DEPRECATION)) {
@@ -1785,6 +1806,14 @@ public abstract class NuxeoLauncher {
      */
     protected static void setDebug(boolean activateDebug) {
         setDebug("org.nuxeo", activateDebug);
+    }
+
+    /**
+     * @param set a launcher force option
+     * @since 5.9
+     */
+    protected static void setForce(boolean value) {
+        force = value;
     }
 
     protected void setXMLOutput() {
