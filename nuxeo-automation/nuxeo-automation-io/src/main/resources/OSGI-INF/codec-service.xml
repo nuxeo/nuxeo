@@ -1,5 +1,4 @@
 <component name="org.nuxeo.ecm.automation.io.services.IOComponent">
-  <alias>org.nuxeo.ecm.automation.server.AutomationServer</alias>
 
 
   <documentation>@author Damien Metzler (dmetzler@nuxeo.com)</documentation>
