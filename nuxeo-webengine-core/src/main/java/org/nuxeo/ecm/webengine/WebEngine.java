@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
@@ -457,8 +457,8 @@ public class WebEngine implements ResourceLocator {
     @Override
     public URL getResourceURL(String key) {
         try {
-            return URLFactory.getURL(key);
-        } catch (Exception e) {
+            return new URL(key);
+        } catch (MalformedURLException e) {
             return null;
         }
     }
