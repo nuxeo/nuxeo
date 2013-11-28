@@ -104,6 +104,16 @@
         </snapshotRepository>
       </distributionManagement>
     </profile>
+    <profile>
+      <id>nightly</id>
+      <distributionManagement>
+        <repository>
+          <id>nightly-staging</id>
+          <url>dav:http://maven.in.nuxeo.com/nexus/content/repositories/nightly-staging</url>
+          <uniqueVersion>true</uniqueVersion>
+        </repository>
+      </distributionManagement>
+    </profile>
   </profiles>
 
   <build>
