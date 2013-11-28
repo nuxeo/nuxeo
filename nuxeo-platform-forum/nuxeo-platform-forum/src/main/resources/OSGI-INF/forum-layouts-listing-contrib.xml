@@ -6,7 +6,7 @@
 
     <widgetType name="forum_post_info">
       <configuration>
-        <sinceVersion>5.8.0-HF02-SNAPSHOT</sinceVersion>
+        <sinceVersion>5.8.0-HF02</sinceVersion>
         <title>Forum post information</title>
         <description>
           <p>This widget type displays information about a post</p>
