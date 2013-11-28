@@ -24,6 +24,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.codehaus.jackson.JsonFactory;
+import org.nuxeo.ecm.automation.io.services.IOComponent;
 import org.nuxeo.ecm.automation.io.services.JsonFactoryManager;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
@@ -47,9 +48,15 @@ public class AutomationServerComponent extends DefaultComponent implements
 
     protected static final String XP_BINDINGS = "bindings";
 
+    protected static final String IOCOMPONENT_NAME = "org.nuxeo.ecm.automation.io.services.IOComponent";
+
+    protected IOComponent ioComponent;
+
     private static final String XP_MARSHALLER = "marshallers";
 
     protected Map<String, RestBinding> bindings;
+
+    protected static final String XP_CODECS = "codecs";
 
     protected volatile Map<String, RestBinding> lookup;
 
@@ -63,6 +70,8 @@ public class AutomationServerComponent extends DefaultComponent implements
         writers = new ArrayList<>();
         readers = new ArrayList<>();
         me = this;
+        ioComponent = ((IOComponent) Framework.getRuntime().getComponentInstance(
+                IOCOMPONENT_NAME));
     }
 
     @Override
@@ -82,7 +91,10 @@ public class AutomationServerComponent extends DefaultComponent implements
             MarshallerDescriptor marshaller = (MarshallerDescriptor) contribution;
             writers.addAll(marshaller.getWriters());
             readers.addAll(marshaller.getReaders());
-        }
+        } else if (XP_CODECS.equals(extensionPoint)) {
+            ioComponent.registerContribution(contribution, extensionPoint,
+                    contributor);
+    }
     }
 
     @Override
@@ -92,6 +104,9 @@ public class AutomationServerComponent extends DefaultComponent implements
         if (XP_BINDINGS.equals(extensionPoint)) {
             RestBinding binding = (RestBinding) contribution;
             removeBinding(binding);
+        } else if (XP_CODECS.equals(extensionPoint)) {
+            ioComponent.unregisterContribution(contribution, extensionPoint,
+                    contributor);
         }
     }
 
