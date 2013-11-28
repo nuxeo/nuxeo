@@ -3888,7 +3888,7 @@
 
     <widgetType name="dropZone">
       <configuration>
-        <sinceVersion>5.8.0-HF02-SNAPSHOT</sinceVersion>
+        <sinceVersion>5.8.0-HF02</sinceVersion>
         <title>Drop zone</title>
         <description>
           <p>
