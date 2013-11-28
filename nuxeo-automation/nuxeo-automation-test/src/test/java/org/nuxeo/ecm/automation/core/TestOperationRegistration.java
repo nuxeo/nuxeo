@@ -1,6 +1,7 @@
 package org.nuxeo.ecm.automation.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -9,18 +10,27 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
+import org.nuxeo.ecm.automation.io.services.IOComponent;
+import org.nuxeo.ecm.automation.io.services.codec.ObjectCodec;
+import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
+@LocalDeploy("org.nuxeo.ecm.automation.test:test-bindings-compat.xml")
 public class TestOperationRegistration {
 
     @Inject
     AutomationService service;
+
+    @Inject
+    ObjectCodecService objectCodecService;
 
     @Test
     public void testRegistration() throws Exception {
@@ -49,5 +59,11 @@ public class TestOperationRegistration {
         }
         assertEquals(DummyCreateDocument.class, op.getType());
 
+    }
+
+    @Test
+    public void testCompatibilityRegistration() throws Exception {
+        ObjectCodec codec = objectCodecService.getCodec(ObjectCodec.class.getName());
+        assertNotNull(codec);
     }
 }
