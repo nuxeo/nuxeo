@@ -530,7 +530,7 @@ def main():
 [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] \
 [--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
        %prog perform [-r alias] [-f] [-p profiles] [-b branch] [-t tag] [-m maintenance]
-       %prog package [--skipTests] [-p profiles]
+       %prog package [-b branch] [-t tag] [--skipTests] [-p profiles]
 \nCommands:
   prepare: Prepare the release (build, change versions, tag and package source and distributions). The release  parameters are stored in a release.log file.
   perform: Perform the release (push sources, deploy artifacts and upload packages, tests are always skipped). If no parameter is given, they are read from the release.log file.
@@ -659,16 +659,20 @@ Default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
                 options.other_versions = None
 
         repo = Repository(os.getcwd(), options.remote_alias)
-        if options.branch == "auto":
-            options.branch = repo.get_current_version()
         system("git fetch %s" % (options.remote_alias))
-        repo.git_update(options.branch)
+        if "command" in locals():
+            if command == "package" and options.tag != "auto":
+                    options.branch = options.tag
+            if options.branch == "auto":
+                options.branch = repo.get_current_version()
+            repo.git_update(options.branch)
         release = Release(repo, options.branch, options.tag,
                           options.next_snapshot, options.maintenance_version,
                           options.is_final, options.skipTests,
                           options.other_versions, options.profiles,
                           options.msg_commit, options.msg_tag)
-        release.log_summary("command" in locals() and command != "perform")
+        if "command" not in locals() or command != "package":
+            release.log_summary("command" in locals() and command != "perform")
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
         elif command == "prepare":
@@ -676,6 +680,7 @@ Default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
         elif command == "perform":
             release.perform()
         elif command == "package":
+            log("Packaging %s from %s" % (release.snapshot, release.branch))
             repo.clone(release.branch)
             # workaround for NXBT-121: use install instead of package
             if options.profiles:
