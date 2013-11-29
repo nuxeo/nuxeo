@@ -16,7 +16,10 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
@@ -34,7 +37,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -299,6 +301,7 @@ public class UserGroupTest extends BaseUserTest {
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals("null",node.get("errorMessage").getValueAsText());
         ArrayNode entries = (ArrayNode) node.get("entries");
         assertEquals(1, entries.size());
         assertEquals("user0", entries.get(0).get("id").getValueAsText());
@@ -336,6 +339,7 @@ public class UserGroupTest extends BaseUserTest {
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals("null",node.get("errorMessage").getValueAsText());
         ArrayNode entries = (ArrayNode) node.get("entries");
         assertEquals(1, entries.size());
         assertEquals("Lannister",
