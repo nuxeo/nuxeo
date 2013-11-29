@@ -2,6 +2,8 @@
 <component name="org.nuxeo.ecm.automation.server.AutomationServer"
            version="1.0">
 
+  <require>org.nuxeo.ecm.automation.io.services.IOComponent</require>
+
   <documentation>@author Bogdan Stefanescu (bs@nuxeo.com)</documentation>
 
   <implementation class="org.nuxeo.ecm.automation.server.AutomationServerComponent"/>
