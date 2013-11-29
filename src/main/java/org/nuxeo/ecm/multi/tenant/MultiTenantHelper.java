@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.ecm.multi.tenant.cache.SimpleCache;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -51,8 +52,7 @@ public class MultiTenantHelper {
     }
 
     public static String computeTenantMembersGroup(String tenantId) {
-        return TENANT_GROUP_PREFIX + tenantId
-                + TENANT_MEMBERS_GROUP_SUFFIX;
+        return TENANT_GROUP_PREFIX + tenantId + TENANT_MEMBERS_GROUP_SUFFIX;
     }
 
     /**
@@ -90,26 +90,37 @@ public class MultiTenantHelper {
         return nuxeoPrincipal.getTenantId();
     }
 
+    protected static final SimpleCache<String> pathCache = new SimpleCache<String>(
+            100);
+
     /**
      * Returns the path of the tenant document matching the {@code tenantId}, or
      * {@code null} if there is no document matching.
      */
     public static String getTenantDocumentPath(CoreSession session,
             final String tenantId) throws ClientException {
-        final List<String> paths = new ArrayList<String>();
-        new UnrestrictedSessionRunner(session) {
-            @Override
-            public void run() throws ClientException {
-                String query = String.format(
-                        "SELECT * FROM Document WHERE tenantconfig:tenantId = '%s'",
-                        tenantId);
-                List<DocumentModel> docs = session.query(query);
-                if (!docs.isEmpty()) {
-                    paths.add(docs.get(0).getPathAsString());
+
+        String path = pathCache.get(tenantId);
+        if (path == null) {
+            final List<String> paths = new ArrayList<String>();
+            new UnrestrictedSessionRunner(session) {
+                @Override
+                public void run() throws ClientException {
+                    String query = String.format(
+                            "SELECT * FROM Document WHERE tenantconfig:tenantId = '%s'",
+                            tenantId);
+                    List<DocumentModel> docs = session.query(query);
+                    if (!docs.isEmpty()) {
+                        paths.add(docs.get(0).getPathAsString());
+                    }
                 }
+            }.runUnrestricted();
+            path = paths.isEmpty() ? null : paths.get(0);
+            if (path != null) {
+                pathCache.put(tenantId, path);
             }
-        }.runUnrestricted();
-        return paths.isEmpty() ? null : paths.get(0);
+        }
+        return path;
     }
 
 }

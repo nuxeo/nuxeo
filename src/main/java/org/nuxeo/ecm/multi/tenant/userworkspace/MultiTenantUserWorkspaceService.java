@@ -45,7 +45,7 @@ public class MultiTenantUserWorkspaceService extends
 
     @Override
     protected String computePathUserWorkspaceRoot(CoreSession userCoreSession,
-            DocumentModel currentDocument) throws ClientException {
+            DocumentModel currentDocument) throws ClientException {        
         String tenantId = MultiTenantHelper.getCurrentTenantId(userCoreSession.getPrincipal());
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
