@@ -10,11 +10,11 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
-import org.nuxeo.ecm.automation.io.services.IOComponent;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodec;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
+import org.nuxeo.ecm.automation.server.test.MyObject;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -23,6 +23,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
+@Deploy({ "org.nuxeo.ecm.automation.test", "org.nuxeo.ecm.automation.io",
+        "org.nuxeo.ecm.automation.server" })
 @LocalDeploy("org.nuxeo.ecm.automation.test:test-bindings-compat.xml")
 public class TestOperationRegistration {
 
@@ -63,7 +65,7 @@ public class TestOperationRegistration {
 
     @Test
     public void testCompatibilityRegistration() throws Exception {
-        ObjectCodec codec = objectCodecService.getCodec(ObjectCodec.class.getName());
+        ObjectCodec codec = objectCodecService.getCodec(MyObject.class);
         assertNotNull(codec);
     }
 }
