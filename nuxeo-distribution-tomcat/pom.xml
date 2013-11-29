@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -64,23 +65,6 @@
         profile is activated) -->
     </profile>
     <profile>
-      <id>nightly</id>
-    </profile>
-    <profile>
-      <id>release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.jboss.tattletale</groupId>
-            <artifactId>tattletale-maven</artifactId>
-            <configuration>
-              <source>${project.build.directory}/nuxeo-cap-${project.version}-tomcat/nxserver/lib</source>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
       <id>qa</id>
       <distributionManagement>
         <snapshotRepository>
@@ -113,6 +97,26 @@
           <uniqueVersion>true</uniqueVersion>
         </repository>
       </distributionManagement>
+    </profile>
+    <profile>
+      <id>release</id>
+      <distributionManagement>
+        <repository>
+          <id>public-releases</id>
+          <url>dav:http://maven.in.nuxeo.com/nexus/content/repositories/public-releases</url>
+        </repository>
+      </distributionManagement>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jboss.tattletale</groupId>
+            <artifactId>tattletale-maven</artifactId>
+            <configuration>
+              <source>${project.build.directory}/nuxeo-cap-${project.version}-tomcat/nxserver/lib</source>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
