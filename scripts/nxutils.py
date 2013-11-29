@@ -189,10 +189,10 @@ class Repository(object):
         found locally or remotely."""
         if version in check_output("git tag").split():
             # the version is a tag name
-            system("git checkout %s" % version)
+            system("git checkout %s -q" % version)
         elif version not in check_output("git branch").split():
             # create the local branch if missing
-            retcode = system("git checkout --track -b %s %s/%s" % (version,
+            retcode = system("git checkout --track -b %s %s/%s -q" % (version,
                                                         self.alias, version),
                    fallback_branch is None)
             if retcode != 0 and fallback_branch is not None:
@@ -201,11 +201,11 @@ class Repository(object):
                 self.git_update(fallback_branch)
         else:
             # reuse local branch
-            system("git checkout %s" % version)
-            retcode = system("git rebase %s/%s" % (self.alias, version), False)
+            system("git checkout %s -q" % version)
+            retcode = system("git rebase %s/%s -q" % (self.alias, version), False)
             if retcode != 0:
-                system("git stash")
-                system("git rebase %s/%s" % (self.alias, version))
+                system("git stash -q")
+                system("git rebase %s/%s -q" % (self.alias, version))
                 system("git stash pop -q")
         log("")
 
