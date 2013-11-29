@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.pictures.tiles.service.test;
@@ -44,6 +43,7 @@ import org.nuxeo.ecm.platform.pictures.tiles.api.adapter.PictureTilesAdapter;
 @Ignore
 public class TestAdapters extends SQLRepositoryTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -60,6 +60,7 @@ public class TestAdapters extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
