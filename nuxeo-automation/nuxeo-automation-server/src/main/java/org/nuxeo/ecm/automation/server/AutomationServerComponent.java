@@ -71,7 +71,7 @@ public class AutomationServerComponent extends DefaultComponent implements
         readers = new ArrayList<>();
         me = this;
         ioComponent = ((IOComponent) Framework.getRuntime().getComponentInstance(
-                IOCOMPONENT_NAME));
+                IOCOMPONENT_NAME).getInstance());
     }
 
     @Override
