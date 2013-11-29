@@ -676,7 +676,7 @@ Default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
         elif command == "perform":
             release.perform()
         elif command == "package":
-            repo.clone()
+            repo.clone(release.branch)
             # workaround for NXBT-121: use install instead of package
             if options.profiles:
                 repo.mvn("clean install", skip_tests=options.skipTests,
