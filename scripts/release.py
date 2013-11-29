@@ -562,7 +562,7 @@ def main():
 [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] \
 [--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
        %prog perform [-r alias] [-f] [-p profiles] [-b branch] [-t tag] [-m maintenance]
-       %prog package [--skipTests] [-p profiles]
+       %prog package [-b branch] [-t tag] [--skipTests] [-p profiles]
        %prog maintenance [-r alias] [-b branch] [-t tag] [-m maintenance] [--arv versions_replacements]
 \nCommands:
   prepare: Prepare the release (build, change versions, tag and package source and distributions). The release  parameters are stored in a release.log file.
@@ -694,29 +694,33 @@ Default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
 
         repo = Repository(os.getcwd(), options.remote_alias)
         system("git fetch %s" % (options.remote_alias))
-        if "command" in locals() and command == "maintenance":
-            if options.tag == "auto":
-                options.tag = repo.get_current_version()[8:]
-            if options.tag == "":
-                raise ExitException(1, "Couldn't guess tag name from %s" %
-                                    repo.get_current_version())
-            if options.branch == "auto":
-                options.branch = options.tag
-            repo.git_update("release-%s" % options.tag)
-            options.is_final = True
-            if options.maintenance_version == "auto":
-                options.maintenance_version = options.tag + ".1-SNAPSHOT"
-            options.next_snapshot = None
-        else:
-            if options.branch == "auto":
-                options.branch = repo.get_current_version()
-            repo.git_update(options.branch)
+        if "command" in locals():
+            if command == "maintenance":
+                if options.tag == "auto":
+                    options.tag = repo.get_current_version()[8:]
+                if options.tag == "":
+                    raise ExitException(1, "Couldn't guess tag name from %s" %
+                                        repo.get_current_version())
+                if options.branch == "auto":
+                    options.branch = options.tag
+                repo.git_update("release-%s" % options.tag)
+                options.is_final = True
+                if options.maintenance_version == "auto":
+                    options.maintenance_version = options.tag + ".1-SNAPSHOT"
+                options.next_snapshot = None
+            if command == "package" and options.tag != "auto":
+                    options.branch = options.tag
+            if command != "maintenance":
+                if options.branch == "auto":
+                    options.branch = repo.get_current_version()
+                repo.git_update(options.branch)
         release = Release(repo, options.branch, options.tag,
                           options.next_snapshot, options.maintenance_version,
                           options.is_final, options.skipTests,
                           options.other_versions, options.profiles,
                           options.msg_commit, options.msg_tag)
-        if "command" not in locals() or command != "maintenance":
+        if ("command" not in locals() or
+            command != "maintenance" and command != "package"):
             release.log_summary("command" in locals() and command != "perform")
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
@@ -727,6 +731,7 @@ Default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
         elif command == "perform":
             release.perform()
         elif command == "package":
+            log("Packaging %s from %s" % (release.snapshot, release.branch))
             repo.clone(release.branch)
             # workaround for NXBT-121: use install instead of package
             if options.profiles:
