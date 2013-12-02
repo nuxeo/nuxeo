@@ -18,18 +18,33 @@
 package org.nuxeo.ecm.multi.tenant;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.computedgroups.UserManagerWithComputedGroups;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
+import org.nuxeo.runtime.api.Framework;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
 public class MultiTenantUserManager extends UserManagerWithComputedGroups {
+
+    protected static final Integer CACHE_CONCURRENCY_LEVEL = 10;
+
+    protected static final Integer CACHE_MAXIMUM_SIZE = 1000;
+
+    protected static final Integer CACHE_TIMEOUT = 10;
+
+    protected final Cache<String, NuxeoPrincipal> principalCache = CacheBuilder.newBuilder().concurrencyLevel(
+            CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(
+            CACHE_TIMEOUT, TimeUnit.MINUTES).build();
 
     @Override
     protected NuxeoPrincipal makePrincipal(DocumentModel userEntry,
@@ -42,4 +57,28 @@ public class MultiTenantUserManager extends UserManagerWithComputedGroups {
         }
         return nuxeoPrincipal;
     }
+
+    protected boolean useCache() {
+        return !Framework.isTestModeSet();
+    }
+
+    @Override
+    public NuxeoPrincipal getPrincipal(String username) throws ClientException {
+        if (!useCache()) {
+            return super.getPrincipal(username);
+        }
+        NuxeoPrincipal principal = principalCache.getIfPresent(username);
+        if (principal == null) {
+            principal = super.getPrincipal(username);
+            principalCache.put(username, principal);
+        }
+        return principal;
+    }
+
+    @Override
+    protected void notifyUserChanged(String userName) throws ClientException {
+        principalCache.invalidate(userName);
+        super.notifyUserChanged(userName);
+    }
+
 }
