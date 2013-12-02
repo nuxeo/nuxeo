@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
@@ -69,6 +70,7 @@ public abstract class AbstractRenditionRestHelper implements Serializable {
     protected abstract Blob renderAsBlob(DocumentModel doc, String renditionName)
             throws Exception;
 
+    @Begin(id = "#{conversationIdGenerator.nextMainConversationId}", join = true)
     public void render(DocumentView docView) throws Exception {
 
         DocumentLocation docLoc = docView.getDocumentLocation();
