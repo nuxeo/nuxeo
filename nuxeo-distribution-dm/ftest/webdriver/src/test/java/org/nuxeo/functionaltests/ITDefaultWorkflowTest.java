@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
@@ -141,8 +140,6 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         deleteTestUser(USER_JDOE);
     }
 
-    // randomly failing, see NXP-13159
-    @Ignore
     @Test
     public void testDefaultParallelWorkflow() throws Exception {
         createTestUser(USER_JDOE, USER_JDOE);
@@ -233,8 +230,6 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         deleteTestUser(USER_JSMITH);
     }
 
-    // randomly failing, see NXP-13159
-    @Ignore
     @Test
     public void testTaskReassignmentAndDelegation() throws Exception {
         createTestUser(USER_JDOE, USER_JDOE);
