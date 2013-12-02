@@ -112,15 +112,16 @@ def git_fetch(module):
 
     if version in check_output(["git", "tag"]).split():
         # the version is a tag name
-        system("git checkout %s" % version)
+        system("git checkout -q %s" % version)
     elif version not in check_output(["git", "branch"]).split():
         # create the local branch if missing
-        system("git checkout --track -b %s %s/%s" % (version, alias, version))
+        system("git checkout --track -b -q %s %s/%s" %
+               (version, alias, version))
     else:
         # reuse local branch
-        system("git checkout %s" % version)
+        system("git checkout -q %s" % version)
         log("Updating branch")
-        system("git rebase %s/%s" % (alias, version))
+        system("git rebase -q %s/%s" % (alias, version))
     os.chdir(cwd)
     log("")
 
@@ -168,15 +169,15 @@ log("Cloning/updating addons parent pom")
 system("git fetch %s" % (alias))
 if version in check_output(["git", "tag"]).split():
     # the version is a tag name
-    system("git checkout %s" % version)
+    system("git checkout -q %s" % version)
 elif version not in check_output(["git", "branch"]).split():
     # create the local branch if missing
-    system("git checkout --track -b %s %s/%s" % (version, alias, version))
+    system("git checkout --track -b -q %s %s/%s" % (version, alias, version))
 else:
     # reuse local branch
-    system("git checkout %s" % version)
+    system("git checkout -q %s" % version)
     log("Updating branch")
-    system("git rebase %s/%s" % (alias, version))
+    system("git rebase -q %s/%s" % (alias, version))
 log("")
 
 # find the remote URL
