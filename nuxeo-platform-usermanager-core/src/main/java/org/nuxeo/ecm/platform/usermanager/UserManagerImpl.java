@@ -568,7 +568,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         }
         if (principal==null) {
             principal =  getPrincipal(username, null);
-            if (useCache()) {
+            if (useCache() && principal!=null) {
                 principalCache.put(username, principal);
             }
         }
