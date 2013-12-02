@@ -149,7 +149,9 @@ public class SeamOperationFilter {
         ActionContext seamActionContext = new SeamActionContext();
         NavigationContext navigationContext = (NavigationContext) Contexts.getConversationContext().get(
                 "navigationContext");
-        seamActionContext.setCurrentDocument(navigationContext.getCurrentDocument());
+        if (navigationContext != null) {
+            seamActionContext.setCurrentDocument(navigationContext.getCurrentDocument());
+        }
         seamActionContext.setDocumentManager(session);
         seamActionContext.putLocalVariable("SeamContext",
                 new SeamContextHelper());
