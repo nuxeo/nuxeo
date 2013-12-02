@@ -125,6 +125,11 @@
               </c:choose>
             </c:when>
           </c:choose>
+          <script>
+            jQuery(document).ready(function() {
+              jQuery(".contentViewHeaderSortTooltip").tooltip();
+            });
+          </script>
         </th>
       </nxl:layoutColumn>
     </tr>
@@ -132,12 +137,6 @@
 </c:if>
 
 </nxu:set>
-
-<script>
-  jQuery(document).ready(function() {
-    jQuery(".contentViewHeaderSortTooltip").tooltip();
-  });
-</script>
 
 <c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
 <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
