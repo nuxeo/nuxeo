@@ -58,6 +58,13 @@ esac
 ## Empty $GREP_OPTIONS to prevent some undesirable behaviors
 GREP_OPTIONS=""
 
+## Check for DOS CRLF
+if grep $'\r' "$NUXEO_CONF" >/dev/null 2>&1 ; then
+  warn "Found DOS CRLF in $NUXEO_CONF! Fixing in a temporary file..."
+  sed 's/\r//' "$NUXEO_CONF" > "$NUXEO_CONF.fixed"
+  NUXEO_CONF="$NUXEO_CONF.fixed"
+fi
+
 ## Setup the JVM (find JAVA_HOME if undefined; use JAVA if defined)
 while read line; do
   case $line in
