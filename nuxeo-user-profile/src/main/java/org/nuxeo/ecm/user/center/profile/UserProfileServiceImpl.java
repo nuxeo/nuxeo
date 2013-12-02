@@ -22,11 +22,14 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_DOCTYPE;
 
+import java.util.concurrent.TimeUnit;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -34,6 +37,9 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * Implementation of {@code UserProfileService}.
@@ -45,6 +51,16 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class UserProfileServiceImpl extends DefaultComponent implements
         UserProfileService {
 
+    protected static final Integer CACHE_CONCURRENCY_LEVEL = 10;
+
+    protected static final Integer CACHE_TIMEOUT = 10;
+
+    protected static final Integer CACHE_MAXIMUM_SIZE = 1000;
+
+    protected final Cache<String, String> profileUidCache = CacheBuilder.newBuilder().concurrencyLevel(
+            CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(
+            CACHE_TIMEOUT, TimeUnit.MINUTES).build();
+
     private UserWorkspaceService userWorkspaceService;
 
     @Override
@@ -52,7 +68,16 @@ public class UserProfileServiceImpl extends DefaultComponent implements
             throws ClientException {
         DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(
                 session, null);
-        return new UserProfileDocumentGetter(session, userWorkspace).getOrCreate();
+        String uid = profileUidCache.getIfPresent(session.getPrincipal().getName());
+        if (uid != null) {
+            return session.getDocument(new IdRef(uid));
+        } else {
+            DocumentModel profile = new UserProfileDocumentGetter(session,
+                    userWorkspace).getOrCreate();
+            profileUidCache.put(session.getPrincipal().getName(),
+                    profile.getId());
+            return profile;
+        }
     }
 
     @Override
@@ -60,7 +85,16 @@ public class UserProfileServiceImpl extends DefaultComponent implements
             CoreSession session) throws ClientException {
         DocumentModel userWorkspace = getUserWorkspaceService().getUserPersonalWorkspace(
                 userName, session.getRootDocument());
-        return new UserProfileDocumentGetter(session, userWorkspace).getOrCreate();
+
+        String uid = profileUidCache.getIfPresent(userName);
+        if (uid != null) {
+            return session.getDocument(new IdRef(uid));
+        } else {
+            DocumentModel profile = new UserProfileDocumentGetter(session,
+                    userWorkspace).getOrCreate();
+            profileUidCache.put(userName, profile.getId());
+            return profile;
+        }
     }
 
     @Override
@@ -94,8 +128,15 @@ public class UserProfileServiceImpl extends DefaultComponent implements
 
         @Override
         public void run() throws ClientException {
-            DocumentModelList children = session.getChildren(
-                    userWorkspace.getRef(), USER_PROFILE_DOCTYPE);
+
+            String query = "select * from "
+                    + USER_PROFILE_DOCTYPE
+                    + " where ecm:parentId='"
+                    + userWorkspace.getId()
+                    + "' "
+                    + " AND ecm:isProxy = 0 "
+                    + " AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'";
+            DocumentModelList children = session.query(query);
             if (!children.isEmpty()) {
                 userProfileDocRef = children.get(0).getRef();
             } else {
@@ -122,7 +163,6 @@ public class UserProfileServiceImpl extends DefaultComponent implements
             }
             return session.getDocument(userProfileDocRef);
         }
-
     }
 
 }
