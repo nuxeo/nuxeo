@@ -153,7 +153,7 @@ public final class FileManagerUtils {
                 + value.replace("'", "\\\'")
                 + "' AND ecm:currentLifeCycleState != '"
                 + LifeCycleConstants.DELETED_STATE + "'";
-        DocumentModelList docs = documentManager.query(query);
+        DocumentModelList docs = documentManager.query(query, 1);
         if (docs.size() > 0) {
             existing = docs.get(0);
         }
