@@ -40,7 +40,6 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
-
 /**
  * Base class for Rendition url codec bindings.
  * <p>
@@ -48,7 +47,6 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
  *
  * @since 5.6
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 public abstract class AbstractRenditionRestHelper implements Serializable {
 
@@ -89,10 +87,8 @@ public abstract class AbstractRenditionRestHelper implements Serializable {
                 rendered = renderAsBlob(doc, renditionName);
             } catch (RenditionException e) {
                 log.error("Unable to generate rendition " + renditionName, e);
-                facesMessages.add(
-                        StatusMessage.Severity.WARN,
-                        messages.get(
-                                "rendition.not.available"), renditionName);
+                facesMessages.add(StatusMessage.Severity.WARN,
+                        messages.get("rendition.not.available"), renditionName);
                 // now we need to redirect
                 // otherwise the page will be rendered via Seam PDF
                 HttpServletRequest req = (HttpServletRequest) context.getExternalContext().getRequest();
@@ -105,9 +101,7 @@ public abstract class AbstractRenditionRestHelper implements Serializable {
                     response.flushBuffer();
                     FacesContext.getCurrentInstance().responseComplete();
                 } catch (IOException ioe) {
-                    log.error(
-                            "Error while redirecting to standard view",
-                            ioe);
+                    log.error("Error while redirecting to standard view", ioe);
                 }
                 return;
             }
