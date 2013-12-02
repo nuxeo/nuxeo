@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_MEMBERS_GROUP_SUFFIX;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -35,11 +36,24 @@ import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
 public class MultiTenantHelper {
+
+    protected static final Integer CACHE_CONCURRENCY_LEVEL = 10;
+
+    protected static final Integer CACHE_MAXIMUM_SIZE = 1000;
+
+    protected static final Integer CACHE_TIMEOUT = 10;
+
+    protected final static Cache<String, String> pathCache = CacheBuilder.newBuilder().concurrencyLevel(
+            CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(
+            CACHE_TIMEOUT, TimeUnit.MINUTES).build();
 
     private MultiTenantHelper() {
         // helper class
@@ -51,8 +65,7 @@ public class MultiTenantHelper {
     }
 
     public static String computeTenantMembersGroup(String tenantId) {
-        return TENANT_GROUP_PREFIX + tenantId
-                + TENANT_MEMBERS_GROUP_SUFFIX;
+        return TENANT_GROUP_PREFIX + tenantId + TENANT_MEMBERS_GROUP_SUFFIX;
     }
 
     /**
@@ -97,19 +110,26 @@ public class MultiTenantHelper {
     public static String getTenantDocumentPath(CoreSession session,
             final String tenantId) throws ClientException {
         final List<String> paths = new ArrayList<String>();
-        new UnrestrictedSessionRunner(session) {
-            @Override
-            public void run() throws ClientException {
-                String query = String.format(
-                        "SELECT * FROM Document WHERE tenantconfig:tenantId = '%s'",
-                        tenantId);
-                List<DocumentModel> docs = session.query(query);
-                if (!docs.isEmpty()) {
-                    paths.add(docs.get(0).getPathAsString());
+        String path = pathCache.getIfPresent(tenantId);
+        if (path == null) {
+            new UnrestrictedSessionRunner(session) {
+                @Override
+                public void run() throws ClientException {
+                    String query = String.format(
+                            "SELECT * FROM Document WHERE tenantconfig:tenantId = '%s'",
+                            tenantId);
+                    List<DocumentModel> docs = session.query(query);
+                    if (!docs.isEmpty()) {
+                        paths.add(docs.get(0).getPathAsString());
+                    }
                 }
+            }.runUnrestricted();
+            path = paths.isEmpty() ? null : paths.get(0);
+            if (path != null) {
+                pathCache.put(tenantId, path);
             }
-        }.runUnrestricted();
-        return paths.isEmpty() ? null : paths.get(0);
+        }
+        return path;
     }
 
 }
