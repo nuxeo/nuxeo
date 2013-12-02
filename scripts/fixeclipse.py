@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 ##
-## (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+## (C) Copyright 2011-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
 ##
 ## All rights reserved. This program and the accompanying materials
 ## are made available under the terms of the GNU Lesser General Public License
 ## (LGPL) version 2.1 which accompanies this distribution, and is available at
-## http://www.gnu.org/licenses/lgpl.html
+## http://www.gnu.org/licenses/lgpl-2.1.html
 ##
 ## This library is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,10 +19,10 @@
 ##    Edgar Geisler
 ##    Julien Carsique
 ##
-from os         import system, path, walk, devnull
-from re         import compile, match, M as Multiline
+from os import path, walk, devnull
+from re import compile, match, M as Multiline
+from shutil import copy
 from subprocess import call
-from shutil     import copy
 
 
 MAX_DEPTH = 4
@@ -44,6 +44,7 @@ def get_test_pattern():
             r'\1' + NEW_TEST + r'\2')
 
 
+#pylint: disable=C0103
 def read_file_content(filename):
     """Reads file content.
 
@@ -106,9 +107,9 @@ def fix_classpath():
     main_pattern = get_main_pattern()
 
     # For each '.classpath' file...
-    for file in find_files_by_pattern('\.classpath$'):
+    for cpfile in find_files_by_pattern('\.classpath$'):
         try:
-            content = read_file_content(file)
+            content = read_file_content(cpfile)
 
             # Replace OLD_MAIN by NEW_MAIN
             content = main_pattern[0].subn(main_pattern[1], content)
@@ -120,11 +121,11 @@ def fix_classpath():
 
             # Content has been changed
             if changed:
-                write_file_content(file, content[0])
-                print file
+                write_file_content(cpfile, content[0])
+                print cpfile
 
-        except IOError, e:
-            print "Cannot process file " + file
+        except IOError:
+            print "Cannot process file " + cpfile
 
     print "Done."
 
@@ -138,18 +139,19 @@ def replace_files():
         nulldevice = open(devnull, "w")
 
         # For each .*.ok file...
-        for file in find_files_by_pattern('\.[^\.]+\.ok$'):
+        for okfile in find_files_by_pattern('\.[^\.]+\.ok$'):
             # Base file name without '.ok' extension
-            newfile = file[:-3]
+            newfile = okfile[:-3]
 
             # Replace file if something's changed.
             # Diff utility is expected (not pre-installed on Windows!)
             # http://gnuwin32.sourceforge.net/packages/diffutils.htm
             # FIXME: use python difflib instead of forcing (Windows) users to
             #          install diff utilities.
-            cmd = ['diff', '-qbB', file, newfile]
-            if 0 != call(cmd, stdout=nulldevice, stderr=nulldevice, shell=False):
-                copy(file, newfile)
+            cmd = ['diff', '-qbB', okfile, newfile]
+            if 0 != call(cmd, stdout=nulldevice, stderr=nulldevice,
+                         shell=False):
+                copy(okfile, newfile)
                 print newfile
 
     finally:

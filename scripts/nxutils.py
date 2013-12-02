@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 ##
-## (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+## (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
 ##
 ## All rights reserved. This program and the accompanying materials
 ## are made available under the terms of the GNU Lesser General Public License
 ## (LGPL) version 2.1 which accompanies this distribution, and is available at
-## http://www.gnu.org/licenses/lgpl.html
+## http://www.gnu.org/licenses/lgpl-2.1.html
 ##
 ## This library is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,18 +17,17 @@
 ##
 ## Utilities for Python scripts.
 ##
-from zipfile import ZIP_DEFLATED
-from zipfile import ZipFile
-import optparse
+import errno
 import os
 import platform
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import time
-import shutil
-import errno
+from zipfile import ZIP_DEFLATED, ZipFile
+
 
 SUPPORTED_GIT_ONLINE_URLS = "http://", "https://", "git://", "git@"
 
@@ -39,6 +38,7 @@ class ExitException(Exception):
         self.message = message
 
 
+#pylint: disable=R0902
 class Repository(object):
     """Nuxeo repository manager.
 
@@ -68,6 +68,7 @@ class Repository(object):
     def cleanup(self):
         long_path_workaround_cleanup(self.driveletter, self.oldbasedir)
 
+    #pylint: disable=C0103
     def eval_modules(self):
         """Set the list of Nuxeo addons in 'self.modules'."""
         os.chdir(self.basedir)
@@ -160,6 +161,7 @@ class Repository(object):
         os.mkdir(archive_dir)
         log("[.]")
         p = system("git archive %s" % version, run=False)
+        #pylint: disable=E1103
         system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         if not self.modules:
             self.eval_modules()
@@ -202,7 +204,8 @@ class Repository(object):
         else:
             # reuse local branch
             system("git checkout %s -q" % version)
-            retcode = system("git rebase -q %s/%s" % (self.alias, version), False)
+            retcode = system("git rebase -q %s/%s" % (self.alias, version),
+                             False)
             if retcode != 0:
                 system("git stash -q")
                 system("git rebase -q %s/%s" % (self.alias, version))
@@ -278,6 +281,7 @@ def log(message, out=sys.stdout):
 
 
 # Can't this method be replaced with system?
+#pylint: disable=C0103
 def check_output(cmd):
     """Return Shell command output."""
     args = shlex.split(cmd)
@@ -303,6 +307,7 @@ def check_output(cmd):
     return out.strip()
 
 
+#pylint: disable=R0912,R0913
 def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
            run=True, stdin=subprocess.PIPE,
            stdout=subprocess.PIPE, stderr=subprocess.PIPE):
@@ -322,7 +327,8 @@ def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
             if logOutput:
                 # Merge stderr with stdout
                 stderr = subprocess.STDOUT
-            p = subprocess.Popen(args, stdin=stdin, stdout=stdout, stderr=stderr,
+            p = subprocess.Popen(args, stdin=stdin, stdout=stdout,
+                                 stderr=stderr,
                                  shell=platform.system() == "Windows")
             if run:
                 out, err = p.communicate()
@@ -342,18 +348,19 @@ def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
             raise
     if not run:
         return p
+    #pylint: disable=E1103
     retcode = p.returncode
     if retcode != 0:
         if failonerror:
             if logOutput:
                 raise ExitException(retcode,
-                                    "Command '%s' returned non-zero exit code (%s)"
+                                "Command '%s' returned non-zero exit code (%s)"
                                     % (cmd, retcode))
             else:
                 if err is None or err == "":
                     err = out
                 raise ExitException(retcode,
-                                    "Command '%s' returned non-zero exit code (%s)\n%s"
+                            "Command '%s' returned non-zero exit code (%s)\n%s"
                                     % (cmd, retcode, err))
     return retcode
 
@@ -435,14 +442,14 @@ def make_zip(archive, rootdir=None, basedir=None, mode="w"):
         if basedir is None:
             basedir = os.curdir
         log("Creating %s with %s ..." % (archive, basedir))
-        zip = ZipFile(archive, mode, compression=ZIP_DEFLATED)
-        for dirpath, dirnames, filenames in os.walk(basedir):
+        zipfile = ZipFile(archive, mode, compression=ZIP_DEFLATED)
+        for dirpath, _, filenames in os.walk(basedir):
             for name in filenames:
                 path = os.path.normpath(os.path.join(dirpath, name))
                 if os.path.isfile(path):
-                    zip.write(path, path)
+                    zipfile.write(path, path)
                     log("Adding %s" % path)
-        zip.close()
+        zipfile.close()
     finally:
         if rootdir is not None:
             os.chdir(cwd)
@@ -453,8 +460,8 @@ def extract_zip(archive, outdir=None):
 
     Extracts all the files to the 'outdir' directory (defaults to current dir)
     """
-    zip = ZipFile(archive, "r")
+    zipfile = ZipFile(archive, "r")
     if outdir is None:
         outdir = os.getcwd()
-    zip.extractall(outdir)
-    zip.close()
+    zipfile.extractall(outdir)
+    zipfile.close()

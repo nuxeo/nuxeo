@@ -1,88 +1,75 @@
 #!/usr/bin/env python
-# #
-# # (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
-# #
-# # All rights reserved. This program and the accompanying materials
-# # are made available under the terms of the GNU Lesser General Public License
-# # (LGPL) version 2.1 which accompanies this distribution, and is available at
-# # http://www.gnu.org/licenses/lgpl.html
-# #
-# # This library is distributed in the hope that it will be useful,
-# # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# # Lesser General Public License for more details.
-# #
-# # Contributors:
-# #     Julien Carsique
-# #
-# # This script manages releasing of Nuxeo source code.
-# # It applies on current Git repository and its sub-repositories.
-# #
-# # Examples from Nuxeo root, checkout on master:
-# # $ ./scripts/release.py
-# # Releasing from branch:   master
-# # Current version:         5.6-SNAPSHOT
-# # Tag:                     5.6-I20120102_1741
-# # Next version:            5.6-SNAPSHOT
-# # No maintenance branch
-# #
-# # $ ./scripts/release.py -f
-# # Releasing from branch:   master
-# # Current version:         5.6-SNAPSHOT
-# # Tag:                     5.6
-# # Next version:            5.7-SNAPSHOT
-# # No maintenance branch
-# #
-# # $ ./scripts/release.py -f -m 5.6.1-SNAPSHOT
-# # Releasing from branch:   master
-# # Current version:         5.6-SNAPSHOT
-# # Tag:                     5.6
-# # Next version:            5.7-SNAPSHOT
-# # Maintenance version:     5.6.1-SNAPSHOT
-# #
-# # $ ./scripts/release.py -f -b 5.5.0
-# # Releasing from branch:   5.5.0
-# # Current version:         5.5.0-HF01-SNAPSHOT
-# # Tag:                     5.5.0-HF01
-# # Next version:            5.5.0-HF02-SNAPSHOT
-# # No maintenance branch
-# #
-# # $ ./scripts/release.py -b 5.5.0 -t sometag
-# # Releasing from branch 5.5.0
-# # Current version:      5.5.0-HF01-SNAPSHOT
-# # Tag:                  sometag
-# # Next version:         5.5.0-HF01-SNAPSHOT
-# # No maintenance branch
-# #
-from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
+##
+## (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+##
+## All rights reserved. This program and the accompanying materials
+## are made available under the terms of the GNU Lesser General Public License
+## (LGPL) version 2.1 which accompanies this distribution, and is available at
+## http://www.gnu.org/licenses/lgpl-2.1.html
+##
+## This library is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+## Lesser General Public License for more details.
+##
+## Contributors:
+##     Julien Carsique
+##
+## This script manages releasing of Nuxeo source code.
+## It applies on current Git repository and its sub-repositories.
+##
+## Examples from Nuxeo root, checkout on master:
+## $ ./scripts/release.py
+## Releasing from branch:   master
+## Current version:         5.6-SNAPSHOT
+## Tag:                     5.6-I20120102_1741
+## Next version:            5.6-SNAPSHOT
+## No maintenance branch
+##
+## $ ./scripts/release.py -f
+## Releasing from branch:   master
+## Current version:         5.6-SNAPSHOT
+## Tag:                     5.6
+## Next version:            5.7-SNAPSHOT
+## No maintenance branch
+##
+## $ ./scripts/release.py -f -m 5.6.1-SNAPSHOT
+## Releasing from branch:   master
+## Current version:         5.6-SNAPSHOT
+## Tag:                     5.6
+## Next version:            5.7-SNAPSHOT
+## Maintenance version:     5.6.1-SNAPSHOT
+##
+## $ ./scripts/release.py -f -b 5.5.0
+## Releasing from branch:   5.5.0
+## Current version:         5.5.0-HF01-SNAPSHOT
+## Tag:                     5.5.0-HF01
+## Next version:            5.5.0-HF02-SNAPSHOT
+## No maintenance branch
+##
+## $ ./scripts/release.py -b 5.5.0 -t sometag
+## Releasing from branch 5.5.0
+## Current version:      5.5.0-HF01-SNAPSHOT
+## Tag:                  sometag
+## Next version:         5.5.0-HF01-SNAPSHOT
+## No maintenance branch
+##
 from collections import namedtuple
 from datetime import datetime
-from distutils.log import Log
-from lxml import etree
-from nxutils import ExitException
-from nxutils import Repository
-from nxutils import assert_git_config
-from nxutils import check_output
-from nxutils import extract_zip
-from nxutils import log
-from nxutils import make_zip
-from nxutils import system
-from optparse import IndentedHelpFormatter
-from optparse import TitledHelpFormatter
-from terminalsize import get_terminal_size
 import fnmatch
-import hashlib
+from lxml import etree
 import optparse
 import os
-import posixpath
 import re
 import shutil
-import stat
-import subprocess
 import sys
 import tempfile
-import time
-import urllib
+
+from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
+from nxutils import ExitException, Repository, assert_git_config, extract_zip,\
+     log, make_zip, system
+from terminalsize import get_terminal_size
+
 
 PKG_RENAMINGS = {
     # Tomcat packages
@@ -104,23 +91,26 @@ PKG_RENAMINGS_OPTIONALS = {
 }
 
 
-def etree_parse(file):
+#pylint: disable=C0103
+def etree_parse(xmlfile):
     """XML parsing with context error logging"""
     try:
-        tree = etree.parse(file)
+        tree = etree.parse(xmlfile)
     except etree.XMLSyntaxError as e:
         raise ExitException(1, "XML syntax error on '%s'\n%s" %
-                            (file, e.message))
+                            (xmlfile, e.message))
     return tree
 
 
+#pylint: disable=R0902
 class Release(object):
     """Nuxeo release manager.
 
     See 'self.perpare()', 'self.perform()'."""
-    def __init__(self, repo, branch, tag, next_snapshot, maintenance_version="auto",
-                 is_final=False, skipTests=False, other_versions=None,
-                 profiles='', msg_commit='', msg_tag=''):
+    #pylint: disable=R0913
+    def __init__(self, repo, branch, tag, next_snapshot,
+                 maintenance_version="auto", is_final=False, skipTests=False,
+                 other_versions=None, profiles='', msg_commit='', msg_tag=''):
         self.repo = repo
         self.branch = branch
         self.is_final = is_final
@@ -183,7 +173,8 @@ class Release(object):
             elif len(other_versions_split) == 1:
                 other_versions = other_versions_split[0]
             else:
-                raise ExitException(1, "Could not parse other_versions parameter %s."
+                raise ExitException(1,
+                                "Could not parse other_versions parameter %s."
                                     % other_versions)
             # Parse version replacements
             other_versions_split = []
@@ -254,7 +245,8 @@ class Release(object):
                 self.custom_patterns.props[35:])
         if self.other_versions:
             for other_version in self.other_versions:
-                log("Also replace version:".ljust(25) + '/'.join(other_version))
+                log("Also replace version:".ljust(25) +
+                    '/'.join(other_version))
         if store_params:
             release_log = os.path.abspath(os.path.join(self.repo.basedir,
                                                        os.pardir,
@@ -265,8 +257,8 @@ class Release(object):
                         "PROFILES=%s\nOTHER_VERSIONS=%s\nFILES_PATTERN=%s\n"
                         "PROPS_PATTERN=%s\nMSG_COMMIT=%s\nMSG_TAG=%s\n" %
                         (self.repo.alias, self.branch, self.tag,
-                         self.next_snapshot, self.maintenance_version, self.is_final,
-                         self.skipTests, self.profiles,
+                         self.next_snapshot, self.maintenance_version,
+                         self.is_final, self.skipTests, self.profiles,
                          (','.join('/'.join(other_version)
                                    for other_version in self.other_versions)),
                          self.custom_patterns.files,
@@ -275,6 +267,7 @@ class Release(object):
             log("Parameters stored in %s" % release_log)
         log("")
 
+    #pylint: disable=R0912,R0914
     def update_versions(self, old_version, new_version):
         """Update all occurrences of 'old_version' with 'new_version'.
         Return True if there was some change."""
@@ -284,19 +277,21 @@ class Release(object):
         log("[INFO] Replacing occurrences of %s with %s" % (old_version,
                                                             new_version))
         if self.custom_patterns.files:
-            files_pattern = re.compile("(%s)|(%s)" % (self.default_patterns.files,
-                                 self.custom_patterns.files))
+            files_pattern = re.compile("(%s)|(%s)" %
+                                       (self.default_patterns.files,
+                                        self.custom_patterns.files))
         else:
             files_pattern = re.compile(self.default_patterns.files)
         if self.custom_patterns.props:
-            props_pattern = re.compile("(%s)|(%s)" % (self.default_patterns.props,
-                                 self.custom_patterns.props))
+            props_pattern = re.compile("(%s)|(%s)" %
+                                       (self.default_patterns.props,
+                                        self.custom_patterns.props))
         else:
             props_pattern = re.compile(self.default_patterns.props)
 
         for root, dirs, files in os.walk(os.getcwd(), True, None, True):
-            for dir in set(dirs) & set([".git", "target"]):
-                dirs.remove(dir)
+            for subdir in set(dirs) & set([".git", "target"]):
+                dirs.remove(subdir)
             for name in files:
                 replaced = False
                 if fnmatch.fnmatch(name, "pom*.xml"):
@@ -316,11 +311,11 @@ class Release(object):
                     properties = tree.getroot().find("pom:properties",
                                                      namespaces)
                     if properties is not None:
-                        for property in properties.getchildren():
-                            if (not isinstance(property, etree._Comment)
-                                and props_pattern.match(property.tag)
-                                and property.text == old_version):
-                                property.text = new_version
+                        for prop in properties.getchildren():
+                            if (not isinstance(prop, etree._Comment)
+                                and props_pattern.match(prop.tag)
+                                and prop.text == old_version):
+                                prop.text = new_version
                                 replaced = True
                     tree.write_c14n(os.path.join(root, name))
                 elif files_pattern.match(name):
@@ -375,7 +370,7 @@ class Release(object):
             - set executable bit on scripts in bin/
             - activate the setup wizard
 
-        If 'failonerror', raise an ExitException in case of missing file."""
+        If 'failonerror', raise an ExitException in case of missing filef."""
         if not os.path.isfile(old_archive):
             if failonerror:
                 raise ExitException(1, "Could not find %s" % old_archive)
@@ -393,8 +388,8 @@ class Release(object):
                 shutil.move(ls[0], new_name)
         else:
             os.mkdir(new_name)
-            for file in ls:
-                shutil.move(file, os.path.join(new_name, file))
+            for filef in ls:
+                shutil.move(filef, os.path.join(new_name, filef))
 
         files = os.listdir(os.path.join(new_name, "bin"))
         for filename in (fnmatch.filter(files, "*ctl") +
@@ -426,9 +421,10 @@ class Release(object):
         log("\n[INFO] Releasing branch {0}, create maintenance branch {1}, "
             "update versions, commit and tag as release-{2}..."
             .format(self.branch, self.maintenance_branch, self.tag))
-        msg_commit = "Release %s, update %s to %s" % (self.branch, self.snapshot,
-                                                      self.tag)
-        self.repo.system_recurse("git checkout -b %s" % self.maintenance_branch)
+        msg_commit = "Release %s, update %s to %s" % (self.branch,
+                                                      self.snapshot, self.tag)
+        self.repo.system_recurse("git checkout -b %s" %
+                                 self.maintenance_branch)
         self.update_versions(self.snapshot, self.tag)
         for other_version in self.other_versions:
             if len(other_version) > 0:
@@ -437,7 +433,8 @@ class Release(object):
                                                      other_version[1])
         self.repo.system_recurse("git commit -m'%s %s' -a" % (self.msg_commit,
                                                               msg_commit))
-        msg_tag = "Release release-%s from %s on %s" % (self.tag, self.snapshot,
+        msg_tag = "Release release-%s from %s on %s" % (self.tag,
+                                                        self.snapshot,
                                                         self.branch)
         self.repo.system_recurse("git tag -a release-%s -m'%s %s'" % (self.tag,
                                                         self.msg_tag, msg_tag))
@@ -446,7 +443,8 @@ class Release(object):
         if self.maintenance_version != "auto":
             # Maintenance branches are kept, so update their versions
             log("\n[INFO] Maintenance branch (update version and commit)...")
-            msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
+            msg_commit = "Update %s to %s" % (self.tag,
+                                              self.maintenance_version)
             self.update_versions(self.tag, self.maintenance_version)
             self.repo.system_recurse("git commit -m'%s' -a" % msg_commit)
 
@@ -454,10 +452,12 @@ class Release(object):
             self.branch)
         self.repo.system_recurse("git checkout %s" % self.branch)
         # Update released branches with next versions
-        post_release_change = self.update_versions(self.snapshot, self.next_snapshot)
+        post_release_change = self.update_versions(self.snapshot,
+                                                   self.next_snapshot)
         msg_commit = "Post release %s." % self.branch
         if post_release_change:
-            msg_commit = " Update %s to %s" % (self.snapshot, self.next_snapshot)
+            msg_commit = " Update %s to %s" % (self.snapshot,
+                                               self.next_snapshot)
         for other_version in self.other_versions:
             if (len(other_version) == 3 and
                 self.update_versions(other_version[0], other_version[2])):
@@ -501,7 +501,8 @@ class Release(object):
                 self.custom_patterns.props[35:])
         if self.other_versions:
             for other_version in self.other_versions:
-                log("Also replace version:".ljust(25) + '/'.join(other_version))
+                log("Also replace version:".ljust(25) +
+                    '/'.join(other_version))
         log("")
 
         cwd = os.getcwd()
@@ -511,8 +512,8 @@ class Release(object):
         log("[INFO] Check release-ability...")
         self.check()
 
-        log("\n[INFO] Creating maintenance branch {0} from {1}, update versions "
-            "and commit...".format(self.branch, self.tag))
+        log("\n[INFO] Creating maintenance branch {0} from {1}, "
+            "update versions and commit...".format(self.branch, self.tag))
         self.repo.system_recurse("git checkout -b %s" % self.branch)
         msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
         self.update_versions(self.tag, self.maintenance_version)
@@ -534,7 +535,7 @@ class Release(object):
                                                      self.branch))
         if self.maintenance_version != "auto":
             self.repo.system_recurse("git push %s %s" % (self.repo.alias,
-                                                         self.maintenance_branch))
+                                                    self.maintenance_branch))
         self.repo.system_recurse("git push --tags")
         self.repo.system_recurse("git checkout release-%s" % self.tag)
         self.repo.mvn("clean deploy", skip_tests=True,
@@ -547,6 +548,7 @@ class Release(object):
         # TODO NXP-8573 all POMs have a namespace
 
 
+#pylint: disable=R0912,R0914,R0915
 def main():
     global namespaces
     assert_git_config()

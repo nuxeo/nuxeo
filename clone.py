@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 ##
-## (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+## (C) Copyright 2011-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
 ##
 ## All rights reserved. This program and the accompanying materials
 ## are made available under the terms of the GNU Lesser General Public License
 ## (LGPL) version 2.1 which accompanies this distribution, and is available at
-## http://www.gnu.org/licenses/lgpl.html
+## http://www.gnu.org/licenses/lgpl-2.1.html
 ##
 ## This library is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,22 +18,11 @@
 ##
 ## This script clones or updates Nuxeo source code from Git repositories.
 ##
-from scripts.nxutils import ExitException
-from scripts.nxutils import Repository
-from scripts.nxutils import assert_git_config
-from scripts.nxutils import check_output
-from scripts.nxutils import log
-from scripts.nxutils import long_path_workaround_cleanup
-from scripts.nxutils import long_path_workaround_init
-from scripts.nxutils import system
 import optparse
 import os
-import platform
-import re
-import shlex
-import subprocess
 import sys
-import time
+
+from scripts.nxutils import ExitException, Repository, log
 
 
 def main():
@@ -67,6 +56,7 @@ virtual drive on Windows""")
             raise ExitException(1, "'version' must be a single argument. "
                                 "See usage with '-h'.")
         repo.clone(version, options.fallback_branch, options.with_optionals)
+    #pylint: disable=C0103
     except ExitException, e:
         if e.message is not None:
             log("[ERROR] %s" % e.message, sys.stderr)
