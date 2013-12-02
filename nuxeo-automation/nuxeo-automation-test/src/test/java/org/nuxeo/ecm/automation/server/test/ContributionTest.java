@@ -11,7 +11,10 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +33,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy( { "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io",
+        "org.nuxeo.ecm.automation.server" })
 @LocalDeploy("org.nuxeo.ecm.automation.server:test-bindings.xml")
 // @RepositoryConfig(cleanup=Granularity.METHOD)
 public class ContributionTest {
