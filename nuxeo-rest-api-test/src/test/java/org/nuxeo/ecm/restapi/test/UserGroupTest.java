@@ -301,7 +301,7 @@ public class UserGroupTest extends BaseUserTest {
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("null",node.get("errorMessage").getValueAsText());
+        assertEquals("null", node.get("errorMessage").getValueAsText());
         ArrayNode entries = (ArrayNode) node.get("entries");
         assertEquals(1, entries.size());
         assertEquals("user0", entries.get(0).get("id").getValueAsText());
@@ -315,8 +315,7 @@ public class UserGroupTest extends BaseUserTest {
                 new String[] { "Administrator", "Guest", "user0" },
                 new String[] { "user1", "user2", "user3" }, new String[0] };
 
-
-        for(int i=0; i< expectedPages.length; i++) {
+        for (int i = 0; i < expectedPages.length; i++) {
             JsonNode node = getResponseAsJson(RequestType.GET, "/user/search",
                     getQueryParamsForPage(i));
             assertPaging(i, 3, 2, 6, expectedPages[i].length, node);
@@ -325,8 +324,6 @@ public class UserGroupTest extends BaseUserTest {
         }
 
     }
-
-
 
     @Test
     public void itCanSearchGroups() throws Exception {
@@ -339,7 +336,7 @@ public class UserGroupTest extends BaseUserTest {
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("null",node.get("errorMessage").getValueAsText());
+        assertEquals("null", node.get("errorMessage").getValueAsText());
         ArrayNode entries = (ArrayNode) node.get("entries");
         assertEquals(1, entries.size());
         assertEquals("Lannister",
@@ -350,14 +347,12 @@ public class UserGroupTest extends BaseUserTest {
     @Test
     public void itCanPaginateGroups() throws Exception {
 
-        String[][] expectedResults = new String[][]{
-                new String[] {"administrators", "group0", "group1"},
-                new String[] {"group2", "group3", "members"},
-                new String[] {"powerusers"},
-                new String[0],
-        };
+        String[][] expectedResults = new String[][] {
+                new String[] { "administrators", "group0", "group1" },
+                new String[] { "group2", "group3", "members" },
+                new String[] { "powerusers" }, new String[0], };
 
-        for(int i=0; i< expectedResults.length; i++) {
+        for (int i = 0; i < expectedResults.length; i++) {
             JsonNode node = getResponseAsJson(RequestType.GET, "/group/search",
                     getQueryParamsForPage(i));
             assertPaging(i, 3, 3, 7, expectedResults[i].length, node);
@@ -370,18 +365,17 @@ public class UserGroupTest extends BaseUserTest {
     @Test
     public void itDoesntWritePassword() throws Exception {
         // When I call JSON for user1
-        JsonNode node  = getResponseAsJson(RequestType.GET, "/user/user1");
+        JsonNode node = getResponseAsJson(RequestType.GET, "/user/user1");
 
         // Then it doesn't contain the password
-        assertEquals("",node.get("properties").get("password").getValueAsText());
+        assertEquals("",
+                node.get("properties").get("password").getValueAsText());
 
     }
-
 
     /**
      * @param node node to test
      * @param strings an array of expected user names
-     *
      * @since 5.8
      */
     private void assertUserEntries(JsonNode node, String... users) {
@@ -399,11 +393,11 @@ public class UserGroupTest extends BaseUserTest {
      * @param resultsCount expected resultsCount
      * @param currentPageSize expected currentPageSize
      * @param jsonNodeToText
-     *
      * @since 5.8
      */
     private void assertPaging(int currentPageIndex, int pageSize,
-            int numberOfPage, int resultsCount, int currentPageSize, JsonNode node) {
+            int numberOfPage, int resultsCount, int currentPageSize,
+            JsonNode node) {
         assertTrue(node.get("isPaginable").getBooleanValue());
         assertEquals(currentPageIndex,
                 node.get("currentPageIndex").getIntValue());
@@ -416,7 +410,6 @@ public class UserGroupTest extends BaseUserTest {
     /**
      * @param pageIndex
      * @return
-     *
      * @since 5.8
      */
     private MultivaluedMap<String, String> getQueryParamsForPage(int pageIndex) {
@@ -430,7 +423,6 @@ public class UserGroupTest extends BaseUserTest {
     /**
      * @param node node to test
      * @param strings an array of expected group names
-     *
      * @since 5.8
      */
     private void assertGroupEntries(JsonNode node, String... groups) {
