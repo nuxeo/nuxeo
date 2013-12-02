@@ -202,10 +202,10 @@ class Repository(object):
         else:
             # reuse local branch
             system("git checkout %s -q" % version)
-            retcode = system("git rebase %s/%s -q" % (self.alias, version), False)
+            retcode = system("git rebase -q %s/%s" % (self.alias, version), False)
             if retcode != 0:
                 system("git stash -q")
-                system("git rebase %s/%s -q" % (self.alias, version))
+                system("git rebase -q %s/%s" % (self.alias, version))
                 system("git stash pop -q")
         log("")
 
