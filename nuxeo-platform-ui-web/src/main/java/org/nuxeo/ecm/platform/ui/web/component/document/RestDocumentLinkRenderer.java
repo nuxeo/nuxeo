@@ -25,14 +25,15 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 
 import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.OutputLinkRenderer;
 
 /**
  * Overrides default output link renderer so that URL parameters passed through
- * f:param tags are not added twice, since the component already takes them into
- * account when building the URL.
+ * f:param tags are not added twice, since the component already takes them
+ * into account when building the URL.
  *
  * @see RestDocumentLink
  * @since 5.4.2
@@ -111,14 +112,12 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
 
         writer.writeURIAttribute("href", urlNewConversation, "href");
 
-
         Boolean isNewConversation = ((RestDocumentLink) component).getNewConversation();
-        if (!isNewConversation) {
+        if (!Boolean.TRUE.equals(isNewConversation)) {
             String onclickJS = "if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='"
-                    + urlCurrentConversation + "'}";
+                    + Functions.javaScriptEscape(urlCurrentConversation) + "'}";
             writer.writeAttribute("onclick", onclickJS, "onclick");
         }
-
 
         RenderKitUtils.renderPassThruAttributes(writer, component,
                 PASSTHROUGHATTRIBUTES);
