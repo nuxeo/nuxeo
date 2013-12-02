@@ -187,12 +187,25 @@ public class UserManagerDescriptor implements Serializable {
     @XNode("digestAuthRealm")
     public String digestAuthRealm;
 
+
+    @XNode("userCacheMaxSize")
+    public Integer userCacheMaxSize=1000;
+
+    @XNode("userCacheTimeout")
+    public Integer userCacheTimeout=10;
+
     /**
      * Merge with data from another descriptor.
      */
     public void merge(UserManagerDescriptor other) {
         if (other.userManagerClass != null) {
             userManagerClass = other.userManagerClass;
+        }
+        if (other.userCacheMaxSize != null && other.userCacheMaxSize!=1000) {
+            userCacheMaxSize = other.userCacheMaxSize;
+        }
+        if (other.userCacheTimeout != null && other.userCacheTimeout!=10) {
+            userCacheTimeout = other.userCacheTimeout;
         }
         if (other.userListingMode != null) {
             userListingMode = other.userListingMode;

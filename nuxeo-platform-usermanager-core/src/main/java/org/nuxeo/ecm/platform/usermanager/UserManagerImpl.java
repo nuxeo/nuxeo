@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,6 +61,9 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * Standard implementation of the Nuxeo UserManager.
@@ -157,6 +161,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     protected final Map<String, VirtualUserDescriptor> virtualUsers;
 
+    protected static final Integer CACHE_CONCURRENCY_LEVEL = 10;
+
+    protected Cache<String, NuxeoPrincipal> principalCache = null;
+
     public UserManagerImpl() {
         dirService = Framework.getLocalService(DirectoryService.class);
         virtualUsers = new HashMap<String, VirtualUserDescriptor>();
@@ -208,6 +216,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         userConfig.emailKey = userEmailField;
         userConfig.schemaName = userSchemaName;
         userConfig.nameKey = userIdField;
+
+        if (descriptor.userCacheMaxSize>0) {
+            principalCache = CacheBuilder.newBuilder().concurrencyLevel(
+                    CACHE_CONCURRENCY_LEVEL).maximumSize(descriptor.userCacheMaxSize).expireAfterWrite(
+                            descriptor.userCacheTimeout, TimeUnit.MINUTES).build();
+        }
+
     }
 
     protected void setUserDirectoryName(String userDirectoryName)
@@ -541,9 +556,23 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return principal;
     }
 
+    protected boolean useCache() {
+            return (!Framework.isTestModeSet()) && principalCache!=null;
+    }
+
     @Override
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
-        return getPrincipal(username, null);
+        NuxeoPrincipal principal = null;
+        if (useCache()) {
+            principal = principalCache.getIfPresent(username);
+        }
+        if (principal==null) {
+            principal =  getPrincipal(username, null);
+            if (useCache()) {
+                principalCache.put(username, principal);
+            }
+        }
+        return principal;
     }
 
     @Override
@@ -747,6 +776,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
      * sure principals cache is reset.
      */
     protected void notifyUserChanged(String userName) throws ClientException {
+        if (useCache()) {
+            principalCache.invalidate(userName);
+        }
         notify(userName, USERCHANGED_EVENT_ID);
     }
 
@@ -1453,6 +1485,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             if (userDir != null) {
                 userDir.close();
             }
+            notifyUserChanged(userId);
         }
     }
 
