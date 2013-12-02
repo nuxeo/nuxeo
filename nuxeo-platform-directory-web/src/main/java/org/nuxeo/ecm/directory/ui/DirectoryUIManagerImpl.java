@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.directory.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Component managing directory ui information
  *
  * @author Anahide Tchertchian
- *
  */
 public class DirectoryUIManagerImpl extends DefaultComponent implements
         DirectoryUIManager {
@@ -113,7 +113,9 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements
     }
 
     public List<String> getDirectoryNames() throws ClientException {
-        return new ArrayList<String>(registry.keySet());
+        List<String> dirNames = new ArrayList<String>(registry.keySet());
+        Collections.sort(dirNames);
+        return dirNames;
     }
 
 }
