@@ -189,7 +189,6 @@ public final class URIUtils {
         r = r.replace("?", "%3F");
         r = r.replace("[", "%5B");
         r = r.replace("]", "%5D");
-        r = r.replace("'", "%27");
         if (quoteAt) {
             r = r.replace("@", "%40");
         }
