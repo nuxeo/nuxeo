@@ -46,7 +46,7 @@
           styleClass="button"
           action="#{directoryUIActions.selectDirectoryEntry(value.id)}"
           immediate="true"
-          reRender="viewDirectoryPanel" />
+          reRender="editDirectoryEntryPanel" />
       </td>
       <td class="fieldColumn">
         <a4j:commandButton value="#{messages['command.delete']}"
@@ -80,7 +80,7 @@
             styleClass="button"
             action="#{directoryUIActions.selectDirectoryEntry(value.id)}"
             immediate="true"
-            reRender="viewDirectoryPanel" />
+            reRender="editDirectoryEntryPanel" />
         </td>
         <td class="fieldColumn">
           <a4j:commandButton value="#{messages['command.delete']}"
