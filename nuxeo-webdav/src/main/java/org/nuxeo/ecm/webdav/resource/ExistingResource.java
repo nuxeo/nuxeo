@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webdav.resource;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -35,10 +36,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import net.java.dev.webdav.core.jaxrs.xml.properties.Win32CreationTime;
-import net.java.dev.webdav.core.jaxrs.xml.properties.Win32FileAttributes;
-import net.java.dev.webdav.core.jaxrs.xml.properties.Win32LastAccessTime;
-import net.java.dev.webdav.core.jaxrs.xml.properties.Win32LastModifiedTime;
 import net.java.dev.webdav.jaxrs.methods.COPY;
 import net.java.dev.webdav.jaxrs.methods.LOCK;
 import net.java.dev.webdav.jaxrs.methods.MKCOL;
@@ -71,11 +68,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.webdav.Util;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.BackendHelper;
-import org.nuxeo.ecm.webdav.backend.WebDavBackend;
+import org.nuxeo.ecm.webdav.jaxrs.Win32CreationTime;
+import org.nuxeo.ecm.webdav.jaxrs.Win32FileAttributes;
+import org.nuxeo.ecm.webdav.jaxrs.Win32LastAccessTime;
+import org.nuxeo.ecm.webdav.jaxrs.Win32LastModifiedTime;
 
 /**
  * An existing resource corresponds to an existing object (folder or file) in
@@ -89,10 +87,10 @@ public class ExistingResource extends AbstractResource {
 
     protected DocumentModel doc;
 
-    protected WebDavBackend backend;
+    protected Backend backend;
 
     protected ExistingResource(String path, DocumentModel doc,
-            HttpServletRequest request, WebDavBackend backend) throws Exception {
+            HttpServletRequest request, Backend backend) throws Exception {
         super(path, request);
         this.doc = doc;
         this.backend = backend;
@@ -132,6 +130,15 @@ public class ExistingResource extends AbstractResource {
         return copyOrMove("MOVE", dest, overwrite);
     }
 
+    private static String encode(byte[] bytes, String encoding)
+            throws ClientException {
+        try {
+            return new String(bytes, encoding);
+        } catch (UnsupportedEncodingException e) {
+            throw new ClientException("Unsupported encoding " + encoding);
+        }
+    }
+
     private Response copyOrMove(String method,
             @HeaderParam("Destination") String destination,
             @HeaderParam("Overwrite") String overwrite) throws Exception {
@@ -140,10 +147,10 @@ public class ExistingResource extends AbstractResource {
             return Response.status(423).build();
         }
 
-        destination = Util.encode(destination.getBytes(), "ISO-8859-1");
+        destination = encode(destination.getBytes(), "ISO-8859-1");
         destination = URIUtil.decode(destination);
 
-        WebDavBackend root = BackendHelper.get("/", request);
+        Backend root = BackendHelper.getBackend("/", request);
         Set<String> names = new HashSet<String>(root.getVirtualFolderNames());
         Path destinationPath = new Path(destination);
         String[] segments = destinationPath.segments();
@@ -159,7 +166,7 @@ public class ExistingResource extends AbstractResource {
 
         String destPath = destinationPath.toString();
         String davDestPath = destPath;
-        WebDavBackend destinationBackend = BackendHelper.get(davDestPath, request);
+        Backend destinationBackend = BackendHelper.getBackend(davDestPath, request);
         destPath = destinationBackend.parseLocation(destPath).toString();
         log.debug("to " + davDestPath);
 
@@ -174,18 +181,18 @@ public class ExistingResource extends AbstractResource {
         }
 
         // Check if parent exists
-        String destParentPath = Util.getParentPath(destPath);
+        String destParentPath = getParentPath(destPath);
         PathRef destParentRef = new PathRef(destParentPath);
-        if (!destinationBackend.exists(Util.getParentPath(davDestPath))) {
+        if (!destinationBackend.exists(getParentPath(davDestPath))) {
             return Response.status(409).build();
         }
 
         if ("COPY".equals(method)) {
             DocumentModel destDoc = backend.copyItem(doc, destParentRef);
-            backend.renameItem(destDoc, Util.getNameFromPath(destPath));
+            backend.renameItem(destDoc, getNameFromPath(destPath));
         } else if ("MOVE".equals(method)) {
             if (backend.isRename(doc.getPathAsString(), destPath)) {
-                backend.renameItem(doc, Util.getNameFromPath(destPath));
+                backend.renameItem(doc, getNameFromPath(destPath));
             } else {
                 backend.moveItem(doc, destParentRef);
             }

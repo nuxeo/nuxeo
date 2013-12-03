@@ -18,12 +18,8 @@ package org.nuxeo.ecm.webdav.backend;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.nuxeo.ecm.webdav.service.WISession;
-
 public interface BackendFactory {
 
     Backend getBackend(String path, HttpServletRequest request);
-
-    Backend getBackend(WISession wiSession);
 
 }

@@ -35,9 +35,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import net.java.dev.webdav.core.jaxrs.xml.properties.IsCollection;
-import net.java.dev.webdav.core.jaxrs.xml.properties.IsFolder;
-import net.java.dev.webdav.core.jaxrs.xml.properties.IsHidden;
 import net.java.dev.webdav.jaxrs.methods.COPY;
 import net.java.dev.webdav.jaxrs.methods.LOCK;
 import net.java.dev.webdav.jaxrs.methods.MKCOL;
@@ -68,6 +65,9 @@ import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.webdav.jaxrs.IsCollection;
+import org.nuxeo.ecm.webdav.jaxrs.IsFolder;
+import org.nuxeo.ecm.webdav.jaxrs.IsHidden;
 
 public class VirtualFolderResource extends AbstractResource {
 

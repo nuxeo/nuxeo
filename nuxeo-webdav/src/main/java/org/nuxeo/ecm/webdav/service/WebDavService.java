@@ -25,23 +25,12 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 public class WebDavService extends DefaultComponent {
 
-    protected static BackendFactory backendFactory = new SearchBackendFactory();
-
-    // protected static WSSListItemFactory itemFactory = new
-    // DefaultNuxeoItemFactory();
+    public static final ComponentName NAME = new ComponentName(
+            "org.nuxeo.ecm.webdav.service");
 
     public static String BACKEND_FACTORY_XP = "backendFactory";
 
-    // public static String ITEM_FACTORY_XP = "itemFactory";
-
-    public static String DOC_TYPES_XP = "docTypes";
-
-    public static String leafDocType = "File";
-
-    public static String folderishDocType = "Folder";
-
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.webdav.service");
+    protected BackendFactory backendFactory = new SearchBackendFactory();
 
     public static WebDavService instance() {
         return (WebDavService) Framework.getRuntime().getComponent(
@@ -52,10 +41,10 @@ public class WebDavService extends DefaultComponent {
         return backendFactory;
     }
 
-    // public NuxeoListItem createItem(DocumentModel doc, String corePathPrefix,
-    // String urlRoot) {
-    // return itemFactory.createItem(doc, corePathPrefix, urlRoot);
-    // }
+    // used by tests
+    public void setBackendFactory(BackendFactory backendFactory) {
+        this.backendFactory = backendFactory;
+    }
 
     @Override
     public void registerContribution(Object contribution,
@@ -65,19 +54,7 @@ public class WebDavService extends DefaultComponent {
             BackendFactoryDescriptor desc = (BackendFactoryDescriptor) contribution;
             Class<?> factoryClass = desc.getFactoryClass();
             backendFactory = (BackendFactory) factoryClass.newInstance();
-            // } else if (ITEM_FACTORY_XP.equals(extensionPoint)) {
-            // ItemFactoryDescriptor desc = (ItemFactoryDescriptor)
-            // contribution;
-            // Class<?> factoryClass = desc.getFactoryClass();
-            // itemFactory = (WSSListItemFactory) factoryClass.newInstance();
-        } else if (DOC_TYPES_XP.equals(extensionPoint)) {
-            DocTypesDescriptor desc = (DocTypesDescriptor) contribution;
-            if (desc.getFolderishDocType() != null) {
-                folderishDocType = desc.getFolderishDocType();
-            }
-            if (desc.getLeafDocType() != null) {
-                leafDocType = desc.getLeafDocType();
-            }
         }
     }
+
 }

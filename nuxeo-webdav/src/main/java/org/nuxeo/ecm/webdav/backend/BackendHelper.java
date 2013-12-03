@@ -16,36 +16,23 @@
  */
 package org.nuxeo.ecm.webdav.backend;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import javax.servlet.http.HttpServletRequest;
+
+import org.nuxeo.ecm.webdav.service.WebDavService;
 
 public class BackendHelper {
 
-protected static WebDavBackendFactory factoryWebDav = null;
-
-    private static final Log log = LogFactory.getLog(WebDavBackendFactory.class);
-
-    public static WebDavBackendFactory getFactory() {
-        if (factoryWebDav == null) {
-            factoryWebDav = loadFactory();
-        }
-        return factoryWebDav;
+    /**
+     * For tests. Otherwise the factory is configured through an extension point
+     * in the component.
+     */
+    public static void setBackendFactory(BackendFactory backendFactory) {
+        WebDavService.instance().setBackendFactory(backendFactory);
     }
 
-    protected synchronized static WebDavBackendFactory loadFactory() {
-        String factoryClass = "org.nuxeo.ecm.webdav.backend.WebDavBackendFactoryImpl";
-        try {
-            factoryWebDav = (WebDavBackendFactory) Class.forName(factoryClass, true, Thread.currentThread().getContextClassLoader()).newInstance();
-        } catch (Exception e) {
-            log.error("Unable to create backend factoryWebDav", e);
-        }
-        return factoryWebDav;
-    }
-
-    public static WebDavBackend get(String path, HttpServletRequest request) {
-        return getFactory().getBackend(path, request);
+    public static Backend getBackend(String path, HttpServletRequest request) {
+        return WebDavService.instance().getBackendFactory().getBackend(path,
+                request);
     }
 
 }

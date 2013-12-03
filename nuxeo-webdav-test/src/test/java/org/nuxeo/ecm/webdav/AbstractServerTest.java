@@ -28,7 +28,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(WebDavServerFeature.class)
-@Deploy({ Constants.BUNDLE_NAME })
+@Deploy("org.nuxeo.ecm.webdav")
 @RepositoryConfig(cleanup=Granularity.METHOD, init = WebDavRepoInit.class)
 public abstract class AbstractServerTest {
 

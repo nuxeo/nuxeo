@@ -17,21 +17,15 @@
  */
 package org.nuxeo.wss.impl;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nuxeo.ecm.webdav.backend.Backend;
-import org.nuxeo.ecm.webdav.backend.BackendFactory;
-import org.nuxeo.ecm.webdav.service.PluggableBackendFactory;
+import org.nuxeo.ecm.webdav.backend.BackendHelper;
 import org.nuxeo.wss.servlet.WSSRequest;
 import org.nuxeo.wss.spi.WSSBackend;
 import org.nuxeo.wss.spi.WSSBackendFactory;
 
 public class WSSBackendFactoryImpl implements WSSBackendFactory {
-
-    private BackendFactory factory = new PluggableBackendFactory();
-
-    // for tests
-    public void setFactory(BackendFactory factory) {
-        this.factory = factory;
-    }
 
     protected String computeVirtualRoot(WSSRequest request) {
         if(request == null){
@@ -52,12 +46,9 @@ public class WSSBackendFactoryImpl implements WSSBackendFactory {
 
     @Override
     public WSSBackend getBackend(WSSRequest wssRequest) {
-        Backend backend = null;
-        if (wssRequest != null) {
-            backend = factory.getBackend("/", wssRequest.getHttpRequest());
-        } else {
-            backend = factory.getBackend("/", null);
-        }
+        String path = "/";
+        HttpServletRequest request = wssRequest == null ? null : wssRequest.getHttpRequest();
+        Backend backend = BackendHelper.getBackend(path, request);
         if (backend == null) {
             return new WSSFakeBackend();
         }

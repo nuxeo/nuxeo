@@ -1,10 +1,27 @@
 <?xml version="1.0"?>
 <fragment version="1">
 
-  <extension target="application#MODULE">
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
+
+  <extension target="web#STD-AUTH-FILTER">
+    <filter>
+      <display-name>Nuxeo Windows Integration Request Filter
+      </display-name>
+      <filter-name>WIRequestFilter</filter-name>
+      <filter-class>org.nuxeo.ecm.webdav.service.WIRequestFilter
+      </filter-class>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>WIRequestFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>NuxeoRequestController</filter-name>
+      <url-pattern>/site/dav/*</url-pattern>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
   </extension>
 
   <extension target="web#SERVLET">
@@ -13,8 +30,8 @@
       Declare this module in a separate application so
       that it does not interfere with other jax-rs application
       (including webengine apps).
-      
-      The application name has to match the host name set in MANIFEST.MF 
+
+      The application name has to match the host name set in MANIFEST.MF
     -->
     <servlet>
       <servlet-name>Nuxeo Webdav Servlet</servlet-name>

@@ -19,25 +19,11 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import net.java.dev.webdav.core.jaxrs.xml.properties.IsCollection;
-import net.java.dev.webdav.core.jaxrs.xml.properties.IsFolder;
-import net.java.dev.webdav.core.jaxrs.xml.properties.IsHidden;
-import net.java.dev.webdav.jaxrs.methods.PROPFIND;
-import net.java.dev.webdav.jaxrs.xml.elements.*;
-import net.java.dev.webdav.jaxrs.xml.properties.*;
+import static javax.ws.rs.core.Response.Status.OK;
 
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.webdav.Util;
-import org.nuxeo.ecm.webdav.backend.WebDavBackend;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -49,14 +35,27 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
-import static javax.ws.rs.core.Response.Status.OK;
-import static net.java.dev.webdav.jaxrs.xml.properties.ResourceType.COLLECTION;
+import net.java.dev.webdav.jaxrs.methods.PROPFIND;
+import net.java.dev.webdav.jaxrs.xml.elements.HRef;
+import net.java.dev.webdav.jaxrs.xml.elements.MultiStatus;
+import net.java.dev.webdav.jaxrs.xml.elements.Prop;
+import net.java.dev.webdav.jaxrs.xml.elements.PropFind;
+import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
+import net.java.dev.webdav.jaxrs.xml.elements.Status;
+import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
+import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
+
+import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.webdav.backend.Backend;
+import org.nuxeo.ecm.webdav.jaxrs.IsFolder;
+import org.nuxeo.ecm.webdav.jaxrs.Util;
 
 /**
  * A resource for folder-like objects in the repository.
@@ -65,7 +64,8 @@ public class FolderResource extends ExistingResource {
 
     private static final Log log = LogFactory.getLog(FolderResource.class);
 
-    public FolderResource(String path, DocumentModel doc, HttpServletRequest request, WebDavBackend backend) throws Exception {
+    public FolderResource(String path, DocumentModel doc,
+            HttpServletRequest request, Backend backend) throws Exception {
         super(path, doc, request, backend);
     }
 

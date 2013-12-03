@@ -12,18 +12,4 @@
         <object class="org.nuxeo.ecm.webdav.service.BackendFactoryDescriptor"/>
     </extension-point>
 
-    <extension-point name="itemFactory">
-        <documentation>
-      This extension can be used to register WSSListItem Factory
-        </documentation>
-        <object class="org.nuxeo.ecm.webdav.service.ItemFactoryDescriptor"/>
-    </extension-point>
-
-    <extension-point name="docTypes">
-        <documentation>
-      This extension can be used to register default types mapping
-        </documentation>
-        <object class="org.nuxeo.ecm.webdav.service.DocTypesDescriptor"/>
-    </extension-point>
-
 </component>

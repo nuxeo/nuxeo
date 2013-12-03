@@ -19,33 +19,47 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.webdav.Util;
-import org.nuxeo.ecm.webdav.backend.WebDavBackend;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.core.Response;
+
+import org.nuxeo.common.utils.Path;
 
 /**
  * Base class for all resources (existing or not).
  */
 public class AbstractResource {
 
-    private static final Log log = LogFactory.getLog(AbstractResource.class);
-
     protected String path;
+
     protected String parentPath;
+
     protected String name;
 
     protected HttpServletRequest request;
 
-    protected AbstractResource(String path, HttpServletRequest request) throws Exception {
+    public static String getParentPath(String path) {
+        path = new Path(path).removeLastSegments(1).toString();
+        // Ensures that path starts with a "/" and doesn't end with a "/".
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+        return path;
+    }
+
+    public static String getNameFromPath(String path) {
+        return new Path(path).lastSegment();
+    }
+
+    protected AbstractResource(String path, HttpServletRequest request)
+            throws Exception {
         this.path = path;
         this.request = request;
-        parentPath = Util.getParentPath(path);
-        name = Util.getNameFromPath(path);
+        parentPath = getParentPath(path);
+        name = getNameFromPath(path);
     }
 
     @OPTIONS

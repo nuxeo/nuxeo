@@ -95,7 +95,7 @@ public class TestFakeWSWebS extends NXRuntimeTestCase {
 
         String result= response.getOutput();
 
-        System.out.println(result);
+        //System.out.println(result);
 
         //String[] lines = result.split("\n");
 

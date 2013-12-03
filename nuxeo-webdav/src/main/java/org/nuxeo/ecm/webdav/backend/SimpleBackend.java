@@ -82,11 +82,6 @@ public class SimpleBackend extends AbstractCoreBackend {
         this.rootUrl = rootUrl;
     }
 
-    protected SimpleBackend(String backendDisplayName, String rootPath,
-            String rootUrl) {
-        this(backendDisplayName, rootPath, rootUrl, null);
-    }
-
     protected PathCache getPathCache() throws ClientException {
         if (pathCache == null) {
             pathCache = new PathCache(getSession(), PATH_CACHE_SIZE);
@@ -584,6 +579,7 @@ public class SimpleBackend extends AbstractCoreBackend {
         }
     }
 
+    @Override
     public DocumentModel getDocument(String location) throws ClientException {
         return resolveLocation(location);
     }

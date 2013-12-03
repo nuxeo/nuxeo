@@ -20,8 +20,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 public interface RealBackendFactory {
 
-    Backend createBackend(String backendDisplayName, String rootPath, String rootUrl);
-
     Backend createBackend(String backendDisplayName, String rootPath, String rootUrl, CoreSession session);
 
 }

@@ -4,3 +4,4 @@ Bundle-Name: Nuxeo WSS Handler
 Bundle-SymbolicName: org.nuxeo.wss.handler;singleton=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/auth-wss-config.xml

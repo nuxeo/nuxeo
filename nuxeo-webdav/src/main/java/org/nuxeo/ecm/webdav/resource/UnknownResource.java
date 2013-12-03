@@ -33,7 +33,7 @@ import net.java.dev.webdav.jaxrs.methods.PROPPATCH;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.webdav.backend.WebDavBackend;
+import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 /**
@@ -45,9 +45,10 @@ public class UnknownResource extends AbstractResource {
 
     private static final String DS_STORE = ".DS_Store";
 
-    protected WebDavBackend backend;
+    protected Backend backend;
 
-    public UnknownResource(String path, HttpServletRequest request, WebDavBackend backend) throws Exception {
+    public UnknownResource(String path, HttpServletRequest request,
+            Backend backend) throws Exception {
         super(path, request);
         this.backend = backend;
     }

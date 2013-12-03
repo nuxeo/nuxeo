@@ -21,9 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webdav.service.WIRequestFilter;
-import org.nuxeo.ecm.webdav.service.WISession;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 
@@ -39,18 +37,22 @@ public abstract class AbstractBackendFactory implements BackendFactory {
                     + request.getRequestURI());
         }
 
-        final Backend backend;
+        Backend backend;
         if (request != null) {
-            WISession wiSession = (WISession) request.getAttribute(WIRequestFilter.SESSION_KEY);
-            backend = getBackend(wiSession);
+            backend = (Backend) request.getAttribute(WIRequestFilter.BACKEND_KEY);
+            if (backend == null) {
+                backend = createRootBackend();
+                request.setAttribute(WIRequestFilter.BACKEND_KEY, backend);
+            }
             // register a backend cleanup handler
             // unless there's none (pure servlet call for WSS)
             RequestContext activeContext = RequestContext.getActiveContext(request);
             if (activeContext != null) {
+                final Backend be = backend;
                 activeContext.addRequestCleanupHandler(new RequestCleanupHandler() {
                     @Override
                     public void cleanup(HttpServletRequest req) {
-                        backend.destroy();
+                        be.destroy();
                     }
                 });
             }
@@ -59,35 +61,6 @@ public abstract class AbstractBackendFactory implements BackendFactory {
             backend = createRootBackend();
         }
         return backend.getBackend(path);
-    }
-
-    @Override
-    public Backend getBackend(WISession wiSession) {
-
-        Backend backend = null;
-        if (wiSession != null) {
-            Object sessionBackend = wiSession.getAttribute(WISession.BACKEND_KEY);
-            if (sessionBackend != null) {
-                backend = (Backend) sessionBackend;
-            }
-        }
-
-        if (backend == null) {
-            CoreSession session = null;
-            if (wiSession != null) {
-                session = (CoreSession) wiSession.getAttribute(WISession.CORESESSION_KEY);
-            }
-            backend = createRootBackend();
-            if (session != null) {
-                backend.setSession(session);
-            }
-        }
-
-        if (wiSession != null) {
-            wiSession.setAttribute(WISession.BACKEND_KEY, backend);
-        }
-
-        return backend;
     }
 
     protected abstract Backend createRootBackend();

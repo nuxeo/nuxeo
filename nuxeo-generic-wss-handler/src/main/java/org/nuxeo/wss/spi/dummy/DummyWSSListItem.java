@@ -106,7 +106,7 @@ public class DummyWSSListItem extends AbstractWSSListItem implements WSSListItem
             return new ByteArrayInputStream(byteArray);
         }
         if (stream == null && binaryResourcePath != null) {
-            return DummyMemoryTree.class.getClassLoader().getResourceAsStream(binaryResourcePath);
+            return getClass().getClassLoader().getResourceAsStream(binaryResourcePath);
         }
         return stream;
     }

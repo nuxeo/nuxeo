@@ -52,8 +52,6 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
 
     protected String virtualRoot;
 
-    protected WSSListItemFactory itemFactory;
-
     protected Backend backend;
 
     public WSSBackendAdapter(Backend backend, String virtualRoot) {
@@ -298,18 +296,11 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
     }
 
     private NuxeoListItem createItem(DocumentModel model) {
-        return getItemFactory().createItem(model, corePathPrefix, urlRoot);
+        return new NuxeoListItem(model, corePathPrefix, urlRoot);
     }
 
     private VirtualListItem createItem(String name) {
         return new VirtualListItem(name, corePathPrefix, urlRoot);
-    }
-
-    private WSSListItemFactory getItemFactory() {
-        if (itemFactory == null) {
-            itemFactory = new DefaultNuxeoItemFactory();
-        }
-        return itemFactory;
     }
 
     protected User getUserFromLogin(String userLogin, int idx) throws Exception {

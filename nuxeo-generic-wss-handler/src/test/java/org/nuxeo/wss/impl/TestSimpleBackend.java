@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.webdav.backend.BackendHelper;
 import org.nuxeo.ecm.webdav.backend.SearchBackendFactory;
 import org.nuxeo.ecm.webdav.backend.SimpleBackendFactory;
 import org.nuxeo.wss.spi.WSSBackend;
@@ -140,9 +141,9 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
     @Test
     public void testSimpleBackendBrowse() throws Exception {
+        BackendHelper.setBackendFactory(new SimpleBackendFactory());
 
         WSSBackendFactoryImpl factory = new WSSBackendFactoryImpl();
-        factory.setFactory(new SimpleBackendFactory());
 
         WSSBackend backend = factory.getBackend(null);
         assertNotNull(backend);
@@ -208,9 +209,9 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
     @Test
     public void testSimpleBackendOperations() throws Exception {
+        BackendHelper.setBackendFactory(new SimpleBackendFactory());
 
         WSSBackendFactoryImpl factory = new WSSBackendFactoryImpl();
-        factory.setFactory(new SimpleBackendFactory());
 
         WSSBackend backend = factory.getBackend(null);
         assertNotNull(backend);
@@ -275,9 +276,9 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
     @Test
     public void testSearchBackendBrowse() throws Exception {
+        BackendHelper.setBackendFactory(new SearchBackendFactory());
 
         WSSBackendFactoryImpl factory = new WSSBackendFactoryImpl();
-        factory.setFactory(new SearchBackendFactory());
 
         WSSBackend backend = factory.getBackend(null);
         assertNotNull(backend);
@@ -355,9 +356,9 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
     @Test
     public void testSearchBackendOperations() throws Exception {
+        BackendHelper.setBackendFactory(new SearchBackendFactory());
 
         WSSBackendFactoryImpl factory = new WSSBackendFactoryImpl();
-        factory.setFactory(new SearchBackendFactory());
 
         WSSBackend backend = factory.getBackend(null);
         assertNotNull(backend);

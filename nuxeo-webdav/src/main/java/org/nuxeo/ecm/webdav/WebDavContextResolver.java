@@ -23,6 +23,8 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.nuxeo.ecm.webdav.jaxrs.Util;
+
 /**
  * Injects the JAXBContext needed to parse our webdav XML payloads.
  */

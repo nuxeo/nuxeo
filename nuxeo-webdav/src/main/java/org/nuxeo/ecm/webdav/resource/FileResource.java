@@ -19,27 +19,10 @@
 
 package org.nuxeo.ecm.webdav.resource;
 
-import net.java.dev.webdav.core.jaxrs.xml.properties.IsFolder;
-import net.java.dev.webdav.jaxrs.methods.PROPFIND;
-import net.java.dev.webdav.jaxrs.xml.elements.*;
-import net.java.dev.webdav.jaxrs.xml.properties.CreationDate;
-import net.java.dev.webdav.jaxrs.xml.properties.GetContentLength;
-import net.java.dev.webdav.jaxrs.xml.properties.GetContentType;
-import net.java.dev.webdav.jaxrs.xml.properties.GetLastModified;
-import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
-import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
+import static javax.ws.rs.core.Response.Status.OK;
 
-import org.apache.commons.httpclient.util.URIUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.webdav.Util;
-import org.nuxeo.ecm.webdav.backend.WebDavBackend;
-import org.nuxeo.runtime.services.streaming.InputStreamSource;
+import java.net.URI;
+import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -49,14 +32,29 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.Calendar;
-import java.util.Date;
 
-import static javax.ws.rs.core.Response.Status.OK;
+import net.java.dev.webdav.jaxrs.methods.PROPFIND;
+import net.java.dev.webdav.jaxrs.xml.elements.HRef;
+import net.java.dev.webdav.jaxrs.xml.elements.LockEntry;
+import net.java.dev.webdav.jaxrs.xml.elements.LockScope;
+import net.java.dev.webdav.jaxrs.xml.elements.LockType;
+import net.java.dev.webdav.jaxrs.xml.elements.MultiStatus;
+import net.java.dev.webdav.jaxrs.xml.elements.Prop;
+import net.java.dev.webdav.jaxrs.xml.elements.PropFind;
+import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
+import net.java.dev.webdav.jaxrs.xml.elements.Status;
+import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.webdav.backend.Backend;
+import org.nuxeo.ecm.webdav.jaxrs.Util;
+import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 /**
  * Resource representing a file-like object in the repository. (I.e. not a folder).
@@ -65,7 +63,8 @@ public class FileResource extends ExistingResource {
 
     private static final Log log = LogFactory.getLog(FileResource.class);
 
-    public FileResource(String path, DocumentModel doc, HttpServletRequest request, WebDavBackend backend) throws Exception {
+    public FileResource(String path, DocumentModel doc,
+            HttpServletRequest request, Backend backend) throws Exception {
         super(path, doc, request, backend);
     }
 
@@ -148,32 +147,32 @@ public class FileResource extends ExistingResource {
         net.java.dev.webdav.jaxrs.xml.elements.Response response;
         URI uri = uriInfo.getRequestUri();
         PropStat filePropStat = new PropStat(
-                new Prop(new SupportedLock(new LockEntry(LockScope.EXCLUSIVE, LockType.WRITE))), 
+                new Prop(new SupportedLock(new LockEntry(LockScope.EXCLUSIVE, LockType.WRITE))),
                 new Status(OK));
         if (doc.isLocked()) {
             PropStat lockDiscoveryPropStat = new PropStat(
                     new Prop(getLockDiscovery(doc, uriInfo)), new Status(OK));
             if (propStatNotFound != null) {
                 response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null, 
+                        new HRef(uri), null, null, null,
                         filePropStat, propStatFound, propStatNotFound, lockDiscoveryPropStat);
             } else {
                 response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null, 
+                        new HRef(uri), null, null, null,
                         filePropStat, propStatFound, lockDiscoveryPropStat);
             }
         } else {
             if (propStatNotFound != null) {
                 response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null, 
+                        new HRef(uri), null, null, null,
                         filePropStat, propStatFound, propStatNotFound);
             } else {
                 response = new net.java.dev.webdav.jaxrs.xml.elements.Response(
-                        new HRef(uri), null, null, null, 
+                        new HRef(uri), null, null, null,
                         filePropStat, propStatFound);
             }
         }
-        
+
         MultiStatus st = new MultiStatus(response);
         return Response.status(207).entity(st).build();
     }

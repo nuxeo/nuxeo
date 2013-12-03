@@ -19,10 +19,13 @@ package org.nuxeo.ecm.webdav;
 
 import net.java.dev.webdav.jaxrs.xml.elements.PropFind;
 import net.java.dev.webdav.jaxrs.xml.elements.PropertyUpdate;
+
 import org.junit.Test;
+import org.nuxeo.ecm.webdav.jaxrs.Util;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
+
 import java.io.InputStream;
 
 import static org.junit.Assert.assertNotNull;

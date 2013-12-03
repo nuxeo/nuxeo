@@ -19,7 +19,7 @@ package org.nuxeo.ecm.webdav.backend;
 public class SimpleRootBackend extends SimpleBackend {
 
     public SimpleRootBackend() {
-        super("", "", "");
+        super("", "", "", null);
         this.rootPath = "/default-domain";
     }
 

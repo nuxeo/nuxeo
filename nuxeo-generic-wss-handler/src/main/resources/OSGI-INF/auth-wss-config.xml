@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.wi.auth.config">
+<component name="org.nuxeo.wss.auth">
 
   <require>org.nuxeo.ecm.platform.login.digest</require>
   <require>org.nuxeo.ecm.webdav.auth.config</require>

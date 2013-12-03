@@ -18,34 +18,58 @@
 package org.nuxeo.ecm.webdav.resource;
 
 import org.junit.Test;
-import org.nuxeo.ecm.webdav.Util;
 
 import javax.servlet.http.HttpServletRequest;
 
 import java.net.URI;
 import java.net.URLEncoder;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class MiscTest {
+
+    public static String getTokenFromHeaders(String headerName,
+            HttpServletRequest request) {
+        String header = request.getHeader(headerName);
+        if (header == null) {
+            return null;
+        }
+        String token = header.trim();
+        int tokenStart = token.indexOf("<urn:uuid:");
+        token = token.substring(tokenStart + "<urn:uuid:".length(),
+                token.length());
+        int tokenEnd = token.indexOf(">");
+        token = token.substring(0, tokenEnd);
+        return token;
+    }
+
+    @Test
+    public void getTokenFromHeadersReturnsRightToken() {
+        String TOKEN = "tititoto2010";
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getHeader("If")).thenReturn("<urn:uuid:" + TOKEN + ">");
+
+        String result = getTokenFromHeaders("If", request);
+        assertThat(result, is(TOKEN));
+    }
 
     @Test
     public void testIf() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getHeader("if")).thenReturn("<urn:uuid:tototiti>");
-        assertEquals("tototiti",
-                Util.getTokenFromHeaders("if", request));
+        assertEquals("tototiti", getTokenFromHeaders("if", request));
 
         when(request.getHeader("if")).thenReturn(" (<urn:uuid:tototiti>) ");
-        assertEquals("tototiti",
-                Util.getTokenFromHeaders("if", request));
+        assertEquals("tototiti", getTokenFromHeaders("if", request));
 
-        when(request.getHeader("lock-token")).thenReturn(" (<urn:uuid:tototiti>) ");
-        assertEquals("tototiti",
-                Util.getTokenFromHeaders("lock-token", request));
+        when(request.getHeader("lock-token")).thenReturn(
+                " (<urn:uuid:tototiti>) ");
+        assertEquals("tototiti", getTokenFromHeaders("lock-token", request));
     }
 
     @Test

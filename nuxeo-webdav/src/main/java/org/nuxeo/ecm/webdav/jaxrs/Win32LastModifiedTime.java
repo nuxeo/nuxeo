@@ -1,4 +1,4 @@
-package net.java.dev.webdav.core.jaxrs.xml.properties;
+package org.nuxeo.ecm.webdav.jaxrs;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;

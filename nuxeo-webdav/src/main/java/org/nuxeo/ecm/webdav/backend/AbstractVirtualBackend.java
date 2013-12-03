@@ -234,7 +234,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
     @Override
     public DocumentModel resolveLocation(String location)
             throws ClientException {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(location);
     }
 
     @Override
@@ -301,7 +301,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
 
     @Override
     public boolean exists(String location) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(location);
     }
 
     @Override
@@ -351,7 +351,4 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
         return orderedBackendNames;
     }
 
-    protected RealBackendFactory getRealBackendFactory() {
-        return realBackendFactory;
-    }
 }

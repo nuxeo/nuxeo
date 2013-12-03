@@ -40,6 +40,7 @@ public class ExceptionHandler implements ExceptionMapper<Exception> {
 
     private static final Log log = LogFactory.getLog(ExceptionHandler.class);
 
+    @Override
     public Response toResponse(Exception e) {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));

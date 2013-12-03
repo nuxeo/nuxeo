@@ -18,13 +18,15 @@
  */
 package org.nuxeo.ecm.webdav.resource;
 
-import net.java.dev.webdav.core.jaxrs.xml.properties.IsHidden;
 import net.java.dev.webdav.jaxrs.xml.elements.Prop;
 import net.java.dev.webdav.jaxrs.xml.elements.PropStat;
 import net.java.dev.webdav.jaxrs.xml.properties.*;
+
+import org.nuxeo.ecm.webdav.jaxrs.IsHidden;
 import org.w3c.dom.Element;
 
 import javax.ws.rs.core.Response.Status;
+
 import java.util.*;
 
 /**
@@ -112,16 +114,6 @@ public class PropStatBuilderExt {
 
         return this;
     }
-//
-//    public PropStatBuilderExt lastAccessed(Date dateTime){
-//        if(!names.contains("lastaccessed")){
-//            LastAccessed lastAccessed = new LastAccessed(dateTime);
-//            properties.add(lastAccessed);
-//            names.add("lastaccessed");
-//        }
-//
-//        return this;
-//    }
 
     public PropStat notFound(Prop allprops) {
         boolean empty = true;

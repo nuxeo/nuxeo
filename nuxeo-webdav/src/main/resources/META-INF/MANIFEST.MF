@@ -8,6 +8,6 @@ Provide-Package: org.nuxeo.ecm.webdav
 Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.webengine.core
 Nuxeo-WebModule: org.nuxeo.ecm.webdav.Application;host=nuxeo-webdav
-Nuxeo-Component: OSGI-INF/auth-contrib.xml,
- OSGI-INF/request-controller-contrib.xml,
- OSGI-INF/service-contrib.xml
+Nuxeo-Component: OSGI-INF/service-contrib.xml,
+ OSGI-INF/auth-contrib.xml,
+ OSGI-INF/request-controller-contrib.xml
