@@ -70,15 +70,27 @@ public class MultiTenantUserManager extends UserManagerWithComputedGroups {
         NuxeoPrincipal principal = principalCache.getIfPresent(username);
         if (principal == null) {
             principal = super.getPrincipal(username);
-            principalCache.put(username, principal);
+            if (principal!=null) {
+                principalCache.put(username, principal);
+            }
         }
         return principal;
     }
 
     @Override
     protected void notifyUserChanged(String userName) throws ClientException {
-        principalCache.invalidate(userName);
+        if (useCache()) {
+            principalCache.invalidate(userName);
+        }
         super.notifyUserChanged(userName);
+    }
+
+    @Override
+    protected void notifyGroupChanged(String groupName) throws ClientException {
+        if (useCache()) {
+            principalCache.invalidateAll();
+        }
+        super.notifyGroupChanged(groupName);
     }
 
 }
