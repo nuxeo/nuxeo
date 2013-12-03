@@ -17,7 +17,6 @@
     <module>nuxeo-generic-wss-handler</module>
     <module>nuxeo-webdav</module>
     <module>nuxeo-webdav-test</module>
-    <module>nuxeo-platform-wi-backend</module>
   </modules>
 
   <repositories>
