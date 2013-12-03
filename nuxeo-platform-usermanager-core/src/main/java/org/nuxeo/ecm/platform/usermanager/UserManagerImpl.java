@@ -787,6 +787,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
      * sure principals cache is reset.
      */
     protected void notifyGroupChanged(String groupName) throws ClientException {
+        if (useCache()) {
+            principalCache.invalidateAll();
+        }
         notify(groupName, GROUPCHANGED_EVENT_ID);
     }
 
