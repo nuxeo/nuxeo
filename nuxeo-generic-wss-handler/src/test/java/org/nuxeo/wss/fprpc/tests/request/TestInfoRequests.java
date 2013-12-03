@@ -23,20 +23,32 @@ import javax.servlet.Filter;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.wss.fprpc.tests.WindowsHelper;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequest;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequestBuilder;
 import org.nuxeo.wss.fprpc.tests.fake.FakeResponse;
 import org.nuxeo.wss.servlet.WSSFilter;
+import org.nuxeo.wss.spi.Backend;
+import org.nuxeo.wss.spi.dummy.DummyBackendFactory;
 
-public class TestInfoRequests {
+public class TestInfoRequests extends NXRuntimeTestCase {
 
     protected Filter filter;
 
-    @Before
+    @Override
     public void setUp() throws Exception {
-        filter=new WSSFilter();
+        super.setUp();
+        filter = new WSSFilter();
         filter.init(null);
+        deployBundle("org.nuxeo.ecm.webdav");
+        Backend.factory = new DummyBackendFactory();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        Backend.factory = null;
+        super.tearDown();
     }
 
     @Test

@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.webdav.backend.Backend;
+import org.nuxeo.ecm.webdav.backend.BackendHelper;
 import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 
 //path is set at the servlet level, see the deployment-fragment file
@@ -94,7 +95,7 @@ public class RootResource {
     public Object findResource(@PathParam("path") String path) throws Exception {
         path = new String(path.getBytes(), "UTF-8");
 
-        WebDavBackend backend = Backend.get(path, request);
+        WebDavBackend backend = BackendHelper.get(path, request);
 
         if (backend == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);

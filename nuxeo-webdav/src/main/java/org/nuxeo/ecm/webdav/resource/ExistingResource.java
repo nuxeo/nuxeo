@@ -74,6 +74,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.webdav.Util;
 import org.nuxeo.ecm.webdav.backend.Backend;
+import org.nuxeo.ecm.webdav.backend.BackendHelper;
 import org.nuxeo.ecm.webdav.backend.WebDavBackend;
 
 /**
@@ -142,7 +143,7 @@ public class ExistingResource extends AbstractResource {
         destination = Util.encode(destination.getBytes(), "ISO-8859-1");
         destination = URIUtil.decode(destination);
 
-        WebDavBackend root = Backend.get("/", request);
+        WebDavBackend root = BackendHelper.get("/", request);
         Set<String> names = new HashSet<String>(root.getVirtualFolderNames());
         Path destinationPath = new Path(destination);
         String[] segments = destinationPath.segments();
@@ -158,7 +159,7 @@ public class ExistingResource extends AbstractResource {
 
         String destPath = destinationPath.toString();
         String davDestPath = destPath;
-        WebDavBackend destinationBackend = Backend.get(davDestPath, request);
+        WebDavBackend destinationBackend = BackendHelper.get(davDestPath, request);
         destPath = destinationBackend.parseLocation(destPath).toString();
         log.debug("to " + davDestPath);
 
@@ -295,7 +296,7 @@ public class ExistingResource extends AbstractResource {
         }
     }
 
-    protected LockDiscovery getLockDiscovery(DocumentModel doc, UriInfo uriInfo) 
+    protected LockDiscovery getLockDiscovery(DocumentModel doc, UriInfo uriInfo)
             throws ClientException {
         LockDiscovery lockDiscovery = null;
         if (doc.isLocked()) {
@@ -308,7 +309,7 @@ public class ExistingResource extends AbstractResource {
         }
         return lockDiscovery;
     }
-    
+
     protected PropStatBuilderExt getPropStatBuilderExt(DocumentModel doc, UriInfo uriInfo)
             throws ClientException, URIException {
         Date lastModified = getTimePropertyWrapper(doc, "dc:modified");
@@ -340,7 +341,7 @@ public class ExistingResource extends AbstractResource {
         }
         return props;
     }
-    
+
     protected Date getTimePropertyWrapper(DocumentModel doc, String name) {
         Object property;
         try {

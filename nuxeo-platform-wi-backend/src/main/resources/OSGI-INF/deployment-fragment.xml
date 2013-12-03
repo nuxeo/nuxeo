@@ -24,7 +24,7 @@
             <display-name>Nuxeo Windows Integration Request Filter</display-name>
             <filter-name>WIRequestFilter</filter-name>
             <filter-class>
-                org.nuxeo.ecm.platform.wi.filter.WIRequestFilter
+                org.nuxeo.ecm.webdav.service.WIRequestFilter
             </filter-class>
         </filter>
         <filter-mapping>
@@ -49,7 +49,7 @@
             <filter-class>org.nuxeo.wss.servlet.FailSafeWSSFilter</filter-class>
             <init-param>
                 <param-name>org.nuxeo.wss.backendFactory</param-name>
-                <param-value>org.nuxeo.ecm.platform.wi.service.PluggableBackendFactory</param-value>
+                <param-value>org.nuxeo.ecm.webdav.service.PluggableBackendFactory</param-value>
             </init-param>
             <init-param>
                 <param-name>org.nuxeo.wss.webdav.base.url</param-name>

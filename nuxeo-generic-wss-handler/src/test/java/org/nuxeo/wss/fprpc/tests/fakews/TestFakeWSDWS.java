@@ -20,8 +20,10 @@ package org.nuxeo.wss.fprpc.tests.fakews;
 import javax.servlet.Filter;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequest;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequestBuilder;
 import org.nuxeo.wss.fprpc.tests.fake.FakeResponse;
@@ -29,8 +31,23 @@ import org.nuxeo.wss.handlers.fakews.FakeDWS;
 import org.nuxeo.wss.handlers.fakews.FakeWSCmdParser;
 import org.nuxeo.wss.servlet.WSSFilter;
 import org.nuxeo.wss.servlet.WSSRequest;
+import org.nuxeo.wss.spi.Backend;
+import org.nuxeo.wss.spi.dummy.DummyBackendFactory;
 
-public class TestFakeWSDWS {
+public class TestFakeWSDWS extends NXRuntimeTestCase {
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        deployBundle("org.nuxeo.ecm.webdav");
+        Backend.factory = new DummyBackendFactory();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        Backend.factory = null;
+        super.tearDown();
+    }
 
     @Test
     public void testParsing() throws Exception {

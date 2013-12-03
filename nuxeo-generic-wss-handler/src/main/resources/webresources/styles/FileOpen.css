@@ -1,6 +1,6 @@
 body {
 font: normal 12px "Lucida Grande", Arial, sans-serif;
-background-color: #FFFFFF;
+background: #FFFFFF url(../img/galaxy_logo.png) no-repeat scroll right bottom;
 margin:0px;
 /* FileOpenDialog_fichiers/ */
 }
@@ -12,7 +12,7 @@ font-size:12px;
 
 table.titleTable {
 height:74px;
-background-color:#000000;
+background:#000000 url(../img/header_bg.jpg) no-repeat scroll right bottom;
 }
 
 th {

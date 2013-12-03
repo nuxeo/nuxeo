@@ -31,6 +31,16 @@ Setup a Basic Auth plugin for /dav paths that will always send 401 on authentica
             <plugin>ANONYMOUS_AUTH</plugin>
         </replacementChain>
     </specificAuthenticationChain>
+    <specificAuthenticationChain name="WebDAV_Root">
+      <headers>
+        <header name="User-Agent">(Microsoft-WebDAV-MiniRedir|DavClnt|litmus|gvfs|gnome-vfs|davfs|WebDAV|cadaver|BitKinex|GoodReader|DataAccess|iWorkHTTPKit).*</header>
+      </headers>
+
+      <replacementChain>
+        <plugin>DIGEST_AUTH</plugin>
+        <plugin>WEBDAV_BASIC_AUTH</plugin>
+      </replacementChain>
+    </specificAuthenticationChain>
   </extension>
 
 </component>

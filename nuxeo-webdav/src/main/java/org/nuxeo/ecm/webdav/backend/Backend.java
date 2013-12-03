@@ -16,36 +16,92 @@
  */
 package org.nuxeo.ecm.webdav.backend;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PathRef;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.LinkedList;
+import java.util.List;
 
-public class Backend {
+public interface Backend {
 
-protected static WebDavBackendFactory factoryWebDav = null;
+    String getRootPath();
 
-    private static final Log log = LogFactory.getLog(WebDavBackendFactory.class);
+    String getRootUrl();
 
-    public static WebDavBackendFactory getFactory() {
-        if (factoryWebDav == null) {
-            factoryWebDav = loadFactory();
-        }
-        return factoryWebDav;
-    }
+    CoreSession getSession() throws ClientException;
 
-    protected synchronized static WebDavBackendFactory loadFactory() {
-        String factoryClass = "org.nuxeo.ecm.platform.wi.backend.webdav.WebDavBackendFactoryImpl";
-        try {
-            factoryWebDav = (WebDavBackendFactory) Class.forName(factoryClass, true, Thread.currentThread().getContextClassLoader()).newInstance();
-        } catch (Exception e) {
-            log.error("Unable to create backend factoryWebDav", e);
-        }
-        return factoryWebDav;
-    }
+    void setSession(CoreSession session);
 
-    public static WebDavBackend get(String path, HttpServletRequest request) {
-        return getFactory().getBackend(path, request);
-    }
+    CoreSession getSession(boolean synchronize) throws ClientException;
+
+    String getBackendDisplayName();
+
+    void saveChanges() throws ClientException;
+
+    void discardChanges() throws ClientException;
+
+    boolean isLocked(DocumentRef ref) throws ClientException;
+
+    boolean canUnlock(DocumentRef ref) throws ClientException;
+
+    String lock(DocumentRef ref) throws ClientException;
+
+    boolean unlock(DocumentRef ref) throws ClientException;
+
+    String getCheckoutUser(DocumentRef ref) throws ClientException;
+
+    Path parseLocation(String location);
+
+    DocumentModel resolveLocation(String location) throws ClientException;
+
+    void removeItem(String location) throws ClientException;
+
+    void removeItem(DocumentRef ref) throws ClientException;
+
+    void renameItem(DocumentModel source, String destinationName) throws ClientException;
+
+    DocumentModel moveItem(DocumentModel source, PathRef targetParentRef) throws ClientException;
+
+    DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name)
+            throws ClientException;
+
+    DocumentModel updateDocument(DocumentModel doc, String name, Blob content) throws ClientException;
+
+    DocumentModel copyItem(DocumentModel source, PathRef targetParentRef) throws ClientException;
+
+    DocumentModel createFolder(String parentPath, String name) throws ClientException;
+
+    DocumentModel createFile(String parentPath, String name, Blob content) throws ClientException;
+
+    DocumentModel createFile(String parentPath, String name) throws ClientException;
+
+    List<DocumentModel> getChildren(DocumentRef ref) throws ClientException;
+
+    boolean isRename(String source, String destination);
+
+    boolean exists(String location);
+
+    boolean hasPermission(DocumentRef docRef, String permission) throws ClientException;
+
+    String getDisplayName(DocumentModel doc);
+
+    LinkedList<String> getVirtualFolderNames() throws ClientException;
+
+    Backend getBackend(String path);
+
+    boolean isVirtual();
+
+    boolean isRoot();
+
+    void destroy();
+
+    String getVirtualPath(String path) throws ClientException;
+
+    DocumentModel getDocument(String location) throws ClientException;
 
 }

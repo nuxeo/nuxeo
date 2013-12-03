@@ -17,8 +17,6 @@
 
 package org.nuxeo.ecm.webdav;
 
-import org.nuxeo.ecm.webdav.provider.ExceptionHandler;
-import org.nuxeo.ecm.webdav.provider.WebDavContextResolver;
 import org.nuxeo.ecm.webdav.resource.RootResource;
 import org.nuxeo.ecm.webengine.model.io.BlobWriter;
 

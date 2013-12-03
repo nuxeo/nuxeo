@@ -5,5 +5,4 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.wi.backend;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Category: web,stateless
 Require-Bundle: org.nuxeo.ecm.platform.web.common
-Nuxeo-Component: OSGI-INF/authentication-contrib.xml,
- OSGI-INF/wi-backend-contrib.xml
+Nuxeo-Component: OSGI-INF/authentication-contrib.xml

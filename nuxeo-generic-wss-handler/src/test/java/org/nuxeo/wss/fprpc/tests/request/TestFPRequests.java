@@ -26,22 +26,34 @@ import javax.servlet.Filter;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.wss.fprpc.tests.WindowsHelper;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequest;
 import org.nuxeo.wss.fprpc.tests.fake.FakeRequestBuilder;
 import org.nuxeo.wss.fprpc.tests.fake.FakeResponse;
 import org.nuxeo.wss.servlet.WSSFilter;
+import org.nuxeo.wss.spi.Backend;
 import org.nuxeo.wss.spi.WSSListItem;
+import org.nuxeo.wss.spi.dummy.DummyBackendFactory;
 import org.nuxeo.wss.spi.dummy.DummyMemoryTree;
 
-public class TestFPRequests {
+public class TestFPRequests extends NXRuntimeTestCase {
 
     protected Filter filter;
 
-    @Before
+    @Override
     public void setUp() throws Exception {
+        super.setUp();
         filter = new WSSFilter();
         filter.init(null);
+        deployBundle("org.nuxeo.ecm.webdav");
+        Backend.factory = new DummyBackendFactory();
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        Backend.factory = null;
+        super.tearDown();
     }
 
     @Test

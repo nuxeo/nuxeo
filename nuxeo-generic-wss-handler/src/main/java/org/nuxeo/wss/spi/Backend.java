@@ -26,8 +26,8 @@ import org.nuxeo.wss.spi.dummy.DummyBackendFactory;
 
 public class Backend {
 
-    protected static WSSBackendFactory factory = null;
-    public static final String DEFAULT_FACTORY_CLASS = "org.nuxeo.ecm.platform.wi.backend.wss.WSSBackendFactoryImpl";
+    public static WSSBackendFactory factory = null;
+    public static final String DEFAULT_FACTORY_CLASS = "org.nuxeo.wss.impl.WSSBackendFactoryImpl";
 
     private static final Log log = LogFactory.getLog(Backend.class);
 
@@ -45,7 +45,7 @@ public class Backend {
         String factoryClass = WSSConfig.instance().getWssBackendFactoryClassName();
 
         /*@TODO: uncomment this after set org.nuxeo.ecm.platform.wi.backend.wss.WSSBackendFactoryImpl
-         as default factory in WSSFilter config 
+         as default factory in WSSFilter config
         /*try {
             factory = (WSSBackendFactory) Class.forName(factoryClass, true,
                     Thread.currentThread().getContextClassLoader()).newInstance();
