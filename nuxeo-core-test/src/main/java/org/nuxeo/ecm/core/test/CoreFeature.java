@@ -69,8 +69,7 @@ public class CoreFeature extends SimpleFeature {
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         repository = new RepositorySettings(runner);
-        runner.getFeature(RuntimeFeature.class).addServiceProvider(
-                repository);
+        runner.getFeature(RuntimeFeature.class).addServiceProvider(repository);
     }
 
     @Override
@@ -108,7 +107,7 @@ public class CoreFeature extends SimpleFeature {
                             + "the test leaked %s session(s).",
                     Integer.valueOf(finalOpenSessions),
                     Integer.valueOf(leakedOpenSessions)));
-             for (CoreInstance.RegistrationInfo info:core.getRegistrationInfos()) {
+            for (CoreInstance.RegistrationInfo info : core.getRegistrationInfos()) {
                 log.warn("Leaking session", info);
             }
         }
@@ -147,7 +146,7 @@ public class CoreFeature extends SimpleFeature {
     }
 
     protected void cleanupSession(FeaturesRunner runner) {
-        CoreSession session  = repository.getSession();
+        CoreSession session = repository.getSession();
         if (session == null) {
             // session was never properly created, error during setup
             return;
@@ -176,7 +175,7 @@ public class CoreFeature extends SimpleFeature {
             NXCore.getRepositoryService().applicationStarted(null);
             cleaned = false;
         }
-        CoreSession session  = repository.createSession();
+        CoreSession session = repository.createSession();
         RepositoryInit factory = repository.getInitializer();
         if (factory != null) {
             factory.populate(session);

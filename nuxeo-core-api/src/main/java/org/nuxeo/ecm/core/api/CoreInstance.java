@@ -82,10 +82,14 @@ public class CoreInstance implements Serializable {
 
     public static class RegistrationInfo extends Throwable {
         private static final long serialVersionUID = 1L;
+
         public final CoreSession session;
+
         public final String threadName;
+
         RegistrationInfo(CoreSession session) {
-            super("Session registration context (" + session.getSessionId() + "," + Thread.currentThread().getName() + ")");
+            super("Session registration context (" + session.getSessionId()
+                    + "," + Thread.currentThread().getName() + ")");
             this.session = session;
             this.threadName = Thread.currentThread().getName();
         }
@@ -207,6 +211,7 @@ public class CoreInstance implements Serializable {
     public Collection<RegistrationInfo> getRegistrationInfos() {
         return sessions.values();
     }
+
     /**
      * Gets the client bound to the given session.
      *
