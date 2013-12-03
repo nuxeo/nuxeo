@@ -84,7 +84,19 @@ public class CoreFeature extends SimpleFeature {
 
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
-        initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
+        // wait for async tasks that may have been triggered by
+        // RuntimeFeature (typically repo initialization)
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        final CoreInstance core = CoreInstance.getInstance();
+        initialOpenSessions = core.getNumberOfSessions();
+        if (initialOpenSessions != 0) {
+            log.error(String.format(
+                    "There are already %s open session(s) before running tests.",
+                    Integer.valueOf(initialOpenSessions)));
+            for (CoreInstance.RegistrationInfo info : core.getRegistrationInfos()) {
+                log.warn("Leaking session", info);
+            }
+        }
         if (repository.getGranularity() != Granularity.METHOD) {
             initializeSession(runner);
         }
@@ -101,7 +113,7 @@ public class CoreFeature extends SimpleFeature {
         final CoreInstance core = CoreInstance.getInstance();
         int finalOpenSessions = core.getNumberOfSessions();
         int leakedOpenSessions = finalOpenSessions - initialOpenSessions;
-        if (leakedOpenSessions != 0) {
+        if (leakedOpenSessions > 0) {
             log.error(String.format(
                     "There are %s open session(s) at tear down; it seems "
                             + "the test leaked %s session(s).",
