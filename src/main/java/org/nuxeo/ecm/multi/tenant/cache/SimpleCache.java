@@ -78,4 +78,13 @@ public class SimpleCache<V> extends LinkedHashMap<String, V> {
         }
     }
 
+    public void invalidateAll() {
+        try {
+            cacheLock.writeLock().lock();
+            super.clear();
+        } finally {
+            cacheLock.writeLock().unlock();
+        }
+    }
+
 }
