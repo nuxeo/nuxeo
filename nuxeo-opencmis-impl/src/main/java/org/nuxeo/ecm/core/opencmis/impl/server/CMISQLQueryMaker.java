@@ -135,8 +135,6 @@ public class CMISQLQueryMaker implements QueryMaker {
 
     protected Table hierTable;
 
-    protected Table qualHierTable;
-
     public boolean skipDeleted = true;
 
     // ----- filled during walks of the clauses -----
@@ -317,7 +315,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             String typeQueryName = qualifierToType.get(alias);
             String qual = canonicalQualifier.get(alias);
-            qualHierTable = getTable(hierTable, qual);
+            Table qualHierTable = getTable(hierTable, qual);
 
             // table this join is about
             Table table;
@@ -1391,7 +1389,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                         + col.getPropertyQueryName());
             }
             Column column = (Column) col.getInfo();
-            String qual = col.getQualifier();
+            String qual = canonicalQualifier.get(col.getQualifier());
             // we need the real table and column in the subquery
             Table realTable = column.getTable().getRealTable();
             Column realColumn = realTable.getColumn(column.getKey());
@@ -1432,7 +1430,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             if (multi) {
                 // we need the real table and column in the subquery
                 Column column = (Column) col.getInfo();
-                String qual = col.getQualifier();
+                String qual = canonicalQualifier.get(col.getQualifier());
                 Table realTable = column.getTable().getRealTable();
                 Column hierMainColumn = getTable(hierTable, qual).getColumn(
                         model.MAIN_KEY);
@@ -1629,8 +1627,13 @@ public class CMISQLQueryMaker implements QueryMaker {
             /*
              * SQL generation
              */
+
+            ColumnReference facetsCol = resolveColumnReference(colNodel);
+            String qual = canonicalQualifier.get(facetsCol.getQualifier());
+            Table table = getTable(hierTable, qual);
+
             if (!types.isEmpty()) {
-                Column col = qualHierTable.getColumn(Model.MAIN_PRIMARY_TYPE_KEY);
+                Column col = table.getColumn(Model.MAIN_PRIMARY_TYPE_KEY);
                 whereBuf.append(col.getFullQuotedName());
                 whereBuf.append(" IN ");
                 whereBuf.append('(');
@@ -1650,7 +1653,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             if (!instanceMixins.isEmpty()) {
                 whereBuf.append('(');
-                Column mixinsColumn = qualHierTable.getColumn(Model.MAIN_MIXIN_TYPES_KEY);
+                Column mixinsColumn = table.getColumn(Model.MAIN_MIXIN_TYPES_KEY);
                 String[] returnParam = new String[1];
                 for (Iterator<String> it = instanceMixins.iterator(); it.hasNext();) {
                     String mixin = it.next();
