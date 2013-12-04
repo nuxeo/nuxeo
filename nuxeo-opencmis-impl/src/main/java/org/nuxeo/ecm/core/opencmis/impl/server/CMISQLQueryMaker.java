@@ -1122,7 +1122,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                     // could not fetch
                     v = null;
                 } else {
-                    NuxeoPropertyDataBase<?> pd = (NuxeoPropertyDataBase<?>) data.getProperty(key);
+                    NuxeoPropertyDataBase<?> pd = (NuxeoPropertyDataBase<?>) data.getProperty(col.getPropertyId());
                     if (pd == null) {
                         v = null;
                     } else {

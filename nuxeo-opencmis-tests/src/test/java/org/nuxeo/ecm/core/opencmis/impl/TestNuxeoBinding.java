@@ -2126,6 +2126,20 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testQueryJoinReturnVirtualColumns() throws Exception {
+        String statement = "SELECT A.cmis:objectId, A.nuxeo:contentStreamDigest, B.cmis:path" //
+                + " FROM cmis:document A" //
+                + " JOIN cmis:folder B ON A.nuxeo:parentId = B.cmis:objectId" //
+                + " WHERE A.cmis:name = 'testfile1_Title'";
+        ObjectList res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+
+        ObjectData data = res.getObjects().get(0);
+        assertNotNull(getQueryValue(data, "A.nuxeo:contentStreamDigest"));
+        assertEquals("/testfolder1", getQueryValue(data, "B.cmis:path"));
+    }
+
+    @Test
     public void testQueryBad() throws Exception {
         try {
             query("SELECT foo bar baz");
