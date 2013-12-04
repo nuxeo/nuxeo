@@ -1635,6 +1635,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         statement = "SELECT cmis:name FROM File WHERE ANY dc:contributors IN ('pete', 'bob')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
+        // with qualifier
+        statement = "SELECT f.cmis:objectId FROM File f WHERE ANY f.dc:subjects IN ('foo')";
+        res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
 
         // ANY ... NOT IN ...
         statement = "SELECT cmis:name FROM File WHERE ANY dc:contributors NOT IN ('pete')";
@@ -1650,9 +1654,18 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryIsNullMuti() throws Exception {
-        String statement = "SELECT cmis:objectId FROM cmis:document"
+        String statement;
+        ObjectList res;
+
+        statement = "SELECT cmis:objectId FROM cmis:document"
                 + " WHERE dc:subjects IS NULL";
-        ObjectList res = query(statement);
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        // with qualifier
+        statement = "SELECT A.cmis:objectId FROM cmis:document A"
+                + " WHERE A.dc:subjects IS NULL";
+        res = query(statement);
         assertEquals(3, res.getNumItems().intValue());
     }
 
@@ -1697,6 +1710,12 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         statement = "SELECT * FROM File WHERE 'CustomFacetWithMySchema2' = ANY nuxeo:secondaryObjectTypeIds";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
+        // with several qualifiers (therefore a JOIN)
+        statement = "SELECT A.cmis:objectId FROM cmis:document A"
+                + " JOIN cmis:folder B ON A.nuxeo:parentId = B.cmis:objectId"
+                + " WHERE 'Versionable' = ANY A.nuxeo:secondaryObjectTypeIds";
+        res = query(statement);
+        assertEquals(4, res.getNumItems().intValue());
 
         // ANY ... IN ...
         statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds IN ('Versionable')";
