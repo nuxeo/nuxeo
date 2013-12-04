@@ -374,6 +374,10 @@
       <groupId>org.nuxeo.ecm.routing</groupId>
       <artifactId>nuxeo-routing-default</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-login-token</artifactId>
+    </dependency>
 
     <!-- Scope test -->
     <dependency>
