@@ -385,21 +385,23 @@ input.tinyButton {
   border-radius: 3px;
   border: 1px solid;
   border-color: transparent #ddd #ccc transparent;
-  color: "black (__FLAVOR__ color)";
+  color: #555f6d;
   display: inline-block;
-  font-family: monospace;
+  font-family: Arial, Tahoma, sans-serif;
   font-size: 13px;
   line-height: inherit;
   margin: .1em;
-  padding: 0 .3em;
-  text-decoration: none }
+  padding: 0 .12em;
+  text-decoration: none;
+  -moz-transition: none;
+  -webkit-transition: none;
+  transition: none }
 
+.tag,
 a.tag,
 .tag a,
 .tagLink a {
-  color: "black (__FLAVOR__ color)";
-  opacity: .8;
-  padding: 0 0 0 .2em;
+  color: #555f6d;
   text-decoration: none }
 
 .tagLink img {
