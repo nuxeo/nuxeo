@@ -148,8 +148,7 @@ public class DocumentRoutingEscalationServiceImpl implements
                 }
                 node.executeChain(rule.getChain());
                 // mark the rule as resolved
-                rule.setExecuted(true);
-                session.saveDocument(rule.getNode().getDocument());
+                markRuleAsExecuted(nodeDocId, escalationRuleId, session);
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
@@ -181,4 +180,20 @@ public class DocumentRoutingEscalationServiceImpl implements
 
     }
 
+    private static void markRuleAsExecuted(String nodeDocId,
+            String escalationRuleId, CoreSession session)
+            throws ClientException {
+        DocumentModel nodeDoc = session.getDocument(new IdRef(nodeDocId));
+        GraphNode node = nodeDoc.getAdapter(GraphNode.class);
+        List<EscalationRule> rules = node.getEscalationRules();
+        EscalationRule rule = null;
+        for (EscalationRule escalationRule : rules) {
+            if (escalationRuleId.equals(escalationRule.getId())) {
+                rule = escalationRule;
+                break;
+            }
+        }
+        rule.setExecuted(true);
+        session.saveDocument(nodeDoc);
+    }
 }
