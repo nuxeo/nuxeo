@@ -244,5 +244,6 @@ echo on
 @echo off
 del /F /Q "%TMPLAUNCHER%"
 if "%exitcode%" == "128" GOTO RESTARTLAUNCHER
-
+exit /b %exitcode%
 :END
+exit /b 1
