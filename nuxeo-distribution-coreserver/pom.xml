@@ -270,6 +270,10 @@
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-io</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ws</artifactId>
+    </dependency>
 
     <!-- CMIS -->
     <dependency>
@@ -288,7 +292,11 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ws</artifactId>
+      <artifactId>nuxeo-generic-wss-front</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-generic-wss-handler</artifactId>
     </dependency>
 
     <!-- Scope test -->
