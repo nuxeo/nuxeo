@@ -60,6 +60,7 @@
     <nuxeo.agenda.version>5.6.0-HF29-SNAPSHOT</nuxeo.agenda.version>
     <nuxeo.templates.version>5.6.0-HF29-SNAPSHOT</nuxeo.templates.version>
     <nuxeo.drive.version>5.6.0-HF29-SNAPSHOT</nuxeo.drive.version>
+    <nuxeo.imaging.recompute.version>5.6.0-HF29-SNAPSHOT</nuxeo.imaging.recompute.version>
   </properties>
 
   <modules>
@@ -1064,6 +1065,13 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-groups-rights-audit</artifactId>
         <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Imaging Recompute -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-imaging-recompute</artifactId>
+        <version>${nuxeo.imaging.recompute.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

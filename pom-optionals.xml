@@ -23,6 +23,7 @@
     <module>nuxeo-sample-project</module>
     <module>nuxeo-web-embedded</module>
     <module>nuxeo-platform-intuition</module>
+    <module>nuxeo-imaging-recompute</module>
   </modules>
 
 </project>
