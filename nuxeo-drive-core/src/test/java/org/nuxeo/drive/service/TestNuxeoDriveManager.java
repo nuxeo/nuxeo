@@ -416,6 +416,35 @@ public class TestNuxeoDriveManager {
         checkRoots(user1Principal, 0, expectedSyncRootPaths);
     }
 
+    @Test
+    public void testSyncRootsWithPathInclusion() throws ClientException {
+        Principal user1Principal = user1Session.getPrincipal();
+
+        // Create 2 folders with path inclusion:
+        // /default-domain/folder1 includes /default-domain/folder
+        DocumentModel folder = session.createDocument(session.createDocumentModel(
+                "/default-domain/workspaces", "folder", "Folder"));
+        DocumentModel folder1 = session.createDocument(session.createDocumentModel(
+                "/default-domain/workspaces", "folder1", "Folder"));
+        Map<String, Boolean> permissions = new HashMap<String, Boolean>();
+        permissions.put(SecurityConstants.READ_WRITE, true);
+        setPermissions(folder, "members", permissions);
+        setPermissions(folder1, "members", permissions);
+
+        // Register folder as a synchronization root
+        nuxeoDriveManager.registerSynchronizationRoot(user1Principal, folder,
+                user1Session);
+        // Register folder1 as a synchronization root
+        nuxeoDriveManager.registerSynchronizationRoot(user1Principal, folder1,
+                user1Session);
+
+        // Check there are 2 synchronization roots
+        Set<IdRef> syncRootrefs = nuxeoDriveManager.getSynchronizationRootReferences(user1Session);
+        assertEquals(2, syncRootrefs.size());
+        assertTrue(syncRootrefs.contains(folder.getRef()));
+        assertTrue(syncRootrefs.contains(folder1.getRef()));
+    }
+
     protected DocumentModel doc(String path) throws ClientException {
         return doc(session, path);
     }
