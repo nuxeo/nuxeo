@@ -68,6 +68,7 @@
     <nuxeo.jbpm.version>5.8.0-HF03-SNAPSHOT</nuxeo.jbpm.version>
     <nuxeo.semantic.entities.version>5.8.0-HF03-SNAPSHOT</nuxeo.semantic.entities.version>
     <nuxeo.sync.version>5.8.0-HF03-SNAPSHOT</nuxeo.sync.version>
+    <nuxeo.imaging.recompute.version>5.8.0-HF03-SNAPSHOT</nuxeo.imaging.recompute.version>
     <!-- end of optional addons -->
   </properties>
 
@@ -1133,6 +1134,13 @@
         <groupId>org.nuxeo.style</groupId>
         <artifactId>nuxeo-style-guide</artifactId>
         <version>${nuxeo.style.guide.version}</version>
+      </dependency>
+
+      <!-- Imaging Recompute -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-imaging-recompute</artifactId>
+        <version>${nuxeo.imaging.recompute.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
