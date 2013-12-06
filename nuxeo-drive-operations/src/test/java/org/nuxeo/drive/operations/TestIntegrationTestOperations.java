@@ -68,7 +68,7 @@ import com.google.inject.Inject;
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.drive.operations" })
+        "org.nuxeo.ecm.user.center.profile", "org.nuxeo.drive.operations" })
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 @Jetty(port = 18080)
 public class TestIntegrationTestOperations {

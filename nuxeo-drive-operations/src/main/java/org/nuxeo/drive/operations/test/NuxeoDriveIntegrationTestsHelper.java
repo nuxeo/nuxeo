@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.user.center.profile.UserProfileService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -84,6 +85,9 @@ public final class NuxeoDriveIntegrationTestsHelper {
             session.removeDocument(testWorkspaceDocRef);
             session.save();
         }
+
+        // Invalidate user profile cache
+        Framework.getLocalService(UserProfileService.class).clearCache();
     }
 
     public static String getDefaultDomainPath(CoreSession session)
