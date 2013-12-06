@@ -176,7 +176,10 @@
 
           <ui:insert name="content_view_search_layout">
             <c:if test="#{contentView.searchLayout.filterDisplayType == 'default' or empty contentView.searchLayout.filterDisplayType}">
-              <ui:include src="/incl/content_view_search_layout.xhtml" />
+              <ui:include src="/incl/content_view_search_layout.xhtml">
+                <ui:param name="contentIdToBeReRendered"
+                  value="#{nxl:joinReRender(contentViewPanelId, ajaxReRender)}" />
+              </ui:include>
               <div style="clear:both;" />
             </c:if>
           </ui:insert>
