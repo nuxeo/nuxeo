@@ -165,4 +165,9 @@ public class UserProfileServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
+    public void clearCache() {
+        profileUidCache.invalidateAll();
+    }
+
 }
