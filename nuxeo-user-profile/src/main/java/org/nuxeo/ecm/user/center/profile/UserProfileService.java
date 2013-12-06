@@ -61,4 +61,9 @@ public interface UserProfileService {
     DocumentModel getUserProfile(DocumentModel userModel, CoreSession session)
             throws ClientException;
 
+    /**
+     * Clears the user profile cache.
+     */
+    void clearCache();
+
 }
