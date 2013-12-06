@@ -31,7 +31,7 @@ empty:
   <nxu:set var="openBox" value="#{nxu:hasMessages(filterFormId) or contentView.searchLayout.filterUnfolded}"
     cache="true">
   <nxu:set var="elementsToReRender"
-    value="#{cvid}_resultsPanel, #{resetFilterFormId}, #{filterFormId}, #{cvid}_contentViewActionsPanel"
+    value="#{contentIdToBeReRendered}, #{resetFilterFormId}, #{filterFormId}, #{cvid}_contentViewActionsPanel"
     cache="true">
 
   <div class="foldableLightBox">
