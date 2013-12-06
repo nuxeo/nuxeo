@@ -629,7 +629,7 @@
       <widgetTypeCategory>jsfAction</widgetTypeCategory>
     </widgetType>
 
-    <widgetType name="template">
+    <widgetType name="templateAction" widgetTypeName="template">
       <label>Template</label>
       <viewId>templateAction</viewId>
       <category>action</category>

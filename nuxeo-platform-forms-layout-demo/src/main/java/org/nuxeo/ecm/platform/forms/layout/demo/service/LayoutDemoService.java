@@ -68,7 +68,7 @@ public class LayoutDemoService extends DefaultComponent implements
         DemoWidgetTypeDescriptor desc = (DemoWidgetTypeDescriptor) contribution;
         String name = desc.getName();
         if (widgetTypeRegistry.containsKey(name)) {
-            log.warn(String.format("Overriding definition for widget type %s",
+            log.error(String.format("Overriding definition for widget type %s",
                     name));
             widgetTypeRegistry.remove(name);
         }
@@ -80,9 +80,9 @@ public class LayoutDemoService extends DefaultComponent implements
         String viewId = desc.getViewId();
         // TODO: query the layout service to get more information about this
         // widget type and use it in the demo
-        DemoWidgetType widgetType = new DemoWidgetTypeImpl(name,
-                desc.getLabel(), viewId, category, wtCat,
-                desc.getPreviewEnabled(), desc.getFields(),
+        DemoWidgetType widgetType = new DemoWidgetTypeImpl(
+                desc.getWidgetTypeName(), desc.getLabel(), viewId, category,
+                wtCat, desc.getPreviewEnabled(), desc.getFields(),
                 desc.getDefaultProperties(), desc.getDemoLayouts());
         widgetTypeRegistry.put(name, widgetType);
         if (category != null) {

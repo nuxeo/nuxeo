@@ -38,6 +38,15 @@ public class DemoWidgetTypeDescriptor implements Serializable {
     @XNode("@name")
     protected String name;
 
+    /**
+     * Additional name that can be used when describing a widget type in a
+     * different category.
+     *
+     * @since 5.9.1
+     */
+    @XNode("@widgetTypeName")
+    protected String widgetTypeName;
+
     @XNode("label")
     protected String label;
 
@@ -64,6 +73,13 @@ public class DemoWidgetTypeDescriptor implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public String getWidgetTypeName() {
+        if (widgetTypeName == null) {
+            return getName();
+        }
+        return widgetTypeName;
     }
 
     public String getLabel() {
