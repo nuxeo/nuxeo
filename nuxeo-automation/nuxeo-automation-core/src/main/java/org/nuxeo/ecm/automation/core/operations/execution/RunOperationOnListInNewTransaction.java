@@ -42,7 +42,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @since 5.7.2
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @Operation(id = RunOperationOnListInNewTransaction.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run For Each in new TX", description = "Run an operation/chain in a new Transaction for each element from the list defined by the 'list' paramter. The 'list' parameter is pointing to context variable that represent the list which will be iterated. The 'itemName' parameter represent the name of the context varible which will point to the current element in the list at each iteration. You can use the 'isolate' parameter to specify whether or not the evalution context is the same as the parent context or a copy of it. If the isolate is 'true' then a copy of the current contetx is used and so that modifications in this context will not affect the parent context. Any input is accepted. The input is returned back as output when operation terminate.")
 public class RunOperationOnListInNewTransaction {
@@ -100,7 +99,7 @@ public class RunOperationOnListInNewTransaction {
                 subctx.put(itemName, value);
                 service.run(subctx, chainId, null);
             } catch (Exception e) {
-                log.error("Cannot procceed on " + value, e);
+                log.error("Cannot proceed on " + value, e);
                 TransactionHelper.setTransactionRollbackOnly();
             } finally {
                 TransactionHelper.commitOrRollbackTransaction();
