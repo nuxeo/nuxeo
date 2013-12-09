@@ -100,7 +100,7 @@ public class RunOperationOnListInNewTransaction {
                 subctx.put(itemName, value);
                 service.run(subctx, chainId, null);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Cannot procceed on " + value, e);
                 TransactionHelper.setTransactionRollbackOnly();
             } finally {
                 TransactionHelper.commitOrRollbackTransaction();
