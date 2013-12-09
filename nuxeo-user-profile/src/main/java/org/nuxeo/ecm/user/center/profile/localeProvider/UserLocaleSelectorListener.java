@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.user.center.profile.UserProfileService;
 import org.nuxeo.ecm.webapp.locale.LocaleStartup;
 import org.nuxeo.runtime.api.Framework;
@@ -46,9 +47,12 @@ public class UserLocaleSelectorListener implements EventListener {
         if (!userProfileDocument.hasFacet("UserProfile")) {
             return;
         }
-        UserProfileService userProfileService = Framework.getLocalService(UserProfileService.class);
-        DocumentModel userProfileDoc = userProfileService.getUserProfileDocument(ctx.getCoreSession());
-        if (!userProfileDoc.getId().equals(userProfileDocument.getId())) {
+
+        // if the profile does not belong to the current user
+        // => no need to sync Seam session
+        UserWorkspaceService uws = Framework.getLocalService(UserWorkspaceService.class);
+        DocumentModel userWorkspace = uws.getCurrentUserPersonalWorkspace(ctx.getCoreSession(), userProfileDocument);
+        if (!userProfileDocument.getPathAsString().startsWith(userWorkspace.getPathAsString())) {
             return;
         }
 
