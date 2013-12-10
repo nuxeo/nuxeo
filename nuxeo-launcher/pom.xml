@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -81,10 +82,42 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <!-- merge services files -->
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"></transformer>
+              </transformers>
               <!-- <createDependencyReducedPom>false</createDependencyReducedPom> -->
               <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
               <shadedArtifactAttached>true</shadedArtifactAttached>
               <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+              <relocations>
+                <!-- Relocate org.eclipse.core:org.eclipse.core.jobs -->
+                <relocation>
+                  <pattern>org/eclipse/core/internal/jobs</pattern>
+                  <shadedPattern>hidden/org/eclipse/core/internal/jobs</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org/eclipse/core/runtime/jobs</pattern>
+                  <shadedPattern>hidden/org/eclipse/core/runtime/jobs</shadedPattern>
+                </relocation>
+                <!-- Relocate org.eclipse.equinox:org.eclipse.equinox.common -->
+                <relocation>
+                  <pattern>org/eclipse/core/internal/boot</pattern>
+                  <shadedPattern>hidden/org/eclipse/core/internal/boot</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org/eclipse/core/internal/runtime</pattern>
+                  <shadedPattern>hidden/org/eclipse/core/internal/runtime</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org/eclipse/core/runtime</pattern>
+                  <shadedPattern>hidden/org/eclipse/core/runtime</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org/eclipse/equinox/events</pattern>
+                  <shadedPattern>hidden/org/eclipse/equinox/events</shadedPattern>
+                </relocation>
+              </relocations>
               <filters>
                 <filter>
                   <artifact>*:*</artifact>
