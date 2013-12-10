@@ -103,9 +103,6 @@ body {
   width: 400px
 }
 
-.container {
-  min-height: 670px }
-
 /* Header */
 .topBar {
   background: #000 none;
@@ -155,7 +152,6 @@ body {
   -moz-box-sizing: border-box;
   border-radius: 3px;
   filter: alpha(opacity = 90);
-  margin-top: -110px;
   opacity: 0.9;
   padding: 1.5em 1em 1em;
   width: 300px }
