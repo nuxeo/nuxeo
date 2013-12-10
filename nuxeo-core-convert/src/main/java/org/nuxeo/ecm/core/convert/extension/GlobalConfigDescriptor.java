@@ -58,11 +58,16 @@ public class GlobalConfigDescriptor implements Serializable {
         return GCInterval;
     }
 
+
     public int getDiskCacheSize() {
         if (diskCacheSize == 0) {
             return DEFAULT_DISK_CACHE_IN_KB;
         }
         return diskCacheSize;
+    }
+
+    public void setDiskCacheSize(int size) {
+        diskCacheSize =size;
     }
 
     public boolean isCacheEnabled() {

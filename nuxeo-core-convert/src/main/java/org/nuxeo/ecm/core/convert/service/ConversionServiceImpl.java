@@ -121,6 +121,10 @@ public class ConversionServiceImpl extends DefaultComponent implements
         return config.getDiskCacheSize();
     }
 
+    public static void setMaxCacheSizeInKB(int size) {
+        config.setDiskCacheSize(size);
+    }
+
     public static boolean isCacheEnabled() {
         return config.isCacheEnabled();
     }

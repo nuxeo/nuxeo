@@ -73,28 +73,32 @@ public class ConversionCacheGCManager {
     }
 
     public static boolean gcIfNeeded() {
-        gcCalls += 1;
         log.debug("GC Thread awake, see if there is some work to be done");
 
         long totalSize = getCacheSizeInKB();
         long limit = getMaxDiskSpaceUsageKB();
 
         if (totalSize < limit) {
+            gcCalls += 1;
             log.debug("No GC needed, go back to sleep for now");
             return false;
         }
 
         // do the GC
         long deltaInKB = totalSize - limit;
+        if (limit <0) {
+            // mainly for testing : negative limit means cleanup everything
+            deltaInKB = totalSize;
+        }
         log.debug("GC needed to free " + deltaInKB + " KB of data");
         doGC(deltaInKB);
         log.debug("GC terminated");
-
+        gcCalls += 1;
         return true;
     }
 
     public static void doGC(long deltaInKB) {
-        gcRuns += 1;
+
         Set<String> cacheKeys = ConversionCacheHolder.getCacheKeys();
 
         Map<Date, String> sortingMap = new HashMap<Date, String>();
@@ -123,6 +127,7 @@ public class ConversionCacheGCManager {
                 break;
             }
         }
+        gcRuns += 1;
     }
 
 }

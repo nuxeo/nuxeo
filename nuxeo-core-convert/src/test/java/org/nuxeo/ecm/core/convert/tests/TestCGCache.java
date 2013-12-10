@@ -13,13 +13,14 @@
 
 package org.nuxeo.ecm.core.convert.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -28,6 +29,7 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheGCManager;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheHolder;
+import org.nuxeo.ecm.core.convert.cache.GCTask;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -45,13 +47,20 @@ public class TestCGCache extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.convert");
         deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/convert-service-config-enabled-gc.xml");
         cs = Framework.getLocalService(ConversionService.class);
+
+        //  fire the frameworkStarted event and make sure that the GC thread is started
+        fireFrameworkStarted();
+
+        // do testing configuration
+        // cachesize = -1 (actually 0)
+        // GC interval negative => interpreted as seconds
+        ConversionServiceImpl.setMaxCacheSizeInKB(-1);
+        GCTask.setGCIntervalInMinutes(-1000);
     }
 
     @Test
-    // disabled because randomly failing, see NXP-12900
-    @Ignore
     public void testCGTask() throws Exception {
-        int noRuns = ConversionCacheGCManager.getGCRuns();
+
         Converter cv = deployConverter();
         assertNotNull(cv);
 
@@ -64,13 +73,11 @@ public class TestCGCache extends NXRuntimeTestCase {
         // check new cache entry was created
         assertEquals(1, cacheSize2 - cacheSize1);
 
-        //  fire the frameworkStarted event and make sure that the GC
-        // has run and that the cache is empty
-        fireFrameworkStarted();
-        // wait for the CHTread to run
+        // wait for the GCThread to run
         int retryCount = 0;
+        int noRuns = ConversionCacheGCManager.getGCRuns();
         while ( ConversionCacheGCManager.getGCRuns() == noRuns && retryCount++ < 5) {
-            Thread.sleep(1000);
+            Thread.sleep(1100);
         }
         assertTrue(ConversionCacheGCManager.getGCRuns() > 0);
 
