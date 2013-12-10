@@ -701,7 +701,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
                 transition("transLoop", "parallelNode2",
                         "NodeVariables[\"button\"] ==\"loop\""),
                 transition("transToMerge", "mergeNode",
-                        "NodeVariables[\"button\"] ==\"toMerge\""));
+                        "NodeVariables[\"tasks\"].getNumberEndedWithStatus(\"toMerge\") ==1"));
         parallelNode2 = session.saveDocument(parallelNode2);
 
         DocumentModel mergeNode = createNode(routeDoc, "mergeNode", session);
@@ -783,6 +783,16 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         route = session.getDocument(route.getDocument().getRef()).getAdapter(
                 DocumentRoute.class);
         assertTrue(route.isDone());
+        GraphRoute graph = route.getDocument().getAdapter(GraphRoute.class);
+        assertEquals(1,
+                graph.getNode("parallelNode1").getEndedTasksInfo().size());
+        assertEquals(1,
+                graph.getNode("parallelNode1").getProcessedTasksInfo().size());
+        assertEquals(1,
+                graph.getNode("parallelNode2").getEndedTasksInfo().size());
+        assertEquals(1,
+                graph.getNode("parallelNode2").getProcessedTasksInfo().size());
+
     }
 
     @SuppressWarnings("unchecked")

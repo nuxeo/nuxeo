@@ -274,6 +274,10 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             incrementProp(PROP_COUNT);
             document.setPropertyValue(PROP_NODE_START_DATE,
                     Calendar.getInstance());
+            // reset taskInfo property
+            tasksInfo = null;
+            document.setPropertyValue(PROP_TASKS_INFO,
+                    new ArrayList<TaskInfo>());
             saveDocument();
         } catch (Exception e) {
             throw new ClientRuntimeException(e);
