@@ -13,8 +13,8 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>nuxeo-generic-wss-front</module>
-    <module>nuxeo-generic-wss-handler</module>
+    <module>nuxeo-wss-front</module>
+    <module>nuxeo-wss</module>
     <module>nuxeo-webdav</module>
     <module>nuxeo-webdav-test</module>
   </modules>

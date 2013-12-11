@@ -24,7 +24,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-generic-wss-handler</artifactId>
+      <artifactId>nuxeo-wss</artifactId>
     </dependency>
 
     <dependency>

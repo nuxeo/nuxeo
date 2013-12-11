@@ -7,8 +7,8 @@
     <version>5.9.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-generic-wss-front</artifactId>
-  <name>Nuxeo Generic WSS Front Filter</name>
+  <artifactId>nuxeo-wss-front</artifactId>
+  <name>Nuxeo WSS Front Filter</name>
 
   <dependencies>
     <dependency>

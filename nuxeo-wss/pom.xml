@@ -7,13 +7,13 @@
     <version>5.9.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-generic-wss-handler</artifactId>
-  <name>Nuxeo Generic WSS bindings</name>
+  <artifactId>nuxeo-wss</artifactId>
+  <name>Nuxeo WSS</name>
 
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-generic-wss-front</artifactId>
+      <artifactId>nuxeo-wss-front</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
