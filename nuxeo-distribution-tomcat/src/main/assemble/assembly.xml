@@ -295,7 +295,7 @@ install nuxeo-dam
         <include name="freemarker-*" />
         <include name="mail-*" />
         <!-- move WSS front filter as external lib since it must be referenced from root Web context-->
-        <include name="nuxeo-generic-wss-front*" />
+        <include name="nuxeo-wss-front*" />
       </fileset>
       <!-- install sl4j bridge in container classpath -->
       <fileset dir="${distribution.dir}/nxserver/lib">

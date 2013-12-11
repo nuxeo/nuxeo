@@ -65,8 +65,7 @@
     </copy>
     <move todir="${nuxeo.ear}/lib">
       <fileset dir="${nuxeo.ear}/bundles">
-        <include name="nuxeo-generic-wss-front*" />
-        <include name="nuxeo-generic-wss-handler*" />
+        <include name="nuxeo-wss-front*" />
       </fileset>
     </move>
     <nx:rmdups dir="${nuxeo.ear}/lib" />
