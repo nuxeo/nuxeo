@@ -67,10 +67,6 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                     EventContext ctx = event.getContext();
 
                     if (ctx instanceof DocumentEventContext) {
-                        if (log.isTraceEnabled()) {
-                            String sid = ((DocumentEventContext) ctx).getCoreSession().getSessionId();
-                            log.trace("Orginal SessionId:" + sid);
-                        }
                         SizeUpdateEventContext quotaCtx = SizeUpdateEventContext.unwrap((DocumentEventContext) ctx);
                         if (quotaCtx != null) {
                             processQuotaComputation(quotaCtx);
@@ -117,13 +113,6 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                         + sourceDocument.getPathAsString() + " on event "
                         + sourceEvent);
                 return;
-            }
-        } else {
-            if (log.isTraceEnabled()) {
-                log.trace("sourceDoc SessionId:"
-                        + sourceDocument.getSessionId());
-                log.trace("sourceDoc SessionId:"
-                        + sourceDocument.getCoreSession().getSessionId());
             }
         }
         List<DocumentModel> parents = new ArrayList<DocumentModel>();

@@ -200,7 +200,6 @@ public class SizeUpdateEventContext extends DocumentEventContext {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("CoreSession " + getCoreSession().getSessionId());
         sb.append("\nsourceDocument " + getSourceDocument().getId() + " "
                 + getSourceDocument().getPathAsString());
         sb.append("\nprops " + getProperties().toString());
