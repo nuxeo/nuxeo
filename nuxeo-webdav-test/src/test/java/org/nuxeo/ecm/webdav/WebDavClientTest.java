@@ -66,10 +66,12 @@ import com.google.inject.Inject;
  * Jackrabbit includes a WebDAV client library. Let's use it to test our
  * server.
  */
-public class JackrabbitWebdavClientTest extends AbstractServerTest {
+public class WebDavClientTest extends AbstractServerTest {
 
 
-    private static String USERNAME = "userId";
+    private static String USERNAME = "Administrator";
+
+    private static String PASSWORD = "Administrator";
 
     private static HttpClient client;
 
@@ -78,11 +80,10 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
 
     @BeforeClass
     public static void setUpClass() {
-        client = createClient(USERNAME);
+        client = createClient(USERNAME, PASSWORD);
     }
 
-
-    protected static HttpClient createClient(String username) {
+    protected static HttpClient createClient(String username, String password) {
         HostConfiguration hostConfig = new HostConfiguration();
         hostConfig.setHost("localhost", WebDavServerFeature.PORT);
 
@@ -95,8 +96,9 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         HttpClient httpClient = new HttpClient(connectionManager);
         httpClient.setHostConfiguration(hostConfig);
 
-        Credentials creds = new UsernamePasswordCredentials(username, "pw");
+        Credentials creds = new UsernamePasswordCredentials(username, password);
         httpClient.getState().setCredentials(AuthScope.ANY, creds);
+        httpClient.getParams().setAuthenticationPreemptive(true);
         return httpClient;
     }
 
@@ -323,10 +325,9 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         client.executeMethod(pLock);
         pLock.checkSuccess();
 
-        HttpClient client2 = createClient("user2Id");
         DavMethod pFind = new PropFindMethod(
                 fileUri, DavConstants.PROPFIND_ALL_PROP, DavConstants.DEPTH_1);
-        client2.executeMethod(pFind);
+        client.executeMethod(pFind);
 
         MultiStatus multiStatus = pFind.getResponseBodyAsMultiStatus();
         MultiStatusResponse[] responses = multiStatus.getResponses();
@@ -338,7 +339,7 @@ public class JackrabbitWebdavClientTest extends AbstractServerTest {
         Element eLockDiscovery =
                 (Element) ((Element) pLockDiscovery.getValue()).getParentNode();
         LockDiscovery lockDiscovery = LockDiscovery.createFromXml(eLockDiscovery);
-        assertEquals("system", lockDiscovery.getValue().get(0).getOwner());
+        assertEquals(USERNAME, lockDiscovery.getValue().get(0).getOwner());
     }
 
 }

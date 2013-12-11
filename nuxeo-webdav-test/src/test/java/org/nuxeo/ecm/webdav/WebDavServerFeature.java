@@ -19,7 +19,11 @@ package org.nuxeo.ecm.webdav;
 import java.io.IOException;
 
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
+import org.nuxeo.ecm.webengine.app.WebEngineFilter;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContextFilter;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionCleanupFilter;
+import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -42,7 +46,7 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
         "org.nuxeo.ecm.platform.mimetype.core",
         "org.nuxeo.ecm.platform.filemanager.api",
         "org.nuxeo.ecm.platform.filemanager.core" })
-public class WebDavServerFeature extends SimpleFeature {
+public class WebDavServerFeature extends WebEngineFeature {
 
     static boolean DEBUG = false;
 
@@ -74,6 +78,12 @@ public class WebDavServerFeature extends SimpleFeature {
         // session cleanup
         jerseyAdapter.addFilter(new RequestContextFilter(),
                 "RequestContextFilter", null);
+        jerseyAdapter.addFilter(new SessionCleanupFilter(),
+                "SessionCleanupFilter", null);
+        jerseyAdapter.addFilter(new NuxeoAuthenticationFilter(),
+                "NuxeoAuthenticationFilter", null);
+        jerseyAdapter.addFilter(new WebEngineFilter(),
+                "WebEngineFilter", null);
 
         if (DEBUG) {
             jerseyAdapter.addInitParameter(

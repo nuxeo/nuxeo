@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.webdav.backend;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 public class SearchVirtualBackend extends AbstractVirtualBackend {
@@ -25,8 +26,8 @@ public class SearchVirtualBackend extends AbstractVirtualBackend {
     private String query;
 
     public SearchVirtualBackend(String name, String rootUrl, String query,
-            RealBackendFactory realBackendFactory) {
-        super(name, rootUrl, realBackendFactory);
+            CoreSession session, RealBackendFactory realBackendFactory) {
+        super(name, rootUrl, session, realBackendFactory);
         this.query = query;
     }
 

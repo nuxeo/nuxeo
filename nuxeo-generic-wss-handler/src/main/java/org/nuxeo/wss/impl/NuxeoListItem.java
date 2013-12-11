@@ -27,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
@@ -54,7 +53,7 @@ public class NuxeoListItem extends AbstractWSSListItem implements WSSListItem {
     protected String virtualRootNodeName = null;
 
     protected CoreSession getSession() {
-        return CoreInstance.getInstance().getSession(doc.getSessionId());
+        return doc.getCoreSession();
     }
 
     public NuxeoListItem(DocumentModel doc, String corePathPrefix,

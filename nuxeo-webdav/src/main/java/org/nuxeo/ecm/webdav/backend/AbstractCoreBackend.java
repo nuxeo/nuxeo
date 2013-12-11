@@ -17,14 +17,8 @@
  */
 package org.nuxeo.ecm.webdav.backend;
 
-import java.io.Serializable;
-import java.util.HashMap;
-
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractCoreBackend implements Backend {
 
@@ -38,12 +32,6 @@ public abstract class AbstractCoreBackend implements Backend {
         this.session = session;
     }
 
-    /*
-     * public void begin() throws ClientException { if
-     * (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-     * TransactionHelper.startTransaction(); } }
-     */
-
     @Override
     public CoreSession getSession() throws ClientException {
         return getSession(false);
@@ -51,17 +39,6 @@ public abstract class AbstractCoreBackend implements Backend {
 
     @Override
     public CoreSession getSession(boolean synchronize) throws ClientException {
-        try {
-            if (session == null) {
-                session = Framework.getService(CoreSession.class);
-                String repoURI = Framework.getService(RepositoryManager.class).getDefaultRepository().getName();
-                session.connect(repoURI, new HashMap<String,Serializable>());
-            } else {
-                session.save();
-            }
-        } catch (Exception e) {
-            throw new ClientException("Error while getting session", e);
-        }
         if (synchronize) {
             session.save();
         }
@@ -69,66 +46,8 @@ public abstract class AbstractCoreBackend implements Backend {
     }
 
     @Override
-    public void setSession(CoreSession session) {
-        this.session = session;
-    }
-
-    @Override
-    public void destroy() {
-        close();
-    }
-
-    protected void close() {
-        if (session != null) {
-            CoreInstance.getInstance().close(session);
-            session = null;
-        }
-    }
-
-    @Override
-    public void discardChanges() throws ClientException {
-        discardChanges(false);
-    }
-
-    public void discardChanges(boolean release) throws ClientException {
-        // TransactionHelper.setTransactionRollbackOnly();
-        try {
-            if (session != null) {
-                try {
-                    session.cancel();
-                    if (release) {
-                        close();
-                    }
-                } catch (Exception e) {
-                    throw new ClientException("Error during discard", e);
-                }
-            }
-        } finally {
-            // TransactionHelper.commitOrRollbackTransaction();
-        }
-    }
-
-    @Override
     public void saveChanges() throws ClientException {
-        saveChanges(false);
-    }
-
-    public void saveChanges(boolean release) throws ClientException {
-        try {
-            if (session != null) {
-                try {
-                    session.save();
-                    if (release) {
-                        close();
-                    }
-                } catch (ClientException e) {
-                    throw new ClientException("Error during save", e);
-                }
-            }
-        } finally {
-            // TransactionHelper.commitOrRollbackTransaction();
-        }
-
+        session.save();
     }
 
 }

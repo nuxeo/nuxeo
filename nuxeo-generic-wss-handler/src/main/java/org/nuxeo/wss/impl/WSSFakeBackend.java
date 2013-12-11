@@ -59,11 +59,6 @@ public class WSSFakeBackend implements WSSBackend {
     }
 
     @Override
-    public void discardChanges() throws WSSException {
-
-    }
-
-    @Override
     public WSSListItem moveItem(String s, String s1) throws WSSException {
         return null;
     }

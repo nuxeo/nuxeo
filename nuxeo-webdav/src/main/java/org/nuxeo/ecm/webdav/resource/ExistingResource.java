@@ -109,7 +109,6 @@ public class ExistingResource extends AbstractResource {
         } catch (ClientException e) {
             log.error("Can't remove item: " + doc.getPathAsString() + e.getMessage());
             log.debug(e);
-            backend.discardChanges();
             return Response.status(FORBIDDEN).build();
         }
     }

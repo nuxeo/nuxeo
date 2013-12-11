@@ -397,7 +397,6 @@ public class SimpleBackend extends AbstractCoreBackend {
             getPathCache().remove(source.getPathAsString());
             return model;
         } catch (ClientException e) {
-            discardChanges();
             throw new ClientException("Error while doing move", e);
         }
     }
@@ -413,7 +412,6 @@ public class SimpleBackend extends AbstractCoreBackend {
                             + source.getName(), model);
             return model;
         } catch (ClientException e) {
-            discardChanges();
             throw new ClientException("Error while doing move", e);
         }
     }
@@ -441,7 +439,6 @@ public class SimpleBackend extends AbstractCoreBackend {
             getPathCache().put(parseLocation(parentPath) + "/" + name, folder);
             return folder;
         } catch (Exception e) {
-            discardChanges();
             throw new ClientException("Error child creating new folder", e);
         }
     }
@@ -478,7 +475,6 @@ public class SimpleBackend extends AbstractCoreBackend {
             getPathCache().put(parseLocation(parentPath) + "/" + name, file);
             return file;
         } catch (Exception e) {
-            discardChanges();
             throw new ClientException("Error child creating new folder", e);
         }
     }

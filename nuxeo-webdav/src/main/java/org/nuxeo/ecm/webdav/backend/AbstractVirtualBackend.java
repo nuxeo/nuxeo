@@ -50,11 +50,6 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
     private RealBackendFactory realBackendFactory;
 
     protected AbstractVirtualBackend(String name, String rootUrl,
-            RealBackendFactory realBackendFactory) {
-        this(name, rootUrl, null, realBackendFactory);
-    }
-
-    protected AbstractVirtualBackend(String name, String rootUrl,
             CoreSession session, RealBackendFactory realBackendFactory) {
         super(session);
         this.backendDisplayName = name;
@@ -175,16 +170,6 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend
             }
             String location = path.removeFirstSegments(1).toString();
             return backend.getBackend(location);
-        }
-    }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-        if (backendMap != null) {
-            for (Backend backend : backendMap.values()) {
-                backend.destroy();
-            }
         }
     }
 

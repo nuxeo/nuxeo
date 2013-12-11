@@ -16,10 +16,12 @@
  */
 package org.nuxeo.ecm.webdav.backend;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+
 public class SimpleRootBackend extends SimpleBackend {
 
-    public SimpleRootBackend() {
-        super("", "", "", null);
+    public SimpleRootBackend(CoreSession session) {
+        super("", "", "", session);
         this.rootPath = "/default-domain";
     }
 

@@ -18,11 +18,13 @@
  */
 package org.nuxeo.ecm.webdav.backend;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+
 public class SearchBackendFactory extends AbstractBackendFactory {
 
     @Override
-    protected Backend createRootBackend() {
-        return new SearchRootBackend();
+    public Backend createRootBackend(CoreSession session) {
+        return new SearchRootBackend(session);
     }
 
 }

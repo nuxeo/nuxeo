@@ -38,8 +38,6 @@ public interface WSSBackend {
 
     void saveChanges() throws WSSException;
 
-    void discardChanges() throws WSSException;
-
     WSSListItem moveItem(String oldLocation, String newLocation) throws WSSException;
 
     void removeItem(String location) throws WSSException;

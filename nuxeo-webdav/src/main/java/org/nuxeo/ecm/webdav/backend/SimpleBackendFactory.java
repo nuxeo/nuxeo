@@ -16,10 +16,12 @@
  */
 package org.nuxeo.ecm.webdav.backend;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+
 public class SimpleBackendFactory extends AbstractBackendFactory {
 
     @Override
-    protected Backend createRootBackend() {
-        return new SimpleRootBackend();
+    public Backend createRootBackend(CoreSession session) {
+        return new SimpleRootBackend(session);
     }
 }

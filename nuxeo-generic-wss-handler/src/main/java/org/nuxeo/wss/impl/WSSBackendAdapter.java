@@ -124,15 +124,6 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
     }
 
     @Override
-    public void discardChanges() throws WSSException {
-        try {
-            backend.discardChanges();
-        } catch (ClientException e) {
-            throw new WSSException("Error during discard changes", e);
-        }
-    }
-
-    @Override
     public WSSListItem moveItem(String location, String destination)
             throws WSSException {
         location = cleanLocation(location);
@@ -289,10 +280,6 @@ public class WSSBackendAdapter extends AbstractWSSBackend {
         site.setListUUID(parent.getEtag());
         site.setItem(parent);
         return site;
-    }
-
-    public void setSession(CoreSession session) {
-        backend.setSession(session);
     }
 
     private NuxeoListItem createItem(DocumentModel model) {

@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
-import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -84,10 +83,6 @@ public class WIRequestFilter implements Filter {
                 } finally {
                     ((BufferingHttpServletResponse) response).stopBuffering();
                 }
-            }
-            Backend backend = (Backend) httpRequest.getAttribute(BACKEND_KEY);
-            if (backend != null) {
-                backend.destroy();
             }
         }
     }

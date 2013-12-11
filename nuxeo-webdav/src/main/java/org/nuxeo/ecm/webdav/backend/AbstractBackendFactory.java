@@ -19,50 +19,35 @@ package org.nuxeo.ecm.webdav.backend;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webdav.service.WIRequestFilter;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
-import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.model.WebContext;
 
 public abstract class AbstractBackendFactory implements BackendFactory {
 
-    private static final Log log = LogFactory.getLog(AbstractBackendFactory.class);
-
     @Override
     public Backend getBackend(String path, HttpServletRequest request) {
-
-        if (log.isDebugEnabled() && request != null) {
-            log.debug("Get backend for method:" + request.getMethod() + " uri:"
-                    + request.getRequestURI());
+        if (request == null) {
+            throw new NullPointerException("null request");
         }
-
-        Backend backend;
-        if (request != null) {
-            backend = (Backend) request.getAttribute(WIRequestFilter.BACKEND_KEY);
-            if (backend == null) {
-                backend = createRootBackend();
-                request.setAttribute(WIRequestFilter.BACKEND_KEY, backend);
+        Backend backend = (Backend) request.getAttribute(WIRequestFilter.BACKEND_KEY);
+        if (backend == null) {
+            // create backend from WebEngine session
+            WebContext webContext = WebEngine.getActiveContext();
+            if (webContext == null) {
+                throw new NullPointerException("null WebContext");
             }
-            // register a backend cleanup handler
-            // unless there's none (pure servlet call for WSS)
-            RequestContext activeContext = RequestContext.getActiveContext(request);
-            if (activeContext != null) {
-                final Backend be = backend;
-                activeContext.addRequestCleanupHandler(new RequestCleanupHandler() {
-                    @Override
-                    public void cleanup(HttpServletRequest req) {
-                        be.destroy();
-                    }
-                });
+            CoreSession session = webContext.getCoreSession();
+            if (session == null) {
+                throw new NullPointerException("null CoreSession");
             }
-        } else {
-            // for tests
-            backend = createRootBackend();
+            backend = createRootBackend(session);
+            request.setAttribute(WIRequestFilter.BACKEND_KEY, backend);
         }
         return backend.getBackend(path);
     }
 
-    protected abstract Backend createRootBackend();
+    public abstract Backend createRootBackend(CoreSession session);
 
 }

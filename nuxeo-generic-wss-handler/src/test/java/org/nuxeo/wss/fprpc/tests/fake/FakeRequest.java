@@ -410,7 +410,7 @@ public class FakeRequest implements HttpServletRequest {
 
     @Override
     public void removeAttribute(String name) {
-        throw new NotImplementedException();
+        attributes.remove(name);
     }
 
     @Override

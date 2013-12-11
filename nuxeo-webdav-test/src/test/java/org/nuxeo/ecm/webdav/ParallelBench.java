@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
  * Jackrabbit includes a WebDAV client library. Let's use it to test our
  * server.
  */
-public class JackRabbitParallelBench implements Runnable {
+public class ParallelBench implements Runnable {
 
     // Nuxeo / JBoss
     private static final String ROOT_URI = "http://localhost:8080/nuxeo/site/dav/default-domain/workspaces/";
@@ -55,7 +55,7 @@ public class JackRabbitParallelBench implements Runnable {
     private Random random;
     private final HttpClient client;
 
-    public JackRabbitParallelBench() {
+    public ParallelBench() {
         random = new Random();
         client = createClient();
     }
@@ -65,7 +65,7 @@ public class JackRabbitParallelBench implements Runnable {
             long startTime = System.currentTimeMillis();
             Thread[] threads = new Thread[NUM_THREADS];
             for (int i = 0; i < NUM_THREADS; i++) {
-                threads[i] = new Thread(new JackRabbitParallelBench());
+                threads[i] = new Thread(new ParallelBench());
                 threads[i].start();
             }
             for (int i = 0; i < NUM_THREADS; i++) {

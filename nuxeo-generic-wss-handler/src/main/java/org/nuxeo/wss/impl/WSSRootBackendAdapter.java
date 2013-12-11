@@ -74,11 +74,6 @@ public class WSSRootBackendAdapter extends WSSBackendAdapter {
     }
 
     @Override
-    public void discardChanges() throws WSSException {
-        super.discardChanges();
-    }
-
-    @Override
     public WSSListItem moveItem(String location, String destination)
             throws WSSException {
         WSSBackend sourceBackend = getBackend(location);

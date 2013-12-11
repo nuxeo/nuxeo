@@ -17,26 +17,37 @@
  */
 package org.nuxeo.wss.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.webdav.backend.AbstractBackendFactory;
+import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.BackendHelper;
 import org.nuxeo.ecm.webdav.backend.SearchBackendFactory;
 import org.nuxeo.ecm.webdav.backend.SimpleBackendFactory;
+import org.nuxeo.ecm.webdav.service.WIRequestFilter;
+import org.nuxeo.wss.servlet.WSSRequest;
 import org.nuxeo.wss.spi.WSSBackend;
 import org.nuxeo.wss.spi.WSSListItem;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 public class TestSimpleBackend extends SQLRepositoryTestCase {
 
@@ -139,14 +150,19 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
+    protected WSSBackend createWssBackend(AbstractBackendFactory factory) {
+        BackendHelper.setBackendFactory(factory);
+        Backend backend = factory.createRootBackend(session);
+        HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
+        when(httpServletRequest.getAttribute(WIRequestFilter.BACKEND_KEY)).thenReturn(
+                backend);
+        WSSRequest wssRequest = new WSSRequest(httpServletRequest, "/");
+        return new WSSBackendFactoryImpl().getBackend(wssRequest);
+    }
+
     @Test
     public void testSimpleBackendBrowse() throws Exception {
-        BackendHelper.setBackendFactory(new SimpleBackendFactory());
-
-        WSSBackendFactoryImpl factory = new WSSBackendFactoryImpl();
-
-        WSSBackend backend = factory.getBackend(null);
-        assertNotNull(backend);
+        WSSBackend backend = createWssBackend(new SimpleBackendFactory());
 
         List<WSSListItem> items = backend.listItems("/nuxeo");
         assertNotNull(items);
@@ -209,13 +225,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
     @Test
     public void testSimpleBackendOperations() throws Exception {
-        BackendHelper.setBackendFactory(new SimpleBackendFactory());
-
-        WSSBackendFactoryImpl factory = new WSSBackendFactoryImpl();
-
-        WSSBackend backend = factory.getBackend(null);
-        assertNotNull(backend);
-        ((WSSBackendAdapter) backend).setSession(session);
+        WSSBackend backend = createWssBackend(new SimpleBackendFactory());
 
         WSSListItem item = backend.createFileItem("/nuxeo/workspaces/ws1",
                 "testMe");
@@ -276,13 +286,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
     @Test
     public void testSearchBackendBrowse() throws Exception {
-        BackendHelper.setBackendFactory(new SearchBackendFactory());
-
-        WSSBackendFactoryImpl factory = new WSSBackendFactoryImpl();
-
-        WSSBackend backend = factory.getBackend(null);
-        assertNotNull(backend);
-        ((WSSBackendAdapter) backend).setSession(session);
+        WSSBackend backend = createWssBackend(new SearchBackendFactory());
 
         List<WSSListItem> items = backend.listItems("/nuxeo");
         assertNotNull(items);
@@ -356,13 +360,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
 
     @Test
     public void testSearchBackendOperations() throws Exception {
-        BackendHelper.setBackendFactory(new SearchBackendFactory());
-
-        WSSBackendFactoryImpl factory = new WSSBackendFactoryImpl();
-
-        WSSBackend backend = factory.getBackend(null);
-        assertNotNull(backend);
-        ((WSSBackendAdapter) backend).setSession(session);
+        WSSBackend backend = createWssBackend(new SearchBackendFactory());
 
         WSSListItem item = backend.createFileItem("/nuxeo/ws1", "testMe");
         assertNotNull(item);

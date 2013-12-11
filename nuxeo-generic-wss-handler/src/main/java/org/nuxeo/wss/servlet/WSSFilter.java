@@ -17,6 +17,10 @@
 
 package org.nuxeo.wss.servlet;
 
+import java.security.Principal;
+import java.util.ArrayList;
+
+import javax.security.auth.login.LoginContext;
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
@@ -26,6 +30,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoSecuredRequestWrapper;
+import org.nuxeo.ecm.webengine.app.DefaultContext;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+import org.nuxeo.ecm.webengine.model.WebContext;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.wss.WSSConfig;
 import org.nuxeo.wss.WSSException;
 import org.nuxeo.wss.fprpc.FPRPCRequest;
@@ -52,14 +64,20 @@ import org.nuxeo.wss.spi.WSSBackend;
  */
 public class WSSFilter extends BaseWSSFilter implements Filter {
 
+    protected static final Log log = LogFactory.getLog(WSSFilter.class);
+
+    /**
+     * Dummy username used for requests not authenticated otherwise.
+     */
+    public static final String WSS_USERNAME = "__wss__dummy__user__";
+
     protected Boolean rootFilter = null;
 
     protected SimpleGetHandler simpleGetHandler = null;
 
     protected ResourcesHandler resourcesHandler = null;
 
-    protected static final Log log = LogFactory.getLog(WSSFilter.class);
-
+    @Override
     protected void doForward(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, FilterBindingConfig config)
             throws Exception {
@@ -85,7 +103,59 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
         }
     }
 
-    protected void handleWSSCall(HttpServletRequest httpRequest,
+    /*
+     * Init transaction and WebEngine before handling WSS call.
+     */
+    @Override
+    protected void handleWSSCall(HttpServletRequest request,
+            HttpServletResponse response, FilterBindingConfig config)
+            throws Exception {
+        boolean tx = false;
+        boolean ok = false;
+        RequestContext requestContext = null;
+        LoginContext loginContext = null;
+        try {
+            // init transaction
+            tx = TransactionHelper.startTransaction();
+            // make sure we have a user
+            if (request.getUserPrincipal() == null) {
+                // if we didn't go through the NuxeoAuthenticationFilter
+                // use a dummy user
+                Principal principal = new UserPrincipal(WSS_USERNAME,
+                        new ArrayList<String>(), false, false);
+                loginContext = Framework.loginAs(principal.getName());
+                request = new NuxeoSecuredRequestWrapper(request, principal);
+            }
+            // init WebEngine context needed to later get the session
+            // in AbstractBackendFactory
+            requestContext = new RequestContext(request, response);
+            request.setAttribute(WebContext.class.getName(),
+                    new DefaultContext(request));
+            // we could use BufferingHttpServletResponse also here
+            // do WSS call
+            doWSSCall(request, response, config);
+            ok = true;
+        } finally {
+            try {
+                if (tx) {
+                    if (!ok) {
+                        TransactionHelper.setTransactionRollbackOnly();
+                    }
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+            } finally {
+                SessionFactory.dispose(request);
+                if (requestContext != null) {
+                    requestContext.dispose();
+                }
+                if (loginContext != null) {
+                    loginContext.logout();
+                }
+            }
+        }
+    }
+
+    protected void doWSSCall(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, FilterBindingConfig config)
             throws Exception {
 
@@ -133,7 +203,6 @@ public class WSSFilter extends BaseWSSFilter implements Filter {
 
             backend.saveChanges();
         } catch (Throwable t) {
-            backend.discardChanges();
             log.error("Error during WSS call processing", t);
             throw new WSSException("Error while processing WSS request", t);
         }

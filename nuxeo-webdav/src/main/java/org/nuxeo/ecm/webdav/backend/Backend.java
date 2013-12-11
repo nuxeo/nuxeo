@@ -35,15 +35,11 @@ public interface Backend {
 
     CoreSession getSession() throws ClientException;
 
-    void setSession(CoreSession session);
-
     CoreSession getSession(boolean synchronize) throws ClientException;
 
     String getBackendDisplayName();
 
     void saveChanges() throws ClientException;
-
-    void discardChanges() throws ClientException;
 
     boolean isLocked(DocumentRef ref) throws ClientException;
 
@@ -97,8 +93,6 @@ public interface Backend {
     boolean isVirtual();
 
     boolean isRoot();
-
-    void destroy();
 
     String getVirtualPath(String path) throws ClientException;
 

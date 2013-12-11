@@ -19,14 +19,15 @@
 package org.nuxeo.ecm.webdav.backend;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 public class SearchRootBackend extends SearchVirtualBackend {
 
     private static final String QUERY = "select * from Workspace where ecm:mixinType != 'HiddenInNavigation' "
             + "AND  ecm:currentLifeCycleState != 'deleted' AND ecm:isProxy = 0 order by ecm:path";
 
-    public SearchRootBackend() {
-        super("", "", QUERY, new SimpleRealBackendFactory());
+    public SearchRootBackend(CoreSession session) {
+        super("", "", QUERY, session, new SimpleRealBackendFactory());
     }
 
     @Override
