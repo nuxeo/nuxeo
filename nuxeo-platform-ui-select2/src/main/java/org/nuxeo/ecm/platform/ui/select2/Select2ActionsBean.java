@@ -211,6 +211,10 @@ public class Select2ActionsBean implements Serializable {
 
             for (Entry<String, Serializable> entry : propertySet.entrySet()) {
 
+                if (entry.getValue() == null) {
+                    continue;
+                }
+
                 if (defaultParams != null) {
                     // Widget properties have priority on default properties
                     defaultParams.remove(entry.getKey());
