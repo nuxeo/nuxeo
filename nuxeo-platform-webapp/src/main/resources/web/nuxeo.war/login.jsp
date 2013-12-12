@@ -7,6 +7,7 @@
 <%@ page import="java.util.Locale"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%
 String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
 String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
@@ -376,7 +377,7 @@ function focusOn(eltId) {
                 <td>
                   <% // label.login.logIn %>
                   <input type="hidden" name="requestedUrl"
-                      id="requestedUrl" value="${param.requestedUrl}">
+                      id="requestedUrl" value="${fn:escapeXml(param.requestedUrl)}">
                   <input type="hidden" name="form_submitted_marker"
                       id="form_submitted_marker">
                   <input class="login_button" type="submit" name="Submit"
