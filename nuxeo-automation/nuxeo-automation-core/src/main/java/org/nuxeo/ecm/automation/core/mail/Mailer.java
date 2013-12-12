@@ -14,7 +14,9 @@ package org.nuxeo.ecm.automation.core.mail;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.mail.Address;
 import javax.mail.Authenticator;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -225,6 +227,11 @@ public class Mailer {
     }
 
     public static class Message extends MimeMessage {
+
+        public static enum AS {
+            FROM, TO, CC, BCC, REPLYTO
+        }
+
         public Message(Session session) {
             super(session);
         }
@@ -252,6 +259,41 @@ public class Mailer {
         public Message addFrom(String from) throws MessagingException {
             addFrom(new InternetAddress[] { new InternetAddress(from) });
             return this;
+        }
+
+        public void addInfoInMessageHeader(String address, AS as)
+                throws MessagingException {
+            switch (as) {
+            case FROM:
+                addFrom(address);
+                break;
+            case TO:
+                addTo(address);
+                break;
+            case CC:
+                addCc(address);
+                break;
+            case BCC:
+                addBcc(address);
+                break;
+            case REPLYTO:
+                Address[] oldValue = getReplyTo();
+                Address[] replyToValue;
+                if (getReplyTo() == null) {
+                    replyToValue = new Address[1];
+                } else {
+                    replyToValue = new Address[oldValue.length + 1];
+                }
+                for (int i = 0; i < oldValue.length; i++) {
+                    replyToValue[i] = oldValue[i];
+                }
+                replyToValue[oldValue.length] = new InternetAddress(address);
+                setReplyTo(replyToValue);
+                break;
+            default:
+                throw new MessagingException("Unknown header info "
+                        + as.toString());
+            }
         }
 
         public Message setFrom(String from) throws MessagingException {

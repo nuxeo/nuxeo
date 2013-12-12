@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+import javax.mail.Session;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,9 +34,12 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.automation.core.mail.Composer;
 import org.nuxeo.ecm.automation.core.mail.Mailer;
+import org.nuxeo.ecm.automation.core.mail.Mailer.Message;
+import org.nuxeo.ecm.automation.core.mail.Mailer.Message.AS;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -41,6 +47,7 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -60,38 +67,60 @@ public class SendMail {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "message", widget = Constants.W_MAIL_TEMPLATE)
-    protected String message;
+    @Context
+    protected UserManager umgr;
+
+    @Param(name = "from")
+    protected StringList from;
+
+    @Param(name = "to")
+    protected StringList to;
+
+    // Useful for tests.
+    protected Session mailSession;
+
+    /**
+     * @since 5.9.1
+     */
+    @Param(name = "cc", required = false)
+    protected StringList cc;
+
+    /**
+     * @since 5.9.1
+     */
+    @Param(name = "bcc", required = false)
+    protected StringList bcc;
+    /**
+     * @since 5.9.1
+     */
+    @Param(name = "replyto", required = false)
+    protected StringList replyto;
 
     @Param(name = "subject")
     protected String subject;
 
-    @Param(name = "from")
-    protected String from;
-
-    @Param(name = "to")
-    protected StringList to; // a comma separated list of emails
+    @Param(name = "message", widget = Constants.W_MULTILINE_TEXT)
+    protected String message;
 
     @Param(name = "HTML", required = false, values = {"false"})
     protected boolean asHtml = false;
 
     @Param(name = "files", required = false)
     protected StringList blobXpath;
-
-    @Param(name = "viewId", required = false, values = {"view_documents"})
-    protected String viewId = "view_documents";
-
-    @Param(name = "rollbackOnError", required = false, values = {"true"})
+    @Param(name = "rollbackOnError", required = false, values = { "true" })
     protected boolean rollbackOnError = true;
+    /**
+     * @since 5.9.1
+     */
+    @Param(name = "Strict User Resolution", required = false)
+    protected boolean isStrict = true;
+    @Param(name = "viewId", required = false, values = { "view_documents" })
+    protected String viewId = "view_documents";
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         send(doc);
         return doc;
-    }
-
-    protected StringList getRecipients() {
-        return to;
     }
 
     protected String getContent() throws Exception {
@@ -119,17 +148,24 @@ public class SendMail {
             map.put("docUrl", MailTemplateHelper.getDocumentUrl(doc, viewId));
             map.put("subject", subject);
             map.put("to", to);
+            map.put("toResolved", MailBox.fetchPersonsFromList(to, isStrict));
             map.put("from", from);
+            map.put("fromResolved", MailBox.fetchPersonsFromList(from, isStrict));
+            map.put("from", cc);
+            map.put("fromResolved", MailBox.fetchPersonsFromList(cc, isStrict));
+            map.put("from", bcc);
+            map.put("fromResolved", MailBox.fetchPersonsFromList(bcc, isStrict));
+            map.put("from", replyto);
+            map.put("fromResolved", MailBox.fetchPersonsFromList(replyto, isStrict));
             map.put("viewId", viewId);
             map.put("baseUrl",
                     NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
             map.put("Runtime", Framework.getRuntime());
             Mailer.Message msg = createMessage(doc, getContent(), map);
-            msg.setFrom(from);
             msg.setSubject(subject, "UTF-8");
-            for (String r : getRecipients()) {
-                msg.addTo(r);
-            }
+
+            addMailBoxInfo(msg);
+
             msg.send();
         } catch (Exception e) {
             if (rollbackOnError) {
@@ -142,6 +178,41 @@ public class SendMail {
             }
         }
     }
+
+    /**
+     * @since 5.9.1
+     */
+    private void addMailBoxInfo(Mailer.Message msg) throws MessagingException, ClientException {
+        List<MailBox> persons = MailBox.fetchPersonsFromList(from, isStrict);
+        addMailBoxInfoInMessageHeader(msg, AS.FROM, persons);
+
+        persons = MailBox.fetchPersonsFromList(to, isStrict);
+        addMailBoxInfoInMessageHeader(msg, AS.TO, persons);
+
+        persons = MailBox.fetchPersonsFromList(cc, isStrict);
+        addMailBoxInfoInMessageHeader(msg, AS.CC, persons);
+
+        persons = MailBox.fetchPersonsFromList(bcc, isStrict);
+        addMailBoxInfoInMessageHeader(msg, AS.BCC, persons);
+
+        if (replyto != null && !replyto.isEmpty() ) {
+            msg.setReplyTo(null);
+            persons = MailBox.fetchPersonsFromList(replyto, isStrict);
+            addMailBoxInfoInMessageHeader(msg, AS.REPLYTO, persons);
+        }
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    private void addMailBoxInfoInMessageHeader(Message msg, AS as, List<MailBox> persons)
+            throws MessagingException {
+        for (MailBox person : persons) {
+            msg.addInfoInMessageHeader(person.toString(), as);
+        }
+    }
+
+
 
     protected Mailer.Message createMessage(DocumentModel doc, String message,
             Map<String, Object> map) throws Exception {
