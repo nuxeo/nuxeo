@@ -428,7 +428,7 @@ body {
                       id="language" value="<%= selectedLanguage %>" />
                   <% } %>
                   <input type="hidden" name="requestedUrl"
-                      id="requestedUrl" value="${param.requestedUrl}" />
+                      id="requestedUrl" value="${fn:escapeXml(param.requestedUrl)}" />
                   <input type="hidden" name="forceAnonymousLogin"
                       id="true" />
                   <input type="hidden" name="form_submitted_marker"
