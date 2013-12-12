@@ -25,6 +25,15 @@
           <widget>deprecatedVersion</widget>
         </row>
         <row>
+          <widget>acceptingSubWidgets</widget>
+        </row>
+        <row>
+          <widget>handlingLabels</widget>
+        </row>
+        <row>
+          <widget>containingForm</widget>
+        </row>
+        <row>
           <widget>handlerClass</widget>
         </row>
         <row>
@@ -93,6 +102,42 @@
             layoutValue.configuration.deprecatedVersion?'hidden':mode}
           </mode>
         </widgetModes>
+      </widget>
+      <widget name="acceptingSubWidgets" type="checkbox">
+        <labels>
+          <label mode="any">label.layoutDemo.reference.acceptingSubWidgets</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">label.layoutDemo.reference.help.acceptingSubWidgets</label>
+        </helpLabels>
+        <translated>true</translated>
+        <fields>
+          <field>configuration.acceptingSubWidgets</field>
+        </fields>
+      </widget>
+      <widget name="handlingLabels" type="checkbox">
+        <labels>
+          <label mode="any">label.layoutDemo.reference.handlingLabels</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">label.layoutDemo.reference.help.handlingLabels</label>
+        </helpLabels>
+        <translated>true</translated>
+        <fields>
+          <field>configuration.handlingLabels</field>
+        </fields>
+      </widget>
+      <widget name="containingForm" type="checkbox">
+        <labels>
+          <label mode="any">label.layoutDemo.reference.containingForm</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">label.layoutDemo.reference.help.containingForm</label>
+        </helpLabels>
+        <translated>true</translated>
+        <fields>
+          <field>configuration.containingForm</field>
+        </fields>
       </widget>
       <widget name="handlerClass" type="text">
         <labels>
