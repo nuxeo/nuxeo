@@ -70,11 +70,17 @@ public class SendMail {
     @Context
     protected UserManager umgr;
 
-    @Param(name = "from")
-    protected StringList from;
+    @Param(name = "fromList", required = false)
+    protected StringList fromList;
 
-    @Param(name = "to")
-    protected StringList to;
+    @Param(name = "toList", required = false)
+    protected StringList toList;
+
+    @Param(name = "from", required = false, description = "Please do not use, prefer to user fromList. If fromList not null this values is skipped")
+    protected String from;
+
+    @Param(name = "to", required = false, description = "Please do not use, prefer to user toList. If toList not null this values is skipped")
+    protected String to;
 
     // Useful for tests.
     protected Session mailSession;
@@ -90,6 +96,7 @@ public class SendMail {
      */
     @Param(name = "bcc", required = false)
     protected StringList bcc;
+
     /**
      * @since 5.9.1
      */
@@ -102,23 +109,40 @@ public class SendMail {
     @Param(name = "message", widget = Constants.W_MULTILINE_TEXT)
     protected String message;
 
-    @Param(name = "HTML", required = false, values = {"false"})
+    @Param(name = "HTML", required = false, values = { "false" })
     protected boolean asHtml = false;
 
     @Param(name = "files", required = false)
     protected StringList blobXpath;
+
     @Param(name = "rollbackOnError", required = false, values = { "true" })
     protected boolean rollbackOnError = true;
+
     /**
      * @since 5.9.1
      */
     @Param(name = "Strict User Resolution", required = false)
     protected boolean isStrict = true;
+
     @Param(name = "viewId", required = false, values = { "view_documents" })
     protected String viewId = "view_documents";
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
+        if (fromList == null && from == null) {
+            throw new ClientException("Waiting for from (deprecated) of fromList not null please check your operation configuration");
+        }
+
+        if (toList == null && to == null) {
+            throw new ClientException("Waiting for to (deprecated) of toList not null please check your operation configuration");
+        }
+
+        if (fromList == null || fromList.isEmpty()) {
+            fromList = new StringList(new String[]{from});
+        }
+        if (toList == null || toList.isEmpty()) {
+            toList = new StringList(new String[]{to});
+        }
         send(doc);
         return doc;
     }
@@ -148,15 +172,17 @@ public class SendMail {
             map.put("docUrl", MailTemplateHelper.getDocumentUrl(doc, viewId));
             map.put("subject", subject);
             map.put("to", to);
-            map.put("toResolved", MailBox.fetchPersonsFromList(to, isStrict));
+            map.put("toResolved", MailBox.fetchPersonsFromList(toList, isStrict));
             map.put("from", from);
-            map.put("fromResolved", MailBox.fetchPersonsFromList(from, isStrict));
+            map.put("fromResolved",
+                    MailBox.fetchPersonsFromList(fromList, isStrict));
             map.put("from", cc);
             map.put("fromResolved", MailBox.fetchPersonsFromList(cc, isStrict));
             map.put("from", bcc);
             map.put("fromResolved", MailBox.fetchPersonsFromList(bcc, isStrict));
             map.put("from", replyto);
-            map.put("fromResolved", MailBox.fetchPersonsFromList(replyto, isStrict));
+            map.put("fromResolved",
+                    MailBox.fetchPersonsFromList(replyto, isStrict));
             map.put("viewId", viewId);
             map.put("baseUrl",
                     NotificationServiceHelper.getNotificationService().getServerUrlPrefix());
@@ -182,11 +208,12 @@ public class SendMail {
     /**
      * @since 5.9.1
      */
-    private void addMailBoxInfo(Mailer.Message msg) throws MessagingException, ClientException {
-        List<MailBox> persons = MailBox.fetchPersonsFromList(from, isStrict);
+    private void addMailBoxInfo(Mailer.Message msg) throws MessagingException,
+            ClientException {
+        List<MailBox> persons = MailBox.fetchPersonsFromList(fromList, isStrict);
         addMailBoxInfoInMessageHeader(msg, AS.FROM, persons);
 
-        persons = MailBox.fetchPersonsFromList(to, isStrict);
+        persons = MailBox.fetchPersonsFromList(toList, isStrict);
         addMailBoxInfoInMessageHeader(msg, AS.TO, persons);
 
         persons = MailBox.fetchPersonsFromList(cc, isStrict);
@@ -195,7 +222,7 @@ public class SendMail {
         persons = MailBox.fetchPersonsFromList(bcc, isStrict);
         addMailBoxInfoInMessageHeader(msg, AS.BCC, persons);
 
-        if (replyto != null && !replyto.isEmpty() ) {
+        if (replyto != null && !replyto.isEmpty()) {
             msg.setReplyTo(null);
             persons = MailBox.fetchPersonsFromList(replyto, isStrict);
             addMailBoxInfoInMessageHeader(msg, AS.REPLYTO, persons);
@@ -205,14 +232,12 @@ public class SendMail {
     /**
      * @since 5.9.1
      */
-    private void addMailBoxInfoInMessageHeader(Message msg, AS as, List<MailBox> persons)
-            throws MessagingException {
+    private void addMailBoxInfoInMessageHeader(Message msg, AS as,
+            List<MailBox> persons) throws MessagingException {
         for (MailBox person : persons) {
             msg.addInfoInMessageHeader(person.toString(), as);
         }
     }
-
-
 
     protected Mailer.Message createMessage(DocumentModel doc, String message,
             Map<String, Object> map) throws Exception {
