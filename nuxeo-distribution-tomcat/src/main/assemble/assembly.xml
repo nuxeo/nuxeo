@@ -196,7 +196,7 @@
           tofile="${tomcat}/setupWizardDownloads/${DAMMPMD5}" />
     <move file="${maven.project.build.directory}/nuxeo-marketplace-social-collaboration-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${SCMPMD5}" />
-          <move file="${maven.project.build.directory}/nuxeo-marketplace-rest-api-${nuxeo.distribution.version}.zip"
+    <move file="${maven.project.build.directory}/nuxeo-marketplace-rest-api-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${RESTMD5}" />
 
     <echo file="${tomcat}/nxserver/data/installAfterRestart-DM.log">init
@@ -258,18 +258,19 @@ install nuxeo-dam
         <includes>
           <artifact groupId="org.nuxeo*" />
         </includes>
+        <excludes>
+          <artifact groupId="org.nuxeo.lib*" />
+        </excludes>
       </artifact:set>
     </copy>
     <copy todir="${distribution.dir}/nxserver/lib" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="!org.nuxeo*" />
+          <artifact groupId="!org.nuxeo*" scope="!test" />
+          <artifact groupId="org.nuxeo.lib*" scope="!test" />
         </includes>
       </artifact:set>
     </copy>
-
-    <nx:rmdups dir="${distribution.dir}/nxserver/lib" />
-
     <!-- remove libraries already provided by Tomcat or unneeded -->
     <delete>
       <fileset dir="${distribution.dir}/nxserver/lib">
@@ -287,39 +288,30 @@ install nuxeo-dam
         <include name="commons-logging*" />
       </fileset>
     </delete>
-
     <!-- Move some libraries from nxserver to Tomcat default lib directory -->
     <move todir="${distribution.dir}/lib">
       <fileset dir="${distribution.dir}/nxserver/lib">
+        <include name="nuxeo-*" />
         <include name="lucene-*" />
         <include name="commons-lang-*" />
         <include name="freemarker-*" />
         <include name="mail-*" />
-        <!-- move WSS front filter as external lib since it must be referenced from root Web context-->
-        <include name="nuxeo-wss-front*" />
-      </fileset>
-      <!-- install sl4j bridge in container classpath -->
-      <fileset dir="${distribution.dir}/nxserver/lib">
+        <!-- install sl4j bridge in container classpath -->
         <include name="slf4j*" />
         <include name="jcl-over-slf4j*" />
         <include name="log4j-*" />
       </fileset>
-      <fileset dir="${distribution.dir}/nxserver/bundles">
-        <include name="nuxeo-core-storage-sql-extensions-*" />
-        <include name="nuxeo-runtime-tomcat-adapter*" />
-        <include name="nuxeo-runtime-launcher*" />
-      </fileset>
     </move>
+    <nx:rmdups dir="${distribution.dir}/nxserver/lib" />
     <nx:rmdups dir="${distribution.dir}/lib" />
 
-    <!-- Move JAX libraries more recent that those from JDK6 into endorsed -->
+    <!-- Move JAX libraries more recent than those from JDK6 into endorsed -->
     <move todir="${distribution.dir}/endorsed">
       <fileset dir="${distribution.dir}/nxserver/lib">
         <include name="jaxb-api-*" />
         <include name="jaxws-api-*" />
       </fileset>
     </move>
-
   </target>
 
   <target name="set-distribution-properties">
@@ -374,5 +366,4 @@ org.nuxeo.distribution.package=zip</echo>
            perm="ug+x"
            includes="*.command,bin/*.sh,bin/*ctl,bin/*.command" />
   </target>
-
 </project>

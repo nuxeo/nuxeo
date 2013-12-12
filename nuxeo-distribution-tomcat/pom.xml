@@ -29,7 +29,7 @@
       <artifactId>nuxeo-runtime-datasource</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
+      <groupId>org.nuxeo.lib.runtime</groupId>
       <artifactId>nuxeo-runtime-tomcat-adapter</artifactId>
     </dependency>
     <dependency>
@@ -43,6 +43,10 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
     </dependency>
   </dependencies>
 

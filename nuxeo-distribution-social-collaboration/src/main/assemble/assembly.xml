@@ -25,6 +25,9 @@
         <includes>
           <artifact groupId="org.nuxeo*" scope="!test" type="!pom" />
         </includes>
+        <excludes>
+          <artifact groupId="org.nuxeo.lib*" />
+        </excludes>
       </artifact:set>
     </copy>
 
@@ -32,14 +35,10 @@
       <artifact:set>
         <includes>
           <artifact groupId="!org.nuxeo*" scope="!test" />
+          <artifact groupId="org.nuxeo.lib*" scope="!test" />
         </includes>
       </artifact:set>
     </copy>
-    <move todir="${nxr}/lib">
-      <fileset dir="${nxr}/bundles">
-        <include name="nuxeo-wss-front*" />
-      </fileset>
-    </move>
     <nx:rmdups dir="${nxr}/lib" />
 
     <copy file="${outdir}/artifacts.properties" todir="${nxr}" />
