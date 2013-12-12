@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.core.api.thumbnail.ThumbnailService"
     point="thumbnailFactory">
     <thumbnailFactory name="thumbnailVideoFactory"
-      docType="Video"
+      facet="Video"
       factoryClass="org.nuxeo.ecm.platform.video.adapter.ThumbnailVideoFactory" />
   </extension>
 
