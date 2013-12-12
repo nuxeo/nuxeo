@@ -235,11 +235,13 @@ public class OperationServiceImpl implements AutomationService {
             }
         }
         String chainId = catchChainException.getChainId();
-        if (chainId.isEmpty())
+        if (chainId.isEmpty()) {
             throw new OperationException(
                     "No chain exception has been selected to be run. You should verify Automation filters applied.");
-        if (catchChainException.getRollBack())
+        }
+        if (catchChainException.getRollBack()) {
             ctx.setRollback();
+        }
         return catchChainException.getChainId();
     }
 
@@ -591,19 +593,23 @@ public class OperationServiceImpl implements AutomationService {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o)
+            if (this == o) {
                 return true;
-            if (o == null || getClass() != o.getClass())
+            }
+            if (o == null || getClass() != o.getClass()) {
                 return false;
+            }
 
             CacheKey cacheKey = (CacheKey) o;
 
             if (inputType != null ? !inputType.equals(cacheKey.inputType)
-                    : cacheKey.inputType != null)
+                    : cacheKey.inputType != null) {
                 return false;
+            }
             if (operationId != null ? !operationId.equals(cacheKey.operationId)
-                    : cacheKey.operationId != null)
+                    : cacheKey.operationId != null) {
                 return false;
+            }
 
             return true;
         }
