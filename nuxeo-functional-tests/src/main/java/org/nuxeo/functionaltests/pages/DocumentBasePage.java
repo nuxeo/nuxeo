@@ -29,6 +29,7 @@ import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.RelationTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
@@ -59,6 +60,9 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='History']")
     public WebElement historyTabLink;
+
+    @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Relations']")
+    public WebElement relationTabLink;
 
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Manage']")
     public WebElement manageTabLink;
@@ -117,6 +121,11 @@ public class DocumentBasePage extends AbstractPage {
     public ManageTabSubPage getManageTab() {
         clickOnLinkIfNotSelected(manageTabLink);
         return asPage(ManageTabSubPage.class);
+    }
+
+    public RelationTabSubPage getRelationTab() {
+        clickOnLinkIfNotSelected(relationTabLink);
+        return asPage(RelationTabSubPage.class);
     }
 
     public NavigationSubPage getNavigationSubPage() {
