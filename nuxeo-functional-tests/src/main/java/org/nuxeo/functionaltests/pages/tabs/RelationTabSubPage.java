@@ -90,7 +90,7 @@ public class RelationTabSubPage extends DocumentBasePage {
 
         Select2WidgetElement documentSuggestionWidget = new Select2WidgetElement(
                 driver,
-                By.xpath("//*[@id='createForm:nxw_singleDocumentSuggestion_select2_init']"));
+                By.xpath("//*[@id='s2id_createForm:nxw_singleDocumentSuggestion_select2']"));
 
         documentSuggestionWidget.selectValue(documentName);
 
