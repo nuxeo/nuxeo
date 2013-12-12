@@ -23,6 +23,11 @@
       "view"
     ],
     "acceptingSubWidgets": true,
+    "handlingLabels": true,
+    "supportedControls":     [
+      "requireSurroundingForm",
+      "handlingLabels"
+    ],
     "containingForm": true,
     "fields":     {
       "list": false,

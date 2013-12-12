@@ -48,6 +48,10 @@
           <mode>edit</mode>
           <mode>view</mode>
         </supportedModes>
+        <supportedControls>
+          <control>requireSurroundingForm</control>
+          <control>handlingLabels</control>
+        </supportedControls>
         <acceptingSubWidgets>true</acceptingSubWidgets>
         <containingForm>true</containingForm>
         <fields>

@@ -181,6 +181,14 @@ public class JSONLayoutExporter {
         if (conf.isHandlingLabels()) {
             json.element("handlingLabels", conf.isHandlingLabels());
         }
+        JSONArray supportedControls = new JSONArray();
+        List<String> confSupportedControls = conf.getSupportedControls();
+        if (confSupportedControls != null) {
+            supportedControls.addAll(confSupportedControls);
+        }
+        if (!supportedControls.isEmpty()) {
+            json.element("supportedControls", supportedControls);
+        }
         if (conf.isContainingForm()) {
             json.element("containingForm", true);
         }
@@ -310,6 +318,12 @@ public class JSONLayoutExporter {
 
         res.setAcceptingSubWidgets(conf.optBoolean("acceptingSubWidgets", false));
         res.setHandlingLabels(conf.optBoolean("handlingLabels", false));
+        List<String> confSupportedControls = new ArrayList<String>();
+        JSONArray supportedControls = conf.optJSONArray("supportedControls");
+        if (supportedControls != null) {
+            confSupportedControls.addAll(supportedControls);
+        }
+        res.setSupportedControls(confSupportedControls);
         res.setContainingForm(conf.optBoolean("containingForm", false));
 
         JSONObject fields = conf.optJSONObject("fields");
