@@ -6,35 +6,21 @@
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
            uri="urn:nuxeo-artifact" />
 
-
-  <target name="init" unless="init.done">
+  <target name="build" description="Build Nuxeo Core Server NXR">
+    <echo>Building Nuxeo Core Server NXR</echo>
     <property name="outdir" value="${maven.project.build.directory}" />
-    <property name="nuxeo.ear" value="${outdir}/nuxeo.ear" />
-
-    <antcall target="expand" />
-    <property name="init.done" value="true" />
-  </target>
-
-  <target name="expand">
     <artifact:nuxeo-expand includeTestScope="true" />
-    <artifact:print output="${outdir}/artifacts-coreserver.properties" mode="sdk" />
+    <artifact:print output="${outdir}/artifacts-coreserver.properties"
+                    mode="sdk" />
     <artifact:print output="${outdir}/test-artifacts-coreserver.properties"
                     mode="sdk"
                     scopes="test" />
     <artifact:print output="${outdir}/dependency-tree.log" />
-  </target>
 
-  <target name="build" depends="init" description="Build Nuxeo Core Server">
-    <echo>Building default Nuxeo DM EAR</echo>
-    <delete failonerror="false" dir="${nuxeo.ear}" />
-    <mkdir dir="${nuxeo.ear}" />
-    <antcall target="build-standard" />
-  </target>
-
-  <target name="build-standard"
-          description="Build default distribution"
-          depends="init">
-    <copy todir="${nuxeo.ear}/bundles" overwrite="true">
+    <property name="nxr" value="${outdir}/nxr" />
+    <delete failonerror="false" dir="${nxr}" />
+    <mkdir dir="${nxr}" />
+    <copy todir="${nxr}/bundles" overwrite="true">
       <artifact:set>
         <includes>
           <artifact groupId="org.nuxeo*" scope="!test" />
@@ -42,32 +28,29 @@
       </artifact:set>
     </copy>
 
-    <antcall target="third-party-libraries" />
-
-    <copy file="${outdir}/artifacts-coreserver.properties" todir="${nuxeo.ear}" />
-    <copy file="${outdir}/test-artifacts-coreserver.properties" todir="${nuxeo.ear}" />
-
-    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-         basedir="${nuxeo.ear}" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     type="zip" />
-  </target>
-
-  <target name="third-party-libraries">
-    <copy todir="${nuxeo.ear}/lib" overwrite="true">
+    <copy todir="${nxr}/lib" overwrite="true">
       <artifact:set>
         <includes>
           <artifact groupId="!org.nuxeo*" scope="!test" />
         </includes>
       </artifact:set>
     </copy>
-    <move todir="${nuxeo.ear}/lib">
-      <fileset dir="${nuxeo.ear}/bundles">
+    <move todir="${nxr}/lib">
+      <fileset dir="${nxr}/bundles">
         <include name="nuxeo-wss-front*" />
       </fileset>
     </move>
-    <nx:rmdups dir="${nuxeo.ear}/lib" />
+    <nx:rmdups dir="${nxr}/lib" />
+
+    <copy file="${outdir}/artifacts-coreserver.properties" todir="${nxr}" />
+    <copy file="${outdir}/test-artifacts-coreserver.properties"
+          todir="${nxr}" />
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${nxr}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
   </target>
 
 </project>
