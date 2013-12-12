@@ -24,6 +24,10 @@
           <property name="confProp">foo</property>
           <property name="sortProperty">dc:title</property>
         </confProperties>
+        <supportedControls>
+          <control>requireSurroundingForm</control>
+          <control>handlingLabels</control>
+        </supportedControls>
         <fields>
           <list>false</list>
           <complex>false</complex>

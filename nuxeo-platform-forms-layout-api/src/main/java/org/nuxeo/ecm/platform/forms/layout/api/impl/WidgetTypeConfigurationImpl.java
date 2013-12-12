@@ -44,6 +44,11 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
 
     protected boolean handlingLabels = false;
 
+    /**
+     * @since 5.9.1
+     */
+    protected List<String> supportedControls;
+
     protected boolean list = false;
 
     protected boolean complex = false;
@@ -416,6 +421,21 @@ public class WidgetTypeConfigurationImpl implements WidgetTypeConfiguration {
      */
     public void setFieldLayouts(Map<String, List<LayoutDefinition>> fieldLayouts) {
         this.fieldLayouts = fieldLayouts;
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    @Override
+    public List<String> getSupportedControls() {
+        return supportedControls;
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public void setSupportedControls(List<String> supportedControls) {
+        this.supportedControls = supportedControls;
     }
 
 }

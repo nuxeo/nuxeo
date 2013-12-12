@@ -83,6 +83,14 @@ public class WidgetTypeConfigurationDescriptor {
     @XNode("handlingLabels")
     boolean handlingLabels = false;
 
+    /**
+     * List of supported controls (controls checkd on subwidgets configuration)
+     *
+     * @since 5.9.1
+     */
+    @XNodeList(value = "supportedControls/control", type = ArrayList.class, componentType = String.class)
+    List<String> supportedControls;
+
     @XNode("fields/list")
     boolean list = false;
 
@@ -162,7 +170,18 @@ public class WidgetTypeConfigurationDescriptor {
      * @since 5.6
      */
     public boolean isHandlingLabels() {
+        List<String> controls = getSupportedControls();
+        if (controls != null && controls.contains("handlingLabels")) {
+            return true;
+        }
         return handlingLabels;
+    }
+
+    /**
+     * @since 5.9.1
+     */
+    public List<String> getSupportedControls() {
+        return supportedControls;
     }
 
     public boolean isComplex() {
@@ -316,6 +335,7 @@ public class WidgetTypeConfigurationDescriptor {
         res.setPropertyLayouts(getPropertyLayouts());
         res.setDefaultPropertyValues(getDefaultPropertyValues());
         res.setFieldLayouts(getFieldLayouts());
+        res.setSupportedControls(getSupportedControls());
         return res;
     }
 }
