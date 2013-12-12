@@ -34,6 +34,9 @@
           <widget>containingForm</widget>
         </row>
         <row>
+          <widget>supportedControls</widget>
+        </row>
+        <row>
           <widget>handlerClass</widget>
         </row>
         <row>
@@ -138,6 +141,34 @@
         <fields>
           <field>configuration.containingForm</field>
         </fields>
+      </widget>
+      <widget name="supportedControls" type="list">
+        <labels>
+          <label mode="any">label.layoutDemo.reference.supportedControls</label>
+        </labels>
+        <helpLabels>
+          <label mode="any">label.layoutDemo.reference.help.supportedControls</label>
+        </helpLabels>
+        <translated>true</translated>
+        <fields>
+          <field>configuration.supportedControls</field>
+        </fields>
+        <properties mode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <widgetModes>
+          <mode value="any">
+            #{empty
+            layoutValue.configuration.supportedControls?'hidden':mode}
+          </mode>
+        </widgetModes>
+        <subWidgets>
+          <widget name="subwidget" type="text">
+            <fields>
+              <field></field>
+            </fields>
+          </widget>
+        </subWidgets>
       </widget>
       <widget name="handlerClass" type="text">
         <labels>
