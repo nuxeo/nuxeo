@@ -120,7 +120,6 @@ public class TestLayoutStoreService extends NXRuntimeTestCase {
         assertEquals(2, supportedControls.size());
         assertTrue(supportedControls.contains("requireSurroundingForm"));
         assertTrue(supportedControls.contains("handlingLabels"));
-        // BBB
         assertTrue(conf.isHandlingLabels());
 
         List<WidgetTypeDefinition> wTypeDefs = service.getWidgetTypeDefinitions("testCategory");

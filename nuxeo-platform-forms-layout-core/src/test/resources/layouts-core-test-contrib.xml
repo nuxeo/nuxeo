@@ -24,6 +24,7 @@
           <property name="confProp">foo</property>
           <property name="sortProperty">dc:title</property>
         </confProperties>
+        <handlingLabels>true</handlingLabels>
         <supportedControls>
           <control>requireSurroundingForm</control>
           <control>handlingLabels</control>
