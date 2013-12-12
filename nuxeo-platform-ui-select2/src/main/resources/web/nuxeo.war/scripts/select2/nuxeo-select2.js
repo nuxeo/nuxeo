@@ -253,6 +253,8 @@
       select2_params.id = function(doc) {
         return doc.properties[params.idProperty];
       };
+    } else if (params.idFunction) {
+      select2_params.id = eval(params.idFunction);
     } else if (params.prefixed) {
       select2_params.id = function(item) {
         return item.prefixed_id;
