@@ -120,7 +120,7 @@ def git_fetch(module):
         system("git checkout -q %s" % version)
     elif version not in check_output(["git", "branch"]).split():
         # create the local branch if missing
-        system("git checkout --track -b -q %s %s/%s" %
+        system("git checkout --track -q -b %s %s/%s" %
                (version, alias, version))
     else:
         # reuse local branch
@@ -178,7 +178,7 @@ if version in check_output(["git", "tag"]).split():
     system("git checkout -q %s" % version)
 elif version not in check_output(["git", "branch"]).split():
     # create the local branch if missing
-    system("git checkout --track -b -q %s %s/%s" % (version, alias, version))
+    system("git checkout --track -q -b %s %s/%s" % (version, alias, version))
 else:
     # reuse local branch
     system("git checkout -q %s" % version)
