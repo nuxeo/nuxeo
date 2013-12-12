@@ -170,10 +170,6 @@ public class WidgetTypeConfigurationDescriptor {
      * @since 5.6
      */
     public boolean isHandlingLabels() {
-        List<String> controls = getSupportedControls();
-        if (controls != null && controls.contains("handlingLabels")) {
-            return true;
-        }
         return handlingLabels;
     }
 
