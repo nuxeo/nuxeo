@@ -203,11 +203,11 @@ public class DefaultMonitorComponent extends DefaultComponent {
     }
 
     protected static ObjectInstance bind(Object managed) {
-        return bind(managed, "jdoe");
+        return bind(managed, "default");
     }
 
     protected static ObjectInstance bind(Class<?> itf, Object managed) {
-        return bind(itf, managed, "jdoe");
+        return bind(itf, managed, "default");
     }
 
     protected static ObjectInstance bind(Object managed, String name) {

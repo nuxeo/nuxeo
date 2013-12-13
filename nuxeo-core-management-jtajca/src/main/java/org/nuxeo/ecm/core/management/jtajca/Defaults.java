@@ -14,7 +14,7 @@ public class Defaults {
     public static Defaults instance = new Defaults();
 
     public String name(Class<?> clazz) {
-        return name(clazz, "jdoe");
+        return name(clazz, "default");
     }
 
     public String name(Class<?> clazz, String name) {
