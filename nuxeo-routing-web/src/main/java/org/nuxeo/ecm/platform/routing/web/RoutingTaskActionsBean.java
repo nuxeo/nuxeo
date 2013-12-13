@@ -361,7 +361,12 @@ public class RoutingTaskActionsBean implements Serializable {
                         task.getName());
             }
         }.runUnrestricted();
-        tasksInfoCache.put(task.getId(), res[0]);
+        // don't add tasks in cache when are fetched without the form variables
+        // for
+        // bulk processing
+        if (getFormVariables) {
+            tasksInfoCache.put(task.getId(), res[0]);
+        }
         return res[0];
     }
 
@@ -417,8 +422,8 @@ public class RoutingTaskActionsBean implements Serializable {
     public Map<String, Action> getTaskActionsMap(Task task)
             throws ClientException {
         Map<String, Action> actions = new LinkedHashMap<String, Action>();
-
-        TaskInfo taskInfo = getTaskInfo(task, true);
+        // bulk processing, don't fetch formVariables to avoid overriding them
+        TaskInfo taskInfo = getTaskInfo(task, false);
         String layout = taskInfo.layout;
         List<Button> buttons = taskInfo.buttons;
 
