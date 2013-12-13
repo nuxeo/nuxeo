@@ -52,7 +52,6 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
@@ -201,10 +200,8 @@ public class JSONDocumentModelReader implements
                 Serializable data = (Serializable) fromDataModel.getData(field);
                 try {
 
-                    if (!(dataModel.getDocumentPart().get(field) instanceof BlobProperty)) {
-                        if (data != null && !"null".equals(data)) {
-                            dataModel.setData(field, data);
-                        }
+                    if (data != null && !"null".equals(data)) {
+                        dataModel.setData(field, data);
                     }
                 } catch (PropertyNotFoundException e) {
                     log.warn(String.format(
@@ -238,8 +235,7 @@ public class JSONDocumentModelReader implements
         return doc;
     }
 
-    static Properties readProperties(JsonParser jp)
-            throws Exception {
+    static Properties readProperties(JsonParser jp) throws Exception {
         JsonNode node = jp.readValueAsTree();
         return new Properties(node);
 
