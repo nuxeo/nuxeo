@@ -82,7 +82,7 @@
   <div class="tabsContent">
     <ui:insert name="view_user_tab_content">
       <a4j:form id="viewUser" rendered="#{userManagementActions.detailsMode == 'view'}">
-        <nxl:layout name="user" mode="view" value="#{userManagementActions.selectedUser}" />
+        <nxl:layout name="gridUserLayout" mode="view" value="#{userManagementActions.selectedUser}" />
       </a4j:form>
     </ui:insert>
 

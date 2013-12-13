@@ -10,22 +10,25 @@
     <div class="tabsContent">
 
       <!-- create form -->
-      <f:subview rendered="#{groupManagementActions.showCreateForm}"
-        id="createGroupView">
-        <ui:include src="create_group.xhtml"/>
-      </f:subview>
+      <c:if test="#{groupManagementActions.showCreateForm}">
+        <f:subview id="createGroupView">
+          <ui:include src="create_group.xhtml"/>
+        </f:subview>
+      </c:if>
 
       <!-- view form -->
-      <f:subview rendered="#{not empty groupManagementActions.selectedGroup and groupManagementActions.showUserOrGroup}"
-        id="viewGroupView">
-        <ui:include src="view_group.xhtml"/>
-      </f:subview>
+      <c:if test="#{not empty groupManagementActions.selectedGroup and groupManagementActions.showUserOrGroup}">
+        <f:subview id="viewGroupView">
+          <ui:include src="view_group.xhtml"/>
+        </f:subview>
+      </c:if>
 
       <!-- listing -->
-      <f:subview rendered="#{!groupManagementActions.showUserOrGroup and !groupManagementActions.showCreateForm}"
-        id="groupsListingView">
-        <ui:include src="view_groups_listing.xhtml"/>
-      </f:subview>
+      <c:if test="#{!groupManagementActions.showUserOrGroup and !groupManagementActions.showCreateForm}">
+        <f:subview id="groupsListingView">
+          <ui:include src="view_groups_listing.xhtml"/>
+        </f:subview>
+      </c:if>
 
     </div>
   </a4j:outputPanel>
