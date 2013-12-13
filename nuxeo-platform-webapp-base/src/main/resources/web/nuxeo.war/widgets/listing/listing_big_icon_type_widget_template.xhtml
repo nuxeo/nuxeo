@@ -8,7 +8,7 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
 <nxu:set var="typeLabel" value="#{nxd:typeLabel(field)}">
-<nxu:set var="label" value="#{empty typeLabel ? field_2 : messages[typeLabel]}">
+<nxu:set var="label" value="#{empty field_2 ? messages[typeLabel] : field_2}">
 
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{label}</c:if>
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
