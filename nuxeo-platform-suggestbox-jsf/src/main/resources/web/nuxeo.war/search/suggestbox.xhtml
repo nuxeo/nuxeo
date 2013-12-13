@@ -38,6 +38,15 @@
           }
           return false;
         }
+
+        function showSearchLoading() {
+           jQuery("input[id$=faceted_search_suggest_box]").css('background', '#fff url(' + window.nxContextPath + '/img/standart_waiter.gif) no-repeat 98% center');
+        }
+
+        function hideSearchLoading() {
+           jQuery("input[id$=faceted_search_suggest_box]").css('background', '#fff url(' + window.nxContextPath + '/icons/search.png) no-repeat 98% center');
+        }
+
         // bind the '/' key to focus the searchbox
         jQuery(document).bind('keydown', '/', focus_searchbox);
         // handle keyboard layouts such as French where the '/' char is
@@ -73,6 +82,7 @@
             <h:outputText value="#{result.label}" styleClass="resultLabel" />
           </h:column>
         </rich:suggestionbox>
+        <a4j:status onstart="showSearchLoading();" onstop="hideSearchLoading();" />
         <a4j:commandButton
           action="#{suggestboxActions.performKeywordsSearch('searchByKeywords', 'searchbox')}"
           value="#{messages['command.search']}" styleClass="button"
