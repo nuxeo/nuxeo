@@ -150,6 +150,13 @@ public class DamSearchActions implements Serializable {
 
     protected String savedSearchTitle;
 
+    public ContentViewState getContentViewState() throws ClientException {
+        ContentView contentView = contentViewActions.getContentView(currentContentViewName);
+        ContentViewService contentViewService = Framework.getLocalService(ContentViewService.class);
+        ContentViewState state = contentViewService.saveContentView(contentView);
+        return state;
+    }
+
     public String getCurrentContentViewName() {
         if (currentContentViewName == null) {
             List<String> contentViewNames = getContentViewNames();
@@ -410,6 +417,7 @@ public class DamSearchActions implements Serializable {
         this.pageSize = pageSize;
     }
 
+
     /**
      * Compute a permanent link for the current search.
      */
@@ -427,11 +435,8 @@ public class DamSearchActions implements Serializable {
         docView.setViewId("assets");
         docView.addParameter(CONTENT_VIEW_NAME_PARAMETER,
                 currentContentViewName);
-        ContentView contentView = contentViewActions.getContentView(currentContentViewName);
-        ContentViewService contentViewService = Framework.getLocalService(ContentViewService.class);
-        ContentViewState state = contentViewService.saveContentView(contentView);
         docView.addParameter(CONTENT_VIEW_STATE_PARAMETER,
-                JSONContentViewState.toJSON(state, true));
+                JSONContentViewState.toJSON(getContentViewState(), true));
         DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
         String url = documentViewCodecManager.getUrlFromDocumentView(DAM_CODEC,
                 docView, true, BaseURL.getBaseURL());
