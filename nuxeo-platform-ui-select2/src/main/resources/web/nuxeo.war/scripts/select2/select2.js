@@ -18,6 +18,12 @@ Apache License or the GPL Licesnse is distributed on an "AS IS" BASIS, WITHOUT W
 CONDITIONS OF ANY KIND, either express or implied. See the Apache License and the GPL License for
 the specific language governing permissions and limitations under the Apache License and the GPL License.
 */
+/*
+ * Nuxeo WARN: This script has been patched for:
+ *   - https://jira.nuxeo.com/browse/NXP-13149
+ *
+ * Please re-apply any patch when upgrading this script.
+ */
 (function ($) {
     if(typeof $.fn.each2 == "undefined") {
         $.fn.extend({
@@ -149,7 +155,8 @@ the specific language governing permissions and limitations under the Apache Lic
         var val, i, l;
         if (string === null || string.length < 1) return [];
         val = string.split(separator);
-        for (i = 0, l = val.length; i < l; i = i + 1) val[i] = $.trim(val[i]);
+        // We don't want to trim vals (See NXP-13149)
+        //for (i = 0, l = val.length; i < l; i = i + 1) val[i] = $.trim(val[i]);
         return val;
     }
 
