@@ -8,7 +8,7 @@
     <ui:define name="view_user_tab_content">
       <a4j:form id="viewUser"
         rendered="#{userManagementActions.detailsMode == 'view'}">
-        <nxl:layout name="summary_user_profile_layout" mode="view"
+        <nxl:layout name="gridUserLayout" mode="view"
           value="#{userProfileActions.selectedUserProfile}" />
       </a4j:form>
     </ui:define>
