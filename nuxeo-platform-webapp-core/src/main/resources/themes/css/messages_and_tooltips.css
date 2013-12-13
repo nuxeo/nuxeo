@@ -29,18 +29,18 @@ a.ambiance-close {
   margin: 1em .5em .2em 0;
   padding: 0 .4em }
 
-.neutralFeedback,
-.infoFeedback,
-.errorFeedback,
-.warningFeedback,
-.successFeedback,
 .ambiance-default,
 .ambiance-neutral,
 .ambiance-info,
 .ambiance-success,
 .ambiance-warn,
 .ambiance-error,
-.ambiance-fatal {
+.ambiance-fatal,
+.neutralFeedback,
+.infoFeedback,
+.errorFeedback,
+.warningFeedback,
+.successFeedback {
   background-color: "neutral (__FLAVOR__ background)";
   border-radius: 5px 0 0 5px;
   color: "black (__FLAVOR__ color)";
