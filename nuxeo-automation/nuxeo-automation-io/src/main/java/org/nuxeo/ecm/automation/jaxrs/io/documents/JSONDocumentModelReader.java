@@ -42,6 +42,7 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -52,6 +53,7 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
@@ -199,9 +201,13 @@ public class JSONDocumentModelReader implements
             for (String field : fromDataModel.getDirtyFields()) {
                 Serializable data = (Serializable) fromDataModel.getData(field);
                 try {
+                    if (isNotNull(data)) {
 
-                    if (data != null && !"null".equals(data)) {
-                        dataModel.setData(field, data);
+                        if (!(dataModel.getDocumentPart().get(field) instanceof BlobProperty)) {
+                            dataModel.setData(field, data);
+                        } else {
+                            dataModel.setData(field, decodeBlob(data));
+                        }
                     }
                 } catch (PropertyNotFoundException e) {
                     log.warn(String.format(
@@ -210,6 +216,32 @@ public class JSONDocumentModelReader implements
                 }
             }
         }
+    }
+
+    /**
+     * Decodes a Serializable to make it a blob.
+     * @param data
+     * @return
+     *
+     * @since 5.9.1
+     */
+    private static Serializable decodeBlob(Serializable data) {
+        if(data instanceof Blob) {
+            return data;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Check that a serialized data is not null.
+     * @param data
+     * @return
+     *
+     * @since 5.9.1
+     */
+    private static boolean isNotNull(Serializable data) {
+        return data != null && !"null".equals(data);
     }
 
     private static DocumentModel getOrCreateDocumentModel(String id,
