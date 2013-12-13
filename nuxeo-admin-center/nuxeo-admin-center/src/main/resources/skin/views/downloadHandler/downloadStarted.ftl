@@ -19,7 +19,7 @@ function back() {
  var url = document.location.href;
  var idx = url.indexOf("/download/");
  var idParam = url.indexOf("?");
- var returnUrl = url.substring(0,idx) + "/packages/${source}?filterOnPlatform=${filterOnPlatform}&amp;type=${type}&amp;onlyRemote=${onlyRemote}" + url.substring(iParam,url.length);
+ var returnUrl = url.substring(0,idx) + "/packages/${source}?filterOnPlatform=${filterOnPlatform}&amp;type=${type}&amp;onlyRemote=${onlyRemote}" + url.substring(idParam,url.length);
  document.location.href=returnUrl;
 }
 
