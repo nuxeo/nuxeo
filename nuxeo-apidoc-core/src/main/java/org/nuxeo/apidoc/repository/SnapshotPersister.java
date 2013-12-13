@@ -164,6 +164,11 @@ public class SnapshotPersister {
         RepositoryDistributionSnapshot distribContainer = createDistributionDoc(
                 snapshot, session, label);
 
+        if (filter == null) {
+            // If no filter, clean old entries
+            distribContainer.cleanPreviousArtifacts();
+        }
+
         DocumentModel bundleContainer = getSubRoot(session,
                 distribContainer.getDoc(), Bundle_Root_NAME);
 

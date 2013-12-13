@@ -498,4 +498,9 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements
         return jdocHelper;
     }
 
+    @Override
+    public void cleanPreviousArtifacts() {
+        // Can't delete anything in a runtime Snapshot
+        throw new UnsupportedOperationException();
+    }
 }
