@@ -20,6 +20,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.jsf.OperationHelper;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -28,6 +29,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  * Operation that:
  * <ul>
  * <li>refreshes the content view cache;</li>
+ * <li>refreshes the navigation context current document cache;</li>
  * <li>raises standard seam events to trigger refresh of most seam component;</li>
  * <li>raises additional configurable seam events.</li>
  * </ul>
@@ -53,12 +55,18 @@ public class RefreshUI {
     public void run() {
         if (OperationHelper.isSeamContextAvailable()) {
             OperationHelper.getContentViewActions().resetAllContent();
-            NavigationContext context = OperationHelper.getNavigationContext();
-            DocumentModel dm = context.getCurrentDocument();
+            NavigationContext navContext = OperationHelper.getNavigationContext();
+            try {
+                navContext.invalidateCurrentDocument();
+            } catch (ClientException e) {
+                log.error("Error invalidating current document "
+                        + "on navigation context", e);
+            }
+            DocumentModel dm = navContext.getCurrentDocument();
             if (dm != null) {
                 Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, dm);
-                Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                        dm);
+                Events.instance().raiseEvent(
+                        EventNames.DOCUMENT_CHILDREN_CHANGED, dm);
             }
             if (additionalSeamEvents != null) {
                 for (String event : additionalSeamEvents) {
