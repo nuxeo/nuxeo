@@ -92,3 +92,6 @@ h6 {
   color: "title.minor (__FLAVOR__ color)";
   font-size: 1em;
   margin: .2em 0 .2em 0 }
+
+.icon {
+  margin-right: .3em }
