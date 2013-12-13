@@ -9,6 +9,13 @@ a:hover { text-decoration: underline }
 
 img { border: none }
 
+.icon {
+  margin-right: .3em }
+
+.smallIcon {
+  height: 16px;
+  width: 16px }
+
 input.button { background-color: #e7e7e7;
   border: 1px solid #c9c9c9;
   border-radius: 3px;
@@ -81,7 +88,7 @@ input.searchBox { font: 11px 'Lucida Grande',Verdana,Arial,sans-serif; padding: 
 .dataList .iconColumn { text-align: center; width: 20px }
 .dataOutput td table td { border: 0 none transparent }
 
-.dataRowEven { background-color: #f2f7fc }
+.dataRowEven { background-color: #f6f6f6 }
 
 /* Pagination controls */
 #pageNavigationControls span {
@@ -92,7 +99,7 @@ margin: 1em .5em;
 vertical-align: top }
 
 #pageNavigationControls {
-border-bottom: 1px solid #39f;
+border-bottom: 1px solid #e7e7e7;
 margin: 0;
 padding: .3em 0 0;
 text-align: center;

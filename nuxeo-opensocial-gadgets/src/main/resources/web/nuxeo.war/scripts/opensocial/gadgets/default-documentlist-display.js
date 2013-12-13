@@ -133,7 +133,7 @@ function mkCell(colDef, dashBoardItem) {
     if (colDef.type == 'builtin') {
         if (colDef.field == "icon") {
             html += "<td class=\"iconColumn\">";
-            html += "<img alt=\"File\" src=\"";
+            html += "<img class=\"icon smallIcon\" alt=\"Icon\" src=\"";
             html += NXGadgetContext.clientSideBaseUrl;
             html += dashBoardItem.properties["common:icon"];
             html += "\"/>";
