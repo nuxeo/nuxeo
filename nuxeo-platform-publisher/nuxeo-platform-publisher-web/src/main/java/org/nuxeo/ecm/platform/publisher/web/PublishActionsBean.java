@@ -259,6 +259,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
                     messages.get("document_published"),
                     messages.get(currentDocument.getType()));
         }
+        navigationContext.invalidateCurrentDocument();
         currentPublicationTree = null;
         return null;
     }
