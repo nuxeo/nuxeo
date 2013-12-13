@@ -43,7 +43,6 @@
       <layouts mode="edit">
         <layout>heading</layout>
         <layout>dublincore</layout>
-        <layout>step_folder</layout>
       </layouts>
       <layouts mode="header">
         <layout>document_route_header</layout>
