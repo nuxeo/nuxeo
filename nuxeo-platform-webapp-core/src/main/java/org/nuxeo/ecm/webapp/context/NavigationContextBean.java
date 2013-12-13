@@ -252,8 +252,10 @@ public class NavigationContextBean implements NavigationContext, Serializable {
     }
 
     public void invalidateCurrentDocument() throws ClientException {
-        currentDocument = documentManager.getDocument(currentDocument.getRef());
-        updateContextVariables();
+        if (currentDocument != null) {
+            currentDocument = documentManager.getDocument(currentDocument.getRef());
+            updateContextVariables();
+        }
     }
 
     @Deprecated
