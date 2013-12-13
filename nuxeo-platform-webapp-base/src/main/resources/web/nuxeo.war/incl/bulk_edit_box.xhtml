@@ -21,12 +21,16 @@
 
     <div class="buttonsGadget">
       <h:commandButton styleClass="button"
+        onclick="document.getElementById('#{fancyboxFormId}_waiter').className = '';"
         action="#{bulkEditActions.bulkEditSelection}"
         value="#{messages['command.update']}"/>
       <a4j:commandButton styleClass="button"
         action="#{bulkEditActions.cancel}"
         value="#{messages['command.cancel']}"
         oncomplete="jQuery.fancybox.close();"/>
+      <span class="displayN" id="#{fancyboxFormId}_waiter">
+        <h:graphicImage value="/img/standart_waiter.gif" />
+      </span>
     </div>
   </h:form>
 
