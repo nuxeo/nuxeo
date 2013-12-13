@@ -864,7 +864,8 @@ public class Select2ActionsBean implements Serializable {
 
                 params.put("value", storedReference);
                 params.put("xpath", idProperty);
-
+                params.put("lang",
+                        org.jboss.seam.core.Locale.instance().getLanguage());
                 Object result = as.run(ctx, operationName, params);
 
                 if (result == null) {
