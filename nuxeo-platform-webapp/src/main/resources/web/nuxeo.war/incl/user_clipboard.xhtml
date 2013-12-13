@@ -47,7 +47,7 @@
               </span>
               <nxu:graphicImage
                 value="#{nxd:iconPath(copiedDocument)}"
-                styleClass="iconImage" />
+                styleClass="icon smallIcon" />
               <nxd:restDocumentLink document="#{copiedDocument}">
                 <h:outputText value="#{nxd:titleOrId(copiedDocument)}" />
               </nxd:restDocumentLink>
@@ -73,7 +73,7 @@
                 immediate="#{cb_action.immediate}">
                 <nxu:graphicImage value="#{cb_action.icon}"
                   rendered="#{not empty cb_action.icon}"
-                  styleClass="smallIcon" />
+                  styleClass="icon smallIcon" />
                 <h:outputText value=" #{messages[cb_action.label]}" />
               </nxh:commandLink>
             </div>
@@ -82,12 +82,7 @@
     
       </div>
 
-      <p class="nobottomgap"></p>
-
     </div>
-
-    <div class="bottom-left"></div>
-    <div class="bottom-right"></div>
 
   </h:panelGroup>
 
