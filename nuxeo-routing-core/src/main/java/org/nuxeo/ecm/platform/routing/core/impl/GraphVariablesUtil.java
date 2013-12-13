@@ -87,6 +87,9 @@ public class GraphVariablesUtil {
             boolean hasFacet = doc.hasFacet(facet);
             for (Field f : type.getFields()) {
                 String name = f.getName().getLocalName();
+                if (!map.containsKey(name)) {
+                    continue;
+                }
                 Serializable value = map.get(name);
                 if (value == null && !hasFacet) {
                     continue;
