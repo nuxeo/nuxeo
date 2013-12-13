@@ -17,6 +17,7 @@
 package org.nuxeo.apidoc.repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -38,8 +39,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+
+import com.google.common.collect.Lists;
 
 public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
         implements DistributionSnapshot {
@@ -475,5 +479,20 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
             jdocHelper = JavaDocHelper.getHelper(getName(), getVersion());
         }
         return jdocHelper;
+    }
+
+    @Override
+    public void cleanPreviousArtifacts() {
+        String query = QueryHelper.select("Document", getDoc());
+        try {
+            List<DocumentRef> refs = new ArrayList<>();
+            DocumentModelList docs = getCoreSession().query(query);
+            for(DocumentModel doc : docs) {
+                refs.add(doc.getRef());
+            }
+            getCoreSession().removeDocuments(refs.toArray(new DocumentRef[1]));
+        } catch (ClientException e) {
+            log.warn("Unable to query", e);
+        }
     }
 }

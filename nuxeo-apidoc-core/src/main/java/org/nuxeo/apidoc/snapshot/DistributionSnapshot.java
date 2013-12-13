@@ -43,6 +43,8 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
     String getKey();
 
+    void cleanPreviousArtifacts();
+
     List<BundleGroup> getBundleGroups();
 
     BundleGroup getBundleGroup(String groupId);

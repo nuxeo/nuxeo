@@ -117,6 +117,11 @@ public class TestDistributionResolver {
                 }
 
                 @Override
+                public void cleanPreviousArtifacts() {
+                    // empty body
+                }
+
+                @Override
                 public JavaDocHelper getJavaDocHelper() {
                     // TODO Auto-generated method stub
                     return null;
