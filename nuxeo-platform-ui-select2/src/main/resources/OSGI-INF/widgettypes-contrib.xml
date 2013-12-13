@@ -26,6 +26,31 @@
       </fields>
     </widget>
 
+    <widget name="select2_idFunction" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Id Function</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the JavaScript function that will be called by
+          select2 to get the id from
+          the suggested objects. The target function should
+          take as input the
+          javascript object as returned by Automation and should
+          return the id to be
+          submitted. Use the "Inline Javascript" property field
+          to define your own
+          function.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>idFunction</field>
+      </fields>
+    </widget>
+
     <widget name="select2_labelProperty" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -145,6 +170,9 @@
                   <widget category="widgetTypeConf">select2_idProperty</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_idFunction</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select2_labelProperty</widget>
                 </row>
                 <row>
@@ -202,6 +230,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_idProperty</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_idFunction</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_labelProperty</widget>
@@ -287,6 +318,9 @@
                   <widget category="widgetTypeConf">select2_idProperty</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_idFunction</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select2_labelProperty</widget>
                 </row>
                 <row>
@@ -347,6 +381,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_idProperty</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_idFunction</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_labelProperty</widget>

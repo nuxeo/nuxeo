@@ -18,15 +18,30 @@
   }
 
   function docEntryDefaultFormatter(doc) {
-    var markup = "";
+    var markup = "<table><tbody>";
+    markup += "<tr><td>";
     if (doc.properties && doc.properties['common:icon']) {
       markup += "<img src='" + window.nxContextPath
           + doc.properties['common:icon'] + "'/>"
     }
+    markup += "</td><td>";
     markup += doc.title;
     if (doc.warn_message) {
       markup += "<img src='" + window.nxContextPath
           + "/icons/warning.gif' title='" + doc.warn_message + "'/>"
+    }
+    if (doc.path) {
+      markup += "<span class='displayB detail' style='word-break:break-all;'>" + doc.path + "</span>";
+    }
+    markup += "</td></tr></tbody></table>"
+    return markup;
+  }
+
+  function dirEntryDefaultFormatter(entry) {
+    var markup = entry.displayLabel;
+    if (entry.warn_message) {
+      markup += "<img src='" + window.nxContextPath
+          + "/icons/warning.gif' title='" + entry.warn_message + "'/>"
     }
     return markup;
   }
@@ -253,6 +268,8 @@
       select2_params.id = function(doc) {
         return doc.properties[params.idProperty];
       };
+    } else if (params.idFunction) {
+      select2_params.id = eval(params.idFunction);
     } else if (params.prefixed) {
       select2_params.id = function(item) {
         return item.prefixed_id;
