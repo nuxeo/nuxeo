@@ -10,6 +10,10 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:a4j="http://richfaces.org/a4j">
 
+  <ui:define name="page title">
+    <h:outputText value="#{messages['label.main.tab.home']}" />
+  </ui:define>
+
   <ui:define name="body">
 
      <a4j:outputPanel id="user_center_divtab" layout="block">
