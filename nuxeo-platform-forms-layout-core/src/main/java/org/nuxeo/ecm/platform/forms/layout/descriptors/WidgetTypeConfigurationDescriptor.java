@@ -84,7 +84,7 @@ public class WidgetTypeConfigurationDescriptor {
     boolean handlingLabels = false;
 
     /**
-     * List of supported controls (controls checkd on subwidgets configuration)
+     * List of supported controls (controls checkd on subwidgets configuration).
      *
      * @since 5.9.1
      */
