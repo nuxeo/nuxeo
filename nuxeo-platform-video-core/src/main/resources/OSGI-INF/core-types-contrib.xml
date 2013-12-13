@@ -21,6 +21,7 @@
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="uid" />
+      <schema name="files" />
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Publishable" />
