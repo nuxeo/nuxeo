@@ -5,7 +5,9 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+
   id="#{layout.id}">
 
 <c:if test="false">
@@ -16,8 +18,16 @@
   - layoutListingStatus: iteration status, used to print table header
     matching widget label.
   - formId: the surrounding form id
+  - useAjaxForm: whether the form is jaxified or not.
+  - contentIdToBeReRendered: mandatory list of elements to reRender when form is ajaxified.
+
+  Since 5.9.1, this file also handles the following templating zones that can
+  be replaced using facelets tag ui:define:
+  - listing_header
+  - listing_row
 </c:if>
 
+<ui:insert name="listing_header">
 <nxu:set var="hasSeveralSorts"
   value="#{provider.getSortInfos().size() > 1}"
   cache="true">
@@ -58,14 +68,27 @@
                     value="#{provider.getSortInfoIndex(layoutColumn.properties.sortPropertyName, false)}"
                     cache="true">
                     <span class="contentViewHeaderSortTooltip">
-                      <h:commandLink immediate="true"
-                        action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
-                        id="#{layoutColumn.widgets[0].name}_header_sort">
-                        <h:outputText value="#{layoutColumn.widgets[0].label}"
-                          rendered="#{!layoutColumn.widgets[0].translated}" />
-                        <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
-                          rendered="#{layoutColumn.widgets[0].translated}" />
-                      </h:commandLink>
+                      <c:if test="#{useAjaxForm}">
+                        <a4j:commandLink ajaxSingle="true" immediate="true"
+                          reRender="#{contentIdToBeReRendered}"
+                          action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
+                          id="#{layoutColumn.widgets[0].name}_header_sort">
+                          <h:outputText value="#{layoutColumn.widgets[0].label}"
+                            rendered="#{!layoutColumn.widgets[0].translated}" />
+                          <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
+                            rendered="#{layoutColumn.widgets[0].translated}" />
+                        </a4j:commandLink>
+                      </c:if>
+                      <c:if test="#{not useAjaxForm}">
+                        <h:commandLink immediate="true"
+                          action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
+                          id="#{layoutColumn.widgets[0].name}_header_sort">
+                          <h:outputText value="#{layoutColumn.widgets[0].label}"
+                            rendered="#{!layoutColumn.widgets[0].translated}" />
+                          <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
+                            rendered="#{layoutColumn.widgets[0].translated}" />
+                        </h:commandLink>
+                      </c:if>
                     </span>
                     <div class="tooltip">
                       #{messages['contentview.setSort.help']}
@@ -73,14 +96,27 @@
                     <f:verbatim>&amp;nbsp;</f:verbatim>
                     <c:if test="#{ascIndex != -1}">
                       <span class="contentViewHeaderSortTooltip">
-                        <h:commandLink immediate="true"
-                          action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
-                          id="#{layoutColumn.widgets[0].name}_header_sort_desc">
-                          <h:graphicImage value="/icons/sort_selected_up.png" />
-                          <c:if test="#{hasSeveralSorts}">
-                            #{ascIndex + 1}
-                          </c:if>
-                        </h:commandLink>
+                        <c:if test="#{useAjaxForm}">
+                          <a4j:commandLink ajaxSingle="true" immediate="true"
+                            reRender="#{contentIdToBeReRendered}"
+                            action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
+                            id="#{layoutColumn.widgets[0].name}_header_sort_desc">
+                            <h:graphicImage value="/icons/sort_selected_up.png" />
+                            <c:if test="#{hasSeveralSorts}">
+                              #{ascIndex + 1}
+                            </c:if>
+                          </a4j:commandLink>
+                        </c:if>
+                        <c:if test="#{not useAjaxForm}">
+                          <h:commandLink immediate="true"
+                            action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
+                            id="#{layoutColumn.widgets[0].name}_header_sort_desc">
+                            <h:graphicImage value="/icons/sort_selected_up.png" />
+                            <c:if test="#{hasSeveralSorts}">
+                              #{ascIndex + 1}
+                            </c:if>
+                          </h:commandLink>
+                        </c:if>
                       </span>
                       <div class="tooltip">
                         #{messages['contentview.addSort.help']}
@@ -88,14 +124,27 @@
                     </c:if>
                     <c:if test="#{descIndex != -1}">
                       <span class="contentViewHeaderSortTooltip">
-                        <h:commandLink immediate="true"
-                          action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
-                          id="#{layoutColumn.widgets[0].name}_header_sort_asc">
-                          <h:graphicImage value="/icons/sort_selected_down.png" />
-                          <c:if test="#{hasSeveralSorts}">
-                            #{descIndex + 1}
-                          </c:if>
-                        </h:commandLink>
+                        <c:if test="#{useAjaxForm}">
+                          <a4j:commandLink ajaxSingle="true" immediate="true"
+                            reRender="#{contentIdToBeReRendered}"
+                            action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
+                            id="#{layoutColumn.widgets[0].name}_header_sort_asc">
+                            <h:graphicImage value="/icons/sort_selected_down.png" />
+                            <c:if test="#{hasSeveralSorts}">
+                              #{descIndex + 1}
+                            </c:if>
+                          </a4j:commandLink>
+                        </c:if>
+                        <c:if test="#{not useAjaxForm}">
+                          <h:commandLink immediate="true"
+                            action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
+                            id="#{layoutColumn.widgets[0].name}_header_sort_asc">
+                            <h:graphicImage value="/icons/sort_selected_down.png" />
+                            <c:if test="#{hasSeveralSorts}">
+                              #{descIndex + 1}
+                            </c:if>
+                          </h:commandLink>
+                        </c:if>
                       </span>
                       <div class="tooltip">
                         #{messages['contentview.addSort.help']}
@@ -103,11 +152,21 @@
                     </c:if>
                     <c:if test="#{ascIndex == -1 and descIndex == -1}">
                       <span class="contentViewHeaderSortTooltip">
-                        <h:commandLink immediate="true"
-                          action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
-                          id="#{layoutColumn.widgets[0].name}_header_sort_add">
-                          <h:graphicImage value="/icons/sort_up.png" />
-                        </h:commandLink>
+                        <c:if test="#{useAjaxForm}">
+                          <a4j:commandLink ajaxSingle="true" immediate="true"
+                            reRender="#{contentIdToBeReRendered}"
+                            action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
+                            id="#{layoutColumn.widgets[0].name}_header_sort_add">
+                            <h:graphicImage value="/icons/sort_up.png" />
+                          </a4j:commandLink>
+                        </c:if>
+                        <c:if test="#{not useAjaxForm}">
+                          <h:commandLink immediate="true"
+                            action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
+                            id="#{layoutColumn.widgets[0].name}_header_sort_add">
+                            <h:graphicImage value="/icons/sort_up.png" />
+                          </h:commandLink>
+                        </c:if>
                       </span>
                       <div class="tooltip">
                         #{messages['contentview.addSort.help']}
@@ -137,7 +196,9 @@
 </c:if>
 
 </nxu:set>
+</ui:insert>
 
+<ui:insert name="listing_row">
 <c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
 <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
   <nxl:layoutColumn>
@@ -151,5 +212,6 @@
     </td>
   </nxl:layoutColumn>
 </tr>
+</ui:insert>
 
 </f:subview>
