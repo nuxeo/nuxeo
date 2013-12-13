@@ -887,9 +887,12 @@ BEGIN
   DECLARE @permissions NVARCHAR(4000);
   SET @permissions = dbo.nx_get_read_permissions();
   INSERT INTO @output (acl_id)
-    SELECT acl_id FROM hierarchy_read_acl
+    SELECT acl_id FROM hierarchy_read_acl r
+    JOIN hierarchy h ON r.id = h.id
+    -- do not use orphan version
+    WHERE h.isversion IS NULL
     GROUP BY acl_id
-    HAVING dbo.NX_ACCESS_ALLOWED(max(id), @users, @permissions) = 1;
+    HAVING dbo.NX_ACCESS_ALLOWED(max(r.id), @users, @permissions) = 1;
   RETURN;
 END;
 
@@ -970,7 +973,10 @@ BEGIN
   INSERT INTO aclr_user_map
     SELECT u.user_id, NEW.acl_id
     FROM aclr_user AS u, inserted AS NEW
-    JOIN hierarchy_read_acl AS h ON NEW.acl_id = h.acl_id
+    JOIN hierarchy_read_acl AS r ON NEW.acl_id = r.acl_id
+    JOIN hierarchy AS h ON r.id = h.id
+    -- do not use orphan version
+    WHERE h.isversion IS NULL
     GROUP BY u.user_id, u.principals, NEW.acl_id
     HAVING dbo.NX_ACCESS_ALLOWED(max(h.id), u.principals, @permissions) = 1
 END;
