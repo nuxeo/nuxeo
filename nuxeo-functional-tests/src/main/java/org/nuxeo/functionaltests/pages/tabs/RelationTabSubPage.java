@@ -12,13 +12,14 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     guillaume
+ *      <a href="mailto:grenard@nuxeo.com">Guillaume</a>
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -34,13 +35,15 @@ import org.openqa.selenium.support.ui.Wait;
 import com.google.common.base.Function;
 
 /**
- *
+ * Representation of a Relations tab page.
  *
  * @since 5.9.1
  */
 public class RelationTabSubPage extends DocumentBasePage {
 
-    private final int CREATE_FORM_LOADING_TMEOUT = 20;
+    private final int CREATE_FORM_LOADING_TIMEOUT = 20;
+
+    private final int SELECT2_CHANGE_TIMEOUT = 4;
 
     @Required
     @FindBy(linkText = "Add a new relation")
@@ -58,11 +61,26 @@ public class RelationTabSubPage extends DocumentBasePage {
     @FindBy(name = "createForm:objectType")
     List<WebElement> objectCheckBoxList;
 
+    @FindBy(xpath = "//*[@id='document_relations']/table/tbody/tr")
+    List<WebElement> existingRelations;
+
+    @FindBy(id = "createForm:nxw_singleDocumentSuggestion_select2_init")
+    WebElement selectedDocument;
+
     /**
      * @param driver
      */
     public RelationTabSubPage(WebDriver driver) {
         super(driver);
+    }
+
+    public RelationTabSubPage deleteRelation(int index) {
+        getExistingRelations().get(index).findElement(By.linkText("Delete")).click();
+        return asPage(RelationTabSubPage.class);
+    }
+
+    public List<WebElement> getExistingRelations() {
+        return existingRelations;
     }
 
     public RelationTabSubPage initRelationSetUp() {
@@ -75,15 +93,29 @@ public class RelationTabSubPage extends DocumentBasePage {
         };
 
         Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                CREATE_FORM_LOADING_TMEOUT, TimeUnit.SECONDS).pollingEvery(100,
-                TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
+                CREATE_FORM_LOADING_TIMEOUT, TimeUnit.SECONDS).pollingEvery(
+                100, TimeUnit.MILLISECONDS).ignoring(
+                NoSuchElementException.class);
 
         wait.until(createRelationFormVisible);
 
         return asPage(RelationTabSubPage.class);
     }
 
-    public RelationTabSubPage setRelationWithDocument(String documentName, String predicateUri) {
+    private boolean isObjectChecked(int index) {
+        assert (index < 3 && index >= 0);
+        org.junit.Assert.assertNotNull(objectCheckBoxList);
+        org.junit.Assert.assertEquals(3, objectCheckBoxList.size());
+
+        return objectCheckBoxList.get(index).isSelected();
+    }
+
+    public boolean isObjectDocumentChecked() {
+        return isObjectChecked(2);
+    }
+
+    public RelationTabSubPage setRelationWithDocument(String documentName,
+            String predicateUri) {
 
         Select predicateSelect = new Select(predicate);
         predicateSelect.selectByValue(predicateUri);
@@ -96,21 +128,22 @@ public class RelationTabSubPage extends DocumentBasePage {
 
         org.junit.Assert.assertTrue(isObjectDocumentChecked());
 
+        Function<WebDriver, Boolean> isDocumentSelected = new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                String value = selectedDocument.getAttribute("value");
+                return StringUtils.isNotBlank(value);
+            }
+        };
+
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                SELECT2_CHANGE_TIMEOUT, TimeUnit.SECONDS).pollingEvery(100,
+                TimeUnit.MILLISECONDS);
+
+        wait.until(isDocumentSelected);
+
         addButton.click();
 
         return asPage(RelationTabSubPage.class);
-    }
-
-    private boolean isObjectChecked(int index) {
-        assert(index < 3 && index >= 0);
-        org.junit.Assert.assertNotNull(objectCheckBoxList);
-        org.junit.Assert.assertEquals(3, objectCheckBoxList.size());
-
-        return objectCheckBoxList.get(index).isSelected();
-    }
-
-    public boolean isObjectDocumentChecked() {
-        return isObjectChecked(2);
     }
 
 }
