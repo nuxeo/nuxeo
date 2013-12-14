@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -41,9 +43,11 @@ import com.google.common.base.Function;
  */
 public class RelationTabSubPage extends DocumentBasePage {
 
-    private final int CREATE_FORM_LOADING_TIMEOUT = 20;
+    private static final Log log = LogFactory.getLog(RelationTabSubPage.class);
 
-    private final int SELECT2_CHANGE_TIMEOUT = 4;
+    private static final int CREATE_FORM_LOADING_TIMEOUT = 20;
+
+    private static final int SELECT2_CHANGE_TIMEOUT = 4;
 
     @Required
     @FindBy(linkText = "Add a new relation")
@@ -140,6 +144,8 @@ public class RelationTabSubPage extends DocumentBasePage {
                 TimeUnit.MILLISECONDS);
 
         wait.until(isDocumentSelected);
+
+        log.warn("Submitting relation on document: " + selectedDocument.getAttribute("value"));
 
         addButton.click();
 
