@@ -22,17 +22,14 @@ package org.nuxeo.ecm.platform.pictures.tiles.service;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
-import org.nuxeo.ecm.platform.picture.api.MetadataConstants;
-import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.pictures.tiles.gwt.client.TilingPreviewConstant;
 import org.nuxeo.ecm.platform.preview.adapter.AbstractPreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.ImagePreviewer;
@@ -56,7 +53,7 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
 
     public List<Blob> getPreview(Blob blob, DocumentModel dm)
             throws PreviewException {
-        if (useTiling(blob, dm)) {
+        if (useTiling(blob)) {
             List<Blob> blobResults = new ArrayList<Blob>();
             String htmlFile = getString().replace("$repoId$",
                     dm.getRepositoryName());
@@ -78,40 +75,30 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
         return new ImagePreviewer().getPreview(blob, dm);
     }
 
-    protected boolean useTiling(Blob blob, DocumentModel dm) {
-        Long width = Long.valueOf(0);
-        Long height = Long.valueOf(0);
-
-        if ("Picture".equals(dm.getType())) {
-            try {
-                PictureResourceAdapter adapter = dm.getAdapter(PictureResourceAdapter.class);
-                String xpath = adapter.getViewXPath(ORIGINAL_JPEG_VIEW_NAME);
-                if (xpath == null) {
-                    xpath = adapter.getViewXPath(ORIGINAL_VIEW_NAME);
-                    if (xpath == null) {
-                        xpath = adapter.getFirstViewXPath();
-                    }
-                }
-
-                width = (Long) dm.getPropertyValue(xpath + "width");
-                height = (Long) dm.getPropertyValue(xpath + "height");
-            } catch (ClientException e) {
-                log.error("Failed to get picture dimensions", e);
-            }
-        } else {
-            ImagingService imagingService = Framework.getLocalService(ImagingService.class);
-            if (imagingService != null) {
-                Map<String, Object> imageMetadata = imagingService.getImageMetadata(blob);
-                width = ((Integer) imageMetadata.get(MetadataConstants.META_WIDTH)).longValue();
-                height = ((Integer) imageMetadata.get(MetadataConstants.META_HEIGHT)).longValue();
+    protected boolean useTiling(Blob blob) {
+        ImagingService imagingService = Framework.getLocalService(ImagingService.class);
+        if (imagingService != null) {
+            ImageInfo info = imagingService.getImageInfo(blob);
+            if (info!= null) {
+                int width = info.getWidth();
+                int height = info.getHeight();
+                Integer widthThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue(
+                        "WidthThreshold", "1200"));
+                Integer heightThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue(
+                        "HeightThreshold", "1200"));
+                return width > widthThreshold || height > heightThreshold;
             }
         }
+        return false;
+    }
 
-        Integer widthThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue(
-                "WidthThreshold", "1200"));
-        Integer heightThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue(
-                "HeightThreshold", "1200"));
-        return width > widthThreshold || height > heightThreshold;
+    /**
+     * @deprecated since 5.9.2. Use
+     *             {@link #useTiling(org.nuxeo.ecm.core.api.Blob)}.
+     */
+    @Deprecated
+    protected boolean useTiling(Blob blob, DocumentModel dm) {
+        return useTiling(blob);
     }
 
     private String getString() {
