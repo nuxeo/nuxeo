@@ -570,7 +570,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             // the options of the event
             options.put(CoreEventConstants.SOURCE_REF, src);
             options.put(CoreEventConstants.DESTINATION_REF, dst);
+            options.put(CoreEventConstants.DESTINATION_PATH, dstDoc.getPath());
             options.put(CoreEventConstants.DESTINATION_NAME, name);
+            options.put(CoreEventConstants.DESTINATION_EXISTS, dstDoc.hasChild(name));
             options.put(CoreEventConstants.RESET_LIFECYCLE, resetLifeCycle);
             DocumentModel srcDocModel = readModel(srcDoc);
             notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, options,
@@ -722,7 +724,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             // the options of the event
             options.put(CoreEventConstants.SOURCE_REF, src);
             options.put(CoreEventConstants.DESTINATION_REF, dst);
+            options.put(CoreEventConstants.DESTINATION_PATH, dstDoc.getPath());
             options.put(CoreEventConstants.DESTINATION_NAME, name);
+            options.put(CoreEventConstants.DESTINATION_EXISTS, dstDoc.hasChild(name));
 
             notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, options,
                     null, null, true, true);
@@ -870,6 +874,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             throw new ClientException(
                     "Only Administrators can create placeless documents");
         }
+        String childName = docModel.getName();
         try {
             Document folder = parentRef == null ? null
                     : resolveReference(parentRef);
@@ -885,17 +890,15 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             if (lifecycleStateInfo instanceof String) {
                 initialLifecycleState = (String) lifecycleStateInfo;
             }
-            String name = docModel.getName();
             Map<String, Serializable> options = getContextMapEventInfo(docModel);
             options.put(CoreEventConstants.DESTINATION_REF, parentRef);
-            options.put(CoreEventConstants.DESTINATION_NAME, docModel.getName());
+            options.put(CoreEventConstants.DESTINATION_PATH, folder.getPath());
+            options.put(CoreEventConstants.DESTINATION_NAME, childName);
+            options.put(CoreEventConstants.DESTINATION_EXISTS, folder.hasChild(childName));
             notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options,
                     null, null, false, true); // no lifecycle yet
-            name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
-            if (folder == null) {
-                folder = getSession().getNullDocument();
-            }
-            Document doc = folder.addChild(name, typeName);
+            childName = (String) options.get(CoreEventConstants.DESTINATION_NAME);
+            Document doc = folder.addChild(childName, typeName);
 
             // update facets too since some of them may be dynamic
             for (String facetName : docModel.getFacets()) {
@@ -937,7 +940,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             return docModel;
         } catch (DocumentException e) {
             throw new ClientException("Failed to create document: "
-                    + docModel.getName(), e);
+                    + childName, e);
         }
     }
 
@@ -977,7 +980,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 : resolveReference(parentRef);
         Map<String, Serializable> props = getContextMapEventInfo(docModel);
         props.put(CoreEventConstants.DESTINATION_REF, parentRef);
+        props.put(CoreEventConstants.DESTINATION_PATH, parent.getPath());
         props.put(CoreEventConstants.DESTINATION_NAME, name);
+        props.put(CoreEventConstants.DESTINATION_EXISTS, parent.hasChild(name));
         notifyEvent(DocumentEventTypes.ABOUT_TO_IMPORT,
                 docModel, null, null, null, false, true);
         name = (String)props.get(CoreEventConstants.DESTINATION_NAME);
