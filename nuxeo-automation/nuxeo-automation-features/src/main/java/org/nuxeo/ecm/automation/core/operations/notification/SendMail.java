@@ -55,7 +55,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = SendMail.ID, category = Constants.CAT_NOTIFICATION, label = "Send E-Mail", description = "Send an email using the input document to the specified recipients. You can use the HTML parameter to specify whether you message is in HTML format or in plain text. Also you can attach any blob on the current document to the message by using the comma separated list of xpath expressions 'files'. If you xpath points to a blob list all blobs in the list will be attached. Return back the input document(s). If rollbackOnError is true, the whole chain will be rollbacked if an error occurs while trying to send the email (for instance if no SMTP server is configured), else a simple warning will be logged and the chain will continue.<br><div style='color: red'>Becareful, parameter \"from\" and \"to\" are deprecated, prefer to use fromList and toList</div>")
+@Operation(id = SendMail.ID, category = Constants.CAT_NOTIFICATION, label = "Send E-Mail", description = "Send an email using the input document to the specified recipients. You can use the HTML parameter to specify whether you message is in HTML format or in plain text. Also you can attach any blob on the current document to the message by using the comma separated list of xpath expressions 'files'. If you xpath points to a blob list all blobs in the list will be attached. Return back the input document(s). If rollbackOnError is true, the whole chain will be rollbacked if an error occurs while trying to send the email (for instance if no SMTP server is configured), else a simple warning will be logged and the chain will continue.")
 public class SendMail {
 
     protected static final Log log = LogFactory.getLog(SendMail.class);
@@ -70,17 +70,11 @@ public class SendMail {
     @Context
     protected UserManager umgr;
 
-    /**
-     * @since 5.9.1
-     */
-    @Param(name = "fromList", required = false)
-    protected StringList fromList;
+    @Param(name = "from")
+    protected String from;
 
-    /**
-     * @since 5.9.1
-     */
-    @Param(name = "toList", required = false)
-    protected StringList toList;
+    @Param(name = "to")
+    protected StringList to;
 
     // Useful for tests.
     protected Session mailSession;
@@ -127,31 +121,8 @@ public class SendMail {
     @Param(name = "viewId", required = false, values = { "view_documents" })
     protected String viewId = "view_documents";
 
-    @Deprecated
-    @Param(name = "from", required = false, description = "Please do not use it, prefer to use fromList parameter. If fromList is not null this value is ignored")
-    protected String from;
-
-    @Deprecated
-    @Param(name = "to", required = false, description = "Please do not use it, prefer to use toList parameter. If toList is not null this value is ignored")
-    protected String to;
-
-
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
-        if (fromList == null && from == null) {
-            throw new ClientException("Waiting for from (deprecated) of fromList not null please check your operation configuration");
-        }
-
-        if (toList == null && to == null) {
-            throw new ClientException("Waiting for to (deprecated) of toList not null please check your operation configuration");
-        }
-
-        if (fromList == null || fromList.isEmpty()) {
-            fromList = new StringList(new String[]{from});
-        }
-        if (toList == null || toList.isEmpty()) {
-            toList = new StringList(new String[]{to});
-        }
         send(doc);
         return doc;
     }
@@ -181,10 +152,10 @@ public class SendMail {
             map.put("docUrl", MailTemplateHelper.getDocumentUrl(doc, viewId));
             map.put("subject", subject);
             map.put("to", to);
-            map.put("toResolved", MailBox.fetchPersonsFromList(toList, isStrict));
+            map.put("toResolved", MailBox.fetchPersonsFromList(to, isStrict));
             map.put("from", from);
             map.put("fromResolved",
-                    MailBox.fetchPersonsFromList(fromList, isStrict));
+                    MailBox.fetchPersonsFromString(from, isStrict));
             map.put("from", cc);
             map.put("fromResolved", MailBox.fetchPersonsFromList(cc, isStrict));
             map.put("from", bcc);
@@ -219,10 +190,10 @@ public class SendMail {
      */
     private void addMailBoxInfo(Mailer.Message msg) throws MessagingException,
             ClientException {
-        List<MailBox> persons = MailBox.fetchPersonsFromList(fromList, isStrict);
+        List<MailBox> persons = MailBox.fetchPersonsFromString(from, isStrict);
         addMailBoxInfoInMessageHeader(msg, AS.FROM, persons);
 
-        persons = MailBox.fetchPersonsFromList(toList, isStrict);
+        persons = MailBox.fetchPersonsFromList(to, isStrict);
         addMailBoxInfoInMessageHeader(msg, AS.TO, persons);
 
         persons = MailBox.fetchPersonsFromList(cc, isStrict);
