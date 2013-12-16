@@ -68,7 +68,7 @@ public class RelationTabSubPage extends DocumentBasePage {
     @FindBy(xpath = "//*[@id='document_relations']/table/tbody/tr")
     List<WebElement> existingRelations;
 
-    @FindBy(id = "createForm:nxw_singleDocumentSuggestion_select2_init")
+    @FindBy(id = "createForm:objectDocumentUid")
     WebElement selectedDocument;
 
     /**
@@ -121,6 +121,8 @@ public class RelationTabSubPage extends DocumentBasePage {
     public RelationTabSubPage setRelationWithDocument(String documentName,
             String predicateUri) {
 
+        org.junit.Assert.assertFalse(isObjectDocumentChecked());
+
         Select predicateSelect = new Select(predicate);
         predicateSelect.selectByValue(predicateUri);
 
@@ -130,14 +132,18 @@ public class RelationTabSubPage extends DocumentBasePage {
 
         documentSuggestionWidget.selectValue(documentName);
 
-        org.junit.Assert.assertTrue(isObjectDocumentChecked());
-
         Function<WebDriver, Boolean> isDocumentSelected = new Function<WebDriver, Boolean>() {
             public Boolean apply(WebDriver driver) {
                 String value = selectedDocument.getAttribute("value");
-                return StringUtils.isNotBlank(value);
+                boolean result = StringUtils.isNotBlank(value);
+                if (!result) {
+                    log.warn("Waiting for select2 ajaxReRender");
+                }
+                return result;
             }
         };
+
+        org.junit.Assert.assertTrue(isObjectDocumentChecked());
 
         Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
                 SELECT2_CHANGE_TIMEOUT, TimeUnit.SECONDS).pollingEvery(100,
@@ -145,7 +151,8 @@ public class RelationTabSubPage extends DocumentBasePage {
 
         wait.until(isDocumentSelected);
 
-        log.warn("Submitting relation on document: " + selectedDocument.getAttribute("value"));
+        log.warn("Submitting relation on document: "
+                + selectedDocument.getAttribute("value"));
 
         addButton.click();
 
