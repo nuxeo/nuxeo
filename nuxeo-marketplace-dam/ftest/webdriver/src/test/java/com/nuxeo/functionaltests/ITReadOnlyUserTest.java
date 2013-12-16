@@ -44,12 +44,16 @@ public class ITReadOnlyUserTest extends AbstractDAMTest {
         logout();
 
         login("bender", "test");
+        // make sure navigation to a given domain is done, see NXP-13436
+        findElementWithTimeout(By.linkText("DOCUMENT MANAGEMENT")).click();
+        findElementWithTimeout(By.linkText("Default domain")).click();
         damPage = getDAMPage();
         SearchResultsFragment searchResultsFragment = damPage.getSearchResultsFragment();
         // Asset Library is not selected as the user does not have Write right
         // on it
         AssetCreationFancyBoxFragment assetCreation = searchResultsFragment.showAssetCreation(damPage);
         assetCreation.checkTextToBeNotPresent("Asset Library");
+        assetCreation.cancel();
 
         // cannot bulk edit, but can add to worklist
         String bEditButtonId = "nxl_gridDamLayout:dam_search_nxw_searchResults_buttons:nxw_damBulkEdit_form:nxw_cvButton_damBulkEdit_subview:nxw_cvButton_damBulkEdit_link";
