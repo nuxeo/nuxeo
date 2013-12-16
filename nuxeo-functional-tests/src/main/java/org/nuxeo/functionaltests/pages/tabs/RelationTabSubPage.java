@@ -137,7 +137,7 @@ public class RelationTabSubPage extends DocumentBasePage {
                 String value = selectedDocument.getAttribute("value");
                 boolean result = StringUtils.isNotBlank(value);
                 if (!result) {
-                    log.warn("Waiting for select2 ajaxReRender");
+                    log.debug("Waiting for select2 ajaxReRender");
                 }
                 return result;
             }
@@ -151,7 +151,7 @@ public class RelationTabSubPage extends DocumentBasePage {
 
         wait.until(isDocumentSelected);
 
-        log.warn("Submitting relation on document: "
+        log.debug("Submitting relation on document: "
                 + selectedDocument.getAttribute("value"));
 
         addButton.click();
