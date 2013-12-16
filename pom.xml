@@ -382,7 +382,7 @@
         <version>${nuxeo.fsconnectors.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
+        <groupId>org.nuxeo.lib.wss</groupId>
         <artifactId>nuxeo-wss-front</artifactId>
         <version>${nuxeo.fsconnectors.version}</version>
       </dependency>
