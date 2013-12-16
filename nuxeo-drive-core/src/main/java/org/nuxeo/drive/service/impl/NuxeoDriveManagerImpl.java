@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -165,6 +166,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 (Serializable) subscriptions);
         newRootContainer.putContextData(
                 NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
+        newRootContainer.putContextData(
+                NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
         DocumentModel savedNewRootContainer = session.saveDocument(newRootContainer);
         fireEvent(savedNewRootContainer, session,
                 NuxeoDriveEvents.ROOT_REGISTERED, userName);
@@ -197,6 +200,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 (Serializable) subscriptions);
         rootContainer.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER,
                 true);
+        rootContainer.putContextData(
+                NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
         session.saveDocument(rootContainer);
         fireEvent(rootContainer, session, NuxeoDriveEvents.ROOT_UNREGISTERED,
                 userName);
