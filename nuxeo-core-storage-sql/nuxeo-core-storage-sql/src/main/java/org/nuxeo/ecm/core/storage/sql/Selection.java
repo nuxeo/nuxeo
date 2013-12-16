@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -109,6 +110,8 @@ public class Selection {
      */
     protected Set<Serializable> deleted;
 
+    protected final Map<Serializable, SimpleFragment> fragmentByValue = new HashMap<Serializable, SimpleFragment>();
+
     /**
      * Constructs a {@link Selection} for the given selection id.
      * <p>
@@ -151,16 +154,18 @@ public class Selection {
      *
      * @param id the fragment id
      */
-    public void addExisting(Serializable id) {
+    public void addExisting(SimpleFragment fragment) {
         if (existing == null) {
             existing = new HashSet<Serializable>();
         }
+        Serializable id = fragment.getId();
         if (existing.contains(id) || (created != null && created.contains(id))) {
             // the id is already known here, this happens if the fragment was
             // GCed from pristine and we had to refetched it from the mapper
             return;
         }
         existing.add(id);
+        fragmentByValue.put(fragmentValue(fragment), fragment);
     }
 
     /**
@@ -168,19 +173,21 @@ public class Selection {
      *
      * @param id the fragment id
      */
-    public void addCreated(Serializable id) {
+    public void addCreated(SimpleFragment frag) {
         if (created == null) {
             created = new HashSet<Serializable>();
             // move to hard map
             softMap.remove(selId);
             hardMap.put(selId, this);
         }
+        Serializable id = frag.getId();
         if ((existing != null && existing.contains(id)) || created.contains(id)) {
             // TODO remove sanity check if ok
             log.error("Creating already present id: " + id);
             return;
         }
         created.add(id);
+        fragmentByValue.put(fragmentValue(frag), frag);
     }
 
     /**
@@ -192,10 +199,14 @@ public class Selection {
      * @param actualExisting the existing database ids (the list must be
      *            mutable)
      */
-    public void addExistingComplete(List<Serializable> actualExisting) {
+    public void addExistingComplete(List<SimpleFragment> actualExisting) {
         assert !complete;
         complete = true;
-        existing = new HashSet<Serializable>(actualExisting);
+        existing = new HashSet<Serializable>(actualExisting.size());
+        for (SimpleFragment eachExisting:actualExisting) {
+            fragmentByValue.put(fragmentValue(eachExisting), eachExisting);
+            existing.add(eachExisting.getId());
+        }
     }
 
     /**
@@ -213,7 +224,8 @@ public class Selection {
      *
      * @param id the id to remove
      */
-    public void remove(Serializable id) {
+    public void remove(SimpleFragment frag) {
+        Serializable id = frag.getId();
         if (created != null && created.remove(id)) {
             // don't add to deleted
             return;
@@ -228,6 +240,7 @@ public class Selection {
             hardMap.put(selId, this);
         }
         deleted.add(id);
+        fragmentByValue.remove(fragmentValue(frag));
     }
 
     /**
@@ -274,47 +287,9 @@ public class Selection {
      * @return the fragment, or {@code null}, or {@link SimpleFragment#UNKNOWN}
      */
     public SimpleFragment getFragmentByValue(Serializable filter) {
-        if (existing != null) {
-            for (Serializable id : existing) {
-                SimpleFragment fragment;
-                try {
-                    fragment = getFragment(id);
-                } catch (StorageException e) {
-                    log.warn("Failed refetch for: " + id, e);
-                    continue;
-                }
-                if (fragment == null) {
-                    log.warn("Existing fragment missing: " + id);
-                    continue;
-                }
-                if (filter.equals(fragmentValue(fragment))) {
-                    return fragment;
-                }
-            }
-        }
-        if (created != null) {
-            for (Serializable id : created) {
-                SimpleFragment fragment = getFragmentIfPresent(id);
-                if (fragment == null) {
-                    log.warn("Created fragment missing: " + id);
-                    continue;
-                }
-                if (filter.equals(fragmentValue(fragment))) {
-                    return fragment;
-                }
-            }
-        }
-        if (deleted != null) {
-            for (Serializable id : deleted) {
-                SimpleFragment fragment = getFragmentIfPresent(id);
-                if (fragment == null) {
-                    log.warn("Deleted fragment missing: " + id);
-                    continue;
-                }
-                if (filter.equals(fragmentValue(fragment))) {
-                    return null;
-                }
-            }
+        SimpleFragment frag = fragmentByValue.get(filter);
+        if (frag != null) {
+            return frag;
         }
         return complete ? null : SimpleFragment.UNKNOWN;
     }

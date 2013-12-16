@@ -939,36 +939,39 @@ public class PersistenceContext {
      * Remove node from children/proxies selections.
      */
     private void removeFromSelections(NodeInfo info) throws StorageException {
-        Serializable id = info.id;
+        SimpleFragment frag = (SimpleFragment)pristine.get(info.id);
+        if (frag == null) {
+            frag = (SimpleFragment)modified.get(info.id);
+        }
         if (Model.PROXY_TYPE.equals(info.primaryType)) {
-            seriesProxies.recordRemoved(id, info.versionSeriesId);
-            targetProxies.recordRemoved(id, info.targetId);
+            seriesProxies.recordRemoved(frag, info.versionSeriesId);
+            targetProxies.recordRemoved(frag, info.targetId);
         }
         if (info.versionSeriesId != null && info.targetId == null) {
             // version
-            seriesVersions.recordRemoved(id, info.versionSeriesId);
+            seriesVersions.recordRemoved(frag, info.versionSeriesId);
         }
 
-        hierComplex.recordRemoved(info.id, info.parentId);
-        hierNonComplex.recordRemoved(info.id, info.parentId);
+        hierComplex.recordRemoved(frag, info.parentId);
+        hierNonComplex.recordRemoved(frag, info.parentId);
 
         // remove complete selections
         if (complexProp(info.isProperty)) {
             // no more a parent
-            hierComplex.recordRemovedSelection(id);
+            hierComplex.recordRemovedSelection(info.id);
             // is never a parent of non-complex children
         } else {
             // no more a parent
-            hierComplex.recordRemovedSelection(id);
-            hierNonComplex.recordRemovedSelection(id);
+            hierComplex.recordRemovedSelection(info.id);
+            hierNonComplex.recordRemovedSelection(info.id);
             // no more a version series
             if (model.proxiesEnabled) {
-                seriesProxies.recordRemovedSelection(id);
+                seriesProxies.recordRemovedSelection(info.id);
             }
-            seriesVersions.recordRemovedSelection(id);
+            seriesVersions.recordRemovedSelection(info.id);
             // no more a target
             if (model.proxiesEnabled) {
-                targetProxies.recordRemovedSelection(id);
+                targetProxies.recordRemovedSelection(info.id);
             }
         }
     }

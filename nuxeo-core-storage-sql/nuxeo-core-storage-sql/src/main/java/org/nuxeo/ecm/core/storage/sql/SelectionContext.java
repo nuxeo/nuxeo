@@ -144,7 +144,7 @@ public class SelectionContext {
         // add as a new fragment in the selection
         Serializable selId = fragment.get(selType.selKey);
         if (selId != null) {
-            getSelection(selId).addCreated(id);
+            getSelection(selId).addCreated(fragment);
             modifiedInTransaction.add(selId);
             modifiedInTransactionCount.inc();
         }
@@ -167,7 +167,7 @@ public class SelectionContext {
             throws StorageException {
         Serializable selId = fragment.get(selType.selKey);
         if (selId != null) {
-            getSelection(selId).addExisting(fragment.getId());
+            getSelection(selId).addExisting(fragment);
             if (invalidate) {
                 modifiedInTransaction.add(selId);
                 modifiedInTransactionCount.inc();
@@ -177,14 +177,14 @@ public class SelectionContext {
 
     /** Removes a selection item from the selection. */
     public void recordRemoved(SimpleFragment fragment) throws StorageException {
-        recordRemoved(fragment.getId(), fragment.get(selType.selKey));
+        recordRemoved(fragment, fragment.get(selType.selKey));
     }
 
     /** Removes a selection item from the selection. */
-    public void recordRemoved(Serializable id, Serializable selId)
+    public void recordRemoved(SimpleFragment fragment, Serializable selId)
             throws StorageException {
         if (selId != null) {
-            getSelection(selId).remove(id);
+            getSelection(selId).remove(fragment);
             modifiedInTransaction.add(selId);
             modifiedInTransactionCount.inc();
         }
@@ -243,12 +243,10 @@ public class SelectionContext {
             List<Fragment> frags = context.getFragmentsFromFetchedRows(rows,
                     false);
             fragments = new ArrayList<SimpleFragment>(frags.size());
-            List<Serializable> ids = new ArrayList<Serializable>(frags.size());
             for (Fragment fragment : frags) {
                 fragments.add((SimpleFragment) fragment);
-                ids.add(fragment.getId());
             }
-            selection.addExistingComplete(ids);
+            selection.addExistingComplete(fragments);
 
             // redo the query, as the selection may include newly-created ones,
             // and we also filter by name
