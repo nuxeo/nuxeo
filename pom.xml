@@ -230,7 +230,7 @@
         <version>${nuxeo.runtime.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
+        <groupId>org.nuxeo.lib.runtime</groupId>
         <artifactId>nuxeo-runtime-launcher</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
@@ -314,7 +314,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
+        <groupId>org.nuxeo.lib.runtime</groupId>
         <artifactId>nuxeo-runtime-tomcat-adapter</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
@@ -397,7 +397,7 @@
         <version>${nuxeo.core.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
+        <groupId>org.nuxeo.lib.core</groupId>
         <artifactId>nuxeo-core-storage-sql-extensions</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
