@@ -13,10 +13,6 @@
 package org.nuxeo.ecm.core.model;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -27,22 +23,16 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  */
 public class DuplicatedNameFixer implements EventListener {
 
+
     @Override
     public void handleEvent(Event event) throws ClientException {
         DocumentEventContext context = (DocumentEventContext) event.getContext();
-        CoreSession session = context.getCoreSession();
-        DocumentRef parentRef = (DocumentRef) context.getProperty(
-                CoreEventConstants.DESTINATION_REF);
-        if (parentRef == null) {
+        Boolean destinationExists = (Boolean)context.getProperty(CoreEventConstants.DESTINATION_EXISTS);
+        if (!destinationExists) {
             return;
         }
         String name = (String)context.getProperty(CoreEventConstants.DESTINATION_NAME);
-        DocumentModel parent = session.getDocument(parentRef);
-        String parentPath = parent.getPathAsString();
-        PathRef path = new PathRef(parentPath, name);
-        if (session.exists(path)) {
-            name += '.' + String.valueOf(System.currentTimeMillis());
-        }
+        name += '.' + String.valueOf(System.currentTimeMillis());
         context.setProperty(CoreEventConstants.DESTINATION_NAME, name);
     }
 
