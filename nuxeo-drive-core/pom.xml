@@ -86,6 +86,10 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-reload</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-audit-core</artifactId>
+    </dependency>
     <!-- Test -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -130,11 +134,6 @@
     <dependency>
       <groupId>backport-util-concurrent</groupId>
       <artifactId>backport-util-concurrent</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-audit-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

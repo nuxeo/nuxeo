@@ -80,6 +80,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         // First pass over the entries to check if a "NuxeoDrive" event has
         // occurred during that period.
         // This event can be:
+        // - a root registration
         // - a root unregistration
         // - a "deleted" transition
         // - an "undeleted" transition
@@ -236,11 +237,16 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                     activeRoots.getPaths(), params));
             auditQuerySb.append(") or ");
         }
-        // detect any root (un-)registration changes for the roots previously
-        // seen by the current user
+        // Detect any root (un-)registration changes for the roots previously
+        // seen by the current user.
+        // Exclude 'rootUnregistered' since root unregistration is covered by a
+        // "deleted" virtual event.
+        auditQuerySb.append("(");
         auditQuerySb.append("log.category = '");
         auditQuerySb.append(NuxeoDriveEvents.EVENT_CATEGORY);
-        auditQuerySb.append("') and (");
+        auditQuerySb.append("' and log.eventId != 'rootUnregistered'");
+        auditQuerySb.append(")");
+        auditQuerySb.append(") and (");
         auditQuerySb.append(getJPADateClause(lastSuccessfulSyncDate, syncDate,
                 params));
         // we intentionally sort by eventDate even if the range filtering is

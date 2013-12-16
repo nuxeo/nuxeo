@@ -312,7 +312,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(3, changes.size());
             change = changes.get(0);
             assertEquals("test", change.getRepositoryId());
-            assertEquals("documentModified", change.getEventId());
+            assertEquals("rootRegistered", change.getEventId());
             assertEquals(folder2.getId(), change.getDocUuid());
             assertEquals(
                     "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
@@ -786,9 +786,7 @@ public class TestAuditFileSystemChangeFinder {
             changes = changeSummary.getFileSystemChanges();
             assertEquals(1, changes.size());
             fsItemChange = changes.get(0);
-            // TODO: this should be detected has a file system item
-            // creation rather than modification
-            assertEquals("documentModified", fsItemChange.getEventId());
+            assertEquals("rootRegistered", fsItemChange.getEventId());
             assertEquals(
                     "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
                     fsItemChange.getFileSystemItem().getId());
@@ -832,9 +830,7 @@ public class TestAuditFileSystemChangeFinder {
             changes = changeSummary.getFileSystemChanges();
             assertEquals(1, changes.size());
             fsItemChange = changes.get(0);
-            // TODO: this should be detected has a file system item
-            // creation rather than modification
-            assertEquals("documentModified", fsItemChange.getEventId());
+            assertEquals("rootRegistered", fsItemChange.getEventId());
             assertEquals(
                     "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
                     fsItemChange.getFileSystemItem().getId());
@@ -908,7 +904,7 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(2, changes.size());
 
             change = changes.get(0);
-            assertEquals("documentModified", change.getEventId());
+            assertEquals("rootRegistered", change.getEventId());
             assertEquals(folder2.getId(), change.getDocUuid());
             assertEquals(
                     "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
@@ -917,7 +913,7 @@ public class TestAuditFileSystemChangeFinder {
             assertNotNull(change.getFileSystemItem());
 
             change = changes.get(1);
-            assertEquals("documentModified", change.getEventId());
+            assertEquals("rootRegistered", change.getEventId());
             assertEquals(folder1.getId(), change.getDocUuid());
             assertEquals(
                     "defaultSyncRootFolderItemFactory#test#" + folder1.getId(),
