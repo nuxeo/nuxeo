@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -162,11 +163,13 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         }
         newRootContainer.setPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY,
                 (Serializable) subscriptions);
+        newRootContainer.putContextData(
+                NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
         DocumentModel savedNewRootContainer = session.saveDocument(newRootContainer);
-        session.save();
-        invalidateSynchronizationRootsCache(userName);
         fireEvent(savedNewRootContainer, session,
                 NuxeoDriveEvents.ROOT_REGISTERED, userName);
+        session.save();
+        invalidateSynchronizationRootsCache(userName);
     }
 
     @Override
@@ -192,11 +195,13 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         }
         rootContainer.setPropertyValue(DRIVE_SUBSCRIPTIONS_PROPERTY,
                 (Serializable) subscriptions);
+        rootContainer.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER,
+                true);
         session.saveDocument(rootContainer);
-        session.save();
-        invalidateSynchronizationRootsCache(userName);
         fireEvent(rootContainer, session, NuxeoDriveEvents.ROOT_UNREGISTERED,
                 userName);
+        session.save();
+        invalidateSynchronizationRootsCache(userName);
     }
 
     @Override
