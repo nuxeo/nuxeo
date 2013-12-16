@@ -150,11 +150,11 @@ public class DamSearchActions implements Serializable {
 
     protected String savedSearchTitle;
 
-    public ContentViewState getContentViewState() throws ClientException {
+    public String getJSONContentViewState() throws ClientException, UnsupportedEncodingException {
         ContentView contentView = contentViewActions.getContentView(currentContentViewName);
         ContentViewService contentViewService = Framework.getLocalService(ContentViewService.class);
         ContentViewState state = contentViewService.saveContentView(contentView);
-        return state;
+        return JSONContentViewState.toJSON(state, true);
     }
 
     public String getCurrentContentViewName() {
@@ -435,8 +435,7 @@ public class DamSearchActions implements Serializable {
         docView.setViewId("assets");
         docView.addParameter(CONTENT_VIEW_NAME_PARAMETER,
                 currentContentViewName);
-        docView.addParameter(CONTENT_VIEW_STATE_PARAMETER,
-                JSONContentViewState.toJSON(getContentViewState(), true));
+        docView.addParameter(CONTENT_VIEW_STATE_PARAMETER, getJSONContentViewState());
         DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
         String url = documentViewCodecManager.getUrlFromDocumentView(DAM_CODEC,
                 docView, true, BaseURL.getBaseURL());
