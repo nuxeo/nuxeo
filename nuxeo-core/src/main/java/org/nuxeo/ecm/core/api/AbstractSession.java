@@ -561,9 +561,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     public DocumentModel copy(DocumentRef src, DocumentRef dst, String name,
             boolean resetLifeCycle) throws ClientException {
         try {
-            Document srcDoc = resolveReference(src);
             Document dstDoc = resolveReference(dst);
             checkPermission(dstDoc, ADD_CHILDREN);
+
+            Document srcDoc = resolveReference(src);
+            if (name == null) {
+                name = srcDoc.getName();
+            }
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
 
@@ -572,7 +576,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             // the options of the event
             options.put(CoreEventConstants.SOURCE_REF, src);
             options.put(CoreEventConstants.DESTINATION_REF, dst);
+            options.put(CoreEventConstants.DESTINATION_PATH, dstDoc.getPath());
             options.put(CoreEventConstants.DESTINATION_NAME, name);
+            options.put(CoreEventConstants.DESTINATION_EXISTS, dstDoc.hasChild(name));
             options.put(CoreEventConstants.RESET_LIFECYCLE, resetLifeCycle);
             DocumentModel srcDocModel = readModel(srcDoc);
             notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, options,
@@ -724,7 +730,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             // the options of the event
             options.put(CoreEventConstants.SOURCE_REF, src);
             options.put(CoreEventConstants.DESTINATION_REF, dst);
+            options.put(CoreEventConstants.DESTINATION_PATH, dstDoc.getPath());
             options.put(CoreEventConstants.DESTINATION_NAME, name);
+            options.put(CoreEventConstants.DESTINATION_EXISTS, dstDoc.hasChild(name));
 
             notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, options,
                     null, null, true, true);
@@ -872,14 +880,10 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             throw new ClientException(
                     "Only Administrators can create placeless documents");
         }
+        String childName = docModel.getName();
         try {
-            Document folder = parentRef == null ? null
-                    : resolveReference(parentRef);
-            if (folder != null) {
-                checkPermission(folder, ADD_CHILDREN);
-            } else {
-                folder = getSession().getNullDocument();
-            }
+            Map<String, Serializable> options = getContextMapEventInfo(docModel);
+            Document folder = fillCreateOptions(parentRef, childName, options);
 
             // get initial life cycle state info
             String initialLifecycleState = null;
@@ -887,17 +891,10 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             if (lifecycleStateInfo instanceof String) {
                 initialLifecycleState = (String) lifecycleStateInfo;
             }
-            String name = docModel.getName();
-            Map<String, Serializable> options = getContextMapEventInfo(docModel);
-            options.put(CoreEventConstants.DESTINATION_REF, parentRef);
-            options.put(CoreEventConstants.DESTINATION_NAME, docModel.getName());
             notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options,
                     null, null, false, true); // no lifecycle yet
-            name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
-            if (folder == null) {
-                folder = getSession().getNullDocument();
-            }
-            Document doc = folder.addChild(name, typeName);
+            childName = (String) options.get(CoreEventConstants.DESTINATION_NAME);
+            Document doc = folder.addChild(childName, typeName);
 
             // update facets too since some of them may be dynamic
             for (String facetName : docModel.getFacets()) {
@@ -939,8 +936,30 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             return docModel;
         } catch (DocumentException e) {
             throw new ClientException("Failed to create document: "
-                    + docModel.getName(), e);
+                    + childName, e);
         }
+    }
+
+    protected Document fillCreateOptions(DocumentRef parentRef,
+            String childName, Map<String, Serializable> options)
+            throws DocumentException, ClientException,
+            DocumentSecurityException {
+        Document folder;
+        if (parentRef == null || EMPTY_PATH.equals(parentRef)) {
+            folder = getSession().getNullDocument();
+            options.put(CoreEventConstants.DESTINATION_REF, null);
+            options.put(CoreEventConstants.DESTINATION_PATH, null);
+            options.put(CoreEventConstants.DESTINATION_NAME, childName);
+            options.put(CoreEventConstants.DESTINATION_EXISTS, false);
+        } else {
+            folder = resolveReference(parentRef);
+            checkPermission(folder, ADD_CHILDREN);
+            options.put(CoreEventConstants.DESTINATION_REF, parentRef);
+            options.put(CoreEventConstants.DESTINATION_PATH, folder.getPath());
+            options.put(CoreEventConstants.DESTINATION_NAME, childName);
+            options.put(CoreEventConstants.DESTINATION_EXISTS, folder.hasChild(childName));
+        }
+        return folder;
     }
 
     @Override
@@ -975,17 +994,17 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             throw new IllegalArgumentException("Invalid empty id");
         }
         DocumentRef parentRef = docModel.getParentRef();
-        Document parent = parentRef == null || EMPTY_PATH.equals(parentRef) ? null
-                : resolveReference(parentRef);
         Map<String, Serializable> props = getContextMapEventInfo(docModel);
-        props.put(CoreEventConstants.DESTINATION_REF, parentRef);
-        props.put(CoreEventConstants.DESTINATION_NAME, name);
+        if (parentRef != null && EMPTY_PATH.equals(parentRef)) {
+            parentRef = null;
+        }
+        Document parent = fillCreateOptions(parentRef, name, props);
         notifyEvent(DocumentEventTypes.ABOUT_TO_IMPORT,
-                docModel, null, null, null, false, true);
+                docModel, props, null, null, false, true);
         name = (String)props.get(CoreEventConstants.DESTINATION_NAME);
 
         // create the document
-        Document doc = getSession().importDocument(id, parent, name, typeName,
+        Document doc = getSession().importDocument(id, parentRef == null ? null : parent, name, typeName,
                 props);
 
         if (typeName.equals(CoreSession.IMPORT_PROXY_TYPE)) {
