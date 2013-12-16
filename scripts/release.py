@@ -413,7 +413,7 @@ class Release(object):
         and distributions."""
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
-        self.repo.clone(self.branch)
+        self.repo.clone(self.branch, with_optionals=True)
 
         log("[INFO] Check release-ability...")
         self.check()
@@ -450,7 +450,8 @@ class Release(object):
 
         log("\n[INFO] Released branch %s (update version and commit)..." %
             self.branch)
-        self.repo.system_recurse("git checkout %s" % self.branch)
+        self.repo.system_recurse("git checkout -f %s" % self.branch,
+                                 with_optionals=True)
         # Update released branches with next versions
         post_release_change = self.update_versions(self.snapshot,
                                                    self.next_snapshot)
@@ -465,7 +466,8 @@ class Release(object):
                 msg_commit += ", update %s to %s" % (other_version[0],
                                                      other_version[2])
         if post_release_change:
-            self.repo.system_recurse("git commit -m'%s' -a" % msg_commit)
+            self.repo.system_recurse("git commit -m'%s' -a" % msg_commit,
+                                     with_optionals=True)
 
         if self.maintenance_version == "auto":
             log("\n[INFO] Delete maintenance branch %s..." %
@@ -530,13 +532,14 @@ class Release(object):
         packages."""
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
-        self.repo.clone(self.branch)
+        self.repo.clone(self.branch, with_optionals=True)
         self.repo.system_recurse("git push %s %s" % (self.repo.alias,
-                                                     self.branch))
+                                                     self.branch),
+                                 with_optionals=True)
         if self.maintenance_version != "auto":
             self.repo.system_recurse("git push %s %s" % (self.repo.alias,
                                                     self.maintenance_branch))
-        self.repo.system_recurse("git push --tags")
+        self.repo.system_recurse("git push release-%s" % self.tag)
         self.repo.system_recurse("git checkout release-%s" % self.tag)
         self.repo.mvn("clean deploy", skip_tests=True,
                         profiles="release,-qa" + self.profiles)

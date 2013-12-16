@@ -84,24 +84,28 @@ class Repository(object):
                 continue
             self.modules.append(m.group(1))
 
-    def eval_addons(self, with_optionals=False):
-        """Set the list of Nuxeo addons in 'self.addons'.
-
-        If 'with_optionals', add "optional" addons to the list."""
+    def eval_addons(self):
+        """Set the list of Nuxeo addons in 'self.addons' and
+        'self.optional_addons'."""
         os.chdir(os.path.join(self.basedir, "addons"))
-        self.addons = []
         log("Using Maven introspection of the POM files"
             " to find the list of addons...")
         output = check_output("mvn -N help:effective-pom")
-        if with_optionals:
-            output += check_output("mvn -N help:effective-pom " +
+        self.addons = self.parse_modules(output)
+        output = check_output("mvn -N help:effective-pom " +
                                   "-f pom-optionals.xml")
-        for line in output.split("\n"):
+        self.optional_addons = self.parse_modules(output)
+
+    def parse_modules(self, pom):
+        """Extract modules names from a Maven POM"""
+        modules = []
+        for line in pom.split("\n"):
             line = line.strip()
             m = re.match("<module>(.*?)</module>", line)
             if not m:
                 continue
-            self.addons.append(m.group(1))
+            modules.append(m.group(1))
+        return modules
 
     def git_pull(self, module, version, fallback_branch=None):
         """Git clone or fetch, then update.
@@ -138,8 +142,9 @@ class Repository(object):
             log("[%s]" % module)
             system(command)
         if not self.addons and self.is_nuxeoecm:
-            self.eval_addons(with_optionals)
-        for addon in self.addons:
+            self.eval_addons()
+        for addon in self.addons + (self.optional_addons
+                                    if with_optionals else []):
             os.chdir(os.path.join(self.basedir, "addons", addon))
             log("[%s]" % addon)
             system(command)
@@ -172,8 +177,9 @@ class Repository(object):
                        run=False)
             system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         if not self.addons:
-            self.eval_addons(with_optionals)
-        for addon in self.addons:
+            self.eval_addons()
+        for addon in self.addons + (self.optional_addons
+                                    if with_optionals else []):
             os.chdir(os.path.join(self.basedir, "addons", addon))
             log("[%s]" % addon)
             p = system("git archive --prefix=addons/%s/ %s" % (addon, version),
@@ -238,11 +244,12 @@ class Repository(object):
 
             # Addons
             os.chdir(os.path.join(self.basedir, "addons"))
-            self.eval_addons(with_optionals)
+            self.eval_addons()
             if not self.is_online:
                 self.url_pattern = self.url_pattern.replace("module",
                                                             "addons/module")
-            for addon in self.addons:
+            for addon in self.addons + (self.optional_addons
+                                        if with_optionals else []):
                 self.git_pull(addon, version, fallback_branch)
             if not self.is_online:
                 self.url_pattern = self.url_pattern.replace("addons/module",
@@ -289,6 +296,7 @@ def check_output(cmd):
         p = subprocess.Popen(args, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                              shell=platform.system() == "Windows")
+    #pylint: disable=C0103
     except OSError, e:
         log("$> " + cmd)
         if e.errno == errno.ENOENT:
