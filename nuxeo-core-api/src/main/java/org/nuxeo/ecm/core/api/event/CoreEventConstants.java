@@ -69,10 +69,6 @@ public final class CoreEventConstants {
 
     public static final String DESTINATION_REF = "destinationRef";
 
-    public static final String DESTINATION_PATH = "destinationPath";
-
-    public static final String DESTINATION_EXISTS = "destinationExists";
-
     public static final String SOURCE_REF = "sourceRef";
 
     /**
