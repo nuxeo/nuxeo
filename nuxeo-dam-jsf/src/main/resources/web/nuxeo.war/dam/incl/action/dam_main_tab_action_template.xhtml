@@ -13,7 +13,7 @@
       <f:param name="contentViewName"
         value="#{damSearchActions.currentContentViewName}" />
       <f:param name="contentViewState"
-        value="#{damSearchActions.contentViewState}" />
+        value="#{damSearchActions.getJSONContentViewState()}" />
       <h:outputText value="#{messages[action.label]}" />
     </nxd:restDocumentLink>
   </a4j:outputPanel>
