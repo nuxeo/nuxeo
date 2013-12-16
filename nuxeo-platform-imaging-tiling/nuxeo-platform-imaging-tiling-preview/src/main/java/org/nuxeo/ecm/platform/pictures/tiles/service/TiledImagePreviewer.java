@@ -54,10 +54,12 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
 
     protected static final String ORIGINAL_VIEW_NAME = "Original";
 
-    public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
-        if(useTiling(blob, dm)) {
+    public List<Blob> getPreview(Blob blob, DocumentModel dm)
+            throws PreviewException {
+        if (useTiling(blob, dm)) {
             List<Blob> blobResults = new ArrayList<Blob>();
-            String htmlFile = getString().replace("$repoId$", dm.getRepositoryName());
+            String htmlFile = getString().replace("$repoId$",
+                    dm.getRepositoryName());
             htmlFile = htmlFile.replace("$docId$", dm.getId());
             htmlFile = htmlFile.replace("$tileWidth$", "" + 200);
             htmlFile = htmlFile.replace("$tileHeight$", "" + 200);
@@ -87,7 +89,7 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
                 if (xpath == null) {
                     xpath = adapter.getViewXPath(ORIGINAL_VIEW_NAME);
                     if (xpath == null) {
-                      xpath = adapter.getFirstViewXPath();
+                        xpath = adapter.getFirstViewXPath();
                     }
                 }
 
@@ -105,8 +107,10 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
             }
         }
 
-        Integer widthThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue("WidthThreshold", "1200"));
-        Integer heightThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue("HeightThreshold", "1200"));
+        Integer widthThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue(
+                "WidthThreshold", "1200"));
+        Integer heightThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue(
+                "HeightThreshold", "1200"));
         return width > widthThreshold || height > heightThreshold;
     }
 
@@ -117,11 +121,14 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
         writer.write("var serverSetting = {");
         writer.write("repoId : '$repoId$' ,");
         writer.write("docId : '$docId$' ,");
-        writer.write("contextPath : '" + VirtualHostHelper.getContextPathProperty() + "'");
+        writer.write("contextPath : '"
+                + VirtualHostHelper.getContextPathProperty() + "'");
         writer.write("};");
         writer.write("</script>");
         writer.write("<script type=\"text/javascript\"");
-        writer.write("src=\"" + VirtualHostHelper.getContextPathProperty() + "/org.nuxeo.ecm.platform.pictures.tiles.gwt.TilingPreview/org.nuxeo.ecm.platform.pictures.tiles.gwt.TilingPreview.nocache.js\">");
+        writer.write("src=\""
+                + VirtualHostHelper.getContextPathProperty()
+                + "/org.nuxeo.ecm.platform.pictures.tiles.gwt.TilingPreview/org.nuxeo.ecm.platform.pictures.tiles.gwt.TilingPreview.nocache.js\">");
         writer.write("</script>");
         appendPreviewSettings(writer);
         writer.write("<div id=\"display\"></div>");
@@ -134,9 +141,15 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
         sb.append("var previewSettings = { ");
         sb.append("imageOnly: \"true\", ");
         sb.append("multiImageAnnotation: \"true\", ");
-        sb.append("xPointerFilterPath: \"" + TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_XPOINTER_FILTER + "\", ");
-        sb.append("pointerAdapter: \"" + TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_POINTER_ADAPTER + "\", ");
-        sb.append("annotationDecoratorFunction: \"" + TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_UPDATE_ANNOTATED_DOCUMENT + "\"");
+        sb.append("xPointerFilterPath: \""
+                + TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_XPOINTER_FILTER
+                + "\", ");
+        sb.append("pointerAdapter: \""
+                + TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_POINTER_ADAPTER
+                + "\", ");
+        sb.append("annotationDecoratorFunction: \""
+                + TilingPreviewConstant.ORG_NUXEO_ECM_PLATFORM_PICTURES_TILES_GWT_CLIENT_UPDATE_ANNOTATED_DOCUMENT
+                + "\"");
         sb.append("}");
         sb.append("</script>");
     }
