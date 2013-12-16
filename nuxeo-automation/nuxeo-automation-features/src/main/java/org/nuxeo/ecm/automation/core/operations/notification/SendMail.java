@@ -70,9 +70,15 @@ public class SendMail {
     @Context
     protected UserManager umgr;
 
+    /**
+     * @since 5.9.1
+     */
     @Param(name = "fromList", required = false)
     protected StringList fromList;
 
+    /**
+     * @since 5.9.1
+     */
     @Param(name = "toList", required = false)
     protected StringList toList;
 
@@ -121,10 +127,12 @@ public class SendMail {
     @Param(name = "viewId", required = false, values = { "view_documents" })
     protected String viewId = "view_documents";
 
-    @Param(name = "from", required = false, description = "Please do not use, prefer to user fromList. If fromList not null this values is skipped")
+    @Deprecated
+    @Param(name = "from", required = false, description = "Please do not use it, prefer to use fromList parameter. If fromList is not null this value is ignored")
     protected String from;
 
-    @Param(name = "to", required = false, description = "Please do not use, prefer to user toList. If toList not null this values is skipped")
+    @Deprecated
+    @Param(name = "to", required = false, description = "Please do not use it, prefer to use toList parameter. If toList is not null this value is ignored")
     protected String to;
 
 
