@@ -150,6 +150,9 @@ public class DamSearchActions implements Serializable {
 
     protected String savedSearchTitle;
 
+    /**
+     * @since 5.9.1
+     */
     public String getJSONContentViewState() throws ClientException, UnsupportedEncodingException {
         ContentView contentView = contentViewActions.getContentView(currentContentViewName);
         ContentViewService contentViewService = Framework.getLocalService(ContentViewService.class);
