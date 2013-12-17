@@ -126,7 +126,7 @@
 
     <nuxeo.connect.client.version>1.4.13</nuxeo.connect.client.version>
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
-    <nuxeo.ftest.version>1.7.11-SNAPSHOT</nuxeo.ftest.version>
+    <nuxeo.ftest.version>1.7.11</nuxeo.ftest.version>
     <nuxeo.richfaces.version>3.3.1.GA-NX9.02</nuxeo.richfaces.version>
 
     <tomcat.version>7.0.42</tomcat.version>
@@ -4541,10 +4541,9 @@
                 <onlyWhenRelease>true</onlyWhenRelease>
                 <excludes>
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
-                  <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
-                  <!-- The 2 following lines are to be removed once 3.3.1.GA-NX9.02 released and used above-->
-                  <!--exclude>org.richfaces.framework:richfaces-impl:*</exclude-->
-                  <!--exclude>org.richfaces.ui:richfaces-ui:*</exclude-->
+                  <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
+                  <!-- <exclude>org.richfaces.framework:richfaces-impl:*</exclude> -->
+                  <!-- <exclude>org.richfaces.ui:richfaces-ui:*</exclude> -->
                   <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                   <!-- <exclude>org.jboss.seam:*</exclude> -->
                 </excludes>
