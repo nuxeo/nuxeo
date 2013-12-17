@@ -63,6 +63,7 @@ class Repository(object):
             self.url_pattern = remote_url + "/module"
         self.modules = []
         self.addons = []
+        self.optional_addons = []
         self.is_nuxeoecm = True
 
     def cleanup(self):
