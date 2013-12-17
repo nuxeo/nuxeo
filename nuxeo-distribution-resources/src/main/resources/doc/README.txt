@@ -8,26 +8,26 @@ Previous releases are available at [http://nuxeo.github.com/downloads.html][2]
 
 ## Requirements
 
-The applications based on Nuxeo Platform 5 need Java. Please install and set up a 
+The applications based on the Nuxeo Platform need Java. Please install and set up a
 Java Development Kit 7 (JDK 7, also called Java 1.7; JRE is not enough)* if it's not
 already installed on your computer.  
 * We currently support Oracle's JDK[3] and OpenJDK[4] as a default Java setup. 
 Don't hesitate to contact us if you need us to support a JDK from another vendor.
 
 Even if not supported, we welcome your feedback if you encounter any trouble with 
-earlier versions of the JDK. Nuxeo won't work with any previous release of Java (e.g. Java 5).
+earlier versions of the JDK. Nuxeo won't work with any previous release of Java (e.g. Java 6).
 
 Under Windows, virus scan should be configured to avoid scanning
 Nuxeo's installation folder.  See [lock problems leading to server errors][5].
 
 ## Getting Started
 
-For Internet Explorer 9 users: uou need to add the Nuxeo server URL in the trusted 
+For Internet Explorer 9 users: you need to add the Nuxeo server URL in the trusted
 sites list to be able to complete the installation and configuration steps.
 In the Internet Options > Security > Trusted Sites menu, click on the 
 Sites button, type the Nuxeo server URL and add it.
 
-After you have installed the Nuxeo Platform, either follow the Quick installation
+After you have installed the Nuxeo Platform, either follow the Quick configuration
 steps described on the online [Installation and Administration Guide][6] or the instructions below:
 
 1. Go to your installation directory.
@@ -46,10 +46,10 @@ steps described on the online [Installation and Administration Guide][6] or the 
    login and the "Administrator" password (no quotes, of course, but
    capital "A").
 
-For setup and configuration, you should refer to the [Setup pages of
+For complete setup and configuration, you should refer to the [Setup pages of
 the Installation and Administration Guide][11].
 
-## Complementary features
+## Complementary Features
 
 The following features depend on the environment where you installed
 your Nuxeo application:
@@ -57,14 +57,15 @@ your Nuxeo application:
 * PDF transformation: this feature requires OpenOffice started as
   server, complete the installation by following [the OpenOffice
   instructions on the related software page][12].
-* Preview and annotations: requires install of third-party software
+* Preview and annotations: requires the installation of third-party software
  [pdftohtml][13], see [the pdftohtml instructions on the related
   software page][14].
-* Image tiling: requires install of third-party software [ImageMagick][15],
+* Image tiling: requires the installation of third-party software [ImageMagick][15],
   see [the ImageMagick instructions on the related software page][16].
+* Document thumbnails: requires the installation of third-party software [Ghostscript][33]
 * Drag and drop plugins: [Firefox][17], [Internet Explorer][18].
 * Desktop integration thanks to LiveEdit: see the [plugins
-  download page][19].
+  documentation page][19].
 * Video features: requires install of third-party software [FFmpeg][20].
 
 
@@ -88,11 +89,11 @@ developed and is releasing its platform, helped by a vibrant
 community of professional and individual contributors:
 
 * Capture: With the Nuxeo Platform, you can create your documents
- using your day-to-day favorite tools (MS Office, Mail, etc.) or or
+ using your day-to-day favorite tools (MS Office, Mail, etc.) or
  you can batch import your exiting documents (drag and drop, form
  and import, email capture).
 * Share & Collaborate: Save time by finding the right information
- when you need it ! Empower your co-workers to share, access, enrich
+ when you need it! Empower your co-workers to share, access, enrich
  and store high quality content in a single place. The Nuxeo
  Platform can manage all of your organization's documents and IP
  assets in a scalable and secured document repository. Create and
@@ -116,7 +117,7 @@ community of professional and individual contributors:
 
 ## Release Notes
 
-See See [http://nuxeo.github.io/releasenotes/5.9.2-SNAPSHOT/][25]
+See [http://nuxeo.github.io/releasenotes/5.9.1-SNAPSHOT/][25].
 
 ## Issues
 
@@ -144,7 +145,7 @@ The Nuxeo Platform includes third-party libraries, licensed under compatible ope
 
 This release contains code developed by the Nuxeo Team, the Leroy Merlin team 
 and Jean-Marc from Chalmers University in Goteborg. 
-Many more people have suggested improvement, spotted issues or contributed patches.
+Many more people have suggested improvements, spotted issues or contributed patches.
 
 The following translations are contributions from the community:
 
@@ -152,6 +153,7 @@ Arabic: Taieb Felfel
 Basque: Jose Luis de la Rosa
 Catalan: Jose Luis de la Rosa, Jordi Mallach 
 Chinese: Line Lu
+Dutch: Capgemini NL Team
 English: Nuxeo Team
 French: Nuxeo Team
 French (Canada) : Patrick Turcotte
@@ -196,7 +198,7 @@ licenses donated by YourKit), etc.
 [16]: https://doc.nuxeo.com/x/zgJc
 [17]: https://download.nuxeo.com/browser/firefox/nuxeo-dragdrop-ff-extension.xpi
 [18]: http://download.nuxeo.org/desktop-integration/drag-drop/msie/
-[19]: http://www.nuxeo.com/en/downloads/desktop-integration
+[19]: http://doc.nuxeo.com/x/K4Wo
 [20]: http://ffmpeg.org/download.html
 [21]: http://www.nuxeo.com/en/products/enterprise-platform/
 [22]: http://www.nuxeo.com/en/products/document-management
@@ -206,8 +208,9 @@ licenses donated by YourKit), etc.
 [26]: http://jira.nuxeo.org/browse/NXP?report=com.atlassian.jira.plugin.system.project:versions-panel
 [27]: https://jira.nuxeo.org/browse/NXP/fixforversion/
 [28]: http://doc.nuxeo.com/
-[29]: http://doc.nuxeo.org/current/books/nuxeo-user-guide/html/
-[30]: http://doc.nuxeo.com/display/NXDOC/Customization+and+Development
+[29]: http://doc.nuxeo.com/x/aYEk
+[30]: http://doc.nuxeo.com/x/E4AO
 [31]: https://doc.nuxeo.com/x/PIAO
 [32]: https://doc.nuxeo.com/x/G4AO
+[33]: http://www.ghostscript.com/download/gsdnld.html
 
