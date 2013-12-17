@@ -539,7 +539,8 @@ class Release(object):
         if self.maintenance_version != "auto":
             self.repo.system_recurse("git push %s %s" % (self.repo.alias,
                                                     self.maintenance_branch))
-        self.repo.system_recurse("git push release-%s" % self.tag)
+        self.repo.system_recurse("git push %s release-%s" % (self.repo.alias,
+                                                             self.tag))
         self.repo.system_recurse("git checkout release-%s" % self.tag)
         self.repo.mvn("clean deploy", skip_tests=True,
                         profiles="release,-qa" + self.profiles)
