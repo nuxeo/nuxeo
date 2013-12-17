@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -12,13 +13,7 @@
   <name>Nuxeo optional Addons parent POM</name>
   <packaging>pom</packaging>
   <description>Convenient parent POM for building optional addons (they are not
-  included in the default full build). Thus they are not deprecated.</description>
-
-  <!-- dependencyManagement of optional addons must also be defined in pom.xml but
-    they must use a dedicated property, not nuxeo.addons.version -->
-  <properties>
-    <nuxeo.jbpm.version>5.9.2-SNAPSHOT</nuxeo.jbpm.version>
-  </properties>
+included in the default full build). Thus they are not deprecated.</description>
 
   <modules>
     <module>nuxeo-platform-importer</module>
@@ -32,5 +27,7 @@
     <module>nuxeo-platform-semantic-entities</module>
     <module>nuxeo-platform-sync</module>
   </modules>
+
+  <!-- dependencyManagement of optional addons must be defined in pom.xml -->
 
 </project>
