@@ -26,6 +26,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.routing.dm.api.RoutingTaskConstants;
 
+/**
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
+ */
+@Deprecated
 public class TaskStepImpl implements TaskStep {
 
     protected DocumentModel doc;

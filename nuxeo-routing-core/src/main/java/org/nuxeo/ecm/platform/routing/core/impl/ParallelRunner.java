@@ -26,8 +26,10 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
  * done.
  *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  *
  */
+@Deprecated
 public class ParallelRunner extends AbstractRunner implements ElementRunner {
 
     @Override

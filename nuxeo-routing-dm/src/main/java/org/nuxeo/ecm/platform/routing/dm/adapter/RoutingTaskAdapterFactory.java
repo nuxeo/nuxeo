@@ -22,14 +22,19 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
- *
  * @author ldoguin
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
+ *
+ *             The facet 'RoutingTask' is still used to mark tasks created by
+ *             the workflow, but it {@link RoutingTask} class is marked as
+ *             deprecated as it extends the deprecated ActionableObject
  */
+@Deprecated
 public class RoutingTaskAdapterFactory implements DocumentAdapterFactory {
 
     @Override
-    public Object getAdapter(DocumentModel doc,
-            @SuppressWarnings("rawtypes") Class itf) {
+    public Object getAdapter(DocumentModel doc, @SuppressWarnings("rawtypes")
+    Class itf) {
         if (doc.hasFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME)) {
             return new RoutingTaskImpl(doc);
         }

@@ -32,9 +32,11 @@ import org.nuxeo.ecm.platform.routing.api.helper.ActionableValidator;
  * A Test Helper class that simulate persistence of Step information. This
  * persistence is transient to the JVM.
  *
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
+@Deprecated
 public class WaitingStepRuntimePersister {
     protected static final List<String> runningSteps = new ArrayList<String>();
 

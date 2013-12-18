@@ -25,7 +25,9 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  */
+@Deprecated
 @Operation(id = StepBackToReadyOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Set Step back to a ready state", description = "Set the step back to a ready state.", addToStudio = false)
 public class StepBackToReadyOperation {
     public final static String ID = "Document.Routing.BackToReady";

@@ -1,9 +1,11 @@
 <component name="org.nuxeo.ecm.platform.routing.dm.types">
-
+  <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
   <require>org.nuxeo.ecm.platform.routing.types</require>
 
-  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+  <extension target="org.nuxeo.ecm.platform.types.TypeService"
+    point="types">
 
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <type id="SimpleTask" coreType="SimpleTask">
       <label>Simple Task</label>
       <icon>/icons/step.png</icon>
@@ -17,8 +19,9 @@
         <layout>task_step</layout>
       </layouts>
     </type>
-    
-     <type id="FollowLifeCycleTransitionTask" coreType="FollowLifeCycleTransitionTask">
+
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
+    <type id="FollowLifeCycleTransitionTask" coreType="FollowLifeCycleTransitionTask">
       <label>Follow life cycle transition task</label>
       <icon>/icons/step.png</icon>
       <bigIcon>/icons/step_100.png</bigIcon>
@@ -31,8 +34,9 @@
         <layout>follow_lc_transition_task_step</layout>
       </layouts>
     </type>
-    
-     <type id="PublishTask" coreType="PublishTask">
+
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
+    <type id="PublishTask" coreType="PublishTask">
       <label>Publish Task</label>
       <icon>/icons/step.png</icon>
       <bigIcon>/icons/step_100.png</bigIcon>
@@ -45,7 +49,8 @@
         <layout>pusblishing_task_step</layout>
       </layouts>
     </type>
-    
+
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <type id="ConditionalTask" coreType="ConditionalTask">
       <label>ConditionalTask</label>
       <icon>/icons/step.png</icon>
@@ -62,7 +67,7 @@
         <layout>conditional_task_step</layout>
       </layouts>
     </type>
-    
+
 
     <type id="DocumentRoute">
       <subtypes>
@@ -72,6 +77,7 @@
       </subtypes>
     </type>
 
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <type id="StepFolder">
       <subtypes>
         <type>SimpleTask</type>
@@ -80,6 +86,7 @@
       </subtypes>
     </type>
 
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <type id="ConditionalStepFolder">
       <subtypes>
         <type>ConditionalTask</type>

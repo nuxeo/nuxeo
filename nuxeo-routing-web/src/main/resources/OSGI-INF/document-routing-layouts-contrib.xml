@@ -74,6 +74,7 @@
       </properties>
     </widget>
 
+    <!--since 5.9.2, use only routes of type 'graph'  -->
     <widget name="execution_type" type="selectOneDirectory">
       <fields>
         <field>stepf:execution</field>
@@ -109,6 +110,7 @@
       </properties>
     </widget>
 
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph'-->
     <widget name="conditional_step_value" type="template">
       <translated>true</translated>
       <fields>
@@ -184,6 +186,7 @@
       </rows>
     </layout>
 
+    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
     <layout name="conditional_step_folder">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml

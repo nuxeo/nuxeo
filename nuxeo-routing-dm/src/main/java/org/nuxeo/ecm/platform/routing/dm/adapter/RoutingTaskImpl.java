@@ -28,6 +28,14 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.task.TaskImpl;
 
+/**
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
+ *
+ *             The facet 'RoutingTask' is still used to mark tasks created by
+ *             the workflow, but it this class is marked as deprecated as it
+ *             extends the deprecated ActionableObject
+ */
+@Deprecated
 public class RoutingTaskImpl extends TaskImpl implements RoutingTask {
 
     public RoutingTaskImpl(DocumentModel doc) {
@@ -36,6 +44,10 @@ public class RoutingTaskImpl extends TaskImpl implements RoutingTask {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * @deprecated {@link Task#getTargetDocumentsIds() } should be used instead
+     */
+    @Deprecated
     @Override
     public DocumentModelList getAttachedDocuments(CoreSession coreSession) {
         try {

@@ -80,6 +80,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
     }
 
     @Test
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
+    @Deprecated
     public void testAddStepToDraftRoute() throws Exception {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         session.save();
@@ -236,6 +238,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
     }
 
     @Test
+    @Deprecated
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
     public void testRemoveStep() throws Exception {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
@@ -283,6 +287,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
     }
 
     @Test
+    @Deprecated
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
     public void testRemoveStepFromLockedRoute() throws Exception {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
@@ -682,6 +688,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
     }
 
     @Test
+    @Deprecated
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
     public void testConditionalFolderContainerModel() throws ClientException {
         DocumentRoute route = createDocumentRouteWithConditionalFolder(session,
                 ROUTE1);
@@ -723,6 +731,8 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
     }
 
     @Test
+    @Deprecated
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
     public void testExecuteSimpleRouteWithConditionalStep()
             throws ClientException {
         DocumentRoute route = createDocumentRouteWithConditionalFolder(session,

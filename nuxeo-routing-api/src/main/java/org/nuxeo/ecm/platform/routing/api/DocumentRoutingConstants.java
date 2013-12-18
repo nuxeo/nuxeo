@@ -53,8 +53,12 @@ public interface DocumentRoutingConstants {
 
     String STEP_FOLDER_FACET = "StepFolder";
 
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
+    @Deprecated
     String CONDITIONAL_STEP_FACET = "ConditionalStepFolder";
 
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
+    @Deprecated
     String CONDITIONAL_STEP_DOCUMENT_TYPE = "ConditionalStepFolder";
 
     String TITLE_PROPERTY_NAME = "dc:title";
@@ -69,6 +73,8 @@ public interface DocumentRoutingConstants {
 
     String COMMENTS_NO_PROPERTY_NAME = "info_comments:numberOfComments";
 
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
+    @Deprecated
     String STEP_TO_BE_EXECUTED_NEXT_PROPERTY_NAME = "condstepf:posOfChildStepToRunNext";
 
     // operation constant

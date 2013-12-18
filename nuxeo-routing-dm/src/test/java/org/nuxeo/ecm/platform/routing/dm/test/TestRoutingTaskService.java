@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.api.RoutingTaskService;
 import org.nuxeo.ecm.platform.routing.dm.adapter.RoutingTask;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
@@ -39,8 +40,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author ldoguin
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'. This class tests
+ *             {@link RoutingTaskService} deprecated since 5.6
+ *
  *
  */
+@Deprecated
 public class TestRoutingTaskService extends SQLRepositoryTestCase {
 
     protected UserManager userManager;
@@ -73,7 +78,6 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
         deployBundle(TaskUTConstants.CORE_BUNDLE_NAME);
         deployBundle(TaskUTConstants.TESTING_BUNDLE_NAME);
 
-
         deployBundle(TestConstants.DM_BUNDLE);
 
         userManager = Framework.getService(UserManager.class);
@@ -93,7 +97,6 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
 
         user4 = userManager.getPrincipal("myuser4");
         assertNotNull(user4);
-
 
         openSession();
         targetDoc = session.createDocumentModel("/", "targetDocument", "File");
@@ -116,15 +119,18 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
                 null, "/");
         routing.makeRoutingTasks(session, tasks);
         session.save();
-        DocumentModel taskDoc = session.getDocument(new PathRef("/MyRoutingTask"));
+        DocumentModel taskDoc = session.getDocument(new PathRef(
+                "/MyRoutingTask"));
         RoutingTask routingTask = taskDoc.getAdapter(RoutingTask.class);
         assertNotNull(routingTask);
         closeSession(session);
     }
 
     @Test
+    @Deprecated
     public void testTaskStep() throws Exception {
-        DocumentModel taskStep = session.createDocumentModel("/","simpleTask","SimpleTask");
+        DocumentModel taskStep = session.createDocumentModel("/", "simpleTask",
+                "SimpleTask");
         assertNotNull(taskStep);
         taskStep = session.createDocument(taskStep);
         assertNotNull(taskStep);

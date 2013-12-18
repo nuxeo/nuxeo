@@ -18,20 +18,31 @@
  */
 package org.nuxeo.ecm.platform.routing.web;
 
+/**
+ * since 5.9.2 - Use only routes of type 'graph'
+ */
+@Deprecated
 public class DocumentRoutingWebConstants {
 
+    @Deprecated
     public static final String ADD_STEP_ACTIONS_LIST = "ADD_STEP_ACTIONS_LIST";
 
+    @Deprecated
     public static final String REMOVE_STEP_ACTIONS_LIST = "REMOVE_STEP_ACTIONS_LIST";
 
+    @Deprecated
     public static final String EDIT_STEP_ACTIONS_LIST = "EDIT_STEP_ACTIONS_LIST";
 
+    @Deprecated
     public static final String ADD_STEP_IN_FORK_ACTIONS_LIST = "ADD_STEP_IN_FORK_ACTIONS_LIST";
 
+    @Deprecated
     public static final String MOVE_STEP_UP = "up";
 
+    @Deprecated
     public static final String MOVE_STEP_DOWN = "down";
 
-    private DocumentRoutingWebConstants(){};
+    private DocumentRoutingWebConstants() {
+    };
 
 }

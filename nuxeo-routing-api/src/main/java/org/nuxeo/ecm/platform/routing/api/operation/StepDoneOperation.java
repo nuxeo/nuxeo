@@ -27,7 +27,9 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
  * An operation that set the step to the done state.
  *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  */
+@Deprecated
 @Operation(id = StepDoneOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Set Step Done", description = "Set the step as done.", addToStudio = false)
 public class StepDoneOperation {
     public final static String ID = "Document.Routing.Step.Done";

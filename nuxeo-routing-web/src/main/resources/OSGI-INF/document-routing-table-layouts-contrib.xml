@@ -39,29 +39,12 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           </properties>
-          <widget>dr_listing_document_route_element_actors</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-          </properties>
           <widget>dr_listing_route_element_state</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-          </properties>
-          <widget>dr_listing_step_actions</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-          </properties>
-          <widget>dr_listing_no_comments</widget>
         </column>
       </columns>
     </layout>
 
+    <!-- @deprecated since 5.9.2-->
     <layout name="pdf_document_routing_route_content">
       <templates>
         <template mode="any">

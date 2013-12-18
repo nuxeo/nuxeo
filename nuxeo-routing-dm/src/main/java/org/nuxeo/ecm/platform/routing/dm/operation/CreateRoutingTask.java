@@ -58,7 +58,9 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  *
  * @author ldoguin
  * @since 5.6
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  */
+@Deprecated
 @Operation(id = CreateRoutingTask.ID, category = Constants.CAT_SERVICES, label = "Create task", since = "5.6", description = "Enable to create a routingTask bound to a route and its document. "
         + "In <b>accept operation chain</b> and <b>reject operation chain</b> fields, "
         + "you can put the operation chain ID of your choice among the one you contributed. "

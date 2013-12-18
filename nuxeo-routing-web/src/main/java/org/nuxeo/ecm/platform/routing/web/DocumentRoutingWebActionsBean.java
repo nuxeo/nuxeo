@@ -36,12 +36,13 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.action.ActionContextProvider;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
-
 /**
  * Web Actions to edit a document route
  *
  * @author Mariana Cedica
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  */
+@Deprecated
 @Name("routingWebActions")
 @Scope(CONVERSATION)
 @Install(precedence = Install.FRAMEWORK)
@@ -66,31 +67,52 @@ public class DocumentRoutingWebActionsBean implements Serializable {
 
     protected List<Action> editStepActions;
 
+    /**
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     */
+    @Deprecated
     public List<Action> getAddStepActions(DocumentModel step) {
         ActionContext context = actionContextProvider.createActionContext();
         context.setCurrentDocument(step);
-        addStepActions = webActions.getActionsList(DocumentRoutingWebConstants.ADD_STEP_ACTIONS_LIST, context);
+        addStepActions = webActions.getActionsList(
+                DocumentRoutingWebConstants.ADD_STEP_ACTIONS_LIST, context);
         return addStepActions;
     }
 
+    /**
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     */
+    @Deprecated
     public List<Action> getAddStepInActions(DocumentModel step) {
         ActionContext context = actionContextProvider.createActionContext();
         context.setCurrentDocument(step);
-        addStepInForkActions = webActions.getActionsList(DocumentRoutingWebConstants.ADD_STEP_IN_FORK_ACTIONS_LIST, context);
+        addStepInForkActions = webActions.getActionsList(
+                DocumentRoutingWebConstants.ADD_STEP_IN_FORK_ACTIONS_LIST,
+                context);
         return addStepInForkActions;
     }
 
+    /**
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     */
+    @Deprecated
     public List<Action> getRemoveStepActions(DocumentModel step) {
         ActionContext context = actionContextProvider.createActionContext();
         context.setCurrentDocument(step);
-        removeStepActions = webActions.getActionsList(DocumentRoutingWebConstants.REMOVE_STEP_ACTIONS_LIST, context);
+        removeStepActions = webActions.getActionsList(
+                DocumentRoutingWebConstants.REMOVE_STEP_ACTIONS_LIST, context);
         return removeStepActions;
     }
 
+    /**
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     */
+    @Deprecated
     public List<Action> getEditStepActions(DocumentModel step) {
         ActionContext context = actionContextProvider.createActionContext();
         context.setCurrentDocument(step);
-        editStepActions = webActions.getActionsList(DocumentRoutingWebConstants.EDIT_STEP_ACTIONS_LIST, context);
+        editStepActions = webActions.getActionsList(
+                DocumentRoutingWebConstants.EDIT_STEP_ACTIONS_LIST, context);
         return editStepActions;
     }
 

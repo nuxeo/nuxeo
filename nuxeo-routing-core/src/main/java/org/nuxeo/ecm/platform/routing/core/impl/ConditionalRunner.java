@@ -27,10 +27,12 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
  * Run the first step and then run the folder child in the position determined
  * by the posOfChildStepToRunNext on this container. It's done once the selected
  * branch to be run is done .
- * 
+ *
  * @since 5.5
- * 
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
+ *
  */
+@Deprecated
 public class ConditionalRunner extends SerialRunner {
 
     @Override
@@ -64,7 +66,7 @@ public class ConditionalRunner extends SerialRunner {
                     // run only the child that was selected to be run by the
                     // previous step
                     if (String.valueOf(children.indexOf(child)).equals(
-                                    posOfchildToRun)) {
+                            posOfchildToRun)) {
                         child.run(session);
                         if (!child.isDone()) {
                             return;

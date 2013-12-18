@@ -4,14 +4,17 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
-
+<c:if test="false">
+  @deprecated since 5.9.2 - Use only routes of type 'graph'
+</c:if>
   <c:if test="#{isEditableRouteElement}">
     <nxu:set var="actions"
       value="#{routingWebActions.getRemoveStepActions(field_0)}"
       cache="true">
       <c:if test="#{!empty actions}">
         <c:forEach items="#{actions}" var="action">
-          <li><nxh:commandLink id="#{action}" action="#{action.getLink()}">
+          <li><nxh:commandLink id="#{action}"
+              action="#{action.getLink()}">
               <nxu:graphicImage value="#{action.icon}"
                 rendered="#{not empty action.icon}" />
               <h:outputText value="#{messages[action.label]}" />
@@ -20,6 +23,6 @@
         </c:forEach>
       </c:if>
     </nxu:set>
-  </c:if> 
+  </c:if>
 
 </f:subview>

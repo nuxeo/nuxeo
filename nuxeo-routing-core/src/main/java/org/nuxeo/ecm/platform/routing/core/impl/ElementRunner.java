@@ -33,7 +33,7 @@ public interface ElementRunner {
      * Run this element.
      */
     void run(CoreSession session, DocumentRouteElement element,
-       Map<String, Serializable> map);
+            Map<String, Serializable> map);
 
     /**
      * Run this element. If an exception is thrown while doing, it cancels the
@@ -53,7 +53,10 @@ public interface ElementRunner {
     /**
      * Run the undo chain on this element. If this element is not a step, then
      * throw an exception.
+     *
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
+    @Deprecated
     void undo(CoreSession session, DocumentRouteElement element);
 
     /**

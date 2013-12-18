@@ -3,24 +3,30 @@
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
 
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="schema">
     <schema name="base" src="schemas/base.xsd" />
     <schema name="document_route_instance" prefix="docri"
       src="schemas/document_route_instance.xsd" />
     <schema name="document_route_model" prefix="docrm"
       src="schemas/document_route_model.xsd" />
     <schema name="step_folder" prefix="stepf" src="schemas/step_folder.xsd" />
-    <schema name="info_comments" src="schemas/info_comments.xsd" prefix="infocom" />
+    <schema name="info_comments" src="schemas/info_comments.xsd"
+      prefix="infocom" />
     <schema name="conditional_step_folder" prefix="condstepf"
       src="schemas/conditional_step_folder.xsd" />
     <schema name="route_node" prefix="rnode" src="schemas/route_node.xsd" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
 
     <facet name="Routable" />
     <facet name="DocumentRoute" />
+
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <facet name="RouteStep" />
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <facet name="StepFolder" />
 
     <facet name="RoutingTask" />
@@ -29,6 +35,7 @@
       <schema name="info_comments" />
     </facet>
 
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <facet name="ConditionalStepFolder">
       <schema name="conditional_step_folder" />
     </facet>
@@ -68,6 +75,7 @@
       </subtypes>
     </doctype>
 
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <doctype name="StepFolder" extends="OrderedFolder">
       <facet name="HiddenInNavigation" />
       <facet name="StepFolder" />
@@ -80,6 +88,7 @@
       </subtypes>
     </doctype>
 
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <doctype name="DocumentRouteStep" extends="Document">
       <schema name="dublincore" />
       <facet name="RouteStep" />
@@ -88,6 +97,7 @@
       <facet name="SystemDocument" />
     </doctype>
 
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <doctype name="ConditionalStepFolder" extends="StepFolder">
       <facet name="ConditionalStepFolder" />
       <facet name="SystemDocument" />

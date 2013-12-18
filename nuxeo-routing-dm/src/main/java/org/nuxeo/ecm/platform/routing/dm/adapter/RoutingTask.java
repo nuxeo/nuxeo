@@ -20,10 +20,13 @@ import org.nuxeo.ecm.platform.routing.api.ActionableObject;
 import org.nuxeo.ecm.platform.task.Task;
 
 /**
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  *
- *
+ *             The facet 'RoutingTask' is still used to mark tasks created by
+ *             the workflow, but it this class is marked as deprecated as it
+ *             extends the deprecated ActionableObject
  */
+@Deprecated
 public interface RoutingTask extends Task, ActionableObject {
-
 
 }

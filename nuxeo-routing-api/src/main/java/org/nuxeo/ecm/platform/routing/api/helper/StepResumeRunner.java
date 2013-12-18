@@ -28,8 +28,10 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
  * Allows to resume a route from the id of a step.
  *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  *
  */
+@Deprecated
 public class StepResumeRunner {
 
     protected String stepDocId;

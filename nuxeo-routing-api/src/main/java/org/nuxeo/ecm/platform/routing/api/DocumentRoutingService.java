@@ -179,9 +179,12 @@ public interface DocumentRoutingService {
      * should extend the DocumentRouteStep. Use the <code>chainsToType</code>
      * extension point to contribute new mapping.
      *
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     *
      * @param documentType The document type
      * @return The operation chain id.
      */
+    @Deprecated
     String getOperationChainId(String documentType);
 
     /**
@@ -189,9 +192,12 @@ public interface DocumentRoutingService {
      * state. The document type should extend the DocumentRouteStep. Use the
      * <code>chainsToType</code> extension point to contribute new mapping.
      *
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     *
      * @param documentType
      * @return
      */
+    @Deprecated
     String getUndoFromRunningOperationChainId(String documentType);
 
     /**
@@ -282,12 +288,15 @@ public interface DocumentRoutingService {
     /**
      * Add a route element in another route element.
      *
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     *
      * @param parentDocumentRef The DocumentRef of the parent document.
      * @param idx The position of the document in its container.
      * @param routeElement The document to add.
      * @param session
      * @throws ClientException
      */
+    @Deprecated
     void addRouteElementToRoute(DocumentRef parentDocumentRef, int idx,
             DocumentRouteElement routeElement, CoreSession session)
             throws DocumentRouteNotLockedException, ClientException;
@@ -298,12 +307,15 @@ public interface DocumentRoutingService {
      * If the parent element is in draft state, the routeElement is kept in
      * draft state. Otherwise, the element is set to 'ready' state.
      *
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     *
      * @param parentDocumentRef The DocumentRef of the parent document.
      * @param sourceName the name of the previous document in the container.
      * @param routeElement the document to add.
      * @param session
      * @throws ClientException
      */
+    @Deprecated
     void addRouteElementToRoute(DocumentRef parentDocumentRef,
             String sourceName, DocumentRouteElement routeElement,
             CoreSession session) throws DocumentRouteNotLockedException,
@@ -312,10 +324,13 @@ public interface DocumentRoutingService {
     /**
      * Remove the given route element
      *
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     *
      * @param The route element document.
      * @param session
      * @throws ClientException
      */
+    @Deprecated
     void removeRouteElement(DocumentRouteElement routeElement,
             CoreSession session) throws DocumentRouteNotLockedException,
             ClientException;
@@ -323,11 +338,14 @@ public interface DocumentRoutingService {
     /**
      * Get the children of the given stepFolder ordered by the ecm:pos metadata.
      *
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     *
      * @param stepFolderId
      * @param session
      * @return
      * @throws ClientException
      */
+    @Deprecated
     DocumentModelList getOrderedRouteElement(String routeElementId,
             CoreSession session) throws ClientException;
 

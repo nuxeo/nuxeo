@@ -31,7 +31,9 @@ import org.nuxeo.ecm.platform.routing.api.helper.ConditionalFolderUpdateRunner;
  * finished.
  *
  * @since 5.5
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  */
+@Deprecated
 @Operation(id = SetNextStepOnConditionalFolderOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Choose branch", description = "Update branch to be executed ", addToStudio = false)
 public class SetNextStepOnConditionalFolderOperation {
 

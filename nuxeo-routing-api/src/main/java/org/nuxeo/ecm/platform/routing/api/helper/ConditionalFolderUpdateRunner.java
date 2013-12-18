@@ -26,9 +26,11 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 /***
  * Set the position of the child to be run once the step with the given id it's
  * finished.
- * 
+ *
  * @since 5.5
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  */
+@Deprecated
 public class ConditionalFolderUpdateRunner {
 
     protected String stepDocId;

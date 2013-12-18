@@ -43,7 +43,9 @@ import org.nuxeo.ecm.platform.task.TaskComment;
  *
  * @author mcedica
  * @since 5.6
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  */
+@Deprecated
 @Operation(id = SetCurrentRunningStepFromTask.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Set Current Step from Task", description = "Set the current running step as <document.routing.step> context variable. The comments from the task can be mapped to originating step.", addToStudio = false)
 public class SetCurrentRunningStepFromTask extends AbstractTaskStepOperation {
 

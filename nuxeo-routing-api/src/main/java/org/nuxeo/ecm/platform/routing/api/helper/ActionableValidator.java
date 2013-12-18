@@ -31,9 +31,12 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * An actionable validator allows to run an {@link ActionableObject}.
  *
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
+ *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
+@Deprecated
 public class ActionableValidator {
 
     protected ActionableObject actionnable;

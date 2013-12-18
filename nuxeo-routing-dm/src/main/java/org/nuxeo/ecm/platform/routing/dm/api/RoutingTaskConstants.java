@@ -16,6 +16,11 @@
  */
 package org.nuxeo.ecm.platform.routing.dm.api;
 
+/**
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
+ *
+ */
+@Deprecated
 public class RoutingTaskConstants {
 
     public static final String TASK_STEP_FACET_NAME = "TaskStep";

@@ -7,43 +7,49 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
+
   <c:if test="#{currentDocument.currentLifeCycleState != 'deleted'}">
 
-  <ui:include src="/select_route_elements_type.xhtml" />
-   <nxu:set var="documents"  value="#{routeElementsSelectModel}" >
-    <ui:decorate template="/incl/actions_fragment.xhtml">
-      <ui:param name="category" value="ROUTE_LIST" />
-    </ui:decorate>
+    <ui:include src="/select_route_elements_type.xhtml" />
+    <nxu:set var="documents" value="#{routeElementsSelectModel}">
+      <ui:decorate template="/incl/actions_fragment.xhtml">
+        <ui:param name="category" value="ROUTE_LIST" />
+      </ui:decorate>
 
-      <nxu:set var="isEditableRouteElement" value="#{routingActions.isEditableRouteElement(currentDocument)}">
-      <nxu:set var="isEmptyFork" value="#{routingActions.isEmptyFork(currentDocument)}">
-      <nxu:set var="isEditableStep" value="#{routingActions.isEditableStep(currentDocument)}">
+      <nxu:set var="isEditableRouteElement"
+        value="#{routingActions.isEditableRouteElement(currentDocument)}">
+        <nxu:set var="isEmptyFork"
+          value="#{routingActions.isEmptyFork(currentDocument)}">
+          <nxu:set var="isEditableStep"
+            value="#{routingActions.isEditableStep(currentDocument)}">
 
-      <c:if test="#{currentRouteLockedByCurrentUser and (isEditableRouteElement || isEmptyFork || isEditableStep)}">
-        <c:if test="#{documents.rowCount == 0}">
-          <a onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{currentDocument.id}';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
-            <nxu:graphicImage value="/icons/add.png" />
-          </a>
-          <a onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{currentDocument.id}';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
-            #{messages['command.add.routeelement.firstStep']}
-            <f:param
-              name="stepId"
-              value="#{currentDocument.id}" />
-          </a>
-        </c:if>
-      </c:if>
+            <c:if
+              test="#{currentRouteLockedByCurrentUser and (isEditableRouteElement || isEmptyFork || isEditableStep)}">
+              <c:if test="#{documents.rowCount == 0}">
+                <a
+                  onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{currentDocument.id}';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
+                  <nxu:graphicImage value="/icons/add.png" />
+                </a>
+                <a
+                  onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{currentDocument.id}';document.getElementById('selectRouteElementsTypeForCreationForm:hiddenDocOrder').value = 'in';Richfaces.showModalPanel('selectRouteElementsTypePanel');">
+                  #{messages['command.add.routeelement.firstStep']} <f:param
+                    name="stepId" value="#{currentDocument.id}" />
+                </a>
+              </c:if>
+            </c:if>
 
+          </nxu:set>
+        </nxu:set>
       </nxu:set>
-      </nxu:set>
-      </nxu:set>
 
-    <ui:decorate template="/incl/documents_layout_table.xhtml">
-     <ui:param name="documents" value="#{documents}" />
-     <ui:param name="showCheckboxes" value="#{true}" />
-     <ui:param name="listName" value="CURRENT_SELECTION" />
-     <ui:param name="layoutName" value="document_routing_route_content" />
-    </ui:decorate>
-   </nxu:set>
+      <ui:decorate template="/incl/documents_layout_table.xhtml">
+        <ui:param name="documents" value="#{documents}" />
+        <ui:param name="showCheckboxes" value="#{true}" />
+        <ui:param name="listName" value="CURRENT_SELECTION" />
+        <ui:param name="layoutName"
+          value="document_routing_route_content" />
+      </ui:decorate>
+    </nxu:set>
   </c:if>
 
   <c:if test="#{currentDocument.currentLifeCycleState == 'deleted'}">

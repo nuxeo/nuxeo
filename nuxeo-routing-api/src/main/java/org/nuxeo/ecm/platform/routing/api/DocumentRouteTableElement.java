@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * document is inside the container documentRoute
  *
  * @author <a href="mailto:mcedica@nuxeo.com">Mariana Cedica</a>
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  */
 public class DocumentRouteTableElement {
 

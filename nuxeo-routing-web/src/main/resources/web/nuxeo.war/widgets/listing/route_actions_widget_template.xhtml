@@ -4,7 +4,9 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
-
+<c:if test="false">
+  @deprecated since 5.9.2 - Use only routes of type 'graph'
+</c:if>
   <nxu:set var="isEditableRouteElement" value="#{routingActions.isEditableRouteElement(field_0)}">
   <nxu:set var="isEmptyFork" value="#{routingActions.isEmptyFork(field_0)}">
   <nxu:set var="isEditableStep" value="#{routingActions.isEditableStep(field_0)}">

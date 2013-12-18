@@ -419,6 +419,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 DocumentRoute.class);
     }
 
+    /**
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     */
+    @Deprecated
     @Override
     public List<DocumentRouteTableElement> getRouteElements(
             DocumentRoute route, CoreSession session) {
@@ -438,6 +442,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         return elements;
     }
 
+    /**
+     *
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     */
+    @Deprecated
     protected void processElementsInFolder(DocumentModel doc,
             List<DocumentRouteTableElement> elements, RouteTable table,
             CoreSession session, int depth, RouteFolderElement folder) {
@@ -469,6 +478,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Deprecated
     protected List<DocumentRouteTableElement> getRouteElements(
             DocumentRouteElement routeElementDocument, CoreSession session,
             List<DocumentRouteTableElement> routeElements, int depth) {
@@ -536,7 +546,9 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
                 SecurityConstants.EVERYTHING);
     }
 
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
     @Override
+    @Deprecated
     public void addRouteElementToRoute(DocumentRef parentDocumentRef, int idx,
             DocumentRouteElement routeElement, CoreSession session)
             throws DocumentRouteNotLockedException, ClientException {
@@ -558,7 +570,9 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }
     }
 
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
     @Override
+    @Deprecated
     public void addRouteElementToRoute(DocumentRef parentDocumentRef,
             String sourceName, DocumentRouteElement routeElement,
             CoreSession session) throws DocumentRouteNotLockedException,

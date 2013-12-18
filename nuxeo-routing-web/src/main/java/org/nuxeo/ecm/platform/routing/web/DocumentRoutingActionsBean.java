@@ -341,6 +341,10 @@ public class DocumentRoutingActionsBean implements Serializable {
         return null;
     }
 
+    /**
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     */
+    @Deprecated
     protected List<DocumentRouteTableElement> computeRouteElements()
             throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -348,6 +352,10 @@ public class DocumentRoutingActionsBean implements Serializable {
         return getElements(currentRoute);
     }
 
+    /**
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     */
+    @Deprecated
     protected List<DocumentRouteTableElement> computeRelatedRouteElements()
             throws ClientException {
         if (relatedRoutes.isEmpty()) {
@@ -359,12 +367,20 @@ public class DocumentRoutingActionsBean implements Serializable {
         return getElements(currentRoute);
     }
 
+    /**
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     */
+    @Deprecated
     protected List<DocumentRouteTableElement> getElements(
             DocumentRoute currentRoute) {
         return getDocumentRoutingService().getRouteElements(currentRoute,
                 documentManager);
     }
 
+    /**
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     */
+    @Deprecated
     @Factory(value = "routeElementsSelectModel", scope = EVENT)
     public SelectDataModel computeSelectDataModelRouteElements()
             throws ClientException {
@@ -372,6 +388,10 @@ public class DocumentRoutingActionsBean implements Serializable {
                 computeRouteElements(), null);
     }
 
+    /**
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     */
+    @Deprecated
     @Factory(value = "relatedRouteElementsSelectModel", scope = EVENT)
     public SelectDataModel computeSelectDataModelRelatedRouteElements()
             throws ClientException {
@@ -379,6 +399,10 @@ public class DocumentRoutingActionsBean implements Serializable {
                 computeRelatedRouteElements(), null);
     }
 
+    /**
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     */
+    @Deprecated
     public SelectDataModel computeSelectDataModelRouteElements(
             DocumentModel relatedRouteDocumentModel) throws ClientException {
         DocumentRoute currentRoute = relatedRouteDocumentModel.getAdapter(DocumentRoute.class);
@@ -466,6 +490,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         return routeModel.isDraft();
     }
 
+    @Deprecated
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
     public String removeStep() throws ClientException {
         boolean alreadyLockedByCurrentUser = false;
         DocumentRoute routeModel = getRelatedRoute();
@@ -507,7 +533,10 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     /**
      * Returns true if the givenDoc is a step that can be edited
+     *
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
+    @Deprecated
     public boolean isEditableStep(DocumentModel stepDoc) throws ClientException {
         DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
         // if fork, is not simple editable step
@@ -519,7 +548,10 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     /**
      * Returns true if the givenDoc is an routeElement that can be edited
+     *
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
+    @Deprecated
     public boolean isEditableRouteElement(DocumentModel stepDoc)
             throws ClientException {
         DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
@@ -650,6 +682,10 @@ public class DocumentRoutingActionsBean implements Serializable {
                 "TAB_DOCUMENT_ROUTE_ELEMENTS");
     }
 
+    /**
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
+     */
+    @Deprecated
     public String createRouteElement(String typeName) throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRef routeRef = currentDocument.getRef();
@@ -698,7 +734,10 @@ public class DocumentRoutingActionsBean implements Serializable {
      * step is in a parallel container, it can't be moved. A step can't be moved
      * before a step already done or running. Assumed that the route is already
      * locked to have this action availabe , so no check is done
+     *
+     * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
+    @Deprecated
     public String moveRouteElement(String direction) throws ClientException {
         if (StringUtils.isEmpty(stepId)) {
             return null;
@@ -836,6 +875,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         }
     }
 
+    @Deprecated
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
     public List<DocumentModel> getOrderedChildren(String docRouteElementId,
             String type) throws ClientException {
         // xxx move me in serice with query
@@ -850,6 +891,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         return filteredChildren;
     }
 
+    @Deprecated
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
     public DocumentModel getChildWithPosition(DocumentModel docRouteElement,
             String pos) throws ClientException {
         DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(
@@ -857,6 +900,8 @@ public class DocumentRoutingActionsBean implements Serializable {
         return orderedChildren.get(Integer.parseInt(pos));
     }
 
+    @Deprecated
+    // @deprecated since 5.9.2 - Use only routes of type 'graph'
     public String getPositionForChild(DocumentModel docRouteElement,
             DocumentModel docChild) throws ClientException {
         DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(

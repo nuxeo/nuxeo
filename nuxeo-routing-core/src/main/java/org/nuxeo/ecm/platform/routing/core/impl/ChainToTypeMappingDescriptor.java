@@ -21,8 +21,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- *
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  */
+@Deprecated
 @XObject("mapping")
 public class ChainToTypeMappingDescriptor {
     @XNode("@documentType")

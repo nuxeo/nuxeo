@@ -36,7 +36,9 @@ import org.nuxeo.ecm.platform.routing.dm.api.RoutingTaskConstants.EvaluationOper
  * document. Supports only Integer and String parameters
  *
  * @author mcedica
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  */
+@Deprecated
 @Operation(id = EvaluateCondition.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Set Task Done", description = "Set the task as done.", addToStudio = false)
 public class EvaluateCondition extends AbstractTaskStepOperation {
 

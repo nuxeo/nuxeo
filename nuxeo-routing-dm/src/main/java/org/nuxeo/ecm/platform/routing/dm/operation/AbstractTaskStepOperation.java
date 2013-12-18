@@ -27,8 +27,10 @@ import org.nuxeo.ecm.platform.routing.dm.adapter.RoutingTask;
 
 /**
  * @since 5.6
- * 
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
+ *
  */
+@Deprecated
 public class AbstractTaskStepOperation {
 
     protected RoutingTask routingTask;

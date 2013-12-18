@@ -28,9 +28,11 @@ import org.nuxeo.ecm.platform.routing.api.helper.StepResumeRunner;
  * An Operation that allows to resume a step.
  *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  *
  */
-@Operation(id = ResumeStepOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Resume Step", description = "Resume a step that were in running step.", addToStudio=false)
+@Deprecated
+@Operation(id = ResumeStepOperation.ID, category = DocumentRoutingConstants.OPERATION_CATEGORY_ROUTING_NAME, label = "Resume Step", description = "Resume a step that were in running step.", addToStudio = false)
 public class ResumeStepOperation {
     public final static String ID = "Document.Routing.Resume.Step";
 

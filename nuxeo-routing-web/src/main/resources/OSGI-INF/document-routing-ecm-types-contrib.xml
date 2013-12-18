@@ -58,6 +58,7 @@
       </contentViews>
     </type>
 
+    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
     <type id="StepFolder" coreType="StepFolder">
       <label>StepFolder</label>
       <icon>/icons/fork.png</icon>
@@ -87,6 +88,7 @@
       </contentViews>
     </type>
 
+    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
     <type id="DocumentRouteStep" coreType="DocumentRouteStep">
       <label>Step</label>
       <icon>/icons/step.png</icon>
@@ -103,6 +105,7 @@
       </layouts>
     </type>
     
+    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
     <type id="ConditionalStepFolder" coreType="ConditionalStepFolder">
       <label>ConditionalStepFolder</label>
       <icon>/icons/conditional_folder.png</icon>

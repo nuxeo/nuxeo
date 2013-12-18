@@ -22,14 +22,15 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.platform.routing.dm.api.RoutingTaskConstants;
 
 /**
- *
  * @author ldoguin
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
  */
+@Deprecated
 public class TaskStepAdapterFactory implements DocumentAdapterFactory {
 
     @Override
-    public Object getAdapter(DocumentModel doc,
-            @SuppressWarnings("rawtypes") Class itf) {
+    public Object getAdapter(DocumentModel doc, @SuppressWarnings("rawtypes")
+    Class itf) {
         if (doc.hasFacet(RoutingTaskConstants.TASK_STEP_FACET_NAME)) {
             return new TaskStepImpl(doc);
         }

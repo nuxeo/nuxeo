@@ -32,9 +32,12 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Run the operation chain for this step.
  *
+ * @deprecated since 5.9.2 - Use only routes of type 'graph'
+ *
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  *
  */
+@Deprecated
 public class StepElementRunner implements ElementRunner {
 
     @Override

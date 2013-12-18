@@ -58,6 +58,7 @@ public abstract class AbstractRunner implements ElementRunner {
         throw new UnsupportedOperationException();
     }
 
+    @Deprecated
     @Override
     public void undo(CoreSession session, DocumentRouteElement element) {
         throw new UnsupportedOperationException();

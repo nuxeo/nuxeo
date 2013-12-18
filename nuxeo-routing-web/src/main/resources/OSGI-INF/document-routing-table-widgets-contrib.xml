@@ -15,6 +15,7 @@
         <ul>
           <li>The step document Id.</li>
         </ul>
+        @Deprecated since 5.9.2
       </documentation>
 
       <handler-class>
@@ -29,8 +30,10 @@
       <documentation>
         This add_step widget displays three different links.
         <br />
-        Add before will add a new step before the selected step. Add in will add
-        a new step at the end of the container. Add after will add a new step
+        Add before will add a new step before the selected step. Add in
+        will add
+        a new step at the end of the container. Add after will
+        add a new step
         after the selected step.
         <br />
         It requires the following fields configuration:
@@ -39,6 +42,7 @@
           <li>The step document Id.</li>
           <li>A Boolean used to render the Add In Button if true.</li>
         </ul>
+        @Deprecated since 5.9.2
       </documentation>
 
       <handler-class>
@@ -51,8 +55,10 @@
 
     <widgetType name="listing_document_route_folder_element_type">
       <documentation>
-        This widget type displays an icon representing the type of folder,
+        This widget type displays an icon representing the type of
+        folder,
         "Serial" or "Parallel "
+        @Deprecated since 5.9.2
         <br />
         It requires the following fields configuration:
         <ul>
@@ -70,7 +76,8 @@
 
     <widgetType name="listing_document_route_element_type">
       <documentation>
-        This widget type displays the type and the type icon of the document.
+        This widget type displays the type and the type icon of the
+        document.
         <br />
         It requires the following fields configuration:
         <ul>
@@ -86,7 +93,7 @@
         /widgets/listing/listing_document_route_element_type_widget_template.xhtml
       </property>
     </widgetType>
-    
+
     <widgetType name="listing_document_route_element_actors">
       <documentation>
         This widget type displays the actors of the document.
@@ -114,6 +121,7 @@
           <li>the route documuent model</li>
           <li>the route documuent model id</li>
         </ul>
+        @Deprecated since 5.9.2
       </documentation>
 
       <handler-class>
@@ -145,7 +153,8 @@
 
     <widgetType name="step_actions">
       <documentation>
-        This widget type displays available step actions for the given doc.
+        This widget type displays available step actions for the given
+        doc.
         <br />
         It requires the following fields configuration:
         <ul>
@@ -153,6 +162,8 @@
           <li>The step document Id.</li>
           <li>A Boolean used to render the Add In Button if true.</li>
         </ul>
+        @Deprecated - This widget is deprecated since 5.9.2. Only routes
+        of type 'graph' are used.
       </documentation>
 
       <handler-class>
@@ -166,37 +177,46 @@
     <widgetType name="listing_route_title_link">
 
       <documentation>
-        Override the default widget to add useful information for selenium. This
-        widget type displays a link to navigate to a document, as well as a
-        download link for the document binary content.
+        Override the default widget to add useful information for
+        selenium. This
+        widget type displays a link to navigate to a
+        document, as well as a
+        download link for the document binary
+        content.
         <br />
         It requires the following fields configuration:
         <ul>
           <li>
-            first field maps the document model, it will be used to display the
+            first field maps the document model, it will be used to
+            display the
             document link and its title
           </li>
           <li>
-            second field maps the unique id to be used for contextual menu (e.g.
+            second field maps the unique id to be used for contextual
+            menu (e.g.
             the document model id)
           </li>
           <li>
-            third field maps the displayed link title (can be the document model
+            third field maps the displayed link title (can be the
+            document model
             description)
           </li>
           <li>
-            fourth field maps the document model file to be used for download
+            fourth field maps the document model file to be used for
+            download
             link
           </li>
           <li>
-            fifth field maps the file name to be used for download link (can be
+            fifth field maps the file name to be used for download
+            link (can be
             the document model file name property value)
           </li>
         </ul>
         It also requires the following properties configuration:
         <ul>
           <li>
-            file_schema: the file schema name, used to check whether download
+            file_schema: the file schema name, used to check whether
+            download
             link should be displayed
           </li>
           <li>file_property_name:</li>
@@ -238,7 +258,8 @@
     <widget name="dr_listing_document_route_folder_element_type"
       type="listing_document_route_folder_element_type">
       <labels>
-        <label mode="any">label.document.route.content.header.type</label>
+        <label mode="any">label.document.route.content.header.type
+        </label>
       </labels>
       <translated>true</translated>
       <fields>
@@ -247,14 +268,14 @@
         <field>routeElement.document.hasFacet('Folderish')</field>
       </fields>
       <properties mode="any">
-        <property name="showAvailableActionsOnRouteElement">true</property>
+        <property name="showAvailableActionsOnRouteElement">false</property>
       </properties>
     </widget>
 
-    <widget name="dr_listing_document_route_element_type"
-      type="listing_document_route_element_type">
+    <widget name="dr_listing_document_route_element_type" type="listing_document_route_element_type">
       <labels>
-        <label mode="any">label.document.route.content.header.type</label>
+        <label mode="any">label.document.route.content.header.type
+        </label>
       </labels>
       <translated>true</translated>
       <fields>
@@ -274,11 +295,12 @@
         <field>data.document.title</field>
       </fields>
     </widget>
-    
-    <widget name="dr_listing_document_route_element_actors"
-      type="listing_document_route_element_actors">
+
+    <!-- @deprecated since 5.9.2 - Use routing_task_actors instead -->
+    <widget name="dr_listing_document_route_element_actors" type="listing_document_route_element_actors">
       <labels>
-        <label mode="any">label.document.route.content.header.actors</label>
+        <label mode="any">label.document.route.content.header.actors
+        </label>
       </labels>
       <translated>true</translated>
       <fields>
@@ -286,11 +308,11 @@
       </fields>
     </widget>
 
-    <widget name="dr_listing_route_element_state"
-      type="listing_document_route_element_state">
+    <widget name="dr_listing_route_element_state" type="listing_document_route_element_state">
       <translated>true</translated>
-       <labels>
-        <label mode="any">label.widget.document_routing_route_content.dr_listing_route_element_state</label>
+      <labels>
+        <label mode="any">label.widget.document_routing_route_content.dr_listing_route_element_state
+        </label>
       </labels>
       <fields>
         <field>data.document.currentLifeCycleState</field>
@@ -307,10 +329,10 @@
       </fields>
     </widget>
 
-    <widget name="dr_listing__edit_document_route_element"
-      type="listing_edit_document_route_element">
+    <widget name="dr_listing__edit_document_route_element" type="listing_edit_document_route_element">
       <labels>
-        <label mode="any">label.document.route.content.header.update</label>
+        <label mode="any">label.document.route.content.header.update
+        </label>
       </labels>
       <translated>true</translated>
       <fields>
@@ -319,6 +341,7 @@
       </fields>
     </widget>
 
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <widget name="dr_listing_add_step" type="add_step">
       <translated>true</translated>
       <fields>
@@ -328,6 +351,7 @@
       </fields>
     </widget>
 
+    <!-- @deprecated since 5.9.2 - Use only routes of type 'graph' -->
     <widget name="dr_listing_remove_step" type="remove_step">
       <translated>true</translated>
       <fields>
@@ -348,7 +372,8 @@
 
     <widget name="dr_listing_current_lifecycle" type="text">
       <labels>
-        <label mode="any">label.content.header.currentLifecycleState</label>
+        <label mode="any">label.content.header.currentLifecycleState
+        </label>
       </labels>
       <translated>true</translated>
       <fields>
