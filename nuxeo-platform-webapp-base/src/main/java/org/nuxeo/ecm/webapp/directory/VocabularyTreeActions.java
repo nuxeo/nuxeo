@@ -58,8 +58,16 @@ public class VocabularyTreeActions implements Serializable {
 
     private static final Log log = LogFactory.getLog(VocabularyTreeActions.class);
 
+    /**
+     * @deprecated since 5.9.2.
+     */
+    @Deprecated
     public static final String L10NVOCABULARY_SCHEMA = "l10nvocabulary";
 
+    /**
+     * @deprecated since 5.9.2.
+     */
+    @Deprecated
     public static final String L10NXVOCABULARY_SCHEMA = "l10nxvocabulary";
 
     protected transient Map<String, VocabularyTreeNode> treeModels;
@@ -82,14 +90,6 @@ public class VocabularyTreeActions implements Serializable {
             if (directory == null) {
                 throw new DirectoryException(vocabularyName
                         + " is not a registered directory");
-            }
-            String dirSchema = directory.getSchema();
-            if (!L10NVOCABULARY_SCHEMA.equals(dirSchema)
-                    && !L10NXVOCABULARY_SCHEMA.equals(dirSchema)) {
-                throw new DirectoryException(vocabularyName
-                        + "does not have the required schema: "
-                        + L10NVOCABULARY_SCHEMA + " or "
-                        + L10NXVOCABULARY_SCHEMA);
             }
         } catch (DirectoryException e) {
             throw new RuntimeException(e);

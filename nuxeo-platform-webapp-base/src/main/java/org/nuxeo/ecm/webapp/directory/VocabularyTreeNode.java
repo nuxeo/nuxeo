@@ -35,9 +35,13 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * A vocabulary tree node based on l10nvocabulary or l10nxvocabulary directory.
@@ -221,8 +225,14 @@ public class VocabularyTreeNode {
         try {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
 
-            if (level == 0
-                    && VocabularyTreeActions.L10NXVOCABULARY_SCHEMA.equals(getDirectorySchema())) {
+            String directorySchema = getDirectorySchema();
+            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            Schema schema = schemaManager.getSchema(directorySchema);
+            if (schema == null) {
+                throw new DirectoryException(directorySchema
+                        + " is not a registered directory");
+            }
+            if (level == 0 && schema.hasField(PARENT_FIELD_ID)) {
                 // filter on empty parent
                 filter.put(PARENT_FIELD_ID, "");
             } else {
