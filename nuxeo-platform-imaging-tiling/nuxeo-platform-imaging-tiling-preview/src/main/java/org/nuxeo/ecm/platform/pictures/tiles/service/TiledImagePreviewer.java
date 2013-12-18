@@ -79,7 +79,7 @@ public class TiledImagePreviewer extends AbstractPreviewer implements
         ImagingService imagingService = Framework.getLocalService(ImagingService.class);
         if (imagingService != null) {
             ImageInfo info = imagingService.getImageInfo(blob);
-            if (info!= null) {
+            if (info != null) {
                 int width = info.getWidth();
                 int height = info.getHeight();
                 Integer widthThreshold = Integer.valueOf(PictureTilingComponent.getEnvValue(
