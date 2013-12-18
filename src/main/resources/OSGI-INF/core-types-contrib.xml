@@ -20,6 +20,8 @@
     <!-- multi tenant vocabulary -->
     <schema name="multitenantvocabulary" src="schemas/multi_tenant_vocabulary.xsd"/>
     <schema name="multitenantxvocabulary" src="schemas/multi_tenant_xvocabulary.xsd"/>
+    <schema name="multitenantl10nvocabulary" src="schemas/multi_tenant_l10nvocabulary.xsd"/>
+    <schema name="multitenantl10nxvocabulary" src="schemas/multi_tenant_l10nxvocabulary.xsd"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"

@@ -46,6 +46,32 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
+    <directory name="l10nsubjects">
+      <schema>multitenantl10nxvocabulary</schema>
+      <parentDirectory>l10nsubjects</parentDirectory>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>l10nsubjects</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/l10nsubjects.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="l10ncoverage">
+      <schema>multitenantl10nxvocabulary</schema>
+      <parentDirectory>l10ncoverage</parentDirectory>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>l10ncoverage</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/l10ncoverage.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager"
@@ -59,6 +85,23 @@
       </deleteConstraint>
     </directory>
     <directory name="subtopic" layout="multi_tenant_subtopic_vocabulary" sortField="parent" />
+
+    <directory name="l10ncoverage" layout="multi_tenant_l10ncoverage_vocabulary"
+      sortField="id">
+      <deleteConstraint
+        class="org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint">
+        <property name="targetDirectory">l10ncoverage</property>
+        <property name="targetDirectoryField">parent</property>
+      </deleteConstraint>
+    </directory>
+    <directory name="l10nsubjects" layout="multi_tenant_l10nsubjects_vocabulary"
+      sortField="id">
+      <deleteConstraint
+        class="org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint">
+        <property name="targetDirectory">l10nsubjects</property>
+        <property name="targetDirectoryField">parent</property>
+      </deleteConstraint>
+    </directory>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -177,6 +220,147 @@
         <property name="size">10</property>
       </properties>
     </widget>
+
+    <widget name="multi_tenant_l10nvocabulary_id" type="text">
+      <labels>
+        <label mode="any">label.vocabulary.entry.id</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>multitenantl10nvocabulary:id</field>
+      </fields>
+      continent
+      <widgetModes>
+        <mode value="edit">view</mode>
+      </widgetModes>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+    </widget>
+
+    <widget name="multi_tenant_l10nvocabulary_label_fr" type="text">
+      <labels>
+        <label mode="any">label.vocabulary.l10n.entry.label.french</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>multitenantl10nvocabulary:label_fr</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="size">50</property>
+      </properties>
+    </widget>
+
+    <widget name="multi_tenant_l10nvocabulary_label_en" type="text">
+      <labels>
+        <label mode="any">label.vocabulary.l10n.entry.label.english</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>multitenantl10nvocabulary:label_en</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="size">50</property>
+      </properties>
+    </widget>
+
+    <widget name="multi_tenant_l10nvocabulary_obsolete" type="template">
+      <labels>
+        <label mode="any">label.vocabulary.entry.obsolete</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>multitenantl10nvocabulary:obsolete</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/integer_yes_no_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="multi_tenant_l10nvocabulary_order" type="int">
+      <labels>
+        <label mode="any">label.vocabulary.entry.order</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>multitenantl10nvocabulary:ordering</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="size">10</property>
+      </properties>
+    </widget>
+
+    <widget name="multi_tenant_l10nxvocabulary_id" type="text">
+      <labels>
+        <label mode="any">label.vocabulary.entry.id</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>multitenantl10nxvocabulary:id</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit">view</mode>
+      </widgetModes>
+      <properties widgetMode="edit">
+        <property name="required">true</property>
+      </properties>
+    </widget>
+
+    <widget name="multi_tenant_l10nxvocabulary_label_fr" type="text">
+      <labels>
+        <label mode="any">label.vocabulary.l10n.entry.label.french</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>multitenantl10nxvocabulary:label_fr</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="size">50</property>
+      </properties>
+    </widget>
+
+    <widget name="multi_tenant_l10nxvocabulary_label_en" type="text">
+      <labels>
+        <label mode="any">label.vocabulary.l10n.entry.label.english</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>multitenantl10nxvocabulary:label_en</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="size">50</property>
+      </properties>
+    </widget>
+
+    <widget name="multi_tenant_l10nxvocabulary_obsolete" type="template">
+      <labels>
+        <label mode="any">label.vocabulary.entry.obsolete</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>multitenantl10nxvocabulary:obsolete</field>
+      </fields>
+      <properties mode="any">
+        <property name="template">
+          /widgets/integer_yes_no_widget_template.xhtml
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="multi_tenant_l10nxvocabulary_order" type="int">
+      <labels>
+        <label mode="any">label.vocabulary.entry.order</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>multitenantl10nxvocabulary:ordering</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="size">10</property>
+      </properties>
+    </widget>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -241,6 +425,96 @@
         </properties>
         <properties widgetMode="edit">
           <property name="required">true</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="multi_tenant_l10ncoverage_vocabulary">
+      <templates>
+        <template mode="any">
+          /directory/directory_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>parent</widget>
+        </row>
+        <row>
+          <widget>multi_tenant_l10nxvocabulary_id</widget>
+        </row>
+        <row>
+          <widget>multi_tenant_l10nxvocabulary_label_en</widget>
+        </row>
+        <row>
+          <widget>multi_tenant_l10nxvocabulary_label_fr</widget>
+        </row>
+        <row>
+          <widget>multi_tenant_l10nxvocabulary_obsolete</widget>
+        </row>
+        <row>
+          <widget>multi_tenant_l10nxvocabulary_order</widget>
+        </row>
+      </rows>
+      <widget name="parent" type="select_l10n_vocabulary_tree">
+        <labels>
+          <label mode="any">label.vocabulary.entry.parent</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>multitenantl10nxvocabulary:parent</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">l10ncoverage</property>
+          <property name="selectIdOnly">true</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="displayObsoleteEntries">true</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="multi_tenant_l10nsubjects_vocabulary">
+      <templates>
+        <template mode="any">
+          /directory/directory_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>parent</widget>
+        </row>
+        <row>
+          <widget>multi_tenant_l10nxvocabulary_id</widget>
+        </row>
+        <row>
+          <widget>multi_tenant_l10nxvocabulary_label_en</widget>
+        </row>
+        <row>
+          <widget>multi_tenant_l10nxvocabulary_label_fr</widget>
+        </row>
+        <row>
+          <widget>multi_tenant_l10nxvocabulary_obsolete</widget>
+        </row>
+        <row>
+          <widget>multi_tenant_l10nxvocabulary_order</widget>
+        </row>
+      </rows>
+      <widget name="parent" type="select_l10n_vocabulary_tree">
+        <labels>
+          <label mode="any">label.vocabulary.entry.parent</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>multitenantl10nxvocabulary:parent</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">l10nsubjects</property>
+          <property name="selectIdOnly">true</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="displayObsoleteEntries">true</property>
         </properties>
       </widget>
     </layout>
