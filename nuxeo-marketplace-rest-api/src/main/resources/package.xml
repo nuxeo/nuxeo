@@ -2,7 +2,7 @@
 <package type="addon" name="nuxeo-rest-api" version="@VERSION@">
   <title>Nuxeo REST API</title>
   <description>
-    <p>Nuxeo REST API exposes documents as REST resources allowing document to be GET, PUT, DELETE and POST</p>    
+    <p>Nuxeo REST API exposes documents as REST resources allowing documents to be GET, PUT, DELETE and POST.</p>
   </description>
   <home-page>http://doc.nuxeo.com/x/QYLQ</home-page>
   <vendor>Nuxeo</vendor>
