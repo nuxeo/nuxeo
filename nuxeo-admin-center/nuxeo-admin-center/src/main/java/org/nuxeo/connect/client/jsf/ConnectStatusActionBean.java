@@ -385,6 +385,19 @@ public class ConnectStatusActionBean implements Serializable {
         return getConnectUpdateStatusInfo();
     }
 
+    /**
+     * @since 5.9.1
+     */
+    @Factory(scope = ScopeType.APPLICATION, value = "connectBannerEnabled")
+    public boolean isConnectBannerEnabled() {
+        final String testerName = Framework.getProperty("org.nuxeo.ecm.tester.name");
+        if (testerName != null && testerName.equals("Nuxeo-Selenium-Tester")) {
+            // disable banner when running selenium tests
+            return false;
+        }
+        return true;
+    }
+
     @Factory(scope = ScopeType.APPLICATION, value = "connectUpdateStatusInfo")
     public ConnectUpdateStatusInfo getConnectUpdateStatusInfo() {
         if (connectionStatusCache == null) {
