@@ -47,7 +47,6 @@ import org.nuxeo.runtime.metrics.MetricsService;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
 
 /**
  * This class holds persistence context information.
@@ -142,9 +141,9 @@ public class PersistenceContext {
      */
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final Counter cacheHitCount;
+    protected final Counter cacheCount;
 
-    protected final Timer cacheGetTimer;
+    protected final Counter cacheHitCount;
 
     @SuppressWarnings("unchecked")
     public PersistenceContext(Model model, RowMapper mapper, SessionImpl session)
@@ -180,10 +179,10 @@ public class PersistenceContext {
         // this has to be linked to keep creation order, as foreign keys
         // are used and need this
         createdIds = new LinkedHashSet<Serializable>();
+        cacheCount = registry.counter(MetricRegistry.name(
+                "nuxeo", "repositories", session.getRepositoryName(), "caches", "count"));
         cacheHitCount = registry.counter(MetricRegistry.name(
                 "nuxeo", "repositories", session.getRepositoryName(), "caches", "hit"));
-        cacheGetTimer = registry.timer(MetricRegistry.name(
-                "nuxeo", "repositories", session.getRepositoryName(), "caches", "get"));
     }
 
     protected int clearCaches() {
@@ -544,19 +543,15 @@ public class PersistenceContext {
      * @return the fragment, or {@code null} if not found
      */
     protected Fragment getIfPresent(RowId rowId) {
-        final Timer.Context context = cacheGetTimer.time();
-        try {
-            Fragment fragment = pristine.get(rowId);
-            if (fragment == null) {
-                fragment = modified.get(rowId);
-            }
-            if (fragment != null) {
-                cacheHitCount.inc();
-            }
-            return fragment;
-        } finally {
-            context.stop();
+        cacheCount.inc();
+        Fragment fragment = pristine.get(rowId);
+        if (fragment == null) {
+            fragment = modified.get(rowId);
         }
+        if (fragment != null) {
+            cacheHitCount.inc();
+        }
+        return fragment;
     }
 
     /**
