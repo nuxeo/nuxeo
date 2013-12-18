@@ -24,7 +24,7 @@
     </p>
     <p> * Inter-operability, with a CMIS-enabled platform</p>
 
-    <p>Nuxeo DAM new features:</p>
+    <p>Nuxeo DAM features:</p>
     <ul>
       <li>
         <p>Bulk Import</p>
@@ -34,16 +34,16 @@
       </li>
       <li>
         <p>Video Story-boarding</p>
-        <p>Nuxeo DAM automatically generates upon import a series of thumbnails
+        <p>Nuxeo DAM automatically generates a series of thumbnails upon import
           that display the contents of a video file. Chapters of the video can
           be reached by clicking on the thumbnail.
         </p>
       </li>
       <li>
         <p>Video Streaming</p>
-        <p>Streaming Feature offers to user to share through Nuxeo DAM their
-          video (and soon audio) in streaming, that mean user don't need to wait
-          for the end of the download of the file to start to see it. Most used
+        <p>The streaming feature offers users the ability to share their
+          video (and soon audio) in streaming through Nuxeo DAM, which mean users don't need to wait
+          for the end of the download of the file to start watching it. Most used
           video format can uploaded into Nuxeo DAM. Available for Windows
           servers.
         </p>
