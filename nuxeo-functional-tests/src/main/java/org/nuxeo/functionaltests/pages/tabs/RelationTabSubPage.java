@@ -49,6 +49,10 @@ public class RelationTabSubPage extends DocumentBasePage {
 
     private static final int SELECT2_CHANGE_TIMEOUT = 4;
 
+    private static final String OBJECT_DOCUMENT_UID_ID = "createForm:objectDocumentUid";
+
+    private static final String SELECT2_DOCUMENT_XPATH = "//*[@id='s2id_createForm:nxw_singleDocumentSuggestion_select2']";
+
     @Required
     @FindBy(linkText = "Add a new relation")
     WebElement addANewRelationLink;
@@ -67,9 +71,6 @@ public class RelationTabSubPage extends DocumentBasePage {
 
     @FindBy(xpath = "//*[@id='document_relations']/table/tbody/tr")
     List<WebElement> existingRelations;
-
-    @FindBy(id = "createForm:objectDocumentUid")
-    WebElement selectedDocument;
 
     /**
      * @param driver
@@ -127,13 +128,13 @@ public class RelationTabSubPage extends DocumentBasePage {
         predicateSelect.selectByValue(predicateUri);
 
         Select2WidgetElement documentSuggestionWidget = new Select2WidgetElement(
-                driver,
-                By.xpath("//*[@id='s2id_createForm:nxw_singleDocumentSuggestion_select2']"));
+                driver, By.xpath(SELECT2_DOCUMENT_XPATH));
 
         documentSuggestionWidget.selectValue(documentName);
 
         Function<WebDriver, Boolean> isDocumentSelected = new Function<WebDriver, Boolean>() {
             public Boolean apply(WebDriver driver) {
+                WebElement selectedDocument = driver.findElement(By.id(OBJECT_DOCUMENT_UID_ID));
                 String value = selectedDocument.getAttribute("value");
                 boolean result = StringUtils.isNotBlank(value);
                 if (!result) {
@@ -151,8 +152,11 @@ public class RelationTabSubPage extends DocumentBasePage {
 
         wait.until(isDocumentSelected);
 
-        log.debug("Submitting relation on document: "
-                + selectedDocument.getAttribute("value"));
+        if (log.isDebugEnabled()) {
+            WebElement selectedDocument = driver.findElement(By.id(OBJECT_DOCUMENT_UID_ID));
+            log.debug("Submitting relation on document: "
+                    + selectedDocument.getAttribute("value"));
+        }
 
         addButton.click();
 
