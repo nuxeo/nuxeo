@@ -1,7 +1,13 @@
 <package type="addon" name="nuxeo-social-collaboration" version="@VERSION@">
   <title>Nuxeo Social Collaboration</title>
   <description>
-    Nuxeo Social Collaboration
+    The Nuxeo Social Collaboration brings social network features to the Nuxeo Platform, such as:
+    <ul>
+      <li>Social workspaces, which provide a project-centric view of content,</li>
+      <li>A circle-based relationship network, to create meaningful connections across geographic and organizational boundaries,</li>
+      <li>Activity streams, to quickly see what your network works on,</li>
+      <li>Micro-messaging, to quickly share information with your network.</li>
+    </ul>
   </description>
   <home-page>http://doc.nuxeo.com/x/QoGN</home-page>
   <vendor>Nuxeo</vendor>
