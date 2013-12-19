@@ -820,6 +820,15 @@ public class SQLSession implements Session {
         }
     }
 
+    protected void removeProperty(Node node) throws DocumentException {
+        try {
+            // session.removePropertyNode(node);
+            session.removeNode(node);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
     protected Document checkIn(Node node, String label, String checkinComment)
             throws DocumentException {
         try {
@@ -934,8 +943,8 @@ public class SQLSession implements Session {
     protected Property makeProperty(Node node, String name,
             ComplexType parentType, List<CompositeType> mixinTypes,
             boolean readonly) throws DocumentException {
-        return makeProperties(node, name, parentType, mixinTypes, readonly, 0).get(
-                0);
+        return makeProperties(node, name, parentType, mixinTypes, readonly, 0,
+                0).get(0);
     }
 
     /**
@@ -944,7 +953,7 @@ public class SQLSession implements Session {
      */
     protected List<Property> makeProperties(Node node, String name,
             Type parentType, List<CompositeType> mixinTypes, boolean readonly,
-            int complexListSize) throws DocumentException {
+            int complexListStart, int complexListEnd) throws DocumentException {
         boolean complexList = parentType instanceof ListType;
         Model model;
         try {
@@ -1008,13 +1017,14 @@ public class SQLSession implements Session {
             List<Node> childNodes;
             try {
                 if (complexList) {
-                    if (complexListSize == -1) {
+                    if (complexListStart == -1) {
                         // get existing
-                        childNodes = session.getChildren(node, name, true);
+                        childNodes = getComplexList(node, name);
                     } else {
                         // create with given size (after a remove)
-                        childNodes = new ArrayList<Node>(complexListSize);
-                        for (int i = 0; i < complexListSize; i++) {
+                        childNodes = new ArrayList<Node>(complexListEnd
+                                - complexListStart);
+                        for (int i = complexListStart; i < complexListEnd; i++) {
                             Node childNode = session.addChildNode(node, name,
                                     Long.valueOf(i), type.getName(), true);
                             childNodes.add(childNode);
@@ -1053,6 +1063,38 @@ public class SQLSession implements Session {
             return properties;
         }
     }
+
+     /**
+     * Makes a property from a complex list element.
+     *
+     * @since 5.5
+     */
+    protected Property makeProperty(Node node, String name, Type parentType,
+            boolean readonly, int pos) throws DocumentException {
+        Type type = ((ListType) parentType).getField().getType();
+        List<Node> childNodes;
+        try {
+            childNodes = session.getChildren(node, name, true);
+       } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+        if (pos < 0 || pos >= childNodes.size()) {
+            throw new NoSuchPropertyException(name + '/' + pos);
+        }
+        Node childNode = childNodes.get(pos);
+        return newSQLComplexProperty(childNode, (ComplexType) type, readonly);
+    }
+
+    protected Property newSQLComplexProperty(Node childNode, ComplexType type,
+            boolean readonly) {
+        // TODO use a better switch
+        if (TypeConstants.isContentType(type)) {
+            return new SQLContentProperty(childNode, type, this, readonly);
+        } else {
+            return new SQLComplexProperty(childNode, type, this, readonly);
+        }
+    }
+
 
     /**
      * This method flag the current session, the read ACLs update will be done

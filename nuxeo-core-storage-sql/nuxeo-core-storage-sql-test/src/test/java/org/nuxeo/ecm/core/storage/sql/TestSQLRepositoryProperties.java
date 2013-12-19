@@ -7,9 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id$
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.storage.sql;
@@ -22,27 +21,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.primitives.ExternalBlobProperty;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
 
-/**
- * @author Anahide Tchertchian
- *
- */
 @SuppressWarnings("unchecked")
 public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
@@ -78,6 +77,12 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.createDocumentModel("TestDocument");
         doc.setPathInfo("/", "doc");
         doc = session.createDocument(doc);
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     protected File createTempFile() throws Exception {
@@ -149,6 +154,93 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertTrue(actual instanceof List);
         assertEquals(1, ((List) actual).size());
         assertEquals(item, ((List) actual).get(0));
+    }
+
+    public void testComplexListChange() throws Exception {
+        ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
+        Map<String, Serializable> item1 = new HashMap<String, Serializable>();
+        Map<String, Serializable> item2 = new HashMap<String, Serializable>();
+        Map<String, Serializable> item3 = new HashMap<String, Serializable>();
+        List<?> actual;
+
+        item1.put("string", "foo");
+        item1.put("int", Long.valueOf(123));
+        values.add(item1);
+        doc.setPropertyValue("tp:complexList", values);
+        doc = session.saveDocument(doc);
+
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(new PathRef("/doc"));
+
+        actual = (List<?>) doc.getPropertyValue("tp:complexList");
+        assertEquals(1, actual.size());
+        assertComplexListElements(actual, 0, "foo", 123);
+
+        // add to list
+
+        item2.put("string", "bar");
+        item2.put("int", Long.valueOf(999));
+        values.add(item2);
+        item3.put("string", "baz");
+        item3.put("int", Long.valueOf(314));
+        values.add(item3);
+        doc.setPropertyValue("tp:complexList", values);
+        doc = session.saveDocument(doc);
+
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(new PathRef("/doc"));
+
+        actual = (List<?>) doc.getPropertyValue("tp:complexList");
+        assertEquals(3, actual.size());
+        assertComplexListElements(actual, 0, "foo", 123);
+        assertComplexListElements(actual, 1, "bar", 999);
+        assertComplexListElements(actual, 2, "baz", 314);
+
+        // change list
+
+        item1.put("int", Long.valueOf(111));
+        item2.put("int", Long.valueOf(222));
+        item3.put("int", Long.valueOf(333));
+        doc.setPropertyValue("tp:complexList", values);
+        doc = session.saveDocument(doc);
+
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(new PathRef("/doc"));
+
+        actual = (List<?>) doc.getPropertyValue("tp:complexList");
+        assertEquals(3, actual.size());
+        assertComplexListElements(actual, 0, "foo", 111);
+        assertComplexListElements(actual, 1, "bar", 222);
+        assertComplexListElements(actual, 2, "baz", 333);
+
+        // remove from list
+
+        values.remove(0);
+        values.remove(0);
+        doc.setPropertyValue("tp:complexList", values);
+        doc = session.saveDocument(doc);
+
+        session.save();
+        closeSession();
+        openSession();
+        doc = session.getDocument(new PathRef("/doc"));
+
+        actual = (List<?>) doc.getPropertyValue("tp:complexList");
+        assertEquals(1, actual.size());
+        assertComplexListElements(actual, 0, "baz", 333);
+    }
+
+    protected static void assertComplexListElements(List<?> list, int i,
+            String string, int theint) {
+        Map<String, Serializable> map = (Map<String, Serializable>) list.get(i);
+        assertEquals(string, map.get("string"));
+        assertEquals(Long.valueOf(theint), map.get("int"));
     }
 
     // NXP-912
@@ -378,8 +470,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertTrue(actualBlob instanceof Blob);
         assertEquals("Hello External Blob", ((Blob) actualBlob).getString());
         assertEquals("hello.txt", ((Blob) actualBlob).getFilename());
-        assertEquals("hello.txt", doc.getPropertyValue(propName
-                + "/0/blob/name"));
+        assertEquals("hello.txt",
+                doc.getPropertyValue(propName + "/0/blob/name"));
         assertEquals(uri, doc.getPropertyValue(propName + "/0/blob/uri"));
     }
 
@@ -405,6 +497,36 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.saveDocument(doc);
         session.save();
         // check that the minimal number of updates are done in the db
+    }
+
+    // toplevel complex list
+    public void testXPath1() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
+        List<Object> files = new ArrayList<Object>(2);
+        Map<String, Object> f = new HashMap<String, Object>();
+        f.put("filename", "f1");
+        files.add(f);
+        doc.setProperty("files", "files", files);
+        assertEquals("f1", doc.getPropertyValue("files/0/filename"));
+        assertEquals("f1", doc.getPropertyValue("files/item[0]/filename"));
+    }
+
+    // other complex list
+    public void testXPath2() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
+        HashMap<String, Object> attachedFile = new HashMap<String, Object>();
+        List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
+        attachedFile.put("vignettes", vignettes);
+        Map<String, Object> vignette = new HashMap<String, Object>();
+        Long width = Long.valueOf(123);
+        vignette.put("width", width);
+        vignettes.add(vignette);
+        doc.setPropertyValue("cmpf:attachedFile", attachedFile);
+        assertEquals(width,
+                doc.getPropertyValue("cmpf:attachedFile/vignettes/0/width"));
+        assertEquals(
+                width,
+                doc.getPropertyValue("cmpf:attachedFile/vignettes/vignette[0]/width"));
     }
 
 }
