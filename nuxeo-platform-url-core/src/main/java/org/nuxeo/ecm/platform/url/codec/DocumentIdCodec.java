@@ -47,7 +47,7 @@ public class DocumentIdCodec extends AbstractDocumentViewCodec {
 
     // nxdoc/server/docId/view_id/?requestParams
     public static final String URLPattern
-            = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([a-zA-Z_0-9\\-\\.]*))?(/)?(\\?(.*)?)?";
+            = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([a-zA-Z_0-9\\-\\.;=]*))?(/)?(\\?(.*)?)?";
 
     public DocumentIdCodec() {
     }
@@ -103,7 +103,13 @@ public class DocumentIdCodec extends AbstractDocumentViewCodec {
                 final String server = m.group(1);
                 String uuid = m.group(2);
                 final DocumentRef docRef = new IdRef(uuid);
-                final String viewId = m.group(4);
+                String viewId = m.group(4);
+                if (viewId != null) {
+                    int jsessionidIndex = viewId.indexOf(";jsessionid");
+                    if (jsessionidIndex != -1) {
+                        viewId = viewId.substring(0, jsessionidIndex);
+                    }
+                }
 
                 // get other parameters
 
