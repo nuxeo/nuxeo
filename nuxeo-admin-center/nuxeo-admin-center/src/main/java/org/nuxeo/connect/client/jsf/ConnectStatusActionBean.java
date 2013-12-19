@@ -385,7 +385,7 @@ public class ConnectStatusActionBean implements Serializable {
     }
 
     /**
-     * @since 5.9.1
+     * @since 5.9.2
      */
     @Factory(scope = ScopeType.APPLICATION, value = "connectBannerEnabled")
     public boolean isConnectBannerEnabled() {
