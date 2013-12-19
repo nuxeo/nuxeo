@@ -569,7 +569,7 @@
       </widgetModes>
     </widget>
 
-    <widget name="htmltext_width" type="int">
+    <widget name="htmltext_width" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -579,6 +579,7 @@
       <helpLabels>
         <label mode="any">
           The textarea width. Defaults to "640".
+          Give the exact size in pixels or percentage.
         </label>
       </helpLabels>
       <fields>
@@ -586,7 +587,7 @@
       </fields>
     </widget>
 
-    <widget name="htmltext_height" type="int">
+    <widget name="htmltext_height" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
@@ -596,6 +597,7 @@
       <helpLabels>
         <label mode="any">
           The textarea height. Defaults to "400".
+          Give the exact size in pixels or percentage.
         </label>
       </helpLabels>
       <fields>
