@@ -8,6 +8,7 @@
     <startURLPattern>
       <patterns>
         <pattern>nxdam/</pattern>
+        <pattern>nxdamid/</pattern>
       </patterns>
     </startURLPattern>
 

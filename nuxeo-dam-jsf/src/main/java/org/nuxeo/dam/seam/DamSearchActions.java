@@ -104,6 +104,8 @@ public class DamSearchActions implements Serializable {
 
     public static final String DAM_CODEC = "docpathdam";
 
+    public static final String DAM_ID_CODEC = "dociddam";
+
     public static final String CONTENT_VIEW_NAME_PARAMETER = "contentViewName";
 
     public static final String CURRENT_PAGE_PARAMETER = "currentPage";
@@ -464,10 +466,12 @@ public class DamSearchActions implements Serializable {
         }
 
         DocumentModel damCurrentDocument = mainTabsActions.getDocumentFor(DAM_MAIN_TAB_ACTION);
-        DocumentView docView = computeDocumentView(damCurrentDocument);
+        DocumentView docView = new DocumentViewImpl(new DocumentLocationImpl(
+                documentManager.getRepositoryName(), new IdRef(
+                        damCurrentDocument.getId())));
         docView.setViewId("asset");
         DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
-        return documentViewCodecManager.getUrlFromDocumentView(DAM_CODEC,
+        return documentViewCodecManager.getUrlFromDocumentView(DAM_ID_CODEC,
                 docView, true, BaseURL.getBaseURL());
     }
 
