@@ -4813,6 +4813,12 @@
 
   <profiles>
     <profile>
+      <id>skipUnitTests</id>
+      <properties>
+        <skipTests>true</skipTests>
+      </properties>
+    </profile>
+    <profile>
       <id>release</id>
       <activation>
         <property>
