@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.ConflictOperationException;
 import org.nuxeo.ecm.automation.InvalidOperationException;
 import org.nuxeo.ecm.automation.OperationNotFoundException;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 
@@ -111,10 +110,6 @@ public class ExceptionHandler {
             log.warn("Badly wrapped exception: found a NoSuchDocumentException"
                     + " message but no NoSuchDocumentException", cause);
             return HttpServletResponse.SC_NOT_FOUND;
-        }
-        if (cause instanceof ClientException) {
-            // Generic ClientException with no root cause
-            return HttpServletResponse.SC_BAD_REQUEST;
         }
         return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
     }
