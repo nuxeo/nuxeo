@@ -106,7 +106,7 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
             writer.startElement("script", editorComp);
             writer.writeAttribute("type", "text/javascript", null);
             String scriptContent = String.format(
-                    "initTinyMCE(%s, %s, '%s', '%s', '%s', '%s')",
+                    "initTinyMCE('%s', '%s', '%s', '%s', '%s', '%s')",
                     editorComp.getWidth(), editorComp.getHeight(), clientId,
                     pluginsOptions.get("plugins"), locale.getLanguage(),
                     toolbarPluginsOptions.get("toolbar"));
