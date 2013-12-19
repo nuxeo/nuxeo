@@ -9,6 +9,10 @@
       prefix="nxdam"
       class="org.nuxeo.dam.codec.DamCodec" />
 
+    <documentViewCodec name="dociddam" enabled="true" default="false"
+      prefix="nxdamid"
+      class="org.nuxeo.dam.codec.DamIdCodec" />
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.ui.web.rest.URLService"
@@ -20,6 +24,42 @@
       <needRedirectFilter>true</needRedirectFilter>
       <needFilterPreprocessing>true</needFilterPreprocessing>
       <codecName>docpathdam</codecName>
+      <actionBinding>
+        #{damSearchActions.loadPermanentLink}
+      </actionBinding>
+      <documentViewBindingApplies>
+        #{mainTabsActions.isOnMainTab('dam')}
+      </documentViewBindingApplies>
+      <documentViewBinding>#{restHelper.documentView}</documentViewBinding>
+      <newDocumentViewBinding>
+        #{restHelper.getNewDocumentView(null)}
+      </newDocumentViewBinding>
+      <bindings>
+        <binding name="tabIds">#{damActions.damMainTab}</binding>
+        <binding name="language" callGetter="false">
+          #{restHelper.localeString}
+        </binding>
+        <binding name="contentViewName" callGetter="true">
+          #{damSearchActions.currentContentViewName}
+        </binding>
+        <binding name="currentPage" callGetter="true">
+          #{damSearchActions.currentPage}
+        </binding>
+        <binding name="pageSize" callGetter="true">
+          #{damSearchActions.pageSize}
+        </binding>
+        <binding name="state" callGetter="false">
+          #{damSearchActions.state}
+        </binding>
+      </bindings>
+    </urlPattern>
+
+    <urlPattern name="damid" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>true</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>dociddam</codecName>
       <actionBinding>
         #{damSearchActions.loadPermanentLink}
       </actionBinding>
