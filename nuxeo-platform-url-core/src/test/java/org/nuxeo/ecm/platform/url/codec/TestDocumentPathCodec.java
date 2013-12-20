@@ -234,4 +234,20 @@ public class TestDocumentPathCodec {
         assertEquals("TAB_CONTENT", params.get("tabId"));
     }
 
+    @Test
+    public void testGetDocumentViewFromUrlWithJSessionId() {
+        DocumentPathCodec codec = new DocumentPathCodec();
+        String url = "nxpath/demo@view_documents;jsessionid=7CD6F2222BB08134A57BD2098DA16B2C.nuxeo?tabId=TAB_CONTENT";
+        DocumentView docView = codec.getDocumentViewFromUrl(url);
+
+        DocumentLocation docLoc = docView.getDocumentLocation();
+        assertEquals("demo", docLoc.getServerName());
+        assertEquals(null, docLoc.getDocRef());
+        assertEquals("view_documents", docView.getViewId());
+        assertNull(docView.getSubURI());
+
+        Map<String, String> params = docView.getParameters();
+        assertEquals("TAB_CONTENT", params.get("tabId"));
+    }
+
 }

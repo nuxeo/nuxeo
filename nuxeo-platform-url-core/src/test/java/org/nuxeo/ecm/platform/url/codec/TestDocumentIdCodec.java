@@ -94,4 +94,18 @@ public class TestDocumentIdCodec {
         assertNull(docView);
     }
 
+    @Test
+    public void testGetDocumentViewFromUrlWithJSessionId() {
+        DocumentIdCodec codec = new DocumentIdCodec();
+        String url = "nxdoc/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/view_documents;jsessionid=7CD6F2222BB08134A57BD2098DA16B2C.nuxeo?tabId=TAB_CONTENT";
+        DocumentView docView = codec.getDocumentViewFromUrl(url);
+        assertNotNull(docView);
+
+        DocumentLocation docLoc = docView.getDocumentLocation();
+        assertEquals("demo", docLoc.getServerName());
+        assertEquals("view_documents", docView.getViewId());
+        Map<String, String> params = docView.getParameters();
+        assertEquals("TAB_CONTENT", params.get("tabId"));
+    }
+
 }
