@@ -54,7 +54,7 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
     public static final String URL_PATTERN = "/" // slash
             + "([\\w\\.]+)" // server name (group 1)
             + "(?:/(.*))?" // path (group 2) (optional)
-            + "@([\\w\\-\\.]+)" // view id (group 3)
+            + "@([\\w\\-\\.;=]+)" // view id (group 3)
             + "/?" // final slash (optional)
             + "(?:\\?(.*)?)?"; // query (group 4) (optional)
 
@@ -149,7 +149,11 @@ public class DocumentPathCodec extends AbstractDocumentViewCodec {
                 path = "/" + URIUtils.unquoteURIPathComponent(path);
             }
             final DocumentRef docRef = path != null ? new PathRef(path) : null;
-            final String viewId = m.group(3);
+            String viewId = m.group(3);
+            int jsessionidIndex = viewId.indexOf(";jsessionid");
+            if (jsessionidIndex != -1) {
+                viewId = viewId.substring(0, jsessionidIndex);
+            }
 
             // get other parameters
             String query = m.group(4);
