@@ -263,59 +263,37 @@ public class OperationServiceImpl implements AutomationService {
         return operationParameters;
     }
 
-    /**
-     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain.
-     * became an operation - use #putOperation method instead.
-     */
+
     @Override
-    @Deprecated
     public synchronized void putOperationChain(OperationChain chain)
             throws OperationException {
         putOperationChain(chain, false);
     }
 
-    /**
-     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain.
-     * became an operation - use #putOperation method instead.
-     */
     @Override
-    @Deprecated
     public synchronized void putOperationChain(OperationChain chain,
             boolean replace) throws OperationException {
         OperationType docChainType = new ChainTypeImpl(this, chain);
         this.putOperation(docChainType, replace);
     }
 
-    /**
-     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain.
-     * became an operation - use #removeOperation method instead.
-     */
+
     @Override
-    @Deprecated
     public synchronized void removeOperationChain(String id) {
         OperationChain chain = new OperationChain(id);
         OperationType docChainType = new ChainTypeImpl(this, chain);
         operations.removeContribution(docChainType);
     }
 
-    /**
-     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain.
-     * became an operation - use #getOperation method instead.
-     */
     @Override
-    @Deprecated
     public OperationChain getOperationChain(String id)
             throws OperationNotFoundException {
         ChainTypeImpl chain = (ChainTypeImpl) getOperation(id);
         return chain.getChain();
     }
 
-    /**
-     * Deprecated since 5.7.2 - Reason: no chain registry existence since chain.
-     * became an operation - use #getOperations method instead.
-     */
+
     @Override
-    @Deprecated
     public List<OperationChain> getOperationChains() {
         List<ChainTypeImpl> chainsType = new ArrayList<ChainTypeImpl>();
         List<OperationChain> chains = new ArrayList<OperationChain>();
@@ -354,6 +332,7 @@ public class OperationServiceImpl implements AutomationService {
         putOperation(op, replace);
     }
 
+    @Override
     public synchronized void putOperation(OperationType op, boolean replace)
             throws OperationException {
         operations.addContribution(op, replace);
@@ -361,10 +340,16 @@ public class OperationServiceImpl implements AutomationService {
 
     @Override
     public synchronized void removeOperation(Class<?> key) {
-        OperationType op = operations.getOperationType(key);
-        if (op != null) {
-            operations.removeContribution(op);
+        OperationType type = operations.getOperationType(key);
+        if (type == null) {
+            log.warn("Cannot remove operation, no such operation " + key);
+            return;
         }
+        removeOperation(type);
+    }
+
+    public synchronized void removeOperation(OperationType type) {
+        operations.removeContribution(type);
     }
 
     @Override
