@@ -92,6 +92,9 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
                 FacesContext.getCurrentInstance().responseComplete();
             }
         }
+        if (response.containsHeader("Cache-Control")) {
+            response.setHeader("Cache-Control", "no-cache");
+        }
         // go back to default handler
         super.handleException(request, response, t);
     }
