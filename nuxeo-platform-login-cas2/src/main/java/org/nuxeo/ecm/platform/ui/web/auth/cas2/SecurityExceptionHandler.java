@@ -62,6 +62,10 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
             HttpServletResponse response, Throwable t) throws IOException,
             ServletException {
 
+        if (response.containsHeader("Cache-Control")) {
+            response.setHeader("Cache-Control", "no-cache");
+        }
+
         Throwable unwrappedException = unwrapException(t);
 
         if (!ExceptionHelper.isSecurityError(unwrappedException)
@@ -90,6 +94,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
                             response);
                 }
                 FacesContext.getCurrentInstance().responseComplete();
+                return;
             }
         }
         // go back to default handler
