@@ -90,10 +90,16 @@ PKG_RENAMINGS_OPTIONALS = {
     "nuxeo-cap-%s-tomcat-sdk"
 }
 
+NAMESPACES = {"pom": "http://maven.apache.org/POM/4.0.0"}
+etree.register_namespace('pom', 'http://maven.apache.org/POM/4.0.0')
+
 
 #pylint: disable=C0103
 def etree_parse(xmlfile):
     """XML parsing with context error logging"""
+#     if 'done' not in locals():
+#         etree.register_namespace('pom', 'http://maven.apache.org/POM/4.0.0')
+#         done = True
     try:
         tree = etree.parse(xmlfile)
     except etree.XMLSyntaxError as e:
@@ -107,6 +113,45 @@ class Release(object):
     """Nuxeo release manager.
 
     See 'self.perpare()', 'self.perform()'."""
+    @staticmethod
+    def get_release_log(path=os.getcwd()):
+        """Return the path for the file containing the release parameters
+given the path parameter.
+
+        'path': root path of the repository being released."""
+        return os.path.abspath(os.path.join(path, os.pardir,
+                                    "release-%s.log" % os.path.basename(path)))
+
+    #pylint: disable=R0914
+    @staticmethod
+    def read_release_log(path=os.getcwd()):
+        """Read release parameters generated for the given path.
+
+        'path': root path of the repository being released."""
+        release_log = Release.get_release_log(path)
+        log("Reading parameters from %s ..." % release_log)
+        with open(release_log, "rb") as f:
+            remote_alias = f.readline().split("=")[1].strip()
+            branch = f.readline().split("=")[1].strip()
+            tag = f.readline().split("=")[1].strip()
+            next_snapshot = f.readline().split("=")[1].strip()
+            maintenance_version = f.readline().split("=")[1].strip()
+            is_final = f.readline().split("=")[1].strip() == "True"
+            skipTests = f.readline().split("=")[1].strip() == "True"
+            profiles = f.readline().split("=")[1].strip()
+            other_versions = f.readline().split("=")[1].strip()
+            files_pattern = f.readline().split("=")[1].strip()
+            props_pattern = f.readline().split("=")[1].strip()
+            other_versions = ':'.join((files_pattern, props_pattern,
+                                               other_versions))
+            msg_commit = f.readline().split("=")[1].strip()
+            msg_tag = f.readline().split("=")[1].strip()
+        if other_versions == "::":
+            other_versions = None
+        return (remote_alias, branch, tag, next_snapshot,
+                maintenance_version, is_final, skipTests, profiles,
+                other_versions, msg_commit, msg_tag)
+
     #pylint: disable=R0913
     def __init__(self, repo, branch, tag, next_snapshot,
                  maintenance_version="auto", is_final=False, skipTests=False,
@@ -132,7 +177,7 @@ class Release(object):
             self.maintenance_branch += ".0"
         # Detect if working on Nuxeo main sources
         tree = etree_parse(os.path.join(self.repo.basedir, "pom.xml"))
-        artifact_id = tree.getroot().find("pom:artifactId", namespaces)
+        artifact_id = tree.getroot().find("pom:artifactId", NAMESPACES)
         self.repo.is_nuxeoecm = "nuxeo-ecm" == artifact_id.text
         if self.repo.is_nuxeoecm:
             log("Working on Nuxeo main repository...")
@@ -146,7 +191,7 @@ class Release(object):
             # Files extentions
             "^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$",
             # Properties like nuxeo.*.version
-            "{%s}(nuxeo|marketplace)\..*version" % namespaces.get("pom"))
+            "{%s}(nuxeo|marketplace)\..*version" % NAMESPACES.get("pom"))
         custom_files_pattern = ""
         custom_props_pattern = ""
         other_versions_split = []
@@ -167,14 +212,14 @@ class Release(object):
                     except re.error, e:
                         raise ExitException(e, 1, "Bad pattern: '%s'\n/s" %
                                             other_versions_split[1], e.message)
-                    custom_props_pattern = "{%s}%s" % (namespaces.get("pom"),
+                    custom_props_pattern = "{%s}%s" % (NAMESPACES.get("pom"),
                                                        other_versions_split[1])
                 other_versions = other_versions_split[2]
             elif len(other_versions_split) == 1:
                 other_versions = other_versions_split[0]
             else:
                 raise ExitException(1,
-                                "Could not parse other_versions parameter %s."
+                            "Could not parse other_versions parameter '%s'."
                                     % other_versions)
             # Parse version replacements
             other_versions_split = []
@@ -185,7 +230,7 @@ class Release(object):
                     other_version_split.count(None) > 0 or
                     other_version_split.count("") > 0):
                     raise ExitException(1,
-                        "Could not parse other_versions parameter %s."
+                        "Could not parse other_versions parameter '%s'."
                         % other_versions)
                 other_versions_split.append(other_version_split)
         self.other_versions = other_versions_split
@@ -195,10 +240,10 @@ class Release(object):
     def set_snapshot(self):
         """Set current version from root POM."""
         tree = etree_parse(os.path.join(self.repo.basedir, "pom.xml"))
-        version_elem = tree.getroot().find("pom:version", namespaces)
+        version_elem = tree.getroot().find("pom:version", NAMESPACES)
         if version_elem is None:
             version_elem = tree.getroot().find("pom:parent/pom:version",
-                                               namespaces)
+                                               NAMESPACES)
         self.snapshot = version_elem.text
 
     def set_tag(self, tag="auto"):
@@ -250,7 +295,7 @@ class Release(object):
         if store_params:
             release_log = os.path.abspath(os.path.join(self.repo.basedir,
                                                        os.pardir,
-                                                       "release.log"))
+                    "release-%s.log" % os.path.basename(self.repo.basedir)))
             with open(release_log, "wb") as f:
                 f.write("REMOTE=%s\nBRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\n"
                         "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s\n"
@@ -297,19 +342,19 @@ class Release(object):
                 if fnmatch.fnmatch(name, "pom*.xml"):
                     tree = etree_parse(os.path.join(root, name))
                     # Parent POM version
-                    parent = tree.getroot().find("pom:parent", namespaces)
+                    parent = tree.getroot().find("pom:parent", NAMESPACES)
                     if parent is not None:
-                        elem = parent.find("pom:version", namespaces)
+                        elem = parent.find("pom:version", NAMESPACES)
                         if elem is not None and elem.text == old_version:
                             elem.text = new_version
                             replaced = True
                     # POM version
-                    elem = tree.getroot().find("pom:version", namespaces)
+                    elem = tree.getroot().find("pom:version", NAMESPACES)
                     if elem is not None and elem.text == old_version:
                         elem.text = new_version
                         replaced = True
                     properties = tree.getroot().find("pom:properties",
-                                                     namespaces)
+                                                     NAMESPACES)
                     if properties is not None:
                         for prop in properties.getchildren():
                             if (not isinstance(prop, etree._Comment)
@@ -334,7 +379,6 @@ class Release(object):
     def test(self):
         """For current script development purpose."""
         self.prepare(dryrun=True)
-#         self.package_all(self.snapshot)
 
     def package_all(self, version=None):
         """Repackage files to be uploaded.
@@ -477,15 +521,16 @@ class Release(object):
 
         log("\n[INFO] Build and package release-%s..." % self.tag)
         self.repo.system_recurse("git checkout release-%s" % self.tag)
-        if dryrun:
-            return
         if dodeploy:
             self.repo.mvn("clean deploy", skip_tests=self.skipTests,
-                        profiles="release,-qa,nightly" + self.profiles)
+                        profiles="release,-qa,nightly" + self.profiles,
+                        dryrun=dryrun)
         else:
             self.repo.mvn("clean install", skip_tests=self.skipTests,
-                        profiles="release,-qa" + self.profiles)
-        self.package_all()
+                        profiles="release,-qa" + self.profiles,
+                        dryrun=dryrun)
+        if not dryrun:
+            self.package_all()
         # TODO NXP-8571 package sources
         os.chdir(cwd)
 
@@ -554,10 +599,10 @@ class Release(object):
 
 #pylint: disable=R0912,R0914,R0915
 def main():
-    global namespaces
+#     global namespaces
     assert_git_config()
-    namespaces = {"pom": "http://maven.apache.org/POM/4.0.0"}
-    etree.register_namespace('pom', 'http://maven.apache.org/POM/4.0.0')
+#     namespaces = {"pom": "http://maven.apache.org/POM/4.0.0"}
+#     etree.register_namespace('pom', 'http://maven.apache.org/POM/4.0.0')
 
     try:
         if not os.path.isdir(".git"):
@@ -571,8 +616,8 @@ def main():
        %prog package [-b branch] [-t tag] [--skipTests] [-p profiles]
        %prog maintenance [-r alias] [-b branch] [-t tag] [-m maintenance] [--arv versions_replacements]
 \nCommands:
-  prepare: Prepare the release (build, change versions, tag and package source and distributions). The release  parameters are stored in a release.log file.
-  perform: Perform the release (push sources, deploy artifacts and upload packages, tests are always skipped). If no parameter is given, they are read from the release.log file.
+  prepare: Prepare the release (build, change versions, tag and package source and distributions). The release parameters are stored in a release-*.log file.
+  perform: Perform the release (push sources, deploy artifacts and upload packages, tests are always skipped). If no parameter is given, they are read from the release-*.log file.
   package: Package distributions and source code in the archives directory.
   maintenance: Create a maintenance branch from an existing tag.""")
         description = """Release Nuxeo from a given branch, tag the release, then
@@ -673,31 +718,14 @@ Default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
             raise ExitException(1, "'command' must be a single argument. "
                                 "See usage with '-h'.")
 
-        release_log = os.path.abspath(os.path.join(os.getcwd(), os.pardir,
-                                               "release.log"))
         if ("command" in locals() and command == "perform"
-            and os.path.isfile(release_log)
+            and os.path.isfile(Release.get_release_log(os.getcwd()))
             and options == parser.get_default_values()):
-            log("Reading parameters from %s ..." % release_log)
-            with open(release_log, "rb") as f:
-                options.remote_alias = f.readline().split("=")[1].strip()
-                options.branch = f.readline().split("=")[1].strip()
-                options.tag = f.readline().split("=")[1].strip()
-                options.next_snapshot = f.readline().split("=")[1].strip()
-                options.maintenance_version = f.readline().split("=")[1].strip()
-                options.is_final = f.readline().split("=")[1].strip() == "True"
-                options.skipTests = f.readline().split("=")[1].strip() == "True"
-                options.profiles = f.readline().split("=")[1].strip()
-                other_versions = f.readline().split("=")[1].strip()
-                files_pattern = f.readline().split("=")[1].strip()
-                props_pattern = f.readline().split("=")[1].strip()
-                options.other_versions = ':'.join((files_pattern, props_pattern,
-                                                   other_versions))
-                options.msg_commit = f.readline().split("=")[1].strip()
-                options.msg_tag = f.readline().split("=")[1].strip()
-            if options.other_versions == "::":
-                options.other_versions = None
-
+            (options.remote_alias, options.branch, options.tag,
+             options.next_snapshot, options.maintenance_version,
+             options.is_final, options.skipTests, options.profiles,
+             options.other_versions, options.msg_commit,
+             options.msg_tag) = Release.read_release_log(os.getcwd())
         repo = Repository(os.getcwd(), options.remote_alias)
         system("git fetch %s" % (options.remote_alias))
         if "command" in locals():

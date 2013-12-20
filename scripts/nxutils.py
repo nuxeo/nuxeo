@@ -17,6 +17,7 @@
 ##
 ## Utilities for Python scripts.
 ##
+import ConfigParser
 import errno
 import os
 import platform
@@ -26,6 +27,7 @@ import shutil
 import subprocess
 import sys
 import time
+import urllib2
 from zipfile import ZIP_DEFLATED, ZipFile
 
 
@@ -48,6 +50,7 @@ class Repository(object):
         assert_git_config()
         (self.basedir, self.driveletter,
          self.oldbasedir) = long_path_workaround_init(basedir, dirmapping)
+        self.mp_dir = os.path.join(self.basedir, "marketplace")
         self.alias = alias
         # find the remote URL
         remote_lines = check_output("git remote -v").split("\n")
@@ -219,13 +222,58 @@ class Repository(object):
                 system("git stash pop -q")
         log("")
 
-    def clone(self, version=None, fallback_branch=None, with_optionals=False):
+    def get_mp_config(self, marketplace_conf):
+        """Return the Marketplace packages configuration."""
+        mp_config = ConfigParser.ConfigParser(
+                                            defaults={'other_versions': None,
+                                                      'prepared': False,
+                                                      'performed': False})
+        if marketplace_conf is None:
+            no_remote = True
+        else:
+            try:
+                mp_config.readfp(urllib2.urlopen(marketplace_conf))
+                no_remote = False
+            except urllib2.URLError:
+                no_remote = True
+        mp_config = self.save_mp_config(mp_config, True, no_remote)
+        return mp_config
+
+    def save_mp_config(self, mp_config, read_first=False,
+                       fail_if_no_file=False):
+        """Save the Marketplace packages configuration."""
+        configfile_path = os.path.join(self.mp_dir, "release.ini")
+        if read_first and os.path.isfile(configfile_path):
+            mp_config.read(configfile_path)
+        if fail_if_no_file and not os.path.isfile(configfile_path):
+            raise ExitException(1, "Missing configuration: '%s'" %
+                                configfile_path)
+        mp_config.write(open(configfile_path, 'w'))
+        log("Configuration saved: " + configfile_path)
+        return mp_config
+
+    def clone_mp(self, marketplace_conf):
+        """Clone or update Nuxeo Marketplace package repositories.
+
+        Returns the Marketplace packages configuration."""
+        if not os.path.isdir(self.mp_dir):
+            os.mkdir(self.mp_dir)
+        os.chdir(self.mp_dir)
+        mp_config = self.get_mp_config(marketplace_conf)
+        for marketplace in mp_config.sections():
+            self.git_pull(marketplace, mp_config.get(marketplace, "branch"))
+        return mp_config
+
+    def clone(self, version=None, fallback_branch=None, with_optionals=False,
+              marketplace_conf=None):
         """Clone or update whole Nuxeo repository.
 
         'version': the version to checkout; defaults to current version.
         'fallback_branch': the branch to fallback on when 'version' is not
         found locally or remotely.
-        If 'with_optionals', also clone/update "optional" addons."""
+        If 'with_optionals', also clone/update "optional" addons.
+        'marketplace_conf': URL of configuration file listing the Marketplace
+        repositories to clone or update."""
         cwd = os.getcwd()
         os.chdir(self.basedir)
         log("[.]")
@@ -242,7 +290,6 @@ class Repository(object):
                 if (not os.path.isdir(module) or
                 os.path.isdir(os.path.join(module, ".git"))):
                     self.git_pull(module, version, fallback_branch)
-
             # Addons
             os.chdir(os.path.join(self.basedir, "addons"))
             self.eval_addons()
@@ -255,6 +302,9 @@ class Repository(object):
             if not self.is_online:
                 self.url_pattern = self.url_pattern.replace("addons/module",
                                                             "module")
+            # Marketplace packages
+            if marketplace_conf:
+                self.clone_mp(marketplace_conf)
             os.chdir(cwd)
 
     def get_current_version(self):
@@ -262,14 +312,15 @@ class Repository(object):
         t = check_output("git describe --all").split("/")
         return t[-1]
 
-    def mvn(self, commands, skip_tests=False, profiles=None):
+    def mvn(self, commands, skip_tests=False, profiles=None, dryrun=False):
         """Run Maven commands (install, package, deploy, ...) on the whole
         sources (including addons and all distributions) with the given
         parameters.
 
         'commands': the commands to run.
         'skip_tests': whether to skip or not the tests.
-        'profiles': comma-separated additional Maven profiles to use."""
+        'profiles': comma-separated additional Maven profiles to use.
+        If 'dryrun', then print command without executing them."""
         skip_tests_param = ""
         if skip_tests:
             skip_tests_param = "-DskipTests=true"
@@ -280,7 +331,7 @@ class Repository(object):
             profiles_param = "-P%s" % profiles
         system("mvn %s %s -Paddons,distrib,all-distributions %s" %
                (commands, skip_tests_param, profiles_param),
-               delay_stdout=False)
+               delay_stdout=False, run=(not dryrun))
 
 
 def log(message, out=sys.stdout):

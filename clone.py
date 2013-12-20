@@ -44,6 +44,10 @@ remotely (default: %default)""")
                           dest='no_drive_mapping', default=False,
                           help="""deactivate current directory mapping to a
 virtual drive on Windows""")
+        parser.add_option('-m', "--marketplace-conf", action="store",
+                          type="string", dest='marketplace_conf', default=None,
+                          help="""The Marketplace configuration URL
+(default: %default)""")
 
         (options, args) = parser.parse_args()
         repo = Repository(os.getcwd(), options.remote_alias,
@@ -55,7 +59,8 @@ virtual drive on Windows""")
         else:
             raise ExitException(1, "'version' must be a single argument. "
                                 "See usage with '-h'.")
-        repo.clone(version, options.fallback_branch, options.with_optionals)
+        repo.clone(version, options.fallback_branch, options.with_optionals,
+                   options.marketplace_conf)
     #pylint: disable=C0103
     except ExitException, e:
         if e.message is not None:
