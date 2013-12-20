@@ -33,19 +33,19 @@ import org.openqa.selenium.support.FindBy;
 public class UserEditFormPage extends UsersGroupsBasePage {
 
     @Required
-    @FindBy(id = "viewUserView:editUser:nxl_user_2:nxw_firstname_2")
+    @FindBy(id = "viewUserView:editUser:nxl_user_1:nxw_firstname_1")
     WebElement firstnameInput;
 
     @Required
-    @FindBy(id = "viewUserView:editUser:nxl_user_2:nxw_lastname_2")
+    @FindBy(id = "viewUserView:editUser:nxl_user_1:nxw_lastname_1")
     WebElement lastnameInput;
 
     @Required
-    @FindBy(id = "viewUserView:editUser:nxl_user_2:nxw_company_2")
+    @FindBy(id = "viewUserView:editUser:nxl_user_1:nxw_company_1")
     WebElement companyInput;
 
     @Required
-    @FindBy(id = "viewUserView:editUser:nxl_user_2:nxw_email_2")
+    @FindBy(id = "viewUserView:editUser:nxl_user_1:nxw_email_1")
     WebElement emailInput;
 
     @Required
@@ -75,7 +75,7 @@ public class UserEditFormPage extends UsersGroupsBasePage {
         updateInput(companyInput, company);
         updateInput(emailInput, email);
         if (group != null) {
-            Select2WidgetElement groups = new Select2WidgetElement(driver, By.xpath("//*[@id='s2id_viewUserView:editUser:nxl_user_2:nxw_groups_2_select2']"), true);
+            Select2WidgetElement groups = new Select2WidgetElement(driver, By.xpath("//*[@id='s2id_viewUserView:editUser:nxl_user_1:nxw_groups_1_select2']"), true);
             groups.selectValue(group);
         }
         saveButton.click();
