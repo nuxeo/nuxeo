@@ -128,7 +128,7 @@
         </label>
       </helpLabels>
       <fields>
-        <field>ajaxReRender</field>
+        <field>ajaxSupport</field>
       </fields>
     </widget>
 
