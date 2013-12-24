@@ -60,6 +60,7 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
+import org.nuxeo.runtime.services.event.EventListener;
 import org.nuxeo.runtime.services.event.EventService;
 
 import com.google.common.cache.Cache;
@@ -97,6 +98,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     public static final String DEFAULT_ANONYMOUS_USER_ID = "Anonymous";
 
     public static final String VIRTUAL_FIELD_FILTER_PREFIX = "__";
+
+    public static final String INVALIDATE_PRINCIPAL_EVENT_ID = "invalidatePrincipal";
+
+    public static final String INVALIDATE_ALL_PRINCIPALs_EVENT_ID = "invalidateAllPrincipals";
 
     protected final DirectoryService dirService;
 
@@ -776,10 +781,14 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
      * sure principals cache is reset.
      */
     protected void notifyUserChanged(String userName) throws ClientException {
+        invalidatePrincipal(userName);
+        notify(userName, USERCHANGED_EVENT_ID);
+    }
+
+    protected void invalidatePrincipal(String userName) {
         if (useCache()) {
             principalCache.invalidate(userName);
         }
-        notify(userName, USERCHANGED_EVENT_ID);
     }
 
     /**
@@ -787,10 +796,14 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
      * sure principals cache is reset.
      */
     protected void notifyGroupChanged(String groupName) throws ClientException {
+        invalidateAllPrincipals();
+        notify(groupName, GROUPCHANGED_EVENT_ID);
+    }
+
+    protected void invalidateAllPrincipals() {
         if (useCache()) {
             principalCache.invalidateAll();
         }
-        notify(groupName, GROUPCHANGED_EVENT_ID);
     }
 
     @Override
@@ -1675,6 +1688,21 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
         }
         return usernames.toArray(new String[usernames.size()]);
+    }
+
+    @Override
+    public boolean aboutToHandleEvent(Event event) {
+        return true;
+    }
+
+    @Override
+    public void handleEvent(Event event) {
+        String id = event.getId();
+        if (INVALIDATE_PRINCIPAL_EVENT_ID.equals(id)) {
+            invalidatePrincipal((String) event.getData());
+        } else if (INVALIDATE_ALL_PRINCIPALs_EVENT_ID.equals(id)) {
+            invalidateAllPrincipals();
+        }
     }
 
 }

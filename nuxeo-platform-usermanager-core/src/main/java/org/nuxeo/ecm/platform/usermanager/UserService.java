@@ -27,11 +27,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.Authenticator;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.services.event.EventService;
 
 public class UserService extends DefaultComponent {
 
@@ -47,6 +49,9 @@ public class UserService extends DefaultComponent {
     public UserManager getUserManager() throws ClientException {
         if (userManager == null) {
             recomputeUserManager(false);
+            EventService eventService = Framework.getLocalService(EventService.class);
+            eventService.addListener(UserManagerImpl.USERMANAGER_TOPIC,
+                    userManager);
         }
         return userManager;
     }
@@ -124,6 +129,11 @@ public class UserService extends DefaultComponent {
     @Override
     public void deactivate(ComponentContext context) {
         log.info("UserService deactivated");
+        if (userManager != null) {
+            EventService eventService = Framework.getLocalService(EventService.class);
+            eventService.removeListener(UserManagerImpl.USERMANAGER_TOPIC,
+                    userManager);
+        }
     }
 
     @Override

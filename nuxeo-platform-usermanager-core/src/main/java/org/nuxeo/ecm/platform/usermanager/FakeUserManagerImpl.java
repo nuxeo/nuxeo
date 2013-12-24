@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.runtime.services.event.Event;
 
 /**
  * @author Florent Guillaume
@@ -455,4 +456,12 @@ public class FakeUserManagerImpl implements UserManager {
         return checkUsernamePassword(name, password) ? getPrincipal(name) : null;
     }
 
+    @Override
+    public boolean aboutToHandleEvent(Event event) {
+        return false;
+    }
+
+    @Override
+    public void handleEvent(Event event) {
+    }
 }
