@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.usermanager.UserService">
 
+  <require>org.nuxeo.ecm.core.event.EventServiceComponent</require>
+
   <documentation>
     A service to interact with the list of users and groups of the platform.
   </documentation>

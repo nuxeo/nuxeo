@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.usermanager.local.configuration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,8 +27,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
@@ -41,9 +43,9 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * bit different than other ones. Other Directory can be segregate per
  * directory. Groups must be defined into the same directory. The segregation is
  * managed by the suffix added to the groupname.
- * 
+ *
  * @author bjalon
- * 
+ *
  */
 public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagement
         extends NXRuntimeTestCase {
@@ -61,6 +63,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.directory.api");
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
