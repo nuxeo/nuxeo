@@ -263,7 +263,7 @@ class Release(object):
         if store_params:
             release_log = os.path.abspath(os.path.join(self.repo.basedir,
                                                        os.pardir,
-                                                       "release.log"))
+                                                       "release-nuxeo.log"))
             with open(release_log, "wb") as f:
                 f.write("REMOTE=%s\nBRANCH=%s\nTAG=%s\nNEXT_SNAPSHOT=%s\n"
                         "MAINTENANCE=%s\nFINAL=%s\nSKIP_TESTS=%s\n"
@@ -532,8 +532,8 @@ def main():
        %prog perform [-r alias] [-f] [-p profiles] [-b branch] [-t tag] [-m maintenance]
        %prog package [-b branch] [-t tag] [--skipTests] [-p profiles]
 \nCommands:
-  prepare: Prepare the release (build, change versions, tag and package source and distributions). The release  parameters are stored in a release.log file.
-  perform: Perform the release (push sources, deploy artifacts and upload packages, tests are always skipped). If no parameter is given, they are read from the release.log file.
+  prepare: Prepare the release (build, change versions, tag and package source and distributions). The release  parameters are stored in a release-nuxeo.log file.
+  perform: Perform the release (push sources, deploy artifacts and upload packages, tests are always skipped). If no parameter is given, they are read from the release-nuxeo.log file.
   package: Package distributions and source code in the archives directory.""")
         description = """Release Nuxeo from a given branch, tag the release, then
 set the next SNAPSHOT version. If a maintenance version was provided, then a
@@ -634,7 +634,7 @@ Default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
                                 "See usage with '-h'.")
 
         release_log = os.path.abspath(os.path.join(os.getcwd(), os.pardir,
-                                               "release.log"))
+                                               "release-nuxeo.log"))
         if ("command" in locals() and command == "perform"
             and os.path.isfile(release_log)
             and options == parser.get_default_values()):
