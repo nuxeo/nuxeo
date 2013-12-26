@@ -232,22 +232,11 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.saveDocument(doc);
         session.save();
 
-        closeSession();
-        waitForFulltextIndexing();
-        openSession();
-
         doc = session.getDocument(docRef);
         assertEquals(attachedFile,
                 doc.getProperty("cmpf:attachedFile").getValue());
         assertEquals(attachedFile.get("vignettes"),
                 doc.getProperty("cmpf:attachedFile/vignettes").getValue());
-
-        // test fulltext indexing of complex property at level one
-        DocumentModelList results = session.query(
-                "SELECT * FROM Document WHERE ecm:fulltext = 'somename'", 1);
-        assertNotNull(results);
-        assertEquals(1, results.size());
-        assertEquals("complex-doc", results.get(0).getTitle());
 
         // test setting and reading a list of maps without a complex type in the
         // maps
@@ -263,10 +252,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.saveDocument(doc);
         session.save();
 
-        closeSession();
-        waitForFulltextIndexing();
-        openSession();
-
         doc = session.getDocument(docRef);
         assertEquals(
                 "text/plain",
@@ -280,20 +265,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
                 "vignettelabel",
                 doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/label").getValue());
 
-        // test fulltext indexing of complex property at level 3
-        results = session.query("SELECT * FROM Document"
-                + " WHERE ecm:fulltext = 'vignettelabel'", 2);
-        assertNotNull(results);
-        assertEquals(1, results.size());
-        assertEquals("complex-doc", results.get(0).getTitle());
-
-        // test fulltext indexing of complex property at level 3 in blob
-        results = session.query("SELECT * FROM Document"
-                + " WHERE ecm:fulltext = 'textblob content'", 2);
-        assertNotNull(results);
-        assertEquals(1, results.size());
-        assertEquals("complex-doc", results.get(0).getTitle());
-
         // test setting and reading a list of maps with a blob inside the map
         byte[] binaryContent = "01AB".getBytes();
         Blob blob = StreamingBlob.createFromByteArray(binaryContent,
@@ -304,10 +275,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.saveDocument(doc);
         session.save();
 
-        closeSession();
-        waitForFulltextIndexing();
-        openSession();
-
+        doc = session.getDocument(docRef);
         assertEquals(
                 Long.valueOf(0),
                 doc.getProperty(
@@ -322,27 +290,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         Blob b = (Blob) doc.getProperty(
                 "cmpf:attachedFile/vignettes/vignette[0]/content").getValue();
         assertEquals("file.bin", b.getFilename());
-
-        // test deleting the list of vignette and ensure that the fulltext index
-        // has been properly updated (regression test for NXP-6315)
-        doc.setPropertyValue("cmpf:attachedFile/vignettes",
-                new ArrayList<Map<String, Object>>());
-        session.saveDocument(doc);
-        session.save();
-
-        closeSession();
-        waitForFulltextIndexing();
-        openSession();
-
-        results = session.query("SELECT * FROM Document"
-                + " WHERE ecm:fulltext = 'vignettelabel'", 2);
-        assertNotNull(results);
-        assertEquals(0, results.size());
-
-        results = session.query("SELECT * FROM Document"
-                + " WHERE ecm:fulltext = 'textblob content'", 2);
-        assertNotNull(results);
-        assertEquals(0, results.size());
     }
 
     @Test
@@ -2102,19 +2049,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testFacetFulltext() throws Exception {
-        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
-        doc.addFacet("Aged");
-        doc.setPropertyValue("age:age", "barbar");
-        doc = session.createDocument(doc);
-        session.save();
-        waitForFulltextIndexing();
-
-        DocumentModelList list = session.query("SELECT * FROM File WHERE ecm:fulltext = 'barbar'");
-        assertEquals(1, list.size());
-    }
-
-    @Test
     public void testFacetQueryContent() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
         doc.addFacet("Aged");
@@ -3603,8 +3537,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
             DocumentEventTypes.SESSION_SAVED,
             EventConstants.EVENT_VCS_INVALIDATIONS);
 
-    private static final List<String> IGNORE_VCS = Arrays.asList(EventConstants.EVENT_VCS_INVALIDATIONS);
-
     public static void assertEvents(String... expectedEventNames) {
         assertEvents(IGNORED_EVENTS, expectedEventNames);
     }
@@ -3613,25 +3545,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
             String... expectedEventNames) {
         assertEquals(Arrays.asList(expectedEventNames),
                 getDummyListenerEvents(ignored));
-    }
-
-    public static void assertEventSet(List<String> ignored,
-            String... expectedEventNames) {
-        List<String> list = getDummyListenerEvents(ignored);
-        Map<String, AtomicInteger> map = new HashMap<String, AtomicInteger>();
-        for (String name : list) {
-            AtomicInteger i = map.get(name);
-            if (i == null) {
-                map.put(name, i = new AtomicInteger(0));
-            }
-            i.incrementAndGet();
-        }
-        Set<String> set = new HashSet<String>();
-        for (Entry<String, AtomicInteger> es : map.entrySet()) {
-            set.add(es.getKey() + '=' + es.getValue());
-        }
-        assertEquals(new HashSet<String>(Arrays.asList(expectedEventNames)),
-                set);
     }
 
     protected static List<String> getDummyListenerEvents(List<String> ignored) {
@@ -3792,53 +3705,6 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         set = (Set<String>) event.getContext().getProperty(
                 EventConstants.INVAL_MODIFIED_PARENT_IDS);
         assertEquals(0, set.size());
-    }
-
-    @Test
-    public void testFulltextReindexOnCreateDelete() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
-                "OSGI-INF/test-listeners-all-contrib.xml");
-        waitForFulltextIndexing();
-
-        // create
-        DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
-        doc = session.createDocument(doc);
-
-        DummyTestListener.clear();
-        session.save();
-        waitForFulltextIndexing();
-        assertEventSet(IGNORE_VCS, "sessionSaved=1");
-
-        // modify regular
-        doc.setPropertyValue("dc:title", "The title");
-        doc = session.saveDocument(doc);
-
-        DummyTestListener.clear();
-        session.save();
-        waitForFulltextIndexing();
-        // 3 = 1 main save + 2 indexes (except SQL Server)
-        int nsave = database.supportsMultipleFulltextIndexes() ? 3 : 2;
-        assertEventSet(IGNORE_VCS, "sessionSaved=" + nsave);
-
-        // modify binary
-        StringBlob blob = new StringBlob("hello world");
-        doc.setPropertyValue("file:content", blob);
-        doc = session.saveDocument(doc);
-
-        DummyTestListener.clear();
-        session.save();
-        waitForFulltextIndexing();
-        // 4 = 1 main save + 2 simple indexes + 1 binary index
-        nsave = database.supportsMultipleFulltextIndexes() ? 4 : 3;
-        assertEventSet(IGNORE_VCS, "sessionSaved=" + nsave);
-
-        // delete
-        session.removeDocument(doc.getRef());
-
-        DummyTestListener.clear();
-        session.save();
-        waitForFulltextIndexing();
-        assertEventSet(IGNORE_VCS, "sessionSaved=1");
     }
 
     @Test
