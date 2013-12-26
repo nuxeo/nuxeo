@@ -131,8 +131,10 @@ public class UserService extends DefaultComponent {
         log.info("UserService deactivated");
         if (userManager != null) {
             EventService eventService = Framework.getLocalService(EventService.class);
-            eventService.removeListener(UserManagerImpl.USERMANAGER_TOPIC,
-                    userManager);
+            if (eventService != null) {
+                eventService.removeListener(UserManagerImpl.USERMANAGER_TOPIC,
+                        userManager);
+            }
         }
     }
 
