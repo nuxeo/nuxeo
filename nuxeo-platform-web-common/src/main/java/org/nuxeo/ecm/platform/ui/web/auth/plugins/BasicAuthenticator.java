@@ -23,10 +23,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
@@ -45,25 +48,57 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
 
     protected static final String BA_HEADER_NAME = "WWW-Authenticate";
 
+    protected static final String EXCLUDE_URL_KEY = "ExcludeBAHeader";
+
     protected String realName;
 
     protected Boolean autoPrompt = false;
 
     protected List<String> forcePromptURLs;
 
+    private List<String> excludedHeadersForBasicAuth;
+
+    @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, String baseURL) {
         try {
-            String baHeader = "Basic realm=\"" + realName + '\"';
-            httpResponse.addHeader(BA_HEADER_NAME, baHeader);
+
+            if (needToAddBAHeader(httpRequest)) {
+                String baHeader = "Basic realm=\"" + realName + '\"';
+                httpResponse.addHeader(BA_HEADER_NAME, baHeader);
+            }
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return true;
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             return false;
         }
     }
 
+    /**
+     * Checks if we need to include a basic auth header back to the client.
+     *
+     * @param httpRequest
+     * @return true if we need to include the auth header
+     *
+     * @since 5.9.2
+     */
+    private boolean needToAddBAHeader(HttpServletRequest httpRequest) {
+        for (String header : excludedHeadersForBasicAuth) {
+            if (StringUtils.isNotBlank(httpRequest.getHeader(header))) {
+                return false;
+            }
+            if (httpRequest.getCookies() != null) {
+                for (Cookie cookie : httpRequest.getCookies()) {
+                    if (cookie.getName().equals(header)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
     public UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
@@ -86,6 +121,7 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
         return null;
     }
 
+    @Override
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
         if (autoPrompt) {
             return true;
@@ -102,6 +138,7 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
         }
     }
 
+    @Override
     public void initPlugin(Map<String, String> parameters) {
         if (parameters.containsKey(REALM_NAME_KEY)) {
             realName = parameters.get(REALM_NAME_KEY);
@@ -115,13 +152,21 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
         }
 
         forcePromptURLs = new ArrayList<String>();
-        for (String key : parameters.keySet()) {
-            if (key.startsWith(FORCE_PROMPT_KEY)) {
-                forcePromptURLs.add(parameters.get(key));
+        for (Entry<String, String> entry : parameters.entrySet()) {
+            if (entry.getKey().startsWith(FORCE_PROMPT_KEY)) {
+                forcePromptURLs.add(entry.getValue());
+            }
+        }
+
+        excludedHeadersForBasicAuth = new ArrayList<>();
+        for (Entry<String, String> entry : parameters.entrySet()) {
+            if (entry.getKey().startsWith(EXCLUDE_URL_KEY)) {
+                excludedHeadersForBasicAuth.add(entry.getValue());
             }
         }
     }
 
+    @Override
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;
     }
