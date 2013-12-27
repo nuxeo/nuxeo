@@ -16,13 +16,19 @@
  */
 package org.nuxeo.ecm.platform.error.web;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.EntityManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -32,7 +38,16 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
+import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
+import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.audit.api.AuditReader;
+import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.api.Logs;
+import org.nuxeo.ecm.platform.audit.service.LogEntryProvider;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -41,7 +56,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author Anahide Tchertchian
  */
 @Name("errorSeamComponent")
-@Scope(CONVERSATION)
+@Scope(ScopeType.CONVERSATION)
 public class SeamErrorComponent implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -131,6 +146,112 @@ public class SeamErrorComponent implements Serializable {
     public String performPureRollback(){
         TransactionHelper.setTransactionRollbackOnly();
         return null;
+    }
+
+
+    public void performDistributedRollback() throws ClientException {
+        createDummyUser();
+        createDummyLogEntry();
+        createDummyDoc();
+        TransactionHelper.setTransactionRollbackOnly();
+    }
+
+    public void clearDistributedRollbackEnv() throws ClientException {
+        clearDummyUser();
+        clearDummyDoc();
+        clearDummyLogEntries();
+    }
+
+    protected DocumentModel createDummyUser() throws ClientException {
+        DirectoryService directories = Framework.getLocalService(DirectoryService.class);
+        org.nuxeo.ecm.directory.Session userDir = directories.getDirectory(
+                "userDirectory").getSession();
+        try {
+            Map<String, Object> user = new HashMap<String, Object>();
+            user.put("username", "dummy");
+            user.put("password", "dummy");
+            user.put("firstName", "dummy");
+            user.put("lastName", "dummy");
+            return userDir.createEntry(user);
+        } finally {
+            userDir.close();
+        }
+    }
+
+    protected void clearDummyUser() throws DirectoryException {
+        DirectoryService directories = Framework.getLocalService(DirectoryService.class);
+        org.nuxeo.ecm.directory.Session userDir = directories.getDirectory(
+                "userDirectory").getSession();
+        try {
+            userDir.deleteEntry("dummy");
+        } catch (Exception e) {
+            ;
+        } finally {
+            userDir.close();
+        }
+    }
+
+    @Factory(scope = ScopeType.EVENT)
+    public boolean isDummyUserExists()
+            throws DirectoryException {
+        DirectoryService directories = Framework.getLocalService(DirectoryService.class);
+        org.nuxeo.ecm.directory.Session userDir = directories.getDirectory(
+                "userDirectory").getSession();
+        try {
+            DocumentModel user = userDir.getEntry("dummy");
+            return user != null;
+        } catch (DirectoryException cause) {
+            return false;
+        } finally {
+            userDir.close();
+        }
+    }
+
+    protected LogEntry createDummyLogEntry() {
+        Logs logs = Framework.getLocalService(Logs.class);
+        LogEntry entry = logs.newLogEntry();
+        entry.setEventId("dummy");
+        entry.setDocUUID("dummy");
+        entry.setCategory("dummy");
+        entry.setComment("dummy");
+        logs.addLogEntries(Collections.singletonList(entry));
+        return entry;
+    }
+
+    public void clearDummyLogEntries() {
+        PersistenceProviderFactory pf = Framework.getService(PersistenceProviderFactory.class);
+        EntityManager em = pf.newProvider("nxaudit-logs").acquireEntityManager();
+        LogEntryProvider provider = LogEntryProvider.createProvider(em);
+        provider.removeEntries("dummy", null);
+    }
+
+    @Factory(scope = ScopeType.EVENT)
+    public boolean isDummyAuditExists() {
+        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        List<LogEntry> entries = reader.getLogEntriesFor("dummy");
+        return !entries.isEmpty();
+    }
+
+
+    protected DocumentModel createDummyDoc() throws ClientException {
+        DocumentModel doc = documentManager.createDocumentModel("/", "dummy", "Document");
+        doc = documentManager.createDocument(doc);
+        documentManager.save();
+        return doc;
+    }
+
+
+    public void clearDummyDoc() throws ClientException  {
+        PathRef ref = new PathRef("/dummy");
+        if (documentManager.exists(ref)) {
+            documentManager.removeDocument(ref);
+        }
+    }
+
+    @Factory(scope = ScopeType.EVENT)
+    public boolean isDummyDocExists()
+            throws ClientException {
+        return documentManager.exists(new PathRef("/dummy"));
     }
 
     // methods to test concurrency issues

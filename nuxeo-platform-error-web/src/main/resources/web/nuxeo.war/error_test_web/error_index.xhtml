@@ -1,6 +1,7 @@
 <html xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="http://richfaces.org/a4j">
 
 <title>Test errors in nuxeo jsf</title>
 <body>
@@ -82,6 +83,25 @@
         value="Seam page scope" /></li>
   </ul>
 </h:form>
+<h3>Test distributed transaction</h3>
+<a4j:form disableDoubleClickShield="true">
+<ul>
+    <li><a4j:commandLink
+      action="#{errorSeamComponent.clearDistributedRollbackEnv}"
+      value="clear dummies"/></li>
+    <li><a4j:commandLink
+      action="#{errorSeamComponent.performDistributedRollback}"
+      value="rollback alter transaction"/></li>
+</ul>
+<a4j:outputPanel ajaxRendered="true" id="roots">
+<ul>Persistence roots
+  <li>dictionary is <h:outputText value="#{errorSeamComponent.dummyUserExists?' not':' '} empty"/></li>
+  <li>audit is <h:outputText value="#{errorSeamComponent.dummyAuditExists?' not':' '} empty"/></li>
+  <li>repository is<h:outputText value="#{errorSeamComponent.dummyDocExists?' not':' '} empty"/></li>
+</ul>
+</a4j:outputPanel>
+</a4j:form>
+      
 
 </body>
 
