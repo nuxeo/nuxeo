@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 
 /**
@@ -195,19 +197,30 @@ public class DialectDerby extends Dialect {
             String indexName, int nthMatch, Column mainColumn, Model model,
             Database database) {
         // TODO multiple indexes
-        Column ftColumn = database.getTable(model.FULLTEXT_TABLE_NAME).getColumn(
-                model.FULLTEXT_FULLTEXT_KEY);
-        String qname = ftColumn.getFullQuotedName();
+        Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
+        Column ftMain = ft.getColumn(model.MAIN_KEY);
+        Column ftColumn = ft.getColumn(model.FULLTEXT_FULLTEXT_KEY);
+        String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
+        String ftColumnName = ftColumn.getFullQuotedName();
         if (ftColumn.getJdbcType() == Types.CLOB) {
             String colFmt = getClobCast(false);
             if (colFmt != null) {
-                qname = String.format(colFmt, qname, Integer.valueOf(255));
+                ftColumnName = String.format(colFmt, ftColumnName, Integer.valueOf(255));
             }
         }
         FulltextMatchInfo info = new FulltextMatchInfo();
-        info.whereExpr = String.format("NX_CONTAINS(%s, ?) = 1", qname);
+        info.joins = new ArrayList<Join>(1);
+        if (nthMatch == 1) {
+            // Need only one JOIN involving the fulltext table
+            info.joins.add(new Join(Join.INNER, ft.getQuotedName(), null, null,
+                    ftMain.getFullQuotedName(), mainColumn.getFullQuotedName()));
+        }
+        info.whereExpr = String.format("NX_CONTAINS(%s, ?) = 1", ftColumnName);
         info.whereExprParam = fulltextQuery;
-        // TODO score
+        info.scoreExpr = "1";
+        info.scoreAlias = "NXSCORE" + nthSuffix;
+        info.scoreCol = new Column(mainColumn.getTable(), null,
+                ColumnType.DOUBLE, null);
         return info;
     }
 
@@ -265,6 +278,11 @@ public class DialectDerby extends Dialect {
     }
 
     @Override
+    public String getValidationQuery() {
+        return "VALUES 1";
+    }
+
+    @Override
     public boolean supportsPaging() {
         return true;
     }
@@ -273,6 +291,25 @@ public class DialectDerby extends Dialect {
     public String addPagingClause(String sql, long limit, long offset) {
         return sql + String.format(" OFFSET %d ROWS FETCH FIRST %d ROWS ONLY", offset,
                 limit); // available from 10.5
+    }
+
+    @Override
+    public boolean isConcurrentUpdateException(Throwable t) {
+        for (; t != null; t = t.getCause()) {
+            if (t instanceof SQLException) {
+                String sqlState = ((SQLException) t).getSQLState();
+                if ("23503".equals(sqlState)) {
+                    // INSERT on table ... caused a violation of foreign key
+                    // constraint ... for key ...
+                    return true;
+                }
+                if ("40001".equals(sqlState)) {
+                    // A lock could not be obtained due to a deadlock
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

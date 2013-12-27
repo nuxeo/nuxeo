@@ -273,14 +273,36 @@ public class EmbeddedFunctions {
         if (fulltext == null || query == null) {
             return false;
         }
-        Set<String> words = split(query, ' ');
+        Set<String> words = split(query.toLowerCase(), ' ');
+        Set<String> filtered = new HashSet<String>();
+        for (String word : words) {
+            if (!wordPattern.matcher(word).matches()) {
+                filtered.add(word);
+            }
+        }
+        words = filtered;
         if (words.isEmpty()) {
             return false;
         }
-        Set<String> fulltextWords = split(fulltext, ' ');
+        Set<String> fulltextWords = split(fulltext.toLowerCase(), ' ');
         for (String word : words) {
-            if (!fulltextWords.contains(word)) {
-                return false;
+            if (word.endsWith("*") || word.endsWith("%")) {
+                // prefix match
+                String prefix = word.substring(0, word.length() - 2);
+                boolean match = false;
+                for (String candidate : fulltextWords) {
+                    if (candidate.startsWith(prefix)) {
+                        match = true;
+                        break;
+                    }
+                }
+                if (!match) {
+                    return false;
+                }
+            } else {
+                if (!fulltextWords.contains(word)) {
+                    return false;
+                }
             }
         }
         return true;

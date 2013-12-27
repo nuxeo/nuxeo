@@ -12,11 +12,14 @@
 
 package org.nuxeo.ecm.core.storage.sql.db;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+
 import java.util.Arrays;
 import java.util.HashSet;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author Florent Guillaume
@@ -66,6 +69,23 @@ public class TestEmbeddedFunctions {
         checkParseFullText("aime cafe jure pas",
                 "J'aime PAS le caf\u00e9, je te jure.");
         checkParseFullText("007 bond jame thx1138", "James Bond 007 && THX1138");
+    }
+
+    protected static void checkMatchesFullText(boolean expected, String fulltext, String query) {
+        boolean actual = EmbeddedFunctions.matchesFullText(fulltext, query);
+        assertFalse(expected ^ actual);
+    }
+
+    @Test
+    public void testMatchesFulltext() {
+        checkMatchesFullText(false, "abc def", "ghi");
+        checkMatchesFullText(true, "abc", "abc");
+        checkMatchesFullText(true, "abc", "ABC");
+        checkMatchesFullText(true, "ABC", "abc");
+        checkMatchesFullText(true, "ABC", "ABC");
+        checkMatchesFullText(true, "abc def", "abc");
+        checkMatchesFullText(true, "abcdef", "abc*");
+        checkMatchesFullText(true, "abcdef", "abc%");
     }
 
 }

@@ -867,8 +867,22 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     protected static void rollback(Session session, Xid xid) throws XAException {
         XAResource xaresource = ((SessionImpl) session).getXAResource();
-        xaresource.end(xid, XAResource.TMFAIL);
-        xaresource.rollback(xid);
+        boolean rollback = true;
+        try {
+            xaresource.end(xid, XAResource.TMFAIL);
+        } catch (XAException e) {
+            if (e.errorCode == XAException.XA_RBROLLBACK // Derby
+                    || e.errorCode == XAException.XA_RBDEADLOCK // Derby
+                    || e.getMessage().startsWith("XA_RBDEADLOCK") // MySQL
+            ) {
+                rollback = false;
+            } else {
+                throw e;
+            }
+        }
+        if (rollback) {
+            xaresource.rollback(xid);
+        }
     }
 
     @Test
@@ -950,13 +964,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 session.save();
             } finally {
                 try {
-                    if (!(DatabaseHelper.DATABASE instanceof DatabaseMySQL)) {
-                        // ignore stupid MySQL failing on end():
-                        // com.mysql.jdbc.jdbc2.optional.MysqlXAException:
-                        // XA_RBDEADLOCK: Transaction branch was rolled back:
-                        // deadlock was detected
-                        rollback(session, xid);
-                    }
+                    rollback(session, xid);
                 } finally {
                     session.close();
                 }

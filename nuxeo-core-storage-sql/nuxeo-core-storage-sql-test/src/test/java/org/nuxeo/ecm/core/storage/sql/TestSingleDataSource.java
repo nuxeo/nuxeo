@@ -85,7 +85,8 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
      * the same table, as it waits for a lock.
      */
     protected boolean canUseTwoConnections() {
-        return !(DatabaseHelper.DATABASE instanceof DatabaseH2);
+        return !(database instanceof DatabaseH2 //
+        || database instanceof DatabaseDerby);
     }
 
     protected String getValidationQuery(Connection connection)

@@ -1323,7 +1323,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             logger.error("XA end error on " + systemToString(xid), e);
             throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
         } catch (XAException e) {
-            logger.error("XA end error on " + systemToString(xid), e);
+            if (flags != XAResource.TMFAIL) {
+                logger.error("XA end error on " + systemToString(xid), e);
+            }
             throw e;
         }
     }

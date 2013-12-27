@@ -16,6 +16,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,15 +27,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -409,6 +409,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         // prefix in phrase search
         // not in H2 (with Lucene default parser)
         // not in MySQL
+        // not in Derby
         if (DatabaseHelper.DATABASE instanceof DatabasePostgreSQL
                 || DatabaseHelper.DATABASE instanceof DatabaseOracle
                 || DatabaseHelper.DATABASE instanceof DatabaseSQLServer) {
@@ -506,6 +507,8 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
 
     @Test
     public void testFulltextExpressionSyntax() throws Exception {
+        assumeTrue(!(database instanceof DatabaseDerby));
+
         createDocs();
         waitForFulltextIndexing();
         String query;
@@ -620,6 +623,8 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
     // don't use small words, they are eliminated by some fulltext engines
     @Test
     public void testFulltextExpressionPhrase() throws Exception {
+        assumeTrue(!(database instanceof DatabaseDerby));
+
         String query;
 
         DocumentModel file1 = new DocumentModelImpl("/", "testfile1", "File");

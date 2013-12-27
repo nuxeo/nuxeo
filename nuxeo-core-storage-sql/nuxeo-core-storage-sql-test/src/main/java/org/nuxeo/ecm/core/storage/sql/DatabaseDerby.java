@@ -58,14 +58,14 @@ public class DatabaseDerby extends DatabaseHelper {
 
     @Override
     public void setUp() throws Exception {
+        System.setProperty("derby.stream.error.file",
+                new File(LOG).getAbsolutePath());
         // newInstance needed after a previous shutdown
         Class.forName(DRIVER).newInstance();
         File dbdir = new File(DIRECTORY);
         File parent = dbdir.getParentFile();
         FileUtils.deleteTree(dbdir);
         parent.mkdirs();
-        System.setProperty("derby.stream.error.file",
-                new File(LOG).getAbsolutePath());
         // the following noticeably improves performance
         System.setProperty("derby.system.durability", "test");
         setProperties();
