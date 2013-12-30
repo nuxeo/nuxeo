@@ -5,4 +5,5 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.restapi.server;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
 Nuxeo-WebModule: org.nuxeo.ecm.restapi.server.jaxrs.APIModule;name=api;extends=base;package=org/nuxeo/ecm/restapi/server/jaxrs
-Nuxeo-Component: OSGI-INF/docviewurl-service-contrib.xml
+Nuxeo-Component: OSGI-INF/docviewurl-service-contrib.xml,
+ OSGI-INF/auth-contrib.xml
