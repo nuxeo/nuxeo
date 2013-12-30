@@ -346,6 +346,7 @@ public class OperationServiceImpl implements AutomationService {
         removeOperation(type);
     }
 
+    @Override
     public synchronized void removeOperation(OperationType type) {
         operations.removeContribution(type);
     }
