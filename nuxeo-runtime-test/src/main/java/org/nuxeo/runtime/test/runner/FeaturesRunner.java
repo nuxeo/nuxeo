@@ -237,6 +237,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         for (RunnerFeature feature : reversed(features)) {
             feature.stop(this);
         }
+        MockProvider.INSTANCE.clearBindings();
     }
 
     protected void configureBindings(Binder binder) {

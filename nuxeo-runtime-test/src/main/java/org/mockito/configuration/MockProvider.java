@@ -37,6 +37,10 @@ public class MockProvider implements ServiceProvider {
         mocks.put(klass, mock);
     }
 
+    public void clearBindings() {
+        mocks.clear();
+    }
+
 
     private MockProvider() {
 
