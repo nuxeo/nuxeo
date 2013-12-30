@@ -70,6 +70,14 @@ public interface AutomationService {
     void removeOperation(Class<?> key);
 
     /**
+     * Removes an operation given it's type. If the operation was not registered
+     * does nothing.
+     *
+     * @since 5.9.2
+     */
+    void removeOperation(OperationType type);
+
+    /**
      * Gets all operation types that was registered.
      */
     OperationType[] getOperations();
