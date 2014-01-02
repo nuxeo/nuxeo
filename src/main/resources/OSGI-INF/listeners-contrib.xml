@@ -13,6 +13,13 @@
       <event>documentRemoved</event>
     </listener>
 
+    <listener name="tenantAdministratorsListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.ecm.multi.tenant.TenantAdministratorsListener"
+      priority="100">
+      <event>beforeDocumentModification</event>
+    </listener>
+
   </extension>
 
 </component>

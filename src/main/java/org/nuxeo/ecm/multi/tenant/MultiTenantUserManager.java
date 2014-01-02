@@ -83,10 +83,14 @@ public class MultiTenantUserManager extends UserManagerWithComputedGroups {
 
     @Override
     protected void notifyGroupChanged(String groupName) throws ClientException {
+        invalidateAllPrincipals();
+        super.notifyGroupChanged(groupName);
+    }
+
+    public void invalidateAllPrincipals() {
         if (useCache()) {
             principalCache.invalidateAll();
         }
-        super.notifyGroupChanged(groupName);
     }
 
 
