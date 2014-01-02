@@ -60,7 +60,6 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
-import org.nuxeo.runtime.services.event.EventListener;
 import org.nuxeo.runtime.services.event.EventService;
 
 import com.google.common.cache.Cache;
@@ -101,7 +100,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     public static final String INVALIDATE_PRINCIPAL_EVENT_ID = "invalidatePrincipal";
 
-    public static final String INVALIDATE_ALL_PRINCIPALs_EVENT_ID = "invalidateAllPrincipals";
+    public static final String INVALIDATE_ALL_PRINCIPALS_EVENT_ID = "invalidateAllPrincipals";
 
     protected final DirectoryService dirService;
 
@@ -1700,7 +1699,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         String id = event.getId();
         if (INVALIDATE_PRINCIPAL_EVENT_ID.equals(id)) {
             invalidatePrincipal((String) event.getData());
-        } else if (INVALIDATE_ALL_PRINCIPALs_EVENT_ID.equals(id)) {
+        } else if (INVALIDATE_ALL_PRINCIPALS_EVENT_ID.equals(id)) {
             invalidateAllPrincipals();
         }
     }
