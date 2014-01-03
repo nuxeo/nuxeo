@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.security.MessageDigest;
 import java.sql.Array;
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
@@ -93,6 +95,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     private final PathResolver pathResolver;
 
+    protected boolean clusteringEnabled;
+
     /**
      * Creates a new Mapper.
      *
@@ -110,6 +114,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         super(model, sqlInfo, xadatasource, clusterNodeHandler,
                 connectionPropagator);
         this.pathResolver = pathResolver;
+        clusteringEnabled = clusterNodeHandler != null;
         try {
             queryMakerService = Framework.getService(QueryMakerService.class);
         } catch (Exception e) {
@@ -869,9 +874,58 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * ----- Locking -----
      */
 
+    protected Connection connection(boolean autocommit) throws StorageException {
+        checkConnectionValid();
+        try {
+            connection.setAutoCommit(autocommit);
+        } catch (SQLException e) {
+            throw new StorageException("Cannot set auto commit mode onto " + this + "'s connection", e);
+        }
+        return connection;
+    }
+    /**
+     * Calls the callable, inside a transaction if in cluster mode.
+     * <p>
+     * Called under {@link #serializationLock}.
+     */
+    protected Lock callInTransaction(Callable<Lock> callable, boolean tx)
+            throws StorageException {
+        boolean ok = false;
+        checkConnectionValid();
+        try {
+            connection.setAutoCommit(!tx);
+        } catch (SQLException e) {
+            throw new StorageException("Cannot set auto commit mode onto " + this + "'s connection", e);
+        }
+        try {
+            Lock result;
+            try {
+                result = callable.call();
+            } catch (StorageException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new StorageException(e);
+            }
+
+            ok = true;
+            return result;
+        } finally {
+            if (tx) {
+                try {
+                    if (ok) {
+                        connection.commit();
+                    } else {
+                        connection.rollback();
+                    }
+                } catch (SQLException e) {
+                    throw new StorageException(e);
+                }
+            }
+        }
+    }
+
     @Override
     public Lock getLock(Serializable id) throws StorageException {
-        checkConnectionValid();
         RowId rowId = new RowId(Model.LOCK_TABLE_NAME, id);
         Row row;
         try {
@@ -886,35 +940,72 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public Lock setLock(Serializable id, Lock lock) throws StorageException {
-        Lock oldLock = getLock(id);
-        if (oldLock == null) {
-            Row row = new Row(Model.LOCK_TABLE_NAME, id);
-            row.put(Model.LOCK_OWNER_KEY, lock.getOwner());
-            row.put(Model.LOCK_CREATED_KEY, lock.getCreated());
-            insertSimpleRow(row);
+    public Lock setLock(final Serializable id, final Lock lock) throws StorageException {
+        SetLock call = new SetLock(id, lock);
+        return callInTransaction(call, clusteringEnabled);
+    }
+
+    protected class SetLock implements Callable<Lock> {
+        protected final Serializable id;
+
+        protected final Lock lock;
+
+        protected SetLock(Serializable id, Lock lock) {
+            super();
+            this.id = id;
+            this.lock = lock;
         }
-        return oldLock;
+
+        @Override
+        public Lock call() throws StorageException {
+            Lock oldLock = getLock(id);
+            if (oldLock == null) {
+                Row row = new Row(Model.LOCK_TABLE_NAME, id);
+                row.put(Model.LOCK_OWNER_KEY, lock.getOwner());
+                row.put(Model.LOCK_CREATED_KEY, lock.getCreated());
+                insertSimpleRow(row);
+            }
+            return oldLock;
+        }
     }
 
     @Override
-    public Lock removeLock(Serializable id, String owner, boolean force)
+    public Lock removeLock(final Serializable id, final String owner, final boolean force)
             throws StorageException {
-        Lock oldLock = force ? null : getLock(id);
-        if (!force && owner != null) {
-            if (oldLock == null) {
-                // not locked, nothing to do
-                return null;
-            }
-            if (!LockManager.canLockBeRemoved(oldLock, owner)) {
-                // existing mismatched lock, flag failure
-                return new Lock(oldLock, true);
-            }
+        RemoveLock call = new RemoveLock(id, owner, force);
+        return callInTransaction(call, !force);
+    }
+
+    protected class RemoveLock implements Callable<Lock> {
+        protected final Serializable id;
+        protected final String owner;
+        protected final boolean force;
+
+        protected RemoveLock(Serializable id, String owner, boolean force) {
+            super();
+            this.id = id;
+            this.owner = owner;
+            this.force = force;
         }
-        if (force || oldLock != null) {
-            deleteRows(Model.LOCK_TABLE_NAME, id);
+
+        @Override
+        public Lock call() throws StorageException {
+            Lock oldLock = force ? null : getLock(id);
+            if (!force && owner != null) {
+                if (oldLock == null) {
+                    // not locked, nothing to do
+                    return null;
+                }
+                if (!LockManager.canLockBeRemoved(oldLock, owner)) {
+                    // existing mismatched lock, flag failure
+                    return new Lock(oldLock, true);
+                }
+            }
+            if (force || oldLock != null) {
+                deleteRows(Model.LOCK_TABLE_NAME, id);
+            }
+            return oldLock;
         }
-        return oldLock;
     }
 
     @Override
