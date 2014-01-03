@@ -19,12 +19,6 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +28,8 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -49,7 +45,6 @@ public class TestUserService extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("org.nuxeo.ecm.core.event");
         deployContrib("org.nuxeo.ecm.platform.usermanager",
                 "OSGI-INF/UserService.xml");
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
