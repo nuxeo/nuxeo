@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry including="**/*.java" kind="src" output="bin/test" path="src/test/java"/>
+	<classpathentry excluding="**/*.java" kind="src" output="bin/test" path="src/test/resources"/>
+	<classpathentry excluding="**/*.java" kind="src" path="src/main/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.nuxeo.ide.SDK_CONTAINER"/>
+	<classpathentry kind="con" path="org.nuxeo.ide.SDK_TEST_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/mikeobrebski/Documents/workspace/.metadata/.plugins/org.nuxeo.ide.connect/repository/easyshare-0.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="src" output="bin/java" path="src/main/java"/>
+	<classpathentry kind="output" path="bin/main"/>
+</classpath>
