@@ -25,6 +25,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLRecoverableException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -587,6 +588,11 @@ public class DialectOracle extends Dialect {
         switch (err.intValue()) {
         case 17002: // ORA-17002 IO Exception
         case 17410: // ORA-17410 No more data to read from socket
+            return true;
+        }
+        if (t instanceof SQLRecoverableException) {
+            log.warn("SQLRecoverableException, connection will be reset. errorCode="
+                    + err);
             return true;
         }
         return false;
