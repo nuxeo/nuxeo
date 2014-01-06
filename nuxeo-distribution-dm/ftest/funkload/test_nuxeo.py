@@ -45,6 +45,10 @@ class Nuxeo(NuxeoTestCase):
         self.nb_read = self.conf_getInt('testReader', 'nb_doc')
         self.search = self.conf_getInt('testReader', 'search', 1)
 
+    def midCycle(self, cycle, cvus):
+        """Called in the middle of bench cycle."""
+        self.performHeapHisto("%s-%s" % (cycle, cvus))
+
     def testInit(self):
         p = LoginPage(self).login(self.cred_admin[0], self.cred_admin[1])
         ret = p.viewDocumentPath(self.section_path, raiseOn404=False)

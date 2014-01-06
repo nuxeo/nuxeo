@@ -27,11 +27,12 @@ from funkload.FunkLoadTestCase import FunkLoadTestCase
 from funkload.utils import xmlrpc_get_credential
 from utils import extractJsfState
 
+
 def command(cmd, do_raise=True, silent=False):
     """Return the status, output as a line list."""
     extra = 'LC_ALL=C '
     print('Run: ' + extra + cmd)
-    status, output = getstatusoutput(extra +cmd)
+    status, output = getstatusoutput(extra + cmd)
     if status:
         if not silent:
             print('ERROR: [%s] return status: [%d], output: [%s]' %
@@ -96,19 +97,17 @@ class NuxeoTestCase(FunkLoadTestCase):
 
     def performHeapHistoStart(self):
         """Perform a heap histo of page."""
-        if self.monitorctl_file is None:
-            return
-        logfile = os.path.join(self.log_dir, "hh-%s-%3.3d-before.txt" % (self.test_name, self.steps + 1))
-        status, output = command(self.monitorctl_file + " heap-histo")
-        lf = open(logfile, "w")
-        lf.write(output)
-        lf.close()
+        self.performHeapHisto("%s-%3.3d-before" % (self.test_name, self.steps + 1))
 
     def performHeapHistoEnd(self):
         """Perform a heap histo of page."""
+        self.performHeapHisto("%s-%3.3d-end" % (self.test_name, self.steps))
+
+    def performHeapHisto(self, tag):
+        """Perform a heap histo."""
         if self.monitorctl_file is None:
             return
-        logfile = os.path.join(self.log_dir, "hh-%s-%3.3d-end.txt" % (self.test_name, self.steps))
+        logfile = os.path.join(self.log_dir, "hh-%s.txt" % tag)
         status, output = command(self.monitorctl_file + " heap-histo")
         lf = open(logfile, "w")
         lf.write(output)
