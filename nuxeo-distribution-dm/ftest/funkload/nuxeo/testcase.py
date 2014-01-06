@@ -47,6 +47,7 @@ def command(cmd, do_raise=True, silent=False):
 class NuxeoTestCase(FunkLoadTestCase):
     server_url = None
     _lipsum = Lipsum()
+    monitor_page = 0
 
     def setUp(self):
         self.server_url = self.conf_get('main', 'url')
@@ -55,23 +56,20 @@ class NuxeoTestCase(FunkLoadTestCase):
         self.cred_admin = xmlrpc_get_credential(self.credential_host,
                                                 self.credential_port,
                                                 'admin')
-        self.cred_member =  xmlrpc_get_credential(self.credential_host,
-                                                  self.credential_port,
-                                                  'members')
+        self.cred_member = xmlrpc_get_credential(self.credential_host,
+                                                 self.credential_port,
+                                                 'members')
         self.pglog_file = self.conf_get('main', 'pglog', '')
         self.log_dir = self.conf_get('main', 'log_dir', '')
-        if os.path.exists(self.pglog_file) and not self.in_bench_mode:
-            self.logd("Checking for PostgreSQL logs")
-            self.pglogf = open(self.pglog_file)
-            # move to end of file
-            self.pglogf.seek(0,2)
-        else:
-            self.pglog_file = None
-        self.monitorctl_file = self.conf_get('main', 'monitorctl_file', '')
-        if os.path.exists(self.monitorctl_file) and not self.in_bench_mode:
-            self.logd("Using monitorclt.sh")
-        else:
-            self.monitorctl_file = None
+        if not self.in_bench_mode:
+            self.monitor_page = self.conf_getInt('main', 'monitor_page', '0')
+            if self.monitor_page:
+                self.logd("Tracing pg and jvm heap")
+                if os.path.exists(self.pglog_file):
+                    self.pglogf = open(self.pglog_file)
+                    self.pglogf.seek(0, 2)
+                else:
+                    self.pglog_file = None
         self.logd("setUp")
 
     def pglog(self):
@@ -105,9 +103,11 @@ class NuxeoTestCase(FunkLoadTestCase):
 
     def performHeapHisto(self, tag):
         """Perform a heap histo."""
-        if self.monitorctl_file is None:
+        self.monitorctl_file = self.conf_get('main', 'monitorctl_file', '')
+        if not os.path.exists(self.monitorctl_file):
             return
-        logfile = os.path.join(self.log_dir, "hh-%s.txt" % tag)
+        log_dir = self.conf_get('main', 'log_dir', '')
+        logfile = os.path.join(log_dir, "hh-%s.txt" % tag)
         status, output = command(self.monitorctl_file + " heap-histo")
         lf = open(logfile, "w")
         lf.write(output)
@@ -118,20 +118,24 @@ class NuxeoTestCase(FunkLoadTestCase):
 
     def get(self, url, params=None, description=None, ok_codes=None):
         # Override to save pg logs and heap histo
-        self.performFullGC()
-        self.performHeapHistoStart()
+        if self.monitor_page:
+            self.performFullGC()
+            self.performHeapHistoStart()
         ret = FunkLoadTestCase.get(self, url, params, description, ok_codes)
-        self.pglog()
-        self.performHeapHistoEnd()
+        if self.monitor_page:
+            self.pglog()
+            self.performHeapHistoEnd()
         return ret
 
     def post(self, url, params=None, description=None, ok_codes=None):
         # Override to save pg logs and heap histo
-        self.performFullGC()
-        self.performHeapHistoStart()
+        if self.monitor_page:
+            self.performFullGC()
+            self.performHeapHistoStart()
         ret = FunkLoadTestCase.post(self, url, params, description, ok_codes)
-        self.pglog()
-        self.performHeapHistoEnd()
+        if self.monitor_page:
+            self.pglog()
+            self.performHeapHistoEnd()
         return ret
 
 if __name__ in ('main', '__main__'):
