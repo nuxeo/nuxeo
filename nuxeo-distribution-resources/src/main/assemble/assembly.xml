@@ -98,6 +98,9 @@
     <copy todir="${outdir}/${distribution}/default/${derby-lib-dir}">
       <artifact:file artifactId="derby" />
     </copy>
+    <copy todir="${outdir}/${distribution}/oracle-quartz-cluster/nxserver/lib">
+      <artifact:file artifactId="quartz-oracle" />
+    </copy>
     <antcall target="zip-resources">
       <param name="distribution" value="${distribution}" />
     </antcall>
