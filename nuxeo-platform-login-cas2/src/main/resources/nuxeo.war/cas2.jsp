@@ -13,7 +13,7 @@
   <body>
     <script type="text/javascript"> 
 
-    var indexEndServerName = location.href.indexOf('/', 7);
+    var indexEndServerName = location.href.indexOf('/', 8);
     var indexEndBaseURL = location.href.indexOf('/', indexEndServerName + 2);
     var logoutURL = location.href.substring(0, indexEndBaseURL) + '/logout';
 
