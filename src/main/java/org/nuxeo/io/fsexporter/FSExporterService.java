@@ -8,7 +8,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 public interface FSExporterService {
 
     void export(CoreSession session, String rootPath, String fsPath,
-            boolean ExportDeletedDocuments) throws ClientException,
+            boolean ExportDeletedDocuments, String PageProvider) throws ClientException,
             IOException, Exception;
 
 }

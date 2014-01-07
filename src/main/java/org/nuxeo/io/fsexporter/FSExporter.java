@@ -4,17 +4,13 @@
 
 package org.nuxeo.io.fsexporter;
 
-import java.util.List;
-import java.io.File;
 import java.io.IOException;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -36,15 +32,16 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
         }
     }
 
+    @Override
     public void export(CoreSession session, String rootPath, String fsPath,
-            boolean ExportDeletedDocuments) throws ClientException,
+            boolean ExportDeletedDocuments, String PageProvider) throws ClientException,
             IOException, Exception {
         DocumentModel root = session.getDocument(new PathRef(rootPath));
-        serializeStructure(session, fsPath, root, ExportDeletedDocuments);
+        serializeStructure(session, fsPath, root, ExportDeletedDocuments, PageProvider);
     }
 
     private void serializeStructure(CoreSession session, String fsPath,
-            DocumentModel doc, boolean ExportDeletedDocuments)
+            DocumentModel doc, boolean ExportDeletedDocuments, String PageProvider)
             throws ClientException, IOException, Exception {
 
         // serialize(doc, fsPath);
@@ -53,12 +50,12 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
         if (doc.isFolder()) {
 
             DocumentModelList children = exporter.getChildren(session, doc,
-                    ExportDeletedDocuments);
+                    ExportDeletedDocuments, PageProvider);
 
             // getChildrenIterator
             for (DocumentModel child : children) {
                 serializeStructure(session, fsPath + "/" + doc.getName(),
-                        child, ExportDeletedDocuments);
+                        child, ExportDeletedDocuments, PageProvider);
             }
         }
     }
