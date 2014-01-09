@@ -1344,7 +1344,7 @@ public class ConnectBroker {
 
                 DependencyResolution resolution = getPackageManager().resolveDependencies(
                         solverInstall, null, solverUpgrade,
-                        requestPlatform, allowSNAPSHOT);
+                        requestPlatform, allowSNAPSHOT, false);
                 log.info(resolution);
                 if (resolution.isFailed()) {
                     return false;
@@ -1380,7 +1380,7 @@ public class ConnectBroker {
                     // Don't use IDs to avoid downgrade instead of uninstall
                     packageIdsToRemove.addAll(resolution.getLocalPackagesToUpgrade().keySet());
                     DependencyResolution uninstallResolution = getPackageManager().resolveDependencies(
-                            null, packageIdsToRemove, null, requestPlatform);
+                            null, packageIdsToRemove, null, requestPlatform, allowSNAPSHOT, false);
                     log.debug("Sub-resolution (uninstall) "
                             + uninstallResolution);
                     if (uninstallResolution.isFailed()) {
@@ -1408,7 +1408,7 @@ public class ConnectBroker {
                     // Add list of packages uninstalled because of upgrade
                     packageIdsToInstall.addAll(packagesIdsToReInstall);
                     DependencyResolution installResolution = getPackageManager().resolveDependencies(
-                            packageIdsToInstall, null, null, requestPlatform);
+                            packageIdsToInstall, null, null, requestPlatform, allowSNAPSHOT, false);
                     log.debug("Sub-resolution (install) " + installResolution);
                     if (installResolution.isFailed()) {
                         return false;
@@ -1419,7 +1419,7 @@ public class ConnectBroker {
                     return false;
                 }
 
-                pkgRemove(packageIdsToRemove);
+                pkgUninstall(packageIdsToRemove);
             }
             return cmdOk;
         } catch (PackageException e) {
