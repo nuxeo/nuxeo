@@ -67,8 +67,11 @@ public class WIRequestFilter implements Filter {
         boolean txStarted = false;
         boolean ok = false;
         try {
-            txStarted = TransactionHelper.startTransaction();
-            if (txStarted) {
+            if (!TransactionHelper.isTransactionActive()) {
+                txStarted = TransactionHelper.startTransaction();
+                if (!txStarted) {
+                    throw new ServletException("A transaction is needed.");
+                }
                 response = new BufferingHttpServletResponse(httpResponse);
             }
             chain.doFilter(request, response);
