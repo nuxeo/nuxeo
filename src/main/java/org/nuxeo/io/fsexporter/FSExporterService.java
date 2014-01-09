@@ -11,4 +11,6 @@ public interface FSExporterService {
             boolean ExportDeletedDocuments, String PageProvider) throws ClientException,
             IOException, Exception;
 
+    void exportXML(CoreSession session, String rootName, String fileSystemTarget) throws ClientException, Exception;
+
 }

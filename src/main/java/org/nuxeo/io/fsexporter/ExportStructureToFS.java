@@ -39,7 +39,7 @@ public class ExportStructureToFS {
 
     @OperationMethod
     public void run() throws Exception {
-        service.export(session, RootName, FileSystemTarget,
+      service.export(session, RootName, FileSystemTarget,
                 ExportDeletedDocuments, PageProvider);
     }
 

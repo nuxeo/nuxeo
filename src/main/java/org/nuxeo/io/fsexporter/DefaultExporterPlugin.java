@@ -76,7 +76,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
     }
 
     @Override
-    public File serialize(DocumentModel docfrom, String fsPath)
+    public File serialize(CoreSession session, DocumentModel docfrom, String fsPath)
             throws Exception {
         File folder = null;
         File newFolder = null;
@@ -102,6 +102,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
                 String FileNameToExport = getFileName(blob, docfrom, folder, i);
                 // export the file to the target file system
                 File target = new File(folder, FileNameToExport);
+                //exportFileInXML(session, docfrom, fsPath + "/" + FileNameToExport);
                 blob.transferTo(target);
                 i++;
             }
@@ -131,6 +132,4 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
 
         return prefix + blob.getFilename();
     }
-
-
 }

@@ -5,9 +5,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 @XObject("exportLogic")
 public class ExportLogicDescriptor {
-    @XNode("@value")
-    public String myLogic;
-
     @XNode("@class")
     public Class<? extends FSExporterPlugin> plugin;
 

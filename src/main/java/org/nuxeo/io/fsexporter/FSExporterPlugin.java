@@ -12,6 +12,6 @@ public interface FSExporterPlugin {
     DocumentModelList getChildren(CoreSession session, DocumentModel doc,
             boolean ExportDeletedDocuments, String PageProvider) throws ClientException, Exception;
 
-    File serialize(DocumentModel docfrom, String fsPath) throws Exception;
+    File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws Exception;
 
 }

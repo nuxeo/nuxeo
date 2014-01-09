@@ -4,10 +4,10 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Version: 1.0.qualifier
 Bundle-Name: nuxeo-fsexporter
-Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/extensions/org.nuxeo.io.fsexporter.FSExporte
  r.xml,OSGI-INF/extensions/org.nuxeo.io.fsexporter.ExportStructureToFS
  .xml
+Bundle-ManifestVersion: 2
 Bundle-SymbolicName: nuxeo-fsexporter
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 
