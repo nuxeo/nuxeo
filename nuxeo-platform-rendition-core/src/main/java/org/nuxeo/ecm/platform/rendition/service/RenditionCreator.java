@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 
 /**
  * 
@@ -93,6 +94,9 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         setCorrectVersion(rendition, versionDocument);
         // set ACL
         // giveReadRightToUser(rendition);
+        // do not apply default versioning to rendition
+        rendition.putContextData(VersioningService.VERSIONING_OPTION,
+                VersioningOption.NONE);
         rendition = session.saveDocument(rendition);
 
         // rendition is checkout : make it checkin
