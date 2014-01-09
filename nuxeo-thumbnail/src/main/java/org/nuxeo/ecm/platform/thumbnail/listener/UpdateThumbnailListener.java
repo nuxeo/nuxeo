@@ -20,6 +20,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
@@ -59,6 +60,8 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             }
         }
         if (doc.isDirty()) {
+            doc.putContextData(VersioningService.VERSIONING_OPTION,
+                    VersioningOption.NONE);
             doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
                     Boolean.TRUE);
             doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER,
