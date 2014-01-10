@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.io.fsexporter.FSExporter" version="1.0">
 
 	<implementation class="org.nuxeo.io.fsexporter.FSExporter" />
@@ -15,19 +14,4 @@
 		<object class="org.nuxeo.io.fsexporter.ExportLogicDescriptor" />
 	</extension-point>
 
-	<extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
-		point="providers">
-
-		<coreQueryPageProvider name="GET_CHILDREN_FSEXPORTER">
-			<pattern>
-				SELECT * FROM Document WHERE ecm:parentId = ? 
-				AND ecm:mixinType !='HiddenInNavigation'
-				AND ecm:isCheckedInVersion = 0
-				AND ecm:currentLifeCycleState !='deleted'
-			</pattern>
-			<sort column="dc:title" ascending="true" />
-			<pageSize>50</pageSize>
-		</coreQueryPageProvider>
-
-	</extension>
 </component>

@@ -11,8 +11,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.io.DocumentPipe;
-import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -35,15 +33,14 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
     }
 
     @Override
-    public void export(CoreSession session, String rootPath, String fspath,
-            boolean ExportDeletedDocuments, String PageProvider) throws ClientException,
+    public void export(CoreSession session, String rootPath, String fspath, String PageProvider) throws ClientException,
             IOException, Exception {
         DocumentModel root = session.getDocument(new PathRef(rootPath));
-        serializeStructure(session, fspath, root, ExportDeletedDocuments, PageProvider);
+        serializeStructure(session, fspath, root, PageProvider);
     }
 
     private void serializeStructure(CoreSession session, String fsPath,
-            DocumentModel doc, boolean ExportDeletedDocuments, String PageProvider)
+            DocumentModel doc, String PageProvider)
             throws ClientException, IOException, Exception {
 
         exporter.serialize(session, doc, fsPath);
@@ -51,31 +48,22 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
         if (doc.isFolder()) {
 
             DocumentModelList children = exporter.getChildren(session, doc,
-                    ExportDeletedDocuments, PageProvider);
+                   PageProvider);
 
             // getChildrenIterator
             for (DocumentModel child : children) {
                 serializeStructure(session, fsPath + "/" + doc.getName(),
-                        child, ExportDeletedDocuments, PageProvider);
+                        child,  PageProvider);
             }
         }
     }
 
     @Override
-    public void exportXML(CoreSession session, String rootPath, String fspath) throws ClientException, Exception {
+    public void exportXML(CoreSession session, String rootName,
+            String fileSystemTarget) throws ClientException, Exception {
         // TODO Auto-generated method stub
         //
-        DocumentModel root = session.getDocument(new PathRef(rootPath));
-        DocumentPipe pipe = new DocumentPipeImpl(10);
-
-        /*DocumentTreeReader reader = new DocumentTreeReader(session, root, false);
-        pipe.setReader(reader);
-        XMLDirectoryWriter writer = new XMLDirectoryWriter(new File(fspath));
-
-
-
-        pipe.setWriter(writer);
-        pipe.run();*/
-
+        throw new UnsupportedOperationException();
     }
+
 }

@@ -31,16 +31,12 @@ public class ExportStructureToFS {
     @Param(name = "File System Target", required = true)
     protected String FileSystemTarget;
 
-    @Param(name = "Export Deleted Documents", required = false)
-    protected boolean ExportDeletedDocuments = true;
-
-    @Param(name = "Page Provider", required = false)
+    @Param(name = "Query", required = false)
     protected String PageProvider;
 
     @OperationMethod
     public void run() throws Exception {
-      service.export(session, RootName, FileSystemTarget,
-                ExportDeletedDocuments, PageProvider);
+      service.export(session, RootName, FileSystemTarget, PageProvider);
     }
 
 }

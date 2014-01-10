@@ -17,6 +17,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
 
@@ -24,7 +25,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
 
     @Override
     public DocumentModelList getChildren(CoreSession session,
-            DocumentModel doc, boolean ExportDeletedDocuments,
+            DocumentModel doc,
             String myPageProvider) throws ClientException, Exception {
 
         PageProviderService ppService = null;
@@ -39,26 +40,41 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
                 (Serializable) session);
 
         PageProvider<DocumentModel> pp = null;
+        String query = "";
 
-        if (myPageProvider == null) {
-            myPageProvider = "GET_CHILDREN_FSEXPORTER";
+     // if the user gives a query, we build a new Page Provider with the query provided
+        if (myPageProvider != null) {
+            query = myPageProvider + " AND ecm:parentId = ?";
         }
+        else
+        {
+            query = "SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:mixinType !='HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !='deleted'";
+        }
+            CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
+            desc.setPattern(query);
 
-        // call the page provider
-        try {
             pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                    myPageProvider, null, null, null, props,
+                    "customPP", desc, null, null, null, null, props,
                     new Object[] { doc.getId() });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        /*} else {
+            // call the page provider by default
+            myPageProvider = "GET_CHILDREN_FSEXPORTER";
+            try {
+                pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                        myPageProvider, null, null, null, props,
+                        new Object[] { doc.getId() });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }*/
 
         int countPages = 1;
         // get all the documents of the first page
         DocumentModelList children = new DocumentModelListImpl(
                 pp.getCurrentPage());
 
-        // if there is more than one page, get the children of all the other pages and put into one list
+        // if there is more than one page, get the children of all the other
+        // pages and put into one list
         List<DocumentModel> childrenTemp = new ArrayList<DocumentModel>();
 
         if (pp.getNumberOfPages() > 1) {
@@ -76,8 +92,8 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
     }
 
     @Override
-    public File serialize(CoreSession session, DocumentModel docfrom, String fsPath)
-            throws Exception {
+    public File serialize(CoreSession session, DocumentModel docfrom,
+            String fsPath) throws Exception {
         File folder = null;
         File newFolder = null;
         folder = new File(fsPath);
@@ -102,7 +118,8 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
                 String FileNameToExport = getFileName(blob, docfrom, folder, i);
                 // export the file to the target file system
                 File target = new File(folder, FileNameToExport);
-                //exportFileInXML(session, docfrom, fsPath + "/" + FileNameToExport);
+                // exportFileInXML(session, docfrom, fsPath + "/" +
+                // FileNameToExport);
                 blob.transferTo(target);
                 i++;
             }
@@ -113,8 +130,8 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
         return folder;
     }
 
-
-    protected String getFileName(Blob blob, DocumentModel docfrom, File folder, int i)  {
+    protected String getFileName(Blob blob, DocumentModel docfrom, File folder,
+            int i) {
         String prefix = "";
         // if not principal file, prefix = name of the file which contains
         // the blobs
@@ -122,9 +139,8 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
             prefix = docfrom.getName() + "-";
         }
 
-     // if already existing file, prefix with "timestamp"
-        File alreadyExistingBlob = new File(folder, prefix
-                + blob.getFilename());
+        // if already existing file, prefix with "timestamp"
+        File alreadyExistingBlob = new File(folder, prefix + blob.getFilename());
 
         if (alreadyExistingBlob.exists()) {
             prefix = String.valueOf(new Date().getTime()) + "-" + prefix;

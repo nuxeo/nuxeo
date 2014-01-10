@@ -10,7 +10,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 public interface FSExporterPlugin {
 
     DocumentModelList getChildren(CoreSession session, DocumentModel doc,
-            boolean ExportDeletedDocuments, String PageProvider) throws ClientException, Exception;
+            String PageProvider) throws ClientException, Exception;
 
     File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws Exception;
 
