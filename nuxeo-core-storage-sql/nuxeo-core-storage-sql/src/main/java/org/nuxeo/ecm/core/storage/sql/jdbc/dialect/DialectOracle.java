@@ -782,8 +782,8 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public String getDescending() {
-        return " DESC NULLS LAST";
+    public boolean needsNullsLastOnDescSort() {
+        return true;
     }
 
     @Override

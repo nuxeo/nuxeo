@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -71,6 +71,23 @@ public abstract class Dialect {
 
     // for debug
     private final AtomicLong temporaryIdCounter = new AtomicLong(0);
+
+    /**
+     * Property used to disable NULLS LAST usage when sorting DESC.
+     *
+     * This increase performance for some dialects because they can use an index
+     * for sorting when there are no NULL value.
+     *
+     * @Since 5.9
+     */
+    public static final String NULLS_LAST_ON_DESC_PROP = "nuxeo.vcs.use-nulls-last-on-desc";
+
+    /**
+     * Store the SQL for descending order
+     *
+     * @since 5.9
+     */
+    protected String descending;
 
     /**
      * System property to override the dialect to use globally instead of the
@@ -1090,6 +1107,15 @@ public abstract class Dialect {
     }
 
     /**
+     * True if the dialect need an extra NULLS LAST on DESC sort.
+     *
+     * @since 5.9
+     */
+    public boolean needsNullsLastOnDescSort() {
+        return false;
+    }
+
+    /**
      * When using a CLOB field in an expression, is some casting required and
      * with what pattern?
      * <p>
@@ -1508,7 +1534,15 @@ public abstract class Dialect {
      * @return DESC or DESC NULLS LAST depending on dialects.
      */
     public String getDescending() {
-        return " DESC";
+        if (descending == null) {
+            if (needsNullsLastOnDescSort() && Boolean.parseBoolean(Framework.getProperty(
+                    NULLS_LAST_ON_DESC_PROP, "true"))) {
+                descending = " DESC NULLS LAST";
+            } else {
+                descending = " DESC";
+            }
+        }
+        return descending;
     }
 
     /**
