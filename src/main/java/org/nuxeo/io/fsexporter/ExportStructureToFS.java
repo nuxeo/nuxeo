@@ -14,7 +14,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 /**
  * @author annejubert
  */
-@Operation(id = ExportStructureToFS.ID, category = Constants.CAT_SERVICES, label = "ExportStructureToFS", description = "This operation enables to export the structure contained in the Root name path to the File System Target path. You can choose to export deleted documents or not and you can define your own Page Provider")
+@Operation(id = ExportStructureToFS.ID, category = Constants.CAT_SERVICES, label = "ExportStructureToFS", description = "This operation enables to export the structure contained in the Root name path to the File System Target path. You can declare your own query to choose the document being exported.")
 public class ExportStructureToFS {
 
     public static final String ID = "ExportStructureToFS";
