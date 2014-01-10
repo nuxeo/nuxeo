@@ -57,18 +57,10 @@ public class FSExporterTestCase {
 
         session.save();
 
-        /*
-         * DocumentModelList docs
-         * =session.query("select * from Document order by ecm:path");
-         *
-         * for (DocumentModel doc : docs) { System.out.println(doc.toString());
-         * }
-         */
-
         String tmp = System.getProperty("java.io.tmp");
 
         Framework.getLocalService(FSExporter.class);
-        service.export(session, "/default-domain/", "/tmp/", true, "GET_CHILDREN_PP");
+        service.export(session, "/default-domain/", "/tmp/", "GET_CHILDREN_PP");
 
         // Assure que cela s'est passe comme attendu
         String targetPath = "/tmp" + folder.getPathAsString() + "/"

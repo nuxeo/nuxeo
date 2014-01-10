@@ -129,7 +129,7 @@ public class FSExporterTestAccents {
         String tmp = System.getProperty("java.io.tmp");
 
         Framework.getLocalService(FSExporter.class);
-        service.export(session, "/default-domain/", "/tmp/", true, "GET_CHILDREN_PP");
+        service.export(session, "/default-domain/", "/tmp/", "GET_CHILDREN_PP");
 
         // verify that My File In Section.txt exists
         String targetPathSection = "/tmp" + mySection.getPathAsString() + "/"

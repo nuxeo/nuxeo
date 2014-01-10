@@ -92,7 +92,7 @@ public class FSExporterTestCase2 {
         session.save();
 
         Framework.getLocalService(FSExporter.class);
-        service.export(session, "/default-domain/", "/tmp/", true,  "GET_CHILDREN_PP");
+        service.export(session, "/default-domain/", "/tmp/", "GET_CHILDREN_PP");
 
         // verify that myfile.txt exists
         String targetPath = "/tmp" + folder.getPathAsString() + "/"
