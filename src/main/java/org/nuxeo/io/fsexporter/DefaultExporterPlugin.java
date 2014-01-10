@@ -25,8 +25,8 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
 
     @Override
     public DocumentModelList getChildren(CoreSession session,
-            DocumentModel doc,
-            String myPageProvider) throws ClientException, Exception {
+            DocumentModel doc, String myPageProvider) throws ClientException,
+            Exception {
 
         PageProviderService ppService = null;
         try {
@@ -42,38 +42,23 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
         PageProvider<DocumentModel> pp = null;
         String query = "";
 
-     // if the user gives a query, we build a new Page Provider with the query provided
+        // if the user gives a query, we build a new Page Provider with the
+        // query provided
         if (myPageProvider != null) {
-            if(myPageProvider.contains("WHERE"))
-            {
+            if (myPageProvider.contains("WHERE")) {
                 query = myPageProvider + " AND ecm:parentId = ?";
-            }
-            else
-            {
+            } else {
                 query = myPageProvider + " where ecm:parentId = ?";
             }
-        }
-        else
-        {
+        } else {
             query = "SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:mixinType !='HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !='deleted'";
         }
-            CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
-            desc.setPattern(query);
+        CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
+        desc.setPattern(query);
 
-            pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                    "customPP", desc, null, null, null, null, props,
-                    new Object[] { doc.getId() });
-        /*} else {
-            // call the page provider by default
-            myPageProvider = "GET_CHILDREN_FSEXPORTER";
-            try {
-                pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                        myPageProvider, null, null, null, props,
-                        new Object[] { doc.getId() });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }*/
+        pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                "customPP", desc, null, null, null, null, props,
+                new Object[] { doc.getId() });
 
         int countPages = 1;
         // get all the documents of the first page

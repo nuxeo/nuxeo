@@ -12,6 +12,7 @@ public interface FSExporterPlugin {
     DocumentModelList getChildren(CoreSession session, DocumentModel doc,
             String PageProvider) throws ClientException, Exception;
 
-    File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws Exception;
+    File serialize(CoreSession session, DocumentModel docfrom, String fsPath)
+            throws Exception;
 
 }

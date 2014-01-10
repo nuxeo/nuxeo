@@ -57,8 +57,6 @@ public class FSExporterTestCase {
 
         session.save();
 
-        String tmp = System.getProperty("java.io.tmp");
-
         Framework.getLocalService(FSExporter.class);
         service.export(session, "/default-domain/", "/tmp/", "GET_CHILDREN_PP");
 

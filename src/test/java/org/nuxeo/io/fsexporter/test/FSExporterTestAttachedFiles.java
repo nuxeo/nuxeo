@@ -27,7 +27,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import com.google.inject.Inject;
 
 /**
- *
+ * 
  * @author annejubert
  */
 @RunWith(FeaturesRunner.class)

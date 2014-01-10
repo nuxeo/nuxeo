@@ -33,27 +33,27 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
     }
 
     @Override
-    public void export(CoreSession session, String rootPath, String fspath, String PageProvider) throws ClientException,
-            IOException, Exception {
+    public void export(CoreSession session, String rootPath, String fspath,
+            String PageProvider) throws ClientException, IOException, Exception {
         DocumentModel root = session.getDocument(new PathRef(rootPath));
         serializeStructure(session, fspath, root, PageProvider);
     }
 
     private void serializeStructure(CoreSession session, String fsPath,
-            DocumentModel doc, String PageProvider)
-            throws ClientException, IOException, Exception {
+            DocumentModel doc, String PageProvider) throws ClientException,
+            IOException, Exception {
 
         exporter.serialize(session, doc, fsPath);
 
         if (doc.isFolder()) {
 
             DocumentModelList children = exporter.getChildren(session, doc,
-                   PageProvider);
+                    PageProvider);
 
             // getChildrenIterator
             for (DocumentModel child : children) {
                 serializeStructure(session, fsPath + "/" + doc.getName(),
-                        child,  PageProvider);
+                        child, PageProvider);
             }
         }
     }
