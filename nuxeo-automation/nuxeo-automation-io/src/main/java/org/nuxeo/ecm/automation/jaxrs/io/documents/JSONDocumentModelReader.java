@@ -51,7 +51,6 @@ import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.webengine.WebException;
@@ -106,27 +105,11 @@ public class JSONDocumentModelReader implements
         }
     }
 
-    /**
-     * @param content
-     * @param httpHeaders
-     * @return
-     * @throws Exception
-     *
-     * @since 5.7.2
-     */
     private DocumentModel readRequest(String content,
             MultivaluedMap<String, String> httpHeaders) throws Exception {
         return readRequest(content, httpHeaders, request);
     }
 
-    /**
-     * @param content
-     * @param httpHeaders
-     * @return
-     * @throws Exception
-     *
-     * @since 5.7.2
-     */
     protected DocumentModel readRequest(String content,
             MultivaluedMap<String, String> httpHeaders,
             HttpServletRequest request) throws Exception {
@@ -134,13 +117,6 @@ public class JSONDocumentModelReader implements
         return readJson(jp, httpHeaders, request);
     }
 
-    /**
-     * @param jp
-     * @param httpHeaders
-     * @param request2
-     * @return
-     *
-     */
     public static DocumentModel readJson(JsonParser jp,
             MultivaluedMap<String, String> httpHeaders,
             HttpServletRequest request) throws Exception {
@@ -193,7 +169,7 @@ public class JSONDocumentModelReader implements
     }
 
     private static void applyPropertyValues(DocumentModel src, DocumentModel dst)
-            throws ClientException, PropertyException {
+            throws ClientException {
         for (String schema : src.getSchemas()) {
             DataModelImpl dataModel = (DataModelImpl) dst.getDataModel(schema);
             DataModel fromDataModel = src.getDataModel(schema);
@@ -220,13 +196,11 @@ public class JSONDocumentModelReader implements
 
     /**
      * Decodes a Serializable to make it a blob.
-     * @param data
-     * @return
      *
      * @since 5.9.1
      */
     private static Serializable decodeBlob(Serializable data) {
-        if(data instanceof Blob) {
+        if (data instanceof Blob) {
             return data;
         } else {
             return null;
@@ -235,8 +209,6 @@ public class JSONDocumentModelReader implements
 
     /**
      * Check that a serialized data is not null.
-     * @param data
-     * @return
      *
      * @since 5.9.1
      */
