@@ -1021,7 +1021,7 @@ public abstract class NuxeoLauncher {
                 commandSucceeded = launcher.pkgCompoundRequest(Arrays.asList(params));
             }
         } else if ("mp-set".equalsIgnoreCase(launcher.command)) {
-            commandSucceeded = launcher.pkgSetRequest(Arrays.asList(params));
+            commandSucceeded = launcher.pkgSetRequest(Arrays.asList(params), launcher.hasOption(OPTION_NODEPS));
         } else if ("mp-hotfix".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgHotfix();
         } else if ("mp-upgrade".equalsIgnoreCase(launcher.command)) {
@@ -1879,9 +1879,10 @@ public abstract class NuxeoLauncher {
                 + "Else you must provide the package file(s), name(s) or ID(s) as parameter.");
         log.error("\tmp-uninstall\t\tUninstall Marketplace package(s). "
                 + "You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).");
+        log.error("\tmp-set\t\t\tInstalls a list of Marketplace packages and removes those not in the list.");
         log.error("\tmp-request\t\tInstall + uninstall Marketplace package(s) in one command. "
                 + "You must provide a *quoted* list of package names or IDs prefixed with + (install) or - (uninstall).");
-        log.error("\tmp-remove\t\tRemove Marketplace package(s). "
+        log.error("\tmp-remove\t\tRemove Marketplace package(s) from the local cache. "
                 + "You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).");
         log.error("\tmp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.");
         log.error("\tmp-purge\t\tUninstall and remove all packages from the local cache.");
@@ -2320,9 +2321,12 @@ public abstract class NuxeoLauncher {
         return pkgRequest(add, install, uninstall, null);
     }
 
-    protected boolean pkgSetRequest(List<String> request) throws IOException, PackageException {
-        // TODO: handle --nodeps
-        return getConnectBroker().pkgSet(request);
+    protected boolean pkgSetRequest(List<String> request, boolean nodeps) throws IOException, PackageException {
+        if (nodeps) {
+            return getConnectBroker().pkgSet(request);
+        } else {
+            return getConnectBroker().pkgRequest(null, request, null, null, false);
+        }
     }
 
     /**

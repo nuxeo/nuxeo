@@ -1088,6 +1088,17 @@ public class ConnectBroker {
     public boolean pkgRequest(List<String> pkgsToAdd,
             List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove) {
+        return pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove, true);
+    }
+
+    /**
+     * @param keepExisting If false, the request will remove existing packages
+     *                     that are not part of the resolution
+     * @since 5.9.2
+     */
+    public boolean pkgRequest(List<String> pkgsToAdd,
+            List<String> pkgsToInstall, List<String> pkgsToUninstall,
+            List<String> pkgsToRemove, boolean keepExisting) {
         try {
             boolean cmdOk = true;
             // Add local files
@@ -1182,7 +1193,7 @@ public class ConnectBroker {
                 log.debug("solverUpgrade: " + solverUpgrade);
                 DependencyResolution resolution = getPackageManager().resolveDependencies(
                         solverInstall, solverRemove, solverUpgrade,
-                        requestPlatform, allowSNAPSHOT);
+                        requestPlatform, allowSNAPSHOT, keepExisting);
                 log.info(resolution);
                 if (resolution.isFailed()) {
                     return false;
@@ -1217,7 +1228,7 @@ public class ConnectBroker {
                     // Don't use IDs to avoid downgrade instead of uninstall
                     packageIdsToRemove.addAll(resolution.getLocalPackagesToUpgrade().keySet());
                     DependencyResolution uninstallResolution = getPackageManager().resolveDependencies(
-                            null, packageIdsToRemove, null, requestPlatform);
+                            null, packageIdsToRemove, null, requestPlatform, allowSNAPSHOT, keepExisting);
                     log.debug("Sub-resolution (uninstall) "
                             + uninstallResolution);
                     if (uninstallResolution.isFailed()) {
@@ -1238,7 +1249,7 @@ public class ConnectBroker {
                     // Add list of packages uninstalled because of upgrade
                     packageIdsToInstall.addAll(packagesIdsToReInstall);
                     DependencyResolution installResolution = getPackageManager().resolveDependencies(
-                            packageIdsToInstall, null, null, requestPlatform);
+                            packageIdsToInstall, null, null, requestPlatform, allowSNAPSHOT, keepExisting);
                     log.debug("Sub-resolution (install) " + installResolution);
                     if (installResolution.isFailed()) {
                         return false;
@@ -1259,173 +1270,23 @@ public class ConnectBroker {
     }
 
     /**
-     * Installs at set of package with its dependencies and removes the rest
-     *
+     * Installs a list of packages and uninstalls the rest (no dependency check)
      * @since 5.9.2
-     * @param pkgsList List of target packages names or IDs
-     * @return success/failure as boolean
      */
-    public boolean pkgSet(List<String> pkgsList) {
-        try {
-            boolean cmdOk = true;
-            // Build list of packages to keep with dependencies
-            List<String> solverInstall = new ArrayList<String>();
-            List<String> solverUpgrade = new ArrayList<String>();
-            if (pkgsList != null) {
-                // If install request is a file name, add to cache and get the id
-                List<String> namesOrIdsToInstall = new ArrayList<String>();
-                for (String pkgToInstall : pkgsList) {
-                    if (isLocalPackageFile(pkgToInstall)) {
-                        LocalPackage addedPkg = pkgAdd(pkgToInstall);
-                        if (addedPkg != null) {
-                            namesOrIdsToInstall.add(addedPkg.getId());
-                        } else {
-                            cmdOk = false;
-                        }
-                        // TODO: set flag to prefer local package
-                    } else {
-                        namesOrIdsToInstall.add(pkgToInstall);
-                    }
-                }
-                // Check whether we have new installs or upgrades
-                for (String pkgToInstall : namesOrIdsToInstall) {
-                    Map<String, DownloadablePackage> allPackagesByID = NuxeoConnectClient.getPackageManager().getAllPackagesByID();
-                    DownloadablePackage pkg = allPackagesByID.get(pkgToInstall);
-                    if (pkg != null) {
-                        // This is a known ID
-                        if (isInstalledPackage(pkg.getName())) {
-                            // The package is installed
-                            solverUpgrade.add(pkgToInstall);
-                        } else {
-                            // The package isn't installed yet
-                            solverInstall.add(pkgToInstall);
-                        }
-                    } else {
-                        // This is a name (or a non-existing ID)
-                        String id = getInstalledPackageIdFromName(pkgToInstall);
-                        if (id != null) {
-                            // The package is installed
-                            solverUpgrade.add(pkgToInstall);
-                        } else {
-                            // The package isn't installed yet
-                            solverInstall.add(pkgToInstall);
-                        }
-                    }
-                }
+    public boolean pkgSet(List<String> pkgList) {
+        boolean cmdOK = true;
+        cmdOK = cmdOK && pkgInstall(pkgList);
+        List<DownloadablePackage> installedPkgs = getPackageManager().listInstalledPackages();
+        List<String> pkgsToUninstall = new ArrayList<String>();
+        for (DownloadablePackage pkg : installedPkgs) {
+            if ((!pkgList.contains(pkg.getName())) && (!pkgList.contains(pkg.getId()))) {
+                pkgsToUninstall.add(pkg.getId());
             }
-            if ((solverInstall.size() != 0) || (solverUpgrade.size() != 0)) {
-                // Check whether we need to relax restriction to targetPlatform
-                String requestPlatform = targetPlatform;
-                List<String> requestPackages = new ArrayList<String>();
-                requestPackages.addAll(solverInstall);
-                requestPackages.addAll(solverUpgrade);
-                String nonCompliantPkg = getPackageManager().getNonCompliant(
-                        requestPackages, targetPlatform);
-                if (nonCompliantPkg != null) {
-                    requestPlatform = null;
-                    if ("ask".equalsIgnoreCase(relax)) {
-                        relax = readConsole(
-                                "Package %s is not available on platform version %s.\n"
-                                        + "Do you want to relax the constraint (yes/no)? [no] ",
-                                "no", nonCompliantPkg, targetPlatform);
-                    }
-
-                    if (Boolean.parseBoolean(relax)) {
-                        log.warn(String.format(
-                                "Relax restriction to target platform %s because of package %s",
-                                targetPlatform, nonCompliantPkg));
-                    } else {
-                        throw new PackageException(
-                                String.format(
-                                        "Package %s is not available on platform version %s (relax is not allowed)",
-                                        nonCompliantPkg, targetPlatform));
-                    }
-                }
-
-                DependencyResolution resolution = getPackageManager().resolveDependencies(
-                        solverInstall, null, solverUpgrade,
-                        requestPlatform, allowSNAPSHOT, false);
-                log.info(resolution);
-                if (resolution.isFailed()) {
-                    return false;
-                }
-                if ("ask".equalsIgnoreCase(accept)) {
-                    accept = readConsole(
-                            "Do you want to continue (yes/no)? [yes] ", "yes");
-                }
-                if (!Boolean.parseBoolean(accept)) {
-                    log.warn("Exit");
-                    return false;
-                }
-
-                List<String> packageIdsToKeep = resolution.getUnchangedPackageIds();
-                List<String> packageIdsToUpgrade = resolution.getUpgradePackageIds();
-                List<String> packageIdsToInstall = resolution.getOrderedPackageIdsToInstall();
-                List<String> packagesIdsToReInstall = new ArrayList<String>();
-                List<String> packageIdsToRemove = new ArrayList<String>();
-                List<String> packageIdsFinal = new ArrayList<String>();
-                packageIdsFinal.addAll(packageIdsToKeep);
-                packageIdsFinal.addAll(packageIdsToInstall);
-                packageIdsFinal.addAll(packageIdsToUpgrade);
-
-                // Download remote packages
-                if (!downloadPackages(resolution.getDownloadPackageIds())) {
-                    log.error("Aborting packages change request");
-                    return false;
-                }
-
-                // Uninstall
-                if (!packageIdsToUpgrade.isEmpty()) {
-                    // Add packages to upgrade to uninstall list
-                    // Don't use IDs to avoid downgrade instead of uninstall
-                    packageIdsToRemove.addAll(resolution.getLocalPackagesToUpgrade().keySet());
-                    DependencyResolution uninstallResolution = getPackageManager().resolveDependencies(
-                            null, packageIdsToRemove, null, requestPlatform, allowSNAPSHOT, false);
-                    log.debug("Sub-resolution (uninstall) "
-                            + uninstallResolution);
-                    if (uninstallResolution.isFailed()) {
-                        return false;
-                    }
-                    List<String> newPackageIdsToRemove = uninstallResolution.getOrderedPackageIdsToRemove();
-                    packagesIdsToReInstall = ListUtils.subtract(
-                            newPackageIdsToRemove, packageIdsToRemove);
-                    packagesIdsToReInstall.removeAll(packageIdsToUpgrade);
-                    packageIdsToRemove = newPackageIdsToRemove;
-                }
-                List<DownloadablePackage> installedPackages = getPackageManager().listInstalledPackages();
-                for (DownloadablePackage installedPackage : installedPackages) {
-                    String installedPackageId = installedPackage.getId();
-                    if (!packageIdsFinal.contains(installedPackageId)) {
-                        packageIdsToRemove.add(installedPackageId);
-                    }
-                }
-                if (!pkgUninstall(packageIdsToRemove)) {
-                    return false;
-                }
-
-                // Install
-                if (!packagesIdsToReInstall.isEmpty()) {
-                    // Add list of packages uninstalled because of upgrade
-                    packageIdsToInstall.addAll(packagesIdsToReInstall);
-                    DependencyResolution installResolution = getPackageManager().resolveDependencies(
-                            packageIdsToInstall, null, null, requestPlatform, allowSNAPSHOT, false);
-                    log.debug("Sub-resolution (install) " + installResolution);
-                    if (installResolution.isFailed()) {
-                        return false;
-                    }
-                    packageIdsToInstall = installResolution.getOrderedPackageIdsToInstall();
-                }
-                if (!pkgInstall(packageIdsToInstall)) {
-                    return false;
-                }
-
-                pkgUninstall(packageIdsToRemove);
-            }
-            return cmdOk;
-        } catch (PackageException e) {
-            log.error(e);
-            return false;
         }
+        if (pkgsToUninstall.size() != 0) {
+            cmdOK = cmdOK && pkgUninstall(pkgsToUninstall);
+        }
+        return cmdOK;
     }
 
     /**
