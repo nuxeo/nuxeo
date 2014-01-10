@@ -44,7 +44,14 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
 
      // if the user gives a query, we build a new Page Provider with the query provided
         if (myPageProvider != null) {
-            query = myPageProvider + " AND ecm:parentId = ?";
+            if(myPageProvider.contains("WHERE"))
+            {
+                query = myPageProvider + " AND ecm:parentId = ?";
+            }
+            else
+            {
+                query = myPageProvider + " where ecm:parentId = ?";
+            }
         }
         else
         {
