@@ -318,44 +318,60 @@
       </properties>
     </widget>
 
-    <widget name="current_route_panel_top" type="summary_current_document_custom_actions">
+    <widget name="current_route_panel_top" type="documentActions">
       <labels>
         <label mode="any"></label>
       </labels>
       <properties widgetMode="any">
         <property name="category">CURRENT_ROUTE_PANEL_TOP</property>
-        <property name="subStyleClass">summaryActions</property>
+        <property name="styleClass">summaryActions</property>
+        <property name="actionContextDocument">#{layout.properties.currentDocumentForRoute}</property>
       </properties>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
     </widget>
 
-    <widget name="current_route_panel_left" type="summary_current_document_custom_actions">
+    <widget name="current_route_panel_left" type="documentActions">
       <labels>
         <label mode="any"></label>
       </labels>
       <properties widgetMode="any">
         <property name="category">CURRENT_ROUTE_PANEL_LEFT</property>
-        <property name="subStyleClass">summaryActions</property>
+        <property name="styleClass">summaryActions</property>
+        <property name="actionContextDocument">#{layout.properties.currentDocumentForRoute}</property>
       </properties>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
     </widget>
 
-    <widget name="current_route_panel_right" type="summary_current_document_custom_actions">
+    <widget name="current_route_panel_right" type="documentActions">
       <labels>
         <label mode="any"></label>
       </labels>
       <properties widgetMode="any">
         <property name="category">CURRENT_ROUTE_PANEL_RIGHT</property>
-        <property name="subStyleClass">summaryActions</property>
+        <property name="styleClass">summaryActions</property>
+        <property name="actionContextDocument">#{layout.properties.currentDocumentForRoute}</property>
       </properties>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
     </widget>
 
-    <widget name="current_route_panel_bottom" type="summary_current_document_custom_actions">
+    <widget name="current_route_panel_bottom" type="documentActions">
       <labels>
         <label mode="any"></label>
       </labels>
       <properties widgetMode="any">
         <property name="category">CURRENT_ROUTE_PANEL_BOTTOM</property>
-        <property name="subStyleClass">summaryActions</property>
+        <property name="styleClass">summaryActions</property>
+        <property name="actionContextDocument">#{layout.properties.currentDocumentForRoute}</property>
       </properties>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
     </widget>
 
     <!-- for previous tasks layout -->
@@ -517,7 +533,6 @@
           false)}
         </property>
         <property name="styleClass">globalActionBar</property>
-        <property name="subStyleClass">contextActions</property>
         <property name="actionStyleClass">button</property>
         <property name="actionsDisplay">buttons</property>
         <property name="addForm">true</property>
@@ -536,7 +551,6 @@
           false)}
         </property>
         <property name="styleClass">globalActionBar</property>
-        <property name="subStyleClass">contextActions</property>
         <property name="actionStyleClass">button</property>
         <property name="actionsDisplay">buttons</property>
         <property name="addForm">true</property>
