@@ -53,8 +53,10 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * JAX-RS reader for a DocumentModel. If an id is given, it tries to reattach
@@ -178,7 +180,6 @@ public class JSONDocumentModelReader implements
                 Serializable data = (Serializable) fromDataModel.getData(field);
                 try {
                     if (isNotNull(data)) {
-
                         if (!(dataModel.getDocumentPart().get(field) instanceof BlobProperty)) {
                             dataModel.setData(field, data);
                         } else {
@@ -230,7 +231,8 @@ public class JSONDocumentModelReader implements
             if (StringUtils.isNotBlank(type)) {
                 doc = DocumentModelFactory.createDocumentModel(type);
                 if (StringUtils.isNotBlank(name)) {
-                    doc.setPathInfo(null, name);
+                    PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+                    doc.setPathInfo(null, pss.generatePathSegment(name));
                 }
             } else {
                 throw new WebApplicationException(Response.Status.BAD_REQUEST);
