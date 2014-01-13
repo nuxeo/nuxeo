@@ -18,11 +18,11 @@
  */
 package org.nuxeo.functionaltests;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
@@ -33,10 +33,10 @@ import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
  * Test Modifying a workspace description in Nuxeo DM.
  * </p>
  * <p>
- * Requirements: the user jsmith is created
+ * Requirements: the user TEST_USERNAME is created
  * </p>
  * <ol>
- * <li>loginAs jsmith</li>
+ * <li>loginAs TEST_USERNAME</li>
  * <li>followLink to testWorkspace1</li>
  * <li>modifyWorkspaceDescription</li>
  * <li>logout</li>
@@ -49,10 +49,10 @@ public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
 
         // As an administrator, check that jsmith is created and has rights
         UsersGroupsBasePage usergroupPage = login().getAdminCenter().getUsersGroupsHomePage();
-        UsersTabSubPage page = usergroupPage.getUsersTab().searchUser("jsmith");
-        if (!page.isUserFound("jsmith")) {
-            usergroupPage = page.getUserCreatePage().createUser("jsmith",
-                    "John", "Smith", "Nuxeo", "jsmith@nuxeo.com", "jsmith1",
+        UsersTabSubPage page = usergroupPage.getUsersTab().searchUser(TEST_USERNAME);
+        if (!page.isUserFound(TEST_USERNAME)) {
+            usergroupPage = page.getUserCreatePage().createUser(TEST_USERNAME,
+                    "John", "Smith", "Nuxeo", "jsmith@nuxeo.com", TEST_PASSWORD,
                     "members");
         }
 
@@ -62,15 +62,15 @@ public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
         // Need WriteSecurity (so in practice Manage everything) to edit a
         // Workspace
         if (!accessRightSubTab.hasPermissionForUser("Manage everything",
-                "jsmith")) {
-            accessRightSubTab.addPermissionForUser("jsmith",
+                TEST_USERNAME)) {
+            accessRightSubTab.addPermissionForUser(TEST_USERNAME,
                     "Manage everything", true);
         }
 
         logout();
 
         // Starting the test for real
-        documentBasePage = login("jsmith", "jsmith1").getContentTab().goToDocument(
+        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument(
                 "Workspaces");
 
         // Create a new workspace named 'WorkspaceDescriptionModify_{current

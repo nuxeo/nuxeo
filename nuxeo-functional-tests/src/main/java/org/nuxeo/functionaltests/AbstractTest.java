@@ -55,9 +55,7 @@ import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.Proxy;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -78,6 +76,16 @@ import com.google.common.base.Function;
  * Base functions for all pages.
  */
 public abstract class AbstractTest {
+
+    /**
+     * @since 5.9.2
+     */
+    public final static String TEST_USERNAME = "jdoe";
+
+    /**
+     * @since 5.9.2
+     */
+    public final static String TEST_PASSWORD = "test";
 
     /**
      * @since 5.7
@@ -669,6 +677,15 @@ public abstract class AbstractTest {
                 password, DocumentBasePage.class);
         documentBasePage.checkUserConnected(username);
         return documentBasePage;
+    }
+
+    /**
+     * Login as default test user.
+     *
+     * @since 5.9.2
+     */
+    public DocumentBasePage loginAsTestUser() throws UserNotConnectedException {
+        return login(TEST_USERNAME, TEST_PASSWORD);
     }
 
     /**

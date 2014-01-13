@@ -42,10 +42,6 @@ import org.openqa.selenium.WebElement;
  */
 public class ITCopyPasteTest extends AbstractTest {
 
-    private final static String USERNAME = "jdoe";
-
-    private final static String PASSWORD = "test";
-
     private final static String WORKSPACE1_TITLE = "WorkspaceTitle_"
             + new Date().getTime();
 
@@ -61,14 +57,14 @@ public class ITCopyPasteTest extends AbstractTest {
         // Create a new user if not exist
         UsersGroupsBasePage page;
         UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.searchUser(USERNAME);
-        if (!usersTab.isUserFound(USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(USERNAME, USERNAME,
-                    null, null, USERNAME, PASSWORD, "members");
+        usersTab = usersTab.searchUser(TEST_USERNAME);
+        if (!usersTab.isUserFound(TEST_USERNAME)) {
+            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME,
+                    null, null, TEST_USERNAME, TEST_PASSWORD, "members");
             usersTab = page.getUsersTab(true);
         } // search user usersTab =
-        usersTab.searchUser(USERNAME);
-        assertTrue(usersTab.isUserFound(USERNAME));
+        usersTab.searchUser(TEST_USERNAME);
+        assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
         // create a wokspace1 and grant all rights to the test user
         documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
@@ -77,8 +73,8 @@ public class ITCopyPasteTest extends AbstractTest {
                 WORKSPACE1_TITLE, null);
         AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
         // Need Read
-        if (!accessRightSubTab.hasPermissionForUser("Read", USERNAME)) {
-            accessRightSubTab.addPermissionForUser(USERNAME, "Read", true);
+        if (!accessRightSubTab.hasPermissionForUser("Read", TEST_USERNAME)) {
+            accessRightSubTab.addPermissionForUser(TEST_USERNAME, "Read", true);
         }
         // Create test File 1
         createFile(workspacePage, FILE1_NAME, null, false, null, null, null);
@@ -89,8 +85,8 @@ public class ITCopyPasteTest extends AbstractTest {
                 null);
         accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
         if (!accessRightSubTab.hasPermissionForUser("Manage everything",
-                USERNAME)) {
-            accessRightSubTab.addPermissionForUser(USERNAME,
+                TEST_USERNAME)) {
+            accessRightSubTab.addPermissionForUser(TEST_USERNAME,
                     "Manage everything", true);
         }
 
@@ -110,7 +106,7 @@ public class ITCopyPasteTest extends AbstractTest {
         DocumentBasePage documentBasePage;
 
         // Log as test user and edit the created workdspace
-        documentBasePage = login(USERNAME, PASSWORD).getContentTab().goToDocument(
+        documentBasePage = loginAsTestUser().getContentTab().goToDocument(
                 "Workspaces").getContentTab().goToDocument(WORKSPACE1_TITLE);
 
         ContentTabSubPage contentTabSubPage = documentBasePage.getContentTab();
@@ -135,8 +131,8 @@ public class ITCopyPasteTest extends AbstractTest {
 
     private void restoreSate() throws UserNotConnectedException {
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.searchUser(USERNAME);
-        usersTab = usersTab.viewUser(USERNAME).deleteUser();
+        usersTab = usersTab.searchUser(TEST_USERNAME);
+        usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
         DocumentBasePage documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
                 "Workspaces");
         deleteWorkspace(documentBasePage, WORKSPACE1_TITLE);

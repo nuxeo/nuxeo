@@ -34,31 +34,29 @@ public class ITUsersTest extends AbstractTest {
 
     @Test
     public void testCreateViewDeleteUser() throws Exception {
-        String username = "test_create_view_delete_user";
-        String password = "test";
         String firstname = "firstname";
 
         UsersGroupsBasePage page;
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.searchUser(username);
-        if (!usersTab.isUserFound(username)) {
-            page = usersTab.getUserCreatePage().createUser(username, firstname,
-                    "lastname1", "company1", "email1", password, "members");
+        usersTab = usersTab.searchUser(TEST_USERNAME);
+        if (!usersTab.isUserFound(TEST_USERNAME)) {
+            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, firstname,
+                    "lastname1", "company1", "email1", TEST_PASSWORD, "members");
             // no confirmation message anymore
             // assertEquals(page.getFeedbackMessage(), "User created");
             usersTab = page.getUsersTab(true);
         }
 
         // search user
-        usersTab = usersTab.searchUser(username);
-        assertTrue(usersTab.isUserFound(username));
+        usersTab = usersTab.searchUser(TEST_USERNAME);
+        assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
         // exit admin center and reconnect
         usersTab = usersTab.exitAdminCenter().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
 
         // user already exists
-        page = usersTab.getUserCreatePage().createUser(username, "firstname1",
-                "lastname1", "company1", "email1", "test_user1", "members");
+        page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, "firstname1",
+                "lastname1", "company1", "email1", TEST_PASSWORD, "members");
         assertEquals("User already exists", page.getErrorFeedbackMessage());
         // cancel
         usersTab = asPage(UserCreationFormPage.class).cancelCreation();
@@ -66,16 +64,16 @@ public class ITUsersTest extends AbstractTest {
         // modify a user firstname
         firstname = firstname + "modified";
         usersTab = page.getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.viewUser(username).getEditUserTab().editUser(
+        usersTab = usersTab.viewUser(TEST_USERNAME).getEditUserTab().editUser(
                 firstname, null, "newcompany", null, "Administrators group").backToTheList();
 
         // search user using its new firstname
         usersTab = usersTab.searchUser(firstname);
-        assertTrue(usersTab.isUserFound(username));
+        assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
         // try to login with the new user
         logout();
-        login(username, password);
+        login(TEST_USERNAME, TEST_PASSWORD);
         logout();
 
         // login as admin
@@ -84,14 +82,14 @@ public class ITUsersTest extends AbstractTest {
         // change password
         usersTab = page.getUsersTab();
         usersTab = usersTab.searchUser(firstname);
-        password = "testmodified";
-        UserViewTabSubPage tab = usersTab.viewUser(username).getChangePasswordUserTab().changePassword(
+        String password = "testmodified";
+        UserViewTabSubPage tab = usersTab.viewUser(TEST_USERNAME).getChangePasswordUserTab().changePassword(
                 password);
 
         tab.exitAdminCenter();
         logout();
         // try to login with the new password
-        login(username, password);
+        login(TEST_USERNAME, password);
         logout();
 
         // login as admin
@@ -100,16 +98,16 @@ public class ITUsersTest extends AbstractTest {
         // delete user
         usersTab = page.getUsersTab();
         usersTab = usersTab.searchUser(firstname);
-        usersTab = usersTab.viewUser(username).deleteUser();
+        usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
 
         // search
-        usersTab = usersTab.searchUser(username);
-        assertFalse(usersTab.isUserFound(username));
+        usersTab = usersTab.searchUser(TEST_USERNAME);
+        assertFalse(usersTab.isUserFound(TEST_USERNAME));
 
         logout();
 
         // try to login with a delete user
-        loginInvalid(username, password);
+        loginInvalid(TEST_USERNAME, TEST_PASSWORD);
     }
 
 }
