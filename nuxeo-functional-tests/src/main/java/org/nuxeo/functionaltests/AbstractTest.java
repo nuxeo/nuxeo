@@ -19,8 +19,6 @@
  */
 package org.nuxeo.functionaltests;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -55,14 +53,13 @@ import org.nuxeo.functionaltests.pages.LoginPage;
 import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.openqa.selenium.By;
-import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -73,10 +70,8 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.Clock;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.SystemClock;
 import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
@@ -92,8 +87,7 @@ public abstract class AbstractTest {
     public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/chromedriver";
 
     /**
-     * @since 5.7
-     *        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+     * @since 5.7 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
      *        doesn't work
      */
     public static final String CHROME_DRIVER_DEFAULT_PATH_MAC = "/Applications/chromedriver";
@@ -367,8 +361,7 @@ public abstract class AbstractTest {
 
     /**
      * Introspects the classpath and returns the list of files in it. FIXME:
-     * should use HarnessRuntime#getClassLoaderFiles that returns the same
-     * thing
+     * should use HarnessRuntime#getClassLoaderFiles that returns the same thing
      *
      * @return
      * @throws Exception
@@ -553,8 +546,8 @@ public abstract class AbstractTest {
                 AJAX_TIMEOUT_SECONDS), page);
         // check all required WebElements on the page and wait for their
         // loading
-        List<String> fieldNames = new ArrayList<String>();
-        List<WrapsElement> elements = new ArrayList<WrapsElement>();
+        final List<String> fieldNames = new ArrayList<String>();
+        final List<WrapsElement> elements = new ArrayList<WrapsElement>();
         for (Field field : pageClassToProxy.getDeclaredFields()) {
             if (field.getAnnotation(Required.class) != null) {
                 try {
@@ -566,23 +559,32 @@ public abstract class AbstractTest {
                 }
             }
         }
-        Clock clock = new SystemClock();
-        long end = clock.laterBy(SECONDS.toMillis(LOAD_TIMEOUT_SECONDS));
-        String notLoaded = null;
-        while (clock.isNowBefore(end)) {
-            notLoaded = anyElementNotLoaded(elements, fieldNames);
-            if (notLoaded == null) {
-                return page;
+
+        Wait<T> wait = new FluentWait<T>(page).withTimeout(
+                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(100,
+                TimeUnit.MILLISECONDS);
+
+        return wait.until(new Function<T, T>() {
+            public T apply(T page) {
+                String notLoaded = anyElementNotLoaded(elements, fieldNames);
+                if (notLoaded == null) {
+                    return page;
+                } else {
+                    return null;
+                }
             }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // ignore
-            }
-        }
-        throw new NoSuchElementException("Timeout loading page "
-                + pageClassToProxy.getSimpleName() + " missing element "
-                + notLoaded);
+        });
+
+        /*
+         * Clock clock = new SystemClock(); long end =
+         * clock.laterBy(SECONDS.toMillis(LOAD_TIMEOUT_SECONDS)); String
+         * notLoaded = null; while (clock.isNowBefore(end)) { notLoaded =
+         * anyElementNotLoaded(elements, fieldNames); if (notLoaded == null) {
+         * return page; } try { Thread.sleep(100); } catch (InterruptedException
+         * e) { // ignore } } throw new
+         * NoSuchElementException("Timeout loading page " +
+         * pageClassToProxy.getSimpleName() + " missing element " + notLoaded);
+         */
     }
 
     protected static String anyElementNotLoaded(List<WrapsElement> proxies,
@@ -672,33 +674,29 @@ public abstract class AbstractTest {
      * @return the first matching element on the current page, if found
      * @throws NoSuchElementException when not found
      */
-    public static WebElement findElementWithTimeout(By by, int timeout,
-            WebElement parentElement) throws NoSuchElementException {
-        Clock clock = new SystemClock();
-        long end = clock.laterBy(timeout);
-        NoSuchElementException lastException = null;
-        while (clock.isNowBefore(end)) {
-            try {
-                WebElement element;
-                if (parentElement == null) {
-                    element = driver.findElement(by);
-                } else {
-                    element = parentElement.findElement(by);
+    public static WebElement findElementWithTimeout(final By by, int timeout,
+            final WebElement parentElement) throws NoSuchElementException {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                timeout, TimeUnit.MILLISECONDS).pollingEvery(100,
+                TimeUnit.MILLISECONDS);
+        try {
+            return wait.until(new Function<WebDriver, WebElement>() {
+                public WebElement apply(WebDriver driver) {
+                    try {
+                        if (parentElement == null) {
+                            return driver.findElement(by);
+                        } else {
+                            return parentElement.findElement(by);
+                        }
+                    } catch (NoSuchElementException e) {
+                        return null;
+                    }
                 }
-                if (element != null) {
-                    return element;
-                }
-            } catch (NoSuchElementException e) {
-                lastException = e;
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // ignore
-            }
+            });
+        } catch (TimeoutException e) {
+            throw new NoSuchElementException(String.format(
+                    "Couldn't find element '%s' after timeout", by));
         }
-        throw new NoSuchElementException(String.format(
-                "Couldn't find element '%s' after timeout", by), lastException);
     }
 
     /**
@@ -825,8 +823,8 @@ public abstract class AbstractTest {
     }
 
     /**
-     * Returns true if {@code text} is present in the element retrieved with
-     * the given method.
+     * Returns true if {@code text} is present in the element retrieved with the
+     * given method.
      *
      * @since 5.7.3
      */
@@ -867,20 +865,20 @@ public abstract class AbstractTest {
      */
     public static void waitUntilEnabled(final WebElement element, int timeout)
             throws NotFoundException {
-        Clock clock = new SystemClock();
-        long end = clock.laterBy(timeout);
-        while (clock.isNowBefore(end)) {
-            if (element.isEnabled()) {
-                return;
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                timeout, TimeUnit.SECONDS).pollingEvery(100,
+                TimeUnit.MILLISECONDS);
+        Function<WebDriver, Boolean> function = new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                return element.isEnabled();
             }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // ignore
-            }
+        };
+        try {
+            wait.until(function);
+        } catch (TimeoutException e) {
+            throw new NotFoundException("Element not enabled after timeout: "
+                    + element);
         }
-        throw new NotFoundException("Element not enabled after timeout: "
-                + element);
     }
 
     /**
@@ -895,8 +893,8 @@ public abstract class AbstractTest {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled,
-     * with a {@code waitUntilEnabledTimeout}.
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
@@ -905,35 +903,32 @@ public abstract class AbstractTest {
      * @return the first matching element on the current page, if found
      * @throws NotFoundException if the element is not found or not enabled
      */
-    public static WebElement findElementAndWaitUntilEnabled(By by,
-            int findElementTimeout, int waitUntilEnabledTimeout)
+    public static WebElement findElementAndWaitUntilEnabled(final By by,
+            final int findElementTimeout, final int waitUntilEnabledTimeout)
             throws NotFoundException {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(100,
+                TimeUnit.MILLISECONDS);
+        Function<WebDriver, WebElement> function = new Function<WebDriver, WebElement>() {
+            public WebElement apply(WebDriver driver) {
+                WebElement element = null;
+                try {
+                    // Find the element.
+                    element = findElementWithTimeout(by, findElementTimeout);
 
-        // Find the element.
-        WebElement element = findElementWithTimeout(by, findElementTimeout);
-
-        // Try to wait until the element is enabled.
-        Clock clock = new SystemClock();
-        long end = clock.laterBy(findElementTimeout);
-        WebDriverException lastException = null;
-        while (clock.isNowBefore(end)) {
-            try {
-                waitUntilEnabled(element, waitUntilEnabledTimeout);
+                    // Try to wait until the element is enabled.
+                    waitUntilEnabled(element, waitUntilEnabledTimeout);
+                } catch (StaleElementReferenceException sere) {
+                    // log.warn("StaleElementReferenceException: " +
+                    // sere.getMessage());
+                    return null;
+                }
                 return element;
-            } catch (StaleElementReferenceException sere) {
-                // Means the element is no longer attached to the DOM
-                // => need to find it again.
-                element = findElementWithTimeout(by, findElementTimeout);
-                lastException = sere;
             }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // ignore
-            }
-        }
-        throw new NotFoundException(String.format(
-                "Couldn't find element '%s' after timeout", by), lastException);
+        };
+
+        return wait.until(function);
+
     }
 
     /**
@@ -953,8 +948,8 @@ public abstract class AbstractTest {
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled,
-     * with a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
      *
      * @param by the locating mechanism
      * @param findElementTimeout the find element timeout in milliseconds
@@ -970,35 +965,7 @@ public abstract class AbstractTest {
         WebElement element = findElementAndWaitUntilEnabled(by,
                 findElementTimeout, waitUntilEnabledTimeout);
 
-        // Try to click on the element.
-        Clock clock = new SystemClock();
-        long end = clock.laterBy(findElementTimeout);
-        WebDriverException lastException = null;
-        while (clock.isNowBefore(end)) {
-            try {
-                element.click();
-                return;
-            } catch (ElementNotVisibleException enve) {
-                // Means the element is no visible yet
-                // => need to find it again.
-                element = findElementAndWaitUntilEnabled(by,
-                        findElementTimeout, waitUntilEnabledTimeout);
-                lastException = enve;
-            } catch (StaleElementReferenceException sere) {
-                // Means the element is no longer attached to the DOM
-                // => need to find it again.
-                element = findElementAndWaitUntilEnabled(by,
-                        findElementTimeout, waitUntilEnabledTimeout);
-                lastException = sere;
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // ignore
-            }
-        }
-        throw new NotFoundException(String.format(
-                "Couldn't find element '%s' after timeout", by), lastException);
+        element.click();
     }
 
     /**
