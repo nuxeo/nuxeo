@@ -172,6 +172,11 @@ width: 960px }
   font-size:12pt;
   background-color:#DDDDDD;
 }
+
+.explain {
+    font-size: smaller;
+    display: block;
+}
 </style>
 
  <script type="text/javascript" src="/nuxeo/nxthemes-lib/jquery.js">
@@ -265,9 +270,24 @@ function ajaxSubmit() {
 
 }
 
+function serializeImportForm() {
+    var params = $('#importForm').serializeArray();
+    var cleaned = [];
+    params.forEach(function(o){
+        if((o.name === "leafType" || o.name === "folderishType")){
+            if(o.value !== "") {
+                cleaned.push(o);
+            }
+        } else {
+            cleaned.push(o);
+        }
+    });
+    return cleaned;
+}
+
 function startImport() {
   started = false;
-  var params = $('#importForm').serializeArray();
+  var params = serializeImportForm();//$('#importForm').serializeArray();
   var formURL = baseUrl + "run";
   params.push({
     name : 'interactive',
@@ -363,18 +383,33 @@ $(document).ready(function() {
   <fieldset>
        <legend>Common configuration</legend>
    <div>
-     <label for="targetPath">Target path in Nuxeo repository : </label>
-     <input type="text" name="targetPath" placeholder="/" value="/">
+     <label for="targetPath">Target path in Nuxeo repository:</label>
+     <input type="text" name="targetPath" placeholder="/" value="/" size="60">
+     <p></p>
    </div>
 
    <div>
-     <label for="batchSize">Batch size (number of documents imported in a single transaction) : </label>
-     <input type="number" name="batchSize" placeholder="10" value="10">
+     <label for="batchSize">Batch size:</label>
+     <input type="number" name="batchSize" placeholder="10" value="10" style="width:5em">
+     <p><span class="explain">Number of documents imported in a single transaction</span></p>
    </div>
 
    <div>
-     <label for="nbThreads">Number of concurrent threads in the importer process : </label>
+     <label for="nbThreads">Number of concurrent threads in the importer process: </label>
      <input type="number" name="nbThreads" placeholder="5" value="5">
+     <p></p>
+   </div>
+
+   <div>
+     <label for="leafType">Leaf type:</label>
+     <input type="text" name="leafType"  style="width:20em">
+     <p><span class="explain">Used by the DocumentModelFactory for the import</span></p>
+   </div>
+
+   <div>
+     <label for="folderishType">Folderish type:</label>
+     <input type="text" name="folderishType" style="width:20em">
+     <p><span class="explain">Used by the DocumentModelFactory for the import</span></p>
    </div>
 
   </fieldset>
@@ -384,7 +419,7 @@ $(document).ready(function() {
        <legend>File Importer configuration</legend>
 
    <div>
-     <label for="inputPath">Local path (on the server) for source files : </label>
+     <label for="inputPath">Local path (on the server) for source files:</label>
      <input type="text" name="inputPath" placeholder="C:\InputData" value="C:\InputData"  size="60">
    </div>
   </fieldset>
@@ -393,14 +428,14 @@ $(document).ready(function() {
   <fieldset style="display:none" id="randomConfig">
        <legend>Random Importer configuration</legend>
 
-  <label for="nbNodes">Number of documents to generate : </label>
+  <label for="nbNodes">Number of documents to generate: </label>
    <input type="range" name="nbNodes" onchange="$('#rangeValue').html(this.value)" style="width:300px"
        min="100"
        max="50000"
        step="100"
        value="200"><span id="rangeValue">200</span> docs<br/>
 
-  <label for="fileSize">Size in KB of the files : </label>
+  <label for="fileSize">Size in KB of the files: </label>
    <input type="range" name="fileSize" onchange="$('#fileSizeValue').html(this.value)" style="width:300px"
        min="1"
        max="1000"
@@ -413,8 +448,6 @@ $(document).ready(function() {
   <input type="button" id="killBtn"  value="Stop import" onclick="killImport()" style="display:none"/>
 
   </form>
-
-
 </div>
 </body>
 </html>
