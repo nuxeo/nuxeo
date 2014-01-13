@@ -20,6 +20,7 @@ import java.lang.reflect.Constructor;
 import java.util.Map;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -115,7 +116,7 @@ public class LayoutElement extends AbstractPage {
      *            added to the page after an ajax call).
      */
     public WebElement getElement(String id, boolean wait) {
-        return AbstractTest.findElementWithTimeout(By.id(id));
+        return Locator.findElementWithTimeout(By.id(id));
     }
 
     /**

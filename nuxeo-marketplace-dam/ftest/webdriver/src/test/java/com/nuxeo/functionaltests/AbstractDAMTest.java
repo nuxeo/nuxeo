@@ -20,6 +20,7 @@ package com.nuxeo.functionaltests;
 import org.junit.After;
 import org.junit.Before;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.dam.DAMAssetPage;
 import org.nuxeo.functionaltests.dam.DAMPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -49,7 +50,7 @@ public abstract class AbstractDAMTest extends AbstractTest {
     }
 
     protected DAMPage getDAMPage() {
-        findElementWithTimeout(By.linkText("DAM")).click();
+        Locator.findElementWithTimeout(By.linkText("DAM")).click();
         return asPage(DAMPage.class);
     }
 

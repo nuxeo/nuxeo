@@ -20,6 +20,7 @@ package org.nuxeo.functionaltests.dam;
 import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -73,7 +74,7 @@ public class FoldableBoxFragment extends WebFragmentImpl {
 
     public void edit() {
         element.findElement(By.linkText("Edit")).click();
-        AbstractTest.waitUntilElementPresent(By.xpath("//h3/a[text()='Cancel']"));
+        Locator.waitUntilElementPresent(By.xpath("//h3/a[text()='Cancel']"));
         refreshElement();
         waitUntilElementPresent(By.className("buttonsGadget"));
     }
@@ -82,7 +83,7 @@ public class FoldableBoxFragment extends WebFragmentImpl {
         element.findElement(
                 By.xpath("//p[@class='buttonsGadget']/input[@value='Save']")).click();
         if (isAjax) {
-            AbstractTest.waitUntilElementPresent(By.xpath("//div[@id='" + id
+            Locator.waitUntilElementPresent(By.xpath("//div[@id='" + id
                     + "']//a[text()='Edit']"));
             refreshElement();
         }

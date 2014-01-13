@@ -80,7 +80,7 @@ public class ITSimpleDiff extends AbstractTest {
         workspacePage = newFile.getNavigationSubPage().goToDocument(
                 WORKSPACE_TITLE);
 
-        WebElement document_content = findElementWithTimeout(By.xpath("//form[@id=\"document_content\"]"));
+        WebElement document_content = Locator.findElementWithTimeout(By.xpath("//form[@id=\"document_content\"]"));
 
         List<WebElement> trelements = document_content.findElement(
                 By.tagName("tbody")).findElements(By.tagName("tr"));
@@ -90,14 +90,14 @@ public class ITSimpleDiff extends AbstractTest {
         trelements.get(0).findElement(By.xpath("td/input[@type=\"checkbox\"]")).click();
         trelements.get(1).findElement(By.xpath("td/input[@type=\"checkbox\"]")).click();
 
-        findElementWaitUntilEnabledAndClick(By.xpath("//input[@value=\"Compare\"]"));
+        Locator.findElementWaitUntilEnabledAndClick(By.xpath("//input[@value=\"Compare\"]"));
 
-        WebElement description1 = findElementWithTimeout(By.xpath(LEFT_DESCRIPTION_XPATH));
+        WebElement description1 = Locator.findElementWithTimeout(By.xpath(LEFT_DESCRIPTION_XPATH));
         String description1Text = description1.getText();
         assertTrue(description1Text != null
                 && description1Text.equals(DESCRIPTION_1));
 
-        WebElement description2 = findElementWithTimeout(By.xpath(RIGHT_DESCRIPTION_XPATH));
+        WebElement description2 = Locator.findElementWithTimeout(By.xpath(RIGHT_DESCRIPTION_XPATH));
 
         String description2Text = description2.getText();
         assertTrue(description2Text != null

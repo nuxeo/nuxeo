@@ -21,7 +21,8 @@ import static org.nuxeo.functionaltests.AbstractTest.findElementAndWaitUntilEnab
 
 import java.util.List;
 
-import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
+import org.nuxeo.functionaltests.Locator.findElementAndWaitUntilEnabled;
 import org.nuxeo.functionaltests.forms.LayoutElement;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
@@ -57,7 +58,7 @@ public class SearchResultsFragment extends WebFragmentImpl {
                 layout.getSubElement("nxw_damNewAsset_after_view_select"));
         select.selectByValue(type);
 
-        AbstractTest.waitForTextPresent(By.id("fancybox-content"),
+        Locator.waitForTextPresent(By.id("fancybox-content"),
                 "You can upload files of any format");
 
         layout.getWidget("nxl_heading:nxw_title").setInputValue(title);
@@ -114,7 +115,7 @@ public class SearchResultsFragment extends WebFragmentImpl {
     }
 
     public BulkEditFancyBoxFragment showBulkEdit(DAMPage currentPage) {
-        WebElement bulkEditButton = findElementAndWaitUntilEnabled(By.id("nxl_gridDamLayout:dam_search_nxw_searchResults_buttons:nxw_damBulkEdit_form:nxw_cvButton_damBulkEdit_subview:nxw_cvButton_damBulkEdit_link"));
+        WebElement bulkEditButton = Locator.findElementAndWaitUntilEnabled(By.id("nxl_gridDamLayout:dam_search_nxw_searchResults_buttons:nxw_damBulkEdit_form:nxw_cvButton_damBulkEdit_subview:nxw_cvButton_damBulkEdit_link"));
         bulkEditButton.click();
         WebElement element = currentPage.getFancyBoxContent();
         return getWebFragment(element, BulkEditFancyBoxFragment.class);

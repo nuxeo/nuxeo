@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -159,7 +160,7 @@ public abstract class AbstractPage {
      */
     public WebElement findElementWithTimeout(By by, int timeout)
             throws NoSuchElementException {
-        return AbstractTest.findElementWithTimeout(by, timeout);
+        return Locator.findElementWithTimeout(by, timeout);
     }
 
     /**
@@ -174,7 +175,7 @@ public abstract class AbstractPage {
      */
     public WebElement findElementWithTimeout(By by, int timeout,
             WebElement parentElement) throws NoSuchElementException {
-        return AbstractTest.findElementWithTimeout(by, timeout, parentElement);
+        return Locator.findElementWithTimeout(by, timeout, parentElement);
     }
 
     /**
@@ -188,7 +189,7 @@ public abstract class AbstractPage {
      */
     public static WebElement findElementWithTimeout(By by)
             throws NoSuchElementException {
-        return AbstractTest.findElementWithTimeout(by);
+        return Locator.findElementWithTimeout(by);
     }
 
     /**
@@ -196,7 +197,7 @@ public abstract class AbstractPage {
      */
     public static List<WebElement> findElementsWithTimeout(By by)
             throws NoSuchElementException {
-        return AbstractTest.findElementsWithTimeout(by);
+        return Locator.findElementsWithTimeout(by);
     }
 
     /**
@@ -210,18 +211,7 @@ public abstract class AbstractPage {
      */
     public static WebElement findElementWithTimeout(By by,
             WebElement parentElement) throws NoSuchElementException {
-        return AbstractTest.findElementWithTimeout(by, parentElement);
-    }
-
-    /**
-     * Waits until an element is enabled, with a timeout.
-     *
-     * @param element the element
-     * @param timeout the timeout in milliseconds
-     */
-    public static void waitUntilEnabled(final WebElement element, int timeout)
-            throws NotFoundException {
-        AbstractTest.waitUntilEnabled(element, timeout);
+        return Locator.findElementWithTimeout(by, parentElement);
     }
 
     /**
@@ -231,7 +221,7 @@ public abstract class AbstractPage {
      */
     public static void waitUntilEnabled(WebElement element)
             throws NotFoundException {
-        AbstractTest.waitUntilEnabled(element);
+        Locator.waitUntilEnabled(element);
     }
 
     /**
@@ -249,7 +239,7 @@ public abstract class AbstractPage {
     public static WebElement findElementAndWaitUntilEnabled(By by,
             int findElementTimeout, int waitUntilEnabledTimeout)
             throws NotFoundException {
-        return AbstractTest.findElementAndWaitUntilEnabled(by,
+        return Locator.findElementAndWaitUntilEnabled(by,
                 findElementTimeout, waitUntilEnabledTimeout);
     }
 
@@ -264,7 +254,7 @@ public abstract class AbstractPage {
      */
     public static WebElement findElementAndWaitUntilEnabled(By by)
             throws NotFoundException {
-        return AbstractTest.findElementAndWaitUntilEnabled(by);
+        return Locator.findElementAndWaitUntilEnabled(by);
     }
 
     /**
@@ -281,7 +271,7 @@ public abstract class AbstractPage {
     public static void findElementWaitUntilEnabledAndClick(By by,
             int findElementTimeout, int waitUntilEnabledTimeout)
             throws NotFoundException {
-        AbstractTest.findElementWaitUntilEnabledAndClick(by,
+        Locator.findElementWaitUntilEnabledAndClick(by,
                 findElementTimeout, waitUntilEnabledTimeout);
     }
 
@@ -295,7 +285,7 @@ public abstract class AbstractPage {
      */
     public static void findElementWaitUntilEnabledAndClick(By by)
             throws NotFoundException {
-        AbstractTest.findElementWaitUntilEnabledAndClick(by);
+        Locator.findElementWaitUntilEnabledAndClick(by);
     }
 
     /**

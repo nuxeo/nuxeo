@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
@@ -158,7 +159,7 @@ public class WebFragmentImpl implements WebFragment {
 
     @Override
     public void waitForTextToBePresent(String text) {
-        AbstractTest.waitForTextPresent(element, text);
+        Locator.waitForTextPresent(element, text);
     }
 
     @Override

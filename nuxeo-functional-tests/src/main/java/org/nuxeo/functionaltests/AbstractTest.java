@@ -57,7 +57,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.Proxy;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -70,7 +69,6 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
@@ -114,7 +112,7 @@ public abstract class AbstractTest {
      */
     public static final String CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME = "chromedriver.exe";
 
-    private static final Log log = LogFactory.getLog(AbstractTest.class);
+    static final Log log = LogFactory.getLog(AbstractTest.class);
 
     public static final String NUXEO_URL = System.getProperty("nuxeoURL",
             "http://localhost:8080/nuxeo").replaceAll("/$", "");
@@ -523,7 +521,7 @@ public abstract class AbstractTest {
 
     public static <T extends WebFragment> T getWebFragment(By by,
             Class<T> webFragmentClass) {
-        WebElement element = findElementWithTimeout(by);
+        WebElement element = Locator.findElementWithTimeout(by);
         return getWebFragment(element, webFragmentClass);
     }
 
@@ -574,17 +572,6 @@ public abstract class AbstractTest {
                 }
             }
         });
-
-        /*
-         * Clock clock = new SystemClock(); long end =
-         * clock.laterBy(SECONDS.toMillis(LOAD_TIMEOUT_SECONDS)); String
-         * notLoaded = null; while (clock.isNowBefore(end)) { notLoaded =
-         * anyElementNotLoaded(elements, fieldNames); if (notLoaded == null) {
-         * return page; } try { Thread.sleep(100); } catch (InterruptedException
-         * e) { // ignore } } throw new
-         * NoSuchElementException("Timeout loading page " +
-         * pageClassToProxy.getSimpleName() + " missing element " + notLoaded);
-         */
     }
 
     protected static String anyElementNotLoaded(List<WrapsElement> proxies,
@@ -634,354 +621,6 @@ public abstract class AbstractTest {
         }
     }
 
-    /**
-     * Returns true if corresponding element is found in the test page.
-     *
-     * @since 5.7
-     */
-    public boolean hasElement(By by) {
-        boolean present;
-        try {
-            driver.findElement(by);
-            present = true;
-        } catch (NoSuchElementException e) {
-            present = false;
-        }
-        return present;
-    }
-
-    /**
-     * Finds the first {@link WebElement} using the given method, with a
-     * timeout.
-     *
-     * @param by the locating mechanism
-     * @param timeout the timeout in milliseconds
-     * @return the first matching element on the current page, if found
-     * @throws NoSuchElementException when not found
-     */
-    public static WebElement findElementWithTimeout(By by, int timeout)
-            throws NoSuchElementException {
-        return findElementWithTimeout(by, timeout, null);
-    }
-
-    /**
-     * Finds the first {@link WebElement} using the given method, with a
-     * timeout.
-     *
-     * @param by the locating mechanism
-     * @param timeout the timeout in milliseconds
-     * @param parentElement find from the element
-     * @return the first matching element on the current page, if found
-     * @throws NoSuchElementException when not found
-     */
-    public static WebElement findElementWithTimeout(final By by, int timeout,
-            final WebElement parentElement) throws NoSuchElementException {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                timeout, TimeUnit.MILLISECONDS).pollingEvery(100,
-                TimeUnit.MILLISECONDS);
-        try {
-            return wait.until(new Function<WebDriver, WebElement>() {
-                public WebElement apply(WebDriver driver) {
-                    try {
-                        if (parentElement == null) {
-                            return driver.findElement(by);
-                        } else {
-                            return parentElement.findElement(by);
-                        }
-                    } catch (NoSuchElementException e) {
-                        return null;
-                    }
-                }
-            });
-        } catch (TimeoutException e) {
-            throw new NoSuchElementException(String.format(
-                    "Couldn't find element '%s' after timeout", by));
-        }
-    }
-
-    /**
-     * Finds the first {@link WebElement} using the given method, with a
-     * timeout.
-     *
-     * @param by the locating mechanism
-     * @param timeout the timeout in milliseconds
-     * @return the first matching element on the current page, if found
-     * @throws NoSuchElementException when not found
-     */
-    public static WebElement findElementWithTimeout(By by)
-            throws NoSuchElementException {
-        return findElementWithTimeout(by, LOAD_TIMEOUT_SECONDS * 1000);
-    }
-
-    public static List<WebElement> findElementsWithTimeout(final By by)
-            throws NoSuchElementException {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                POLLING_FREQUENCY_SECONDS, TimeUnit.SECONDS).ignoring(
-                NoSuchElementException.class);
-        return wait.until(new Function<WebDriver, List<WebElement>>() {
-            public List<WebElement> apply(WebDriver driver) {
-                List<WebElement> elements = driver.findElements(by);
-                return elements.isEmpty() ? null : elements;
-            }
-        });
-    }
-
-    /**
-     * Fluent wait for an element to be present, checking every 5 seconds
-     *
-     * @since 5.7.2
-     */
-    public static WebElement waitUntilElementPresent(final By locator) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                POLLING_FREQUENCY_SECONDS, TimeUnit.SECONDS).ignoring(
-                NoSuchElementException.class);
-        WebElement elt = wait.until(new Function<WebDriver, WebElement>() {
-            public WebElement apply(WebDriver driver) {
-                return driver.findElement(locator);
-            }
-        });
-        return elt;
-    }
-
-    /**
-     * Fluent wait for an element not to be present, checking every 5 seconds.
-     *
-     * @since 5.7.2
-     */
-    public static void waitUntilElementNotPresent(final By locator) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                POLLING_FREQUENCY_SECONDS, TimeUnit.SECONDS);
-        wait.until((new Function<WebDriver, By>() {
-            public By apply(WebDriver driver) {
-                try {
-                    driver.findElement(locator);
-                } catch (NoSuchElementException ex) {
-                    // ok
-                    return locator;
-                }
-                return null;
-            }
-        }));
-    }
-
-    /**
-     * Fluent wait for text to be present in the element retrieved with the
-     * given method.
-     *
-     * @since 5.7.3
-     */
-    public static void waitForTextPresent(By locator, String text) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                POLLING_FREQUENCY_SECONDS, TimeUnit.SECONDS);
-        wait.until(ExpectedConditions.textToBePresentInElement(locator, text));
-    }
-
-    /**
-     * Fluent wait for text to be present in the given element.
-     *
-     * @since 5.7.3
-     */
-    public static void waitForTextPresent(final WebElement element,
-            final String text) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                POLLING_FREQUENCY_SECONDS, TimeUnit.SECONDS);
-        wait.until((new Function<WebDriver, Boolean>() {
-            public Boolean apply(WebDriver driver) {
-                try {
-                    return element.getText().contains(text);
-                } catch (StaleElementReferenceException e) {
-                    return null;
-                }
-            }
-        }));
-    }
-
-    /**
-     * Fluent wait for text to be not present in the given element.
-     *
-     * @since 5.7.3
-     */
-    public static void waitForTextNotPresent(final WebElement element,
-            final String text) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                POLLING_FREQUENCY_SECONDS, TimeUnit.SECONDS);
-        wait.until((new Function<WebDriver, Boolean>() {
-            public Boolean apply(WebDriver driver) {
-                try {
-                    return !element.getText().contains(text);
-                } catch (StaleElementReferenceException e) {
-                    return null;
-                }
-            }
-        }));
-    }
-
-    /**
-     * Returns true if {@code text} is present in the element retrieved with the
-     * given method.
-     *
-     * @since 5.7.3
-     */
-    public static boolean isTextPresent(By by, String text) {
-        return isTextPresent(driver.findElement(by), text);
-    }
-
-    /**
-     * Returns true if {@code text} is present in the given element.
-     *
-     * @since 5.7.3
-     */
-    public static boolean isTextPresent(WebElement element, String text) {
-        return element.getText().contains(text);
-    }
-
-    /**
-     * Finds the first {@link WebElement} using the given method, with a
-     * timeout.
-     *
-     * @param by the locating mechanism
-     * @param timeout the timeout in milliseconds
-     * @param parentElement find from the element
-     * @return the first matching element on the current page, if found
-     * @throws NoSuchElementException when not found
-     */
-    public static WebElement findElementWithTimeout(By by,
-            WebElement parentElement) throws NoSuchElementException {
-        return findElementWithTimeout(by, LOAD_TIMEOUT_SECONDS * 1000,
-                parentElement);
-    }
-
-    /**
-     * Waits until an element is enabled, with a timeout.
-     *
-     * @param element the element
-     * @param timeout the timeout in milliseconds
-     */
-    public static void waitUntilEnabled(final WebElement element, int timeout)
-            throws NotFoundException {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                timeout, TimeUnit.SECONDS).pollingEvery(100,
-                TimeUnit.MILLISECONDS);
-        Function<WebDriver, Boolean> function = new Function<WebDriver, Boolean>() {
-            public Boolean apply(WebDriver driver) {
-                return element.isEnabled();
-            }
-        };
-        try {
-            wait.until(function);
-        } catch (TimeoutException e) {
-            throw new NotFoundException("Element not enabled after timeout: "
-                    + element);
-        }
-    }
-
-    /**
-     * Waits until an element is enabled, with a timeout.
-     *
-     * @param element the element
-     */
-    public static void waitUntilEnabled(WebElement element)
-            throws NotFoundException {
-        waitUntilEnabled(element, AJAX_TIMEOUT_SECONDS * 1000);
-    }
-
-    /**
-     * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled, with
-     * a {@code waitUntilEnabledTimeout}.
-     *
-     * @param by the locating mechanism
-     * @param findElementTimeout the find element timeout in milliseconds
-     * @param waitUntilEnabledTimeout the wait until enabled timeout in
-     *            milliseconds
-     * @return the first matching element on the current page, if found
-     * @throws NotFoundException if the element is not found or not enabled
-     */
-    public static WebElement findElementAndWaitUntilEnabled(final By by,
-            final int findElementTimeout, final int waitUntilEnabledTimeout)
-            throws NotFoundException {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
-                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(100,
-                TimeUnit.MILLISECONDS);
-        Function<WebDriver, WebElement> function = new Function<WebDriver, WebElement>() {
-            public WebElement apply(WebDriver driver) {
-                WebElement element = null;
-                try {
-                    // Find the element.
-                    element = findElementWithTimeout(by, findElementTimeout);
-
-                    // Try to wait until the element is enabled.
-                    waitUntilEnabled(element, waitUntilEnabledTimeout);
-                } catch (StaleElementReferenceException sere) {
-                    // log.warn("StaleElementReferenceException: " +
-                    // sere.getMessage());
-                    return null;
-                }
-                return element;
-            }
-        };
-
-        return wait.until(function);
-
-    }
-
-    /**
-     * Finds the first {@link WebElement} using the given method, with the
-     * default timeout. Then waits until the element is enabled, with the
-     * default timeout.
-     *
-     * @param by the locating mechanism
-     * @return the first matching element on the current page, if found
-     * @throws NotFoundException if the element is not found or not enabled
-     */
-    public static WebElement findElementAndWaitUntilEnabled(By by)
-            throws NotFoundException {
-        return findElementAndWaitUntilEnabled(by, LOAD_TIMEOUT_SECONDS * 1000,
-                AJAX_TIMEOUT_SECONDS * 1000);
-    }
-
-    /**
-     * Finds the first {@link WebElement} using the given method, with a
-     * {@code findElementTimeout}. Then waits until the element is enabled, with
-     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
-     *
-     * @param by the locating mechanism
-     * @param findElementTimeout the find element timeout in milliseconds
-     * @param waitUntilEnabledTimeout the wait until enabled timeout in
-     *            milliseconds
-     * @throws NotFoundException if the element is not found or not enabled
-     */
-    public static void findElementWaitUntilEnabledAndClick(By by,
-            int findElementTimeout, int waitUntilEnabledTimeout)
-            throws NotFoundException {
-
-        // Find the element.
-        WebElement element = findElementAndWaitUntilEnabled(by,
-                findElementTimeout, waitUntilEnabledTimeout);
-
-        element.click();
-    }
-
-    /**
-     * Finds the first {@link WebElement} using the given method, with the
-     * default timeout. Then waits until the element is enabled, with the
-     * default timeout. Then clicks on the element.
-     *
-     * @param by the locating mechanism
-     * @throws NotFoundException if the element is not found or not enabled
-     */
-    public static void findElementWaitUntilEnabledAndClick(By by)
-            throws NotFoundException {
-        findElementWaitUntilEnabledAndClick(by, LOAD_TIMEOUT_SECONDS * 1000,
-                AJAX_TIMEOUT_SECONDS * 1000);
-    }
-
     public LoginPage getLoginPage() {
         return get(NUXEO_URL + "/logout", LoginPage.class);
     }
@@ -995,7 +634,7 @@ public abstract class AbstractTest {
      * it.
      */
     public <T extends AbstractPage> T nav(Class<T> pageClass, String linkText) {
-        WebElement link = findElementWithTimeout(By.linkText(linkText));
+        WebElement link = Locator.findElementWithTimeout(By.linkText(linkText));
         if (link == null) {
             return null;
         }

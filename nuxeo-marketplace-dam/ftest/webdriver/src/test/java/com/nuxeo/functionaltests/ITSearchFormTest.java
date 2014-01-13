@@ -20,6 +20,7 @@ package com.nuxeo.functionaltests;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.dam.DAMPage;
 import org.nuxeo.functionaltests.dam.SearchFormFragment;
 import org.nuxeo.functionaltests.dam.SearchResultsFragment;
@@ -62,14 +63,14 @@ public class ITSearchFormTest extends AbstractDAMTest {
         SearchFormFragment searchFormFragment = damPage.getSearchFormFragment();
         searchFormFragment.fillText("Another");
         searchFormFragment.doSearch();
-        waitForTextNotPresent(searchResultsFragment.getElement(), "One File");
+        Locator.waitForTextNotPresent(searchResultsFragment.getElement(), "One File");
         searchResultsFragment.getSelectedAsset().checkTextToBePresent("Another");
         searchResultsFragment.checkTextToBeNotPresent("One File");
         searchResultsFragment.checkTextToBePresent("Another File");
         searchResultsFragment.checkTextToBeNotPresent("Sample doc");
 
         searchFormFragment.clearSearch();
-        waitForTextPresent(searchResultsFragment.getElement(), "One File");
+        Locator.waitForTextPresent(searchResultsFragment.getElement(), "One File");
         searchResultsFragment.getSelectedAsset().checkTextToBePresent("Another");
         searchResultsFragment.checkTextToBePresent("One File");
         searchResultsFragment.checkTextToBePresent("Another File");
@@ -92,7 +93,7 @@ public class ITSearchFormTest extends AbstractDAMTest {
         SearchFormFragment searchFormFragment = damPage.getSearchFormFragment();
         searchFormFragment.fillText("Document");
         searchFormFragment.doSearch();
-        waitForTextNotPresent(searchResultsFragment.getElement(),
+        Locator.waitForTextNotPresent(searchResultsFragment.getElement(),
                 "Sample picture");
         searchResultsFragment.getSelectedAsset().containsText("One");
         searchResultsFragment.checkTextToBePresent("One Document");
@@ -100,7 +101,7 @@ public class ITSearchFormTest extends AbstractDAMTest {
         searchResultsFragment.checkTextToBeNotPresent("Sample picture");
         searchFormFragment.fillOriginalAuthor("Fry");
         searchFormFragment.doSearch();
-        waitForTextNotPresent(searchResultsFragment.getElement(),
+        Locator.waitForTextNotPresent(searchResultsFragment.getElement(),
                 "One Document");
         searchResultsFragment.getSelectedAsset().checkTextToBePresent("Another");
         searchResultsFragment.checkTextToBeNotPresent("One Document");
@@ -110,7 +111,7 @@ public class ITSearchFormTest extends AbstractDAMTest {
         searchFormFragment.fillAuthoringDate("1/1/2011 3:06 PM",
                 "10/10/2011 3:06 PM");
         searchFormFragment.doSearch();
-        waitForTextPresent(searchResultsFragment.getElement(),
+        Locator.waitForTextPresent(searchResultsFragment.getElement(),
                 "No documents match your search criteria");
     }
 }

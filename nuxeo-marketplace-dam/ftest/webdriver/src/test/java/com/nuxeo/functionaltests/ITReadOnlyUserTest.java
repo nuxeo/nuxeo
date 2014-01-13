@@ -20,6 +20,7 @@ package com.nuxeo.functionaltests;
 import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.dam.AssetCreationFancyBoxFragment;
 import org.nuxeo.functionaltests.dam.DAMPage;
 import org.nuxeo.functionaltests.dam.SearchResultsFragment;
@@ -45,8 +46,8 @@ public class ITReadOnlyUserTest extends AbstractDAMTest {
 
         login("bender", "test");
         // make sure navigation to a given domain is done, see NXP-13436
-        findElementWithTimeout(By.linkText("DOCUMENT MANAGEMENT")).click();
-        findElementWithTimeout(By.linkText("Default domain")).click();
+        Locator.findElementWithTimeout(By.linkText("DOCUMENT MANAGEMENT")).click();
+        Locator.findElementWithTimeout(By.linkText("Default domain")).click();
         damPage = getDAMPage();
         SearchResultsFragment searchResultsFragment = damPage.getSearchResultsFragment();
         // Asset Library is not selected as the user does not have Write right
@@ -64,7 +65,7 @@ public class ITReadOnlyUserTest extends AbstractDAMTest {
         assertFalse(bulkEditButton.isEnabled());
 
         // make sure ajax request is done, otherwise we might get stack traces
-        findElementAndWaitUntilEnabled(By.id(addToWLButtonId));
+        Locator.findElementAndWaitUntilEnabled(By.id(addToWLButtonId));
 
         // cannot edit any metadata on the asset view
         assertFalse(damPage.hasElement(By.xpath("//div[contains(@class, 'foldableBox')]//a[text()='Edit']")));

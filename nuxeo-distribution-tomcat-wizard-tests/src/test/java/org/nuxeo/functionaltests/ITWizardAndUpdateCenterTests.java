@@ -225,7 +225,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         currentUrl = currentUrl + "?showPresets=true";
         packageSelectiondPage = get(currentUrl, WizardPage.class);
 
-        WebElement presetBtn = findElementWithTimeout(By.id("preset_nuxeo-dm"));
+        WebElement presetBtn = Locator.findElementWithTimeout(By.id("preset_nuxeo-dm"));
         presetBtn.click();
         Thread.sleep(1000);
 
@@ -396,7 +396,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         SystemHomePage systemHomePage = adminHome.getSystemHomePage();
         systemHomePage.selectSubTab("Nuxeo distribution");
 
-        WebElement bundle = findElementWithTimeout(By.xpath("//td[text()[normalize-space()='org.nuxeo.ecm.platform.audit.web.access']]"));
+        WebElement bundle = Locator.findElementWithTimeout(By.xpath("//td[text()[normalize-space()='org.nuxeo.ecm.platform.audit.web.access']]"));
         assertNotNull(bundle);
 
         // Need to make HeaderLinksSubPage#logout work and use it

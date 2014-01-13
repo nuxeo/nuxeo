@@ -297,7 +297,7 @@ public class ITSafeEditTest extends AbstractTest {
         documentBasePage.getContentTab();
         documentBasePage.getEditTab();
         localStorage = new LocalStorage(driver);
-        titleElt = findElementWithTimeout(By.name(TITLE_ELT_ID));
+        titleElt = Locator.findElementWithTimeout(By.name(TITLE_ELT_ID));
         String titleEltValue = titleElt.getAttribute("value");
         assertTrue(titleEltValue.equals(WORKSPACE_TITLE));
         log.debug("5 - " + localStorage.getLocalStorageLength());

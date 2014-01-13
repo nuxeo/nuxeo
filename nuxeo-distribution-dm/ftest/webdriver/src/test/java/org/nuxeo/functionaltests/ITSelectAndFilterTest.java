@@ -88,7 +88,7 @@ public class ITSelectAndFilterTest extends AbstractTest {
         // Filter on the name of the other document
         contentTabSubPage.filterDocument(Boolean.toString(!selectedFileName),
                 1, AJAX_TIMEOUT_SECONDS * 1000);
-        waitUntilElementPresent(By.id(RESET_FILTER_XPATH));
+        Locator.waitUntilElementPresent(By.id(RESET_FILTER_XPATH));
 
         trelements = contentTabSubPage.getChildDocumentRows();
 
@@ -99,7 +99,7 @@ public class ITSelectAndFilterTest extends AbstractTest {
         // Reset filter
         workspacePage.getContentTab().clearFilter(2,
                 AJAX_TIMEOUT_SECONDS * 1000);
-        waitUntilElementNotPresent(By.id(RESET_FILTER_XPATH));
+        Locator.waitUntilElementNotPresent(By.id(RESET_FILTER_XPATH));
 
         trelements = contentTabSubPage.getChildDocumentRows();
 
