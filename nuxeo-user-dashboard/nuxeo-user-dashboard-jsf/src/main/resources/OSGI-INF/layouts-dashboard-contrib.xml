@@ -34,7 +34,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="dashboard_left" type="summary_current_document_custom_actions">
+    <widget name="dashboard_left" type="documentActions">
       <labels>
         <label mode="any"></label>
       </labels>
@@ -43,7 +43,7 @@
       </properties>
     </widget>
 
-    <widget name="dashboard_right" type="summary_current_document_custom_actions">
+    <widget name="dashboard_right" type="documentActions">
       <labels>
         <label mode="any"></label>
       </labels>
