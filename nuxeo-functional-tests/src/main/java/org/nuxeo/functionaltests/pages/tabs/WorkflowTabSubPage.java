@@ -46,7 +46,7 @@ public class WorkflowTabSubPage extends DocumentBasePage {
      */
     public void addWorkflowReviewer() {
         Select2WidgetElement particpants = new Select2WidgetElement(driver,
-                By.xpath("//div[contains(@id, 'nxw_participants_select2')]"),
+                driver.findElement(By.xpath("//div[contains(@id, 'nxw_participants_select2')]")),
                 true);
         particpants.selectValue("jdoe");
         selectItemInDropDownMenu(reviewSelector, "Simple review");
@@ -59,7 +59,7 @@ public class WorkflowTabSubPage extends DocumentBasePage {
      */
     public void addParallelWorkflowReviewer(String user) {
         Select2WidgetElement particpants = new Select2WidgetElement(driver,
-                By.xpath("//div[contains(@id, 'nxw_participants_select2')]"),
+                driver.findElement(By.xpath("//div[contains(@id, 'nxw_participants_select2')]")),
                 true);
         particpants.selectValue(user);
     }

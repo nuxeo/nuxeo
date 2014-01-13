@@ -17,12 +17,9 @@
 
 package org.nuxeo.functionaltests.dam;
 
-import static org.nuxeo.functionaltests.AbstractTest.findElementAndWaitUntilEnabled;
-
 import java.util.List;
 
 import org.nuxeo.functionaltests.Locator;
-import org.nuxeo.functionaltests.Locator.findElementAndWaitUntilEnabled;
 import org.nuxeo.functionaltests.forms.LayoutElement;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;

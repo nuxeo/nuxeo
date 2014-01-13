@@ -75,7 +75,10 @@ public class UserEditFormPage extends UsersGroupsBasePage {
         updateInput(companyInput, company);
         updateInput(emailInput, email);
         if (group != null) {
-            Select2WidgetElement groups = new Select2WidgetElement(driver, By.xpath("//*[@id='s2id_viewUserView:editUser:nxl_user_1:nxw_groups_1_select2']"), true);
+            Select2WidgetElement groups = new Select2WidgetElement(
+                    driver,
+                    driver.findElement(By.xpath("//*[@id='s2id_viewUserView:editUser:nxl_user_1:nxw_groups_1_select2']")),
+                    true);
             groups.selectValue(group);
         }
         saveButton.click();

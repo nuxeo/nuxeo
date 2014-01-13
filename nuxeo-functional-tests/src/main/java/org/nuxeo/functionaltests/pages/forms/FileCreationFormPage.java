@@ -19,10 +19,12 @@ package org.nuxeo.functionaltests.pages.forms;
 
 import java.io.IOException;
 
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.forms.FileWidgetElement;
 import org.nuxeo.functionaltests.forms.LayoutElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -55,8 +57,7 @@ public class FileCreationFormPage extends AbstractPage {
         descriptionTextInput.sendKeys(description);
 
         if (uploadBlob) {
-            LayoutElement layout = new LayoutElement(driver,
-                    "document_create:nxl_file");
+            LayoutElement layout = new LayoutElement(driver,"document_create:nxl_file");
             // on file document, a widget template is used => standard file
             // widget is wrapped, hence the duplicate nxw_file id
             FileWidgetElement fileWidget = layout.getWidget(

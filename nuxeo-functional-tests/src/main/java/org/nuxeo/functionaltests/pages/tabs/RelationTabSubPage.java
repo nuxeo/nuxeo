@@ -128,7 +128,7 @@ public class RelationTabSubPage extends DocumentBasePage {
         predicateSelect.selectByValue(predicateUri);
 
         Select2WidgetElement documentSuggestionWidget = new Select2WidgetElement(
-                driver, By.xpath(SELECT2_DOCUMENT_XPATH));
+                driver, driver.findElement(By.xpath(SELECT2_DOCUMENT_XPATH)));
 
         documentSuggestionWidget.selectValue(documentName);
 

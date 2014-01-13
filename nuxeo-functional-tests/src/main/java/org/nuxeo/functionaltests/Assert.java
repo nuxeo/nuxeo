@@ -21,7 +21,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
 /**
- *
+ * Helper class providing assert methods on WebElement conditions.
  *
  * @since 5.9.2
  */

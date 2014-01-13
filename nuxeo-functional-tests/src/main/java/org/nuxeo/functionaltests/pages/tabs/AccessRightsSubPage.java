@@ -104,7 +104,10 @@ public class AccessRightsSubPage extends AbstractPage {
     public AccessRightsSubPage addPermissionForUser(String username,
             String permission, boolean grant) {
 
-        Select2WidgetElement userSelection = new Select2WidgetElement(driver, By.xpath("//*[@id='s2id_add_rights_form:nxl_user_group_suggestion:nxw_selection_select2']"), true);
+        Select2WidgetElement userSelection = new Select2WidgetElement(
+                driver,
+                driver.findElement(By.xpath("//*[@id='s2id_add_rights_form:nxl_user_group_suggestion:nxw_selection_select2']")),
+                true);
         userSelection.selectValue(username);
 
         Select selectGrant = new Select(selectGrantElement);

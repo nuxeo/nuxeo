@@ -26,18 +26,29 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.google.common.base.Function;
 
 /**
- *
+ * Helper class providing find and wait methods with or without timeout. When
+ * requiring timeout, the polling frequency is every 100 milliseconds if not
+ * specified.
  *
  * @since 5.9.2
  */
 public class Locator {
+
+    // Timeout for waitUntilURLDifferentFrom in seconds
+    public static int URLCHANGE_MAX_WAIT = 10;
+
+    public static WebElement findElement(By by) {
+        return AbstractTest.driver.findElement(by);
+    }
 
     /**
      * Finds the first {@link WebElement} using the given method, with a
@@ -198,7 +209,7 @@ public class Locator {
      *            milliseconds
      * @throws NotFoundException if the element is not found or not enabled
      */
-    public static void findElementWaitUntilEnabledAndClick(By by,
+    public static void waitUntilElementEnabledAndClick(By by,
             int findElementTimeout, int waitUntilEnabledTimeout)
             throws NotFoundException {
 
@@ -219,7 +230,7 @@ public class Locator {
      */
     public static void findElementWaitUntilEnabledAndClick(By by)
             throws NotFoundException {
-        findElementWaitUntilEnabledAndClick(by, AbstractTest.LOAD_TIMEOUT_SECONDS * 1000,
+        waitUntilElementEnabledAndClick(by, AbstractTest.LOAD_TIMEOUT_SECONDS * 1000,
                 AbstractTest.AJAX_TIMEOUT_SECONDS * 1000);
     }
 
@@ -313,25 +324,24 @@ public class Locator {
     }
 
     /**
-     * Fluent wait for an element to be present, checking every 5 seconds
+     * Fluent wait for an element to be present, checking every 100 ms.
      *
      * @since 5.7.2
      */
-    public static WebElement waitUntilElementPresent(final By locator) {
+    public static void waitUntilElementPresent(final By locator) {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
                 AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
                 NoSuchElementException.class);
-        WebElement elt = wait.until(new Function<WebDriver, WebElement>() {
+        wait.until(new Function<WebDriver, WebElement>() {
             public WebElement apply(WebDriver driver) {
                 return driver.findElement(locator);
             }
         });
-        return elt;
     }
 
     /**
-     * Fluent wait for an element not to be present, checking every 5 seconds.
+     * Fluent wait for an element not to be present, checking every 100 ms.
      *
      * @since 5.7.2
      */
@@ -350,6 +360,27 @@ public class Locator {
                 return null;
             }
         }));
+    }
+
+    /**
+     * Waits until the URL is different from the one given in parameter, with a
+     * timeout.
+     *
+     * @param url the URL to compare to
+     */
+    public static void waitUntilURLDifferentFrom(String url) {
+        final String refurl = url;
+        ExpectedCondition<Boolean> urlchanged = new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver d) {
+                return !d.getCurrentUrl().equals(refurl);
+            }
+        };
+        WebDriverWait wait = new WebDriverWait(AbstractTest.driver, URLCHANGE_MAX_WAIT);
+        wait.until(urlchanged);
+        if (AbstractTest.driver.getCurrentUrl().equals(refurl)) {
+            System.out.println("Page change failed");
+        }
     }
 
 

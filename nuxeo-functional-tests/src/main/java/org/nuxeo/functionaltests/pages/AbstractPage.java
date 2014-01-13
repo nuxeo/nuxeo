@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Assert;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.openqa.selenium.By;
@@ -31,7 +32,6 @@ import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -40,9 +40,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * Base functions for all pages.
  */
 public abstract class AbstractPage {
-
-    // Timeout for waitUntilURLDifferentFrom in seconds
-    public static int URLCHANGE_MAX_WAIT = 10;
 
     @FindBy(xpath = "//div[@id='nxw_doc_userMenuActions_panel']/ul/li/span")
     public WebElement userServicesForm;
@@ -59,14 +56,7 @@ public abstract class AbstractPage {
      * @since 5.7
      */
     public boolean hasElement(By by) {
-        boolean present;
-        try {
-            driver.findElement(by);
-            present = true;
-        } catch (NoSuchElementException e) {
-            present = false;
-        }
-        return present;
+        return Assert.hasElement(by);
     }
 
     public <T> T get(String url, Class<T> pageClassToProxy) {
@@ -271,7 +261,7 @@ public abstract class AbstractPage {
     public static void findElementWaitUntilEnabledAndClick(By by,
             int findElementTimeout, int waitUntilEnabledTimeout)
             throws NotFoundException {
-        Locator.findElementWaitUntilEnabledAndClick(by,
+        Locator.waitUntilElementEnabledAndClick(by,
                 findElementTimeout, waitUntilEnabledTimeout);
     }
 
@@ -295,18 +285,7 @@ public abstract class AbstractPage {
      * @param url the URL to compare to
      */
     public void waitUntilURLDifferentFrom(String url) {
-        final String refurl = url;
-        ExpectedCondition<Boolean> urlchanged = new ExpectedCondition<Boolean>() {
-            @Override
-            public Boolean apply(WebDriver d) {
-                return !d.getCurrentUrl().equals(refurl);
-            }
-        };
-        WebDriverWait wait = new WebDriverWait(driver, URLCHANGE_MAX_WAIT);
-        wait.until(urlchanged);
-        if (driver.getCurrentUrl().equals(refurl)) {
-            System.out.println("Page change failed");
-        }
+       Locator.waitUntilURLDifferentFrom(url);
     }
 
     /**

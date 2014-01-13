@@ -83,7 +83,10 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
         emailInput.sendKeys(email);
         firstPasswordInput.sendKeys(password);
         secondPasswordInput.sendKeys(password);
-        Select2WidgetElement groups = new Select2WidgetElement(driver, By.xpath("//div[@id='s2id_createUserView:createUser:nxl_user:nxw_groups_select2']"), true);
+        Select2WidgetElement groups = new Select2WidgetElement(
+                driver,
+                driver.findElement(By.xpath("//div[@id='s2id_createUserView:createUser:nxl_user:nxw_groups_select2']")),
+                true);
         groups.selectValue(group);
         createButton.click();
         return asPage(UsersGroupsBasePage.class);

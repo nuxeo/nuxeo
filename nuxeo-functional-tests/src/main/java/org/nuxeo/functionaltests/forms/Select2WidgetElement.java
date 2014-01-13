@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
@@ -35,7 +36,7 @@ import com.google.common.base.Function;
  *
  * @since 5.7.3
  */
-public class Select2WidgetElement {
+public class Select2WidgetElement extends WebFragmentImpl {
 
     private static final Log log = LogFactory.getLog(Select2WidgetElement.class);
 
@@ -52,13 +53,7 @@ public class Select2WidgetElement {
      */
     private static final int SELECT2_LOADING_TIMEOUT = 20;
 
-    private Function<WebDriver, Boolean> s2SingleWaitFunction;
-
-    private Function<WebDriver, Boolean> s2MultipleWaitFunction;
-
-    private final WebElement element;
-
-    private final WebDriver driver;
+    private Function<WebElement, Boolean> s2WaitFunction;
 
     private boolean mutliple = false;
 
@@ -68,25 +63,17 @@ public class Select2WidgetElement {
      * @param driver the driver
      * @param by the by locator of the widget
      */
-    public Select2WidgetElement(WebDriver driver, final By by) {
-        this.driver = driver;
-        this.element = driver.findElement(by);
+    public Select2WidgetElement(WebDriver driver, WebElement element) {
+        super(driver, element);
 
-        s2SingleWaitFunction = new Function<WebDriver, Boolean>() {
-            public Boolean apply(WebDriver driver) {
-                WebElement searchInput = driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH));
+        s2WaitFunction = new Function<WebElement, Boolean>() {
+            public Boolean apply(WebElement element) {
+                WebElement searchInput = element;
                 return !searchInput.getAttribute("class").contains(
                         S2_CSS_ACTIVE_CLASS);
             }
         };
 
-        s2MultipleWaitFunction = new Function<WebDriver, Boolean>() {
-            public Boolean apply(WebDriver driver) {
-                WebElement searchInput = element.findElement(By.xpath(S2_MULTIPLE_INPUT_XPATH));
-                return !searchInput.getAttribute("class").contains(
-                        S2_CSS_ACTIVE_CLASS);
-            }
-        };
     }
 
     /**
@@ -96,9 +83,9 @@ public class Select2WidgetElement {
      * @param by the by locator of the widget
      * @param multiple whether the widget can have multiple values
      */
-    public Select2WidgetElement(final WebDriver driver, final By by,
+    public Select2WidgetElement(final WebDriver driver, WebElement element,
             final boolean multiple) {
-        this(driver, by);
+        this(driver, element);
         this.mutliple = multiple;
     }
 
@@ -118,7 +105,9 @@ public class Select2WidgetElement {
         }
         select2Field.click();
 
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
+        Wait<WebElement> wait = new FluentWait<WebElement>(
+                !mutliple ? driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH))
+                        : element.findElement(By.xpath(S2_MULTIPLE_INPUT_XPATH))).withTimeout(
                 SELECT2_LOADING_TIMEOUT, TimeUnit.SECONDS).pollingEvery(100,
                 TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
 
@@ -130,18 +119,19 @@ public class Select2WidgetElement {
         }
 
         char c;
-        for (int i = 0; i <  value.length(); i++) {
+        for (int i = 0; i < value.length(); i++) {
             c = value.charAt(i);
             suggestInput.sendKeys(c + "");
             try {
-                wait.until(mutliple ? s2MultipleWaitFunction
-                        : s2SingleWaitFunction);
+                wait.until(s2WaitFunction);
             } catch (TimeoutException e) {
                 if (i == (value.length() - 1)) {
-                    log.error("Suggestion definitly timed out with last letter : " + c + ". There is something wrong with select2");
+                    log.error("Suggestion definitly timed out with last letter : "
+                            + c + ". There is something wrong with select2");
                     throw e;
                 }
-                log.warn("Suggestion timed out with letter : " + c + ". Let's try with next letter.");
+                log.warn("Suggestion timed out with letter : " + c
+                        + ". Let's try with next letter.");
             }
         }
 

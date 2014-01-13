@@ -20,8 +20,9 @@ import java.lang.reflect.Constructor;
 import java.util.Map;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Assert;
 import org.nuxeo.functionaltests.Locator;
-import org.nuxeo.functionaltests.pages.AbstractPage;
+import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -32,20 +33,26 @@ import org.openqa.selenium.WebElement;
  *
  * @since 5.7
  */
-public class LayoutElement extends AbstractPage {
+public class LayoutElement implements LayoutFragment {
+
+    protected final WebDriver driver;
 
     protected String id;
-
-    public LayoutElement(WebDriver driver, String id) {
-        super(driver);
-        this.id = id;
-    }
 
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * @param driver
+     * @param id
+     */
+    public LayoutElement(WebDriver driver, String id) {
+        this.driver = driver;
         this.id = id;
     }
 
@@ -99,14 +106,14 @@ public class LayoutElement extends AbstractPage {
      * Returns true if sub element is found in the page.
      */
     protected boolean hasSubElement(String id) {
-        return hasElement(By.id(getSubElementId(id)));
+        return Assert.hasElement(By.id(getSubElementId(id)));
     }
 
     /**
      * Returns the element with given id in the page.
      */
     public WebElement getElement(String id) {
-        return driver.findElement(By.id(id));
+        return Locator.findElement(By.id(id));
     }
 
     /**
@@ -174,6 +181,14 @@ public class LayoutElement extends AbstractPage {
         for (Map.Entry<String, String> entry : entries.entrySet()) {
             setInput(entry.getKey(), entry.getValue());
         }
+    }
+
+    /**
+     * @since 5.9.2
+     */
+    public <T extends WebFragment> T getWebFragment(String id,
+            Class<T> webFragmentClass) {
+        return AbstractTest.getWebFragment(By.id(getSubElementId(id)), webFragmentClass);
     }
 
 }
