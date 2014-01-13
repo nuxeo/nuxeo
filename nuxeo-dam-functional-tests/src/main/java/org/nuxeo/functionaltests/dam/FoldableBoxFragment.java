@@ -96,7 +96,7 @@ public class FoldableBoxFragment extends WebFragmentImpl {
     public WebElement waitUntilElementPresent(final By locator) {
         Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_SECONDS, TimeUnit.SECONDS).ignoring(
+                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
                 NoSuchElementException.class);
         return wait.until(new Function<WebDriver, WebElement>() {
             public WebElement apply(WebDriver driver) {

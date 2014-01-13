@@ -88,6 +88,13 @@ public abstract class AbstractTest {
     public final static String TEST_PASSWORD = "test";
 
     /**
+     * Polling frequency in milliseconds.
+     *
+     * @since 5.9.2
+     */
+    public static final int POLLING_FREQUENCY_MILLISECONDS = 100;
+
+    /**
      * @since 5.7
      */
     public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/chromedriver";
@@ -567,7 +574,7 @@ public abstract class AbstractTest {
         }
 
         Wait<T> wait = new FluentWait<T>(page).withTimeout(
-                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(100,
+                LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(POLLING_FREQUENCY_MILLISECONDS,
                 TimeUnit.MILLISECONDS);
 
         return wait.until(new Function<T, T>() {
