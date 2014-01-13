@@ -743,8 +743,10 @@
       <labels>
         <label mode="any"></label>
       </labels>
-      <properties widgetMode="view">
+      <controls mode="any">
         <control name="handleLabels">true</control>
+      </controls>
+      <properties widgetMode="view">
         <property name="category">SUMMARY_INDICATORS</property>
         <property name="overallDisplay">horizontal_block</property>
         <property name="styleClass">indicators</property>
@@ -787,8 +789,7 @@
       </controls>
     </widget>
 
-    <widget name="summary_panel_top" type="summary_current_document_custom_actions">
-      <handlingLabels>true</handlingLabels>
+    <widget name="summary_panel_top" type="documentActions">
       <labels>
         <label mode="any"></label>
       </labels>
@@ -796,10 +797,12 @@
         <property name="category">SUMMARY_PANEL_TOP</property>
         <property name="subStyleClass">summaryActions</property>
       </properties>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
     </widget>
 
-    <widget name="summary_panel_left" type="summary_current_document_custom_actions">
-      <handlingLabels>true</handlingLabels>
+    <widget name="summary_panel_left" type="documentActions">
       <labels>
         <label mode="any"></label>
       </labels>
@@ -807,10 +810,12 @@
         <property name="category">SUMMARY_PANEL_LEFT</property>
         <property name="subStyleClass">summaryActions</property>
       </properties>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
     </widget>
 
-    <widget name="summary_panel_right" type="summary_current_document_custom_actions">
-      <handlingLabels>true</handlingLabels>
+    <widget name="summary_panel_right" type="documentActions">
       <labels>
         <label mode="any"></label>
       </labels>
@@ -818,10 +823,12 @@
         <property name="category">SUMMARY_PANEL_RIGHT</property>
         <property name="subStyleClass">summaryActions</property>
       </properties>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
     </widget>
 
-    <widget name="summary_panel_bottom" type="summary_current_document_custom_actions">
-      <handlingLabels>true</handlingLabels>
+    <widget name="summary_panel_bottom" type="documentActions">
       <labels>
         <label mode="any"></label>
       </labels>
@@ -829,6 +836,9 @@
         <property name="category">SUMMARY_PANEL_BOTTOM</property>
         <property name="subStyleClass">summaryActions</property>
       </properties>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
     </widget>
 
   </extension>
