@@ -23,7 +23,11 @@ public class PathSegmentServiceCompat implements PathSegmentService {
 
     @Override
     public String generatePathSegment(DocumentModel doc) throws ClientException {
-        return IdUtils.generateId(doc.getTitle(), "-", true, 24);
+        return generatePathSegment(doc.getTitle());
     }
 
+    @Override
+    public String generatePathSegment(String s) throws ClientException {
+        return IdUtils.generateId(s, "-", true, 24);
+    }
 }

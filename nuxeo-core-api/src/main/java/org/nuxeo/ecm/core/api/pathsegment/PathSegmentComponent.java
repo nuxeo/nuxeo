@@ -128,4 +128,12 @@ public class PathSegmentComponent extends DefaultComponent implements
         } // else keep old service instance
     }
 
+    @Override
+    public String generatePathSegment(String s) throws ClientException {
+        if (recompute) {
+            recompute();
+            recompute = false;
+        }
+        return service.generatePathSegment(s);
+    }
 }

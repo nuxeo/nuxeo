@@ -29,7 +29,11 @@ public class PathSegmentServiceDefault implements PathSegmentService {
 
     @Override
     public String generatePathSegment(DocumentModel doc) throws ClientException {
-        String s = doc.getTitle();
+        return generatePathSegment(doc.getTitle());
+    }
+
+    @Override
+    public String generatePathSegment(String s) throws ClientException {
         if (s == null) {
             s = "";
         }
@@ -44,5 +48,4 @@ public class PathSegmentServiceDefault implements PathSegmentService {
         }
         return s;
     }
-
 }
