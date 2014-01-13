@@ -795,7 +795,7 @@
       </labels>
       <properties widgetMode="any">
         <property name="category">SUMMARY_PANEL_TOP</property>
-        <property name="subStyleClass">summaryActions</property>
+        <property name="styleClass">summaryActions</property>
       </properties>
       <controls mode="any">
         <control name="handleLabels">true</control>
@@ -808,7 +808,7 @@
       </labels>
       <properties widgetMode="any">
         <property name="category">SUMMARY_PANEL_LEFT</property>
-        <property name="subStyleClass">summaryActions</property>
+        <property name="styleClass">summaryActions</property>
       </properties>
       <controls mode="any">
         <control name="handleLabels">true</control>
@@ -821,7 +821,7 @@
       </labels>
       <properties widgetMode="any">
         <property name="category">SUMMARY_PANEL_RIGHT</property>
-        <property name="subStyleClass">summaryActions</property>
+        <property name="styleClass">summaryActions</property>
       </properties>
       <controls mode="any">
         <control name="handleLabels">true</control>
@@ -834,7 +834,7 @@
       </labels>
       <properties widgetMode="any">
         <property name="category">SUMMARY_PANEL_BOTTOM</property>
-        <property name="subStyleClass">summaryActions</property>
+        <property name="styleClass">summaryActions</property>
       </properties>
       <controls mode="any">
         <control name="handleLabels">true</control>
