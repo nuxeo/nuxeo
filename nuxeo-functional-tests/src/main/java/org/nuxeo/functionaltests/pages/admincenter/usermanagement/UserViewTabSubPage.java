@@ -19,7 +19,6 @@ package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import static org.junit.Assert.assertEquals;
 
-import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -55,14 +54,6 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
         deleteUserLink.click();
         Alert alert = driver.switchTo().alert();
         assertEquals("Delete user?", alert.getText());
-        // Trying Thread.sleep on failing alert.accept on some machines:
-        // org.openqa.selenium.WebDriverException:
-        // a.document.getElementsByTagName("dialog")[0] is undefined
-        try {
-            Thread.sleep(AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
-        } catch (InterruptedException ie) {
-            // ignore
-        }
         alert.accept();
         return asPage(UsersTabSubPage.class);
     }

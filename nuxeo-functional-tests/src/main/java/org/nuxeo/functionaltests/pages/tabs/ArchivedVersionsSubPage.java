@@ -200,14 +200,6 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
         if (isConfirm) {
             Alert alert = driver.switchTo().alert();
             assertEquals("Delete selected document(s)?", alert.getText());
-            // Trying Thread.sleep on failing alert.accept on some machines:
-            // org.openqa.selenium.WebDriverException:
-            // a.document.getElementsByTagName("dialog")[0] is undefined
-            try {
-                Thread.sleep(AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
-            } catch (InterruptedException ie) {
-                // ignore
-            }
             alert.accept();
         }
         return asPage(pageClass);

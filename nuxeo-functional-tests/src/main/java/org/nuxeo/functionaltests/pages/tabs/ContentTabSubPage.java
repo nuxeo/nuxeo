@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.Alert;
@@ -36,8 +36,8 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.Clock;
-import org.openqa.selenium.support.ui.SystemClock;
+
+import com.google.common.base.Function;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents
@@ -138,14 +138,6 @@ public class ContentTabSubPage extends DocumentBasePage {
         findElementWaitUntilEnabledAndClick(By.xpath(DELETE_BUTTON_XPATH));
         Alert alert = driver.switchTo().alert();
         assertEquals("Delete selected document(s)?", alert.getText());
-        // Trying Thread.sleep on failing alert.accept on some machines:
-        // org.openqa.selenium.WebDriverException:
-        // a.document.getElementsByTagName("dialog")[0] is undefined
-        try {
-            Thread.sleep(AbstractTest.LOAD_SHORT_TIMEOUT_SECONDS * 1000);
-        } catch (InterruptedException ie) {
-            // ignore
-        }
         alert.accept();
     }
 
@@ -182,21 +174,15 @@ public class ContentTabSubPage extends DocumentBasePage {
         filterInput.clear();
         filterInput.sendKeys(filter);
         filterButton.click();
-        Clock clock = new SystemClock();
-        long end = clock.laterBy(timeout);
-        while (clock.isNowBefore(end)) {
-            try {
-                if (getChildDocumentRows().size() == expectedNbOfDisplayedResult) {
-                    return;
+        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                try {
+                    return getChildDocumentRows().size() == expectedNbOfDisplayedResult;
+                } catch (NoSuchElementException e) {
+                    return false;
                 }
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // ignore
-            } catch (NoSuchElementException ex) {
-                // ignore
             }
-        }
-
+        });
     }
 
     /**
@@ -210,20 +196,15 @@ public class ContentTabSubPage extends DocumentBasePage {
     public void clearFilter(final int expectedNbOfDisplayedResult,
             final int timeout) {
         clearFilterButton.click();
-        Clock clock = new SystemClock();
-        long end = clock.laterBy(timeout);
-        while (clock.isNowBefore(end)) {
-            try {
-                if (getChildDocumentRows().size() == expectedNbOfDisplayedResult) {
-                    return;
+        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                try {
+                    return getChildDocumentRows().size() == expectedNbOfDisplayedResult;
+                } catch (NoSuchElementException e) {
+                    return false;
                 }
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                // ignore
-            } catch (NoSuchElementException ex) {
-                // ignore
             }
-        }
+        });
     }
 
     /**

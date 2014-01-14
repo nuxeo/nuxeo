@@ -108,15 +108,7 @@ public abstract class AbstractWizardPage extends AbstractPage {
         }
         String URLbefore = driver.getCurrentUrl();
         link.click();
-        if (waitForURLChange == true) {
-            waitUntilURLDifferentFrom(URLbefore);
-        } else {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // do nothing
-            }
-        }
+        waitUntilURLDifferentFrom(URLbefore);
         return asPage(wizardPageClass);
     }
 
