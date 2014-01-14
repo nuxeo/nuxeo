@@ -106,12 +106,20 @@ public class EasyShare extends ModuleRoot {
                     if (session.exists(docRef)) {
                         try {
                             DocumentModel doc = session.getDocument(docRef);
+
                             Blob blob = doc.getAdapter(BlobHolder.class).getBlob();
                             DocumentModel docFolder = session.getDocument(doc.getParentRef());
 
                             // Audit Log
                             OperationContext ctx = new OperationContext(session);
                             ctx.setInput(doc);
+
+                            Date today = new Date();
+                            if (today.after(docFolder.getProperty("dc:expired").getValue(Date.class))) {
+                                return Response.serverError().status(
+                                        Response.Status.NOT_FOUND).build();
+
+                            }
 
                             // Audit.Log operation parameter setting
                             Map<String,Object> params = new HashMap<String,Object>();
@@ -121,12 +129,10 @@ public class EasyShare extends ModuleRoot {
                             AutomationService service = Framework.getLocalService(AutomationService.class);
                             service.run(ctx, "Audit.Log", params);
 
-
-                            Date today = new Date();
-                            if (today.after(docFolder.getProperty("dc:expired").getValue(Date.class))) {
-                                return Response.serverError().status(
-                                        Response.Status.NOT_FOUND).build();
-
+                            if (doc.isProxy()){
+                                DocumentModel liveDoc = session.getSourceDocument(docRef);
+                                ctx.setInput(liveDoc);
+                                service.run(ctx, "Audit.Log", params);
                             }
 
                             return Response.ok(blob.getStream(),
