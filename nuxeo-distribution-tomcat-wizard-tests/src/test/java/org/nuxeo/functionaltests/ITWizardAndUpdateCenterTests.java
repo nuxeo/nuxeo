@@ -72,7 +72,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
     }
 
     protected String getTestPassword() {
-        return "testingwizardregistrationandinstallation";
+        return  System.getProperty("connectPassword");
     }
 
     public void runWizardAndRestart() throws Exception {

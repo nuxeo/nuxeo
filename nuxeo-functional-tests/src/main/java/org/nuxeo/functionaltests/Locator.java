@@ -374,7 +374,7 @@ public class Locator {
             @Override
             public Boolean apply(WebDriver d) {
                 String currentUrl = d.getCurrentUrl();
-                AbstractTest.log.warn("currentUrl is still: " + currentUrl);
+                AbstractTest.log.debug("currentUrl is still: " + currentUrl);
                 return !currentUrl.equals(refurl);
             }
         };
@@ -420,8 +420,8 @@ public class Locator {
                 String currentUrl = d.getCurrentUrl();
                 boolean result = !(currentUrl.contains(refurl) ^ contain);
                 if (!result) {
-                    AbstractTest.log.warn("currentUrl is : " + currentUrl);
-                    AbstractTest.log.warn((contain ? "It should contains : " : "It should not contains : ") + refurl);
+                    AbstractTest.log.debug("currentUrl is : " + currentUrl);
+                    AbstractTest.log.debug((contain ? "It should contains : " : "It should not contains : ") + refurl);
                 }
                 return result;
             }
@@ -430,6 +430,13 @@ public class Locator {
         wait.until(condition);
     }
 
+    /**
+     * Fluent wait on a the given function, checking every 100 ms.
+     *
+     * @param function
+     *
+     * @since 5.9.2
+     */
     public static void waitUntilGivenFunction(Function<WebDriver, Boolean> function) {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
