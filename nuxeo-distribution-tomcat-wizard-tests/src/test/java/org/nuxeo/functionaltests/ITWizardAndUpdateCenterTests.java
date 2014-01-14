@@ -72,7 +72,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
     }
 
     protected String getTestPassword() {
-        return System.getProperty("connectPassword");
+        return "testingwizardregistrationandinstallation";
     }
 
     public void runWizardAndRestart() throws Exception {
@@ -83,19 +83,19 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
         // **********************
         // Settings
-        WizardPage settingsPage = welcomePage.next(true);
+        WizardPage settingsPage = welcomePage.next();
         assertNotNull(settingsPage);
 
         assertEquals("General Settings", settingsPage.getTitle());
 
-        welcomePage = settingsPage.previous(true);
+        welcomePage = settingsPage.previous();
         assertNotNull(welcomePage);
         assertFalse(welcomePage.hasError());
         assertTrue(welcomePage.getTitle().contains("Welcome to "));
 
         // **********************
         // proxy
-        WizardPage proxyPage = welcomePage.next(true).next(true);
+        WizardPage proxyPage = welcomePage.next().next();
         assertNotNull(proxyPage);
         assertFalse(proxyPage.hasError());
         assertEquals("HTTP Proxy Settings", proxyPage.getTitle());
@@ -104,45 +104,45 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type", "anonymous"));
         proxyPage.clearInput("nuxeo.http.proxy.host");
         proxyPage.clearInput("nuxeo.http.proxy.port");
-        proxyPage = proxyPage.next(false);
+        proxyPage = proxyPage.next(true);
         assertTrue(proxyPage.hasError());
 
         proxyPage.fillInput("nuxeo.http.proxy.host", "myproxy");
         proxyPage.fillInput("nuxeo.http.proxy.port", "AAAA");
-        proxyPage = proxyPage.next(false);
+        proxyPage = proxyPage.next(true);
         assertTrue(proxyPage.hasError());
 
         proxyPage.fillInput("nuxeo.http.proxy.port", "8080");
-        WizardPage somePage = proxyPage.next(true);
+        WizardPage somePage = proxyPage.next();
         assertFalse(somePage.hasError());
-        proxyPage = somePage.previous(true);
+        proxyPage = somePage.previous();
 
         assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type",
                 "authenticated"));
         proxyPage.clearInput("nuxeo.http.proxy.login");
         proxyPage.clearInput("nuxeo.http.proxy.password");
-        proxyPage = proxyPage.next();
+        proxyPage = proxyPage.next(true);
         assertTrue(proxyPage.hasError());
 
         assertTrue(proxyPage.selectOption("nuxeo.http.proxy.type", "none"));
 
         // **********************
         // Database settings
-        WizardPage dbPage = proxyPage.next(true);
+        WizardPage dbPage = proxyPage.next();
         assertNotNull(dbPage);
         assertFalse(dbPage.hasError());
         assertEquals("Database Settings", dbPage.getTitle());
 
         // **********************
         // SMTP Settings
-        WizardPage smtpPage = dbPage.next(true);
+        WizardPage smtpPage = dbPage.next();
         assertNotNull(smtpPage);
         assertEquals("SMTP Settings", smtpPage.getTitle());
         // check port validation
         assertTrue(smtpPage.selectOption("mail.transport.auth", "false"));
         smtpPage.fillInput("mail.transport.host", SMTP_SERVER_HOST);
         smtpPage.fillInput("mail.transport.port", "AAA");
-        smtpPage = smtpPage.next(WizardPage.class, false);
+        smtpPage = smtpPage.next(true);
         assertTrue(smtpPage.hasError());
 
         // check login/password validation
@@ -150,13 +150,13 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertTrue(smtpPage.selectOption("mail.transport.auth", "true"));
         smtpPage.clearInput("mail.transport.user");
         smtpPage.clearInput("mail.transport.password");
-        smtpPage = smtpPage.next(WizardPage.class, false);
+        smtpPage = smtpPage.next(true);
         assertTrue(smtpPage.hasError());
         assertTrue(smtpPage.selectOption("mail.transport.auth", "false"));
 
         // **********************
         // Connect Form
-        WizardPage connectWizardPage = smtpPage.next(WizardPage.class, true);
+        WizardPage connectWizardPage = smtpPage.next();
         assertNotNull(connectWizardPage);
         assertFalse(connectWizardPage.hasError());
 
@@ -231,7 +231,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
         // **************************
         // Package Download Screen
-        WizardPage packageDownloadPage = packageSelectiondPage.next(true);
+        WizardPage packageDownloadPage = packageSelectiondPage.next();
         assertNotNull(packageDownloadPage);
         assertEquals("Download Module(s)", packageDownloadPage.getTitle());
 

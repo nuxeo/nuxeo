@@ -24,6 +24,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import com.google.common.base.Function;
+
 public class WizardPage extends AbstractWizardPage {
 
 //    protected static final String NEXT_BUTTON_LOCATOR = "//input[@class=\"glossyButton\" and @value=\"Next step\"]";
@@ -37,19 +39,37 @@ public class WizardPage extends AbstractWizardPage {
     }
 
     public WizardPage next() {
-        return next(WizardPage.class, false);
+        return next(false);
     }
 
-    public WizardPage next(Boolean waitForURLChange) {
-        return next(WizardPage.class, waitForURLChange);
+    public WizardPage next(Boolean errorExpected) {
+        if (errorExpected) {
+            return next(WizardPage.class,
+                    new Function<WebDriver, Boolean>() {
+                        public Boolean apply(WebDriver driver) {
+                            return hasError();
+                        }
+                    });
+        } else {
+            return next(WizardPage.class);
+        }
     }
 
     public WizardPage previous() {
-        return previous(WizardPage.class, false);
+        return previous(false);
     }
 
-    public WizardPage previous(Boolean waitForURLChange) {
-        return previous(WizardPage.class, waitForURLChange);
+    public WizardPage previous(Boolean errorExpected) {
+        if (errorExpected) {
+            return previous(WizardPage.class,
+                    new Function<WebDriver, Boolean>() {
+                        public Boolean apply(WebDriver driver) {
+                            return hasError();
+                        }
+                    });
+        } else {
+            return previous(WizardPage.class);
+        }
     }
 
     @Override
@@ -63,7 +83,6 @@ public class WizardPage extends AbstractWizardPage {
     }
 
     public ConnectWizardPage getConnectPage() {
-        driver.switchTo().frame("connectForm");
         return asPage(ConnectWizardPage.class);
     }
 

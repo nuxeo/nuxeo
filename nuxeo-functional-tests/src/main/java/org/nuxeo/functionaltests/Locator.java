@@ -44,7 +44,7 @@ import com.google.common.base.Function;
 public class Locator {
 
     // Timeout for waitUntilURLDifferentFrom in seconds
-    public static int URLCHANGE_MAX_WAIT = 10;
+    public static int URLCHANGE_MAX_WAIT = 30;
 
     public static WebElement findElement(By by) {
         return AbstractTest.driver.findElement(by);
@@ -373,7 +373,9 @@ public class Locator {
         ExpectedCondition<Boolean> urlchanged = new ExpectedCondition<Boolean>() {
             @Override
             public Boolean apply(WebDriver d) {
-                return !d.getCurrentUrl().equals(refurl);
+                String currentUrl = d.getCurrentUrl();
+                AbstractTest.log.warn("currentUrl is still: " + currentUrl);
+                return !currentUrl.equals(refurl);
             }
         };
         WebDriverWait wait = new WebDriverWait(AbstractTest.driver, URLCHANGE_MAX_WAIT);
@@ -381,6 +383,58 @@ public class Locator {
         if (AbstractTest.driver.getCurrentUrl().equals(refurl)) {
             System.out.println("Page change failed");
         }
+    }
+
+    /**
+     * Waits until the URL contains the string given in parameter, with a
+     * timeout.
+     *
+     * @param string the string that is to be contained
+     *
+     * @since 5.9.2
+     */
+    public static void waitUntilURLContains(String string) {
+        waitUntilURLContainsOrNot(string, true);
+    }
+
+    /**
+     * Waits until the URL does not contain the string given in parameter, with a
+     * timeout.
+     *
+     * @param string the string that is not to be contained
+     *
+     * @since 5.9.2
+     */
+    public static void waitUntilURLNotContain(String string) {
+        waitUntilURLContainsOrNot(string, false);
+    }
+
+    /**
+     * @since 5.9.2
+     */
+    private static void waitUntilURLContainsOrNot(String string, final boolean contain) {
+        final String refurl = string;
+        ExpectedCondition<Boolean> condition = new ExpectedCondition<Boolean>() {
+            @Override
+            public Boolean apply(WebDriver d) {
+                String currentUrl = d.getCurrentUrl();
+                boolean result = !(currentUrl.contains(refurl) ^ contain);
+                if (!result) {
+                    AbstractTest.log.warn("currentUrl is : " + currentUrl);
+                    AbstractTest.log.warn((contain ? "It should contains : " : "It should not contains : ") + refurl);
+                }
+                return result;
+            }
+        };
+        WebDriverWait wait = new WebDriverWait(AbstractTest.driver, URLCHANGE_MAX_WAIT);
+        wait.until(condition);
+    }
+
+    public static void waitUntilGivenFunction(Function<WebDriver, Boolean> function) {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
+                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
+                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        wait.until(function);
     }
 
 

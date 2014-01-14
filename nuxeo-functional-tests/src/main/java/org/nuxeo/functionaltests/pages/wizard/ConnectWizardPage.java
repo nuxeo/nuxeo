@@ -69,11 +69,6 @@ public class ConnectWizardPage extends AbstractWizardPage {
         }
         waitUntilEnabled(link);
         link.click();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            // do nothing
-        }
         return asPage(wizardPageClass);
     }
 

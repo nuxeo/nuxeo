@@ -16,11 +16,14 @@
  */
 package org.nuxeo.functionaltests.pages.wizard;
 
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
+
+import com.google.common.base.Function;
 
 public abstract class AbstractWizardPage extends AbstractPage {
 
@@ -40,43 +43,35 @@ public abstract class AbstractWizardPage extends AbstractPage {
     protected abstract String getPreviousButtonLocator();
 
     public <T extends AbstractWizardPage> T next(Class<T> wizardPageClass) {
-        return next(wizardPageClass, false);
+        return next(wizardPageClass, null);
     }
 
     public <T extends AbstractWizardPage> T next(Class<T> wizardPageClass,
-            Boolean waitForURLChange) {
+            Function<WebDriver, Boolean> function) {
         WebElement buttonNext = findElementWithTimeout(By.xpath(getNextButtonLocator()));
         String URLbefore = driver.getCurrentUrl();
         buttonNext.click();
-        if (waitForURLChange == true) {
+        if (function == null) {
             waitUntilURLDifferentFrom(URLbefore);
         } else {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // do nothing
-            }
+          Locator.waitUntilGivenFunction(function);
         }
         return asPage(wizardPageClass);
     }
 
     public <T extends AbstractWizardPage> T previous(Class<T> wizardPageClass) {
-        return previous(wizardPageClass, false);
+        return previous(wizardPageClass, null);
     }
 
     public <T extends AbstractWizardPage> T previous(Class<T> wizardPageClass,
-            Boolean waitForURLChange) {
+            Function<WebDriver, Boolean> function) {
         WebElement buttonPrev = findElementWithTimeout(By.xpath(getPreviousButtonLocator()));
         String URLbefore = driver.getCurrentUrl();
         buttonPrev.click();
-        if (waitForURLChange == true) {
+        if (function == null) {
             waitUntilURLDifferentFrom(URLbefore);
         } else {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // do nothing
-            }
+            Locator.waitUntilGivenFunction(function);
         }
         return asPage(wizardPageClass);
     }
@@ -96,12 +91,6 @@ public abstract class AbstractWizardPage extends AbstractPage {
         button.click();
         if (waitForURLChange == true) {
             waitUntilURLDifferentFrom(URLbefore);
-        } else {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // do nothing
-            }
         }
         return asPage(wizardPageClass);
     }
