@@ -133,8 +133,10 @@
                   action="#{csvImportActions.importCSVFile}"
                   reRender="csv_import_panel"
                   styleClass="button" />
+                <button class="button" onclick="jQuery.fancybox.close(); return false;">#{messages['command.cancel']}</button>
               </c:if>
               <c:if test="#{importScheduled or importRunning or importComplete}">
+                <button class="button" onclick="jQuery.fancybox.close(); return false;">#{messages['command.close']}</button>
                 <a4j:commandButton value="#{messages['command.csv.start.new']}"
                   action="#{csvImportActions.resetState()}"
                   reRender="csv_import_panel"

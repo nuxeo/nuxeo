@@ -11,6 +11,7 @@
         <property name="autoDimensions">false</property>
         <property name="width">90%</property>
         <property name="height">90%</property>
+        <property name="modal">true</property>
       </properties>
       <filter-id>importFile</filter-id>
     </action>
