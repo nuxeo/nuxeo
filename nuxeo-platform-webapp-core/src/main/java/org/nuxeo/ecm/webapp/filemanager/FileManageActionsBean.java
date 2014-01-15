@@ -35,6 +35,7 @@ import javax.faces.event.ActionEvent;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -43,7 +44,6 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
-import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
@@ -123,6 +123,13 @@ public class FileManageActionsBean implements FileManageActions {
 
     @In(create = true, required = false)
     protected UploadItemHolderCycleManager fileUploadHolderCycle;
+
+    /**
+     * Helper field to get the filename to remove.
+     *
+     * @since 5.9.2
+     */
+    protected String fileToRemove;
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
@@ -611,9 +618,9 @@ public class FileManageActionsBean implements FileManageActions {
             if (uploadFiles != null) {
                 for (UploadItem uploadItem : uploadFiles) {
                     String filename = FileUtils.getCleanFileName(uploadItem.getFileName());
-                    Blob blob = createTemporaryFileBlob(uploadItem.getFile(),
-                            filename, uploadItem.getContentType());
-
+                    Blob blob = FileUtils.createTemporaryFileBlob(
+                            uploadItem.getFile(), filename,
+                            uploadItem.getContentType());
                     HashMap<String, Object> fileMap = new HashMap<String, Object>(
                             2);
                     fileMap.put("file", blob);
@@ -635,7 +642,6 @@ public class FileManageActionsBean implements FileManageActions {
                 }
             }
         }
-        Contexts.getConversationContext().remove("fileUploadHolder");
     }
 
     @SuppressWarnings({ "rawtypes" })
@@ -754,14 +760,31 @@ public class FileManageActionsBean implements FileManageActions {
         return "";
     }
 
+    public void setFileToRemove(String fileToRemove) {
+        this.fileToRemove = fileToRemove;
+    }
+
+    @Override
+    public String removeOneOrAllUploadedFiles(ActionEvent action)
+            throws ClientException {
+        if (StringUtils.isBlank(fileToRemove)) {
+            return removeAllUploadedFile();
+        } else {
+            return removeUploadedFile(fileToRemove);
+        }
+    }
+
     @Override
     @WebRemote
     public String removeAllUploadedFile() throws ClientException {
         if (fileUploadHolder != null) {
-            for (UploadItem item : fileUploadHolder.getUploadedFiles()) {
-                item.getFile().delete();
+            Collection<UploadItem> files = getUploadedFiles();
+            if (files != null) {
+                for (UploadItem item : files) {
+                    item.getFile().delete();
+                }
             }
-            fileUploadHolder.getUploadedFiles().clear();
+            setUploadedFiles(new ArrayList<UploadItem>());
         }
         return "";
     }
@@ -775,16 +798,20 @@ public class FileManageActionsBean implements FileManageActions {
         // IE stores the full path of the file as the filename (ie.
         // Z:\\path\\to\\file)
         fileName = FilenameUtils.getName(fileName);
-        for (UploadItem file : getUploadedFiles()) {
-            String uploadedFileName = file.getFileName();
-            if (fileName.equals(uploadedFileName)) {
-                fileToDelete = file;
-                break;
+        Collection<UploadItem> files = getUploadedFiles();
+        if (files != null) {
+            for (UploadItem file : files) {
+                String uploadedFileName = file.getFileName();
+                if (fileName.equals(uploadedFileName)) {
+                    fileToDelete = file;
+                    break;
+                }
             }
         }
-        if (null != fileToDelete) {
+        if (fileToDelete != null) {
             fileToDelete.getFile().delete();
-            getUploadedFiles().remove(fileToDelete);
+            files.remove(fileToDelete);
+            setUploadedFiles(files);
         }
         return "";
     }
