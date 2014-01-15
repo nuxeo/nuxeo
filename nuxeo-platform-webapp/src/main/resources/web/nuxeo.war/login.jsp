@@ -10,6 +10,7 @@
 <%@ page import="java.lang.Boolean"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Locale"%>
+<%@ page import="org.joda.time.DateTime"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -58,6 +59,7 @@ String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWid
 String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "36");
 String logoAlt = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoAlt(), "Nuxeo");
 String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl(), context + "/img/nuxeo_logo.png");
+String currentYear = new DateTime().toString("Y");
 
 %>
 
@@ -465,7 +467,7 @@ body {
       <td align="center" valign="bottom">
       <div class="loginLegal">
         <fmt:message bundle="${messages}" key="label.login.copyright">
-          <fmt:param value="2013" />
+          <fmt:param value="<%=currentYear %>" />
         </fmt:message>
       </div>
       </td>
