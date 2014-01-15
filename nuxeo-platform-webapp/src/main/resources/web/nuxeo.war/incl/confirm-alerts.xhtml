@@ -12,6 +12,7 @@
     return confirm("#{messages['label.review.confirmDeleteTask']}");
   }
   function confirmRemoveFiles(file) {
-    return confirm("#{messages['label.documents.confirmRemoveFiles']} "+file+" ?");
+    var message = "#{messages['label.documents.confirmRemoveFiles']} '" + file + "'#{messages['label.documents.confirmRemoveFilesEnd']}";
+    return confirm(message);
   }
 </script>
