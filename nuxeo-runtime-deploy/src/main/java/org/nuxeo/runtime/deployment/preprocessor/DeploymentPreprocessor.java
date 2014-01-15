@@ -243,22 +243,71 @@ public class DeploymentPreprocessor {
         }
     }
 
-    protected static void printInfo(
-            List<DependencyTree.Entry<String, FragmentDescriptor>> entries) {
-        StringBuilder buf = new StringBuilder();
+    protected static String listFragmentDescriptor(FragmentDescriptor fd) {
+        return fd.name + " (" + fd.fileName + ")";
+    }
+
+    protected static void printInfo(FragmentRegistry fragments) {
+        List<DependencyTree.Entry<String, FragmentDescriptor>> entries = fragments.getResolvedEntries();
+        StringBuilder buf = new StringBuilder("Preprocessing order: ");
         for (DependencyTree.Entry<String, FragmentDescriptor> entry : entries) {
             FragmentDescriptor fd = entry.get();
             if (fd != null && !fd.isMarker()) {
-                buf.append("\n\t" + entry.getKey());
+                buf.append("\n\t");
+                buf.append(listFragmentDescriptor(entry.get()));
             }
         }
-        log.info("Preprocessing order: " + buf.toString());
+        log.info(buf);
+
+        StringBuilder errors = new StringBuilder();
+        List<DependencyTree.Entry<String, FragmentDescriptor>> missing = fragments.getMissingRequirements();
+        for (DependencyTree.Entry<String, FragmentDescriptor> entry : missing) {
+            buf = new StringBuilder("Unknown bundle: ");
+            buf.append(entry.getKey());
+            buf.append(" required by: ");
+            boolean first = true;
+            for (DependencyTree.Entry<String, FragmentDescriptor> dep : entry.getDependsOnMe()) {
+                if (!first) {
+                    buf.append(", "); // length 2
+                }
+                first = false;
+                buf.append(listFragmentDescriptor(dep.get()));
+            }
+            log.error(buf);
+            errors.append(buf);
+            errors.append("\n");
+        }
+        for (DependencyTree.Entry<String, FragmentDescriptor> entry : fragments.getPendingEntries()) {
+            if (!entry.isRegistered()) {
+                continue;
+            }
+            buf = new StringBuilder("Bundle not preprocessed: ");
+            buf.append(listFragmentDescriptor(entry.get()));
+            buf.append(" waiting for: ");
+            boolean first = true;
+            for (DependencyTree.Entry<String, FragmentDescriptor> dep : entry.getWaitsFor()) {
+                if (!first) {
+                    buf.append(", "); // length 2
+                }
+                first = false;
+                buf.append(dep.getKey());
+            }
+            log.error(buf);
+            errors.append(buf);
+            errors.append("\n");
+        }
+        if (errors.length() != 0) {
+            // set system property to log startup errors
+            // this is read by AbstractRuntimeService
+            System.setProperty("org.nuxeo.runtime.deployment.errors",
+                    errors.toString());
+        }
     }
 
     protected static void predeploy(ContainerDescriptor cd) throws Exception {
         // run installer and register contributions for each fragment
         List<DependencyTree.Entry<String, FragmentDescriptor>> entries = cd.fragments.getResolvedEntries();
-        printInfo(entries);
+        printInfo(cd.fragments);
         for (DependencyTree.Entry<String, FragmentDescriptor> entry : entries) {
             FragmentDescriptor fd = entry.get();
             if (fd == null || fd.isMarker()) {
