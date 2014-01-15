@@ -21,6 +21,8 @@ package org.nuxeo.ecm.webapp.filemanager;
 
 import java.io.InputStream;
 
+import javax.faces.event.ActionEvent;
+
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
@@ -43,6 +45,28 @@ public interface FileManageActions extends SimpleFileManager {
     void setFileName(String fileName);
 
     String getFileName();
+
+    /**
+     * Setter to get the filename to remove, works in conjunction with
+     * {@link #removeOneOrAllUploadedFiles(ActionEvent)}.
+     *
+     * @since 5.9.2
+     */
+    void setFileToRemove(String fileToRemove);
+
+    /**
+     * Removes one of all uploaded files, depending on previous call to
+     * {@link #setFileToRemove(String)}.
+     * <p>
+     * This is useful to remove files in an Ajax context to avoid Seam
+     * remoting, and still get the selected entry from JavaScript variables
+     * (see NXP-13234).
+     *
+     * @since 5.9.2
+     * @throws ClientException
+     */
+    String removeOneOrAllUploadedFiles(ActionEvent action)
+            throws ClientException;
 
     @WebRemote
     String addFolderFromPlugin(String fullName, String morePath)
