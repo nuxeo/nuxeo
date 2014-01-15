@@ -88,7 +88,10 @@ public class WidgetDescriptor {
 
     /**
      * @since 5.6
+     * @deprecated since 5.7: use {@link #controls} instead, with name
+     *             "handleLabels".
      */
+    @Deprecated
     @XNode("handlingLabels")
     boolean handlingLabels = false;
 
