@@ -152,7 +152,9 @@ author: lkemen@nuxeo.com
 
 .nxHeader .userActions {
   float: left;
-  padding: .2em .4em }
+  line-height: 2.1em;
+  padding: 0 .5em;
+  text-transform: none }
 
 .nxHeader .userMenuActions {
   float: left;
