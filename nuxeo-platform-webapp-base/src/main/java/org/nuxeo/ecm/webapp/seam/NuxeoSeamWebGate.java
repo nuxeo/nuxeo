@@ -61,7 +61,7 @@ public class NuxeoSeamWebGate implements ServletContextListener {
     }
 
     @MXBean
-    interface WebConnector {
+    public interface WebConnector {
         String getStateName();
     }
 
