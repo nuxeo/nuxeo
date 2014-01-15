@@ -69,7 +69,7 @@ public class GetQuotaStatisticsOperation {
         DocumentModel doc = session.getDocument(documentRef);
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         if (qa == null) {
-             throw new ClientException("Quota not enabled on doc");
+             throw new ClientException("Quota not activated on doc");
         }
         String string = toJSON(qa.getQuotaInfo(), locale);
 
