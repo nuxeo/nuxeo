@@ -129,7 +129,10 @@
     <nuxeo.features.version>5.9.2-SNAPSHOT</nuxeo.features.version>
 
     <nuxeo.connect.client.version>1.4.14-SNAPSHOT</nuxeo.connect.client.version>
-    <nuxeo.distribution.tools.version>2.0-SNAPSHOT</nuxeo.distribution.tools.version>
+    <!-- nuxeo-distribution-tools is still used as a dependency -->
+    <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
+    <!-- ant-assembly-maven-plugin is only used as a plugin -->
+    <ant.assembly.version>2.0-SNAPSHOT</ant.assembly.version>
     <nuxeo.ftest.version>1.7.13-SNAPSHOT</nuxeo.ftest.version>
     <nuxeo.richfaces.version>3.3.1.GA-NX9.02</nuxeo.richfaces.version>
 
@@ -1335,7 +1338,7 @@
       <dependency>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
-        <version>1.15</version>
+        <version>${nuxeo.distribution.tools.version}</version>
         <classifier>all</classifier>
       </dependency>
       <dependency>
@@ -4287,12 +4290,6 @@
           <artifactId>jboss-packaging-maven-plugin</artifactId>
           <version>2.2</version>
         </plugin>
-        <!-- DEPRECATED - use nuxeo-distribution-tools instead -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-nuxeo-plugin</artifactId>
-          <version>1.0.14</version>
-        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-rar-plugin</artifactId>
@@ -4504,8 +4501,8 @@
         </plugin>
         <plugin>
           <groupId>org.nuxeo.build</groupId>
-          <artifactId>nuxeo-distribution-tools</artifactId>
-          <version>${nuxeo.distribution.tools.version}</version>
+          <artifactId>ant-assembly-maven-plugin</artifactId>
+          <version>${ant.assembly.version}</version>
           <extensions>true</extensions>
         </plugin>
         <plugin>
@@ -4555,13 +4552,13 @@
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
                 <banSnapshots>true</banSnapshots>
-                <!-- <unCheckedPluginList>org.nuxeo.build:nuxeo-distribution-tools</unCheckedPluginList> -->
+                <unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin</unCheckedPluginList>
               </requirePluginVersions>
               <requireReleaseDeps>
                 <message>No Snapshots Allowed!</message>
                 <onlyWhenRelease>true</onlyWhenRelease>
                 <excludes>
-                  <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude>
+                  <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
                   <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
                   <!-- <exclude>org.richfaces.framework:richfaces-impl:*</exclude> -->
                   <!-- <exclude>org.richfaces.ui:richfaces-ui:*</exclude> -->
@@ -5339,7 +5336,7 @@
         <plugins>
           <plugin>
             <groupId>org.nuxeo.build</groupId>
-            <artifactId>nuxeo-distribution-tools</artifactId>
+            <artifactId>ant-assembly-maven-plugin</artifactId>
             <inherited>false</inherited>
             <executions>
               <execution>
