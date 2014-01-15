@@ -57,18 +57,21 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
+import org.joda.time.DateTime;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.log4j.Log4JHelper;
 import org.nuxeo.shell.Shell;
 import org.nuxeo.shell.cmds.Interactive;
 import org.nuxeo.shell.cmds.InteractiveShellHandler;
 import org.nuxeo.shell.swing.ConsolePanel;
+
 
 /**
  * Launcher view for graphical user interface
@@ -237,7 +240,7 @@ public class NuxeoFrame extends JFrame {
 
     public NuxeoFrame(NuxeoLauncherGUI controller) throws HeadlessException {
         super("NuxeoCtl");
-        this.setController(controller);
+        setController(controller);
 
         // Main frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -314,7 +317,7 @@ public class NuxeoFrame extends JFrame {
     }
 
     protected JComponent buildFooter() {
-        JLabel label = new JLabel(NuxeoLauncherGUI.getMessage("footer.label"));
+        JLabel label = new JLabel(NuxeoLauncherGUI.getMessage("footer.label",new DateTime().toString("Y")));
         label.setForeground(Color.WHITE);
         label.setPreferredSize(new Dimension(470, 16));
         label.setFont(new Font(label.getFont().getName(),
@@ -586,7 +589,7 @@ public class NuxeoFrame extends JFrame {
      * @since 5.6
      */
     public void close() {
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(
                 new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }

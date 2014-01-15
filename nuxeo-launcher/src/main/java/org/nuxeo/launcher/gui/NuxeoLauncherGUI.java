@@ -25,6 +25,7 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -95,7 +96,7 @@ public class NuxeoLauncherGUI {
      * @param aLauncher Launcher being used in background
      */
     public NuxeoLauncherGUI(NuxeoLauncher aLauncher) {
-        this.launcher = aLauncher;
+        launcher = aLauncher;
         // Set OS-specific decorations
         if (PlatformUtils.isMac()) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -319,6 +320,18 @@ public class NuxeoLauncherGUI {
                     key);
         }
         return message;
+    }
+
+    /**
+     * Get internationalized message with parameters
+     * @param key Message key
+     * @param params
+     * @return Localized message value
+     *
+     * @since 5.9.2
+     */
+    public static String getMessage(String key, Object... params) {
+        return MessageFormat.format(getMessage(key), params);
     }
 
     /**
