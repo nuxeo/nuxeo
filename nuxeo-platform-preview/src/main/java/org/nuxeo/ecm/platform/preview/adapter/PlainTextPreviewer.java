@@ -38,15 +38,18 @@ public class PlainTextPreviewer extends AbstractPreviewer implements
         StringBuilder htmlPage = new StringBuilder();
 
         htmlPage.append("<html><body>");
+        byte[] data;
         try {
-            String temp = blob.getString().replace("&", "&amp;").replace("<",
-                    "&lt;").replace(">", "&gt;").replace("\'", "&apos;").replace(
-                    "\"", "&quot;");
-            htmlPage.append("<pre>").append(temp.replace("\n", "<br/>")).append(
-                    "</pre>");
+            data = blob.getByteArray();
         } catch (IOException e) {
-            throw new PreviewException(e);
+            throw new PreviewException("Cannot fetch blob content", e);
         }
+
+        String content = new String(data);
+        String temp = content.replace("&", "&amp;").replace("<", "&lt;").replace(
+                ">", "&gt;").replace("\'", "&apos;").replace("\"", "&quot;");
+        htmlPage.append("<pre>").append(temp.replace("\n", "<br/>")).append(
+                "</pre>");
         htmlPage.append("</body></html>");
 
         Blob mainBlob = new StringBlob(htmlPage.toString());
