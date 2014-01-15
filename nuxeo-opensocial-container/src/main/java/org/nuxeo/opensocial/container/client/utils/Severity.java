@@ -21,15 +21,15 @@ package org.nuxeo.opensocial.container.client.utils;
  * @author Stéphane Fourrier
  */
 public enum Severity {
-    ERROR("#FF0000"), INFO("orange"), SUCCESS("#32CD32");
+    ERROR("errorFeedback"), INFO("infoFeedback"), SUCCESS("successFeedback");
 
-    private String color;
+    private String className;
 
-    private Severity(String color) {
-        this.color = color;
+    private Severity(String className) {
+        this.className = className;
     }
 
-    public String getAssociatedColor() {
-        return this.color;
+    public String getAssociatedClassName() {
+        return this.className;
     }
 }
