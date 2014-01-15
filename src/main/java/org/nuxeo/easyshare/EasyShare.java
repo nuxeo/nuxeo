@@ -1,5 +1,18 @@
-/**
+/*
+ * (C) Copyright ${year} Nuxeo SA (http://nuxeo.com/) and others.
  *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Michal Obrebski - Nuxeo
  */
 
 package org.nuxeo.easyshare;
@@ -61,16 +74,17 @@ public class EasyShare extends ModuleRoot {
 
                         DocumentModelList docList = session.getChildren(docRef);
 
-                     // Audit Log
+                        // Audit Log
                         OperationContext ctx = new OperationContext(session);
                         ctx.setInput(docFolder);
 
                         // Audit.Log operation parameter setting
                         try {
-                            Map<String,Object> params = new HashMap<String,Object>();
-                            params.put("event","Access");
+                            Map<String, Object> params = new HashMap<String, Object>();
+                            params.put("event", "Access");
                             params.put("category", "Document");
-                            params.put("comment", "IP: "+request.getRemoteAddr());
+                            params.put("comment",
+                                    "IP: " + request.getRemoteAddr());
                             AutomationService service = Framework.getLocalService(AutomationService.class);
                             service.run(ctx, "Audit.Log", params);
                         } catch (Exception ex) {
@@ -115,31 +129,46 @@ public class EasyShare extends ModuleRoot {
                             ctx.setInput(doc);
 
                             Date today = new Date();
-                            if (today.after(docFolder.getProperty("dc:expired").getValue(Date.class))) {
+                            if (today.after(docFolder.getProperty("dc:expired").getValue(
+                                    Date.class))) {
                                 return Response.serverError().status(
                                         Response.Status.NOT_FOUND).build();
 
                             }
 
                             // Audit.Log operation parameter setting
-                            Map<String,Object> params = new HashMap<String,Object>();
-                            params.put("event","Download");
+                            Map<String, Object> params = new HashMap<String, Object>();
+                            params.put("event", "Download");
                             params.put("category", "Document");
-                            params.put("comment", "IP: "+request.getRemoteAddr());
+                            params.put("comment",
+                                    "IP: " + request.getRemoteAddr());
                             AutomationService service = Framework.getLocalService(AutomationService.class);
                             service.run(ctx, "Audit.Log", params);
 
-                            if (doc.isProxy()){
+                            if (doc.isProxy()) {
                                 DocumentModel liveDoc = session.getSourceDocument(docRef);
                                 ctx.setInput(liveDoc);
                                 service.run(ctx, "Audit.Log", params);
                             }
 
+                            // //Email notification
+                            // EmailHelper emailer = new EmailHelper();
+                            // String shareOwnerEmail = "mobrebski@nuxeo.com";
+                            // Hashtable mail = new Hashtable();
+                            // mail.put("from", "dion@almaer.com");
+                            // mail.put("to", shareOwnerEmail);
+                            // mail.put("subject", "EasyShare Download");
+                            // mail.put("body",
+                            // "File from Share downloaded by IP");
+                            // emailer.sendmail(mail);
+
                             return Response.ok(blob.getStream(),
                                     blob.getMimeType()).build();
+
                         } catch (Exception ex) {
                             log.error(ex.getMessage());
-                            return Response.serverError().status(Response.Status.NOT_FOUND).build();
+                            return Response.serverError().status(
+                                    Response.Status.NOT_FOUND).build();
                         }
 
                     } else {
