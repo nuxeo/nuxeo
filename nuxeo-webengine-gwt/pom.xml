@@ -1,19 +1,31 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.webengine</groupId>
     <artifactId>nuxeo-webengine-parent</artifactId>
     <version>5.9.2-SNAPSHOT</version>
   </parent>
-
   <artifactId>nuxeo-webengine-gwt</artifactId>
   <name>Nuxeo WebEngine GWT</name>
   <description>WebEngine GWT integration.</description>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-web-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
@@ -32,9 +44,7 @@
       <artifactId>gwt-servlet</artifactId>
       <optional>true</optional>
       <scope>compile</scope>
-      <version>2.0</version>
     </dependency>
-
     <!--
       This artifact is required only in gwt dev mode - to launch a nuxeo server.
       It is not required at runtime in web mode
@@ -44,12 +54,11 @@
     <dependency>
       <groupId>org.nuxeo.build</groupId>
       <artifactId>nuxeo-distribution-tools</artifactId>
+      <version>1.15</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
-
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -60,7 +69,6 @@
           </archive>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
@@ -73,9 +81,9 @@
           <additionalBuildcommands>
             <buildCommand>
               <name>com.google.gwt.eclipse.core.gwtProjectValidator</name>
-              <arguments></arguments>
+              <arguments />
               <name>com.google.gdt.eclipse.core.webAppProjectValidator</name>
-              <arguments></arguments>
+              <arguments />
             </buildCommand>
           </additionalBuildcommands>
           <classpathContainers>
@@ -87,5 +95,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>
