@@ -143,4 +143,12 @@ public class ChainedConverter implements Converter {
         return steps;
     }
 
+    /**
+     * Returns the sub converters of this chained converter.
+     *
+     * @since 5.9.2
+     */
+    public List<String> getSubConverters() {
+        return subConverters;
+    }
 }

@@ -209,6 +209,27 @@ public class TestService extends NXRuntimeTestCase {
     }
 
     @Test
+    public void testChainConverterAvailability() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.convert.tests",
+                "OSGI-INF/converters-test-contrib3.xml");
+        deployContrib("org.nuxeo.ecm.core.convert.tests",
+                "OSGI-INF/converters-test-contrib4.xml");
+        deployContrib("org.nuxeo.ecm.core.convert.tests",
+                "OSGI-INF/converters-test-contrib5.xml");
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
+
+        ConverterCheckResult result = cs.isConverterAvailable("chainAvailable");
+        assertNotNull(result);
+        assertTrue(result.isAvailable());
+
+        result = cs.isConverterAvailable("chainNotAvailable");
+        assertNotNull(result);
+        assertFalse(result.isAvailable());
+        assertNotNull(result.getErrorMessage());
+        assertNotNull(result.getInstallationMessage());
+    }
+
+    @Test
     public void testServiceConfig() throws Exception {
         deployContrib("org.nuxeo.ecm.core.convert.tests",
                 "OSGI-INF/convert-service-config-test.xml");

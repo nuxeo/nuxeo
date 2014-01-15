@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
 import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import org.nuxeo.ecm.core.convert.cache.CacheKeyGenerator;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheHolder;
+import org.nuxeo.ecm.core.convert.extension.ChainedConverter;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
@@ -247,6 +248,15 @@ public class ConversionServiceImpl extends DefaultComponent implements
         if (converter instanceof ExternalConverter) {
             ExternalConverter exConverter = (ExternalConverter) converter;
             result = exConverter.isConverterAvailable();
+        } else if (converter instanceof ChainedConverter) {
+            ChainedConverter chainedConverter = (ChainedConverter) converter;
+            result = new ConverterCheckResult();
+            for (String subConverterName : chainedConverter.getSubConverters()) {
+                result = isConverterAvailable(subConverterName, refresh);
+                if (!result.isAvailable()) {
+                    break;
+                }
+            }
         } else {
             // return success since there is nothing to test
             result = new ConverterCheckResult();
