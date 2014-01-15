@@ -156,7 +156,7 @@
     <!-- disabled: nuxeo-distribution tools is generating classloader issue -->
     <!-- <dependency> -->
     <!-- <groupId>org.nuxeo.build</groupId> -->
-    <!-- <artifactId>nuxeo-distribution-tools</artifactId> -->
+    <!-- <artifactId>ant-assembly-maven-plugin</artifactId> -->
     <!-- <classifier>all</classifier> -->
     <!-- </dependency> -->
 
