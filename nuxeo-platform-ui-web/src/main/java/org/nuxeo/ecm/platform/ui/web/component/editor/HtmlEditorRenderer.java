@@ -100,11 +100,12 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         writer.endElement("textarea");
 
         if (!disableHtmlInit) {
-            // Since 5.7.3, tiny mce editors are initialized individually, no need
-            // anymore to specify a class to know which one should or should
-            // not be initialized
             writer.startElement("script", editorComp);
             writer.writeAttribute("type", "text/javascript", null);
+            // Since 5.7.3, use unique clientId instead of editorSelector value
+            // so that tiny mce editors are initialized individually: no need
+            // anymore to specify a class to know which one should or should
+            // not be initialized
             String scriptContent = String.format(
                     "initTinyMCE('%s', '%s', '%s', '%s', '%s', '%s')",
                     editorComp.getWidth(), editorComp.getHeight(), clientId,
