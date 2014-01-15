@@ -28,6 +28,7 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.joda.time.DateTime;
 import org.nuxeo.runtime.api.Framework;
 
 @Name("appNameFactory")
@@ -49,6 +50,12 @@ public class NuxeoProductNameFactory implements Serializable {
     @Factory(value = "nuxeoApplicationVersion", scope = ScopeType.APPLICATION)
     public String getNuxeoProductVersion() {
         return Framework.getProperty(PVERSION_KEY);
+    }
+
+
+    @Factory(value = "copyrightCurrentYear", scope = ScopeType.APPLICATION)
+    public String getCurrentYearAsString() {
+        return new DateTime().toString("Y");
     }
 
 }
