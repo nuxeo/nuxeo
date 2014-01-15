@@ -228,7 +228,7 @@
       </plugin>
       <plugin>
         <groupId>org.nuxeo.build</groupId>
-        <artifactId>nuxeo-distribution-tools</artifactId>
+        <artifactId>ant-assembly-maven-plugin</artifactId>
         <executions>
           <execution>
             <id>build-marketplace</id>
@@ -283,7 +283,7 @@
           </plugin>
           <plugin>
             <groupId>org.nuxeo.build</groupId>
-            <artifactId>nuxeo-distribution-tools</artifactId>
+            <artifactId>ant-assembly-maven-plugin</artifactId>
             <executions>
               <execution>
                 <id>build-marketplace</id>
