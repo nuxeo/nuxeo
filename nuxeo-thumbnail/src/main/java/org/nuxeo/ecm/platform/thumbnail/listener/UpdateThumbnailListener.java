@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 
 /**
@@ -65,6 +66,8 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
                     Boolean.TRUE);
             doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER,
+                    Boolean.TRUE);
+            doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
                     Boolean.TRUE);
             doc.putContextData("disableAuditLogger", Boolean.TRUE);
             session.saveDocument(doc);
