@@ -2086,6 +2086,18 @@
         <version>${nuxeo.richfaces.version}</version>
       </dependency>
 
+      <!-- compat libs for ui-web-compat module -->
+      <dependency>
+        <groupId>org.apache.myfaces.tomahawk</groupId>
+        <artifactId>tomahawk</artifactId>
+        <version>1.1.5-NXP-2749</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.myfaces.tomahawk</groupId>
+        <artifactId>tomahawk-sandbox</artifactId>
+        <version>1.1.5-NXP-10534</version>
+      </dependency>
+
       <!-- OpenOffice.org -->
       <dependency>
         <groupId>org.openoffice</groupId>
