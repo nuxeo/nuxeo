@@ -66,14 +66,14 @@ public class FSExporterTestAttachedFiles {
         // attached blob for myfile
         ArrayList<Map<String, Serializable>> listblobs = new ArrayList<Map<String, Serializable>>();
 
-        Map<String, Serializable> mapBlob = new HashMap<>();
+        Map<String, Serializable> mapBlob = new HashMap<String, Serializable>();
         Blob blob1 = new StringBlob("blob1");
         blob1.setFilename("blob1.txt");
         mapBlob.put("file", (Serializable) blob1);
         mapBlob.put("filename", "blob1.txt");
         listblobs.add(mapBlob);
 
-        Map<String, Serializable> mapBlob2 = new HashMap<>();
+        Map<String, Serializable> mapBlob2 = new HashMap<String, Serializable>();
         Blob blob2 = new StringBlob("blob2");
         blob2.setFilename("blob2.txt");
         mapBlob2.put("file", (Serializable) blob2);

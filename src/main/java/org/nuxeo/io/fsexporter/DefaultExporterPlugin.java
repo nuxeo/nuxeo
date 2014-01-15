@@ -73,7 +73,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
         desc.setPattern(query);
 
         pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                "customPP", desc, null, null, null, null, props,
+                "customPP", desc, null, null, null, props,
                 new Object[] { doc.getId() });
 
         int countPages = 1;
