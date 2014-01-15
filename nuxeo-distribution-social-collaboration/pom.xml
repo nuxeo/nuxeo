@@ -99,7 +99,7 @@
     <plugins>
       <plugin>
         <groupId>org.nuxeo.build</groupId>
-        <artifactId>nuxeo-distribution-tools</artifactId>
+        <artifactId>ant-assembly-maven-plugin</artifactId>
         <configuration>
           <buildFiles>
             <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
