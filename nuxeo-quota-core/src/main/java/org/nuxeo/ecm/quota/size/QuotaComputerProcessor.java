@@ -160,7 +160,11 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
             if (sourceDocument.getRef() == null) {
                 log.error("SourceDocument has no ref");
             } else {
+                try {
                 parents.addAll(getParents(sourceDocument, session));
+                } catch (ClientException e) {
+                    log.trace("Could get parent : " + e.getMessage());
+                }
             }
 
             QuotaAware quotaDoc = sourceDocument.getAdapter(QuotaAware.class);

@@ -89,7 +89,11 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                     String uuid = (String) r.get("ecm:uuid");
                     // this will force an update if the plugin was installed and
                     // then removed
-                    removeFacet(unrestrictedSession, uuid);
+                    try {
+                        removeFacet(unrestrictedSession, uuid);
+                    } catch (ClientException e) {
+                        log.warn("Could not remove facet: " + e.getMessage());
+                    }
                 }
             } finally {
                 res.close();
@@ -99,7 +103,11 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                 res = unrestrictedSession.queryAndFetch(query, "NXQL");
                 for (Map<String, Serializable> r : res) {
                     String uuid = (String) r.get("ecm:uuid");
-                    computeSizeOnDocument(unrestrictedSession, uuid, processor);
+                    try {
+                        computeSizeOnDocument(unrestrictedSession, uuid, processor);
+                    } catch (ClientException e) {
+                        log.warn("Could not computeSizeOnDocument : " + e.getMessage());
+                    }
                     idx++;
                     currentWorker.notifyProgress(idx++, total);
                 }
