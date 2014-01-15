@@ -23,19 +23,20 @@
 
   <h3><h:outputText value="#{messages['label.upload.files.download']}" /></h3>
 
-  <h:panelGrid columns="2" styleClass="dataTableNoBorder smallTable">
+  <h:panelGrid columns="2" styleClass="dataTableNoBorder smallTable"
+    columnClasses="fortyPercent,">
 
     <rich:fileUpload uploadData="#{FileManageActions.uploadedFiles}"
       listHeight="150" maxFilesQuantity="5"
       id="upload"
       locale="#{localeSelector.localeString}"
-      immediateUpload="true" >
+      immediateUpload="true">
       <a4j:support onsubmit="removeUploadedFile(event.memo.entry);" event="onclear" />
       <a4j:support event="onuploadcomplete" reRender="validateMultiplesUploadDiv" />
     </rich:fileUpload>
 
-    <a4j:region renderRegionOnly="true" id="files_region">
-      <a4j:outputPanel ajaxRendered="true" layout="block">
+    <a4j:region id="files_region">
+      <a4j:outputPanel id="files_panel" layout="block">
 
         <nxu:inputList value="#{currentDocument.files.files}"
           id="files_input" model="model">
@@ -44,7 +45,7 @@
             <a4j:commandLink immediate="true"
               onclick="if( !confirmRemoveFiles('#{currentDocument.files.files[model.rowIndex].filename}')) return false;"
               actionListener="#{FileManageActions.performAction}"
-              id="files_delete" reRender="files_input"
+              id="files_delete" reRender="files_panel"
               bypassUpdates="true">
               <h:graphicImage value="/icons/delete.png" />
               <f:param name="index" value="#{model.rowIndex}" />
