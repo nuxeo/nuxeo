@@ -33,20 +33,4 @@
     </validator>
   </extension>
 
-  <install>
-    <!--  create a temp dir -->
-    <!--  be sure no directory with that name exists -->
-    <delete path="${bundle.fileName}.tmp"/>
-    <mkdir path="${bundle.fileName}.tmp"/>
-
-    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp">
-      <include>WEB/**</include>
-    </unzip>
-
-    <copy from="${bundle.fileName}.tmp/WEB/" to="nuxeo.war/WEB-INF/"/>
-
-    <delete path="${bundle.fileName}.tmp"/>
-  </install>
-
 </fragment>
-
