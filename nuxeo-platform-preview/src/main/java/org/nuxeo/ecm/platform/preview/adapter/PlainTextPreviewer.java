@@ -55,7 +55,7 @@ public class PlainTextPreviewer extends AbstractPreviewer implements
             throw new PreviewException("Cannot fetch blob content", e);
         }
         String encoding = blob.getEncoding();
-        if (encoding == null) {
+        if (encoding == null || encoding == "") {
             CharsetDetector detector = new CharsetDetector();
             detector.setText(data);
             encoding = detector.detect().getName();
