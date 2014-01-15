@@ -3,25 +3,19 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.nuxeo.ecm.distribution</groupId>
-    <artifactId>nuxeo-distribution</artifactId>
-    <version>5.6</version>
+    <groupId>org.nuxeo.io.fs.exporter</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.io.fs.exporter</groupId>
+  <groupId>org.nuxeo.io.marketplace</groupId>
   <artifactId>parent</artifactId>
   <packaging>pom</packaging>
-  <name>Grand-Father Nuxeo Marketplace packaging of nuxeo-fs-exporter</name>
+  <name>Nuxeo Marketplace packaging of nuxeo-fsexporter</name>
   <version>1.0-SNAPSHOT</version>
 
-  <properties>
-    <marketplace.nuxeo-fsexporter.version>1.0-SNAPSHOT</marketplace.nuxeo-fsexporter.version>
-    <nuxeo.distribution.version.limit>5.8</nuxeo.distribution.version.limit>
-  </properties>
-
   <modules>
-      <module>nuxeo-fsexporter</module>
-      <module>nuxeo-FileSystemExporter-mp</module>
+    <module>marketplace</module>
   </modules>
 
   <dependencyManagement>

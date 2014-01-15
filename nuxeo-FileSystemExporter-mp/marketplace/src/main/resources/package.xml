@@ -1,0 +1,39 @@
+<!-- See documentation at http://doc.nuxeo.com/x/HgIz -->
+<package type="addon" name="nuxeo-fs-exporter-marketplace" version="@VERSION@">
+  <title></title>
+  <description>
+    
+  </description>
+  <home-page>http://www.cie.com</home-page>
+  <vendor>Personnal</vendor>
+  <installer restart="true" />
+  <uninstaller restart="false" />
+  <hotreload-support>false</hotreload-support>
+  <require-terms-and-conditions-acceptance>false</require-terms-and-conditions-acceptance>
+  <nuxeo-validation>none</nuxeo-validation>
+  <!-- <nuxeo-validation>inprocess</nuxeo-validation> -->
+  <!-- <nuxeo-validation>primary_validation</nuxeo-validation> -->
+  <!-- <nuxeo-validation>nuxeo_certified</nuxeo-validation> -->
+  <!-- <production-state>proto</production-state> -->
+  <production-state>testing</production-state>
+  <!-- <production-state>production_ready</production-state> -->
+  <supported>false</supported>
+  <platforms>
+    <platform>cap-@DISTRIB_VERSION@</platform>
+    <platform>cap-@DISTRIB_VERSION_LIMIT@</platform>
+  </platforms>
+  <!-- Dependencies on other packages -->
+  <!-- <dependencies> -->
+  <!-- <package>another-package:1.0.0:1.0.0</package> -->
+  <!-- </dependencies> -->
+  <!-- Conflicts with other packages -->
+  <!-- <conflicts> -->
+  <!-- <package>a-conflicting-package:1.0.0:1.0.0</package> -->
+  <!-- </conflicts> -->
+  <!-- Provides features of other packages -->
+  <!-- <provides> -->
+  <!-- <package>an-embedded-package:1.0.0:1.0.0</package> -->
+  <!-- </provides> -->
+  <license>LGPL 2.1</license>
+  <license-url>http://www.gnu.org/licenses/lgpl-2.1.html</license-url>
+</package>

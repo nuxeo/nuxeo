@@ -1,0 +1,107 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+  <target name="init" unless="init.done">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand">
+    <!-- Include your artifacts in the graph adding your groupId to groupPrefixes -->
+    <artifact:nuxeo-expand includeTestScope="true"
+                           groupPrefixes="org.nuxeo.io,org.nuxeo,com.nuxeo" />
+    <!-- For Nuxeo IDE being able to use that distribution as a SDK -->
+    <artifact:print output="${outdir}/artifacts-nuxeo-fsexporter.properties" mode="sdk" />
+    <artifact:print output="${outdir}/test-artifacts-nuxeo-fsexporter.properties"
+                    mode="sdk"
+                    scopes="test" />
+    <!-- Prints the graph for debugging purpose -->
+    <artifact:print output="${outdir}/dependency-tree.log" />
+  </target>
+
+  <target name="build"
+          depends="init"
+          description="Build  Marketplace package">
+    <tstamp />
+    <delete failonerror="false" dir="${outdir}/nxr" />
+    <mkdir dir="${outdir}/nxr" />
+    <delete failonerror="false" dir="${outdir}/marketplace" />
+    <mkdir dir="${outdir}/marketplace" />
+    <copy todir="${outdir}/marketplace">
+      <fileset dir="src/main/resources" />
+    	<filterset>
+    	   <filter token="VERSION" value="${marketplace.nuxeo-fsexporter.version}" />
+    	   <filter token="DISTRIB_VERSION" value="${nuxeo.distribution.version}" />
+    	   <filter token="DISTRIB_VERSION_LIMIT" value="${nuxeo.distribution.version.limit}" />
+    	</filterset>
+    </copy>
+    <copy file="${outdir}/artifacts-nuxeo-fsexporter.properties"
+          todir="${outdir}/marketplace/install" />
+    <copy file="${outdir}/test-artifacts-nuxeo-fsexporter.properties"
+          todir="${outdir}/marketplace/install" />
+
+    <!-- Base distribution NXR 
+    <copy todir="${outdir}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-dm::zip" />
+    </copy> -->
+
+    <!-- Nuxeo bundles -->
+    <copy todir="${outdir}/marketplace/install/bundles" overwrite="true">
+      <artifact:set>
+        <includes>
+          <!-- Include your artifacts using their groupId for instance -->
+          <artifact groupId="org.nuxeo.io*" scope="!test" type="!pom" />
+        </includes>
+      </artifact:set>
+    </copy>
+
+      <!-- Generate install.xml file -->
+      <!-- See documentation at http://doc.nuxeo.com/x/IgIz -->
+      <var name="install.content" value="&lt;install&gt;" />
+      <var name="install.content"
+           value="${install.content}${line.separator}
+    &lt;update file=&quot;${package.root}/install/bundles&quot; todir=&quot;${env.bundles}&quot; /&gt;" />
+      <if>
+        <available file="${outdir}/marketplace/install/lib" />
+        <then>
+          <var name="install.content"
+               value="${install.content}${line.separator}
+    &lt;update file=&quot;${package.root}/install/lib&quot; todir=&quot;${env.lib}&quot; /&gt;" />
+        </then>
+      </if>
+      <var name="install.content"
+           value="${install.content}${line.separator}
+    &lt;copy file=&quot;${package.root}/install/artifacts-nuxeo-fsexporter.properties&quot;${line.separator}
+      todir=&quot;${env.server.home}/sdk&quot; overwrite=&quot;true&quot; /&gt;${line.separator}
+    &lt;copy file=&quot;${package.root}/install/test-artifacts-nuxeo-fsexporter.properties&quot;${line.separator}
+      todir=&quot;${env.server.home}/sdk&quot; overwrite=&quot;true&quot; /&gt;${line.separator}" />
+      <!-- Optional: use this if you need your MP to deploy and/or activate a dedicated template -->
+      <if>
+        <available file="${outdir}/marketplace/install/templates" />
+        <then>
+          <var name="install.content"
+               value="${install.content}${line.separator}
+    &lt;copy dir=&quot;${package.root}/install/templates&quot; todir=&quot;${env.templates}&quot; overwrite=&quot;true&quot; /&gt;${line.separator}
+    &lt;config addtemplate=&quot;sample&quot; /&gt;${line.separator}" />
+        </then>
+      </if>
+      <var name="install.content"
+           value="${install.content}${line.separator}
+  &lt;/install&gt;${line.separator}" />
+      <echo file="${outdir}/marketplace/install.xml"
+            message="${install.content}" />
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${marketplace.nuxeo-fsexporter.version}.zip"
+         basedir="${outdir}/marketplace" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${marketplace.nuxeo-fsexporter.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+  </target>
+
+</project>
