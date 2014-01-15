@@ -99,23 +99,6 @@ iframe.gwt-Frame { border-width: 0;
 .facet.facet-collapsed { background-position: 0 -80px }
 .facet.facet-collapsed.over { background-position: -16px -80px }
 
-/* Message widget */
-.messageWidget { position: fixed }
-.messenger { margin: 0;
-	padding: 3px 10px 5px 12px !important;
-	font:normal 13px "Lucida Grande", Helvetica, sans-serif;
-	color: #000;
-	float: right;
-	border: 1px solid #00509b;
-	background-color: #e6f9ff !important;
-	-moz-border-radius:0px 0 0 8px;
-	-webkit-border-radius:0px 0 0 8px;
-	border-radius:0px 0 0 8px;
-	/* IE 8 */
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
-  /* all browsers */
-  opacity: .8 }
-
 /* Dialog box open when you redesign the layout or Change the widget settings */
 .gwt-DialogBox .dialogContent {
   padding: 1em }
