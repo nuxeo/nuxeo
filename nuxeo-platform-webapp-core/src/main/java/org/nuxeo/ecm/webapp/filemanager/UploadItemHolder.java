@@ -34,8 +34,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.richfaces.model.UploadItem;
 
 /**
- * Holds FileUpload data at CONVERSATION scope level (Can not be part of
- * FileManager that can not be CONVERSATION Scoped because of Seam remoting)
+ * Holds FileUpload data at PAGE scope level, useful for
+ * {@link FileManageActions}.
  */
 @Name("fileUploadHolder")
 @Scope(ScopeType.PAGE)
