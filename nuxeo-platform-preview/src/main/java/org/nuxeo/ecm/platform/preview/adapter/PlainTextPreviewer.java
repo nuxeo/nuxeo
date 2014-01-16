@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -55,7 +56,7 @@ public class PlainTextPreviewer extends AbstractPreviewer implements
             throw new PreviewException("Cannot fetch blob content", e);
         }
         String encoding = blob.getEncoding();
-        if (encoding == null || encoding == "") {
+        if (StringUtils.isEmpty(encoding)) {
             CharsetDetector detector = new CharsetDetector();
             detector.setText(data);
             encoding = detector.detect().getName();
