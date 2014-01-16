@@ -2086,6 +2086,13 @@
         <version>${nuxeo.richfaces.version}</version>
       </dependency>
 
+      <!-- jsp library for login and error pags -->
+      <dependency>
+        <groupId>taglibs</groupId>
+        <artifactId>standard</artifactId>
+        <version>1.1.2</version>
+      </dependency>
+
       <!-- compat libs for ui-web-compat module -->
       <dependency>
         <groupId>org.apache.myfaces.tomahawk</groupId>
@@ -4555,7 +4562,7 @@
                   <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
                   <!-- <exclude>org.richfaces.framework:richfaces-impl:*</exclude> -->
                   <!-- <exclude>org.richfaces.ui:richfaces-ui:*</exclude> -->
-                  <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> 
+                  <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
                   <!-- <exclude>org.jboss.seam:*</exclude> -->
                 </excludes>
               </requireReleaseDeps>
