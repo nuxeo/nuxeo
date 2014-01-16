@@ -163,7 +163,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 try {
                 parents.addAll(getParents(sourceDocument, session));
                 } catch (ClientException e) {
-                    log.trace("Could get parent : " + e.getMessage());
+                    log.debug("Could not get parent for document " + sourceDocument.getRef() + ", error is " + e.getMessage());
                 }
             }
 

@@ -92,7 +92,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                     try {
                         removeFacet(unrestrictedSession, uuid);
                     } catch (ClientException e) {
-                        log.warn("Could not remove facet: " + e.getMessage());
+                        log.debug("Could not remove facet for uuid : " + uuid + ", error is : " + e.getMessage());
                     }
                 }
             } finally {
