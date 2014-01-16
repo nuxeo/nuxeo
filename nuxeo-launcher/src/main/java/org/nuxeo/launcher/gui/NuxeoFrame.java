@@ -72,7 +72,6 @@ import org.nuxeo.shell.cmds.Interactive;
 import org.nuxeo.shell.cmds.InteractiveShellHandler;
 import org.nuxeo.shell.swing.ConsolePanel;
 
-
 /**
  * Launcher view for graphical user interface
  *
@@ -317,7 +316,8 @@ public class NuxeoFrame extends JFrame {
     }
 
     protected JComponent buildFooter() {
-        JLabel label = new JLabel(NuxeoLauncherGUI.getMessage("footer.label",new DateTime().toString("Y")));
+        JLabel label = new JLabel(NuxeoLauncherGUI.getMessage("footer.label",
+                new DateTime().toString("Y")));
         label.setForeground(Color.WHITE);
         label.setPreferredSize(new Dimension(470, 16));
         label.setFont(new Font(label.getFont().getName(),
