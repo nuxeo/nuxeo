@@ -1,5 +1,5 @@
 /*
- * (C) Copyright ${year} Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,20 +17,34 @@
 
 package org.nuxeo.easyshare;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.api.IdRef;
+
 
 /**
  * The root entry for the WebEngine module.
@@ -152,15 +166,14 @@ public class EasyShare extends ModuleRoot {
                             }
 
                             // //Email notification
-                            // EmailHelper emailer = new EmailHelper();
-                            // String shareOwnerEmail = "mobrebski@nuxeo.com";
-                            // Hashtable mail = new Hashtable();
-                            // mail.put("from", "dion@almaer.com");
-                            // mail.put("to", shareOwnerEmail);
-                            // mail.put("subject", "EasyShare Download");
-                            // mail.put("body",
-                            // "File from Share downloaded by IP");
-                            // emailer.sendmail(mail);
+                            EmailHelper emailer = new EmailHelper();
+                            String shareOwnerEmail = "mobrebski@nuxeo.com";
+                            Hashtable<String, Object> mail = new Hashtable<String, Object>();
+                            mail.put("from", "dion@almaer.com");
+                            mail.put("to", shareOwnerEmail);
+                            mail.put("subject", "EasyShare Download");
+                            mail.put("body", "File from Share downloaded by IP");
+                            emailer.sendmail(mail);
 
                             return Response.ok(blob.getStream(),
                                     blob.getMimeType()).build();
