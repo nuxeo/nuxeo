@@ -17,6 +17,7 @@
 package org.nuxeo.functionaltests.pages;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
@@ -46,7 +47,9 @@ public class WorkflowHomePage extends AbstractPage {
     public WebElement workflowLink;
 
     public boolean taskExistsOnTasksDashboard(String taskName) {
-        WebElement taskNameEl = userTasksPanel.findElement(By.xpath("//span[contains(@id, 'nxw_routing_task_name')]"));
+        WebElement taskNameEl = Locator.findElementWithTimeout(
+                By.xpath("//span[contains(@id, 'nxw_routing_task_name')]"),
+                userTasksPanel);
         return taskName.equals(taskNameEl.getText());
     }
 
