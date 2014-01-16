@@ -25,6 +25,7 @@ import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -117,10 +118,10 @@ public class LoginPage extends AbstractPage {
         try {
             login(username, password);
             return asPage(pageClassToProxy);
-        } catch (NoSuchElementException exc) {
+        } catch (NoSuchElementException | TimeoutException exc) {
             try {
                 // Try once again because of problem described in NXP-12835.
-                // TODO find the real cause of NXP-12835 and remove second login
+                // find the real cause of NXP-12835 and remove second login
                 // attempt
                 if (hasElement(By.xpath(LOGIN_DIV_XPATH))) {
                     login(username, password);

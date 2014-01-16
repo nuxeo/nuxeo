@@ -27,6 +27,7 @@ import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -148,7 +149,7 @@ public class RelationTabSubPage extends DocumentBasePage {
 
         Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(
                 SELECT2_CHANGE_TIMEOUT, TimeUnit.SECONDS).pollingEvery(100,
-                TimeUnit.MILLISECONDS);
+                TimeUnit.MILLISECONDS).ignoring(StaleElementReferenceException.class);
 
         wait.until(isDocumentSelected);
 
