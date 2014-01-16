@@ -52,7 +52,12 @@ public class NuxeoProductNameFactory implements Serializable {
         return Framework.getProperty(PVERSION_KEY);
     }
 
-
+    /**
+     * Gives current year used in copyright (in case this needs to be extracted
+     * from a configuration in the future).
+     *
+     * @since 5.9.2
+     */
     @Factory(value = "copyrightCurrentYear", scope = ScopeType.APPLICATION)
     public String getCurrentYearAsString() {
         return new DateTime().toString("Y");
