@@ -17,20 +17,19 @@
 
 package org.nuxeo.opensocial.container.client.presenter;
 
-import org.nuxeo.opensocial.container.client.event.priv.app.HideMessageEvent;
-import org.nuxeo.opensocial.container.client.event.priv.app.HideMessageEventHandler;
-import org.nuxeo.opensocial.container.client.event.priv.app.SendMessageEvent;
-import org.nuxeo.opensocial.container.client.event.priv.app.SendMessageEventHandler;
-
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.HasText;
-import com.google.inject.Inject;
-
 import net.customware.gwt.presenter.client.EventBus;
 import net.customware.gwt.presenter.client.place.Place;
 import net.customware.gwt.presenter.client.place.PlaceRequest;
 import net.customware.gwt.presenter.client.widget.WidgetDisplay;
 import net.customware.gwt.presenter.client.widget.WidgetPresenter;
+
+import org.nuxeo.opensocial.container.client.event.priv.app.HideMessageEvent;
+import org.nuxeo.opensocial.container.client.event.priv.app.HideMessageEventHandler;
+import org.nuxeo.opensocial.container.client.event.priv.app.SendMessageEvent;
+import org.nuxeo.opensocial.container.client.event.priv.app.SendMessageEventHandler;
+
+import com.google.gwt.user.client.ui.HasText;
+import com.google.inject.Inject;
 
 /**
  * @author Stéphane Fourrier
@@ -85,8 +84,11 @@ public class MessagePresenter extends WidgetPresenter<MessagePresenter.Display> 
         registerHandler(eventBus.addHandler(SendMessageEvent.TYPE,
                 new SendMessageEventHandler() {
                     public void onMessageSent(SendMessageEvent event) {
-                        float timeout = event.hasToBeKeptVisible() ? 0 : TIMEOUT;
-                        showMessage(event.getMessage(), event.getSeverity().getAssociatedClassName(), timeout);
+                        float timeout = event.hasToBeKeptVisible() ? 0
+                                : TIMEOUT;
+                        showMessage(event.getMessage(),
+                                event.getSeverity().getAssociatedClassName(),
+                                timeout);
                     }
                 }));
     }
@@ -100,15 +102,16 @@ public class MessagePresenter extends WidgetPresenter<MessagePresenter.Display> 
                 }));
     }
 
-    public static native void showMessage(String message, String className, float timeout) /*-{
-      $wnd.jQuery.ambiance({
-        title: message,
-        className: className,
-        timeout: timeout
-      });
-    }-*/;
+    public static native void showMessage(String message, String className,
+            float timeout) /*-{
+                           $wnd.jQuery.ambiance({
+                           title: message,
+                           className: className,
+                           timeout: timeout
+                           });
+                           }-*/;
 
     public static native void hideMessage() /*-{
-      $wnd.jQuery(".ambiance").remove();
-    }-*/;
+                                            $wnd.jQuery(".ambiance").remove();
+                                            }-*/;
 }
