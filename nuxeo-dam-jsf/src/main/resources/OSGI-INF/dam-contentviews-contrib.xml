@@ -70,7 +70,7 @@
           showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
         <layout name="dam_listing_ajax" title="label.dam.listing.title"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="false" showPDFExport="false" showSyndicationLinks="false" />
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="false" />
       </resultLayouts>
 
       <selectionList>CURRENT_SELECTION</selectionList>
@@ -523,6 +523,12 @@
       <templates>
         <template mode="any">
           /dam/layouts/dam_layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">
+          /layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">
+          /layouts/layout_listing_pdf_template.xhtml
         </template>
       </templates>
       <properties mode="any">
