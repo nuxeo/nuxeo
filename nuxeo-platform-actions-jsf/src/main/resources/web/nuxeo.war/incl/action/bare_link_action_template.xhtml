@@ -3,7 +3,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html">
-  <nxu:set var="actionLink" value="#{action.getLink()}" resolveTwice="true" >
+  <nxu:set var="actionLink" value="#{action.getLink()}" resolveTwice="true" cache="true" >
   <nxu:set var="onclick"
     value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
     cache="true">
