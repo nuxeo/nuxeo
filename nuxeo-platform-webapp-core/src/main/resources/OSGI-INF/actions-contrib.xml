@@ -525,29 +525,46 @@
 
     <!-- live edit new document creation links -->
 
-    <!--
-      WARNING: the following declaration are not yet used by
-      incl/liveedit_create_actions.xhtml since nxh:outputLink is not able to
-      perform nested JSF-EL for the link/value attribute as this case for the
-      action attribute of nxh:commandLink
-    -->
-
-    <action id="le_create_msword"
+    <action id="le_create_msword" type="bare_link"
       link="#{nxd:liveCreateUrl('application/msword', 'File', 'file', 'content', 'filename')}"
       order="40" label="action.liveedit.create.msword" icon="/icons/word.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
+      <filter-id>is_le_create_msword</filter-id>
     </action>
 
-    <action id="le_create_msexcel"
+    <action id="le_create_msexcel" type="bare_link"
       link="#{nxd:liveCreateUrl('application/vnd.ms-excel', 'File', 'file', 'content', 'filename')}"
       order="50" label="action.liveedit.create.msexcel" icon="/icons/xls.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
+      <filter-id>is_le_create_msexcel</filter-id>
     </action>
 
-    <action id="le_create_mspowerpoint"
+    <action id="le_create_mspowerpoint" type="bare_link"
       link="#{nxd:liveCreateUrl('application/vnd.ms-powerpoint', 'File', 'file', 'content', 'filename')}"
       order="60" label="action.liveedit.create.mspowerpoint" icon="/icons/ppt.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
+      <filter-id>is_le_create_mspowerpoint</filter-id>
+    </action>
+
+    <action id="le_create_odwriter" type="bare_link"
+      link="#{nxd:liveCreateUrl('application/vnd.oasis.opendocument.text', 'File', 'file', 'content', 'filename')}"
+      order="80" label="action.liveedit.create.writer" icon="/icons/odt.png">
+      <category>LIVEEDIT_CREATE_ACTIONS</category>
+      <filter-id>is_le_create_odwriter</filter-id>
+    </action>
+
+    <action id="le_create_odcalc" type="bare_link"
+      link="#{nxd:liveCreateUrl('application/vnd.oasis.opendocument.spreadsheet', 'File', 'file', 'content', 'filename')}"
+      order="100" label="action.liveedit.create.calc" icon="/icons/ods.png">
+      <category>LIVEEDIT_CREATE_ACTIONS</category>
+      <filter-id>is_le_create_odcalc</filter-id>
+    </action>
+
+    <action id="le_create_odimpress" type="bare_link"
+      link="#{nxd:liveCreateUrl('application/vnd.oasis.opendocument.presentation', 'File', 'file', 'content', 'filename')}"
+      order="120" label="action.liveedit.create.impress" icon="/icons/odp.png">
+      <category>LIVEEDIT_CREATE_ACTIONS</category>
+      <filter-id>is_le_create_odimpress</filter-id>
     </action>
 
     <!-- Local Configuration -->
@@ -1023,6 +1040,43 @@
     <filter id="isSearchEnabled">
       <rule grant="true">
         <condition>#{userServicesContext.searchEnabled}</condition>
+      </rule>
+    </filter>
+
+    <!-- LiveEdit filter -->
+    <filter id="le_create_msword">
+      <rule grant="true">
+        <condition>#{msword_liveeditable}</condition>
+      </rule>
+    </filter>
+
+    <filter id="le_create_msexcel">
+      <rule grant="true">
+        <condition>#{msexcel_liveeditable}</condition>
+      </rule>
+    </filter>
+
+    <filter id="le_create_mspowerpoint">
+      <rule grant="true">
+        <condition>#{mspowerpoint_liveeditable}</condition>
+      </rule>
+    </filter>
+
+    <filter id="le_create_odwriter">
+      <rule grant="true">
+        <condition>#{ootext_liveeditable}</condition>
+      </rule>
+    </filter>
+
+    <filter id="le_create_odcalc">
+      <rule grant="true">
+        <condition>#{oocalc_liveeditable}</condition>
+      </rule>
+    </filter>
+
+    <filter id="is_le_create_odimpress">
+      <rule grant="true">
+        <condition>#{oopresentation_liveeditable}</condition>
       </rule>
     </filter>
 
