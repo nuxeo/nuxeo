@@ -80,6 +80,7 @@ border: 1px solid; border-color: "button.hover (__FLAVOR__ border)" }
 .action_bar a img { float: left; margin: -0.2em .3em -0.3em -0.4em }
 .action_bar a:focus { border-color: "color.major.strong (__FLAVOR__ border)"; }
 .action_bar input[type="text"] { margin: 0 .2em }
+.action_bar .dataInputText { vertical-align: top }
 .action_bar input.button { margin-top: 0 }
 .contentViewQuickFilterForm .action_bar a { margin: 0 }
 
