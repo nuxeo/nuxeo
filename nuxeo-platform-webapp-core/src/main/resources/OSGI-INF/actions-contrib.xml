@@ -526,6 +526,9 @@
       order="40" label="action.liveedit.create.msword" icon="/icons/word.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
       <filter-id>is_le_create_msword</filter-id>
+      <properties>
+        <property name="cacheLink">true</property>
+      </properties>
     </action>
 
     <action id="le_create_msexcel" type="bare_link"
@@ -533,6 +536,9 @@
       order="50" label="action.liveedit.create.msexcel" icon="/icons/xls.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
       <filter-id>is_le_create_msexcel</filter-id>
+      <properties>
+        <property name="cacheLink">true</property>
+      </properties>
     </action>
 
     <action id="le_create_mspowerpoint" type="bare_link"
@@ -540,6 +546,9 @@
       order="60" label="action.liveedit.create.mspowerpoint" icon="/icons/ppt.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
       <filter-id>is_le_create_mspowerpoint</filter-id>
+      <properties>
+        <property name="cacheLink">true</property>
+      </properties>
     </action>
 
     <action id="le_create_odwriter" type="bare_link"
@@ -547,6 +556,9 @@
       order="80" label="action.liveedit.create.writer" icon="/icons/odt.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
       <filter-id>is_le_create_odwriter</filter-id>
+      <properties>
+        <property name="cacheLink">true</property>
+      </properties>
     </action>
 
     <action id="le_create_odcalc" type="bare_link"
@@ -554,6 +566,9 @@
       order="100" label="action.liveedit.create.calc" icon="/icons/ods.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
       <filter-id>is_le_create_odcalc</filter-id>
+      <properties>
+        <property name="cacheLink">true</property>
+      </properties>
     </action>
 
     <action id="le_create_odimpress" type="bare_link"
@@ -561,6 +576,9 @@
       order="120" label="action.liveedit.create.impress" icon="/icons/odp.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
       <filter-id>is_le_create_odimpress</filter-id>
+      <properties>
+        <property name="cacheLink">true</property>
+      </properties>
     </action>
 
     <!-- Local Configuration -->
@@ -1040,31 +1058,31 @@
     </filter>
 
     <!-- LiveEdit filter -->
-    <filter id="le_create_msword">
+    <filter id="is_le_create_msword">
       <rule grant="true">
         <condition>#{msword_liveeditable}</condition>
       </rule>
     </filter>
 
-    <filter id="le_create_msexcel">
+    <filter id="is_le_create_msexcel">
       <rule grant="true">
         <condition>#{msexcel_liveeditable}</condition>
       </rule>
     </filter>
 
-    <filter id="le_create_mspowerpoint">
+    <filter id="is_le_create_mspowerpoint">
       <rule grant="true">
         <condition>#{mspowerpoint_liveeditable}</condition>
       </rule>
     </filter>
 
-    <filter id="le_create_odwriter">
+    <filter id="is_le_create_odwriter">
       <rule grant="true">
         <condition>#{ootext_liveeditable}</condition>
       </rule>
     </filter>
 
-    <filter id="le_create_odcalc">
+    <filter id="is_le_create_odcalc">
       <rule grant="true">
         <condition>#{oocalc_liveeditable}</condition>
       </rule>

@@ -1,12 +1,4 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
-  <h:form>
-    <div class="action_bar">
-      <nxl:widgetType name="actions" mode="view" actionsDisplay="icons"
-        widgetName="liveEditCreateActions" label=""
-        actions="#{webActions.getActionsList('LIVEEDIT_CREATE_ACTIONS')}"
-        overallDisplay="horizontal_block" ignoreTemplateProperty="true"
-        addForm="false" value="#{currentDocument}" />
-    </div>
-  </h:form>
+      <nxl:widget name="liveEditCreateActions" mode="view" />
 </div>
