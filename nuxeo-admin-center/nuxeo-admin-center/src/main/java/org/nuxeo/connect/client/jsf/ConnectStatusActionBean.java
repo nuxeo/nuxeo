@@ -81,6 +81,9 @@ public class ConnectStatusActionBean implements Serializable {
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
 
+    @In(create = true, required = true, value="appsViews")
+    protected AppCenterViewsManager appsViews;
+
     @In(create = true)
     protected Map<String, String> messages;
 
@@ -176,6 +179,7 @@ public class ConnectStatusActionBean implements Serializable {
         Contexts.getEventContext().remove("projectsForRegistration");
         Contexts.getApplicationContext().remove("registredConnectInstance");
         Contexts.getApplicationContext().remove("connectUpdateStatusInfo");
+        appsViews.flushCache();
     }
 
     public void validateLogin() {
