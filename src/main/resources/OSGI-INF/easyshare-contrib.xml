@@ -8,9 +8,8 @@
  </extension>
  
  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
-	<action id="showEasyShareURL"  label="Show Easy Share URL"
+	<action id="showEasyShareURL"  label="Public URL"
 		icon="/icons/contextual_menu/share.png" order="20" type="fancybox">
-		<category>DOCUMENT_UPPER_ACTION</category>
 		<filter id="easyShareFolderFilter">
 			<rule grant="true">
 				<type>EasyShareFolder</type>
