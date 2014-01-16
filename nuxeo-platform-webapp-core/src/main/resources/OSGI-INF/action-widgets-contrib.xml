@@ -111,6 +111,16 @@
       </properties>
     </widget>
 
+    <widget name="liveEditCreateActions" type="documentActionsWithForms">
+      <properties mode="view">
+        <property name="category">LIVEEDIT_CREATE_ACTIONS</property>
+        <property name="actionsDisplay">icons</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="styleClass">action_bar</property>
+        <property name="actionStyleClass">button</property>
+      </properties>
+    </widget>
+
   </extension>
 
 </component>
