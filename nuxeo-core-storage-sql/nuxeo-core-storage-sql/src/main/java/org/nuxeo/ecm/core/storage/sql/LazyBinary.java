@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,10 +19,7 @@ import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
- * Base class for a lazy Binary that fetches its remote stream on first access.
- * <p>
- * The methods {@link #cache()}, {@link #fetchFile} and {@link #fetchLength} must be implemented
- * by the concrete class.
+ * Lazy Binary that fetches its remote stream on first access.
  */
 public class LazyBinary extends Binary {
 
@@ -30,46 +27,50 @@ public class LazyBinary extends Binary {
 
     protected boolean hasLength;
 
-    protected transient BinaryFileCache cache;
+    // transient to be Serializable
+    protected transient CachingBinaryManager cbm;
 
-    /**
-     * A lazy binary for the given digest.
-     *
-     * @param digest the digest for the binary
-     * @param fileCache() a file cache used by the length-caching methods
-     */
-    public LazyBinary(String digest, BinaryFileCache cache, String repo) {
-        super(digest, repo);
-        this.cache = cache;
+    public LazyBinary(String digest, String repoName, CachingBinaryManager cbm) {
+        super(digest, repoName);
+        this.cbm = cbm;
     }
 
-    protected BinaryFileCache cache() {
-        if (cache == null) {
+    // because the class is static, re-acquire the CachingBinaryManager
+    protected CachingBinaryManager getCachingBinaryManager() {
+        if (cbm == null) {
             if (repoName == null) {
-                throw new UnsupportedOperationException("Cannot retrieve file cache, no repository name given");
+                throw new UnsupportedOperationException(
+                        "Cannot find binary manager, no repository name");
             }
-            BinaryCachingManager mgr = (BinaryCachingManager)RepositoryResolver.getBinaryManager(repoName);
-            cache = mgr.fileCache();
+            cbm = (CachingBinaryManager) RepositoryResolver.getBinaryManager(repoName);
         }
-        return cache;
+        return cbm;
     }
 
     @Override
     public InputStream getStream() throws IOException {
         if (file == null) {
-            file = cache().getFile(digest);
+            file = getCachingBinaryManager().getFile(digest);
             if (file != null) {
                 length = file.length();
                 hasLength = true;
             }
         }
-        return file == null ? null : new FileInputStream(file);
+        if (file == null) {
+            return null;
+        } else {
+            return new FileInputStream(file);
+        }
     }
 
     @Override
     public StreamSource getStreamSource() {
         if (file == null) {
-            file = cache().getFile(digest);
+            try {
+                file = getCachingBinaryManager().getFile(digest);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             if (file != null) {
                 length = file.length();
                 hasLength = true;
@@ -78,16 +79,19 @@ public class LazyBinary extends Binary {
         return file == null ? null : new FileSource(file);
     }
 
-
     @Override
     public long getLength() {
         if (!hasLength) {
-            Long len = cache().getLength(digest);
+            Long len;
+            try {
+                len = getCachingBinaryManager().getLength(digest);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             length = len == null ? 0 : len.longValue();
             hasLength = true;
         }
         return length;
     }
-
 
 }
