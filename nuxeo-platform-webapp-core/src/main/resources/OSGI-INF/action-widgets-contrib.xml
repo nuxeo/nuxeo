@@ -111,7 +111,7 @@
       </properties>
     </widget>
 
-    <widget name="breadCrumbActions" type="documentActionsWithForms">
+    <widget name="breadcrumbActions" type="documentActionsWithForms">
       <properties mode="view">
         <property name="category">LIVEEDIT_CREATE_ACTIONS,BREADCRUMB_ACTIONS</property>
         <property name="actionsDisplay">icons</property>
