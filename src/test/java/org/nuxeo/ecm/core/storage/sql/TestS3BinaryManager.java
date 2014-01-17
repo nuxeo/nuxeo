@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,16 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
+
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,12 +39,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * ***** NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!! *****
@@ -96,9 +99,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
 
     @Test
     public void testS3BinaryManager() throws Exception {
-        if (DISABLED) {
-            return; // test disabled
-        }
+        assumeTrue(!DISABLED);
 
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
         assertTrue(binary instanceof LazyBinary);
@@ -118,14 +119,28 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
         assertEquals(bytes.length, binary.getLength());
-        assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
+        assertEquals(CONTENT, toString(binary.getStream()));
 
         // get binary (clean cache)
         binaryManager.fileCache.clear();
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
+        assertTrue(binary instanceof LazyBinary);
+        assertEquals(CONTENT, toString(binary.getStream()));
         assertEquals(bytes.length, binary.getLength());
-        assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
+        // refetch, now in cache
+        binary = binaryManager.getBinary(CONTENT_MD5);
+        assertFalse(binary instanceof LazyBinary);
+        assertEquals(CONTENT, toString(binary.getStream()));
+        assertEquals(bytes.length, binary.getLength());
+
+        // get binary (clean cache), fetch length first
+        binaryManager.fileCache.clear();
+        binary = binaryManager.getBinary(CONTENT_MD5);
+        assertNotNull(binary);
+        assertTrue(binary instanceof LazyBinary);
+        assertEquals(bytes.length, binary.getLength());
+        assertEquals(CONTENT, toString(binary.getStream()));
     }
 
     /**
@@ -133,9 +148,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
      */
     @Test
     public void testS3BinaryManagerGC() throws Exception {
-        if (DISABLED) {
-            return; // test disabled
-        }
+        assumeTrue(!DISABLED);
 
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
         assertTrue(binary instanceof LazyBinary);
@@ -150,7 +163,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
         assertEquals(bytes.length, binary.getLength());
-        assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
+        assertEquals(CONTENT, toString(binary.getStream()));
 
         // another binary we'll GC
         binaryManager.getBinary(new ByteArrayInputStream(
@@ -213,9 +226,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
 
     @Test
     public void testS3BinaryManagerOverwrite() throws Exception {
-        if (DISABLED) {
-            return; // test disabled
-        }
+        assumeTrue(!DISABLED);
 
         // store binary
         byte[] bytes = CONTENT.getBytes("UTF-8");
@@ -230,6 +241,10 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         assertEquals(bytes.length, binary2.getLength());
         // check that S3 bucked was not called for no valid reason
         assertEquals(binary2.digest, Framework.getProperty("cachedBinary"));
+    }
+
+    protected static String toString(InputStream stream) throws IOException {
+        return IOUtils.toString(stream, "UTF-8");
     }
 
     /**
