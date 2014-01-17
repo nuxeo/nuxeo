@@ -373,6 +373,14 @@ public class SuggestDirectoryEntries {
     @Param(name = "displayObsoleteEntries", required = false)
     protected boolean displayObsoleteEntries = false;
 
+    /**
+     * Fetch mode. If not contains, then starts with.
+     *
+     * @since 5.9.2
+     */
+    @Param(name = "contains", required = false)
+    protected boolean contains = false;
+
     private String label = null;
 
     private boolean isChained = false;
@@ -434,12 +442,16 @@ public class SuggestDirectoryEntries {
                 filter.put(Select2Common.OBSOLETE_FIELD_ID, Long.valueOf(0));
             }
             Set<String> fullText = new TreeSet<String>();
-            if (dbl10n && !translateLabels) {
+            if (dbl10n || !translateLabels) {
                 postFilter = false;
                 // do the filtering at directory level
                 if (prefix != null && !prefix.isEmpty()) {
                     // filter.put(directory.getIdField(), prefix);
-                    filter.put(label, prefix);
+                    String computedPrefix = prefix;
+                    if (contains) {
+                        computedPrefix = '%' + computedPrefix;
+                    }
+                    filter.put(label, computedPrefix);
                     fullText.add(label);
                 }
                 if (filter.isEmpty()) {
@@ -474,9 +486,16 @@ public class SuggestDirectoryEntries {
                 }
 
                 if (prefix != null && !prefix.isEmpty() && postFilter) {
-                    if (!adapter.getLabel().toLowerCase().startsWith(
-                            prefix.toLowerCase())) {
-                        continue;
+                    if (contains) {
+                        if (!adapter.getLabel().toLowerCase().contains(
+                                prefix.toLowerCase())) {
+                            continue;
+                        }
+                    } else {
+                        if (!adapter.getLabel().toLowerCase().startsWith(
+                                prefix.toLowerCase())) {
+                            continue;
+                        }
                     }
                 }
 
