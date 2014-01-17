@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,12 +17,12 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -55,9 +55,6 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
 /**
  * A Binary Manager that stores binaries as S3 BLOBs
  * <p>
@@ -66,7 +63,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
  * Because the BLOB length can be accessed independently of the binary stream,
  * it is also cached in a simple text file if accessed before the stream.
  */
-public class S3BinaryManager extends BinaryCachingManager {
+public class S3BinaryManager extends CachingBinaryManager {
 
     private static final Log log = LogFactory.getLog(S3BinaryManager.class);
 
@@ -120,8 +117,6 @@ public class S3BinaryManager extends BinaryCachingManager {
     protected CryptoConfiguration cryptoConfiguration;
 
     protected String repositoryName;
-
-    protected BinaryFileCache fileCache;
 
     protected AmazonS3 amazonS3;
 
@@ -268,7 +263,7 @@ public class S3BinaryManager extends BinaryCachingManager {
         dir.mkdir();
         dir.deleteOnExit();
         long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
-        fileCache = new S3BinaryFileCache(dir, cacheSize);
+        initializeCache(dir, cacheSize, new S3FileStorage());
         log.info("Using binary cache directory: " + dir.getPath() + " size: "
                 + cacheSizeStr);
 
@@ -277,65 +272,6 @@ public class S3BinaryManager extends BinaryCachingManager {
 
     protected void createGarbageCollector() {
         garbageCollector = new S3BinaryGarbageCollector(this);
-    }
-
-    @Override
-    public Binary getBinary(InputStream in) throws IOException {
-        // Write the input stream to a temporary file, while computing a digest
-        File tmp = fileCache.getTempFile();
-        OutputStream out = new FileOutputStream(tmp);
-        String digest;
-        try {
-            digest = storeAndDigest(in, out);
-        } finally {
-            in.close();
-            out.close();
-        }
-
-        File cachedFile = fileCache.getFile(digest);
-        if (cachedFile != null) {
-            if (Framework.isTestModeSet()) {
-                Framework.getProperties().setProperty("cachedBinary", digest);
-            }
-            return new Binary(cachedFile, digest, repositoryName);
-        }
-
-        // Store the blob in the S3 bucket if not already there
-        String etag;
-        try {
-            ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName,
-                    digest);
-            etag = metadata.getETag();
-        } catch (AmazonClientException e) {
-            if (!isMissingKey(e)) {
-                throw new IOException(e);
-            }
-            // no data, store the blob
-            try {
-                PutObjectResult result = amazonS3.putObject(bucketName, digest,
-                        tmp);
-                etag = result.getETag();
-            } catch (AmazonClientException ee) {
-                throw new IOException(ee);
-            }
-        }
-        // check transfer went ok
-        if (!(amazonS3 instanceof AmazonS3EncryptionClient)
-                && !etag.equals(digest)) {
-            // When the blob is not encrypted by S3, the MD5 remotely computed
-            // by S3 and passed as a Etag should match the locally computed MD5
-            // digest.
-            // This check cannot be done when encryption is enabled unless we
-            // could replicate that encryption locally just for that purpose
-            // which would add further load and complexity on the client.
-            throw new IOException("Invalid ETag in S3, ETag=" + etag
-                    + " digest=" + digest);
-        }
-
-        // Register the file in the file cache if all went well
-        File file = fileCache.putFile(digest, tmp);
-
-        return new Binary(file, digest, repositoryName);
     }
 
     protected void removeBinary(String digest) {
@@ -356,23 +292,68 @@ public class S3BinaryManager extends BinaryCachingManager {
         return MD5_RE.matcher(digest).matches();
     }
 
-    public class S3BinaryFileCache extends BinaryFileCache {
-
-        public S3BinaryFileCache(File dir, long maxSize) {
-            super(dir, maxSize);
-        }
+    public class S3FileStorage implements FileStorage {
 
         @Override
-        public boolean fetchFile(String digest, File tmp) {
+        public void storeFile(String digest, File file) throws IOException {
             long t0 = 0;
             if (log.isDebugEnabled()) {
                 t0 = System.currentTimeMillis();
-                log.debug("fetching blob " + digest + " from S3 store");
+                log.debug("storing blob " + digest + " to S3");
+            }
+            String etag;
+            try {
+                ObjectMetadata metadata = amazonS3.getObjectMetadata(
+                        bucketName, digest);
+                etag = metadata.getETag();
+                if (log.isDebugEnabled()) {
+                    log.debug("blob " + digest + " is already in S3");
+                }
+            } catch (AmazonClientException e) {
+                if (!isMissingKey(e)) {
+                    throw new IOException(e);
+                }
+                // not already present -> store the blob
+                try {
+                    PutObjectResult result = amazonS3.putObject(bucketName,
+                            digest, file);
+                    etag = result.getETag();
+                } catch (AmazonClientException ee) {
+                    throw new IOException(ee);
+                } finally {
+                    if (log.isDebugEnabled()) {
+                        long dtms = System.currentTimeMillis() - t0;
+                        log.debug("stored blob " + digest + " to S3 in " + dtms
+                                + "ms");
+                    }
+                }
+            }
+            // check transfer went ok
+            if (!(amazonS3 instanceof AmazonS3EncryptionClient)
+                    && !etag.equals(digest)) {
+                // When the blob is not encrypted by S3, the MD5 remotely
+                // computed by S3 and passed as a Etag should match the locally
+                // computed MD5 digest.
+                // This check cannot be done when encryption is enabled unless
+                // we could replicate that encryption locally just for that
+                // purpose which would add further load and complexity on the
+                // client.
+                throw new IOException("Invalid ETag in S3, ETag=" + etag
+                        + " digest=" + digest);
+            }
+        }
+
+        @Override
+        public boolean fetchFile(String digest, File file) throws IOException {
+            long t0 = 0;
+            if (log.isDebugEnabled()) {
+                t0 = System.currentTimeMillis();
+                log.debug("fetching blob " + digest + " from S3");
             }
             try {
 
                 ObjectMetadata metadata = amazonS3.getObject(
-                        new GetObjectRequest(bucketName, digest), tmp);
+                        new GetObjectRequest(bucketName, digest), file);
                 // check ETag
                 String etag = metadata.getETag();
                 if (!(amazonS3 instanceof AmazonS3EncryptionClient)
@@ -384,26 +365,25 @@ public class S3BinaryManager extends BinaryCachingManager {
                 return true;
             } catch (AmazonClientException e) {
                 if (!isMissingKey(e)) {
-                    log.error("Unknown binary: " + digest, e);
+                    throw new IOException(e);
                 }
                 return false;
             } finally {
                 if (log.isDebugEnabled()) {
                     long dtms = System.currentTimeMillis() - t0;
-                    log.debug("fetched blob " + digest + " from S3 store in "
-                            + dtms + "ms");
+                    log.debug("fetched blob " + digest + " from S3 in " + dtms
+                            + "ms");
                 }
             }
 
         }
 
         @Override
-        public Long fetchLength(String digest) {
+        public Long fetchLength(String digest) throws IOException {
             long t0 = 0;
             if (log.isDebugEnabled()) {
                 t0 = System.currentTimeMillis();
-                log.debug("fetching blob " + digest
-                        + " from S3 store to get length");
+                log.debug("fetching blob length " + digest + " from S3");
             }
             try {
                 ObjectMetadata metadata = amazonS3.getObjectMetadata(
@@ -419,18 +399,16 @@ public class S3BinaryManager extends BinaryCachingManager {
                 return Long.valueOf(metadata.getContentLength());
             } catch (AmazonClientException e) {
                 if (!isMissingKey(e)) {
-                    log.error("Unknown binary: " + digest, e);
+                    throw new IOException(e);
                 }
                 return null;
             } finally {
                 if (log.isDebugEnabled()) {
                     long dtms = System.currentTimeMillis() - t0;
-                    log.debug("fetched blob " + digest
-                            + " from S3 store to get it's length in " + dtms
-                            + "ms");
+                    log.debug("fetched blob length " + digest + " from S3 in "
+                            + dtms + "ms");
                 }
             }
-
         }
     }
 
@@ -480,7 +458,7 @@ public class S3BinaryManager extends BinaryCachingManager {
 
             // XXX : we should be able to do better
             // and only remove the cache entry that will be removed from S3
-            binaryManager.fileCache().clear();
+            binaryManager.fileCache.clear();
         }
 
         @Override
@@ -542,11 +520,6 @@ public class S3BinaryManager extends BinaryCachingManager {
             status.gcDuration = System.currentTimeMillis() - startTime;
             startTime = 0;
         }
-    }
-
-    @Override
-    public BinaryFileCache fileCache() {
-        return fileCache;
     }
 
 }
