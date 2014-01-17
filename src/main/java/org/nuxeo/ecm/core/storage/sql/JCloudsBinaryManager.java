@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -54,7 +54,7 @@ import org.nuxeo.runtime.api.Framework;
  * Because the BLOB length can be accessed independently of the binary stream,
  * it is also cached in a simple text file if accessed before the stream.
  */
-public class JCloudsBinaryManager extends BinaryCachingManager  {
+public class JCloudsBinaryManager extends CachingBinaryManager  {
 
     private static final Log log = LogFactory.getLog(JCloudsBinaryManager.class);
 
@@ -92,8 +92,6 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
     protected String storeName;
 
     protected String storeProvider;
-
-    protected BinaryFileCache fileCache;
 
     protected BlobMap storeMap;
 
@@ -155,6 +153,7 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
             System.setProperty("https.proxyPassword", proxyPassword);
             Authenticator.setDefault(
                     new Authenticator() {
+                        @Override
                         public PasswordAuthentication getPasswordAuthentication() {
                             return new PasswordAuthentication(
                                     proxyLogin, proxyPassword.toCharArray());
@@ -191,7 +190,7 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
         dir.mkdir();
         dir.deleteOnExit();
         long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
-        fileCache = new JCloudsBinaryFileCache(dir, cacheSize);
+        initializeCache(dir, cacheSize, new JCloudsFileStorage());
         log.info("Using binary cache directory: " + dir.getPath() + " size: "
                 + cacheSizeStr);
 
@@ -202,71 +201,6 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
         garbageCollector = new JCloudsBinaryGarbageCollector(this);
     }
 
-    @Override
-    public Binary getBinary(InputStream in) throws IOException {
-        // Write the input stream to a temporary file, while computing a digest
-        File tmp = fileCache.getTempFile();
-        OutputStream out = new FileOutputStream(tmp);
-        String digest;
-        try {
-            digest = storeAndDigest(in, out);
-        } finally {
-            in.close();
-            out.close();
-        }
-
-        // Store the blob in the store if not already there
-        Blob currentObject;
-        try {
-            currentObject = storeMap.get(digest);
-        } catch (Exception e) {
-            throw new IOException("Unable to check existence of binary", e);
-        }
-        if (currentObject == null) {
-            // no data, store the blob
-            Blob remoteBlob = storeMap.blobBuilder().name(digest).payload(tmp).calculateMD5().build();
-            try {
-                storeMap.put(digest, remoteBlob);
-            } catch (Exception e) {
-                throw new IOException("Unable to store binary", e);
-            }
-            // validate storage
-            Blob checkBlob;
-            try {
-                checkBlob = storeMap.get(digest);
-            } catch (Exception e) {
-                try {
-                    // Remote blob can't be validated - remove it
-                    storeMap.remove(digest);
-                } catch (Exception e2) {
-                    log.error("Possible data corruption : binary " + digest
-                            + " validation failed but it could not be removed.");
-                }
-                throw new IOException("Unable to validate stored binary", e);
-            }
-            if ((checkBlob == null) ||
-                    (remoteBlob.getMetadata().getContentMetadata().getContentLength() !=
-                    checkBlob.getMetadata().getContentMetadata().getContentLength())) {
-                if (checkBlob != null) {
-                    // Remote blob is incomplete - remove it
-                    try {
-                        storeMap.remove(digest);
-                    } catch (Exception e2) {
-                        log.error("Possible data corruption : binary "
-                                + digest
-                                + " validation failed but it could not be removed.");
-                    }
-                }
-                throw new IOException("Upload to blob store failed");
-            }
-        }
-
-        // Register the file in the file cache if all went well
-        File file = fileCache.putFile(digest, tmp);
-
-        return new Binary(file, digest, repositoryName);
-    }
-
     protected void removeBinary(String digest) {
         storeMap.remove(digest);
     }
@@ -275,10 +209,55 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
         return MD5_RE.matcher(digest).matches();
     }
 
-    public class JCloudsBinaryFileCache extends BinaryFileCache {
+    public class JCloudsFileStorage implements FileStorage {
 
-        public JCloudsBinaryFileCache(File dir, long maxSize) {
-            super(dir, maxSize);
+        @Override
+        public void storeFile(String digest, File file) throws IOException {
+            Blob currentObject;
+            try {
+                currentObject = storeMap.get(digest);
+            } catch (Exception e) {
+                throw new IOException("Unable to check existence of binary", e);
+            }
+            if (currentObject == null) {
+                // no data, store the blob
+                Blob remoteBlob = storeMap.blobBuilder().name(digest).payload(
+                        file).calculateMD5().build();
+                try {
+                    storeMap.put(digest, remoteBlob);
+                } catch (Exception e) {
+                    throw new IOException("Unable to store binary", e);
+                }
+                // validate storage
+                Blob checkBlob;
+                try {
+                    checkBlob = storeMap.get(digest);
+                } catch (Exception e) {
+                    try {
+                        // Remote blob can't be validated - remove it
+                        storeMap.remove(digest);
+                    } catch (Exception e2) {
+                        log.error("Possible data corruption : binary "
+                                + digest
+                                + " validation failed but it could not be removed.");
+                    }
+                    throw new IOException("Unable to validate stored binary", e);
+                }
+                if (checkBlob == null
+                        || remoteBlob.getMetadata().getContentMetadata().getContentLength() != checkBlob.getMetadata().getContentMetadata().getContentLength()) {
+                    if (checkBlob != null) {
+                        // Remote blob is incomplete - remove it
+                        try {
+                            storeMap.remove(digest);
+                        } catch (Exception e2) {
+                            log.error("Possible data corruption : binary "
+                                    + digest
+                                    + " validation failed but it could not be removed.");
+                        }
+                    }
+                    throw new IOException("Upload to blob store failed");
+                }
+            }
         }
 
         @Override
@@ -420,12 +399,6 @@ public class JCloudsBinaryManager extends BinaryCachingManager  {
             status.gcDuration = System.currentTimeMillis() - startTime;
             startTime = 0;
         }
-
-    }
-
-    @Override
-    public BinaryFileCache fileCache() {
-        return fileCache;
     }
 
 }
