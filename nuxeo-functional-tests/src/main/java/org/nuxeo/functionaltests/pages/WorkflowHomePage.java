@@ -16,6 +16,8 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
@@ -23,6 +25,7 @@ import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -34,6 +37,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class WorkflowHomePage extends AbstractPage {
 
+    protected static final Log log = LogFactory.getLog(WorkflowHomePage.class);
+
     public WorkflowHomePage(WebDriver driver) {
         super(driver);
     }
@@ -43,13 +48,26 @@ public class WorkflowHomePage extends AbstractPage {
     protected WebElement userTasksPanel;
 
     @Required
+    @FindBy(id = "nxl_userOpenTasksLayout:contentViewLayoutSelectForm_cv_user_open_tasks_nxw_current_user_open_tasks:refreshContentViewLink")
+    protected WebElement refreshTask;
+
+    @Required
     @FindBy(linkText = "Workflow")
     public WebElement workflowLink;
 
     public boolean taskExistsOnTasksDashboard(String taskName) {
-        WebElement taskNameEl = Locator.findElementWithTimeout(
+        WebElement taskNameEl;
+        try{
+            taskNameEl = Locator.findElementWithTimeout(
                 By.xpath("//span[contains(@id, 'nxw_routing_task_name')]"),
                 userTasksPanel);
+        } catch (TimeoutException e) {
+            log.warn("Could not find task at first attempt, let's click refresh and try one more time.");
+            refreshTask.click();
+            taskNameEl = Locator.findElementWithTimeout(
+                    By.xpath("//span[contains(@id, 'nxw_routing_task_name')]"),
+                    userTasksPanel);
+        }
         return taskName.equals(taskNameEl.getText());
     }
 
