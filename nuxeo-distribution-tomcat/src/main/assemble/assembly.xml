@@ -280,6 +280,7 @@ install nuxeo-dam
         <include name="el-api*" />
         <include name="jsp-*" />
         <include name="juel-api-*" />
+        <include name="tomcat-dbcp-*" />
       </fileset>
       <!-- replaced by sl4j bridge -->
       <fileset dir="${distribution.dir}/nxserver/lib">
