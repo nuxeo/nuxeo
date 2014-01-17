@@ -23,6 +23,9 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.runtime.api.Framework;
 
 @Operation(id = ExportStructureToFS.ID, category = Constants.CAT_SERVICES, label = "ExportStructureToFS", description = "This operation enables to export the structure contained in the Root name path to the File System Target path. You can declare your own query to choose the document being exported.")
 public class ExportStructureToFS {
@@ -46,7 +49,22 @@ public class ExportStructureToFS {
 
     @OperationMethod
     public void run() throws Exception {
-        service.export(session, RootName, FileSystemTarget, PageProvider);
+        boolean isSessionNull = false;
+        try {
+            if (session == null) {
+                isSessionNull = true;
+                Repository repository = Framework.getService(
+                        RepositoryManager.class).getDefaultRepository();
+                session = repository.open();
+
+            }
+
+            service.export(session, RootName, FileSystemTarget, PageProvider);
+        } finally {
+            if (isSessionNull && session != null) {
+                Repository.close(session);
+            }
+        }
     }
 
 }
