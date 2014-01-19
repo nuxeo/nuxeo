@@ -25,6 +25,7 @@ import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -61,7 +62,7 @@ public class WorkflowHomePage extends AbstractPage {
             taskNameEl = Locator.findElementWithTimeout(
                 By.xpath("//span[contains(@id, 'nxw_routing_task_name')]"),
                 userTasksPanel);
-        } catch (TimeoutException e) {
+        } catch (TimeoutException | NoSuchElementException e) {
             log.warn("Could not find task at first attempt, let's click refresh and try one more time.");
             refreshTask.click();
             taskNameEl = Locator.findElementWithTimeout(
