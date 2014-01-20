@@ -74,7 +74,8 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.publisher.task",
         TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
         "org.nuxeo.ecm.platform.rendition.publisher" })
-@LocalDeploy("org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml")
+@LocalDeploy({"org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml",
+        "org.nuxeo.ecm.platform.rendition.publisher:publishing-facets.xml"})
 public class TestRenditionPublication {
 
     @Inject

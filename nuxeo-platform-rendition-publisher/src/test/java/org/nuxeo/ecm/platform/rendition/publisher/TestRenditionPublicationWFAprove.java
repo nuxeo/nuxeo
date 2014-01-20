@@ -60,9 +60,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
+ *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -83,7 +83,8 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.rendition.publisher" })
 @LocalDeploy({
         "org.nuxeo.ecm.platform.rendition.publisher:relations-default-jena-contrib.xml",
-        "org.nuxeo.ecm.platform.rendition.publisher:test-sql-directories-contrib.xml" })
+        "org.nuxeo.ecm.platform.rendition.publisher:test-sql-directories-contrib.xml",
+        "org.nuxeo.ecm.platform.rendition.publisher:publishing-facets.xml"})
 public class TestRenditionPublicationWFAprove {
 
     @Inject
