@@ -95,7 +95,7 @@ public class DocumentPageProviderOperation {
     @Param(name = "sortInfo", required = false)
     protected StringList sortInfoAsStringList;
 
-    @Param(name = "queryParams", required = false)
+    @Param(name = "queryParams", alias = "searchTerm", required = false)
     protected StringList strParameters;
 
     @Param(name = "documentLinkBuilder", required = false)

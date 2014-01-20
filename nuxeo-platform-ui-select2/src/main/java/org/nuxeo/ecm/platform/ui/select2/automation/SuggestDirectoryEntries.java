@@ -352,7 +352,7 @@ public class SuggestDirectoryEntries {
     @Param(name = "lang", required = false)
     protected String lang;
 
-    @Param(name = "prefix", required = false)
+    @Param(name = "searchTerm", alias="prefix", required = false)
     protected String prefix;
 
     @Param(name = "labelFieldName", required = false)

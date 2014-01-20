@@ -70,7 +70,7 @@ public class SuggestUserEntries {
     @Context
     protected SchemaManager schemaManager;
 
-    @Param(name = "prefix", required = false)
+    @Param(name = "searchTerm", alias="prefix", required = false)
     protected String prefix;
 
     @Param(name = "searchType", required = false)
