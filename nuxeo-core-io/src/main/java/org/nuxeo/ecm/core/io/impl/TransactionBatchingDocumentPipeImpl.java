@@ -26,6 +26,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class TransactionBatchingDocumentPipeImpl extends DocumentPipeImpl {
 
+    public TransactionBatchingDocumentPipeImpl(int pageSize) {
+        super(pageSize);
+    }
+
     @Override
     protected void handleBatchEnd() {
         TransactionHelper.commitOrRollbackTransaction();
