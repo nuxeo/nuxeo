@@ -66,6 +66,9 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.publisher.core.contrib");
         deployBundle("org.nuxeo.ecm.platform.publisher.core");
 
+        deployContrib("org.nuxeo.ecm.platform.publisher.test",
+                "OSGI-INF/publish-facets-contrib.xml");
+
         fireFrameworkStarted();
         openSession();
     }
