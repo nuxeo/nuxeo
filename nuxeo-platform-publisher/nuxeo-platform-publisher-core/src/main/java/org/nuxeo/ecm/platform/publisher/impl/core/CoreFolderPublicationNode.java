@@ -112,10 +112,10 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode
         String clause = String.format("ecm:parentId = '%s' AND ecm:currentLifeCycleState != '%s'", folder.getId(), LifeCycleConstants.DELETED_STATE);
         if (queryDocuments) {
             clause += String.format(" AND ecm:mixinType NOT IN ('%s', '%s')",
-                 FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION);
+                 FacetNames.PUBLISH_SPACE, FacetNames.HIDDEN_IN_NAVIGATION);
         } else {
-            clause += String.format("AND ecm:mixinType IN ('%s' ) AND ecm:mixinType NOT IN ('%s')",
-                        FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION);
+            clause += String.format("AND ecm:mixinType IN ('%s') AND ecm:mixinType NOT IN ('%s')",
+                        FacetNames.PUBLISH_SPACE, FacetNames.HIDDEN_IN_NAVIGATION);
         }
         return clause;
     }
