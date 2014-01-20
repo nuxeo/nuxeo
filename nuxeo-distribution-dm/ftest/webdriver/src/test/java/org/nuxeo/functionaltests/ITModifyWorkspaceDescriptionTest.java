@@ -44,6 +44,9 @@ import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
  */
 public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
 
+    private final String WORKSPACE_TITLE = "WorkspaceDescriptionModify_"
+            + new Date().getTime();
+
     @Test
     public void testModifyWsDescription() throws Exception {
 
@@ -75,10 +78,8 @@ public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
 
         // Create a new workspace named 'WorkspaceDescriptionModify_{current
         // time}'
-        String workspaceTitle = "WorkspaceDescriptionModify_"
-                + new Date().getTime();
         DocumentBasePage workspacePage = createWorkspace(documentBasePage,
-                workspaceTitle, "A workspace description");
+                WORKSPACE_TITLE, "A workspace description");
 
         // Modify Workspace description
         String descriptionModified = "Description modified";
@@ -87,14 +88,27 @@ public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
 
         assertEquals(descriptionModified,
                 workspacePage.getCurrentFolderishDescription());
-        assertEquals(workspaceTitle, workspacePage.getCurrentDocumentTitle());
+        assertEquals(WORKSPACE_TITLE, workspacePage.getCurrentDocumentTitle());
 
         // Clean up repository
-        deleteWorkspace(workspacePage, workspaceTitle);
+        restoreState();
 
         // Logout
         logout();
 
+    }
+
+    /**
+     * @since 5.9.2
+     */
+    private void restoreState() throws Exception {
+        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        usersTab = usersTab.searchUser(TEST_USERNAME);
+        usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
+        DocumentBasePage documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
+                "Workspaces");
+        deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
+        logout();
     }
 
 }
