@@ -25,8 +25,6 @@ import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -57,18 +55,9 @@ public class WorkflowHomePage extends AbstractPage {
     public WebElement workflowLink;
 
     public boolean taskExistsOnTasksDashboard(String taskName) {
-        WebElement taskNameEl;
-        try{
-            taskNameEl = Locator.findElementWithTimeout(
-                By.xpath("//span[contains(@id, 'nxw_routing_task_name')]"),
-                userTasksPanel);
-        } catch (TimeoutException | NoSuchElementException e) {
-            log.warn("Could not find task at first attempt, let's click refresh and try one more time.");
-            refreshTask.click();
-            taskNameEl = Locator.findElementWithTimeout(
-                    By.xpath("//span[contains(@id, 'nxw_routing_task_name')]"),
-                    userTasksPanel);
-        }
+        WebElement taskNameEl = Locator.findElementWithTimeout(
+            By.xpath("//span[contains(@id, 'nxw_routing_task_name')]"),
+            userTasksPanel);
         return taskName.equals(taskNameEl.getText());
     }
 
