@@ -85,6 +85,18 @@ public class S3BinaryManager extends CachingBinaryManager {
 
     public static final String DEFAULT_CACHE_SIZE = "100 MB";
 
+    /** AWS ClientConfiguration default 50 */
+    public static final String CONNECTION_MAX_KEY = "nuxeo.s3storage.connection.max";
+
+    /** AWS ClientConfiguration default 3 (with exponential backoff) */
+    public static final String CONNECTION_RETRY_KEY = "nuxeo.s3storage.connection.retry";
+
+    /** AWS ClientConfiguration default 50*1000 = 50s */
+    public static final String CONNECTION_TIMEOUT_KEY = "nuxeo.s3storage.connection.timeout";
+
+    /** AWS ClientConfiguration default 50*1000 = 50s */
+    public static final String SOCKET_TIMEOUT_KEY = "nuxeo.s3storage.socket.timeout";
+
     public static final String KEYSTORE_FILE_KEY = "nuxeo.s3storage.crypt.keystore.file";
 
     public static final String KEYSTORE_PASS_KEY = "nuxeo.s3storage.crypt.keystore.password";
@@ -148,6 +160,11 @@ public class S3BinaryManager extends CachingBinaryManager {
             cacheSizeStr = DEFAULT_CACHE_SIZE;
         }
 
+        int maxConnections = getIntProperty(CONNECTION_MAX_KEY);
+        int maxErrorRetry = getIntProperty(CONNECTION_RETRY_KEY);
+        int connectionTimeout = getIntProperty(CONNECTION_TIMEOUT_KEY);
+        int socketTimeout = getIntProperty(SOCKET_TIMEOUT_KEY);
+
         String keystoreFile = Framework.getProperty(KEYSTORE_FILE_KEY);
         String keystorePass = Framework.getProperty(KEYSTORE_PASS_KEY);
         String privkeyAlias = Framework.getProperty(PRIVKEY_ALIAS_KEY);
@@ -190,6 +207,18 @@ public class S3BinaryManager extends CachingBinaryManager {
         }
         if (proxyPassword != null) { // could be blank
             clientConfiguration.setProxyPassword(proxyPassword);
+        }
+        if (maxConnections > 0) {
+            clientConfiguration.setMaxConnections(maxConnections);
+        }
+        if (maxErrorRetry >= 0) { // 0 is allowed
+            clientConfiguration.setMaxErrorRetry(maxErrorRetry);
+        }
+        if (connectionTimeout >= 0) { // 0 is allowed
+            clientConfiguration.setConnectionTimeout(connectionTimeout);
+        }
+        if (socketTimeout >= 0) { // 0 is allowed
+            clientConfiguration.setSocketTimeout(socketTimeout);
         }
 
         // set up encryption
@@ -268,6 +297,22 @@ public class S3BinaryManager extends CachingBinaryManager {
                 + cacheSizeStr);
 
         createGarbageCollector();
+    }
+
+    /**
+     * Gets an integer framework property, or -1 if undefined.
+     */
+    protected static int getIntProperty(String key) {
+        String s = Framework.getProperty(key);
+        int value = -1;
+        if (!isBlank(s)) {
+            try {
+                value = Integer.parseInt(s.trim());
+            } catch (NumberFormatException e) {
+                log.error("Cannot parse " + key + ": " + s);
+            }
+        }
+        return value;
     }
 
     protected void createGarbageCollector() {
