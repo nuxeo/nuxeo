@@ -97,7 +97,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         DocumentBasePage filePage = initRepository(defaultDomainPage);
         // start the default serial workflow and choose jdoe_workflow as
         // reviewer
-        filePage = startDefaultSerialWorkflow(filePage);
+        filePage = startDefaultSerialWorkflow(filePage, USER_JDOE);
 
         logout();
         filePage = login(USER_JDOE, USER_JDOE);
@@ -353,7 +353,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
     }
 
     protected DocumentBasePage startDefaultSerialWorkflow(
-            DocumentBasePage filePage) {
+            DocumentBasePage filePage, final String username) {
         // start workflow
         SummaryTabSubPage summaryTabPage = filePage.getSummaryTab();
         summaryTabPage.startDefaultWorkflow();
@@ -363,7 +363,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         WorkflowTabSubPage workflowTab = filePage.getWorkflow();
         workflowTab.showGraphView();
         workflowTab.closeGraphView();
-        workflowTab.addWorkflowReviewer();
+        workflowTab.addWorkflowReviewer(username);
         workflowTab.startWorkflow();
         summaryTabPage = filePage.getSummaryTab();
         assertTrue(summaryTabPage.workflowAlreadyStarted());

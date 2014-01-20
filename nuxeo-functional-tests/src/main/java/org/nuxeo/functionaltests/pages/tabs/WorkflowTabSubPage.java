@@ -44,11 +44,11 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     /**
      * Add reviewer in default serial workflow
      */
-    public void addWorkflowReviewer() {
+    public void addWorkflowReviewer(final String username) {
         Select2WidgetElement particpants = new Select2WidgetElement(driver,
                 driver.findElement(By.xpath("//div[contains(@id, 'nxw_participants_select2')]")),
                 true);
-        particpants.selectValue("jdoe");
+        particpants.selectValue(username);
         selectItemInDropDownMenu(reviewSelector, "Simple review");
     }
 
