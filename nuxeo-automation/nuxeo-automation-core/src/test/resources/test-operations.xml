@@ -15,6 +15,7 @@
     <operation class="org.nuxeo.ecm.automation.core.test.GetVarOperation" />
     <operation class="org.nuxeo.ecm.automation.core.test.StringListOperation" />
     <operation class="org.nuxeo.ecm.automation.core.test.ExitOperation" />
+    <operation class="org.nuxeo.ecm.automation.core.test.ParamNameWithAliasOperation" />
   </extension>
 
   <extension point="chains"
