@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.forms;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -135,6 +136,13 @@ public class Select2WidgetElement extends WebFragmentImpl {
             }
         }
 
+        if (getSuggestedEntries() != null && getSuggestedEntries().size() > 1) {
+            log.warn("Suggestion for element "
+                    + element.getAttribute("id")
+                    + " returned more than 1 result, the first suggestion will be selected : "
+                    + getSuggestedEntries().get(0).getText());
+        }
+
         WebElement suggestion = driver.findElement(By.xpath(S2_SUGGEST_RESULT_XPATH));
         suggestion.click();
     }
@@ -149,6 +157,14 @@ public class Select2WidgetElement extends WebFragmentImpl {
     public void selectValues(final String[] values) {
         for (String value : values) {
             selectValue(value);
+        }
+    }
+
+    protected List<WebElement> getSuggestedEntries() {
+        try {
+           return driver.findElements(By.xpath(S2_SUGGEST_RESULT_XPATH));
+        } catch (NoSuchElementException e) {
+            return null;
         }
     }
 
