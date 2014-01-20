@@ -183,18 +183,40 @@ public class OperationTypeImpl implements OperationType {
         return obj;
     }
 
+    /**
+     * @since 5.9.2
+     */
+    protected Object resolveObject(final OperationContext ctx,
+            final String key, Map<String, Object> args) throws Exception {
+        Object obj = args.get(key);
+        if (obj instanceof Expression) {
+            obj = ((Expression) obj).eval(ctx);
+        }
+        // Trying to fallback on Chain Parameters sub context if cannot
+        // find it
+        if (obj == null) {
+            if (ctx.containsKey(Constants.VAR_RUNTIME_CHAIN)) {
+                obj = ((Map) ctx.get(Constants.VAR_RUNTIME_CHAIN)).get(key);
+            }
+        }
+        return obj;
+    }
+
     public void inject(OperationContext ctx, Map<String, Object> args,
             Object target) throws Exception {
         for (Map.Entry<String, Field> entry : params.entrySet()) {
-            Object obj = args.get(entry.getKey());
-            if (obj instanceof Expression) {
-                obj = ((Expression) obj).eval(ctx);
-            }
-            // Trying to fallback on Chain Parameters sub context if cannot
-            // find it
+            Object obj = resolveObject(ctx, entry.getKey(), args);
             if (obj == null) {
-                if (ctx.containsKey(Constants.VAR_RUNTIME_CHAIN)) {
-                    obj = ((Map) ctx.get(Constants.VAR_RUNTIME_CHAIN)).get(entry.getKey());
+                // We did not resolve object according to its param name, let's
+                // check with potential alias
+                String[] aliases = entry.getValue().getAnnotation(Param.class).alias();
+                if (aliases != null) {
+                    for (String alias : entry.getValue().getAnnotation(Param.class).alias()) {
+                        obj = resolveObject(ctx, alias, args);
+                        if (obj != null) {
+                            break;
+                        }
+                    }
                 }
             }
             if (obj == null) {

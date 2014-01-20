@@ -77,4 +77,12 @@ public @interface Param {
      * presenting the UI form to fill.
      */
     int order() default 0;
+
+    /**
+     * Optional alias for the parameter key. If the operation parameters map
+     * does not contain the name, then alias will be used if any.
+     *
+     * @since 5.9.2
+     */
+    String[] alias() default {};
 }
