@@ -33,6 +33,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -79,7 +80,8 @@ import com.google.inject.Inject;
         TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
         "org.nuxeo.ecm.platform.rendition.publisher",
         "org.nuxeo.template.manager" })
-@LocalDeploy("org.nuxeo.template.manager:relations-default-jena-contrib.xml")
+@LocalDeploy({"org.nuxeo.template.manager:relations-default-jena-contrib.xml",
+        "org.nuxeo.template.manager:publishing-facets.xml"})
 public class TestRenditionPublication {
 
     protected static final String TEMPLATE_NAME = "mytestTemplate";
