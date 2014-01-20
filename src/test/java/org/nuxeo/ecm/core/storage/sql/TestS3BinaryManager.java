@@ -275,7 +275,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
             Throwable c = e.getCause();
             assertTrue(c.getClass().getName(), c instanceof ConnectionPoolTimeoutException);
         }
-        o.close();
+        o.getObjectContent().close();
     }
 
     protected static String toString(InputStream stream) throws IOException {
