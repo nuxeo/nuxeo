@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.ByteArrayInputStream;
@@ -33,11 +34,14 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.junit.Test;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 /**
@@ -93,6 +97,10 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
     public void tearDown() throws Exception {
         if (!DISABLED) {
             removeObjects();
+            Properties props = Framework.getProperties();
+            props.remove(S3BinaryManager.CONNECTION_MAX_KEY);
+            props.remove(S3BinaryManager.CONNECTION_RETRY_KEY);
+            props.remove(S3BinaryManager.CONNECTION_TIMEOUT_KEY);
         }
         super.tearDown();
     }
@@ -241,6 +249,33 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         assertEquals(bytes.length, binary2.getLength());
         // check that S3 bucked was not called for no valid reason
         assertEquals(binary2.digest, Framework.getProperty("cachedBinary"));
+    }
+
+    @Test
+    public void testS3MaxConnections() throws Exception {
+        assumeTrue(!DISABLED);
+
+        // cleaned by tearDown
+        Properties props = Framework.getProperties();
+        props.put(S3BinaryManager.CONNECTION_MAX_KEY, "1");
+        props.put(S3BinaryManager.CONNECTION_RETRY_KEY, "0");
+        props.put(S3BinaryManager.CONNECTION_TIMEOUT_KEY, "5000"); // 5s
+        binaryManager = new S3BinaryManager();
+        binaryManager.initialize(new RepositoryDescriptor());
+
+        // store binary
+        byte[] bytes = CONTENT.getBytes("UTF-8");
+        binaryManager.getBinary(new ByteArrayInputStream(bytes));
+
+        S3Object o = binaryManager.amazonS3.getObject(binaryManager.bucketName, CONTENT_MD5);
+        try {
+            binaryManager.amazonS3.getObject(binaryManager.bucketName, CONTENT_MD5);
+            fail("Should throw AmazonClientException");
+        } catch (AmazonClientException e) {
+            Throwable c = e.getCause();
+            assertTrue(c.getClass().getName(), c instanceof ConnectionPoolTimeoutException);
+        }
+        o.close();
     }
 
     protected static String toString(InputStream stream) throws IOException {
