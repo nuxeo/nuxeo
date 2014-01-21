@@ -171,7 +171,8 @@ public class ContentViewCache implements Serializable {
         Map<String, ContentView> instances = cacheInstances.get(contentViewName);
         if (instances != null) {
             for (ContentView cView : instances.values()) {
-                if (cView != null) {
+                // avoid refreshing twice the same content view, see NXP-13604
+                if (cView != null && !cView.equals(cv)) {
                     if (rewind) {
                         cView.refreshAndRewindPageProvider();
                     } else {

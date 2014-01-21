@@ -186,6 +186,14 @@
       </coreQueryPageProvider>
     </contentView>
 
+    <contentView name="MOCK_DAM_CV">
+      <genericPageProvider name="MOCK_DAM_PP"
+        class="org.nuxeo.ecm.platform.contentview.jsf.test.MockDAMPageProvider">
+        <pageSize>2</pageSize>
+      </genericPageProvider>
+      <cacheKey>only_one_cache</cacheKey>
+    </contentView>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
