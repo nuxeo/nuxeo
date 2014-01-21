@@ -43,6 +43,30 @@
       </properties>
     </widget>
 
+    <widget name="select2_directory_fetch_mode" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Fetch Mode</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          This attribute controls the fetch mode for directory entries.
+          Directory entries can either be fetched if they start with the
+          search term or if thery contain the search term.
+          Available since 5.9.2.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>contains</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Starts with (default)" itemValue="false" />
+        <option itemLabel="Contains" itemValue="true" />
+      </selectOptions>
+    </widget>
+
     <widget name="select2_dbl10n" type="checkbox">
       <categories>
         <category>widgetTypeConf</category>
@@ -1261,6 +1285,9 @@
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_directory_fetch_mode</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select2_dbl10n</widget>
                 </row>
                 <row>
@@ -1355,6 +1382,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_directory_fetch_mode</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_dbl10n</widget>
