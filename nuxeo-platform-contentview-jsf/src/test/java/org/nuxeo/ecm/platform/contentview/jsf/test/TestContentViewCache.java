@@ -190,4 +190,42 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
         assertEquals(5, pp.getResultsCount());
     }
 
+    /**
+     * Non-regression test for NXP-604: check that a page provider triggering a
+     * call to {@link PageProvider#getCurrentPage()} on refresh is not
+     * refreshed more than once.
+     *
+     * @since 5.9.2
+     */
+    @Test
+    public void testContentViewCacheRefreshAndRewind() throws Exception {
+        ContentViewCache cache = new ContentViewCache();
+        ContentView cv = service.getContentView("MOCK_DAM_CV");
+        assertNotNull(cv);
+
+        MockDAMPageProvider pp = (MockDAMPageProvider) cv.getPageProvider();
+        assertNotNull(pp);
+
+        // one refresh already, when retrieving page size on page provider,
+        // refresh is triggered.
+        assertEquals(1, pp.getGetCounter());
+        // init results
+        pp.getCurrentPage();
+        assertEquals(1, pp.getGetCounter());
+
+        cache.add(cv);
+
+        cv.getCurrentPageProvider().getCurrentPage();
+        assertEquals(
+                1,
+                ((MockDAMPageProvider) cv.getCurrentPageProvider()).getGetCounter());
+
+        cache.refreshAndRewindAll();
+
+        cv.getCurrentPageProvider().getCurrentPage();
+        assertEquals(
+                2,
+                ((MockDAMPageProvider) cv.getCurrentPageProvider()).getGetCounter());
+
+    }
 }
