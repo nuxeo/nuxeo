@@ -178,6 +178,11 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals(0, service.getQueueSize(QUEUE, RUNNING));
         assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
         assertEquals(COMPLETED, work.getWorkInstanceState());
+
+        assertTrue(work.getSchedulingTime() != 0);
+        assertTrue(work.getStartTime() != 0);
+        assertTrue(work.getCompletionTime() != 0);
+        assertTrue(work.getCompletionTime() - work.getStartTime() > 0);
     }
 
     @Test
