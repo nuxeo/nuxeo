@@ -352,6 +352,14 @@ public interface Work extends Serializable {
     long getCompletionTime();
 
     /**
+     * CALLED BY THE WORK MANAGER (not user code) to set the start time on the
+     * work instance.
+     *
+     * @since 5.9.2
+     */
+    void setStartTime();
+
+    /**
      * This method should be called periodically by the actual work method when
      * it knows of its progress.
      *

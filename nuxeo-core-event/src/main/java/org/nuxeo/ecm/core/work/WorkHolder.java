@@ -62,6 +62,7 @@ public class WorkHolder implements Runnable {
         boolean ok = false;
         Exception exc = null;
         try {
+            work.setStartTime();
             work.work();
             ok = true;
         } catch (Exception e) { // InterruptedException managed below

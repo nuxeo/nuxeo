@@ -345,7 +345,7 @@ public abstract class AbstractWork implements Work {
      */
     @Override
     public void cleanUp(boolean ok, Exception e) {
-        completionTime = System.currentTimeMillis();
+        setCompletionTime();
         if (!ok) {
             if (e instanceof InterruptedException) {
                 log.debug("Suspended work: " + this);
@@ -389,6 +389,15 @@ public abstract class AbstractWork implements Work {
     @Override
     public long getCompletionTime() {
         return completionTime;
+    }
+
+    @Override
+    public void setStartTime() {
+        startTime = System.currentTimeMillis();
+    }
+
+    protected void setCompletionTime() {
+        completionTime = System.currentTimeMillis();
     }
 
     @Override

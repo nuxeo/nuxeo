@@ -105,9 +105,8 @@ public class SleepWork extends AbstractWork {
             setStatus("Running sleep work");
         }
 
-        startTime = System.currentTimeMillis();
         for (;;) {
-            long elapsed = System.currentTimeMillis() - startTime;
+            long elapsed = System.currentTimeMillis() - getStartTime();
             if (elapsed > durationMillis) {
                 break;
             }

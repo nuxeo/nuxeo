@@ -190,7 +190,7 @@ public class AsyncEventExecutor {
                 EventStats stats = Framework.getLocalService(EventStats.class);
                 if (stats != null) {
                     stats.logAsyncExec(listener, System.currentTimeMillis()
-                            - startTime);
+                            - getStartTime());
                 }
                 listener = null;
             }
