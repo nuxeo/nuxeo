@@ -469,7 +469,7 @@ body {
       <td align="center" valign="bottom">
       <div class="loginLegal">
         <fmt:message bundle="${messages}" key="label.login.copyright">
-          <fmt:param value="2013" />
+          <fmt:param value="2014" />
         </fmt:message>
       </div>
       </td>
