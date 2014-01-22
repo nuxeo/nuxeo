@@ -42,11 +42,14 @@ public abstract class EasyShareUnrestrictedRunner {
             IdRef docRef = new IdRef(docId);
 
             final LoginContext lc = Framework.login();
+
             CoreSession coreSession = null;
             RepositoryManager rm;
             try {
                 rm = Framework.getLocalService(RepositoryManager.class);
                 coreSession = rm.getDefaultRepository().open();
+
+
 
                 // Run unrestricted operation
                 return run(coreSession, docRef);

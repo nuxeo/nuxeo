@@ -165,21 +165,23 @@ public class EasyShare extends ModuleRoot {
                                 service.run(ctx, "Audit.Log", params);
                             }
 
-                            // //Email notification
+                            //Email notification
                             EmailHelper emailer = new EmailHelper();
-                            String shareOwnerEmail = "mobrebski@nuxeo.com";
-                            Hashtable<String, Object> mail = new Hashtable<String, Object>();
-                            mail.put("from", "dion@almaer.com");
-                            mail.put("to", shareOwnerEmail);
-                            mail.put("subject", "EasyShare Download");
-                            mail.put("body", "File from Share downloaded by IP");
-                            emailer.sendmail(mail);
+                            Map<String, Object> mailProps = new Hashtable<String, Object>();
+                            mailProps.put("mail.from", "mobrebski@nuxeo.com");
+                            mailProps.put("mail.to", "mobrebski@nuxeo.com");
+                            mailProps.put("subject", "EasyShare Download");
+                            mailProps.put("body", "File from Share downloaded by IP");
+                            mailProps.put("template", "mail_template");
+                            mailProps.put("subjectTemplate", "subject_template");
+                            emailer.sendmail(mailProps);
+
 
                             return Response.ok(blob.getStream(),
                                     blob.getMimeType()).build();
 
                         } catch (Exception ex) {
-                            log.error(ex.getMessage());
+                            log.error("error ", ex);
                             return Response.serverError().status(
                                     Response.Status.NOT_FOUND).build();
                         }
