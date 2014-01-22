@@ -66,7 +66,7 @@
                 <!--  Image -->
                 <div id="docRef:#{row.data.ref}" class="cell">
                   <h:graphicImage rendered="#{row.data.type eq 'PictureBook'}"
-                    value="/icons/big_picturebook.png" height="100" width="100" />
+                    value="/icons/picturebook_100.png" height="100" width="100" />
                   <h:graphicImage rendered="#{row.data.type eq 'Picture'}"
                     value="#{nxd:fileUrl('downloadPicture', row.data , 'Thumbnail:content', currentDocument.dublincore.modified)}" />
                 </div>
