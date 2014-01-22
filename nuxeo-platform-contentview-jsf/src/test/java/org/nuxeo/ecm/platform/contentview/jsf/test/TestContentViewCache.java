@@ -191,8 +191,8 @@ public class TestContentViewCache extends SQLRepositoryTestCase {
     }
 
     /**
-     * Non-regression test for NXP-604: check that a page provider triggering a
-     * call to {@link PageProvider#getCurrentPage()} on refresh is not
+     * Non-regression test for NXP-13604: check that a page provider triggering
+     * a call to {@link PageProvider#getCurrentPage()} on refresh is not
      * refreshed more than once.
      *
      * @since 5.9.2
