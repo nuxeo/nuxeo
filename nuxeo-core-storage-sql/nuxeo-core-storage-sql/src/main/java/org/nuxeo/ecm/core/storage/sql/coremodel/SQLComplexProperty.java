@@ -44,16 +44,12 @@ public class SQLComplexProperty extends SQLBaseProperty implements
 
     private final Node node;
 
-    protected final SQLSession session;
-
     /**
      * Creates a {@link SQLComplexProperty} to wrap a {@link Node}.
      */
-    public SQLComplexProperty(Node node, ComplexType type, SQLSession session,
-            boolean readonly) {
-        super(type, node == null ? null : node.getName(), readonly);
+    public SQLComplexProperty(Node node, ComplexType type, SQLDocument doc) {
+        super(type, node == null ? null : node.getName(), doc);
         this.node = node;
-        this.session = session;
     }
 
     // for SQLDocument
@@ -114,8 +110,8 @@ public class SQLComplexProperty extends SQLBaseProperty implements
 
     @Override
     public Property getProperty(String name) throws DocumentException {
-        return session.makeProperty(node, name, (ComplexType) type, null, null,
-                readonly);
+        return getSession().makeProperty(node, name, (ComplexType) type,
+                getDocument(), null, null);
     }
 
     @Override

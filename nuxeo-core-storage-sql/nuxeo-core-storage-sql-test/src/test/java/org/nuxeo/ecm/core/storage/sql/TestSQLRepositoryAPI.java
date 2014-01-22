@@ -3566,7 +3566,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
     /**
      * Check that lifecycle and dc:issued can be updated on a version. (Fields
-     * defined in SQLSimpleProperty.VERSION_WRITABLE_PROPS).
+     * defined in SQLDocumentLive#VERSION_WRITABLE_PROPS).
      */
     @Test
     public void testVersionUpdatableFields() throws Exception {

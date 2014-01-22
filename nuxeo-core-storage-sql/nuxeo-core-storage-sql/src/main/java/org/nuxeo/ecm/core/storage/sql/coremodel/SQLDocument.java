@@ -40,8 +40,8 @@ public interface SQLDocument extends Document, PropertyContainer, Property {
     org.nuxeo.ecm.core.model.Property getACLProperty() throws DocumentException;
 
     /**
-     * Raises an exception if the document is read-only.
+     * Raises an exception if the given property is read-only.
      */
-    void checkWritable() throws DocumentException;
+    void checkWritable(String name) throws DocumentException;
 
 }

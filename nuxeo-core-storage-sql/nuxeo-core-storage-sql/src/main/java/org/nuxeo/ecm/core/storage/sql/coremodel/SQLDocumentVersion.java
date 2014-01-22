@@ -250,7 +250,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     @Override
     public void setPropertyValue(String name, Object value)
             throws DocumentException {
-        if (readonly && !isSpecialSystemProperty(name)) {
+        if (isReadOnlyProperty(name)) {
             throw new VersionNotModifiableException(String.format(
                     "Cannot set property on a version: %s = %s", name, value));
         }
@@ -260,7 +260,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
 
     @Override
     public void setString(String name, String value) throws DocumentException {
-        if (readonly && !isSpecialSystemProperty(name)) {
+        if (isReadOnlyProperty(name)) {
             throw new VersionNotModifiableException();
         }
         super.setString(name, value);
@@ -268,8 +268,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
 
     @Override
     public void setBoolean(String name, boolean value) throws DocumentException {
-        if (readonly
-                && !SQLSimpleProperty.VERSION_WRITABLE_PROPS.contains(name)) {
+        if (isReadOnlyProperty(name)) {
             throw new VersionNotModifiableException();
         }
         // import

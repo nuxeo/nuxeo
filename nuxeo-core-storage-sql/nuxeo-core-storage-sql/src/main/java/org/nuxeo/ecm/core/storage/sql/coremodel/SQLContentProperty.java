@@ -45,9 +45,8 @@ public class SQLContentProperty extends SQLComplexProperty {
 
     public static final String BINARY = "data";
 
-    public SQLContentProperty(Node node, ComplexType type, SQLSession session,
-            boolean readonly) {
-        super(node, type, session, readonly);
+    public SQLContentProperty(Node node, ComplexType type, SQLDocument doc) {
+        super(node, type, doc);
     }
 
     @Override
@@ -76,8 +75,7 @@ public class SQLContentProperty extends SQLComplexProperty {
         } else if (value instanceof Blob) {
             map = new HashMap<String, Object>();
             Blob blob = (Blob) value;
-            Binary binary;
-            binary = session.getBinary(blob);
+            Binary binary = getSession().getBinary(blob);
             String filename = blob.getFilename();
             String mimeType = blob.getMimeType();
             if (mimeType == null) {
