@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.Module;
@@ -40,6 +42,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Stefanescu Bogdan</a>
  */
 public class ResourceServlet extends HttpServlet {
+
+    protected static final Log log = LogFactory.getLog(ResourceServlet.class);
 
     private static final long serialVersionUID = 6548084847887645044L;
 
@@ -78,7 +82,12 @@ public class ResourceServlet extends HttpServlet {
             return;
         }
 
-        service(req, resp, module, "/resources"+path);
+        try {
+            service(req, resp, module, "/resources"+path);
+        } catch (Exception e) {
+            log.error("Unable to serve resource for " + path, e);
+            resp.sendError(404);
+        }
     }
 
     protected void service(HttpServletRequest req, HttpServletResponse resp,
