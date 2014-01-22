@@ -87,7 +87,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     /**
      * Read-only flag, used to allow/disallow writes on versions.
      */
-    protected final boolean readonly;
+    protected boolean readonly;
 
     protected SQLDocumentLive(Node node, ComplexType type,
             List<CompositeType> mixinTypes, SQLSession session, boolean readonly) {
@@ -107,6 +107,12 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         return this;
     }
 
+    @Override
+    public void setReadOnly(boolean readonly) {
+        this.readonly = readonly;
+    }
+
+    @Override
     public boolean isReadOnly() {
         return readonly;
     }
