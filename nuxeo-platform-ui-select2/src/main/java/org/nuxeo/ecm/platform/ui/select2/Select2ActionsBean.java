@@ -196,6 +196,12 @@ public class Select2ActionsBean implements Serializable {
             // not.
             jg.writeStringField("translateLabels", "" + isTranslated);
 
+            // Are we writing or reading
+            boolean readonly = !widget.getMode().equals("edit")
+                    && !widget.getMode().equals("create");
+            jg.writeStringField(Select2Common.READ_ONLY_PARAM,
+                    Boolean.toString(readonly));
+
             Map<String, Serializable> propertySet = null;
             if (resolvedWidgetProperties != null) {
                 propertySet = resolvedWidgetProperties;
@@ -265,11 +271,6 @@ public class Select2ActionsBean implements Serializable {
                         Select2Common.DEFAULT_MIN_CHARS);
             }
 
-            // Are we writing or reading
-            boolean readonly = !widget.getMode().equals("edit")
-                    && !widget.getMode().equals("create");
-            jg.writeStringField(Select2Common.READ_ONLY_PARAM,
-                    Boolean.toString(readonly));
             if (hasAjaxReRender) {
                 jg.writeStringField(Select2Common.RERENDER_JS_FUNCTION_NAME,
                         widget.getId() + "_reRender");
