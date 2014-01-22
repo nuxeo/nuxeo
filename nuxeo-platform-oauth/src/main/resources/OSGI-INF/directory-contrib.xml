@@ -61,6 +61,17 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
+    <directory name="oauth2Clients">
+      <schema>oauth2Client</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>oauth2Clients</table>
+      <idField>clientId</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
   </extension>
 
 
