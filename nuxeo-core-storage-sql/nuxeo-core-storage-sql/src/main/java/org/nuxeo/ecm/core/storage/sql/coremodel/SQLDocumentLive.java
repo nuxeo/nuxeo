@@ -15,10 +15,12 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +40,6 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
 import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
@@ -54,21 +55,60 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     private static final Log log = LogFactory.getLog(SQLDocumentLive.class);
 
+    public static final String DC_ISSUED = "dc:issued";
+
+    public static final String RELATED_TEXT_RESOURCES = "relatedtextresources";
+
+    public static final String RELATED_TEXT_ID = "relatedtextid";
+
+    public static final String RELATED_TEXT = "relatedtext";
+
+    protected static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<String>(
+            Arrays.asList( //
+                    Model.FULLTEXT_JOBID_PROP, //
+                    Model.FULLTEXT_BINARYTEXT_PROP, //
+                    Model.MISC_LIFECYCLE_STATE_PROP, //
+                    Model.LOCK_OWNER_PROP, //
+                    Model.LOCK_CREATED_PROP, //
+                    DC_ISSUED, //
+                    RELATED_TEXT_RESOURCES, //
+                    RELATED_TEXT_ID, //
+                    RELATED_TEXT //
+            ));
+
+    protected SQLSession session;
+
     /** Mixin types, updated when facets change. */
     protected final List<CompositeType> mixinTypes;
 
     /** Proxy-induced types. */
     protected final List<Schema> proxySchemas;
 
+    /**
+     * Read-only flag, used to allow/disallow writes on versions.
+     */
+    protected final boolean readonly;
+
     protected SQLDocumentLive(Node node, ComplexType type,
             List<CompositeType> mixinTypes, SQLSession session, boolean readonly) {
-        super(node, type, session, readonly);
+        super(node, type, null);
+        this.session = session;
         this.mixinTypes = mixinTypes;
         if (node != null && node.isProxy()) {
             proxySchemas = session.getTypeManager().getProxySchemas(type.getName());
         } else {
             proxySchemas = null;
         }
+        this.readonly = readonly;
+    }
+
+    @Override
+    public SQLDocument getDocument() {
+        return this;
+    }
+
+    public boolean isReadOnly() {
+        return readonly;
     }
 
     /*
@@ -77,12 +117,30 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     // getNode in SQLComplexProperty
 
-    // checkWritable in SQLBaseProperty
-
     @Override
     public org.nuxeo.ecm.core.model.Property getACLProperty()
             throws DocumentException {
-        return session.makeACLProperty(getNode());
+        return session.makeACLProperty(getNode(), getDocument());
+    }
+
+    @Override
+    public void checkWritable(String name) throws DocumentException {
+        if (isReadOnlyProperty(name)) {
+            throw new DocumentException("Cannot write property: " + name);
+        }
+    }
+
+    protected boolean isReadOnlyProperty(String name) {
+        return isReadOnly() && !isVersionWritableProperty(name);
+    }
+
+    protected static boolean isVersionWritableProperty(String name) {
+        if (name == null) {
+            return false;
+        }
+        return VERSION_WRITABLE_PROPS.contains(name) //
+                || name.startsWith(Model.FULLTEXT_BINARYTEXT_PROP) //
+                || name.startsWith(Model.FULLTEXT_SIMPLETEXT_PROP);
     }
 
     /*
@@ -97,7 +155,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     }
 
     @Override
-    public Session getSession() {
+    public SQLSession getSession() {
         return session;
     }
 
@@ -162,7 +220,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     public org.nuxeo.ecm.core.model.Property getProperty(String name)
             throws DocumentException {
         return session.makeProperty(getNode(), name, (ComplexType) type,
-                mixinTypes, proxySchemas, readonly);
+                getDocument(), mixinTypes, proxySchemas);
     }
 
     /**
@@ -179,7 +237,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
             } catch (VersionNotModifiableException e) {
                 // workaround: only dublincore is allowed to change and
                 // it contains only scalars and arrays
-                // cf also SQLSimpleProperty.VERSION_WRITABLE_PROPS
+                // cf also isVersionWritableProperty()
                 if (!name.startsWith("dc:")) {
                     throw e;
                 }

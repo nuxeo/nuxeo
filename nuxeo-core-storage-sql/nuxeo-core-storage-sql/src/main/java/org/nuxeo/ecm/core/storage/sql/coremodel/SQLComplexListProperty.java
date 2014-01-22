@@ -41,8 +41,6 @@ public class SQLComplexListProperty extends SQLBaseProperty implements
 
     protected final String name;
 
-    protected final SQLSession session;
-
     protected final ComplexType elementType;
 
     /**
@@ -50,11 +48,10 @@ public class SQLComplexListProperty extends SQLBaseProperty implements
      * {@link Node}s.
      */
     public SQLComplexListProperty(Node node, ListType type, String name,
-            SQLSession session, boolean readonly) {
-        super(type, name, readonly);
+            SQLDocument doc) {
+        super(type, name, doc);
         this.node = node;
         this.name = name;
-        this.session = session;
         elementType = (ComplexType) type.getFieldType();
     }
 
@@ -103,13 +100,13 @@ public class SQLComplexListProperty extends SQLBaseProperty implements
         } catch (NumberFormatException e) {
             throw new NoSuchPropertyException(name + '/' + posString);
         }
-        return session.makeProperty(node, name, type, readonly, pos);
+        return getSession().makeProperty(node, name, type, getDocument(), pos);
     }
 
     @Override
     public List<Property> getProperties() throws DocumentException {
-        return session.makeProperties(node, name, type, null, null, readonly,
-                -1, -1);
+        return getSession().makeProperties(node, name, type, getDocument(),
+                null, null, -1, -1);
     }
 
     @Override
@@ -260,7 +257,7 @@ public class SQLComplexListProperty extends SQLBaseProperty implements
         if (oldSize > newSize) {
             for (int i = newSize; i < oldSize; i++) {
                 SQLComplexProperty property = (SQLComplexProperty) properties.get(i);
-                session.removeProperty(property.getNode());
+                getSession().removeProperty(property.getNode());
             }
             for (int i = newSize; i < oldSize; i++) {
                 properties.remove(newSize);
@@ -268,8 +265,9 @@ public class SQLComplexListProperty extends SQLBaseProperty implements
         }
         // add new list elements
         if (oldSize < newSize) {
-            List<Property> newProperties = session.makeProperties(node, name,
-                    type, null, null, readonly, properties.size(), newSize);
+            List<Property> newProperties = getSession().makeProperties(node,
+                    name, type, getDocument(), null, null, properties.size(),
+                    newSize);
             properties.addAll(newProperties);
         }
         // set values

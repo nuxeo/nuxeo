@@ -982,23 +982,24 @@ public class SQLSession implements Session {
      * ----- property helpers -----
      */
 
-    protected Property makeACLProperty(Node node) throws DocumentException {
+    protected Property makeACLProperty(Node node, SQLDocument doc)
+            throws DocumentException {
         CollectionProperty property;
         try {
             property = node.getCollectionProperty(Model.ACL_PROP);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
-        return new SQLCollectionProperty(this, property, null, false);
+        return new SQLCollectionProperty(property, null, doc);
     }
 
     /** Make a property. */
     protected Property makeProperty(Node node, String name,
-            ComplexType parentType, List<CompositeType> mixinTypes,
-            List<Schema> proxySchemas, boolean readonly)
+            ComplexType parentType, SQLDocument doc,
+            List<CompositeType> mixinTypes, List<Schema> proxySchemas)
             throws DocumentException {
-        return makeProperties(node, name, parentType, mixinTypes, proxySchemas,
-                readonly, 0, 0).get(0);
+        return makeProperties(node, name, parentType, doc, mixinTypes,
+                proxySchemas, 0, 0).get(0);
     }
 
     /**
@@ -1006,9 +1007,9 @@ public class SQLSession implements Session {
      * elements.
      */
     protected List<Property> makeProperties(Node node, String name,
-            Type parentType, List<CompositeType> mixinTypes,
-            List<Schema> proxySchemas, boolean readonly, int complexListStart,
-            int complexListEnd) throws DocumentException {
+            Type parentType, SQLDocument doc, List<CompositeType> mixinTypes,
+            List<Schema> proxySchemas, int complexListStart, int complexListEnd)
+            throws DocumentException {
         boolean complexList = parentType instanceof ListType;
         Model model;
         try {
@@ -1057,7 +1058,7 @@ public class SQLSession implements Session {
             } catch (StorageException e) {
                 throw new DocumentException(e);
             }
-            Property property = new SQLSimpleProperty(prop, type, readonly);
+            Property property = new SQLSimpleProperty(prop, type, doc);
             return Collections.singletonList(property);
         } else if (type.isListType()) {
             Property property;
@@ -1069,11 +1070,9 @@ public class SQLSession implements Session {
                 } catch (StorageException e) {
                     throw new DocumentException(e);
                 }
-                property = new SQLCollectionProperty(this, prop, listType,
-                        readonly);
+                property = new SQLCollectionProperty(prop, listType, doc);
             } else {
-                property = new SQLComplexListProperty(node, listType, name,
-                        this, readonly);
+                property = new SQLComplexListProperty(node, listType, name, doc);
             }
             return Collections.singletonList(property);
         } else {
@@ -1113,7 +1112,7 @@ public class SQLSession implements Session {
                     childNodes.size());
             for (Node childNode : childNodes) {
                 Property property = newSQLComplexProperty(childNode,
-                        (ComplexType) type, readonly);
+                        (ComplexType) type, doc);
                 properties.add(property);
             }
             return properties;
@@ -1126,7 +1125,7 @@ public class SQLSession implements Session {
      * @since 5.5
      */
     protected Property makeProperty(Node node, String name, Type parentType,
-            boolean readonly, int pos) throws DocumentException {
+            SQLDocument doc, int pos) throws DocumentException {
         Type type = ((ListType) parentType).getField().getType();
         List<Node> childNodes;
         try {
@@ -1138,16 +1137,16 @@ public class SQLSession implements Session {
             throw new NoSuchPropertyException(name + '/' + pos);
         }
         Node childNode = childNodes.get(pos);
-        return newSQLComplexProperty(childNode, (ComplexType) type, readonly);
+        return newSQLComplexProperty(childNode, (ComplexType) type, doc);
     }
 
     protected Property newSQLComplexProperty(Node childNode, ComplexType type,
-            boolean readonly) {
+            SQLDocument doc) {
         // TODO use a better switch
         if (TypeConstants.isContentType(type)) {
-            return new SQLContentProperty(childNode, type, this, readonly);
+            return new SQLContentProperty(childNode, type, doc);
         } else {
-            return new SQLComplexProperty(childNode, type, this, readonly);
+            return new SQLComplexProperty(childNode, type, doc);
         }
     }
 

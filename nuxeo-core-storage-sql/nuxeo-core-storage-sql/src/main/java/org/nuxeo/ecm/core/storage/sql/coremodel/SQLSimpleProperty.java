@@ -32,9 +32,8 @@ public class SQLSimpleProperty extends SQLBaseProperty {
     /**
      * Creates a {@link SQLSimpleProperty} to wrap a {@link SimpleProperty}.
      */
-    public SQLSimpleProperty(SimpleProperty property, Type type,
-            boolean readonly) {
-        super(type, property.getName(), readonly);
+    public SQLSimpleProperty(SimpleProperty property, Type type, SQLDocument doc) {
+        super(type, property.getName(), doc);
         this.property = property;
     }
 
@@ -58,9 +57,7 @@ public class SQLSimpleProperty extends SQLBaseProperty {
 
     @Override
     public void setValue(Object value) throws DocumentException {
-        if (!isSpecialSystemProperty(getName())) {
-            checkWritable();
-        }
+        checkWritable();
         if (value != null && !(value instanceof Serializable)) {
             throw new DocumentException("Value is not Serializable: " + value);
         }

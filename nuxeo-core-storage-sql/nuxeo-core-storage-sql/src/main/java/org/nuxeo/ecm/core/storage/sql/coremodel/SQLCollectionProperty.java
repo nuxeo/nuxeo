@@ -35,16 +35,14 @@ public class SQLCollectionProperty extends SQLBaseProperty {
 
     private final boolean isArray;
 
-    private final SQLSession session;
-
     /**
      * Creates a {@link SQLCollectionProperty} to wrap a
      * {@link CollectionProperty}.
      */
-    public SQLCollectionProperty(SQLSession session,
-            CollectionProperty property, ListType type, boolean readonly) {
-        super(type, property == null ? null : property.getName(), readonly);
-        this.session = session;
+    public SQLCollectionProperty(CollectionProperty property, ListType type,
+            SQLDocument doc) {
+        super(type, property == null ? null : property.getName(), doc);
+        // q: when is property null? it's not checked elsewhere...
         this.property = property;
         this.isArray = type == null || type.isArray();
     }
@@ -77,7 +75,7 @@ public class SQLCollectionProperty extends SQLBaseProperty {
     public void setValue(Object value) throws DocumentException {
         checkWritable();
         if (Model.ACL_PROP.equals(property.getName())) {
-            session.requireReadAclsUpdate();
+            getSession().requireReadAclsUpdate();
         }
         if (value != null && !(value instanceof Object[])) {
             if (isArray) {

@@ -108,8 +108,8 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public void checkWritable() throws DocumentException {
-        ((SQLDocument) target).checkWritable();
+    public void checkWritable(String name) throws DocumentException {
+        ((SQLDocument) target).checkWritable(name);
     }
 
     /*
@@ -464,7 +464,9 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
 
     @Override
     public void setTargetDocument(Document target) throws DocumentException {
-        ((SQLDocument) proxy).checkWritable();
+        if (((SQLDocumentLive) proxy).isReadOnly()) {
+            throw new DocumentException("Cannot write proxy: " + this);
+        }
         if (!target.getVersionSeriesId().equals(getVersionSeriesId())) {
             throw new DocumentException(
                     "Cannot set proxy target to different version series");
