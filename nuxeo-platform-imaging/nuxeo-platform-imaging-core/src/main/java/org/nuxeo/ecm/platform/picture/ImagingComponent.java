@@ -41,8 +41,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.BlobWrapper;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
@@ -322,16 +322,22 @@ public class ImagingComponent extends DefaultComponent implements
         map.put(PictureView.FIELD_WIDTH, imageInfo.getWidth());
         map.put(PictureView.FIELD_HEIGHT, imageInfo.getHeight());
 
-        Blob originalViewBlob = copyBlob(blob);
-        originalViewBlob.setMimeType(blob.getMimeType());
+        Blob originalViewBlob = wrapBlob(blob);
         originalViewBlob.setFilename(viewFilename);
         map.put(PictureView.FIELD_CONTENT, (Serializable) originalViewBlob);
         return new PictureViewImpl(map);
     }
 
+    /**
+     * @deprecated 5.9.2. Use {@link #wrapBlob(org.nuxeo.ecm.core.api.Blob)}.
+     */
+    @Deprecated
     protected Blob copyBlob(Blob blob) throws IOException {
-        Blob persistedBlob = blob.persist();
-        return new InputStreamBlob(persistedBlob.getStream());
+        return wrapBlob(blob);
+    }
+
+    protected Blob wrapBlob(Blob blob) throws IOException {
+        return new BlobWrapper(blob);
     }
 
     protected PictureView computeOriginalJpegView(Blob blob,
@@ -359,8 +365,7 @@ public class ImagingComponent extends DefaultComponent implements
 
         Blob originalJpegBlob = bh.getBlob();
         if (originalJpegBlob == null) {
-            originalJpegBlob = copyBlob(blob);
-            originalJpegBlob.setMimeType(blob.getMimeType());
+            originalJpegBlob = wrapBlob(blob);
         }
         String viewFilename = computeViewFilename(filename,
                 JPEG_CONVERSATION_FORMAT);
@@ -410,8 +415,7 @@ public class ImagingComponent extends DefaultComponent implements
 
         Blob viewBlob = bh.getBlob();
         if (viewBlob == null) {
-            viewBlob = copyBlob(blob);
-            viewBlob.setMimeType(blob.getMimeType());
+            viewBlob = wrapBlob(blob);
         }
         String viewFilename = computeViewFilename(filename, conversionFormat);
         viewFilename = title + "_" + viewFilename;
