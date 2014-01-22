@@ -100,6 +100,20 @@ public interface Document extends DocumentContainer, PropertyContainer,
     boolean isFolder();
 
     /**
+     * Sets this document as readonly or not.
+     *
+     * @since 5.9.2
+     */
+    void setReadOnly(boolean readonly);
+
+    /**
+     * Checks if this document is readonly or not.
+     *
+     * @since 5.9.2
+     */
+    boolean isReadOnly();
+
+    /**
      * Removes this document and all its children, if any.
      *
      * @throws DocumentException

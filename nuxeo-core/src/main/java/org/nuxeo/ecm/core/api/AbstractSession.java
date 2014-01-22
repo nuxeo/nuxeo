@@ -1878,10 +1878,21 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 }
             }
 
-            // actual save
-            docModel = writeModel(doc, docModel);
-            Document checkedInDoc = null;
+            boolean allowVersionWrite = Boolean.TRUE.equals(docModel.getContextData(ALLOW_VERSION_WRITE));
+            docModel.putContextData(ALLOW_VERSION_WRITE, null);
+            boolean setReadWrite = allowVersionWrite && doc.isVersion()
+                    && doc.isReadOnly();
 
+            // actual save
+            if (setReadWrite) {
+                doc.setReadOnly(false);
+            }
+            docModel = writeModel(doc, docModel);
+            if (setReadWrite) {
+                doc.setReadOnly(true);
+            }
+
+            Document checkedInDoc = null;
             if (!docModel.isImmutable()) {
                 // post-save versioning
                 boolean checkin = getVersioningService().isPostSaveDoingCheckIn(

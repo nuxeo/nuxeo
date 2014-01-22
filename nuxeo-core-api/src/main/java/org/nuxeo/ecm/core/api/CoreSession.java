@@ -101,6 +101,14 @@ public interface CoreSession {
     String IMPORT_PROXY_TYPE = "ecm:proxy";
 
     /**
+     * Allow version write, Boolean parameter passed in context data at
+     * saveDocument time.
+     *
+     * @since 5.9.2
+     */
+    String ALLOW_VERSION_WRITE = "allowVersionWrite";
+
+    /**
      * The container calls this when this session sees a transaction begin.
      */
     void afterBegin();

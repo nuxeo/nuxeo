@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,6 +45,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 
 public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
@@ -878,6 +880,34 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         doc.setPropertyValue("dc:title", doc.getPropertyValue("dc:title"));
         doc = session.saveDocument(doc);
         assertEquals(doc.getVersionLabel(), "3.0");
+    }
+
+    @Test
+    public void testAllowVersionWrite() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc.setPropertyValue("icon", "icon1");
+        doc = session.createDocument(doc);
+        DocumentRef verRef = session.checkIn(doc.getRef(), null, null);
+
+        // regular version cannot be written
+        DocumentModel ver = session.getDocument(verRef);
+        ver.setPropertyValue("icon", "icon2");
+        try {
+            session.saveDocument(ver);
+            fail("Should not allow version write");
+        } catch (ClientException e) {
+            Throwable c = e.getCause();
+            assertNotNull(c);
+            assertTrue(c.toString(), c instanceof VersionNotModifiableException);
+        }
+
+        // with proper option, it's allowed
+        ver.setPropertyValue("icon", "icon3");
+        ver.putContextData(CoreSession.ALLOW_VERSION_WRITE, Boolean.TRUE);
+        session.saveDocument(ver);
+        // refetch to check
+        ver = session.getDocument(verRef);
+        assertEquals("icon3", ver.getPropertyValue("icon"));
     }
 
 }

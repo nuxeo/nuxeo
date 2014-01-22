@@ -167,6 +167,16 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
+    public void setReadOnly(boolean readonly) {
+        target.setReadOnly(readonly);
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return target.isReadOnly();
+    }
+
+    @Override
     public Calendar getLastModified() throws DocumentException {
         return target.getLastModified();
     }
