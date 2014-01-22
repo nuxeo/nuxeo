@@ -137,14 +137,15 @@ public class RestServerInit implements RepositoryInit {
     private void createGroup(UserManager um, String groupId, String groupLabel)
             throws ClientException, GroupAlreadyExistsException {
         NuxeoGroup group = um.getGroup(groupId);
-        if (group == null) {
-
-            DocumentModel groupModel = um.getBareGroupModel();
-            String schemaName = um.getGroupSchemaName();
-            groupModel.setProperty(schemaName, "groupname", groupId);
-            groupModel.setProperty(schemaName, "grouplabel", groupLabel);
-            groupModel = um.createGroup(groupModel);
+        if (group != null) {
+            um.deleteGroup(groupId);
         }
+
+        DocumentModel groupModel = um.getBareGroupModel();
+        String schemaName = um.getGroupSchemaName();
+        groupModel.setProperty(schemaName, "groupname", groupId);
+        groupModel.setProperty(schemaName, "grouplabel", groupLabel);
+        groupModel = um.createGroup(groupModel);
     }
 
     public static DocumentModel getFolder(int index, CoreSession session)

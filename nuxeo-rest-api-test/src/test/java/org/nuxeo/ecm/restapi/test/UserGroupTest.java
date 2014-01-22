@@ -326,8 +326,6 @@ public class UserGroupTest extends BaseUserTest {
 
     }
 
-    // disabled because failing on IT-nuxeo-master-build, see NXP-13301
-    @Ignore
     @Test
     public void itCanSearchGroups() throws Exception {
         // Given a search string
