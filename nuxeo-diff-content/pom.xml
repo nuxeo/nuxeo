@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -13,20 +14,19 @@
   <description>Content diff feature</description>
 
   <dependencies>
-
-    <!-- nuxeo core -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-convert</artifactId>
     </dependency>
-
-    <!-- nuxeo jsf -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-ui-web</artifactId>
     </dependency>
 
-    <!-- daisydiff -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.outerj.daisy</groupId>
       <artifactId>daisydiff</artifactId>
@@ -49,7 +49,6 @@
       <artifactId>nuxeo-platform-url-core</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
 </project>
