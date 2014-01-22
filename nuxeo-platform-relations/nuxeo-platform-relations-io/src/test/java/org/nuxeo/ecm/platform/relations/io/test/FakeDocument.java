@@ -147,6 +147,15 @@ public class FakeDocument implements Document {
     }
 
     @Override
+    public void setReadOnly(boolean readonly) {
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return false;
+    }
+
+    @Override
     public void remove() throws DocumentException {
     }
 
