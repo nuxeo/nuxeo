@@ -9,7 +9,7 @@
 
   <script type="text/javascript">
     var galleryBaseUrl = '${This.path}';
-    var language = '${This.context.locale.language}';
+    var language = '${This.context.locale.language?js_string?html}';
   </script>
 </head>
 <body>
