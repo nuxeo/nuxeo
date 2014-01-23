@@ -17,8 +17,11 @@
 
 package org.nuxeo.ecm.platform.video.listener;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_VIEWS_PROPERTY;
 import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_VIDEO_PREVIEW_FACET;
+import static org.nuxeo.ecm.platform.video.VideoConstants.STORYBOARD_PROPERTY;
 import static org.nuxeo.ecm.platform.video.VideoConstants.TRANSCODED_VIDEOS_PROPERTY;
 import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_CHANGED_EVENT;
 
@@ -33,6 +36,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants;
 import org.nuxeo.ecm.platform.video.VideoHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -63,17 +67,21 @@ public class VideoChangedListener implements EventListener {
             Property origVideoProperty = doc.getProperty("file:content");
             if (DOCUMENT_CREATED.equals(event.getName())
                     || origVideoProperty.isDirty()) {
+
                 Blob video = (Blob) origVideoProperty.getValue();
                 updateVideoInfo(doc, video);
+
+                if (BEFORE_DOC_UPDATE.equals(event.getName())) {
+                    doc.setPropertyValue(TRANSCODED_VIDEOS_PROPERTY, null);
+                    doc.setPropertyValue(STORYBOARD_PROPERTY, null);
+                    doc.setPropertyValue(PICTURE_VIEWS_PROPERTY, null);
+                }
 
                 // only trigger the event if we really have a video
                 if (video != null) {
                     Event trigger = docCtx.newEvent(VIDEO_CHANGED_EVENT);
                     EventService eventService = Framework.getLocalService(EventService.class);
                     eventService.fireEvent(trigger);
-                } else {
-                    // reset the transcoded videos
-                    doc.setPropertyValue(TRANSCODED_VIDEOS_PROPERTY, null);
                 }
             }
         }
