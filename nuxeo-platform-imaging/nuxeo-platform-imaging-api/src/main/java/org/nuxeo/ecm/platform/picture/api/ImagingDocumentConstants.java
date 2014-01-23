@@ -34,6 +34,8 @@ public class ImagingDocumentConstants {
 
     public static final String PICTUREBOOK_TYPE_NAME = "PictureBook";
 
+    public static final String PICTURE_VIEWS_PROPERTY = PICTURE_SCHEMA_NAME + ":views";
+
     public static final String PICTURETEMPLATES_PROPERTY_NAME = "picturebook:picturetemplates";
 
     public static final String UPDATE_PICTURE_VIEW_EVENT = "updatePictureView";
