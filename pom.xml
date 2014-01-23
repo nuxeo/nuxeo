@@ -128,7 +128,7 @@
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0</jxls.version>
     <xdocreport.version>0.9.8</xdocreport.version>
-    <selenium.version>2.34.0</selenium.version>
+    <selenium.version>2.39.0</selenium.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
