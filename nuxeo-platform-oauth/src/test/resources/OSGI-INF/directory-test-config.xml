@@ -71,7 +71,7 @@
       <table>oauth2Clients</table>
       <idField>clientId</idField>
       <autoincrementIdField>false</autoincrementIdField>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <createTablePolicy>always</createTablePolicy>
     </directory>
   </extension>
 </component>

@@ -12,4 +12,18 @@
     <provide interface="org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry" />
   </service>
 
+  <extension-point name="clients">
+
+    <documentation>
+      Registering OAuth2 client
+
+      For instance :
+      <code>
+        <client name="description name" id="clientId" secret="clientSecret" enabled="true" />
+      </code>
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.oauth2.clients.OAuth2Client" />
+  </extension-point>
+
 </component>

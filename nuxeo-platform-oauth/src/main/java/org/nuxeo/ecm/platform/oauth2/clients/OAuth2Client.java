@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -13,12 +15,19 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.9.2
  */
+@XObject("client")
 public class OAuth2Client {
 
+    @XNode("@name")
     protected String name;
+    @XNode("@id")
     protected String id;
+    @XNode("@secret")
     protected String secret;
+    @XNode("@enabled")
     protected boolean enabled = true;
+
+    public OAuth2Client() { }
 
     public OAuth2Client(String name, String id, String secret) {
         this.name = name;

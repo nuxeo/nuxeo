@@ -10,6 +10,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -18,9 +19,24 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.9.2
  */
-public class ClientRegistryImpl extends DefaultComponent implements ClientRegistry{
+public class ClientRegistryImpl extends DefaultComponent implements
+        ClientRegistry {
 
     private static final Log log = LogFactory.getLog(ClientRegistry.class);
+
+    @Override
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        switch (extensionPoint) {
+        case "clients":
+            OAuth2Client client = (OAuth2Client) contribution;
+            registerClient(client);
+            break;
+        default:
+            break;
+        }
+    }
 
     @Override
     public boolean hasClient(String clientId) throws ClientException {
@@ -37,7 +53,8 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
     }
 
     @Override
-    public boolean isValidClient(String clientId, String clientSecret) throws ClientException {
+    public boolean isValidClient(String clientId, String clientSecret)
+            throws ClientException {
         DirectoryService service = getService();
         Session session = null;
         try {
@@ -63,7 +80,8 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
         try {
             session = service.open(OAUTH2CLIENT_DIRECTORY_NAME);
             if (session.hasEntry(client.getId())) {
-                log.debug(String.format("ClientId is already registered: %s", client.getId()));
+                log.debug(String.format("ClientId is already registered: %s",
+                        client.getId()));
                 return false;
             }
 
@@ -86,8 +104,7 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
             return true;
         } catch (DirectoryException e) {
             return false;
-        }
-        finally {
+        } finally {
             if (session != null) {
                 session.close();
             }
@@ -101,8 +118,7 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
         try {
             session = service.open(OAUTH2CLIENT_DIRECTORY_NAME);
             return session.getEntries();
-        }
-        finally {
+        } finally {
             if (session != null) {
                 session.close();
             }
