@@ -52,6 +52,12 @@ public class CheckBlobUpdateListener implements EventListener {
             if (!content.isDirty()) {
                 return;
             }
+
+            // reset the thumbnail
+            if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
+                doc.setPropertyValue(
+                        ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, null);
+            }
         }
         Framework.getLocalService(EventService.class).fireEvent(
                 ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name(),
