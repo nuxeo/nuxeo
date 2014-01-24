@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.segment.io.SegmentIOComponent" version="1.0">
+
+  <implementation class="org.nuxeo.segment.io.SegmentIOComponent" />
+
+  <service>
+      <provide interface="org.nuxeo.segment.io.SegmentIOComponent" />
+  </service>
+    
+</component>
