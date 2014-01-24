@@ -48,6 +48,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NXQLQueryBuilder {
 
+    // @since 5.9
+    public static final String SORTED_COLUMN = "SORTED_COLUMN";
+
     private NXQLQueryBuilder() {
     }
 
@@ -152,6 +155,16 @@ public class NXQLQueryBuilder {
     public static String getQuery(String pattern, Object[] params,
             boolean quoteParameters, boolean escape, SortInfo... sortInfos)
             throws ClientException {
+        String sortedColumn;
+        if (sortInfos == null || sortInfos.length == 0) {
+            // If there is no sortInfos just use a constant
+            sortedColumn = "1";
+        } else {
+            sortedColumn = sortInfos[0].getSortColumn();
+        }
+        if (pattern.contains(SORTED_COLUMN)) {
+            pattern = pattern.replace(SORTED_COLUMN, sortedColumn);
+        }
         StringBuilder queryBuilder;
         if (params == null) {
             queryBuilder = new StringBuilder(pattern + ' ');

@@ -160,4 +160,26 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
                 "SELECT * FROM Document WHERE ecm:parentId = 'docId' and ecm:currentLifeCycleState IN ('foo', 'bar')",
                 query);
     }
+
+    // @Since 5.9
+    @Test
+    public void testSortedColumnQuery() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        String pattern = "SELECT * FROM Document WHERE SORTED_COLUMN IS NOT NULL";
+        String query = NXQLQueryBuilder.getQuery(pattern, null, true, true);
+        assertEquals(
+                "SELECT * FROM Document WHERE 1 IS NOT NULL",
+                query);
+        SortInfo sortInfo = new SortInfo("dc:title", true);
+        query = NXQLQueryBuilder.getQuery(pattern, null, true, true, sortInfo);
+        assertEquals(
+                "SELECT * FROM Document WHERE dc:title IS NOT NULL ORDER BY dc:title",
+                query);
+        sortInfo = new SortInfo("dc:created", true);
+        SortInfo sortInfo2 = new SortInfo("dc:title", true);
+        query = NXQLQueryBuilder.getQuery(pattern, null, true, true, sortInfo, sortInfo2);
+        assertEquals(
+                "SELECT * FROM Document WHERE dc:created IS NOT NULL ORDER BY dc:created , dc:title",
+                query);
+    }
 }
