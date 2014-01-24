@@ -32,6 +32,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-core</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
@@ -50,7 +55,7 @@
     <dependency>
       <groupId>com.github.segmentio</groupId>
       <artifactId>analytics</artifactId>
-      <version>LATEST</version>
+      <version>0.3.1</version>
     </dependency>
 
   </dependencies>

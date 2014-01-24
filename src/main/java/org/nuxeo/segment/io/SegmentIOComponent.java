@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
@@ -160,6 +161,10 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
             }
         }
         return targetMappers;
+    }
+
+    public Set<String> getMappedEvents() {
+        return event2Mappers.keySet();
     }
 
 }

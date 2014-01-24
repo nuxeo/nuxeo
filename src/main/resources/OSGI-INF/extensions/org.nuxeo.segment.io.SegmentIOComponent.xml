@@ -5,7 +5,28 @@
   <implementation class="org.nuxeo.segment.io.SegmentIOComponent" />
 
   <service>
-      <provide interface="org.nuxeo.segment.io.SegmentIOComponent" />
+      <provide interface="org.nuxeo.segment.io.SegmentIO" />
   </service>
-    
+
+  <extension-point name="config">
+    <documentation>
+      Configure segment.io settings : mainly the Write Key that is used to send info to the segment.io backend.
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.segment.io.SegmentIOConfig" />
+  </extension-point>
+
+  <extension-point name="mapper">
+    <documentation>
+      Define mapping XXX
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.segment.io.SegmentIOMapper" />
+  </extension-point>
+
+
+
 </component>

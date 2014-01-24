@@ -2,11 +2,11 @@ Manifest-Version: 1.0
 Bundle-Vendor: Nuxeo
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
-Bundle-Version: 5.8-I20131002_0120
-Bundle-Name: nuxeo-segmentio-conenctor
+Bundle-Version: 5.8
+Bundle-Name: org.nuxeo.segmentio.connector
 Nuxeo-Component: OSGI-INF/extensions/org.nuxeo.segment.io.SegmentIOCom
  ponent.xml
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: nuxeo-segmentio-conenctor
+Bundle-SymbolicName: org.nuxeo.segmentio.connector
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 
