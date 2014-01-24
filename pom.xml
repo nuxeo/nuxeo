@@ -2513,6 +2513,10 @@
             <groupId>xpp3</groupId>
             <artifactId>xpp3_min</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>xmlpull</groupId>
+	    <artifactId>xmlpull</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
