@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -209,15 +210,20 @@ public class Locator {
      *            milliseconds
      * @throws NotFoundException if the element is not found or not enabled
      */
-    public static void waitUntilElementEnabledAndClick(By by,
-            int findElementTimeout, int waitUntilEnabledTimeout)
+    public static void waitUntilElementEnabledAndClick(final By by,
+            final int findElementTimeout, final int waitUntilEnabledTimeout)
             throws NotFoundException {
 
-        // Find the element.
-        WebElement element = findElementAndWaitUntilEnabled(by,
-                findElementTimeout, waitUntilEnabledTimeout);
+        waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                // Find the element.
+                WebElement element = findElementAndWaitUntilEnabled(by,
+                        findElementTimeout, waitUntilEnabledTimeout);
 
-        element.click();
+                element.click();
+                return true;
+            }
+        }, StaleElementReferenceException.class);
     }
 
     /**
@@ -438,9 +444,47 @@ public class Locator {
      * @since 5.9.2
      */
     public static void waitUntilGivenFunction(Function<WebDriver, Boolean> function) {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
+        waitUntilGivenFunctionIgnoring(function, null);
+    }
+
+    /**
+     * Fluent wait on a the given function, checking every 100 ms.
+     *
+     * @param function
+     * @param ignoredExceptions the types of exceptions to ignore.
+     *
+     * @since 5.9.2
+     */
+    public static <K extends java.lang.Throwable> void waitUntilGivenFunctionIgnoreAll(Function<WebDriver, Boolean> function, java.lang.Class<? extends K> ... ignoredExceptions) {
+        FluentWait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
                 AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        if (ignoredExceptions != null) {
+            if (ignoredExceptions.length == 1) {
+                wait.ignoring(ignoredExceptions[0]);
+            } else {
+                wait.ignoreAll(Arrays.asList(ignoredExceptions));
+            }
+
+        }
+        wait.until(function);
+    }
+
+    /**
+     * Fluent wait on a the given function, checking every 100 ms.
+     *
+     * @param function
+     * @param ignoredException the type of exception to ignore.
+     *
+     * @since 5.9.2
+     */
+    public static <K extends java.lang.Throwable> void waitUntilGivenFunctionIgnoring(Function<WebDriver, Boolean> function, java.lang.Class<? extends K> ignoredException) {
+        FluentWait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
+                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
+                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        if (ignoredException != null) {
+            wait.ignoring(ignoredException);
+        }
         wait.until(function);
     }
 
