@@ -5,6 +5,7 @@
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-services-parent</artifactId>
     <version>5.9.2-SNAPSHOT</version>
+    <relativePath>../nuxeo-services/pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.theme</groupId>
