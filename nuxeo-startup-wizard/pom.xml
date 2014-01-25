@@ -76,9 +76,7 @@
                   <artifactId>commons-codec</artifactId>
                 </artifactItem>
               </artifactItems>
-              <outputDirectory>
-                ${project.build.directory}/${artifactId}-${version}/WEB-INF/lib/
-              </outputDirectory>
+              <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/lib/</outputDirectory>
             </configuration>
           </execution>
         </executions>

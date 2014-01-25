@@ -6,6 +6,7 @@
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
     <version>5.9.2-SNAPSHOT</version>
+    <relativePath>../addons/pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
