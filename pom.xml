@@ -5,6 +5,7 @@
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
     <version>5.9.2-SNAPSHOT</version>
+    <relativePath>../../nuxeo-core/pom.xml</relativePath>
   </parent>
 
   <artifactId>nuxeo-core-binarymanager-jclouds</artifactId>
