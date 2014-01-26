@@ -2093,13 +2093,6 @@
         <version>${nuxeo.richfaces.version}</version>
       </dependency>
 
-      <!-- jsp library for login and error pags -->
-      <dependency>
-        <groupId>taglibs</groupId>
-        <artifactId>standard</artifactId>
-        <version>1.1.2</version>
-      </dependency>
-
       <!-- compat libs for ui-web-compat module -->
       <dependency>
         <groupId>org.apache.myfaces.tomahawk</groupId>
@@ -2429,6 +2422,7 @@
         <artifactId>bsh</artifactId>
         <version>2.0b1</version>
       </dependency>
+      <!-- jsp library for login and error pages -->
       <dependency>
         <groupId>taglibs</groupId>
         <artifactId>standard</artifactId>
