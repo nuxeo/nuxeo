@@ -4499,6 +4499,13 @@
           <version>${ant.assembly.version}</version>
           <extensions>true</extensions>
         </plugin>
+        <!-- Compat. Cannot use redirect because of MNG-5561 -->
+        <plugin>
+          <groupId>org.nuxeo.build</groupId>
+          <artifactId>nuxeo-distribution-tools</artifactId>
+          <version>${ant.assembly.version}</version>
+          <extensions>true</extensions>
+        </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
           <version>2.4</version>
@@ -4546,7 +4553,7 @@
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
                 <banSnapshots>true</banSnapshots>
-                <unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin</unCheckedPluginList>
+                <unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin,org.nuxeo.build:nuxeo-distribution-tools</unCheckedPluginList>
               </requirePluginVersions>
               <requireReleaseDeps>
                 <message>No Snapshots Allowed!</message>
