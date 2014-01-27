@@ -11,6 +11,7 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.platform.relations.api.RelationManager"/>
+    <provide interface="org.nuxeo.ecm.platform.relations.api.DocumentRelationManager"/>
   </service>
 
   <extension-point name="graphtypes">

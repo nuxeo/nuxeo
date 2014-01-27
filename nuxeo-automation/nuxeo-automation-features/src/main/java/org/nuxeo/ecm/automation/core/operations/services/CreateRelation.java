@@ -17,16 +17,10 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.relations.api.QNameResource;
+import org.nuxeo.ecm.platform.relations.api.DocumentRelationManager;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
-import org.nuxeo.ecm.platform.relations.api.Resource;
-import org.nuxeo.ecm.platform.relations.api.Statement;
-import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
-import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
-import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -49,33 +43,14 @@ public class CreateRelation {
     // TODO use a combo box?
     protected String predicate;
 
-    @Param(name = "outgoing", required=false, values = "false")
+    @Param(name = "outgoing", required = false, values = "false")
     protected boolean outgoing = false;
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
-        QNameResource subject = getDocumentResource(doc);
-        QNameResource obj = getDocumentResource(object);
-        Resource predicate = getPredicate();
-        Statement stmt;
-        if (outgoing) {
-            stmt = new StatementImpl(obj, predicate, subject);
-        } else {
-            stmt = new StatementImpl(subject, predicate, obj);
-        }
-        relations.getGraphByName(RelationConstants.GRAPH_NAME).add(stmt);
+        // FIXME Bad cast to test
+        ((DocumentRelationManager) relations).addDocumentRelation(session, doc,
+                object, predicate, outgoing);
         return doc;
     }
-
-    protected QNameResource getDocumentResource(DocumentModel document)
-            throws ClientException {
-        return (QNameResource) relations.getResource(
-                RelationConstants.DOCUMENT_NAMESPACE, document, null);
-    }
-
-    protected Resource getPredicate() {
-        return predicate != null && predicate.length() > 0 ? new ResourceImpl(
-                predicate) : null;
-    }
-
 }

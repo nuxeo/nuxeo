@@ -26,9 +26,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -48,11 +46,8 @@ import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.CoreEventConstants;
-import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.relations.api.DocumentRelationManager;
 import org.nuxeo.ecm.platform.relations.api.Graph;
-import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
@@ -60,12 +55,10 @@ import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.Subject;
-import org.nuxeo.ecm.platform.relations.api.event.RelationEvents;
+import org.nuxeo.ecm.platform.relations.api.exceptions.RelationAlreadyExistsException;
 import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
-import org.nuxeo.ecm.platform.relations.api.impl.RelationDate;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
-import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.ecm.platform.relations.jena.JenaGraph;
 import org.nuxeo.ecm.platform.relations.web.NodeInfo;
@@ -78,7 +71,6 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
 import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component that manages statements involving current document as well as
@@ -88,7 +80,7 @@ import org.nuxeo.runtime.api.Framework;
  * thanks to a list of predicates URIs. The object is resolved using a type
  * (literal, resource, qname resource), an optional namespace (for qname
  * resources) and a value.
- *
+ * 
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 @Name("relationActions")
@@ -108,6 +100,9 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
 
     @In(create = true)
     protected RelationManager relationManager;
+
+    @In(create = true)
+    protected DocumentRelationManager documentRelationManager;
 
     @In(create = true)
     protected NavigationContext navigationContext;
@@ -152,6 +147,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
     // until search button clicked
     protected Boolean popupDisplayed = false;
 
+    @Override
     public DocumentModel getDocumentModel(Node node) throws ClientException {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) node;
@@ -178,6 +174,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         return documentResource;
     }
 
+    @Override
     public QNameResource getDocumentResource(DocumentModel document)
             throws ClientException {
         QNameResource documentResource = null;
@@ -218,6 +215,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         }
     }
 
+    @Override
     @Factory(value = "currentDocumentIncomingRelations", scope = ScopeType.EVENT)
     public List<StatementInfo> getIncomingStatementsInfo()
             throws ClientException {
@@ -246,6 +244,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         return incomingStatementsInfo;
     }
 
+    @Override
     @Factory(value = "currentDocumentOutgoingRelations", scope = ScopeType.EVENT)
     public List<StatementInfo> getOutgoingStatementsInfo()
             throws ClientException {
@@ -274,6 +273,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         return outgoingStatementsInfo;
     }
 
+    @Override
     public void resetStatements() {
         incomingStatements = null;
         incomingStatementsInfo = null;
@@ -283,96 +283,80 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
 
     // getters & setters for creation items
 
+    @Override
     public String getComment() {
         return comment;
     }
 
+    @Override
     public void setComment(String comment) {
         this.comment = comment;
     }
 
+    @Override
     public String getObjectDocumentTitle() {
         return objectDocumentTitle;
     }
 
+    @Override
     public void setObjectDocumentTitle(String objectDocumentTitle) {
         this.objectDocumentTitle = objectDocumentTitle;
     }
 
+    @Override
     public String getObjectDocumentUid() {
         return objectDocumentUid;
     }
 
+    @Override
     public void setObjectDocumentUid(String objectDocumentUid) {
         this.objectDocumentUid = objectDocumentUid;
     }
 
+    @Override
     public String getObjectLiteralValue() {
         return objectLiteralValue;
     }
 
+    @Override
     public void setObjectLiteralValue(String objectLiteralValue) {
         this.objectLiteralValue = objectLiteralValue;
     }
 
+    @Override
     public String getObjectType() {
         return objectType;
     }
 
+    @Override
     public void setObjectType(String objectType) {
         this.objectType = objectType;
     }
 
+    @Override
     public String getObjectUri() {
         return objectUri;
     }
 
+    @Override
     public void setObjectUri(String objectUri) {
         this.objectUri = objectUri;
     }
 
+    @Override
     public String getPredicateUri() {
         return predicateUri;
     }
 
+    @Override
     public void setPredicateUri(String predicateUri) {
         this.predicateUri = predicateUri;
     }
 
-    protected void notifyEvent(String eventId, DocumentModel source,
-            Map<String, Serializable> options, String comment) {
-
-        EventProducer evtProducer = null;
-
-        try {
-            evtProducer = Framework.getService(EventProducer.class);
-        } catch (Exception e) {
-            log.error("Unable to get EventProducer to send event notification",
-                    e);
-        }
-
-        DocumentEventContext docCtx = new DocumentEventContext(documentManager,
-                documentManager.getPrincipal(), source);
-        options.put("category", RelationEvents.CATEGORY);
-        options.put("comment", comment);
-
-        try {
-            evtProducer.fireEvent(docCtx.newEvent(eventId));
-        } catch (ClientException e) {
-            log.error("Error while trying to send notification message", e);
-        }
-    }
-
+    @Override
     public String addStatement() throws ClientException {
         resetEventContext();
-        DocumentModel currentDoc = getCurrentDocument();
-        Resource documentResource = getDocumentResource(currentDoc);
-        if (documentResource == null) {
-            throw new ClientException(
-                    "Document resource could not be retrieved");
-        }
 
-        Resource predicate = new ResourceImpl(predicateUri);
         Node object = null;
         if (objectType.equals("literal")) {
             objectLiteralValue = objectLiteralValue.trim();
@@ -387,67 +371,16 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
             object = new QNameResourceImpl(
                     RelationConstants.DOCUMENT_NAMESPACE, localName);
         }
-
-        Statement stmt = new StatementImpl(documentResource, predicate, object);
-        if (!outgoingStatements.contains(stmt)) {
-            // add statement to the graph
-            String eventComment = null;
-            if (comment != null) {
-                comment = comment.trim();
-                if (comment.length() > 0) {
-                    stmt.addProperty(RelationConstants.COMMENT,
-                            new LiteralImpl(comment));
-                    eventComment = comment;
-                }
-            }
-            Literal now = RelationDate.getLiteralDate(new Date());
-            stmt.addProperty(RelationConstants.CREATION_DATE, now);
-            stmt.addProperty(RelationConstants.MODIFICATION_DATE, now);
-            if (currentUser != null) {
-                stmt.addProperty(RelationConstants.AUTHOR, new LiteralImpl(
-                        currentUser.getName()));
-            }
-
-            // notifications
-
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            String currentLifeCycleState = currentDoc.getCurrentLifeCycleState();
-            options.put(CoreEventConstants.DOC_LIFE_CYCLE,
-                    currentLifeCycleState);
-            if (includeStatementsInEvents) {
-                putStatements(options, stmt);
-            }
-            options.put(RelationEvents.GRAPH_NAME_EVENT_KEY,
-                    RelationConstants.GRAPH_NAME);
-
-            // before notification
-            notifyEvent(RelationEvents.BEFORE_RELATION_CREATION, currentDoc,
-                    options, eventComment);
-
-            // add statement
-            Graph graph = relationManager.getGraph(
-                    RelationConstants.GRAPH_NAME, documentManager);
-            graph.add(stmt);
-
-            // XXX AT: try to refetch it from the graph so that resources are
-            // transformed into qname resources: useful for indexing
-            if (includeStatementsInEvents) {
-                putStatements(options, graph.getStatements(stmt));
-            }
-
-            // after notification
-            notifyEvent(RelationEvents.AFTER_RELATION_CREATION, currentDoc,
-                    options, eventComment);
-
-            // make sure statements will be recomputed
-            resetStatements();
-
+        try {
+            documentRelationManager.addDocumentRelation(documentManager,
+                    getCurrentDocument(), object, predicateUri, false,
+                    includeStatementsInEvents, comment.trim());
             facesMessages.add(
                     StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.relation.created"));
             resetCreateFormValues();
-        } else {
+        } catch (RelationAlreadyExistsException e) {
             facesMessages.add(
                     StatusMessage.Severity.WARN,
                     resourcesAccessor.getMessages().get(
@@ -456,21 +389,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         return null;
     }
 
-    // for consistency for callers only
-    private static void putStatements(Map<String, Serializable> options,
-            List<Statement> statements) {
-        options.put(RelationEvents.STATEMENTS_EVENT_KEY,
-                (Serializable) statements);
-    }
-
-    private static void putStatements(Map<String, Serializable> options,
-            Statement statement) {
-        List<Statement> statements = new LinkedList<Statement>();
-        statements.add(statement);
-        options.put(RelationEvents.STATEMENTS_EVENT_KEY,
-                (Serializable) statements);
-    }
-
+    @Override
     public void toggleCreateForm(ActionEvent event) {
         showCreateForm = !showCreateForm;
     }
@@ -487,47 +406,18 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
         popupDisplayed = false;
     }
 
+    @Override
     public String deleteStatement(StatementInfo stmtInfo)
             throws ClientException {
         resetEventContext();
-        if (stmtInfo != null && outgoingStatementsInfo != null
-                && outgoingStatementsInfo.contains(stmtInfo)) {
-            Statement stmt = stmtInfo.getStatement();
-            // notifications
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            DocumentModel source = getCurrentDocument();
-            String currentLifeCycleState = source.getCurrentLifeCycleState();
-            options.put(CoreEventConstants.DOC_LIFE_CYCLE,
-                    currentLifeCycleState);
-            options.put(RelationEvents.GRAPH_NAME_EVENT_KEY,
-                    RelationConstants.GRAPH_NAME);
-            if (includeStatementsInEvents) {
-                putStatements(options, stmt);
-            }
-
-            // before notification
-            notifyEvent(RelationEvents.BEFORE_RELATION_REMOVAL, source,
-                    options, null);
-
-            // remove statement
-            relationManager.getGraphByName(RelationConstants.GRAPH_NAME).remove(
-                    stmt);
-
-            // after notification
-            notifyEvent(RelationEvents.AFTER_RELATION_REMOVAL, source, options,
-                    null);
-
-            // make sure statements will be recomputed
-            resetStatements();
-
-            facesMessages.add(
-                    StatusMessage.Severity.INFO,
-                    resourcesAccessor.getMessages().get(
-                            "label.relation.deleted"));
-        }
+        documentRelationManager.deleteDocumentRelation(documentManager,
+                stmtInfo.getStatement());
+        facesMessages.add(StatusMessage.Severity.INFO,
+                resourcesAccessor.getMessages().get("label.relation.deleted"));
         return null;
     }
 
+    @Override
     public Boolean getShowCreateForm() {
         return showCreateForm;
     }
