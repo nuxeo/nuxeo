@@ -95,7 +95,7 @@
           <form class="displayI subWidgetForm doubleClickShielded" action="/nuxeo/view_documents.faces" method="post"  id="#">
           <a onclick="return false;" href="#" class="actionLink button "><img class="smallIcon " title="Prévisualisation" alt="Prévisualisation" src="/nuxeo/icons/contextual_menu/preview.png" /></a></form>
                         </span>
-              <ul class="actionList">
+              <ul class="actionList" id="titlesExample">
               <li class="dropDownMenu button dropdown">Plus
                 <ul class="actionSubList" style="display: none;">
                     <li>
@@ -115,6 +115,11 @@
                 </ul>
               </li>
             </ul>
+           <script>
+             jQuery(document).ready(function() {
+               jQuery("#titlesExample").dropdown();
+             });
+           </script>
               </div>
             </div>
           <div class="clear"></div>
