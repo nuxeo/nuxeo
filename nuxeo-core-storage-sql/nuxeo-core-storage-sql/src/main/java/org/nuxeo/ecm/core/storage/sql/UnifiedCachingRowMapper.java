@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.MBeanServer;
@@ -45,6 +46,7 @@ import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
@@ -124,30 +126,14 @@ public class UnifiedCachingRowMapper implements RowMapper {
      */
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    private final Counter cacheHitCount = registry.counter(MetricRegistry.name(
-            UnifiedCachingRowMapper.class, "cache-hit"));
+    protected Counter cacheHitCount;
 
-    private final Timer cacheGetTimer = registry.timer(MetricRegistry.name(
-            UnifiedCachingRowMapper.class, "cache-get"));
+    protected Timer cacheGetTimer;
 
     // sor means system of record (database access)
-    private final Counter sorRows = registry.counter(MetricRegistry.name(
-            UnifiedCachingRowMapper.class, "sor-rows"));
+    protected Counter sorRows;
 
-    private final Timer sorGetTimer = registry.timer(MetricRegistry.name(
-            UnifiedCachingRowMapper.class, "sor-get"));
-
-    protected final Gauge<Integer> cacheSize = registry.register(
-            MetricRegistry.name(UnifiedCachingRowMapper.class, "cache-size"),
-            new Gauge<Integer>() {
-                @Override
-                public Integer getValue() {
-                    if (cacheManager != null) {
-                        return cacheManager.getCache(CACHE_NAME).getSize();
-                    }
-                    return 0;
-                }
-            });
+    protected Timer sorGetTimer;
 
     public UnifiedCachingRowMapper() {
         localInvalidations = new Invalidations();
@@ -414,6 +400,28 @@ public class UnifiedCachingRowMapper implements RowMapper {
      */
     public void setSession(SessionImpl session) {
         this.session = session;
+        cacheHitCount = registry.counter(MetricRegistry.name(
+                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "hits"));
+        cacheGetTimer = registry.timer(MetricRegistry.name(
+                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "get"));
+        sorRows = registry.counter(MetricRegistry.name(
+                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "sor", "rows"));
+        sorGetTimer = registry.timer(MetricRegistry.name(
+                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "sor", "get"));
+        String gaugeName = MetricRegistry.name(
+                "nuxeo", "repositories", session.repository.getName(), "caches", "unified", "cache-size");
+        SortedMap<String, Gauge> gauges = registry.getGauges();
+        if (!gauges.containsKey(gaugeName)) {
+            registry.register(gaugeName, new Gauge<Integer>() {
+                @Override
+                public Integer getValue() {
+                    if (cacheManager != null) {
+                        return cacheManager.getCache(CACHE_NAME).getSize();
+                    }
+                    return 0;
+                }
+            });
+        }
     }
 
     @Override
@@ -614,8 +622,8 @@ public class UnifiedCachingRowMapper implements RowMapper {
 
     @Override
     public long getCacheSize() {
-        // The unified cache is reported using its cacheSize gauge
-        return -1;
+        // The unified cache is reported by the cache-size gauge
+        return 0;
     }
 
 }
