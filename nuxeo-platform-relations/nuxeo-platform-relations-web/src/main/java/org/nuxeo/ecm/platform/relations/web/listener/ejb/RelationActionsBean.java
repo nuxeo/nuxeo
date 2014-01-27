@@ -372,7 +372,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
                     RelationConstants.DOCUMENT_NAMESPACE, localName);
         }
         try {
-            documentRelationManager.addDocumentRelation(documentManager,
+            documentRelationManager.addRelation(documentManager,
                     getCurrentDocument(), object, predicateUri, false,
                     includeStatementsInEvents, comment.trim());
             facesMessages.add(
@@ -410,7 +410,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
     public String deleteStatement(StatementInfo stmtInfo)
             throws ClientException {
         resetEventContext();
-        documentRelationManager.deleteDocumentRelation(documentManager,
+        documentRelationManager.deleteRelation(documentManager,
                 stmtInfo.getStatement());
         facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get("label.relation.deleted"));

@@ -47,7 +47,7 @@ public class CreateRelation {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
-        relations.addDocumentRelation(session, doc, object, predicate, outgoing);
+        relations.addRelation(session, doc, object, predicate, outgoing);
         return doc;
     }
 }
