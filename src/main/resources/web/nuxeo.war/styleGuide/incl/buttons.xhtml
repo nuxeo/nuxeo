@@ -111,13 +111,18 @@
         <p class="specification">Depending of the inclusion of your <span class="code">.button</span> in containers, buttons will be displayed in the same line as the main title. In these examples, actions are included in a <span class="code">.dropDownMenu .button .dropdown</span>  li class, in an <span class="code">.action_bar .directoryBack</span>, and finally in a <span class="code">.widgetPanel .actionsWidgetPanel</span>. For more details about actions in titles, check the <a href="/nuxeo/styleGuide/Titles">Titles</a> section.</p>
         <div class="globalActionBar">
          <h1>My page title</h1>
-         <ul class="actionList">
+         <ul class="actionList" id="titlesExample">
           <li class="dropDownMenu button dropdown">Actions
             <ul class="actionSubList" style="display: none;">
               <li><a onclick="return false;" name="#" id="#" href="#">Edit</a></li>
             </ul>
           </li>
          </ul>
+         <script>
+           jQuery(document).ready(function() {
+             jQuery("#titlesExample").dropdown();
+           });
+         </script>
        </div>
         <div class="clear" />
         <div class="globalActionBar">
@@ -156,7 +161,7 @@
               <span class=" ">
           <form id="#" method="post" action="/nuxeo/view_documents.faces" class="displayI subWidgetForm doubleClickShielded">
           <a class="actionLink button " href="#" onclick="return false;"><img src="/nuxeo/icons/contextual_menu/preview.png" alt="Prévisualisation" title="Prévisualisation" class="smallIcon " /></a></form></span>
-              <ul class="actionList">
+              <ul class="actionList" id="actionsExample">
               <li class="dropDownMenu button dropdown">Plus
                 <ul style="display: none;" class="actionSubList">
                     <li>
@@ -176,6 +181,11 @@
                 </ul>
               </li>
             </ul>
+           <script>
+             jQuery(document).ready(function() {
+               jQuery("#actionsExample").dropdown();
+             });
+           </script>
               </div>
             </div>
           </div>
