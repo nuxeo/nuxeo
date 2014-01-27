@@ -74,7 +74,7 @@
         </c:when>
 
         <c:when test="#{widgetProperty_overallDisplay == 'rollover_menu'}">
-          <ul class="actionList">
+          <ul class="actionList" id="#{idPrefix}dropDownMenu">
             <li class="dropDownMenu button dropdown">
               <ui:include src="/widgets/incl/widget_label_template.xhtml">
                 <ui:param name="labelStyleClass"
@@ -96,6 +96,13 @@
               </ul>
             </li>
           </ul>
+
+          <script>
+            jQuery(document).ready(function() {
+              jQuery("##{idPrefix}dropDownMenu").dropdown();
+            });
+          </script>
+
         </c:when>
 
         <c:otherwise>
