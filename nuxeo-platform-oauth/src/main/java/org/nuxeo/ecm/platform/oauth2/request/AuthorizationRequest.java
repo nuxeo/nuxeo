@@ -1,0 +1,158 @@
+package org.nuxeo.ecm.platform.oauth2.request;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.*;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
+import org.nuxeo.runtime.api.Framework;
+
+/**
+ * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
+ * @since 5.9.2
+ */
+public class AuthorizationRequest {
+    private static final Log log = LogFactory.getLog(AuthorizationRequest.class);
+
+    private static Map<String, AuthorizationRequest> requests = new HashMap<>();
+
+    protected String responseType;
+
+    protected String clientId;
+
+    protected String redirectUri;
+
+    protected String scope;
+
+    protected String state;
+
+    protected String sessionId;
+
+    protected Date creationDate;
+
+    protected String authorizationCode;
+
+    protected String authorizationKey;
+
+    protected String username;
+
+    public static final String RESPONSE_TYPE = "response_type";
+
+    public static final String CLIENT_ID = "client_id";
+
+    public static final String REDIRECT_URI = "redirect_uri";
+
+    public static final String SCOPE = "scope";
+
+    public static final String STATE = "state";
+
+    public AuthorizationRequest(HttpServletRequest request) {
+        responseType = request.getParameter(RESPONSE_TYPE);
+        clientId = request.getParameter(CLIENT_ID);
+        redirectUri = request.getParameter(REDIRECT_URI);
+        scope = request.getParameter(SCOPE);
+        state = request.getParameter(STATE);
+        sessionId = request.getSession(true).getId();
+
+        creationDate = new Date();
+        authorizationKey = RandomStringUtils.random(6);
+    }
+
+    public String checkError() {
+        // Check mandatory fields
+        if (isBlank(responseType) || isBlank(clientId) || isBlank(redirectUri)) {
+            return invalid_request.toString();
+        }
+
+        // Check if client exists
+        try {
+            ClientRegistry registry = Framework.getLocalService(ClientRegistry.class);
+            if (!registry.hasClient(clientId)) {
+                return unauthorized_client.toString();
+            }
+        } catch (ClientException e) {
+            log.warn(e, e);
+            return server_error.toString();
+        }
+
+        // Check request type
+        if (!"code".equals(responseType)) {
+            return unsupported_response_type.toString();
+        }
+        return null;
+    }
+
+    public boolean isExpired() {
+        // RFC 4.1.2, Authorization code lifetime is 10; instead, we assume the
+        // authorization request lifetime is 7 min.
+        return new Date().getTime() - creationDate.getTime() > 7 * 60 * 1000;
+    }
+
+    public boolean isValidState(HttpServletRequest request) {
+        return isBlank(getState())
+                || request.getParameter(STATE).equals(getState());
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getResponseType() {
+        return responseType;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public String getRedirectUri() {
+        return redirectUri;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public String getAuthorizationCode() {
+        if (isBlank(authorizationCode)) {
+            authorizationCode = RandomStringUtils.random(12);
+        }
+        return authorizationCode;
+    }
+
+    public String getAuthorizationKey() {
+        return authorizationKey;
+    }
+
+    public static AuthorizationRequest from(HttpServletRequest request) {
+        String sessionId = request.getSession(true).getId();
+        log.error("SessionId: " + sessionId);
+        if (requests.containsKey(sessionId)) {
+            AuthorizationRequest authRequest = requests.get(sessionId);
+            if (!authRequest.isExpired() && authRequest.isValidState(request)) {
+                return authRequest;
+            }
+        }
+
+        AuthorizationRequest authRequest = new AuthorizationRequest(request);
+        requests.put(sessionId, authRequest);
+        return authRequest;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+}

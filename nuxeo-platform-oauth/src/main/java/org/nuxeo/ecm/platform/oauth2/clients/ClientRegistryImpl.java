@@ -44,7 +44,8 @@ public class ClientRegistryImpl extends DefaultComponent implements
         Session session = null;
         try {
             session = service.open(OAUTH2CLIENT_DIRECTORY_NAME);
-            return session.hasEntry(clientId);
+            DocumentModel entry = session.getEntry(clientId);
+            return entry != null && OAuth2Client.fromDocumentModel(entry).isEnabled();
         } finally {
             if (session != null) {
                 session.close();

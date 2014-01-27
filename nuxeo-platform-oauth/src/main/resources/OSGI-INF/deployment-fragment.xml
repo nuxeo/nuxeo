@@ -11,24 +11,39 @@
 
   </install>
 
-    <extension target="web#STD-AUTH-FILTER">
+  <extension target="web#STD-AUTH-FILTER">
 
-       <filter-mapping>
-           <filter-name>NuxeoAuthenticationFilter
-           </filter-name>
-           <url-pattern>/oauthGrant.jsp</url-pattern>
-           <dispatcher>REQUEST</dispatcher>
-           <dispatcher>FORWARD</dispatcher>
-       </filter-mapping>
-       <filter-mapping>
-            <filter-name>NuxeoAuthenticationFilter
-            </filter-name>
-            <url-pattern>/oauth/*</url-pattern>
-            <dispatcher>REQUEST</dispatcher>
-            <dispatcher>FORWARD</dispatcher>
-        </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter
+      </filter-name>
+      <url-pattern>/oauthGrant.jsp</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter
+      </filter-name>
+      <url-pattern>/oauth/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
 
-    </extension>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter
+      </filter-name>
+      <url-pattern>/oauth2Grant.jsp</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter
+      </filter-name>
+      <url-pattern>/oauth2/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
 
- </fragment>
+  </extension>
+
+</fragment>
 
