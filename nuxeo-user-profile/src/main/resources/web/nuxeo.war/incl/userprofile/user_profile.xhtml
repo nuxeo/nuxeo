@@ -11,7 +11,7 @@
           <h1>
             <h:outputText value="#{userProfileActions.userProfile.user.firstName} #{userProfileActions.userProfile.user.lastName}"/>
           </h1>
-          <ul class="actionList">
+          <ul class="actionList" id="userProfileDropDownMenu">
              <li class="dropDownMenu button dropdown">
                <h:outputText value="#{messages['label.content.header.actions']}" />
                <ul class="actionSubList">
@@ -36,6 +36,13 @@
                </ul>
              </li>
           </ul>
+
+          <script>
+            jQuery(document).ready(function() {
+              jQuery("#userProfileDropDownMenu").dropdown();
+            });
+          </script>
+
         </h:form>
       </div>
       <div class="clear"></div>
