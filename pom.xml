@@ -4583,7 +4583,7 @@
         <plugin>
           <groupId>net.java.maven-incremental-build</groupId>
           <artifactId>incremental-build-plugin</artifactId>
-          <version>1.6</version>
+          <version>1.6-NX1</version>
         </plugin>
         <plugin>
           <artifactId>maven-jarsigner-plugin</artifactId>
