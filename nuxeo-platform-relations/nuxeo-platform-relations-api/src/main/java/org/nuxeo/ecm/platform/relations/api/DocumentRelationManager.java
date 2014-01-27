@@ -24,6 +24,7 @@ import org.nuxeo.ecm.platform.relations.api.exceptions.RelationAlreadyExistsExce
 /**
  * Create relations between documents
  * 
+ * @since 5.9.2
  */
 public interface DocumentRelationManager {
 
@@ -38,11 +39,9 @@ public interface DocumentRelationManager {
      * 
      * @throws ClientException
      * @throws RelationAlreadyExistsException
-     * @since 5.9.2
      */
-    void addDocumentRelation(CoreSession session, DocumentModel from,
-            DocumentModel to, String predicate, boolean inverse)
-            throws ClientException;
+    void addRelation(CoreSession session, DocumentModel from, DocumentModel to,
+            String predicate, boolean inverse) throws ClientException;
 
     /**
      * Add link between two document
@@ -55,9 +54,8 @@ public interface DocumentRelationManager {
      * 
      * @throws ClientException
      * @throws RelationAlreadyExistsException
-     * @since 5.9.2
      */
-    void addDocumentRelation(CoreSession session, DocumentModel from, Node to,
+    void addRelation(CoreSession session, DocumentModel from, Node to,
             String predicate, boolean inverse) throws ClientException;
 
     /**
@@ -69,9 +67,8 @@ public interface DocumentRelationManager {
      * 
      * @throws ClientException
      * @throws RelationAlreadyExistsException
-     * @since 5.9.2
      */
-    void addDocumentRelation(CoreSession session, DocumentModel from, Node to,
+    void addRelation(CoreSession session, DocumentModel from, Node to,
             String predicate) throws ClientException;
 
     /**
@@ -88,9 +85,8 @@ public interface DocumentRelationManager {
      * 
      * @throws ClientException
      * @throws RelationAlreadyExistsException
-     * @since 5.9.2
      */
-    void addDocumentRelation(CoreSession session, DocumentModel from, Node to,
+    void addRelation(CoreSession session, DocumentModel from, Node to,
             String predicate, boolean inverse, boolean includeStatementsInEvents)
             throws ClientException;
 
@@ -109,9 +105,8 @@ public interface DocumentRelationManager {
      * 
      * @throws ClientException
      * @throws RelationAlreadyExistsException
-     * @since 5.9.2
      */
-    void addDocumentRelation(CoreSession session, DocumentModel from, Node to,
+    void addRelation(CoreSession session, DocumentModel from, Node to,
             String predicate, boolean inverse,
             boolean includeStatementsInEvents, String comment)
             throws ClientException;
@@ -122,17 +117,15 @@ public interface DocumentRelationManager {
      * @param predicate relation type
      * 
      * @throws ClientException
-     * @since 5.9.2
      */
-    void deleteDocumentRelation(CoreSession session, DocumentModel from,
+    void deleteRelation(CoreSession session, DocumentModel from,
             DocumentModel to, String predicate) throws ClientException;
 
     /**
      * @param statement to delete
      * @throws ClientException
-     * @since 5.9.2
      */
-    void deleteDocumentRelation(CoreSession session, Statement statement)
+    void deleteRelation(CoreSession session, Statement statement)
             throws ClientException;
 
     /**
@@ -141,9 +134,8 @@ public interface DocumentRelationManager {
      *            RelationEvents.BEFORE_RELATION_REMOVAL and
      *            RelationEvents.AFTER_RELATION_REMOVAL
      * @throws ClientException
-     * @since 5.9.2
      */
-    void deleteDocumentRelation(CoreSession session, Statement stmt,
+    void deleteRelation(CoreSession session, Statement stmt,
             boolean includeStatementsInEvents) throws ClientException;
 
     /**
@@ -154,9 +146,8 @@ public interface DocumentRelationManager {
      *            RelationEvents.BEFORE_RELATION_REMOVAL and
      *            RelationEvents.AFTER_RELATION_REMOVAL
      * @throws ClientException
-     * @since 5.9.2
      */
-    void deleteDocumentRelation(CoreSession session, DocumentModel from,
+    void deleteRelation(CoreSession session, DocumentModel from,
             DocumentModel to, String predicate,
             boolean includeStatementsInEvents) throws ClientException;
 

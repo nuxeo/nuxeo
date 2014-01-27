@@ -20,7 +20,6 @@ import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.relations.api.DocumentRelationManager;
-import org.nuxeo.ecm.platform.relations.api.RelationManager;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,7 +33,7 @@ public class CreateRelation {
     protected CoreSession session;
 
     @Context
-    protected RelationManager relations;
+    protected DocumentRelationManager relations;
 
     @Param(name = "object")
     protected DocumentModel object;
@@ -48,9 +47,7 @@ public class CreateRelation {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
-        // FIXME Bad cast to test
-        ((DocumentRelationManager) relations).addDocumentRelation(session, doc,
-                object, predicate, outgoing);
+        relations.addDocumentRelation(session, doc, object, predicate, outgoing);
         return doc;
     }
 }
