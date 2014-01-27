@@ -62,6 +62,7 @@
       <resource>jquery.nuxeo.doubleclickshield.js</resource>
       <resource>jquery.ambiance.js</resource>
       <resource>jquery.ambiance.css</resource>
+      <resource>jquery.nuxeo.dropdown.js</resource>
     </view>
 
     <view name="Nuxeo header" template-engine="jsf-facelets">
@@ -219,6 +220,10 @@
     </resource>
     <resource name="jquery.ambiance.css">
       <path>css/jquery.ambiance.css</path>
+    </resource>
+    <resource name="jquery.nuxeo.dropdown.js">
+      <path>scripts/jquery/jquery.nuxeo.dropdown.js</path>
+      <require>jquery.js</require>
     </resource>
   </extension>
 
