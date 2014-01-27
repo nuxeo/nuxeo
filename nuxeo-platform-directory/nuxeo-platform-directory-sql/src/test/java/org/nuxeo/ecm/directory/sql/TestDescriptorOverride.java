@@ -20,7 +20,10 @@
 package org.nuxeo.ecm.directory.sql;
 
 import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.nuxeo.ecm.directory.Directory;
 
@@ -34,6 +37,11 @@ public class TestDescriptorOverride extends SQLDirectoryTestCase {
         SQLDirectoryDescriptor config = sqlDir.getConfig();
 
         assertEquals("always", config.getCreateTablePolicy());
+        assertEquals(100, config.getQuerySizeLimit());
+        assertFalse(config.isAutoincrementIdField());
+        assertTrue(config.isComputeMultiTenantId());
+        assertEquals(0, config.getCacheTimeout());
+        assertEquals(0, config.getCacheMaxSize());
         assertEquals("test-users.csv", config.getDataFileName());
 
         deployContrib("org.nuxeo.ecm.directory.sql.tests",
@@ -45,6 +53,11 @@ public class TestDescriptorOverride extends SQLDirectoryTestCase {
 
         // override
         assertEquals("never", config.getCreateTablePolicy());
+        assertEquals(123, config.getQuerySizeLimit());
+        assertTrue(config.isAutoincrementIdField());
+        assertFalse(config.isComputeMultiTenantId());
+        assertEquals(123, config.getCacheTimeout());
+        assertEquals(456, config.getCacheMaxSize());
         // inherit
         assertEquals("test-users.csv", config.getDataFileName());
         assertEquals(1, config.getTableReferences().length);

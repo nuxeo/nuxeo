@@ -40,6 +40,16 @@ public class SQLDirectoryDescriptor {
         subinitial, subfinal, subany
     }
 
+    public static final int CACHE_TIMEOUT_DEFAULT = 0;
+
+    public static final int CACHE_MAX_SIZE_DEFAULT = 0;
+
+    public static final int QUERY_SIZE_LIMIT_DEFAULT = 0;
+
+    public static final boolean AUTO_INCREMENT_ID_FIELD_DEFAULT = false;
+
+    public static final boolean READ_ONY_DEFAULT = false;
+
     protected static final char DEFAULT_CHARACTER_SEPARATOR = ',';
 
     private static final String[] SCRIPT_POLICIES = { "never",
@@ -91,10 +101,10 @@ public class SQLDirectoryDescriptor {
     public SubstringMatchType substringMatchType;
 
     @XNode("autoincrementIdField")
-    public boolean autoincrementIdField;
+    public Boolean autoincrementIdField;
 
     @XNode("readOnly")
-    public Boolean readOnly = Boolean.FALSE;
+    public Boolean readOnly;
 
     @XNode("passwordField")
     private String passwordField;
@@ -103,7 +113,7 @@ public class SQLDirectoryDescriptor {
     public String passwordHashAlgorithm;
 
     @XNode("querySizeLimit")
-    private int querySizeLimit;
+    private Integer querySizeLimit;
 
     @XNodeList(value = "references/tableReference", type = TableReference[].class, componentType = TableReference.class)
     private TableReference[] tableReferences;
@@ -115,10 +125,10 @@ public class SQLDirectoryDescriptor {
     private boolean remove = false;
 
     @XNode("cacheTimeout")
-    public int cacheTimeout = 0;
+    public Integer cacheTimeout;
 
     @XNode("cacheMaxSize")
-    public int cacheMaxSize = 0;
+    public Integer cacheMaxSize;
 
     @XNodeList(value = "filters/staticFilter", type = SQLStaticFilter[].class, componentType = SQLStaticFilter.class)
     private SQLStaticFilter[] staticFilters;
@@ -277,7 +287,7 @@ public class SQLDirectoryDescriptor {
     }
 
     public Boolean getReadOnly() {
-        return readOnly;
+        return readOnly == null ? Boolean.valueOf(READ_ONY_DEFAULT) : readOnly;
     }
 
     public void setReadOnly(Boolean readOnly) {
@@ -285,11 +295,12 @@ public class SQLDirectoryDescriptor {
     }
 
     public boolean isAutoincrementIdField() {
-        return autoincrementIdField;
+        return autoincrementIdField == null ? AUTO_INCREMENT_ID_FIELD_DEFAULT
+                : autoincrementIdField.booleanValue();
     }
 
     public void setAutoincrementIdField(boolean autoincrementIdField) {
-        this.autoincrementIdField = autoincrementIdField;
+        this.autoincrementIdField = Boolean.valueOf(autoincrementIdField);
     }
 
     public void setDbDriver(String dbDriver) {
@@ -321,11 +332,12 @@ public class SQLDirectoryDescriptor {
     }
 
     public int getQuerySizeLimit() {
-        return querySizeLimit;
+        return querySizeLimit == null ? QUERY_SIZE_LIMIT_DEFAULT
+                : querySizeLimit.intValue();
     }
 
     public void setQuerySizeLimit(int querySizeLimit) {
-        this.querySizeLimit = querySizeLimit;
+        this.querySizeLimit = Integer.valueOf(querySizeLimit);
     }
 
     public void setRemove(boolean delete) {
@@ -337,11 +349,13 @@ public class SQLDirectoryDescriptor {
     }
 
     public int getCacheTimeout() {
-        return cacheTimeout;
+        return cacheTimeout == null ? CACHE_TIMEOUT_DEFAULT
+                : cacheTimeout.intValue();
     }
 
     public int getCacheMaxSize() {
-        return cacheMaxSize;
+        return cacheMaxSize == null ? CACHE_MAX_SIZE_DEFAULT
+                : cacheMaxSize.intValue();
     }
 
     public SubstringMatchType getSubstringMatchType() {
@@ -423,7 +437,7 @@ public class SQLDirectoryDescriptor {
         if (other.substringMatchType != null || overwite) {
             substringMatchType = other.substringMatchType;
         }
-        if (overwite) {
+        if (other.autoincrementIdField != null || overwite) {
             autoincrementIdField = other.autoincrementIdField;
         }
         if (other.readOnly != null || overwite) {
@@ -435,7 +449,7 @@ public class SQLDirectoryDescriptor {
         if (other.passwordHashAlgorithm != null || overwite) {
             passwordHashAlgorithm = other.passwordHashAlgorithm;
         }
-        if (overwite) {
+        if (other.querySizeLimit != null || overwite) {
             querySizeLimit = other.querySizeLimit;
         }
 
@@ -450,8 +464,10 @@ public class SQLDirectoryDescriptor {
 
         remove = other.remove;
 
-        if (overwite) {
+        if (other.cacheTimeout != null || overwite) {
             cacheTimeout = other.cacheTimeout;
+        }
+        if (other.cacheMaxSize != null || overwite) {
             cacheMaxSize = other.cacheMaxSize;
         }
         if ((other.staticFilters != null && other.staticFilters.length != 0)

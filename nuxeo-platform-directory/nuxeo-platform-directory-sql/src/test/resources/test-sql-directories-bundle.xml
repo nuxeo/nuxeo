@@ -35,6 +35,7 @@
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>test-users.csv</dataFile>
       <createTablePolicy>always</createTablePolicy>
+      <querySizeLimit>100</querySizeLimit>
 
       <references>
         <tableReference field="groups" directory="groupDirectory"
