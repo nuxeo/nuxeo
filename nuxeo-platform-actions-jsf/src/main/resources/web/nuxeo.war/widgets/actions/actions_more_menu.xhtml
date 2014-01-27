@@ -8,7 +8,7 @@
   xmlns:c="http://java.sun.com/jstl/core">
 
 <c:if test="#{not empty widgetProperty_maxActionsNumber and widgetProperty_actions.size > widgetProperty_maxActionsNumber}">
-  <ul class="actionList">
+  <ul class="actionList" id="#{idPrefix}dropDownMenu">
     <li class="dropDownMenu button dropdown">
       <h:outputText value="#{empty widgetProperty_moreMenuLabel ? messages['label.summary.actions.more'] : widgetProperty_moreMenuLabel}" />
       <ul class="actionSubList">
@@ -28,6 +28,13 @@
       </ul>
     </li>
   </ul>
+
+  <script>
+    jQuery(document).ready(function() {
+      jQuery("##{idPrefix}dropDownMenu").dropdown();
+    });
+  </script>
+
 </c:if>
 
 </ui:composition>
