@@ -163,7 +163,7 @@ public class JSONDocumentModelReader implements
                 Properties props = readProperties(jp);
                 // Put null for CoreSession, only needed for ecm:acl... Won't be
                 // supported for rest API
-                DocumentHelper.setProperties(null, tmp, props);
+                DocumentHelper.setJSONProperties(null, tmp, props);
             } else if ("name".equals(key)) {
                 name = jp.readValueAs(String.class);
             } else if ("type".equals(key)) {

@@ -146,38 +146,7 @@ public class DocumentHelper {
 
     public static void setProperty(CoreSession session, DocumentModel doc,
             String key, String value) throws ClientException, IOException {
-        if ("ecm:acl".equals(key)) {
-            setLocalAcl(session, doc, value);
-        }
-        Property p = doc.getProperty(key);
-        if (value == null || value.length() == 0) {
-            p.setValue(null);
-            return;
-        }
-        Type type = p.getField().getType();
-        if (!type.isSimpleType()) {
-            if (type.isListType()) {
-                ListType ltype = (ListType) type;
-                if (ltype.isScalarList()) {
-                    p.setValue(readStringList(value,
-                            (SimpleType) ltype.getFieldType()));
-                    return;
-                } else if (ltype.getFieldType().isComplexType()) {
-                    Object val = ComplexTypeJSONDecoder.decodeList(ltype, value);
-                    p.setValue(val);
-                    return;
-                }
-            } else if (type.isComplexType()) {
-                Object val = ComplexTypeJSONDecoder.decode((ComplexType) type,
-                        value);
-                p.setValue(val);
-                return;
-            }
-            throw new ClientException(
-                    "Property type is not supported by this operation");
-        } else {
-            p.setValue(((SimpleType) type).getPrimitiveType().decode(value));
-        }
+        setProperty(session, doc, key, value, false);
     }
 
     protected static void setLocalAcl(CoreSession session, DocumentModel doc,
@@ -296,6 +265,78 @@ public class DocumentHelper {
         }
         result.add(buf.toString());
         return result.toArray(new String[result.size()]);
+    }
+
+    /**
+     * Sets the properties of a document based on their JSON representation
+     * (especially for scalar lists).
+     *
+     * @param session
+     * @param doc
+     * @param properties
+     * @throws ClientException
+     * @throws IOException
+     *
+     * @since 5.9.2
+     */
+    public static void setJSONProperties(CoreSession session,
+            DocumentModel doc, Properties properties) throws ClientException,
+            IOException {
+
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            setProperty(session, doc, key, value, true);
+        }
+    }
+
+    /**
+     *
+     * @param session
+     * @param doc
+     * @param key
+     * @param value
+     * @param decodeStringListAsJSON
+     * @throws ClientException
+     * @throws IOException
+     *
+     * @since 5.9.2
+     */
+    public static void setProperty(CoreSession session, DocumentModel doc,
+            String key, String value, boolean decodeStringListAsJSON)
+            throws ClientException, IOException {
+        if ("ecm:acl".equals(key)) {
+            setLocalAcl(session, doc, value);
+        }
+        Property p = doc.getProperty(key);
+        if (value == null || value.length() == 0) {
+            p.setValue(null);
+            return;
+        }
+        Type type = p.getField().getType();
+        if (!type.isSimpleType()) {
+            if (type.isListType()) {
+                ListType ltype = (ListType) type;
+                if (ltype.isScalarList() && !decodeStringListAsJSON) {
+                    p.setValue(readStringList(value,
+                            (SimpleType) ltype.getFieldType()));
+                    return;
+                } else {
+                    Object val = ComplexTypeJSONDecoder.decodeList(ltype, value);
+                    p.setValue(val);
+                    return;
+                }
+            } else if (type.isComplexType()) {
+                Object val = ComplexTypeJSONDecoder.decode((ComplexType) type,
+                        value);
+                p.setValue(val);
+                return;
+            }
+            throw new ClientException(
+                    "Property type is not supported by this operation");
+        } else {
+            p.setValue(((SimpleType) type).getPrimitiveType().decode(value));
+        }
     }
 
 }
