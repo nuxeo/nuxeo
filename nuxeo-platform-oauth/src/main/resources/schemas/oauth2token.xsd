@@ -8,6 +8,7 @@
   <xs:element name="accessToken" type="xs:string"/>
   <xs:element name="refreshToken" type="xs:string"/>
   <xs:element name="nuxeoLogin" type="xs:string"/>
+  <xs:element name="clientId" type="xs:string"/>
 
   <xs:element name="expirationTimeMilliseconds" type="xs:integer"/>
   <xs:element name="creationDate" type="xs:date"/>

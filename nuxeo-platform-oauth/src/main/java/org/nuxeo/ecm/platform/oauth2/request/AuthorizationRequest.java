@@ -3,6 +3,8 @@ package org.nuxeo.ecm.platform.oauth2.request;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,16 +57,18 @@ public class AuthorizationRequest {
 
     public static final String STATE = "state";
 
-    public AuthorizationRequest(HttpServletRequest request) {
+    public AuthorizationRequest(HttpServletRequest request)
+            throws UnsupportedEncodingException {
         responseType = request.getParameter(RESPONSE_TYPE);
         clientId = request.getParameter(CLIENT_ID);
-        redirectUri = request.getParameter(REDIRECT_URI);
+        redirectUri = URLDecoder.decode(request.getParameter(REDIRECT_URI),
+                "UTF-8");
         scope = request.getParameter(SCOPE);
         state = request.getParameter(STATE);
         sessionId = request.getSession(true).getId();
 
         creationDate = new Date();
-        authorizationKey = RandomStringUtils.random(6);
+        authorizationKey = RandomStringUtils.random(6, true, false);
     }
 
     public String checkError() {
@@ -128,7 +132,7 @@ public class AuthorizationRequest {
 
     public String getAuthorizationCode() {
         if (isBlank(authorizationCode)) {
-            authorizationCode = RandomStringUtils.random(12);
+            authorizationCode = RandomStringUtils.random(10, true, true);
         }
         return authorizationCode;
     }
@@ -137,7 +141,8 @@ public class AuthorizationRequest {
         return authorizationKey;
     }
 
-    public static AuthorizationRequest from(HttpServletRequest request) {
+    public static AuthorizationRequest from(HttpServletRequest request)
+            throws UnsupportedEncodingException {
         String sessionId = request.getSession(true).getId();
         log.error("SessionId: " + sessionId);
         if (requests.containsKey(sessionId)) {
@@ -150,6 +155,16 @@ public class AuthorizationRequest {
         AuthorizationRequest authRequest = new AuthorizationRequest(request);
         requests.put(sessionId, authRequest);
         return authRequest;
+    }
+
+    public static AuthorizationRequest fromCode(String authorizationCode) {
+        for (AuthorizationRequest auth : requests.values()) {
+            if (auth.authorizationCode.equals(authorizationCode)) {
+                requests.remove(auth.sessionId);
+                return auth.isExpired() ? null : auth;
+            }
+        }
+        return null;
     }
 
     public void setUsername(String username) {

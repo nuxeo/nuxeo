@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.oauth2.tokens;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -37,9 +38,18 @@ public class NuxeoOAuth2Token {
 
     protected String accessToken;
 
+    protected String clientId;
+
     private String refreshToken;
 
     private Long expirationTimeMilliseconds;
+
+    public NuxeoOAuth2Token(long expirationTimeMilliseconds, String clientId) {
+        this(RandomStringUtils.random(32, true, true),
+                RandomStringUtils.random(64, true, true),
+                expirationTimeMilliseconds);
+        this.clientId = clientId;
+    }
 
     public NuxeoOAuth2Token(String accessToken, String refreshToken,
             Long expirationTimeMilliseconds) {
@@ -61,6 +71,7 @@ public class NuxeoOAuth2Token {
                 "expirationTimeMilliseconds");
         this.serviceName = (String) entry.getProperty(SCHEMA, "serviceName");
         this.nuxeoLogin = (String) entry.getProperty(SCHEMA, "nuxeoLogin");
+        this.clientId = (String) entry.getProperty(SCHEMA, "clientId");
     }
 
     public Map<String, Object> toMap() {
@@ -70,7 +81,17 @@ public class NuxeoOAuth2Token {
         map.put("accessToken", accessToken);
         map.put("refreshToken", refreshToken);
         map.put("expirationTimeMilliseconds", expirationTimeMilliseconds);
+        map.put("clientId", clientId);
         return map;
+    }
+
+    public Map<String, Object> toJsonObject() {
+        Map<String, Object> m = new HashMap<>();
+        m.put("access_token", accessToken);
+        m.put("refresh_token", refreshToken);
+        m.put("token_type", "bearer");
+        m.put("expires_in", 3600);
+        return m;
     }
 
     public void updateEntry(DocumentModel entry) throws ClientException {
@@ -80,6 +101,7 @@ public class NuxeoOAuth2Token {
         entry.setProperty(SCHEMA, "refreshToken", this.refreshToken);
         entry.setProperty(SCHEMA, "expirationTimeMilliseconds",
                 this.expirationTimeMilliseconds);
+        entry.setProperty(SCHEMA, "clientId", this.clientId);
     }
 
     public void setServiceName(String serviceName) {
@@ -122,4 +144,11 @@ public class NuxeoOAuth2Token {
         return serviceName;
     }
 
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
 }

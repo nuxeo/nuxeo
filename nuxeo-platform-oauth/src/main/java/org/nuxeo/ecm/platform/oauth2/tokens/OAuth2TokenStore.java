@@ -47,7 +47,10 @@ public class OAuth2TokenStore implements CredentialStore {
 
     @Override
     public void store(String userId, Credential credential) {
-        NuxeoOAuth2Token token = new NuxeoOAuth2Token(credential);
+        store(userId, new NuxeoOAuth2Token(credential));
+    }
+
+    public void store(String userId, NuxeoOAuth2Token token) {
         token.setServiceName(serviceName);
         token.setNuxeoLogin(userId);
         try {
