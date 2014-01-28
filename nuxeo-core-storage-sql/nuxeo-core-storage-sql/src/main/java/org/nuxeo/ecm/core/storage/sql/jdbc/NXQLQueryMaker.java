@@ -1621,9 +1621,9 @@ public class NXQLQueryMaker implements QueryMaker {
                     || op == Operator.IN || op == Operator.NOTIN
                     || op == Operator.LIKE || op == Operator.NOTLIKE
                     || op == Operator.ILIKE || op == Operator.NOTILIKE)) {
-                ColumnInfo info = getColumnInfo(name);
+                ColumnInfo info = name == null ? null : getColumnInfo(name);
                 // node.lvalue must not be accepted from now on
-                if (info.needsSubSelect) {
+                if (info != null && info.needsSubSelect) {
                     // use EXISTS with subselect clause
                     boolean direct = op == Operator.EQ || op == Operator.IN
                             || op == Operator.LIKE || op == Operator.ILIKE;
@@ -1640,13 +1640,15 @@ public class NXQLQueryMaker implements QueryMaker {
                     visitColumnExpression(info.column, directOp, rvalue, cast);
                     allowSubSelect = false;
                     generateExistsEnd(buf);
-                } else {
+                } else if (info != null) {
                     // boolean literals have to be translated according the
                     // database dialect
                     if (info.column.getType() == ColumnType.BOOLEAN) {
                         rvalue = getBooleanLiteral(rvalue);
                     }
                     visitColumnExpression(info.column, op, rvalue, cast);
+                } else {
+                    super.visitExpression(node);
                 }
             } else if (op == Operator.BETWEEN || op == Operator.NOTBETWEEN) {
                 LiteralList l = (LiteralList) rvalue;
@@ -2162,14 +2164,12 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitDoubleLiteral(DoubleLiteral node) {
-            buf.append('?');
-            whereParams.add(Double.valueOf(node.value));
+            buf.append(node.value);
         }
 
         @Override
         public void visitIntegerLiteral(IntegerLiteral node) {
-            buf.append('?');
-            whereParams.add(Long.valueOf(node.value));
+            buf.append(node.value);
         }
 
         @Override
