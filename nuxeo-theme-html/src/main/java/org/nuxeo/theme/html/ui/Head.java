@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.html.ui;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -28,6 +29,8 @@ import org.nuxeo.theme.formats.widgets.Widget;
 public class Head {
 
     private static final Log log = LogFactory.getLog(Head.class);
+
+    protected static Map<String, String> iconsMime = new HashMap<>();
 
     public static String render(Map<String, String> params) {
         StringBuilder sb = new StringBuilder();
@@ -51,8 +54,9 @@ public class Head {
 
             // Site icon
             String icon = properties.getProperty("icon", "/favicon.ico");
+            String mimeType = getMimeType(icon);
             sb.append(String.format(
-                    "<link rel=\"icon\" href=\"%s\" type=\"image/x-icon\"/>",
+                    "<link rel=\"icon\" href=\"%s\" type=\""+ mimeType +"\"/>",
                     icon));
 
             // If specified use a real .ico file for IE
@@ -72,6 +76,29 @@ public class Head {
         }
 
         return sb.toString();
+    }
+
+    protected static String getMimeType(String ico) {
+        // Use a map to cache mimetype for ico
+        if (!iconsMime.containsKey(ico)) {
+            iconsMime.put(ico, resolveMimeType(ico));
+        }
+        return iconsMime.get(ico);
+    }
+
+    protected static String resolveMimeType(String ico) {
+        int index = ico.lastIndexOf(".");
+        if (index > 0) {
+            // Handle only gif and png
+            String ext = ico.substring(1 + index);
+            switch (ext){
+                case "gif":
+                    return "image/gif";
+                case "png":
+                    return "image/png";
+            }
+        }
+        return "image/x-icon";
     }
 
 }
