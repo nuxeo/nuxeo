@@ -16,9 +16,12 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.ws.rs.core.Response;
 
@@ -31,8 +34,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.jaxrs.io.documents.ACPWriter;
-import org.nuxeo.ecm.restapi.test.BaseTest;
-import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -244,6 +245,36 @@ public class DocumentBrowsingTest extends BaseTest {
         // Then i get a the ACL
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
+    }
+
+    @Test
+    public void itCanModifyArrayTypes() throws Exception {
+        // Given a document
+        DocumentModel note = RestServerInit.getNote(0, session);
+        ClientResponse response = getResponse(RequestType.GET,
+                "id/" + note.getId());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // When i do a PUT request on the document with modified data
+        JSONDocumentNode jsonDoc = new JSONDocumentNode(
+                response.getEntityInputStream());
+        jsonDoc.setPropertyValue("dc:title", "New title");
+        jsonDoc.setPropertyArray("dc:contributors", "me", "you", "them",
+                "everybody");
+        response = getResponse(RequestType.PUT, "id/" + note.getId(),
+                jsonDoc.asJson());
+
+        // Then the document is updated
+        dispose(session);
+        note = RestServerInit.getNote(0, session);
+        assertEquals("New title", note.getTitle());
+
+        List<String> contributors = Arrays.asList((String[]) note.getPropertyValue("dc:contributors"));
+        assertTrue(contributors.contains("me"));
+        assertTrue(contributors.contains("you"));
+        assertTrue(contributors.contains("them"));
+        assertTrue(contributors.contains("everybody"));
+        assertEquals(5, contributors.size());
     }
 
 }
