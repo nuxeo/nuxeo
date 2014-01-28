@@ -784,6 +784,21 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertTrue(dml.totalSize() < 0);
     }
 
+    @Test
+    public void testQueryConstantsLeft() throws Exception {
+        String sql;
+        DocumentModelList dml;
+        createDocs();
+
+        sql = "SELECT * FROM Document WHERE 1 = 0";
+        dml = session.query(sql);
+        assertEquals(0, dml.totalSize());
+
+        sql = "SELECT * FROM Document WHERE 0 = 0";
+        dml = session.query(sql);
+        assertEquals(7, dml.totalSize());
+    }
+
     // from TestSQLWithPath
     @Test
     public void testEcmPathEqual() throws Exception {
