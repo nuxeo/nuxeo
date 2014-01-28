@@ -5,7 +5,8 @@ Bundle-ClassPath: .
 Bundle-Version: 5.8
 Bundle-Name: org.nuxeo.segmentio.connector
 Nuxeo-Component: OSGI-INF/extensions/org.nuxeo.segment.io.SegmentIOCom
- ponent.xml
+ ponent.xml,
+ OSGI-INF/listeners-contrib.xml
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.segmentio.connector
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

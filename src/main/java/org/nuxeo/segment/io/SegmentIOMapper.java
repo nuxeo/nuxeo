@@ -37,6 +37,7 @@ public class SegmentIOMapper {
     @XNode("groovy")
     String groovyMapping;
 
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SegmentIOMapper) {
@@ -45,9 +46,13 @@ public class SegmentIOMapper {
         return super.equals(obj);
     }
 
-    public Map<String, Object> getMappedData(Map<String, Object> context) {
+    public boolean isIdentify() {
+        return "identify".equalsIgnoreCase(target);
+    }
 
-        Map<String, Object> mapping = new HashMap<String, Object>();
+    public Map<String, String> getMappedData(Map<String, Object> context) {
+
+        Map<String, String> mapping = new HashMap<String, String>();
 
         context.put("mapping", mapping);
 
@@ -60,10 +65,19 @@ public class SegmentIOMapper {
             GroovyClassLoader loader = new GroovyClassLoader(this.getClass().getClassLoader());
             Class<?> klass = loader.parseClass(groovyMapping);
             Script script = InvokerHelper.createScript(klass, binding);
-             script.run();
+            script.run();
         } else {
             // WTF !
         }
         return mapping;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
 }

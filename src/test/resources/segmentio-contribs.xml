@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.segment.io.SegmentIOComponent.testContribs">
+
+  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
+    point="config">
+    <segmentio>
+      <writeKey>TestKey</writeKey>
+    </segmentio>
+  </extension>
+
+  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
+    point="mapper">
+
+    <mapper name="testIdentify" targetAPI="Identify">
+      <events>
+         <event>loginSuccess</event>
+      </events>
+      <groovy>
+      mapping.put("plugin", eventContext.getProperty("AuthenticationPlugin"));
+      mapping.put("company", principal.getCompany());
+      </groovy>
+    </mapper>
+
+    <mapper name="testTrac" >
+      <events>
+         <event>documentCreated</event>
+      </events>
+      <groovy>
+      mapping.put("title", doc.getTitle());
+      </groovy>
+    </mapper>
+
+  </extension>
+
+</component>

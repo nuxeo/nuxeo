@@ -19,6 +19,7 @@ package org.nuxeo.segment.io;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,6 +51,8 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     protected Map<String, List<SegmentIOMapper>> event2Mappers;
 
+    protected List<Map<String, Object>> testData = new LinkedList<>();
+
     protected SegmentIOConfig config;
 
     protected Bundle bundle;
@@ -60,13 +63,14 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     @Override
     public void activate(ComponentContext context) {
-        this.bundle = context.getRuntimeContext().getBundle();
+        bundle = context.getRuntimeContext().getBundle();
+        mappers = new HashMap<>();
     }
 
     @Override
     public void deactivate(ComponentContext context) {
         flush();
-        this.bundle = null;
+        bundle = null;
     }
 
     @Override
@@ -76,7 +80,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         if (CONFIG_EP.equalsIgnoreCase(extensionPoint)) {
             config = (SegmentIOConfig) contribution;
         }
-        else if (CONFIG_EP.equalsIgnoreCase(extensionPoint)) {
+        else if (MAPPER_EP.equalsIgnoreCase(extensionPoint)) {
             SegmentIOMapper mapper = (SegmentIOMapper) contribution;
             mappers.put(mapper.name, mapper);
         }
@@ -128,7 +132,32 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         if (metadata!=null) {
             traits.putAll(metadata);
         }
-        Analytics.identify(userId, traits);
+
+
+
+        if (Framework.isTestModeSet()) {
+            pushForTest("identify", principal, null, metadata);
+        } else {
+            Analytics.identify(userId, traits);
+        }
+
+    }
+
+    protected void pushForTest(String action, NuxeoPrincipal principal, String eventName,  Map<String, String> metadata) {
+        Map<String, Object> data = new HashMap<>();
+        if (metadata!=null) {
+            data.putAll(metadata);
+        }
+        data.put("action", action);
+        if(eventName !=null) {
+            data.put("eventName", eventName);
+        }
+        data.put("principal", principal);
+        testData.add(data);
+    }
+
+    public List<Map<String, Object>> getTestData() {
+        return testData;
     }
 
     public void track(NuxeoPrincipal principal, String eventName) {
@@ -140,13 +169,19 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         String userId = principal.getPrincipalId();
 
         EventProperties eventProperties = new EventProperties();
-        eventProperties.put("email", principal.getEmail());
-        eventProperties.put("firstName", principal.getFirstName());
-        eventProperties.put("lastName", principal.getLastName());
-        eventProperties.put("email", principal.getEmail());
+        metadata.put("email", principal.getEmail());
+        metadata.put("firstName", principal.getFirstName());
+        metadata.put("lastName", principal.getLastName());
+        metadata.put("email", principal.getEmail());
 
         eventProperties.putAll(metadata);
-        Analytics.track(userId, eventName, eventProperties);
+
+        if (Framework.isTestModeSet()) {
+            pushForTest("track", principal, eventName, metadata);
+        } else {
+            Analytics.track(userId, eventName, eventProperties);
+        }
+
     }
 
     public void flush() {
@@ -167,4 +202,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return event2Mappers.keySet();
     }
 
+    public Map<String, List<SegmentIOMapper>> getAllMappers() {
+        return event2Mappers;
+    }
 }
