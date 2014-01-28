@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
 /**
@@ -52,6 +53,22 @@ public class JSONDocumentNode {
     public void setPropertyValue(String key, String value) {
         ObjectNode on = (ObjectNode) node.findValue("properties");
         on.put(key, value);
+        node.put("properties", on);
+    }
+
+    /**
+     * Put a json array a a property.
+     * @param key
+     * @param values
+     *
+     * @since 5.9.2
+     */
+    public void setPropertyArray(String key, String... values) {
+        ObjectNode on = (ObjectNode) node.findValue("properties");
+        ArrayNode array = on.putArray(key);
+        for(String value : values) {
+            array.add(value);
+        }
         node.put("properties", on);
     }
 
