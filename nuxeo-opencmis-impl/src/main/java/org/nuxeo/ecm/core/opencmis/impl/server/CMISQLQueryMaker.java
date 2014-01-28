@@ -317,6 +317,35 @@ public class CMISQLQueryMaker implements QueryMaker {
             String qual = canonicalQualifier.get(alias);
             Table qualHierTable = getTable(hierTable, qual);
 
+            // determine relevant primary types
+
+            List<String> types = new ArrayList<String>();
+            TypeDefinition td = query.getTypeDefinitionFromQueryName(typeQueryName);
+            if (td.getParentTypeId() != null) {
+                // don't add abstract root types
+                types.add(td.getId());
+            }
+            LinkedList<TypeDefinitionContainer> typesTodo = new LinkedList<TypeDefinitionContainer>();
+            typesTodo.addAll(typeManager.getTypeDescendants(td.getId(), -1,
+                    Boolean.TRUE));
+            // recurse to get all subtypes
+            TypeDefinitionContainer tc;
+            while ((tc = typesTodo.poll()) != null) {
+                types.add(tc.getTypeDefinition().getId());
+                typesTodo.addAll(tc.getChildren());
+            }
+            if (types.isEmpty()) {
+                // shoudn't happen
+                types = Collections.singletonList("__NOSUCHTYPE__");
+            }
+            StringBuilder qms = new StringBuilder();
+            for (int i = 0; i < types.size(); i++) {
+                if (i != 0) {
+                    qms.append(", ");
+                }
+                qms.append("?");
+            }
+
             // table this join is about
             Table table;
             if (firstTable) {
@@ -357,12 +386,27 @@ public class CMISQLQueryMaker implements QueryMaker {
             }
             from.append(name);
 
-            if (!firstTable) {
+            String primaryTypeClause = String.format(
+                    "%s IN (%s)",
+                    qualHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
+                    qms);
+            if (firstTable) {
+                whereClauses.add(primaryTypeClause);
+                whereParams.addAll(types);
+            } else {
                 // emit actual join requested
-                from.append(" ON ");
+                from.append(" ON (");
                 from.append(((Column) join.onLeft.getInfo()).getFullQuotedName());
                 from.append(" = ");
                 from.append(((Column) join.onRight.getInfo()).getFullQuotedName());
+                if (isRelation) {
+                    from.append(")");
+                } else {
+                    from.append(" AND ");
+                    from.append(primaryTypeClause);
+                    from.append(")");
+                    fromParams.addAll(types);
+                }
             }
 
             // join other fragments for qualifier
@@ -383,46 +427,19 @@ public class CMISQLQueryMaker implements QueryMaker {
                 }
                 from.append(" LEFT JOIN ");
                 from.append(n);
-                from.append(" ON ");
+                from.append(" ON (");
                 from.append(t.getColumn(Model.MAIN_KEY).getFullQuotedName());
                 from.append(" = ");
                 from.append(tableMainId);
-            }
-
-            // restrict to relevant primary types
-
-            List<String> types = new ArrayList<String>();
-            TypeDefinition td = query.getTypeDefinitionFromQueryName(typeQueryName);
-            if (td.getParentTypeId() != null) {
-                // don't add abstract root types
-                types.add(td.getId());
-            }
-            LinkedList<TypeDefinitionContainer> typesTodo = new LinkedList<TypeDefinitionContainer>();
-            typesTodo.addAll(typeManager.getTypeDescendants(td.getId(), -1,
-                    Boolean.TRUE));
-            // recurse to get all subtypes
-            TypeDefinitionContainer tc;
-            while ((tc = typesTodo.poll()) != null) {
-                types.add(tc.getTypeDefinition().getId());
-                typesTodo.addAll(tc.getChildren());
-            }
-            if (types.isEmpty()) {
-                // shoudn't happen
-                types = Collections.singletonList("__NOSUCHTYPE__");
-            }
-            StringBuilder qms = new StringBuilder();
-            for (int i = 0; i < types.size(); i++) {
-                if (i != 0) {
-                    qms.append(", ");
+                if (t.getKey().equals(Model.HIER_TABLE_NAME)) {
+                    from.append(" AND ");
+                    from.append(primaryTypeClause);
+                    from.append(")");
+                    fromParams.addAll(types);
+                } else {
+                    from.append(")");
                 }
-                qms.append("?");
             }
-
-            whereClauses.add(String.format(
-                    "%s IN (%s)",
-                    qualHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
-                    qms));
-            whereParams.addAll(types);
 
             // lifecycle not deleted filter
 
@@ -431,8 +448,9 @@ public class CMISQLQueryMaker implements QueryMaker {
                 Column lscol = getTable(
                         database.getTable(propertyInfo.fragmentName), qual).getColumn(
                         propertyInfo.fragmentKey);
-                whereClauses.add(String.format("%s <> ?",
-                        lscol.getFullQuotedName()));
+                String lscolName = lscol.getFullQuotedName();
+                whereClauses.add(String.format("(%s <> ? OR %s IS NULL)",
+                        lscolName, lscolName));
                 whereParams.add(LifeCycleConstants.DELETED_STATE);
             }
 
@@ -443,9 +461,9 @@ public class CMISQLQueryMaker implements QueryMaker {
                 // add islatestversion = true
                 Table ver = getTable(
                         database.getTable(model.VERSION_TABLE_NAME), qual);
-                Column latestver = ver.getColumn(model.VERSION_IS_LATEST_KEY);
-                whereClauses.add(String.format("%s = ?",
-                        latestver.getFullQuotedName()));
+                Column latestvercol = ver.getColumn(model.VERSION_IS_LATEST_KEY);
+                String latestvercolName = latestvercol.getFullQuotedName();
+                whereClauses.add(String.format("(%s = ?)", latestvercolName));
                 whereParams.add(Boolean.TRUE);
             }
 
@@ -484,12 +502,23 @@ public class CMISQLQueryMaker implements QueryMaker {
                         readAclIdCol = al + '.' + model.HIER_READ_ACL_ID;
                         readAclAclIdCol = al + '.' + model.HIER_READ_ACL_ACL_ID;
                     }
-                    whereClauses.add(dialect.getReadAclsCheckSql(readAclAclIdCol));
-                    whereParams.add(principals);
-                    from.append(String.format(" JOIN %s ON %s = %s",
-                            readAclTable, tableMainId, readAclIdCol));
+                    if (!firstTable) {
+                        from.append(" LEFT");
+                    }
+                    from.append(String.format(" JOIN %s ON (%s = %s AND %s)",
+                            readAclTable, tableMainId, readAclIdCol,
+                            dialect.getReadAclsCheckSql(readAclAclIdCol)));
+                    fromParams.add(principals);
                 } else {
-                    whereClauses.add(dialect.getSecurityCheckSql(tableMainId));
+                    StringBuilder clause = new StringBuilder();
+                    clause.append("(");
+                    clause.append(dialect.getSecurityCheckSql(tableMainId));
+                    if (!firstTable) {
+                        clause.append(String.format(" OR %s IS NULL",
+                                tableMainId));
+                    }
+                    clause.append(")");
+                    whereClauses.add(clause.toString());
                     whereParams.add(principals);
                     whereParams.add(permissions);
                 }

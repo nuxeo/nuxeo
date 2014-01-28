@@ -1160,7 +1160,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(4, res.getNumItems().intValue());
         statement = "SELECT * FROM cmis:folder";
         res = query(statement);
-        assertEquals(4, res.getNumItems().intValue());
+        assertEquals(5, res.getNumItems().intValue()); // root too
 
         statement = "SELECT cmis:objectId, dc:description" //
                 + " FROM File" //
@@ -2116,22 +2116,43 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
                 + " WHERE B.dc:subjects IS NULL";
         ObjectList res = query(statement);
-        assertEquals(2, res.getNumItems().intValue());
+        assertEquals(3, res.getNumItems().intValue());
     }
 
     @Test
     public void testQueryJoinWithSecurity() throws Exception {
         nuxeotc.closeSession();
         nuxeotc.session = nuxeotc.openSessionAs("bob");
+        // only testfile1 and testfile2 are accessible by bob
         init();
 
-        String statement = "SELECT A.cmis:objectId, A.dc:title, B.cmis:objectId, B.dc:title" //
+        String statement;
+        ObjectList res;
+
+        statement = "SELECT A.cmis:objectId, A.dc:title, B.cmis:objectId, B.dc:title" //
                 + " FROM cmis:folder A" //
                 + " JOIN cmis:folder B ON A.cmis:objectId = B.cmis:parentId" //
                 + " WHERE A.cmis:name = 'testfolder2_Title'" //
                 + " ORDER BY B.dc:title";
-        ObjectList res = query(statement);
+        res = query(statement);
         assertEquals(0, res.getNumItems().intValue());
+
+        statement = "SELECT A.cmis:objectId, B.cmis:objectId" //
+                + " FROM cmis:document A" //
+                + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
+                + " WHERE B.cmis:name NOT IN ('testfile3_Title', 'testfile4_Title')";
+        res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
+
+        statement = "SELECT A.cmis:objectId, A.cmis:name, B.filename, C.note" //
+                + " FROM cmis:document A" //
+                + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
+                + " LEFT JOIN Note C ON A.cmis:objectId = C.cmis:objectId" //
+                + " WHERE ANY A.nuxeo:secondaryObjectTypeIds NOT IN ('Foo')" //
+                + "   AND (A.cmis:objectTypeId NOT IN ('File')" //
+                + "     OR B.cmis:name NOT IN ('testfile3_Title', 'testfile4_Title'))";
+        res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
     }
 
     @Test
@@ -2141,7 +2162,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + " JOIN cmis:folder B ON A.cmis:objectId = B.cmis:parentId" //
                 + " WHERE ANY A.nuxeo:secondaryObjectTypeIds NOT IN ('Foo')";
         ObjectList res = query(statement);
-        assertEquals(2, res.getNumItems().intValue());
+        assertEquals(4, res.getNumItems().intValue()); // root too
     }
 
     @Test
@@ -2156,6 +2177,30 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         ObjectData data = res.getObjects().get(0);
         assertNotNull(getQueryValue(data, "A.nuxeo:contentStreamDigest"));
         assertEquals("/testfolder1", getQueryValue(data, "B.cmis:path"));
+    }
+
+    @Test
+    public void testQueryJoinWithMultipleTypes() throws Exception {
+        String statement = "SELECT A.cmis:objectId, A.cmis:name, B.filename, C.note" //
+                + " FROM cmis:document A" //
+                + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
+                + " LEFT JOIN Note C ON A.cmis:objectId = C.cmis:objectId" //
+                + " WHERE ANY A.nuxeo:secondaryObjectTypeIds NOT IN ('Foo')" //
+                + "   AND (A.cmis:objectTypeId NOT IN ('File')" //
+                + "     OR B.cmis:name NOT IN ('testfile3_Title', 'testfile4_Title'))";
+        ObjectList res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+    }
+
+    @Test
+    public void testQueryJoinWithMultipleTypes2() throws Exception {
+        String statement = "SELECT A.cmis:objectId, B.cmis:objectId, C.cmis:objectId" //
+                + " FROM cmis:document A" //
+                + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
+                + " LEFT JOIN Note C ON A.cmis:objectId = C.cmis:objectId" //
+                + " WHERE B.cmis:name NOT IN ('testfile3_Title', 'testfile4_Title')";
+        ObjectList res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
     }
 
     @Test
