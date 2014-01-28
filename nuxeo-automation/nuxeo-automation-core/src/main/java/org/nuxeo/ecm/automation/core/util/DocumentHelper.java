@@ -63,9 +63,9 @@ public class DocumentHelper {
 
     /**
      * Removes a property from a document given the xpath. If the xpath points
-     * to a list property the list will be cleared. If the path points to a
-     * blob in a list the property is removed from the list. Otherwise the
-     * xpath should point to a non list property that will be removed.
+     * to a list property the list will be cleared. If the path points to a blob
+     * in a list the property is removed from the list. Otherwise the xpath
+     * should point to a non list property that will be removed.
      */
     public static void removeProperty(DocumentModel doc, String xpath)
             throws ClientException {
@@ -112,7 +112,7 @@ public class DocumentHelper {
     }
 
     public static void setProperties(CoreSession session, DocumentModel doc,
-                                     Properties properties) throws ClientException, IOException  {
+            Properties properties) throws ClientException, IOException {
         if (properties instanceof DataModelProperties) {
             DataModelProperties dataModelProperties = (DataModelProperties) properties;
             for (Map.Entry<String, Serializable> entry : dataModelProperties.getMap().entrySet()) {
@@ -145,7 +145,7 @@ public class DocumentHelper {
     }
 
     public static void setProperty(CoreSession session, DocumentModel doc,
-            String key, String value) throws ClientException, IOException  {
+            String key, String value) throws ClientException, IOException {
         if ("ecm:acl".equals(key)) {
             setLocalAcl(session, doc, value);
         }
@@ -157,17 +157,19 @@ public class DocumentHelper {
         Type type = p.getField().getType();
         if (!type.isSimpleType()) {
             if (type.isListType()) {
-                ListType ltype = (ListType)type;
+                ListType ltype = (ListType) type;
                 if (ltype.isScalarList()) {
-                    p.setValue(readStringList(value, (SimpleType)ltype.getFieldType()));
+                    p.setValue(readStringList(value,
+                            (SimpleType) ltype.getFieldType()));
                     return;
                 } else if (ltype.getFieldType().isComplexType()) {
                     Object val = ComplexTypeJSONDecoder.decodeList(ltype, value);
                     p.setValue(val);
                     return;
                 }
-            } else if (type.isComplexType()){
-                Object val = ComplexTypeJSONDecoder.decode((ComplexType) type, value);
+            } else if (type.isComplexType()) {
+                Object val = ComplexTypeJSONDecoder.decode((ComplexType) type,
+                        value);
                 p.setValue(val);
                 return;
             }
@@ -195,8 +197,11 @@ public class DocumentHelper {
     }
 
     /**
-     * Read an encoded string list as a comma separated list. To use comma inside list element values you need to escape them using '\'.
-     * If the given type is different from {@link StringType#ID} then array elements will be converted to the actual type.
+     * Read an encoded string list as a comma separated list. To use comma
+     * inside list element values you need to escape them using '\'. If the
+     * given type is different from {@link StringType#ID} then array elements
+     * will be converted to the actual type.
+     *
      * @param value
      * @param type
      * @return
@@ -210,46 +215,50 @@ public class DocumentHelper {
             return ar;
         } else if (DateType.INSTANCE == type) {
             Calendar[] r = new Calendar[ar.length];
-            for (int i=0; i<r.length; i++) {
-                r[i] = (Calendar)type.decode(ar[i]);
+            for (int i = 0; i < r.length; i++) {
+                r[i] = (Calendar) type.decode(ar[i]);
             }
             return r;
         } else if (LongType.INSTANCE == type) {
             Long[] r = new Long[ar.length];
-            for (int i=0; i<r.length; i++) {
-                r[i] = (Long)type.decode(ar[i]);
+            for (int i = 0; i < r.length; i++) {
+                r[i] = (Long) type.decode(ar[i]);
             }
             return r;
         } else if (IntegerType.INSTANCE == type) {
             Integer[] r = new Integer[ar.length];
-            for (int i=0; i<r.length; i++) {
-                r[i] = (Integer)type.decode(ar[i]);
+            for (int i = 0; i < r.length; i++) {
+                r[i] = (Integer) type.decode(ar[i]);
             }
             return r;
         } else if (DoubleType.INSTANCE == type) {
             Double[] r = new Double[ar.length];
-            for (int i=0; i<r.length; i++) {
-                r[i] = (Double)type.decode(ar[i]);
+            for (int i = 0; i < r.length; i++) {
+                r[i] = (Double) type.decode(ar[i]);
             }
             return r;
         } else if (BooleanType.INSTANCE == type) {
             Boolean[] r = new Boolean[ar.length];
-            for (int i=0; i<r.length; i++) {
-                r[i] = (Boolean)type.decode(ar[i]);
+            for (int i = 0; i < r.length; i++) {
+                r[i] = (Boolean) type.decode(ar[i]);
             }
             return r;
         } else if (BinaryType.INSTANCE == type) {
             InputStream[] r = new InputStream[ar.length];
-            for (int i=0; i<r.length; i++) {
-                r[i] = (InputStream)type.decode(ar[i]);
+            for (int i = 0; i < r.length; i++) {
+                r[i] = (InputStream) type.decode(ar[i]);
             }
             return r;
         }
-        throw new IllegalArgumentException("Unsupported type when updating document properties from string representation: "+type);
+        throw new IllegalArgumentException(
+                "Unsupported type when updating document properties from string representation: "
+                        + type);
     }
 
     /**
-     * Read an encoded string list as a comma separated list. To use comma inside list element values you need to escape them using '\'.
+     * Read an encoded string list as a comma separated list. To use comma
+     * inside list element values you need to escape them using '\'.
+     *
      * @param value
      * @return
      */
@@ -264,7 +273,7 @@ public class DocumentHelper {
         char[] chars = value.toCharArray();
         StringBuilder buf = new StringBuilder();
         boolean esc = false;
-        for (int i=0; i<chars.length; i++) {
+        for (int i = 0; i < chars.length; i++) {
             char c = chars[i];
             if (c == '\\') {
                 if (esc) {
@@ -288,6 +297,5 @@ public class DocumentHelper {
         result.add(buf.toString());
         return result.toArray(new String[result.size()]);
     }
-
 
 }
