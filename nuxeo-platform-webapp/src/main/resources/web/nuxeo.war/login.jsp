@@ -74,6 +74,7 @@ if (selectedLanguage != null) { %>
 <head>
 <title><%=productName%></title>
 <link rel="icon" type="image/png" href="<%=context%>/icons/favicon.png" />
+<link rel="shortcut icon" type="image/x-icon" href="<%=context%>/icons/favicon.ico" />
 <script type="text/javascript" src="<%=context%>/scripts/detect_timezone.js"></script>
 <script type="text/javascript" src="<%=context%>/scripts/nxtimezone.js"></script>
 <script type="text/javascript">
