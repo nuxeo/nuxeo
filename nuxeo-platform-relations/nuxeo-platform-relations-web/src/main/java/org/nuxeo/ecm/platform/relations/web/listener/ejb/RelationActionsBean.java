@@ -386,6 +386,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
                     resourcesAccessor.getMessages().get(
                             "label.relation.already.exists"));
         }
+        resetStatements();
         return null;
     }
 
@@ -414,6 +415,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean
                 stmtInfo.getStatement());
         facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get("label.relation.deleted"));
+        resetStatements();
         return null;
     }
 
