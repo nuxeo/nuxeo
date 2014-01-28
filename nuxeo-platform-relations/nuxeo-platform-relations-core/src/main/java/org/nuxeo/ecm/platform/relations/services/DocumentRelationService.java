@@ -259,28 +259,43 @@ public class DocumentRelationService implements DocumentRelationManager {
 
         // notifications
         Map<String, Serializable> options = new HashMap<String, Serializable>();
-        // will throw a cast exception if bad statement is passed
-        DocumentModel source = (DocumentModel) getRelationManager().getResourceRepresentation(
-                RelationConstants.DOCUMENT_NAMESPACE,
-                (QNameResource) stmt.getObject(), null);
-        String currentLifeCycleState = source.getCurrentLifeCycleState();
-        options.put(CoreEventConstants.DOC_LIFE_CYCLE, currentLifeCycleState);
-        options.put(RelationEvents.GRAPH_NAME_EVENT_KEY,
-                RelationConstants.GRAPH_NAME);
-        if (includeStatementsInEvents) {
-            putStatements(options, stmt);
+
+        // Find relative document
+        DocumentModel eventDocument = null;
+        if (stmt.getSubject() instanceof QNameResource) {
+            eventDocument = (DocumentModel) getRelationManager().getResourceRepresentation(
+                    RelationConstants.DOCUMENT_NAMESPACE,
+                    (QNameResource) stmt.getSubject(), null);
+        } else if (stmt.getObject() instanceof QNameResource) {
+            eventDocument = (DocumentModel) getRelationManager().getResourceRepresentation(
+                    RelationConstants.DOCUMENT_NAMESPACE,
+                    (QNameResource) stmt.getObject(), null);
         }
 
-        // before notification
-        notifyEvent(RelationEvents.BEFORE_RELATION_REMOVAL, source, options,
-                null, session);
+        // Complete event info and send first event
+        if (eventDocument != null) {
+            String currentLifeCycleState = eventDocument.getCurrentLifeCycleState();
+            options.put(CoreEventConstants.DOC_LIFE_CYCLE,
+                    currentLifeCycleState);
+            options.put(RelationEvents.GRAPH_NAME_EVENT_KEY,
+                    RelationConstants.GRAPH_NAME);
+            if (includeStatementsInEvents) {
+                putStatements(options, stmt);
+            }
+
+            // before notification
+            notifyEvent(RelationEvents.BEFORE_RELATION_REMOVAL, eventDocument,
+                    options, null, session);
+        }
 
         // remove statement
         getRelationManager().getGraphByName(RelationConstants.GRAPH_NAME).remove(
                 stmt);
 
-        // after notification
-        notifyEvent(RelationEvents.AFTER_RELATION_REMOVAL, source, options,
-                null, session);
+        if (eventDocument != null) {
+            // after notification
+            notifyEvent(RelationEvents.AFTER_RELATION_REMOVAL, eventDocument,
+                    options, null, session);
+        }
     }
 }
