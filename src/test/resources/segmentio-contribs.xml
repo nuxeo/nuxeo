@@ -15,19 +15,19 @@
       <events>
          <event>loginSuccess</event>
       </events>
-      <groovy>
-      mapping.put("plugin", eventContext.getProperty("AuthenticationPlugin"));
-      mapping.put("company", principal.getCompany());
-      </groovy>
+      <parameters>
+        <parameter name="plugin">eventContext.getProperty("AuthenticationPlugin")</parameter>
+        <parameter name="company">principal.getCompany()</parameter>
+      </parameters>
     </mapper>
 
     <mapper name="testTrac" >
       <events>
          <event>documentCreated</event>
       </events>
-      <groovy>
-      mapping.put("title", doc.getTitle());
-      </groovy>
+      <parameters>
+        <parameter name="title">doc.getTitle()</parameter>
+      </parameters>
     </mapper>
 
   </extension>

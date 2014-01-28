@@ -84,7 +84,6 @@ public class TestSegmentIOService {
         Assert.assertTrue(testData.size()>0);
 
         Map<String, Object> data = testData.remove(0);
-
         Assert.assertEquals("identify", data.get("action"));
         Assert.assertEquals("FakeAuth", data.get("plugin"));
     }
