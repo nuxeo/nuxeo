@@ -157,8 +157,8 @@ public class NXQLQueryBuilder {
             throws ClientException {
         String sortedColumn;
         if (sortInfos == null || sortInfos.length == 0) {
-            // If there is no sortInfos just use a constant
-            sortedColumn = "1";
+            // If there is no ORDER BY use the id
+            sortedColumn = NXQL.ECM_UUID;
         } else {
             sortedColumn = sortInfos[0].getSortColumn();
         }
