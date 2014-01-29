@@ -274,6 +274,21 @@ public abstract class AbstractTest {
         profile.setPreference("extensions.ui.dictionary.hidden", true);
         profile.setPreference("layout.spellcheckDefault", 0);
 
+        // webdriver logging
+        if (Boolean.TRUE.equals(Boolean.valueOf(System.getenv("nuxeo.log.webriver")))) {
+            String location = System.getProperty("basedir") + File.separator
+                    + "target";
+            File outputFolder = new File(location);
+            if (!outputFolder.exists() || !outputFolder.isDirectory()) {
+                outputFolder = null;
+            }
+            File webdriverlogFile = File.createTempFile("webdriver", ".log",
+                    outputFolder);
+            profile.setPreference("webdriver.log.file",
+                    webdriverlogFile.getAbsolutePath());
+            log.warn("Webdriver logs saved in " + webdriverlogFile);
+        }
+
         addFireBug(profile);
         Proxy proxy = startProxy();
         if (proxy != null) {
