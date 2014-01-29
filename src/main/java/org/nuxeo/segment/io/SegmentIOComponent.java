@@ -18,6 +18,7 @@
 package org.nuxeo.segment.io;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     protected Map<String, SegmentIOMapper> mappers;
 
-    protected Map<String, List<SegmentIOMapper>> event2Mappers;
+    protected Map<String, List<SegmentIOMapper>> event2Mappers = new HashMap<>();
 
     protected List<Map<String, Object>> testData = new LinkedList<>();
 
@@ -88,7 +89,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
-        Analytics.initialize(getKey());
+        Analytics.initialize(getWriteKey());
         computeEvent2Mappers();
     }
 
@@ -109,7 +110,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     }
 
-    protected String getKey() {
+    public String getWriteKey() {
         if (config!=null) {
             return config.writeKey;
         }
@@ -128,7 +129,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         traits.put("email", principal.getEmail());
         traits.put("firstName", principal.getFirstName());
         traits.put("lastName", principal.getLastName());
-        traits.put("email", principal.getEmail());
+
         if (metadata!=null) {
             traits.putAll(metadata);
         }
@@ -172,7 +173,6 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         metadata.put("email", principal.getEmail());
         metadata.put("firstName", principal.getFirstName());
         metadata.put("lastName", principal.getLastName());
-        metadata.put("email", principal.getEmail());
 
         eventProperties.putAll(metadata);
 

@@ -26,9 +26,13 @@ Build :
 
     mvn clean install
 
-Install
+Install bundle
 
     cp target/nuxeo-segmentio-connector-5.8.jar  $NX_TOMCAT/nxserver/plugins/.
+
+Install lib
+
+    cp ~/.m2/repository/com/github/segmentio/analytics/0.3.1/analytics-0.3.1.jar  $NX_TOMCAT/nxserver/lib/.
 
 ### About mapping
 

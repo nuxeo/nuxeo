@@ -74,8 +74,6 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
                 }
 
             }
-
-
         }
     }
 
