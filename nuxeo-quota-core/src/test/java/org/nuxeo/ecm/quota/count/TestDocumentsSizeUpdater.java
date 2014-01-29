@@ -40,15 +40,19 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.TestRepositoryHandler;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.ecm.quota.size.QuotaAware;
@@ -83,7 +87,13 @@ public class TestDocumentsSizeUpdater {
     protected CoreSession session;
 
     @Inject
+    RepositorySettings settings;
+
+    @Inject
     protected EventService eventService;
+
+    @Inject
+    protected UserWorkspaceService uwm;
 
     protected DocumentRef wsRef;
 
@@ -107,7 +117,6 @@ public class TestDocumentsSizeUpdater {
     public void cleanupSessionAssociationBeforeTest() throws Exception {
         isr = new IsolatedSessionRunner(session, eventService);
     }
-
 
     @Test
     public void testQuotaOnAddContent() throws Exception {
@@ -166,7 +175,6 @@ public class TestDocumentsSizeUpdater {
         });
 
     }
-
 
     @Test
     public void testQuotaInitialCheckIn() throws Exception {
@@ -404,7 +412,7 @@ public class TestDocumentsSizeUpdater {
 
     @Test
     public void testQuotaOnMoveContent() throws Exception {
-        //Given some content
+        // Given some content
         addContent();
 
         isr.run(new RunnableWithException() {
@@ -415,11 +423,10 @@ public class TestDocumentsSizeUpdater {
             }
         });
 
-        //When i Move the content
+        // When i Move the content
         doMoveContent();
 
-
-        //Then the quota ore computed accordingly
+        // Then the quota ore computed accordingly
         isr.run(new RunnableWithException() {
 
             @Override
@@ -1174,6 +1181,118 @@ public class TestDocumentsSizeUpdater {
 
     }
 
+    @Test
+    public void testAllowSettingMaxQuotaOnUserWorkspace() throws Exception {
+        addContent();
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                TestRepositoryHandler handler = settings.getRepositoryHandler();
+                CoreSession userSession = handler.openSessionAs("toto");
+                try {
+                    DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(
+                            userSession, null);
+                    assertNotNull(uw);
+
+                } finally {
+                    handler.releaseSession(userSession);
+                }
+
+                userSession = handler.openSessionAs("titi");
+                try {
+                    DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(
+                            userSession, null);
+                    assertNotNull(uw);
+
+                } finally {
+                    handler.releaseSession(userSession);
+                }
+                quotaStatsService.activateQuotaOnUserWorkspaces(300L, session);
+                quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(300L,
+                        session.getRootDocument(), session);
+            }
+        });
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                DocumentModel totoUW = uwm.getUserPersonalWorkspace("toto",
+                        session.getDocument(new PathRef("/default-domain/")));
+                QuotaAware totoUWQuota = totoUW.getAdapter(QuotaAware.class);
+                assertEquals(300L, totoUWQuota.getMaxQuota());
+                DocumentModel titiUW = uwm.getUserPersonalWorkspace("titi",
+                        session.getDocument(new PathRef("/default-domain/")));
+                QuotaAware titiUWQuota = titiUW.getAdapter(QuotaAware.class);
+                assertEquals(300L, titiUWQuota.getMaxQuota());
+
+                // create content in the 2 user workspaces
+                DocumentModel firstFile = session.createDocumentModel(
+                        totoUW.getPathAsString(), "file1", "File");
+                firstFile.setPropertyValue("file:content",
+                        (Serializable) getFakeBlob(200));
+                firstFile = session.createDocument(firstFile);
+                firstFile = session.saveDocument(firstFile);
+
+                DocumentModel secondFile = session.createDocumentModel(
+                        titiUW.getPathAsString(), "file2", "File");
+                secondFile.setPropertyValue("file:content",
+                        (Serializable) getFakeBlob(200));
+                secondFile = session.createDocument(secondFile);
+                secondFile = session.saveDocument(secondFile);
+
+            }
+        });
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+
+                DocumentModel totoUW = uwm.getUserPersonalWorkspace("toto",
+                        session.getDocument(new PathRef("/default-domain/")));
+                QuotaAware totoUWQuota = totoUW.getAdapter(QuotaAware.class);
+                assertEquals(200L, totoUWQuota.getTotalSize());
+                DocumentModel titiUW = uwm.getUserPersonalWorkspace("titi",
+                        session.getDocument(new PathRef("/default-domain/")));
+                QuotaAware titiUWQuota = titiUW.getAdapter(QuotaAware.class);
+                assertEquals(200L, titiUWQuota.getTotalSize());
+
+                boolean canAddContent = true;
+                try {
+                    DocumentModel secondFile = session.createDocumentModel(
+                            titiUW.getPathAsString(), "file2", "File");
+                    secondFile.setPropertyValue("file:content",
+                            (Serializable) getFakeBlob(200));
+                    secondFile = session.createDocument(secondFile);
+                    secondFile = session.saveDocument(secondFile);
+                } catch (Exception e) {
+                    if (e.getCause() instanceof QuotaExceededException) {
+                        canAddContent = false;
+                    }
+                }
+                assertFalse(canAddContent);
+
+                canAddContent = true;
+                try {
+                    DocumentModel firstFile = session.createDocumentModel(
+                            totoUW.getPathAsString(), "file1", "File");
+                    firstFile.setPropertyValue("file:content",
+                            (Serializable) getFakeBlob(200));
+                    firstFile = session.createDocument(firstFile);
+                    firstFile = session.saveDocument(firstFile);
+                } catch (Exception e) {
+                    if (e.getCause() instanceof QuotaExceededException) {
+                        canAddContent = false;
+                    }
+                }
+                assertFalse(canAddContent);
+            }
+        });
+    }
+
     protected Blob getFakeBlob(int size) {
         StringBuilder sb = new StringBuilder(size);
         for (int i = 0; i < size; i++) {
@@ -1438,7 +1557,8 @@ public class TestDocumentsSizeUpdater {
         });
     }
 
-    protected void doDeleteFileContent(final DocumentRef fileRef) throws Exception {
+    protected void doDeleteFileContent(final DocumentRef fileRef)
+            throws Exception {
         isr.run(new RunnableWithException() {
             @Override
             public void run() throws Exception {
@@ -1450,7 +1570,6 @@ public class TestDocumentsSizeUpdater {
             }
         });
     }
-
 
     protected void doUndeleteFileContent() throws Exception {
         isr.run(new RunnableWithException() {
@@ -1483,7 +1602,6 @@ public class TestDocumentsSizeUpdater {
             }
         });
     }
-
 
     protected void dump() throws Exception {
 
@@ -1544,7 +1662,6 @@ public class TestDocumentsSizeUpdater {
                         + " trash:" + qa.getTrashSize() + " versions: "
                         + qa.getVersionsSize());
     }
-
 
     /**
      * @return
