@@ -92,7 +92,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                     try {
                         removeFacet(unrestrictedSession, uuid);
                     } catch (ClientException e) {
-                        log.debug("Could not remove facet for uuid : " + uuid + ", error is : " + e.getMessage());
+                        log.debug("Could not remove facet for uuid : " + uuid
+                                + ", error is : " + e.getMessage());
                     }
                 }
             } finally {
@@ -104,9 +105,11 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                 for (Map<String, Serializable> r : res) {
                     String uuid = (String) r.get("ecm:uuid");
                     try {
-                        computeSizeOnDocument(unrestrictedSession, uuid, processor);
+                        computeSizeOnDocument(unrestrictedSession, uuid,
+                                processor);
                     } catch (ClientException e) {
-                        log.warn("Could not computeSizeOnDocument : " + e.getMessage());
+                        log.warn("Could not computeSizeOnDocument : "
+                                + e.getMessage());
                     }
                     idx++;
                     currentWorker.notifyProgress(idx++, total);
@@ -434,7 +437,11 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         parents.add(unrestrictedSession.getDocument(parentRef));
         for (DocumentModel parent : parents) {
             QuotaAware qap = parent.getAdapter(QuotaAware.class);
-            if (qap != null && qap.getMaxQuota() > 0) {
+            // when enabling quota on user workspaces, the max size set on
+            // the
+            // UserWorkspacesRoot is the max size set on every user workspace
+            if (qap != null && !"UserWorkspacesRoot".equals(parent.getType())
+                    && qap.getMaxQuota() > 0) {
                 if (qap.getTotalSize() + addition > qap.getMaxQuota()) {
                     log.info("Raising Quota Exception on "
                             + doc.getPathAsString());
