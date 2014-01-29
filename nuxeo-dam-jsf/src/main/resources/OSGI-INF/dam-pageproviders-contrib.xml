@@ -11,6 +11,7 @@
         AND dc:creator = ? AND ecm:isProxy = 0
         AND ecm:isCheckedInVersion = 0
         AND ecm:currentLifeCycleState != 'deleted'
+        AND SORTED_COLUMN IS NOT NULL
       </pattern>
       <sort column="dc:title" ascending="true" />
     </coreQueryPageProvider>
@@ -22,6 +23,7 @@
         AND dc:creator != ? AND ecm:isProxy = 0
         AND ecm:isCheckedInVersion = 0
         AND ecm:currentLifeCycleState != 'deleted'
+        AND SORTED_COLUMN IS NOT NULL
       </pattern>
       <sort column="dc:title" ascending="true" />
     </coreQueryPageProvider>
@@ -32,6 +34,7 @@
         SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE '?' AND ecm:mixinType !=
         'HiddenInNavigation' AND ecm:mixinType = 'Folderish'
         AND ecm:currentLifeCycleState != 'deleted'
+        AND SORTED_COLUMN IS NOT NULL
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>10</pageSize>

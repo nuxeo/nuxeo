@@ -17,6 +17,7 @@
           <fixedPart>
             ecm:mixinType = 'Asset' AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0
             AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+            AND SORTED_COLUMN IS NOT NULL
           </fixedPart>
           <predicate parameter="ecm:fulltext" operator="FULLTEXT">
             <field schema="dam_search" name="ecm_fulltext" />
@@ -103,6 +104,7 @@
             AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0
             AND ecm:currentLifeCycleState != 'deleted'
             AND ecm:parentId = ?
+            AND SORTED_COLUMN IS NOT NULL
           </fixedPart>
         </whereClause>
         <parameter>#{userWorkspaceManagerActions.currentUserPersonalWorkspace.id}</parameter>
