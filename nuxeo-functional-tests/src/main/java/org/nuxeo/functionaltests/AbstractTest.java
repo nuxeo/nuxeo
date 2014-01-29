@@ -95,6 +95,13 @@ public abstract class AbstractTest {
     public static final int POLLING_FREQUENCY_MILLISECONDS = 100;
 
     /**
+     * Page Load timeout in seconds.
+     *
+     * @since 5.9.2
+     */
+    public static final int PAGE_LOAD_TIME_OUT_SECONDS = 60;
+
+    /**
      * @since 5.7
      */
     public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/chromedriver";
@@ -188,6 +195,8 @@ public abstract class AbstractTest {
         } else {
             throw new RuntimeException("Browser not supported: " + browser);
         }
+        driver.manage().timeouts().pageLoadTimeout(PAGE_LOAD_TIME_OUT_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     protected static void initFirefoxDriver() throws Exception {
