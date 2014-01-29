@@ -174,9 +174,12 @@ a.ambiance-close {
   background-color: "neutral.stronger (__FLAVOR__ background)";
   color: #fff;
   line-height: 130%;
+  font-size: .9em;
+  font-weight: bold;
   margin: 0 .2em .2em 0;
-  padding: 0 .2em;
+  padding: .1em .3em;
   vertical-align: baseline;
+  text-transform: uppercase;
   white-space: nowrap }
 
 .chip {
@@ -191,19 +194,23 @@ a.ambiance-close {
 
 .label-info,
 .chip-info {
-  background-color: "info.strong (__FLAVOR__ background)" }
+  background-color:"info (__FLAVOR__ background)";
+  color: "info.status (__FLAVOR__ color)" }
 
 .label-success,
 .chip-success {
-  background-color: "success.strong (__FLAVOR__ background)" }
+  background-color:"success (__FLAVOR__ background)";
+  color: "success.status (__FLAVOR__ color)" }
 
 .label-warning,
 .chip-warning {
-  background-color: "warning.strong (__FLAVOR__ background)" }
+  background-color: "warning (__FLAVOR__ background)";
+  color: "warning.status (__FLAVOR__ color)" }
 
 .label-error,
 .chip-error {
-  background-color: "error.strong (__FLAVOR__ background)" }
+  background-color:"error (__FLAVOR__ background)";
+  color: "error.status (__FLAVOR__ color)" }
 
 /* =Quote */
 .quote {
