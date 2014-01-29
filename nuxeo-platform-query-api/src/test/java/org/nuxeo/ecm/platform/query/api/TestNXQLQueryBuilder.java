@@ -168,7 +168,7 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
         String pattern = "SELECT * FROM Document WHERE SORTED_COLUMN IS NOT NULL";
         String query = NXQLQueryBuilder.getQuery(pattern, null, true, true);
         assertEquals(
-                "SELECT * FROM Document WHERE 1 IS NOT NULL",
+                "SELECT * FROM Document WHERE ecm:uuid IS NOT NULL",
                 query);
         SortInfo sortInfo = new SortInfo("dc:title", true);
         query = NXQLQueryBuilder.getQuery(pattern, null, true, true, sortInfo);
