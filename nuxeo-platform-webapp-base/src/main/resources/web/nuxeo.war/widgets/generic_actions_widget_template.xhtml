@@ -25,7 +25,7 @@
       <c:choose>
 
         <c:when test="#{widgetProperty_overallDisplay == 'horizontal_block'}">
-          <div class="widgetPanel actionsWidgetPanel">
+          <div class="widgetPanel actionsWidgetPanel horizontalAction">
             <c:forEach var="action" items="#{widgetProperty_actions}"
               begin="0"
               end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
