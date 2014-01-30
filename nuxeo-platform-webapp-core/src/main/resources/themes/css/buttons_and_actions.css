@@ -169,7 +169,7 @@ input.tinyButton {
 
 /* =Actionbar in Home */
 .actionList {
-  float: right;
+  display: inline-block;
   list-style: none;
   margin: 0;
   padding: 0 }
@@ -316,7 +316,10 @@ input.tinyButton {
   max-width: 60% }
 
 .globalActions {
-  text-align: right }
+  float: right }
+
+.globalActions > span, .globalActions .horizontalAction {
+  float: left }
 
 .contextActions {
   padding: .4em 0 .5em }
