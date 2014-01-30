@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -78,6 +79,29 @@ public class OAuth2TokenStore implements CredentialStore {
         } catch (Exception e) {
             log.error("Error during token loading", e);
             return false;
+        }
+    }
+
+    public NuxeoOAuth2Token getToken(String token) throws ClientException {
+        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+        Session session = null;
+        try {
+            session = ds.open(DIRECTORY_NAME);
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            filter.put("serviceName", serviceName);
+            filter.put("accessToken", token);
+            DocumentModelList entries = session.query(filter);
+            if (entries.size() == 0) {
+                return null;
+            }
+            if (entries.size() > 1) {
+                log.error("Found several tokens");
+            }
+            return getTokenFromDirectoryEntry(entries.get(0));
+        } finally {
+            if (session != null) {
+                session.close();
+            }
         }
     }
 

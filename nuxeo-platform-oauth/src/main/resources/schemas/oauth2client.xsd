@@ -3,6 +3,7 @@
   targetNamespace="http://nuxeo.org/schemas/oauth2/provider"
   xmlns:oauth2client="http://nuxeo.org/schemas/oauth2/client">
 
+  <xs:element name="id" type="xs:integer"/>
   <xs:element name="name" type="xs:string"/>
   <xs:element name="clientId" type="xs:string"/>
   <xs:element name="clientSecret" type="xs:string"/>

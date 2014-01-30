@@ -1,11 +1,15 @@
 package org.nuxeo.ecm.platform.oauth2.clients;
 
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -44,8 +48,15 @@ public class ClientRegistryImpl extends DefaultComponent implements
         Session session = null;
         try {
             session = service.open(OAUTH2CLIENT_DIRECTORY_NAME);
-            DocumentModel entry = session.getEntry(clientId);
-            return entry != null && OAuth2Client.fromDocumentModel(entry).isEnabled();
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put("clientId", clientId);
+            DocumentModelList docs = session.query(filter);
+            if (docs.size() == 0) {
+                return false;
+            }
+
+            DocumentModel entry = docs.get(0);
+            return OAuth2Client.fromDocumentModel(entry).isEnabled();
         } finally {
             if (session != null) {
                 session.close();
@@ -56,26 +67,22 @@ public class ClientRegistryImpl extends DefaultComponent implements
     @Override
     public boolean isValidClient(String clientId, String clientSecret)
             throws ClientException {
-        DirectoryService service = getService();
-        Session session = null;
-        try {
-            session = service.open(OAUTH2CLIENT_DIRECTORY_NAME);
-            DocumentModel docClient = session.getEntry(clientId);
-
-            if (docClient != null) {
-                OAuth2Client client = OAuth2Client.fromDocumentModel(docClient);
-                return client.isValidWith(clientId, clientSecret);
-            }
-        } finally {
-            if (session != null) {
-                session.close();
-            }
+        DocumentModel docClient = getClient(clientId);
+        if (docClient != null) {
+            OAuth2Client client = OAuth2Client.fromDocumentModel(docClient);
+            return client.isValidWith(clientId, clientSecret);
         }
         return false;
     }
 
     @Override
     public boolean registerClient(OAuth2Client client) throws ClientException {
+        DocumentModel doc = getClient(client.getId());
+        if (doc != null) {
+            log.info("Trying to register an exisiting client");
+            return false;
+        }
+
         DirectoryService service = getService();
         Session session = null;
         try {
@@ -124,6 +131,25 @@ public class ClientRegistryImpl extends DefaultComponent implements
                 session.close();
             }
         }
+    }
+
+    protected DocumentModel getClient(String clientId) throws ClientException {
+        DirectoryService service = getService();
+        Session session = null;
+        try {
+            session = service.open(OAUTH2CLIENT_DIRECTORY_NAME);
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put("clientId", clientId);
+            DocumentModelList docs = session.query(filter);
+            if (docs.size() > 0) {
+                return docs.get(0);
+            }
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+        return null;
     }
 
     protected DirectoryService getService() {

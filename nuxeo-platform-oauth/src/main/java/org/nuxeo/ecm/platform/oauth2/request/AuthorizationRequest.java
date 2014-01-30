@@ -4,7 +4,6 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.*;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,16 +21,12 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.9.2
  */
-public class AuthorizationRequest {
+public class AuthorizationRequest extends Oauth2Request {
     private static final Log log = LogFactory.getLog(AuthorizationRequest.class);
 
     private static Map<String, AuthorizationRequest> requests = new HashMap<>();
 
     protected String responseType;
-
-    protected String clientId;
-
-    protected String redirectUri;
 
     protected String scope;
 
@@ -49,20 +44,14 @@ public class AuthorizationRequest {
 
     public static final String RESPONSE_TYPE = "response_type";
 
-    public static final String CLIENT_ID = "client_id";
-
-    public static final String REDIRECT_URI = "redirect_uri";
-
     public static final String SCOPE = "scope";
 
     public static final String STATE = "state";
 
-    public AuthorizationRequest(HttpServletRequest request)
-            throws UnsupportedEncodingException {
+    public AuthorizationRequest(HttpServletRequest request) {
+        super(request);
         responseType = request.getParameter(RESPONSE_TYPE);
-        clientId = request.getParameter(CLIENT_ID);
-        redirectUri = URLDecoder.decode(request.getParameter(REDIRECT_URI),
-                "UTF-8");
+
         scope = request.getParameter(SCOPE);
         state = request.getParameter(STATE);
         sessionId = request.getSession(true).getId();
@@ -112,14 +101,6 @@ public class AuthorizationRequest {
 
     public String getResponseType() {
         return responseType;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public String getRedirectUri() {
-        return redirectUri;
     }
 
     public String getScope() {

@@ -4,9 +4,12 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -23,6 +26,8 @@ import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
 import org.nuxeo.ecm.platform.oauth2.request.TokenRequest;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoSecuredRequestWrapper;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthPreFilter;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -49,7 +54,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
     public static String AUTHORIZATION_KEY = "authorization_key";
 
     public static enum ERRORS {
-        invalid_request, unauthorized_client, access_denied, unsupported_response_type, invalid_scope, server_error, temporarily_unavailable
+        invalid_request, invalid_grant, unauthorized_client, access_denied, unsupported_response_type, invalid_scope, server_error, temporarily_unavailable
     }
 
     @Override
@@ -98,20 +103,55 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String uri = httpRequest.getRequestURI();
-        String endpoint = uri.split(OAUTH2_SEGMENT)[1];
+        if (uri.contains(OAUTH2_SEGMENT)) {
+            String endpoint = uri.split(OAUTH2_SEGMENT)[1];
 
-        switch (endpoint) {
-        case ENDPOINT_AUTH:
-            processAuthorization(httpRequest, httpResponse, chain);
-            break;
-        case ENDPOINT_TOKEN:
-            processToken(httpRequest, httpResponse, chain);
-            break;
+            switch (endpoint) {
+            case ENDPOINT_AUTH:
+                processAuthorization(httpRequest, httpResponse, chain);
+                break;
+            case ENDPOINT_TOKEN:
+                processToken(httpRequest, httpResponse, chain);
+                break;
+            }
+        } else if (isAuthorizedRequest(httpRequest)) {
+            LoginContext loginContext = buildLoginContext(httpRequest);
+            if (loginContext != null) {
+                Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
+                try {
+                    chain.doFilter(new NuxeoSecuredRequestWrapper(httpRequest,
+                            principal), response);
+                } finally {
+                    try {
+                        loginContext.logout();
+                    } catch (LoginException e) {
+                        log.warn("Error when logging out", e);
+                    }
+                }
+            }
         }
 
         if (!response.isCommitted()) {
             chain.doFilter(request, response);
         }
+    }
+
+    protected LoginContext buildLoginContext(HttpServletRequest request)
+            throws ClientException {
+        String key = request.getHeader("Authorization").substring(7);
+        NuxeoOAuth2Token token = getTokenStore().getToken(key);
+
+        try {
+            return NuxeoAuthenticationFilter.loginAs(token.getNuxeoLogin());
+        } catch (LoginException e) {
+            log.warn("Error while authenticate user");
+        }
+        return null;
+    }
+
+    protected boolean isAuthorizedRequest(HttpServletRequest request) {
+        String authorization = request.getHeader("Authorization");
+        return authorization.contains("Bearer");
     }
 
     protected void processAuthorization(HttpServletRequest request,
@@ -171,7 +211,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
             if (authRequest == null) {
                 error = ERRORS.access_denied;
             }
-            // Check that clientId is the good one, already verified in authorization request
+            // Check that clientId is the good one, already verified in
+            // authorization request
             else if (!authRequest.getClientId().equals(tokRequest.getClientId())) {
                 error = ERRORS.access_denied;
             }
@@ -202,7 +243,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
             handleTokenResponse(token, response);
         }
 
-        handleError(ERRORS.invalid_request, request, response);
+        handleJsonError(ERRORS.invalid_grant, request, response);
     }
 
     protected void handleTokenResponse(NuxeoOAuth2Token token,
@@ -230,6 +271,18 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
 
         String redirectUri = request.getParameter("redirect_uri");
         sendRedirect(response, redirectUri, params);
+    }
+
+    protected void handleJsonError(ERRORS error, HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        response.setHeader("Content-Type", "application/json");
+        response.setStatus(400);
+
+        Map<String, String> object = new HashMap<>();
+        object.put("error", error.toString());
+        mapper.writeValue(response.getWriter(), object);
     }
 
     protected void sendRedirect(HttpServletResponse response, String uri,

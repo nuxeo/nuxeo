@@ -67,8 +67,8 @@
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>oauth2Clients</table>
-      <idField>clientId</idField>
-      <autoincrementIdField>false</autoincrementIdField>
+      <idField>id</idField>
+      <autoincrementIdField>true</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
