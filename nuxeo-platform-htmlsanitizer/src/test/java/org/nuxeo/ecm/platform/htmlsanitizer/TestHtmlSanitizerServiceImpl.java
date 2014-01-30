@@ -176,4 +176,17 @@ public class TestHtmlSanitizerServiceImpl {
         assertEquals(html, res);
     }
 
+    @Test
+    public void testFieldToString() {
+        FieldDescriptor fd = new FieldDescriptor();
+        fd.contentField = "a";
+        assertEquals("a", fd.toString());
+        fd.filterField = "b";
+        fd.filterValue = "c";
+        fd.sanitize = true;
+        assertEquals("a if b=c", fd.toString());
+        fd.sanitize = false;
+        assertEquals("a if b!=c", fd.toString());
+    }
+
 }

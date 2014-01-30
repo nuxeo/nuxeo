@@ -25,16 +25,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class FieldDescriptor {
 
     @XContent
-    private String contentField;
+    protected String contentField;
 
     @XNode("@filter")
-    private String filterField;
+    protected String filterField;
 
     @XNode("@filterValue")
-    private String filterValue;
+    protected String filterValue;
 
     @XNode("@sanitize")
-    private boolean sanitize = true;
+    protected boolean sanitize = true;
 
     public String getContentField() {
         if (contentField != null) {
@@ -73,7 +73,8 @@ public class FieldDescriptor {
     @Override
     public String toString() {
         if (filterField != null) {
-            return getContentField() + " if " + filterField + "=" + filterValue;
+            return getContentField() + " if " + filterField
+                    + (sanitize ? "=" : "!=") + filterValue;
         } else {
             return getContentField();
         }
