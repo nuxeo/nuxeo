@@ -292,7 +292,7 @@ public class S3BinaryManager extends CachingBinaryManager {
         dir.mkdir();
         dir.deleteOnExit();
         long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
-        initializeCache(dir, cacheSize, new S3FileStorage());
+        initializeCache(dir, cacheSize, newFileStorage());
         log.info("Using binary cache directory: " + dir.getPath() + " size: "
                 + cacheSizeStr);
 
@@ -335,6 +335,10 @@ public class S3BinaryManager extends CachingBinaryManager {
 
     public static boolean isMD5(String digest) {
         return MD5_RE.matcher(digest).matches();
+    }
+
+    protected FileStorage newFileStorage() {
+        return new S3FileStorage();
     }
 
     public class S3FileStorage implements FileStorage {
