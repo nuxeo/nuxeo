@@ -169,7 +169,7 @@ public class ITSafeEditTest extends AbstractTest {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5,
                 TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
                 NoSuchElementException.class);
-        wait.until(ExpectedConditions.textToBePresentInElement(
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(
                 By.className("ambiance-title"),
                 "A draft of this document has been saved"));
     }
