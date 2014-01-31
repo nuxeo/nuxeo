@@ -17,6 +17,8 @@
  */
 package org.nuxeo.ecm.platform.video.service;
 
+import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,6 +132,9 @@ public class VideoConversionWork extends AbstractWork {
         transcodedVideos.add(transcodedVideo.toMap());
         doc.setPropertyValue("vid:transcodedVideos",
                 (Serializable) transcodedVideos);
+        if (doc.isVersion()) {
+            doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+        }
         session.saveDocument(doc);
     }
 
