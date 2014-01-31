@@ -278,6 +278,109 @@ public class UserManagementActions extends AbstractUserGroupManagement
         }
     }
 
+    /**
+     * Verify that only administrators can add administrator groups.
+     *
+     * @param context
+     * @param component
+     * @param value
+     *
+     * @since 5.9.2
+     */
+    public void validateGroups(FacesContext context, UIComponent component,
+            Object value) {
+
+        @SuppressWarnings("unchecked")
+        List<String> groups = (List<String>) getReferencedComponent(
+                "groupsValueHolderId", component).getLocalValue();
+        if (groups == null || groups.isEmpty()) {
+            return;
+        }
+
+        try {
+            if (!isAllowedToAdminGroups(groups)) {
+                throwValidationException(context,
+                        "label.userManager.invalidGroupSelected");
+            }
+        } catch (ClientException e) {
+            throwValidationException(context,
+                    "label.userManager.unableToValidateGroups", e.getMessage());
+        }
+
+    }
+
+    /**
+     * Checks if the current user is allowed to aministrate (meaning add/remove)
+     * the given groups.
+     *
+     * @param groups
+     * @return
+     * @throws ClientException
+     *
+     * @since 5.9.2
+     */
+    boolean isAllowedToAdminGroups(List<String> groups)
+            throws ClientException {
+        NuxeoPrincipalImpl nuxeoPrincipal = (NuxeoPrincipalImpl) currentUser;
+
+        if (!nuxeoPrincipal.isAdministrator()) {
+            List<String> adminGroups = userManager.getAdministratorsGroups();
+            for (String group : groups) {
+                if (adminGroups.contains(group)) {
+                    return false;
+                }
+            }
+
+        }
+        return true;
+    }
+
+    /**
+     * Throw a validation exception with a translated message that is show in
+     * the UI.
+     *
+     * @param context the current faces context
+     * @param message the error message
+     * @param messageArgs the parameters for the message
+     *
+     * @since 5.9.2
+     */
+    private void throwValidationException(FacesContext context, String message,
+            Object... messageArgs) {
+        FacesMessage fmessage = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                ComponentUtils.translate(context, message, messageArgs), null);
+        throw new ValidatorException(fmessage);
+    }
+
+    /**
+     * Return the value of the JSF component who's id is references in an
+     * attribute of the componet passed in parameter.
+     *
+     * @param string the attribute holding the target component id
+     * @param component the component holding the attribute
+     * @return the UIInput component, null otherwise
+     *
+     * @since 5.9.2
+     */
+    private UIInput getReferencedComponent(String attribute,
+            UIComponent component) {
+        Map<String, Object> attributes = component.getAttributes();
+        String targetComponentId = (String) attributes.get(attribute);
+
+        if (targetComponentId == null) {
+            log.error(String.format("Target component id (%s) not found in attributes", attribute));
+            return null;
+        }
+
+        UIInput targetComponent = (UIInput) component.findComponent(targetComponentId);
+        if (targetComponent == null) {
+            log.error(String.format("Referenced component (%s) not found", attribute));
+            return null;
+        }
+
+        return targetComponent;
+    }
+
     public void validatePassword(FacesContext context, UIComponent component,
             Object value) {
         Map<String, Object> attributes = component.getAttributes();
