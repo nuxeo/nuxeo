@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -225,6 +226,7 @@ public class ITSafeEditTest extends AbstractTest {
      * @since 5.7.1
      */
     @Test
+    @Ignore
     public void testAutoSaveOnChangeAndRestore() throws Exception {
 
         if (!runTestForBrowser()) {
