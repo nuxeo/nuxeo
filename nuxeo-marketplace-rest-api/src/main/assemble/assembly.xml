@@ -27,7 +27,7 @@
 
   <target name="build"
           depends="init"
-          description="Build Nuxeo CSV Marketplace package">
+          description="Build Nuxeo REST API Marketplace package">
     <tstamp />
     <delete failonerror="false" dir="${outdir}/nxr" />
     <mkdir dir="${outdir}/nxr" />
