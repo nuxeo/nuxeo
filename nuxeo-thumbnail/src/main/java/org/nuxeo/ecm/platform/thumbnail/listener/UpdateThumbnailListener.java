@@ -69,7 +69,8 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
                     Boolean.TRUE);
             doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER,
                     Boolean.TRUE);
-            doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
+            doc.putContextData(
+                    NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
                     Boolean.TRUE);
             doc.putContextData("disableAuditLogger", Boolean.TRUE);
             if (doc.isVersion()) {
