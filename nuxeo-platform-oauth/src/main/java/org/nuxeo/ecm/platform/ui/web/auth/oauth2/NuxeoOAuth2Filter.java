@@ -93,7 +93,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         }
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        return httpRequest.getRequestURI().contains(OAUTH2_SEGMENT);
+        return isAuthorizedRequest(httpRequest)
+                || httpRequest.getRequestURI().contains(OAUTH2_SEGMENT);
     }
 
     protected void process(ServletRequest request, ServletResponse response,
@@ -115,20 +116,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
                 break;
             }
         } else if (isAuthorizedRequest(httpRequest)) {
-            LoginContext loginContext = buildLoginContext(httpRequest);
-            if (loginContext != null) {
-                Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
-                try {
-                    chain.doFilter(new NuxeoSecuredRequestWrapper(httpRequest,
-                            principal), response);
-                } finally {
-                    try {
-                        loginContext.logout();
-                    } catch (LoginException e) {
-                        log.warn("Error when logging out", e);
-                    }
-                }
-            }
+            processAuthentication(httpRequest, httpResponse, chain);
         }
 
         if (!response.isCommitted()) {
@@ -136,11 +124,39 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         }
     }
 
-    protected LoginContext buildLoginContext(HttpServletRequest request)
-            throws ClientException {
+    protected void processAuthentication(HttpServletRequest request,
+            HttpServletResponse response, FilterChain chain)
+            throws ClientException, IOException, ServletException {
         String key = request.getHeader("Authorization").substring(7);
         NuxeoOAuth2Token token = getTokenStore().getToken(key);
 
+        if (token == null) {
+            return;
+        }
+
+        if (token.isExpired()) {
+            response.setStatus(401);
+            return;
+        }
+
+        LoginContext loginContext = buildLoginContext(token);
+        if (loginContext != null) {
+            Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
+            try {
+                chain.doFilter(new NuxeoSecuredRequestWrapper(request,
+                        principal), response);
+            } finally {
+                try {
+                    loginContext.logout();
+                } catch (LoginException e) {
+                    log.warn("Error when logging out", e);
+                }
+            }
+        }
+    }
+
+    protected LoginContext buildLoginContext(NuxeoOAuth2Token token)
+            throws ClientException {
         try {
             return NuxeoAuthenticationFilter.loginAs(token.getNuxeoLogin());
         } catch (LoginException e) {
@@ -151,7 +167,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
 
     protected boolean isAuthorizedRequest(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
-        return authorization.contains("Bearer");
+        return authorization != null && authorization.startsWith("Bearer");
     }
 
     protected void processAuthorization(HttpServletRequest request,
@@ -241,9 +257,30 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
             getTokenStore().store(authRequest.getUsername(), token);
 
             handleTokenResponse(token, response);
-        }
+        } else if ("refresh_token".equals(tokRequest.getGrantType())) {
+            ERRORS error = null;
+            if (isBlank(tokRequest.getClientId())) {
+                error = ERRORS.access_denied;
+            } else if (!getClientRegistry().isValidClient(
+                    tokRequest.getClientId(), tokRequest.getClientSecret())) {
+                error = ERRORS.access_denied;
+            }
 
-        handleJsonError(ERRORS.invalid_grant, request, response);
+            if (error != null) {
+                handleError(error, request, response);
+                return;
+            }
+
+            NuxeoOAuth2Token refreshed = getTokenStore().refresh(
+                    tokRequest.getRefreshToken(), tokRequest.getClientId());
+            if (refreshed == null) {
+                handleJsonError(ERRORS.invalid_request, request, response);
+            } else {
+                handleTokenResponse(refreshed, response);
+            }
+        } else {
+            handleJsonError(ERRORS.invalid_grant, request, response);
+        }
     }
 
     protected void handleTokenResponse(NuxeoOAuth2Token token,

@@ -140,8 +140,9 @@ public class AuthorizationRequest extends Oauth2Request {
 
     public static AuthorizationRequest fromCode(String authorizationCode) {
         for (AuthorizationRequest auth : requests.values()) {
-            if (auth.authorizationCode.equals(authorizationCode)) {
-                requests.remove(auth.sessionId);
+            if (auth.authorizationCode != null
+                    && auth.authorizationCode.equals(authorizationCode)) {
+                // requests.remove(auth.sessionId); XXX TEST
                 return auth.isExpired() ? null : auth;
             }
         }

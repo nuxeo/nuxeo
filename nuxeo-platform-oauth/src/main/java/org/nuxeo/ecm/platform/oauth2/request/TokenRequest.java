@@ -7,17 +7,21 @@ import javax.servlet.http.HttpServletRequest;
  * @since 5.9.2
  */
 public class TokenRequest extends Oauth2Request {
+
     protected String grantType;
 
     protected String code;
 
     protected String clientSecret;
 
+    protected String refreshToken;
+
     public TokenRequest(HttpServletRequest request) {
         super(request);
         grantType = request.getParameter("grant_type");
         code = request.getParameter("code");
         clientSecret = request.getParameter("client_secret");
+        refreshToken = request.getParameter("refresh_token");
     }
 
     public String getGrantType() {
@@ -30,5 +34,9 @@ public class TokenRequest extends Oauth2Request {
 
     public String getClientSecret() {
         return clientSecret;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
     }
 }

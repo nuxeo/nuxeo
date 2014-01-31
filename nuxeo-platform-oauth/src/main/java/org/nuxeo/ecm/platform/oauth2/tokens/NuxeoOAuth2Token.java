@@ -45,10 +45,9 @@ public class NuxeoOAuth2Token {
     private Long expirationTimeMilliseconds;
 
     public NuxeoOAuth2Token(long expirationTimeMilliseconds, String clientId) {
-        this(RandomStringUtils.random(32, true, true),
-                RandomStringUtils.random(64, true, true),
-                expirationTimeMilliseconds);
+        this("", "", expirationTimeMilliseconds);
         this.clientId = clientId;
+        refresh();
     }
 
     public NuxeoOAuth2Token(String accessToken, String refreshToken,
@@ -102,6 +101,16 @@ public class NuxeoOAuth2Token {
         entry.setProperty(SCHEMA, "expirationTimeMilliseconds",
                 this.expirationTimeMilliseconds);
         entry.setProperty(SCHEMA, "clientId", this.clientId);
+    }
+
+    public void refresh() {
+        accessToken = RandomStringUtils.random(32, true, true);
+        refreshToken = RandomStringUtils.random(64, true, true);
+    }
+
+    public boolean isExpired() {
+        // XXX
+        return false;
     }
 
     public void setServiceName(String serviceName) {
