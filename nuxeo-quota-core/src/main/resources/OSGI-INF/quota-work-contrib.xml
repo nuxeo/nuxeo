@@ -6,6 +6,7 @@
       <maxThreads>1</maxThreads>
       <category>quotaInitialStatistics</category>
       <category>quotaMaxSizeSetter</category>
+      <category>quotaProcessor</category>
       <name>quota</name>
     </queue>
   </extension>
