@@ -343,21 +343,32 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         }
 
         QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
+        long total = 0;
+        long versSize = 0;
+        if (quotaDoc == null) {
+            // the document could have been just created and the previous
+            // computation
+            // hasn't finished yet, see NXP-13665
+            BlobSizeInfo bsi = computeSizeImpact(targetDoc, false);
+            total = bsi.getBlobSize();
+        }
         if (quotaDoc != null) {
-            long total = quotaDoc.getTotalSize();
-            if (total > 0) {
-                List<String> parentUUIDs = getParentUUIDS(session, targetDoc);
-                SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
-                        session, docCtx, total, ABOUT_TO_REMOVE);
-                // remove size for all its versions from sizeVersions on parents
-                long versSize = -quotaDoc.getVersionsSize();
+            total = quotaDoc.getTotalSize();
+            versSize = -quotaDoc.getVersionsSize();
+        }
+        if (total > 0) {
+            List<String> parentUUIDs = getParentUUIDS(session, targetDoc);
+            SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
+                    session, docCtx, total, ABOUT_TO_REMOVE);
+            // remove size for all its versions from sizeVersions on parents
+            if (versSize != 0) {
                 asyncEventCtx.setVersionsSize(versSize);
-                asyncEventCtx.setParentUUIds(parentUUIDs);
-                asyncEventCtx.getProperties().put(
-                        SizeUpdateEventContext._UPDATE_TRASH_SIZE,
-                        DELETED_STATE.equals(targetDoc.getCurrentLifeCycleState()));
-                sendUpdateEvents(asyncEventCtx);
             }
+            asyncEventCtx.setParentUUIds(parentUUIDs);
+            asyncEventCtx.getProperties().put(
+                    SizeUpdateEventContext._UPDATE_TRASH_SIZE,
+                    DELETED_STATE.equals(targetDoc.getCurrentLifeCycleState()));
+            sendUpdateEvents(asyncEventCtx);
         }
     }
 
