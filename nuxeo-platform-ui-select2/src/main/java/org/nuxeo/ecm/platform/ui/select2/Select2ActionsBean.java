@@ -739,6 +739,9 @@ public class Select2ActionsBean implements Serializable {
                 storedRefs.add(v.toString());
             }
         }
+        if (storedRefs.isEmpty()) {
+            return "[]";
+        }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedOutputStream out = new BufferedOutputStream(baos);
@@ -760,7 +763,10 @@ public class Select2ActionsBean implements Serializable {
         out.flush();
         String json = new String(baos.toByteArray(), "UTF-8");
 
-        if (!json.endsWith("]")) {
+        if (json.isEmpty()) {
+            return "[]";
+        }
+        if (json.startsWith("[") && !json.endsWith("]")) {
             // XXX !!!
             // AT: what's this for?
             json = json + "]";
