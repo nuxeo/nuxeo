@@ -134,7 +134,7 @@
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.0-SNAPSHOT</ant.assembly.version>
     <nuxeo.ftest.version>1.7.13-SNAPSHOT</nuxeo.ftest.version>
-    <nuxeo.richfaces.version>3.3.1.GA-NX9.02</nuxeo.richfaces.version>
+    <nuxeo.richfaces.version>3.3.1.GA-NX9.03</nuxeo.richfaces.version>
 
     <tomcat.version>7.0.42</tomcat.version>
     <apacheds.version>1.5.1</apacheds.version>
