@@ -12,6 +12,8 @@
  */
 package org.nuxeo.ecm.platform.thumbnail.listener;
 
+import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -70,6 +72,9 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
                     Boolean.TRUE);
             doc.putContextData("disableAuditLogger", Boolean.TRUE);
+            if (doc.isVersion()) {
+                doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+            }
             session.saveDocument(doc);
         }
     }
@@ -90,7 +95,7 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             if (doc instanceof DeletedDocumentModel) {
                 continue;
             }
-            if (doc.isProxy() || doc.isVersion()) {
+            if (doc.isProxy()) {
                 continue;
             }
             if (processedDocs.contains(doc.getId())) {

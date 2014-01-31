@@ -73,7 +73,7 @@ public class PictureChangedListener implements EventListener {
         }
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (doc.hasFacet(PICTURE_FACET) && !(doc.isProxy() || doc.isVersion())) {
+        if (doc.hasFacet(PICTURE_FACET) && !doc.isProxy()) {
             Property fileProp = doc.getProperty("file:content");
             if (DOCUMENT_CREATED.equals(event.getName()) || fileProp.isDirty()) {
                 Property viewsProp = doc.getProperty(AbstractPictureAdapter.VIEWS_PROPERTY);
