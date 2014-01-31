@@ -1,5 +1,7 @@
 package org.nuxeo.ecm.platform.picture;
 
+import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +85,9 @@ public class PictureViewsGenerationWork extends AbstractWork {
         startTransaction();
         setStatus("Saving");
         initSession();
+        if (workingDocument.isVersion()) {
+            workingDocument.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+        }
         session.saveDocument(workingDocument);
 
         firePictureViewsGenerationDoneEvent(workingDocument);
