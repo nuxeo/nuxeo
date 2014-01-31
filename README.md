@@ -3,7 +3,7 @@ nuxeo-segment.io-connector
 
 Integrate segment.io API with Nuxeo Event system
 
-### Principles
+## Principles
 
 The bundles provides a service that wraps the Analytics Java lib provided by segment.io
 
@@ -20,7 +20,7 @@ A typical use case could be :
     `loginSucceed`    in Nuxeo => call identify on segment.io
     `documentCreated` in Nuxeo => call track    on segment.io	
 
-### Building / Install
+## Building / Install
 
 Build : 
 
@@ -34,13 +34,15 @@ Install lib
 
     cp ~/.m2/repository/com/github/segmentio/analytics/0.3.1/analytics-0.3.1.jar  $NX_TOMCAT/nxserver/lib/.
 
-### About mapping
+## Server side integration
+
+The SegmentIO API is exposed a Nuxeo Service and plugged to Nuxeo event bus via a mapping system.
 
 The mapping is managed via the `mapping` extenson point.
 
 The configuration mapping is based on Groovy Scripting engine.
 
-#### Default mapping and Groovy context
+### Default mapping and Groovy context
 
 When calling the segment.io API (identify or track), Nuxeo service will always send a minimal set of metadata :
 
@@ -63,7 +65,7 @@ If the event is associated to a Document event, the context will also contain :
  - `session` : CoreSession
  - `dest` : DocumentRef to the target Document if any
 
-#### Parameters bindings
+### Parameters bindings
 
 Here is a simple binding : 
 
@@ -90,7 +92,7 @@ Here is a simple binding :
       </parameters>
     </mapper>
 
-#### Direct Groovy scripting
+### Direct Groovy scripting
 
 The `parameters` system is used to generate a Groovy script.
 
@@ -109,4 +111,49 @@ Will result in this script
       </groovy>
 
 If needed you can directly contribute the groovy script in addition or in replacement of the parameters binding.
+
+## Client side integration
+
+It may be useful to also provide a client side integration.
+
+### JSF / BackOffice
+
+When deployed the segment-io bundle will automatically extend the default footer to include segment.io script.
+
+This includes :
+
+ - dynamic loading analytics.js + dependencies
+ - init analytics.js with the configured WriteKey
+ - calling `page` API
+ - calling `identify` API once per session
+
+You can also do a direct integration in your xhtml template using :
+
+    <ui:include src="/incl/segmentio.xhtml" />
+
+### Other Web UI 
+
+Outside of JSF, for example in WebEngine, you can include a dynamically generated script :
+
+    <script src="/nuxeo/site/segmentIO"></script>
+
+This script will : 
+
+ - dynamic loading analytics.js + dependencies
+ - init analytics.js with the configured WriteKey
+ - calling `page` API
+
+If you want to call the `identify` API, you can directly call
+
+    identifyIfNeeded(login, email)
+
+An alternative is to use a script that is generated for your user:
+
+
+    <script src="/nuxeo/site/segmentIO?login=XXX"></script>
+
+
+XXX should be the actual login of the currently loggedin user.
+
+
 

@@ -10,4 +10,4 @@ Nuxeo-Component: OSGI-INF/extensions/org.nuxeo.segment.io.SegmentIOCom
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.segmentio.connector
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-
+Nuxeo-WebModule: org.nuxeo.segment.io.web.SegmentIOResourceWebApp;name=SegmentIO
