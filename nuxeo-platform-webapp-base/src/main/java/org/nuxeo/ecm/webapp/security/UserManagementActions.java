@@ -383,23 +383,9 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
     public void validatePassword(FacesContext context, UIComponent component,
             Object value) {
-        Map<String, Object> attributes = component.getAttributes();
-        String firstPasswordInputId = (String) attributes.get("firstPasswordInputId");
-        String secondPasswordInputId = (String) attributes.get("secondPasswordInputId");
-        if (firstPasswordInputId == null || secondPasswordInputId == null) {
-            log.error("Cannot validate passwords: input id(s) not found");
-            return;
-        }
 
-        UIInput firstPasswordComp = (UIInput) component.findComponent(firstPasswordInputId);
-        UIInput secondPasswordComp = (UIInput) component.findComponent(secondPasswordInputId);
-        if (firstPasswordComp == null || secondPasswordComp == null) {
-            log.error("Cannot validate passwords: input(s) not found");
-            return;
-        }
-
-        Object firstPassword = firstPasswordComp.getLocalValue();
-        Object secondPassword = secondPasswordComp.getLocalValue();
+        Object firstPassword = getReferencedComponent("firstPasswordInputId", component).getLocalValue();
+        Object secondPassword = getReferencedComponent("secondPasswordInputId", component).getLocalValue();
 
         if (firstPassword == null || secondPassword == null) {
             log.error("Cannot validate passwords: value(s) not found");
@@ -407,11 +393,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
         }
 
         if (!firstPassword.equals(secondPassword)) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, "label.userManager.password.not.match"),
-                    null);
-            throw new ValidatorException(message);
+            throwValidationException(context, "label.userManager.password.not.match");
         }
 
     }
