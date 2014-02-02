@@ -23,16 +23,16 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * An abstract {@link BlockingQueue} and {@link DeactivableQueue} suitable for a
- * fixed-sized {@link java.util.concurrent.ThreadPoolExecutor
- * ThreadPoolExecutor}, that can be implemented in terms of a few methods.
+ * An abstract {@link BlockingQueue} suitable for a fixed-sized
+ * {@link java.util.concurrent.ThreadPoolExecutor ThreadPoolExecutor}, that can
+ * be implemented in terms of a few methods.
  *
  * {@link #offer} always succeeds.
  *
  * @since 5.8
  */
 public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable>
-        implements BlockingQueue<Runnable>, DeactivableQueue {
+        implements BlockingQueue<Runnable> {
 
     /*
      * ThreadPoolExecutor uses a BlockingQueue but the Java 7 implementation
