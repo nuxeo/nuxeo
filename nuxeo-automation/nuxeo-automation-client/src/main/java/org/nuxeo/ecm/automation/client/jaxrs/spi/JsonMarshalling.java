@@ -16,6 +16,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -110,9 +111,9 @@ public class JsonMarshalling {
 
     protected static JsonFactory factory = newJsonFactory();
 
-    protected static final HashMap<String, JsonMarshaller<?>> marshallersByType = new HashMap<String, JsonMarshaller<?>>();
+    protected static final Map<String, JsonMarshaller<?>> marshallersByType = new ConcurrentHashMap<String, JsonMarshaller<?>>();
 
-    protected static final HashMap<Class<?>, JsonMarshaller<?>> marshallersByJavaType = new HashMap<Class<?>, JsonMarshaller<?>>();
+    protected static final Map<Class<?>, JsonMarshaller<?>> marshallersByJavaType = new ConcurrentHashMap<Class<?>, JsonMarshaller<?>>();
 
     public static JsonFactory getFactory() {
         return factory;
@@ -267,7 +268,7 @@ public class JsonMarshalling {
         }
         jp.nextToken();
         String etype = jp.getText();
-        JsonMarshaller<?> jm = marshallersByType.get(etype);
+        JsonMarshaller<?> jm = getMarshaller(etype);
         if (jm == null) {
             // fall-back on generic java class loading in case etype matches a
             // valid class name
