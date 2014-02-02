@@ -12,34 +12,27 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Benoit Delbosc
  *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.work;
 
+import java.util.AbstractQueue;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.nuxeo.ecm.core.work.api.Work;
 
 /**
- * A {@link LinkedBlockingQueue} that can be configured with a maximum capacity.
- * <p>
- * When using a capacity, for a reentrant call the queue blocks on "offer" to
- * prevent starvation deadlocks.
- * <p>
- * In addition, this implementation also keeps a set of {@link Work} ids in the
- * queue when the queue elements are {@link WorkHolder}s.
+ * An abstract {@link BlockingQueue} and {@link DeactivableQueue} suitable for a
+ * fixed-sized {@link java.util.concurrent.ThreadPoolExecutor
+ * ThreadPoolExecutor}, that can be implemented in terms of a few methods.
+ *
+ * {@link #offer} always succeeds.
+ *
+ * @since 5.8
  */
-public class NuxeoBlockingQueue<T> extends LinkedBlockingQueue<T> {
+public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable>
+        implements BlockingQueue<Runnable>, DeactivableQueue {
 
     /*
      * ThreadPoolExecutor uses a BlockingQueue but the Java 7 implementation
@@ -49,7 +42,8 @@ public class NuxeoBlockingQueue<T> extends LinkedBlockingQueue<T> {
      *
      * - size()
      *
-     * - poll(timeout, unit)
+     * - poll(timeout, unit): not used, as core pool size = max size and no core
+     * thread timeout
      *
      * - take()
      *
@@ -57,236 +51,196 @@ public class NuxeoBlockingQueue<T> extends LinkedBlockingQueue<T> {
      *
      * - remove(e)
      *
-     * - toArray(), toArray(a)
+     * - toArray(), toArray(a): for purge and shutdown
      *
      * - drainTo(c)
      *
-     * - iterator() : hasNext(), next(), remove()
+     * - iterator() : hasNext(), next(), remove() (called by toArray)
      */
 
-    private static final long serialVersionUID = 1L;
+    protected Object activeMonitor = new Object();
 
-    private final ReentrantLock limitedPutLock = new ReentrantLock();
-
-    private final int limitedCapacity;
-
-    // @GuardedBy("itself")
-    private final Set<String> workIds;
+    protected volatile boolean active = true;
 
     /**
-     * Creates a {@link BlockingQueue} with a maximum capacity.
-     * <p>
-     * If the capacity is -1 then this is treated as a regular unbounded
-     * {@link LinkedBlockingQueue}.
+     * Sets the queue active or inactive.
      *
-     * @param capacity the capacity, or -1 for unbounded
-     */
-    public NuxeoBlockingQueue(int capacity) {
-        // Allocate more space to prevent starvation dead lock
-        // because a worker can add a new job to the queue.
-        super(capacity < 0 ? Integer.MAX_VALUE : (2 * capacity));
-        limitedCapacity = capacity;
-        workIds = new HashSet<String>();
-    }
-
-    /**
-     * Checks if the queue contains a given work id.
+     * When deactivated, taking an element from the queue (take, poll, peek)
+     * behaves as if the queue was empty. Elements can still be added when the
+     * queue is deactivated. When reactivated, all elements are again available.
      *
-     * @param workId the work id
-     * @return {@code true} if the queue contains the work id
+     * @param active {@code true} to make the queue active, or {@code false} to
+     *            deactivate it
      */
-    public boolean containsWorkId(String workId) {
-        synchronized (workIds) {
-            return workIds.contains(workId);
+    public void setActive(boolean active) {
+        this.active = active;
+        synchronized (activeMonitor) {
+            activeMonitor.notifyAll();
         }
     }
 
-    private T addWorkId(T e) {
-        if (e instanceof WorkHolder) {
-            WorkHolder wh = (WorkHolder) e;
-            String id = WorkHolder.getWork(wh).getId();
-            synchronized (workIds) {
-                workIds.add(id);
-            }
-        }
-        return e;
-    }
-
-    private boolean addWorkId(T e, boolean added) {
-        if (added) {
-            addWorkId(e);
-        }
-        return added;
-    }
-
-    private T removeWorkId(T e) {
-        if (e instanceof WorkHolder) {
-            WorkHolder wh = (WorkHolder) e;
-            String id = WorkHolder.getWork(wh).getId();
-            synchronized (workIds) {
-                workIds.remove(id);
-            }
-        }
-        return e;
-    }
-
-    private boolean removeWorkId(T e, boolean removed) {
-        if (removed) {
-            removeWorkId(e);
-        }
-        return removed;
-    }
-
-    private void clearWorkIds() {
-        synchronized (workIds) {
-            workIds.clear();
-        }
-    }
-
-    /**
-     * Blocks until there is enough remaining capacity to put the entry.
-     */
-    protected void limitedPut(T e) throws InterruptedException {
-        limitedPutLock.lockInterruptibly();
+    @Override
+    public boolean offer(Runnable r) {
         try {
-            while (remainingCapacity() < limitedCapacity) {
-                Thread.sleep(100);
+            put(r);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // restore interrupt status
+            throw new RuntimeException("interrupted", e);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean offer(Runnable r, long timeout, TimeUnit unit)
+            throws InterruptedException {
+        // not needed for ThreadPoolExecutor
+        put(r);
+        return true;
+    }
+
+    @Override
+    public void put(Runnable r) throws InterruptedException {
+        putElement(r);
+    }
+
+    @Override
+    public Runnable peek() {
+        // not needed for ThreadPoolExecutor
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
+    public Runnable take() throws InterruptedException {
+        for (;;) {
+            Runnable r = poll(1, TimeUnit.DAYS);
+            if (r != null) {
+                return r;
             }
-            put(e);
-        } finally {
-            limitedPutLock.unlock();
         }
     }
 
     @Override
-    public boolean offer(T e) {
-        if (limitedCapacity < 0) {
-            return addWorkId(e, super.offer(e));
-        } else {
-            // turn non blocking offer into a blocking put
-            try {
-                if (Thread.currentThread().getName().startsWith(
-                        WorkManagerImpl.THREAD_PREFIX)) {
-                    // use the full queue capacity for reentrant call
-                    put(e);
-                } else {
-                    // put only if there are enough remaining capacity
-                    limitedPut(e);
+    public Runnable poll() {
+        if (!active) {
+            return null;
+        }
+        return pollElement();
+    }
+
+    protected long timeUntil(long end) {
+        long timeout = end - System.currentTimeMillis();
+        if (timeout < 0) {
+            timeout = 0;
+        }
+        return timeout;
+    }
+
+    @Override
+    public Runnable poll(long timeout, TimeUnit unit)
+            throws InterruptedException {
+        long end = System.currentTimeMillis() + unit.toMillis(timeout);
+        for (;;) {
+            while (!active) {
+                synchronized (activeMonitor) {
+                    activeMonitor.wait(timeUntil(end));
                 }
-                return true;
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("interrupted", ie);
+                if (timeUntil(end) == 0) {
+                    return null;
+                }
             }
+            Runnable r = poll();
+            if (r != null) {
+                return r;
+            }
+            if (timeUntil(end) == 0) {
+                return null;
+            }
+            // TODO replace by wakeup when an element is added
+            Thread.sleep(100);
         }
     }
 
     @Override
-    public T remove() {
-        return removeWorkId(super.remove());
+    public boolean contains(Object o) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public T poll() {
-        return removeWorkId(super.poll());
+    public int size() {
+        return getQueueSize();
     }
-
-    // element(): no need to override
-
-    // peek(): no need to override
 
     @Override
-    public Iterator<T> iterator() {
-        return new Itr(super.iterator());
+    public int remainingCapacity() {
+        return Integer.MAX_VALUE;
     }
 
-    private class Itr implements Iterator<T> {
-        private Iterator<T> it;
+    @Override
+    public Iterator<Runnable> iterator() {
+        return new Iter();
+    }
 
-        private T last;
+    /*
+     * Used by drainQueue/purge methods of ThreadPoolExector through toArray.
+     */
+    private class Iter implements Iterator<Runnable> {
 
-        public Itr(Iterator<T> it) {
-            this.it = it;
+        public Iter() {
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public boolean hasNext() {
-            return it.hasNext();
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        public T next() {
-            return last = it.next();
+        public Runnable next() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void remove() {
-            it.remove();
-            removeWorkId(last);
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException();
         }
     }
 
-
-    // addAll(): no need to override, calls offer()
-
-    // removeAll(): no need to override, calls iterator()
-
-    // retainAll(): no need to override, calls iterator()
-
     @Override
-    public void clear() {
-        super.clear();
-        clearWorkIds();
+    public int drainTo(Collection<? super Runnable> c) {
+        return drainTo(c, Integer.MAX_VALUE);
     }
 
     @Override
-    public boolean add(T e) {
-        return addWorkId(e, super.add(e));
-    }
-
-    @Override
-    public void put(T e) throws InterruptedException {
-        super.put(e);
-        addWorkId(e);
-    }
-
-    @Override
-    public boolean offer(T e, long timeout, TimeUnit unit)
-            throws InterruptedException {
-        return addWorkId(e, super.offer(e, timeout, unit));
-    }
-
-    @Override
-    public T take() throws InterruptedException {
-        return removeWorkId(super.take());
-    }
-
-    @Override
-    public T poll(long timeout, TimeUnit unit) throws InterruptedException {
-        return removeWorkId(super.poll(timeout, unit));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public boolean remove(Object o) {
-        return removeWorkId((T) o, super.remove(o));
-    }
-
-    @Override
-    public int drainTo(Collection<? super T> c) {
-        clearWorkIds(); // super implementation always drains all
-        return super.drainTo(c);
-    }
-
-    @Override
-    public int drainTo(Collection<? super T> c, int maxElements) {
-        List<T> tmp = new LinkedList<T>();
-        int n = super.drainTo(tmp, maxElements);
-        c.addAll(tmp);
-        for (T e : tmp) {
-            removeWorkId(e);
+    public int drainTo(Collection<? super Runnable> c, int maxElements) {
+        for (int i = 0; i < maxElements; i++) {
+            Runnable r = poll();
+            if (r == null) {
+                return i;
+            }
+            c.add(r);
         }
-        return n;
+        return maxElements;
     }
+
+    /**
+     * Gets the size of the queue.
+     */
+    public abstract int getQueueSize();
+
+    /**
+     * Adds an element into this queue, waiting if necessary for space to become
+     * available.
+     */
+    public abstract void putElement(Runnable r) throws InterruptedException;
+
+    /**
+     * Retrieves and removes an element from the queue, or returns null if the
+     * queue is empty.
+     */
+    public abstract Runnable pollElement();
 
 }

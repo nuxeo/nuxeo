@@ -31,8 +31,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("queue")
 public class WorkQueueDescriptor {
 
+    public static final String ALL_QUEUES = "*";
+
     @XNode("@id")
     public String id;
+
+    @XNode("@queueing")
+    public Boolean queuing;
+
+    @XNode("@processing")
+    public Boolean processing;
 
     @XNode("name")
     public String name;
@@ -67,10 +75,28 @@ public class WorkQueueDescriptor {
     @XNode("capacity")
     public int capacity = -1;
 
+    /**
+     * Whether queuing of work instances to this queue is enabled for this Nuxeo
+     * instance.
+     */
+    public boolean isQueuingEnabled() {
+        return !Boolean.FALSE.equals(queuing);
+    }
+
+    /**
+     * Whether processing of work instances from this queue is enabled for this
+     * Nuxeo instance.
+     */
+    public boolean isProcessingEnabled() {
+        return !Boolean.FALSE.equals(processing);
+    }
+
     @Override
     public WorkQueueDescriptor clone() {
         WorkQueueDescriptor o = new WorkQueueDescriptor();
         o.id = id;
+        o.queuing = queuing;
+        o.processing = processing;
         o.name = name;
         o.maxThreads = maxThreads;
         o.usePriority = usePriority;
@@ -81,6 +107,12 @@ public class WorkQueueDescriptor {
     }
 
     public void merge(WorkQueueDescriptor other) {
+        if (other.queuing != null) {
+            queuing = other.queuing;
+        }
+        if (other.processing != null) {
+            processing = other.processing;
+        }
         name = other.name;
         maxThreads = other.maxThreads;
         usePriority = other.usePriority;

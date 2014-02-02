@@ -112,7 +112,7 @@ public class MemoryWorkQueuing implements WorkQueuing {
         if (capacity <= 0) {
             capacity = -1; // unbounded
         }
-        return new NuxeoBlockingQueue<Runnable>(capacity);
+        return new MemoryBlockingQueue(capacity);
     }
 
     protected Map<String, Work> newRunningMap() {
@@ -249,10 +249,9 @@ public class MemoryWorkQueuing implements WorkQueuing {
         return completed == null ? 0 : completed.size();
     }
 
-    // TODO fix this, q.containsWorkId is not actually properly thread-safe
     protected synchronized boolean isScheduled(String workId) {
         for (BlockingQueue<Runnable> scheduled : allScheduled.values()) {
-            NuxeoBlockingQueue<Runnable> q = (NuxeoBlockingQueue<Runnable>) scheduled;
+            MemoryBlockingQueue q = (MemoryBlockingQueue) scheduled;
             if (q.containsWorkId(workId)) {
                 return true;
             }

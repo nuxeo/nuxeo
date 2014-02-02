@@ -33,6 +33,7 @@ import java.util.concurrent.BlockingQueue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.redis.RedisService;
+import org.nuxeo.ecm.core.work.WorkHolder;
 import org.nuxeo.ecm.core.work.WorkQueueDescriptorRegistry;
 import org.nuxeo.ecm.core.work.WorkQueuing;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -490,6 +491,7 @@ public class RedisWorkQueuing implements WorkQueuing {
      * @throws IOException
      */
     public void addScheduledWork(String queueId, Work work) throws IOException {
+        log.debug("Add scheduled " + work);
         byte[] workIdBytes = bytes(work.getId());
 
         // serialize Work
@@ -502,21 +504,6 @@ public class RedisWorkQueuing implements WorkQueuing {
             jedis.lpush(scheduledKey(queueId), workIdBytes);
         } finally {
             closeJedis(jedis);
-        }
-    }
-
-    /**
-     * Gets the next scheduled work instance, and removes it from the scheduled
-     * queue.
-     *
-     * @param queueId the queue id
-     * @return the work, or {@code null} if the scheduled queue is empty
-     */
-    public Work removeScheduled(String queueId) {
-        try {
-            return removeScheduledWork(queueId);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -787,6 +774,9 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     /**
      * Removes first work from scheduled queue.
+     *
+     * @param queueId the queue id
+     * @return the work, or {@code null} if the scheduled queue is empty
      */
     protected Work removeScheduledWork(String queueId) throws IOException {
         Jedis jedis = getJedis();

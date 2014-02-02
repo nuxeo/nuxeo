@@ -19,8 +19,10 @@ package org.nuxeo.ecm.core.work;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.work.api.Work.State.CANCELED;
 import static org.nuxeo.ecm.core.work.api.Work.State.COMPLETED;
 import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
@@ -34,8 +36,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.nuxeo.ecm.core.work.api.Work.Progress;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
@@ -138,6 +140,8 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals(QUEUE, service.getCategoryQueueId(CATEGORY));
         WorkQueueDescriptor qd = service.getWorkQueueDescriptor(QUEUE);
         assertEquals("SleepWork", qd.id);
+        assertNull(qd.queuing);
+        assertNull(qd.processing);
         assertEquals("Sleep Work Queue", qd.name);
         assertEquals(2, qd.maxThreads);
         assertFalse(qd.usePriority);
@@ -148,67 +152,41 @@ public class WorkManagerTest extends NXRuntimeTestCase {
     @Test
     public void testWorkManagerWork() throws Exception {
         int duration = 2000; // 2s
-        SleepWork work = new SleepWork(duration, true);
+        SleepWork work = new SleepWork(duration, false);
         service.schedule(work);
 
-        work.debugWaitReady();
-        assertEquals(RUNNING, work.getWorkInstanceState());
+        Thread.sleep(duration / 2);
+        assertEquals(RUNNING, service.getWorkState(work.getId()));
         assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
         assertEquals(1, service.getQueueSize(QUEUE, RUNNING));
         assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
-        assertEquals("Starting sleep work", work.getStatus());
-        assertEquals(Progress.PROGRESS_0_PC, work.getProgress());
-        work.debugStart();
 
-        for (int i = 0; i < 20; i++) {
-            // System.out.println(work.getStatus() + ": " + work.getProgress());
-            Thread.sleep(100);
-        }
-
-        work.debugWaitDone();
-        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
-        assertEquals(1, service.getQueueSize(QUEUE, RUNNING));
-        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
-        assertEquals("Completed sleep work", work.getStatus());
-        assertEquals(Progress.PROGRESS_100_PC, work.getProgress());
-        work.debugFinish();
-
-        Thread.sleep(1000);
+        Thread.sleep(duration);
         assertEquals(1, service.getQueueSize(QUEUE, COMPLETED));
         assertEquals(0, service.getQueueSize(QUEUE, RUNNING));
         assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
-        assertEquals(COMPLETED, work.getWorkInstanceState());
+        assertEquals(COMPLETED, service.getWorkState(work.getId()));
 
         assertTrue(work.getSchedulingTime() != 0);
-        assertTrue(work.getStartTime() != 0);
-        assertTrue(work.getCompletionTime() != 0);
-        assertTrue(work.getCompletionTime() - work.getStartTime() > 0);
+//        assertTrue(work.getStartTime() != 0);
+//        assertTrue(work.getCompletionTime() != 0);
+//        assertTrue(work.getCompletionTime() - work.getStartTime() > 0);
     }
 
     @Test
     public void testWorkManagerScheduling() throws Exception {
-        int duration = 1000; // 1s
-        SleepWork work1 = new SleepWork(duration, true, "1");
-        SleepWork work2 = new SleepWork(duration, true, "2");
-        SleepWork work3 = new SleepWork(duration, true, "3");
+        int duration = 5000; // 2s
+        SleepWork work1 = new SleepWork(duration, false, "1");
+        SleepWork work2 = new SleepWork(duration, false, "2");
+        SleepWork work3 = new SleepWork(duration, false, "3");
         service.schedule(work1);
         service.schedule(work2);
         service.schedule(work3);
 
-        work1.debugWaitReady();
-        work2.debugWaitReady();
-        assertEquals(RUNNING, work1.getWorkInstanceState());
-        assertEquals(RUNNING, work2.getWorkInstanceState());
-        assertEquals(SCHEDULED, work3.getWorkInstanceState());
+        Thread.sleep(duration / 2);
         assertEquals(RUNNING, service.getWorkState("1"));
         assertEquals(RUNNING, service.getWorkState("2"));
         assertEquals(SCHEDULED, service.getWorkState("3"));
-        // assertTrue(work1 == service.find(work1, RUNNING, false, null));
-        // assertTrue(work2 == service.find(work2, RUNNING, false, null));
-        // assertTrue(work3 == service.find(work3, SCHEDULED, false, null));
-        // assertTrue(work1 == service.find(work1, null, false, null));
-        // assertTrue(work2 == service.find(work2, null, false, null));
-        // assertTrue(work3 == service.find(work3, null, false, null));
         assertEquals(Arrays.asList("3"), service.listWorkIds(QUEUE, SCHEDULED));
         assertSetEquals(Arrays.asList("1", "2"),
                 service.listWorkIds(QUEUE, RUNNING));
@@ -219,105 +197,54 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
         // disabled IF_NOT_* features
         if (Boolean.FALSE.booleanValue()) {
-        SleepWork work4 = new SleepWork(duration, true, "3"); // id=3
+        SleepWork work4 = new SleepWork(duration, false, "3"); // id=3
         service.schedule(work4, Scheduling.IF_NOT_SCHEDULED);
         assertEquals(CANCELED, work4.getWorkInstanceState());
 
-        SleepWork work5 = new SleepWork(duration, true, "1"); // id=1
+        SleepWork work5 = new SleepWork(duration, false, "1"); // id=1
         service.schedule(work5, Scheduling.IF_NOT_RUNNING);
         assertEquals(CANCELED, work5.getWorkInstanceState());
 
-        SleepWork work6 = new SleepWork(duration, true, "1"); // id=1
+        SleepWork work6 = new SleepWork(duration, false, "1"); // id=1
         service.schedule(work6, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
         assertEquals(CANCELED, work6.getWorkInstanceState());
         }
 
-        SleepWork work7 = new SleepWork(duration, true, "3"); // id=3
+        SleepWork work7 = new SleepWork(duration, false, "3"); // id=3
         service.schedule(work7, Scheduling.CANCEL_SCHEDULED);
-        // assertEquals(CANCELED, work3.getState()); // not for redis
         assertEquals(SCHEDULED, work7.getWorkInstanceState());
 
-        work1.debugStart();
-        work2.debugStart();
-        work7.debugStart();
-        work1.debugFinish(); // early
-        work2.debugFinish(); // early
-        work7.debugFinish(); // early
-
-        boolean completed = service.awaitCompletion(3, TimeUnit.SECONDS);
+        boolean completed = service.awaitCompletion(duration * 2,
+                TimeUnit.MILLISECONDS);
         assertTrue(completed);
 
-        assertEquals(COMPLETED, work1.getWorkInstanceState());
-        assertEquals(COMPLETED, work2.getWorkInstanceState());
-        // assertEquals(COMPLETED, work7.getState()); // not for redis
         assertEquals(COMPLETED, service.getWorkState("1"));
         assertEquals(COMPLETED, service.getWorkState("2"));
         assertEquals(COMPLETED, service.getWorkState("3"));
-        // assertTrue(work1 == service.find(work1, COMPLETED, false, null));
-        // assertTrue(work2 == service.find(work2, COMPLETED, false, null));
-        // assertTrue(work7 == service.find(work7, COMPLETED, false, null));
         assertEquals(Collections.emptyList(),
                 service.listWorkIds(QUEUE, SCHEDULED));
         assertEquals(Collections.emptyList(),
                 service.listWorkIds(QUEUE, RUNNING));
-        assertEquals(Collections.emptyList(),
-                service.listWorkIds(QUEUE, null));
+        assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, null));
         assertSetEquals(Arrays.asList("1", "2", "3"),
                 service.listWorkIds(QUEUE, COMPLETED));
     }
 
     @Test
-    public void testWorkManagerWorkCompletion() throws Exception {
-        int duration = 2000; // 2s
-        SleepWork work1 = new SleepWork(duration, true);
-        SleepWork work2 = new SleepWork(duration, true);
-        SleepWork work3 = new SleepWork(duration, true);
-        service.schedule(work1);
-        service.schedule(work2);
-        service.schedule(work3);
-
-        work1.debugWaitReady();
-        work2.debugWaitReady();
-        assertEquals(RUNNING, work1.getWorkInstanceState());
-        assertEquals(RUNNING, work2.getWorkInstanceState());
-        assertEquals(SCHEDULED, work3.getWorkInstanceState());
-        work1.debugStart();
-        work2.debugStart();
-        work3.debugStart();
-        work1.debugFinish(); // early
-        work2.debugFinish(); // early
-        work3.debugFinish(); // early
-
-        boolean completed = service.awaitCompletion(5, TimeUnit.SECONDS);
-        assertTrue(completed);
-
-        // check work state
-        assertEquals(COMPLETED, work1.getWorkInstanceState());
-        assertEquals(COMPLETED, work2.getWorkInstanceState());
-        // assertEquals(COMPLETED, work3.getState()); // not for redis
-    }
-
-    @Test
+    @Ignore
     public void testWorkManagerShutdown() throws Exception {
-        int duration = 5000; // 5s
-        SleepWork work1 = new SleepWork(duration, true);
-        SleepWork work2 = new SleepWork(duration, true);
-        SleepWork work3 = new SleepWork(duration, true);
+        int duration = 2000; // 2s
+        SleepWork work1 = new SleepWork(duration, false, "1");
+        SleepWork work2 = new SleepWork(duration, false, "2");
+        SleepWork work3 = new SleepWork(duration, false, "3");
         service.schedule(work1);
         service.schedule(work2);
         service.schedule(work3);
 
-        work1.debugWaitReady();
-        work2.debugWaitReady();
-        assertEquals(RUNNING, work1.getWorkInstanceState());
-        assertEquals(RUNNING, work2.getWorkInstanceState());
-        assertEquals(SCHEDULED, work3.getWorkInstanceState());
-        work1.debugStart();
-        work2.debugStart();
-        work1.debugFinish(); // early
-        work2.debugFinish(); // early
-
-        Thread.sleep(50);
+        Thread.sleep(duration / 2);
+        assertEquals(RUNNING, service.getWorkState("1"));
+        assertEquals(RUNNING, service.getWorkState("2"));
+        assertEquals(SCHEDULED, service.getWorkState("3"));
 
         // shutdown workmanager service
         // work1 and work2 get a suspended notice and stop
@@ -326,7 +253,8 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         // or put in the suspended queue (persistent)
 
         dontClearCompletedWork = true;
-        boolean terminated = service.shutdown(1, TimeUnit.SECONDS);
+        boolean terminated = service.shutdown(duration * 2,
+                TimeUnit.MILLISECONDS);
         assertTrue(terminated);
 
         // check work state
@@ -340,6 +268,88 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertTrue("remaining1 " + remaining1, remaining1 < duration);
         assertTrue("remaining2 " + remaining2, remaining2 < duration);
         assertEquals(duration, remaining3);
+    }
+
+    @Test
+    public void testWorkManagerDisableProcessing() throws Exception {
+        assumeTrue(persistent());
+
+        // disable SleepWork queue
+        deployContrib("org.nuxeo.ecm.core.event.test",
+                "test-workmanager-disablequeue.xml");
+
+        int duration = 2000; // 2s
+        SleepWork work1 = new SleepWork(duration, false);
+        service.schedule(work1);
+
+        Thread.sleep(duration / 2);
+
+        // stays scheduled
+        assertEquals(1, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(0, service.getQueueSize(QUEUE, RUNNING));
+        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
+
+        Thread.sleep(2 * duration);
+        // still scheduled
+        assertEquals(1, service.getQueueSize(QUEUE, SCHEDULED));
+
+        // now reactivate the queue
+        // use a programmatic work queue descriptor
+        WorkQueueDescriptor descr = new WorkQueueDescriptor();
+        descr.id = "SleepWork";
+        descr.processing = Boolean.TRUE;
+        descr.categories = Collections.emptySet();
+        ((WorkManagerImpl) service).registerWorkQueueDescriptor(descr);
+
+        Thread.sleep(duration / 2);
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(1, service.getQueueSize(QUEUE, RUNNING));
+        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
+        Thread.sleep(duration);
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(0, service.getQueueSize(QUEUE, RUNNING));
+        assertEquals(1, service.getQueueSize(QUEUE, COMPLETED));
+    }
+
+    @Test
+    public void testWorkManagerDisableProcessing2() throws Exception {
+        assumeTrue(persistent());
+
+        // disable all queues
+        deployContrib("org.nuxeo.ecm.core.event.test",
+                "test-workmanager-disablequeue2.xml");
+        int duration = 2000; // 2s
+        SleepWork work1 = new SleepWork(duration, false);
+        service.schedule(work1);
+
+        Thread.sleep(duration / 2);
+
+        // stays scheduled
+        assertEquals(1, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(0, service.getQueueSize(QUEUE, RUNNING));
+        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
+
+        // check that we can reenable the queue
+        Thread.sleep(2 * duration);
+        // still scheduled
+        assertEquals(1, service.getQueueSize(QUEUE, SCHEDULED));
+
+        // now reactivate the queue
+        // use a programmatic work queue descriptor
+        WorkQueueDescriptor descr = new WorkQueueDescriptor();
+        descr.id = "SleepWork";
+        descr.processing = Boolean.TRUE;
+        descr.categories = Collections.emptySet();
+        ((WorkManagerImpl) service).registerWorkQueueDescriptor(descr);
+
+        Thread.sleep(duration / 2);
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(1, service.getQueueSize(QUEUE, RUNNING));
+        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
+        Thread.sleep(duration);
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(0, service.getQueueSize(QUEUE, RUNNING));
+        assertEquals(1, service.getQueueSize(QUEUE, COMPLETED));
     }
 
 }
