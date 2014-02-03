@@ -147,13 +147,20 @@ If you want to call the `identify` API, you can directly call
 
     identifyIfNeeded(login, email)
 
-An alternative is to use a script that is generated for your user:
+A typical call in the context of a WebEngine page would be :
 
+    identifyIfNeeded('${Context.principal.name}', '${Context.principal.email}');
+
+An alternative is to use a script that is generated for your user:
 
     <script src="/nuxeo/site/segmentIO?login=XXX"></script>
 
-
 XXX should be the actual login of the currently loggedin user.
+
+Typically : 
+
+    <script src="/nuxeo/site/segmentIO?login=${Context.principal.name}"></script>
+
 
 
 

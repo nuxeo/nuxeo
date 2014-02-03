@@ -1,13 +1,14 @@
 Manifest-Version: 1.0
+Nuxeo-WebModule: org.nuxeo.segment.io.web.SegmentIOResourceWebApp;name
+ =SegmentIO
 Bundle-Vendor: Nuxeo
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Version: 5.8
 Bundle-Name: org.nuxeo.segmentio.connector
-Nuxeo-Component: OSGI-INF/extensions/org.nuxeo.segment.io.SegmentIOCom
- ponent.xml,
- OSGI-INF/listeners-contrib.xml
 Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/segmentIO-service.xml,
+ OSGI-INF/listeners-contrib.xml
 Bundle-SymbolicName: org.nuxeo.segmentio.connector
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Nuxeo-WebModule: org.nuxeo.segment.io.web.SegmentIOResourceWebApp;name=SegmentIO
+
