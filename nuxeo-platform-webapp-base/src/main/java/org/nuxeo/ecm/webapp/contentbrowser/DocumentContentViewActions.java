@@ -38,16 +38,23 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
+import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ActionContext;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.types.localconfiguration.ContentViewConfiguration;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.webapp.action.ActionContextProvider;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Handles available content views defined on a document type per category
+ * Handles available content views defined on a document type per category, as
+ * well as helper methods to retrieve selection actions for a given content
+ * view.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -60,8 +67,14 @@ public class DocumentContentViewActions implements Serializable {
 
     private static final Log log = LogFactory.getLog(DocumentContentViewActions.class);
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient NavigationContext navigationContext;
+
+    @In(create = true, required = false)
+    protected transient WebActions webActions;
+
+    @In(create = true, required = false)
+    protected transient ActionContextProvider actionContextProvider;
 
     @In(create = true)
     protected ContentViewService contentViewService;
@@ -202,7 +215,8 @@ public class DocumentContentViewActions implements Serializable {
         return currentAvailableContentViews.get(category);
     }
 
-    public List<ContentViewHeader> getLocalConfiguredContentViews(DocumentModel doc) {
+    public List<ContentViewHeader> getLocalConfiguredContentViews(
+            DocumentModel doc) {
         LocalConfigurationService localConfigurationService;
         try {
             localConfigurationService = Framework.getService(LocalConfigurationService.class);
@@ -266,15 +280,32 @@ public class DocumentContentViewActions implements Serializable {
         currentAvailableContentViews = null;
         currentExportContentViews = null;
     }
-    
+
     /**
      * Resets typeToContentView cache on {@link EventNames#FLUSH_EVENT},
      * triggered by hot reload when dev mode is set.
-     * 
+     *
      * @since 5.7.1
      */
     @Observer(value = { EventNames.FLUSH_EVENT })
     public void onHotReloadFlush() {
         typeToContentView = new HashMap<String, Map<String, List<ContentViewHeader>>>();
+    }
+
+    /**
+     * Helper to retrieve selection actions for a given content view, passing
+     * additional variables to the {@link ActionContext} used for resolution.
+     *
+     * @since 2.17
+     * @param category
+     * @param contentView
+     * @param selectedEntries
+     */
+    public List<Action> getSelectionActions(String category,
+            ContentView contentView, List<Object> selectedEntries) {
+        ActionContext ctx = actionContextProvider.createActionContext();
+        ctx.putLocalVariable("contentView", contentView);
+        ctx.putLocalVariable("selectedDocuments", selectedEntries);
+        return webActions.getActionsList(category, ctx, false);
     }
 }
