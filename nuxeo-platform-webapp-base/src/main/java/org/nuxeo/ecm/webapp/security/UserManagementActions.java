@@ -290,9 +290,12 @@ public class UserManagementActions extends AbstractUserGroupManagement
     public void validateGroups(FacesContext context, UIComponent component,
             Object value) {
 
+        UIInput groupsComponent = getReferencedComponent("groupsValueHolderId",
+                component);
+
         @SuppressWarnings("unchecked")
-        List<String> groups = (List<String>) getReferencedComponent(
-                "groupsValueHolderId", component).getLocalValue();
+        List<String> groups = groupsComponent == null ? null
+                : (List<String>) groupsComponent.getLocalValue();
         if (groups == null || groups.isEmpty()) {
             return;
         }
@@ -374,7 +377,6 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
         UIInput targetComponent = (UIInput) component.findComponent(targetComponentId);
         if (targetComponent == null) {
-            log.error(String.format("Referenced component (%s) not found", attribute));
             return null;
         }
 
