@@ -308,7 +308,7 @@ public class Selection {
             for (Serializable id : deleted) {
                 SimpleFragment fragment = getFragmentIfPresent(id);
                 if (fragment == null) {
-                    log.warn("Deleted fragment missing: " + id);
+                    // common case
                     continue;
                 }
                 if (filter.equals(fragmentValue(fragment))) {
