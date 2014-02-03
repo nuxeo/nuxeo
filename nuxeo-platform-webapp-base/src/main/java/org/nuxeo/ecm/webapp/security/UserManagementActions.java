@@ -319,8 +319,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
      *
      * @since 5.9.2
      */
-    boolean isAllowedToAdminGroups(List<String> groups)
-            throws ClientException {
+    boolean isAllowedToAdminGroups(List<String> groups) throws ClientException {
         NuxeoPrincipalImpl nuxeoPrincipal = (NuxeoPrincipalImpl) currentUser;
 
         if (!nuxeoPrincipal.isAdministrator()) {
@@ -368,13 +367,16 @@ public class UserManagementActions extends AbstractUserGroupManagement
         String targetComponentId = (String) attributes.get(attribute);
 
         if (targetComponentId == null) {
-            log.error(String.format("Target component id (%s) not found in attributes", attribute));
+            log.error(String.format(
+                    "Target component id (%s) not found in attributes",
+                    attribute));
             return null;
         }
 
         UIInput targetComponent = (UIInput) component.findComponent(targetComponentId);
         if (targetComponent == null) {
-            log.error(String.format("Referenced component (%s) not found", attribute));
+            log.error(String.format("Referenced component (%s) not found",
+                    attribute));
             return null;
         }
 
@@ -384,8 +386,10 @@ public class UserManagementActions extends AbstractUserGroupManagement
     public void validatePassword(FacesContext context, UIComponent component,
             Object value) {
 
-        Object firstPassword = getReferencedComponent("firstPasswordInputId", component).getLocalValue();
-        Object secondPassword = getReferencedComponent("secondPasswordInputId", component).getLocalValue();
+        Object firstPassword = getReferencedComponent("firstPasswordInputId",
+                component).getLocalValue();
+        Object secondPassword = getReferencedComponent("secondPasswordInputId",
+                component).getLocalValue();
 
         if (firstPassword == null || secondPassword == null) {
             log.error("Cannot validate passwords: value(s) not found");
@@ -393,7 +397,8 @@ public class UserManagementActions extends AbstractUserGroupManagement
         }
 
         if (!firstPassword.equals(secondPassword)) {
-            throwValidationException(context, "label.userManager.password.not.match");
+            throwValidationException(context,
+                    "label.userManager.password.not.match");
         }
 
     }
