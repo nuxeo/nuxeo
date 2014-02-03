@@ -125,7 +125,6 @@ public class AuthorizationRequest extends Oauth2Request {
     public static AuthorizationRequest from(HttpServletRequest request)
             throws UnsupportedEncodingException {
         String sessionId = request.getSession(true).getId();
-        log.error("SessionId: " + sessionId);
         if (requests.containsKey(sessionId)) {
             AuthorizationRequest authRequest = requests.get(sessionId);
             if (!authRequest.isExpired() && authRequest.isValidState(request)) {
@@ -142,7 +141,7 @@ public class AuthorizationRequest extends Oauth2Request {
         for (AuthorizationRequest auth : requests.values()) {
             if (auth.authorizationCode != null
                     && auth.authorizationCode.equals(authorizationCode)) {
-                // requests.remove(auth.sessionId); XXX TEST
+                requests.remove(auth.sessionId);
                 return auth.isExpired() ? null : auth;
             }
         }

@@ -4,6 +4,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
@@ -127,7 +128,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
     protected void processAuthentication(HttpServletRequest request,
             HttpServletResponse response, FilterChain chain)
             throws ClientException, IOException, ServletException {
-        String key = request.getHeader("Authorization").substring(7);
+        String key = URLDecoder.decode(
+                request.getHeader("Authorization").substring(7), "UTF-8").trim();
         NuxeoOAuth2Token token = getTokenStore().getToken(key);
 
         if (token == null) {
@@ -196,8 +198,6 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
             return;
         }
 
-        log.error("Authentication succeed !");
-
         // Save username in request object
         authRequest.setUsername((String) request.getSession().getAttribute(
                 USERNAME_KEY));
@@ -208,7 +208,6 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
             params.put("state", authRequest.getState());
         }
 
-        log.error("Auth Code:" + authRequest.getAuthorizationCode());
         sendRedirect(response, authRequest.getRedirectUri(), params);
     }
 
