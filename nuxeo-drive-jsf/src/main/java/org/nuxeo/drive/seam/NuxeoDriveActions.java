@@ -118,6 +118,9 @@ public class NuxeoDriveActions implements Serializable {
     @Factory(value = "canEditCurrentDocument")
     public boolean canEditCurrentDocument() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument == null) {
+            return false;
+        }
         if (currentDocument.isFolder()) {
             return false;
         }
@@ -162,6 +165,9 @@ public class NuxeoDriveActions implements Serializable {
     @Factory(value = "canSynchronizeCurrentDocument")
     public boolean canSynchronizeCurrentDocument() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument == null) {
+            return false;
+        }
         return isSyncRootCandidate(currentDocument)
                 && getCurrentSynchronizationRoot() == null;
     }
@@ -169,6 +175,9 @@ public class NuxeoDriveActions implements Serializable {
     @Factory(value = "canUnSynchronizeCurrentDocument")
     public boolean canUnSynchronizeCurrentDocument() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument == null) {
+            return false;
+        }
         if (!isSyncRootCandidate(currentDocument)) {
             return false;
         }
@@ -184,6 +193,9 @@ public class NuxeoDriveActions implements Serializable {
     public boolean canNavigateToCurrentSynchronizationRoot()
             throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument == null) {
+            return false;
+        }
         if (LifeCycleConstants.DELETED_STATE.equals(currentDocument.getCurrentLifeCycleState())) {
             return false;
         }
@@ -198,6 +210,9 @@ public class NuxeoDriveActions implements Serializable {
     @Factory(value = "currentDocumentUserWorkspace", scope = ScopeType.PAGE)
     public boolean isCurrentDocumentUserWorkspace() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument == null) {
+            return false;
+        }
         return UserWorkspaceHelper.isUserWorkspace(currentDocument);
     }
 
