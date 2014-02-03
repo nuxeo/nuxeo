@@ -1384,9 +1384,6 @@
                   <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">select2_directory_fetch_mode</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">select2_dbl10n</widget>
                 </row>
                 <row>
@@ -1422,6 +1419,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_directory_fetch_mode</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_orderable</widget>
