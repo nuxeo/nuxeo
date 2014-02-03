@@ -5,7 +5,7 @@
     <handler>
       <event>aboutToCreate</event>
       <filters>
-        <expression>a &lt; b &amp; b &gt; c</expression>
+        <condition>a &lt; b &amp; b &gt; c</condition>
       </filters>
     </handler>
   </extension>
