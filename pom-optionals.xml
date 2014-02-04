@@ -26,6 +26,8 @@ included in the default full build). Thus they are not deprecated.</description>
     <module>nuxeo-platform-intuition</module>
     <module>nuxeo-platform-semantic-entities</module>
     <module>nuxeo-platform-sync</module>
+    <module>nuxeo-javaagent</module>
+    <module>nuxeo-session-inspector</module>
   </modules>
 
   <!-- dependencyManagement of optional addons must be defined in pom.xml -->
