@@ -42,15 +42,15 @@ import com.sun.facelets.el.ELAdaptor;
 
 /**
  * Default FaceletContext implementation.
- * 
+ * <p>
  * Copied from facelets-1.1.15.B1 by Jean-Marc Orliaguet <jmo@chalmers.se> -
  * 2010/10/24.
- * 
- * A single FaceletContext is used for all Facelets involved in an invocation of
- * {@link com.sun.facelets.Facelet#apply(FacesContext, UIComponent)
+ * <p>
+ * A single FaceletContext is used for all Facelets involved in an invocation
+ * of {@link com.sun.facelets.Facelet#apply(FacesContext, UIComponent)
  * Facelet#apply(FacesContext, UIComponent)}. This means that included Facelets
  * are treated the same as the JSP include directive.
- * 
+ *
  * @author Jacob Hookom
  * @version $Id: DefaultFaceletContext.java,v 1.4.4.3 2006/03/25 01:01:53 jhook
  *          Exp $
@@ -75,9 +75,7 @@ final class DefaultFaceletContext extends FaceletContext {
 
     private String prefix;
 
-    // TODO: change to StringBuilder when JDK1.5 support is available in
-    // Facelets
-    private final StringBuffer uniqueIdBuilder = new StringBuffer(30);
+    private final StringBuilder uniqueIdBuilder = new StringBuilder(30);
 
     public DefaultFaceletContext(DefaultFaceletContext ctx,
             DefaultFacelet facelet) {
@@ -112,7 +110,6 @@ final class DefaultFaceletContext extends FaceletContext {
 
     /*
      * (non-Javadoc)
-     * 
      * @see com.sun.facelets.FaceletContext#getFacesContext()
      */
     @Override
@@ -122,7 +119,6 @@ final class DefaultFaceletContext extends FaceletContext {
 
     /*
      * (non-Javadoc)
-     * 
      * @see com.sun.facelets.FaceletContext#getExpressionFactory()
      */
     @Override
@@ -132,7 +128,6 @@ final class DefaultFaceletContext extends FaceletContext {
 
     /*
      * (non-Javadoc)
-     * 
      * @see
      * com.sun.facelets.FaceletContext#setVariableMapper(javax.el.VariableMapper
      * )
@@ -145,7 +140,6 @@ final class DefaultFaceletContext extends FaceletContext {
 
     /*
      * (non-Javadoc)
-     * 
      * @see
      * com.sun.facelets.FaceletContext#setFunctionMapper(javax.el.FunctionMapper
      * )
@@ -158,7 +152,6 @@ final class DefaultFaceletContext extends FaceletContext {
 
     /*
      * (non-Javadoc)
-     * 
      * @see
      * com.sun.facelets.FaceletContext#includeFacelet(javax.faces.component.
      * UIComponent, java.lang.String)
@@ -171,7 +164,6 @@ final class DefaultFaceletContext extends FaceletContext {
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.el.ELContext#getFunctionMapper()
      */
     @Override
@@ -181,7 +173,6 @@ final class DefaultFaceletContext extends FaceletContext {
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.el.ELContext#getVariableMapper()
      */
     @Override
@@ -191,7 +182,6 @@ final class DefaultFaceletContext extends FaceletContext {
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.el.ELContext#getContext(java.lang.Class)
      */
     @Override
@@ -201,7 +191,6 @@ final class DefaultFaceletContext extends FaceletContext {
 
     /*
      * (non-Javadoc)
-     * 
      * @see javax.el.ELContext#putContext(java.lang.Class, java.lang.Object)
      */
     @Override
@@ -211,15 +200,13 @@ final class DefaultFaceletContext extends FaceletContext {
 
     /*
      * (non-Javadoc)
-     * 
      * @see com.sun.facelets.FaceletContext#generateUniqueId(java.lang.String)
      */
     @Override
     public String generateUniqueId(String base) {
 
         if (prefix == null) {
-            // TODO: change to StringBuilder when JDK1.5 support is available
-            StringBuffer builder = new StringBuffer(
+            StringBuilder builder = new StringBuilder(
                     faceletHierarchy.size() * 30);
             for (int i = 0; i < faceletHierarchy.size(); i++) {
                 DefaultFacelet facelet = (DefaultFacelet) faceletHierarchy.get(i);
@@ -261,7 +248,6 @@ final class DefaultFaceletContext extends FaceletContext {
 
     /*
      * (non-Javadoc)
-     * 
      * @see com.sun.facelets.FaceletContext#getAttribute(java.lang.String)
      */
     @Override
@@ -277,7 +263,6 @@ final class DefaultFaceletContext extends FaceletContext {
 
     /*
      * (non-Javadoc)
-     * 
      * @see com.sun.facelets.FaceletContext#setAttribute(java.lang.String,
      * java.lang.Object)
      */
@@ -297,7 +282,6 @@ final class DefaultFaceletContext extends FaceletContext {
 
     /*
      * (non-Javadoc)
-     * 
      * @see
      * com.sun.facelets.FaceletContext#includeFacelet(javax.faces.component.
      * UIComponent, java.net.URL)
