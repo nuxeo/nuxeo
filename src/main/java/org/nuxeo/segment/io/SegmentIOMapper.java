@@ -4,6 +4,7 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.Script;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,9 +46,9 @@ public class SegmentIOMapper {
         return "identify".equalsIgnoreCase(target);
     }
 
-    public Map<String, String> getMappedData(Map<String, Object> context) {
+    public Map<String, Serializable> getMappedData(Map<String, Object> context) {
 
-        Map<String, String> mapping = new HashMap<String, String>();
+        Map<String, Serializable> mapping = new HashMap<String, Serializable>();
         context.put("mapping", mapping);
 
         StringBuffer sb = new StringBuffer();

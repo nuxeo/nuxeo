@@ -17,6 +17,7 @@
 
 package org.nuxeo.segment.io;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -41,6 +42,10 @@ import com.github.segmentio.models.Traits;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
+
+    public static final String LOGIN_KEY = "login";
+
+    public static final String PRINCIPAL_KEY = "principal";
 
     protected static Log log = LogFactory.getLog(SegmentIOComponent.class);
 
@@ -131,14 +136,18 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         identify(principal, null);
     }
 
-    public void identify(NuxeoPrincipal principal, Map<String, String> metadata) {
-
-        String userId = principal.getName();
-        Traits traits = new Traits();
+    public void identify(NuxeoPrincipal principal, Map<String, Serializable> metadata) {
 
         if (metadata == null) {
             metadata = new HashMap<>();
         }
+
+        if (metadata.containsKey(PRINCIPAL_KEY) && metadata.get(PRINCIPAL_KEY)!=null) {
+            principal = (NuxeoPrincipal) metadata.get(PRINCIPAL_KEY);
+        }
+
+        String userId = principal.getName();
+        Traits traits = new Traits();
 
         if (!metadata.containsKey("email")) {
             metadata.put("email", principal.getEmail());
@@ -151,8 +160,8 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         }
 
         // allow override
-        if (metadata.containsKey("login")) {
-            userId = metadata.get("login");
+        if (metadata.containsKey(LOGIN_KEY)) {
+            userId = (String) metadata.get(LOGIN_KEY);
         }
 
         traits.putAll(metadata);
@@ -172,7 +181,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     }
 
     protected void pushForTest(String action, NuxeoPrincipal principal,
-            String eventName, Map<String, String> metadata) {
+            String eventName, Map<String, Serializable> metadata) {
         Map<String, Object> data = new HashMap<>();
         if (metadata != null) {
             data.putAll(metadata);
@@ -181,7 +190,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         if (eventName != null) {
             data.put("eventName", eventName);
         }
-        data.put("principal", principal);
+        data.put(PRINCIPAL_KEY, principal);
         testData.add(data);
     }
 
@@ -194,12 +203,17 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     }
 
     public void track(NuxeoPrincipal principal, String eventName,
-            Map<String, String> metadata) {
+            Map<String, Serializable> metadata) {
 
-        String userId = principal.getName();
         if (metadata == null) {
             metadata = new HashMap<>();
         }
+
+        if (metadata.containsKey(PRINCIPAL_KEY) && metadata.get(PRINCIPAL_KEY)!=null) {
+            principal = (NuxeoPrincipal) metadata.get(PRINCIPAL_KEY);
+        }
+
+        String userId = principal.getName();
 
         EventProperties eventProperties = new EventProperties();
         if (!metadata.containsKey("email")) {
@@ -212,8 +226,8 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
             metadata.put("lastName", principal.getLastName());
         }
         // allow override
-        if (metadata.containsKey("login")) {
-            userId = metadata.get("login");
+        if (metadata.containsKey(LOGIN_KEY)) {
+            userId = (String) metadata.get(LOGIN_KEY);
         }
         eventProperties.putAll(metadata);
 

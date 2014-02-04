@@ -1,5 +1,6 @@
 package org.nuxeo.segment.io.listener;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,7 +84,7 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
                     ctx.put("session", docCtx.getCoreSession());
                     ctx.put("dest", docCtx.getDestination());
                 }
-                Map<String, String> mapped =  mapper.getMappedData(ctx);
+                Map<String, Serializable> mapped =  mapper.getMappedData(ctx);
 
                 if (mapper.isIdentify()) {
                     Framework.getLocalService(SegmentIO.class).identify(principal, mapped);

@@ -49,7 +49,8 @@ When calling the segment.io API (identify or track), Nuxeo service will always s
  - `email` :  `principal.getEmail()`
  - `firstName` : `principal.getFirstName()`
  - `lastName` : `principal.getLastName()`
- - `email` : `principal.getEmail()`
+
+However, you can override this default binding, by providing custom bindng for these fields `email`, `firstName`, `lastName`.
 
 The parameters binding, is generated from a Groovy script evaluated in a context containing :
 
@@ -64,6 +65,8 @@ If the event is associated to a Document event, the context will also contain :
  - `repository` : name of the source repository
  - `session` : CoreSession
  - `dest` : DocumentRef to the target Document if any
+
+The `principal` is normally extracted from the context and will be used to fetch the default values for `email`, `firstName`, `lastName`. If you need to use a different value for the principal, you can simply override the default resolution by putting a `principal` field in the binding.
 
 ### Parameters bindings
 
