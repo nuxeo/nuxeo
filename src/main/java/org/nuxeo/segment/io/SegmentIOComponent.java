@@ -37,7 +37,6 @@ import com.github.segmentio.Analytics;
 import com.github.segmentio.models.EventProperties;
 import com.github.segmentio.models.Traits;
 
-
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
@@ -87,8 +86,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
             throws Exception {
         if (CONFIG_EP.equalsIgnoreCase(extensionPoint)) {
             config = (SegmentIOConfig) contribution;
-        }
-        else if (MAPPER_EP.equalsIgnoreCase(extensionPoint)) {
+        } else if (MAPPER_EP.equalsIgnoreCase(extensionPoint)) {
             SegmentIOMapper mapper = (SegmentIOMapper) contribution;
             mappers.put(mapper.name, mapper);
         }
@@ -99,8 +97,8 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         String key = getWriteKey();
         if (DEFAULT_DEBUG_KEY.equals(key)) {
             log.info("Run Segment.io in debug mode : nothing will be sent to the server");
-            debugMode=true;
-        } else{
+            debugMode = true;
+        } else {
             Analytics.initialize(key);
         }
         computeEvent2Mappers();
@@ -111,7 +109,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         for (SegmentIOMapper mapper : mappers.values()) {
             for (String event : mapper.events) {
                 List<SegmentIOMapper> m4event = event2Mappers.get(event);
-                if (m4event==null) {
+                if (m4event == null) {
                     event2Mappers.put(event, new ArrayList<SegmentIOMapper>());
                     m4event = event2Mappers.get(event);
                 }
@@ -123,7 +121,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     }
 
     public String getWriteKey() {
-        if (config!=null) {
+        if (config != null) {
             return config.writeKey;
         }
         return Framework.getProperty(WRITE_KEY, DEFAULT_DEBUG_KEY);
@@ -138,36 +136,49 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         String userId = principal.getName();
         Traits traits = new Traits();
 
-        traits.put("email", principal.getEmail());
-        traits.put("firstName", principal.getFirstName());
-        traits.put("lastName", principal.getLastName());
-
-        if (metadata!=null) {
-            traits.putAll(metadata);
-        } else {
+        if (metadata == null) {
             metadata = new HashMap<>();
         }
+
+        if (!metadata.containsKey("email")) {
+            metadata.put("email", principal.getEmail());
+        }
+        if (!metadata.containsKey("firstName")) {
+            metadata.put("firstName", principal.getFirstName());
+        }
+        if (!metadata.containsKey("lastName")) {
+            metadata.put("lastName", principal.getLastName());
+        }
+
+        // allow override
+        if (metadata.containsKey("login")) {
+            userId = metadata.get("login");
+        }
+
+        traits.putAll(metadata);
+
         if (Framework.isTestModeSet()) {
             pushForTest("identify", principal, null, metadata);
         } else {
             if (debugMode) {
-                log.info("send identify for " + userId + " with meta : " + metadata.toString());
+                log.info("send identify for " + userId + " with meta : "
+                        + metadata.toString());
             } else {
                 log.debug("send identify with " + metadata.toString());
                 Analytics.identify(userId, traits);
             }
         }
 
-
     }
 
-    protected void pushForTest(String action, NuxeoPrincipal principal, String eventName,  Map<String, String> metadata) {
+    protected void pushForTest(String action, NuxeoPrincipal principal,
+            String eventName, Map<String, String> metadata) {
         Map<String, Object> data = new HashMap<>();
-        if (metadata!=null) {
+        if (metadata != null) {
             data.putAll(metadata);
         }
         data.put("action", action);
-        if(eventName !=null) {
+        if (eventName != null) {
             data.put("eventName", eventName);
         }
         data.put("principal", principal);
@@ -182,24 +193,36 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         track(principal, null);
     }
 
-    public void track(NuxeoPrincipal principal, String eventName, Map<String, String> metadata) {
+    public void track(NuxeoPrincipal principal, String eventName,
+            Map<String, String> metadata) {
 
-        String userId = principal.getPrincipalId();
-        if (metadata==null) {
+        String userId = principal.getName();
+        if (metadata == null) {
             metadata = new HashMap<>();
         }
 
         EventProperties eventProperties = new EventProperties();
-        metadata.put("email", principal.getEmail());
-        metadata.put("firstName", principal.getFirstName());
-        metadata.put("lastName", principal.getLastName());
+        if (!metadata.containsKey("email")) {
+            metadata.put("email", principal.getEmail());
+        }
+        if (!metadata.containsKey("firstName")) {
+            metadata.put("firstName", principal.getFirstName());
+        }
+        if (!metadata.containsKey("lastName")) {
+            metadata.put("lastName", principal.getLastName());
+        }
+        // allow override
+        if (metadata.containsKey("login")) {
+            userId = metadata.get("login");
+        }
         eventProperties.putAll(metadata);
 
         if (Framework.isTestModeSet()) {
             pushForTest("track", principal, eventName, metadata);
         } else {
             if (debugMode) {
-                log.info("send track for " + eventName + " user : " +  userId + " with meta : " + metadata.toString());
+                log.info("send track for " + eventName + " user : " + userId
+                        + " with meta : " + metadata.toString());
             } else {
                 log.debug("send track with " + metadata.toString());
                 Analytics.track(userId, eventName, eventProperties);
