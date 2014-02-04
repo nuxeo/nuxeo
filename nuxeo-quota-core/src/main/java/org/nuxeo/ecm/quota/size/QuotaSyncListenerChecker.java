@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -55,8 +57,6 @@ import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.runtime.api.Framework;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting space used by Blobs in
@@ -70,7 +70,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     public static final String DISABLE_QUOTA_CHECK_LISTENER = "disableQuotaListener";
 
-    private static Logger LOG = LoggerFactory.getLogger(QuotaSyncListenerChecker.class);
+    private static Log log = LogFactory.getLog(QuotaSyncListenerChecker.class);
 
     @Override
     public void computeInitialStatistics(CoreSession unrestrictedSession,
@@ -197,7 +197,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             // NXP-10718
             QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
             if (quotaDoc == null) {
-                log.debug("  add Quota Facet on " + targetDoc.getPathAsString());
+                log.trace("  add Quota Facet on " + targetDoc.getPathAsString());
                 quotaDoc = QuotaAwareDocumentFactory.make(targetDoc, true);
             }
         }
@@ -351,10 +351,17 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             // hasn't finished yet, see NXP-13665
             BlobSizeInfo bsi = computeSizeImpact(targetDoc, false);
             total = bsi.getBlobSize();
+            log.debug("Document "
+                    + targetDoc.getId()
+                    + " doesn't have the facet quotaDoc. Compute impacted size:"
+                    + total);
         }
         if (quotaDoc != null) {
             total = quotaDoc.getTotalSize();
             versSize = -quotaDoc.getVersionsSize();
+            log.debug("Found facet quotaDoc on document  " + targetDoc.getId()
+                    + ".Notifying QuotaComputerProcessor with total size: "
+                    + total + " and versions size: " + versSize);
         }
         if (total > 0) {
             List<String> parentUUIDs = getParentUUIDS(session, targetDoc);
@@ -545,7 +552,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                     String schema = blobProperty.getParent().getSchema().getName();
                     String propName = blobProperty.getName();
 
-                    LOG.debug(String.format(
+                    log.debug(String.format(
                             "Using [%s:%s] for quota blob computation (size : %d)",
                             schema, propName, blob.getLength()));
                     result.add(blob);

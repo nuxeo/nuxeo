@@ -161,9 +161,11 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 log.error("SourceDocument has no ref");
             } else {
                 try {
-                parents.addAll(getParents(sourceDocument, session));
+                    parents.addAll(getParents(sourceDocument, session));
                 } catch (ClientException e) {
-                    log.debug("Could not get parent for document " + sourceDocument.getRef() + ", error is " + e.getMessage());
+                    log.debug("Could not get parent for document "
+                            + sourceDocument.getRef() + ", error is "
+                            + e.getMessage());
                 }
             }
 
@@ -202,8 +204,8 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                     quotaDoc.addInnerSize(quotaCtx.getBlobDelta(), true);
                 }
             } else {
-                //When we copy some doc that are not folderish, we don't
-                //copy the versions so we can't rely on the copied quotaDocInfo
+                // When we copy some doc that are not folderish, we don't
+                // copy the versions so we can't rely on the copied quotaDocInfo
                 if (!sourceDocument.isFolder()) {
                     quotaDoc.resetInfos(false);
                     quotaDoc.addInnerSize(quotaCtx.getBlobSize(), true);
@@ -230,6 +232,12 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 // when permanently deleting the doc clean the trash if the doc
                 // is in trash and all
                 // archived versions size
+                log.debug("Processing document about to be removed on parents. Total: "
+                        + quotaCtx.getBlobDelta()
+                        + " , trash size: "
+                        + quotaCtx.getTrashSize()
+                        + " , versions size: "
+                        + quotaCtx.getVersionsSize());
                 processOnParents(
                         parents,
                         quotaCtx.getBlobDelta(),

@@ -26,9 +26,9 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 
 /**
  * Adapter to manage a DocumentModel that supports Quotas
@@ -120,6 +120,8 @@ public class QuotaAwareDocument implements QuotaAware {
             throws ClientException {
         Long total = getTotalSize() + additionalSize;
         doc.setPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, total);
+        log.debug("Setting quota (total size) : " + total + " on document "
+                + doc.getId());
         if (save) {
             save(true);
         }
@@ -130,6 +132,8 @@ public class QuotaAwareDocument implements QuotaAware {
             throws ClientException {
         Long trash = getTrashSize() + additionalSize;
         doc.setPropertyValue(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY, trash);
+        log.debug("Setting quota (trash size):" + trash + " on document "
+                + doc.getId());
         if (save) {
             save(true);
         }
@@ -140,6 +144,8 @@ public class QuotaAwareDocument implements QuotaAware {
             throws ClientException {
         Long versions = getVersionsSize() + additionalSize;
         doc.setPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, versions);
+        log.debug("Setting quota (versions size): " + versions
+                + " on document " + doc.getId());
         if (save) {
             save(true);
         }
