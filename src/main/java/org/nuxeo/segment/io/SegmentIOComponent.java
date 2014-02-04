@@ -43,10 +43,6 @@ import com.github.segmentio.models.Traits;
  */
 public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
-    public static final String LOGIN_KEY = "login";
-
-    public static final String PRINCIPAL_KEY = "principal";
-
     protected static Log log = LogFactory.getLog(SegmentIOComponent.class);
 
     protected static final String DEFAULT_DEBUG_KEY = "FakeKey_ChangeMe";
@@ -138,49 +134,24 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     public void identify(NuxeoPrincipal principal, Map<String, Serializable> metadata) {
 
-        if (metadata == null) {
-            metadata = new HashMap<>();
-        }
-
-        if (metadata.containsKey(PRINCIPAL_KEY) && metadata.get(PRINCIPAL_KEY)!=null) {
-            principal = (NuxeoPrincipal) metadata.get(PRINCIPAL_KEY);
-        }
-
-        String userId = principal.getName();
-        Traits traits = new Traits();
-
-        if (!metadata.containsKey("email")) {
-            metadata.put("email", principal.getEmail());
-        }
-        if (!metadata.containsKey("firstName")) {
-            metadata.put("firstName", principal.getFirstName());
-        }
-        if (!metadata.containsKey("lastName")) {
-            metadata.put("lastName", principal.getLastName());
-        }
-
-        // allow override
-        if (metadata.containsKey(LOGIN_KEY)) {
-            userId = (String) metadata.get(LOGIN_KEY);
-        }
-
-        traits.putAll(metadata);
+        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal, metadata);
 
         if (Framework.isTestModeSet()) {
-            pushForTest("identify", principal, null, metadata);
+            pushForTest("identify", wrapper.getUserId(), null, metadata);
         } else {
             if (debugMode) {
-                log.info("send identify for " + userId + " with meta : "
+                log.info("send identify for " + wrapper.getUserId() + " with meta : "
                         + metadata.toString());
             } else {
                 log.debug("send identify with " + metadata.toString());
-                Analytics.identify(userId, traits);
+                Traits traits = new Traits();
+                traits.putAll(wrapper.getMetadata());
+                Analytics.identify(wrapper.getUserId(), traits);
             }
         }
-
     }
 
-    protected void pushForTest(String action, NuxeoPrincipal principal,
+    protected void pushForTest(String action, String principalName,
             String eventName, Map<String, Serializable> metadata) {
         Map<String, Object> data = new HashMap<>();
         if (metadata != null) {
@@ -190,7 +161,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         if (eventName != null) {
             data.put("eventName", eventName);
         }
-        data.put(PRINCIPAL_KEY, principal);
+        data.put(SegmentIODataWrapper.PRINCIPAL_KEY, principalName);
         testData.add(data);
     }
 
@@ -205,41 +176,19 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     public void track(NuxeoPrincipal principal, String eventName,
             Map<String, Serializable> metadata) {
 
-        if (metadata == null) {
-            metadata = new HashMap<>();
-        }
-
-        if (metadata.containsKey(PRINCIPAL_KEY) && metadata.get(PRINCIPAL_KEY)!=null) {
-            principal = (NuxeoPrincipal) metadata.get(PRINCIPAL_KEY);
-        }
-
-        String userId = principal.getName();
-
-        EventProperties eventProperties = new EventProperties();
-        if (!metadata.containsKey("email")) {
-            metadata.put("email", principal.getEmail());
-        }
-        if (!metadata.containsKey("firstName")) {
-            metadata.put("firstName", principal.getFirstName());
-        }
-        if (!metadata.containsKey("lastName")) {
-            metadata.put("lastName", principal.getLastName());
-        }
-        // allow override
-        if (metadata.containsKey(LOGIN_KEY)) {
-            userId = (String) metadata.get(LOGIN_KEY);
-        }
-        eventProperties.putAll(metadata);
+        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal, metadata);
 
         if (Framework.isTestModeSet()) {
-            pushForTest("track", principal, eventName, metadata);
+            pushForTest("track", wrapper.getUserId(), eventName, metadata);
         } else {
             if (debugMode) {
-                log.info("send track for " + eventName + " user : " + userId
+                log.info("send track for " + eventName + " user : " + wrapper.getUserId()
                         + " with meta : " + metadata.toString());
             } else {
                 log.debug("send track with " + metadata.toString());
-                Analytics.track(userId, eventName, eventProperties);
+                EventProperties eventProperties = new EventProperties();
+                eventProperties.putAll(wrapper.getMetadata());
+                Analytics.track(wrapper.getUserId(), eventName, eventProperties);
             }
         }
     }
