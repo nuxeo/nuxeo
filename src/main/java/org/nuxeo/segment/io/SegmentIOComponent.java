@@ -231,7 +231,10 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     }
 
     public void flush() {
-        Analytics.flush();
+        if (!debugMode) {
+            // only flush if Analytics was actually initialized
+            Analytics.flush();
+        }
     }
 
     public Map<String, List<SegmentIOMapper>> getMappers(List<String> events) {
