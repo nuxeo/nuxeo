@@ -23,4 +23,6 @@ public interface ClientRegistry {
     boolean deleteClient(String clientId) throws ClientException;
 
     List<DocumentModel> listClients() throws ClientException;
+
+    OAuth2Client getClient(String clientId) throws ClientException;
 }

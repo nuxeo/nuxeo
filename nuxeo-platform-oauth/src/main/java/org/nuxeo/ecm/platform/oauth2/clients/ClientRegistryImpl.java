@@ -67,7 +67,7 @@ public class ClientRegistryImpl extends DefaultComponent implements
     @Override
     public boolean isValidClient(String clientId, String clientSecret)
             throws ClientException {
-        DocumentModel docClient = getClient(clientId);
+        DocumentModel docClient = getClientModel(clientId);
         if (docClient != null) {
             OAuth2Client client = OAuth2Client.fromDocumentModel(docClient);
             return client.isValidWith(clientId, clientSecret);
@@ -77,7 +77,7 @@ public class ClientRegistryImpl extends DefaultComponent implements
 
     @Override
     public boolean registerClient(OAuth2Client client) throws ClientException {
-        DocumentModel doc = getClient(client.getId());
+        DocumentModel doc = getClientModel(client.getId());
         if (doc != null) {
             log.info("Trying to register an exisiting client");
             return false;
@@ -133,7 +133,12 @@ public class ClientRegistryImpl extends DefaultComponent implements
         }
     }
 
-    protected DocumentModel getClient(String clientId) throws ClientException {
+    public OAuth2Client getClient(String clientId) throws ClientException {
+        DocumentModel doc = getClientModel(clientId);
+        return doc != null ? OAuth2Client.fromDocumentModel(doc) : null;
+    }
+
+    protected DocumentModel getClientModel(String clientId) throws ClientException {
         DirectoryService service = getService();
         Session session = null;
         try {

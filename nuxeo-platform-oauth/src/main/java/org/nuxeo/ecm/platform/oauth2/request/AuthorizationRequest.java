@@ -6,6 +6,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -85,9 +86,8 @@ public class AuthorizationRequest extends Oauth2Request {
     }
 
     public boolean isExpired() {
-        // RFC 4.1.2, Authorization code lifetime is 10; instead, we assume the
-        // authorization request lifetime is 7 min.
-        return new Date().getTime() - creationDate.getTime() > 7 * 60 * 1000;
+        // RFC 4.1.2, Authorization code lifetime is 10
+        return new Date().getTime() - creationDate.getTime() > 10 * 60 * 1000;
     }
 
     public boolean isValidState(HttpServletRequest request) {
@@ -122,8 +122,20 @@ public class AuthorizationRequest extends Oauth2Request {
         return authorizationKey;
     }
 
+    private static void deleteExpiredRequests() {
+        Iterator<AuthorizationRequest> iterator = requests.values().iterator();
+        AuthorizationRequest req;
+        while (iterator.hasNext() && (req = iterator.next()) != null) {
+            if (req.isExpired()) {
+                requests.remove(req.sessionId);
+            }
+        }
+    }
+
     public static AuthorizationRequest from(HttpServletRequest request)
             throws UnsupportedEncodingException {
+        deleteExpiredRequests();
+
         String sessionId = request.getSession(true).getId();
         if (requests.containsKey(sessionId)) {
             AuthorizationRequest authRequest = requests.get(sessionId);

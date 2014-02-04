@@ -54,6 +54,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
 
     public static String AUTHORIZATION_KEY = "authorization_key";
 
+    public static String CLIENTNAME_KEY = "client_name";
+
     public static enum ERRORS {
         invalid_request, invalid_grant, unauthorized_client, access_denied, unsupported_response_type, invalid_scope, server_error, temporarily_unavailable
     }
@@ -173,7 +175,8 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
     }
 
     protected void processAuthorization(HttpServletRequest request,
-            HttpServletResponse response, FilterChain chain) throws IOException {
+            HttpServletResponse response, FilterChain chain)
+            throws IOException, ClientException {
         AuthorizationRequest authRequest = AuthorizationRequest.from(request);
         String error = authRequest.checkError();
         if (isNotBlank(error)) {
@@ -186,6 +189,9 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
             request.getSession().setAttribute(AUTHORIZATION_KEY,
                     authRequest.getAuthorizationKey());
             request.getSession().setAttribute("state", authRequest.getState());
+            request.getSession().setAttribute(
+                    CLIENTNAME_KEY,
+                    getClientRegistry().getClient(authRequest.getClientId()).getName());
             String base = VirtualHostHelper.getBaseURL(request);
             sendRedirect(response, base + "oauth2Grant.jsp", null);
             return;
@@ -208,6 +214,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
             params.put("state", authRequest.getState());
         }
 
+        request.getSession().invalidate();
         sendRedirect(response, authRequest.getRedirectUri(), params);
     }
 
