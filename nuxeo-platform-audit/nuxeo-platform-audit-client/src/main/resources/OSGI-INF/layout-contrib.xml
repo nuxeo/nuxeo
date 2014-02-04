@@ -62,6 +62,12 @@
         <widgetModes>
           <mode value="create">hidden</mode>
         </widgetModes>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+        </properties>
       </widget>
       <widget name="endDate" type="datetime">
         <labels>
@@ -74,6 +80,12 @@
         <widgetModes>
           <mode value="create">hidden</mode>
         </widgetModes>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="format">#{nxu:basicDateAndTimeFormater()}</property>
+        </properties>
       </widget>
     </layout>
 
