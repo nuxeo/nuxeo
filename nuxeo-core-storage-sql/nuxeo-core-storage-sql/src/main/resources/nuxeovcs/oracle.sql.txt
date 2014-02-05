@@ -981,27 +981,12 @@ BEGIN
       INSERT (id, acl_id) VALUES (s.id, nx_get_read_acl_id(s.id));
   DELETE FROM aclr_modified WHERE is_new = 1;
   --
-  -- 2/ Handles new ACLs, marking read acl with a marker
-  UPDATE hierarchy_read_acl SET acl_id = '-'
-    WHERE id IN (SELECT DISTINCT(hierarchy_id) FROM aclr_modified);
-  DELETE FROM aclr_modified;
-  --
-  -- 3/ Mark all children with a marker
-  -- TODO use CONNECT BY ?
-  LOOP
-    UPDATE hierarchy_read_acl SET acl_id = '-' WHERE id IN (
-      SELECT r.id
-        FROM hierarchy_read_acl r
-        JOIN hierarchy h ON h.id = r.id
-        JOIN hierarchy_read_acl rr ON rr.id = h.parentid
-        WHERE r.acl_id <> '-' AND rr.acl_id = '-');
-    EXIT WHEN SQL%ROWCOUNT = 0;
-  END LOOP;
-  --
-  -- 4/ Compute the new read ACLs for updated documents
+  -- 2/ Update all children in one shot
   UPDATE hierarchy_read_acl SET acl_id = nx_get_read_acl_id(id)
-    WHERE acl_id = '-';
-  --
+  WHERE id IN (SELECT DISTINCT(id) FROM hierarchy
+               START WITH id IN (SELECT DISTINCT(hierarchy_id) FROM aclr_modified)
+               CONNECT BY PRIOR id = parentid and isproperty=0);
+  DELETE FROM aclr_modified;
 END;
 
 
