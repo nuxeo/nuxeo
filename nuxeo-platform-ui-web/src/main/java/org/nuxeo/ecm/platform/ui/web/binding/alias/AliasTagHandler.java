@@ -33,6 +33,7 @@ import javax.faces.context.FacesContext;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
+import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.MetaTagHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
@@ -115,12 +116,12 @@ public class AliasTagHandler extends MetaTagHandler {
             }
         }
 
-        apply(ctx, parent, target);
+        apply(ctx, parent, target, this.nextHandler);
     }
 
-    public void apply(FaceletContext ctx, UIComponent parent,
-            AliasVariableMapper alias) throws IOException, FacesException,
-            FaceletException, ELException {
+    protected void apply(FaceletContext ctx, UIComponent parent,
+            AliasVariableMapper alias, FaceletHandler nextHandler)
+            throws IOException, FacesException, FaceletException, ELException {
         // our id
         String id = ctx.generateUniqueId(this.tagId);
         alias.setId(id);
@@ -164,7 +165,7 @@ public class AliasTagHandler extends MetaTagHandler {
         try {
             AliasVariableMapper.exposeAliasesToRequest(facesContext, alias);
             // first allow c to get populated
-            this.nextHandler.apply(ctx, c);
+            nextHandler.apply(ctx, c);
         } finally {
             AliasVariableMapper.removeAliasesExposedToRequest(facesContext, id);
             ctx.setVariableMapper(orig);

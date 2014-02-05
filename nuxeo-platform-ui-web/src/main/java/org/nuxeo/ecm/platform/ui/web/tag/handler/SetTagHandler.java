@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
+import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
@@ -71,12 +73,18 @@ public class SetTagHandler extends AliasTagHandler {
      */
     protected final TagAttribute blockPatterns;
 
+    /**
+     * @since 5.9.2
+     */
+    protected final TagAttribute blockMerge;
+
     public SetTagHandler(TagConfig config) {
         super(config, null);
         var = getRequiredAttribute("var");
         value = getAttribute("value");
         resolveTwice = getAttribute("resolveTwice");
         blockPatterns = getAttribute("blockPatterns");
+        blockMerge = getAttribute("blockMerge");
     }
 
     public void apply(FaceletContext ctx, UIComponent parent)
@@ -86,8 +94,45 @@ public class SetTagHandler extends AliasTagHandler {
             throw new TagException(this.tag, "Parent UIComponent was null");
         }
 
-        // our id
-        String id = ctx.generateUniqueId(this.tagId);
+        FaceletHandler nextHandler = this.nextHandler;
+        VariableMapper orig = ctx.getVariableMapper();
+        AliasVariableMapper target = new AliasVariableMapper();
+        VariableMapper vm = target.getVariableMapperForBuild(orig);
+        ctx.setVariableMapper(vm);
+        try {
+            nextHandler = getAliasVariableMapper(ctx, target);
+        } finally {
+            ctx.setVariableMapper(orig);
+        }
+        apply(ctx, parent, target, nextHandler);
+    }
+
+    public FaceletHandler getNextHandler() {
+        return nextHandler;
+    }
+
+    public boolean isAcceptingMerge(FaceletContext ctx) {
+        if (blockMerge != null) {
+            if (blockMerge.getBoolean(ctx)) {
+                return false;
+            }
+        }
+        if (blockPatterns != null) {
+            String blocked = blockPatterns.getValue(ctx);
+            if (!StringUtils.isEmpty(blocked)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public FaceletHandler getAliasVariableMapper(FaceletContext ctx,
+            AliasVariableMapper target) {
+        String varStr = var.getValue(ctx);
+        // avoid overriding variable already in the mapper
+        if (target.hasVariables(varStr)) {
+            return this.nextHandler;
+        }
 
         // handle variable expression
         boolean cacheValue = false;
@@ -99,7 +144,6 @@ public class SetTagHandler extends AliasTagHandler {
             resolveTwiceBool = resolveTwice.getBoolean(ctx);
         }
 
-        String varStr = var.getValue(ctx);
         ValueExpression ve;
         if (cacheValue) {
             // resolve value and put it as is in variable mapper
@@ -119,35 +163,45 @@ public class SetTagHandler extends AliasTagHandler {
             }
         }
 
-        AliasVariableMapper target = new AliasVariableMapper(id);
         target.setVariable(varStr, ve);
 
         if (blockPatterns != null) {
-            String blocked = blockPatterns.getValue(ctx);
-            if (!StringUtils.isEmpty(blocked)) {
+            String blockedValue = blockPatterns.getValue(ctx);
+            if (!StringUtils.isEmpty(blockedValue)) {
                 // split on "," character
-                target.setBlockedPatterns(resolveBlockPatterns(blocked));
+                target.setBlockedPatterns(resolveBlockPatterns(blockedValue));
             }
         }
 
-        apply(ctx, parent, target);
+        FaceletHandler nextHandler = this.nextHandler;
+        if (nextHandler instanceof SetTagHandler) {
+            // try merging with next handler
+            SetTagHandler next = (SetTagHandler) nextHandler;
+            if (next.isAcceptingMerge(ctx)) {
+                // make sure referenced vars will be resolved in this context
+                ctx.getVariableMapper().setVariable(varStr, ve);
+                try {
+                    AliasVariableMapper.exposeAliasesToRequest(
+                            ctx.getFacesContext(), target);
+                    nextHandler = next.getAliasVariableMapper(ctx, target);
+                } finally {
+                    AliasVariableMapper.removeAliasesExposedToRequest(
+                            ctx.getFacesContext(), target.getId());
+                }
+            }
+        }
+
+        return nextHandler;
     }
 
     protected List<String> resolveBlockPatterns(String value) {
         List<String> res = new ArrayList<String>();
         if (value != null) {
-            if (value.contains(",")) {
-                // parse potential multiple patterns
-                String[] names = value.split(",");
-                for (String name : names) {
-                    if (!StringUtils.isBlank(name)) {
-                        name = name.trim();
-                        res.add(name);
-                    }
+            String[] split = StringUtils.split(value, ',');
+            if (split != null) {
+                for (String item : split) {
+                    res.add(item.trim());
                 }
-            } else {
-                value = value.trim();
-                res.add(value);
             }
         }
         return res;

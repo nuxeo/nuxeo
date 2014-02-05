@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.ui.web.binding.alias;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -81,9 +82,13 @@ public class AliasVariableMapper extends VariableMapper {
     public ValueExpression setVariable(String variable,
             ValueExpression expression) {
         if (this.vars == null) {
-            this.vars = new HashMap<String, ValueExpression>();
+            this.vars = new LinkedHashMap<String, ValueExpression>();
         }
         return this.vars.put(variable, expression);
+    }
+
+    public boolean hasVariables(String variable) {
+        return this.vars != null && this.vars.containsKey(variable);
     }
 
     public VariableMapper getVariableMapperForBuild(VariableMapper orig) {
