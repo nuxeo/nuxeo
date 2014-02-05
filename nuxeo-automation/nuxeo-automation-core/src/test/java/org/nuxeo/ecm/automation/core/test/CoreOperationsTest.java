@@ -679,7 +679,6 @@ public class CoreOperationsTest {
     }
 
     @Test
-    @Ignore
     public void testRunInNewTxOperation() throws Exception {
         OperationContext ctx = new OperationContext(session);
         OperationChain chain = new OperationChain("testChain");

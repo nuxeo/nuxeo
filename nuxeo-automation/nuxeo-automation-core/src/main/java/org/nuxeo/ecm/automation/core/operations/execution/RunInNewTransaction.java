@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  *
  * Contributors:
  *    Mariana Cedica
+ *    Florent Guillaume
  */
 package org.nuxeo.ecm.automation.core.operations.execution;
 
@@ -18,21 +19,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Operation to run an operation chain in a separate transaction. The
- * rollbackGlobalOnError allows to configure the rollback policy -> if true then
- * the new transaction will be rollbacked and the main transaction will be set
- * for rollback too
+ * Operation to run an operation chain in a separate transaction.
+ * The existing transaction is committed before running the new transaction.
  *
  * @since 5.6
  */
@@ -49,6 +49,9 @@ public class RunInNewTransaction {
     @Context
     protected AutomationService service;
 
+    @Context
+    protected CoreSession session;
+
     @Param(name = "id")
     protected String chainId;
 
@@ -62,83 +65,63 @@ public class RunInNewTransaction {
     protected Properties chainParameters;
 
     @Param(name = "timeout", required = false)
-    protected Integer timeout = 60;
+    protected Integer timeout = Integer.valueOf(60);
 
     @OperationMethod
     public void run() throws Exception {
-        // if the transaction was already marked for rollback, do nothing
+        // if the current transaction was already marked for rollback, do nothing
         if (TransactionHelper.isTransactionMarkedRollback()) {
             return;
         }
+        // commit the current transaction
+        TransactionHelper.commitOrRollbackTransaction();
 
         Map<String, Object> vars = isolate ? new HashMap<String, Object>(
                 ctx.getVars()) : ctx.getVars();
 
-        RunnableOperation runOp = new RunnableOperation(
-                ctx.getCoreSession().getRepositoryName(), chainId, vars);
-        boolean failed = false;
+        int to = timeout == null ? 0 : timeout.intValue();
+
+        TransactionHelper.startTransaction(to);
+        boolean ok = false;
         try {
-            runOp.start();
-            runOp.join((timeout + 1) * 1000);
-            if (runOp.isAlive()) {
-                failed = true;
+            OperationContext subctx = new OperationContext(session, vars);
+            subctx.setInput(ctx.getInput());
+            service.run(subctx, chainId, (Map) chainParameters);
+            ok = true;
+        } catch (OperationException e) {
+            if (rollbackGlobalOnError) {
+                throw e;
+            } else {
+                // just log, no rethrow
+                log.error("Error while executing operation " + chainId, e);
             }
         } finally {
-            if ((failed || runOp.isFailed()) && rollbackGlobalOnError) {
+            if (!ok) {
+                // will be logged by Automation framework
                 TransactionHelper.setTransactionRollbackOnly();
             }
-        }
-        // flush invalidations
-        ctx.getCoreSession().save();
-    }
-
-    protected class RunnableOperation extends Thread {
-
-        protected final Map<String, Object> vars;
-
-        protected final String repo;
-
-        protected final String opName;
-
-        protected boolean failed = false;
-
-        public RunnableOperation(String repo, String opName,
-                Map<String, Object> vars) {
-            super("Runner-for-" + opName);
-            this.vars = vars;
-            this.repo = repo;
-            this.opName = opName;
+            TransactionHelper.commitOrRollbackTransaction();
+            // caller expects a transaction to be started
+            TransactionHelper.startTransaction();
         }
 
-        @Override
-        public void run() {
-            TransactionHelper.startTransaction(timeout);
-            try {
-                new UnrestrictedSessionRunner(repo) {
-                    @Override
-                    public void run() throws ClientException {
-                        OperationContext subctx = new OperationContext(session,
-                                vars);
-                        subctx.setInput(ctx.getInput());
-                        try {
-                            service.run(subctx, opName, (Map) chainParameters);
-                        } catch (Exception e) {
-                            throw ClientException.wrap(e);
-                        }
+        // reconnect documents in the context
+        if (!isolate) {
+            for (String varName : vars.keySet()) {
+                if (!ctx.getVars().containsKey(varName)) {
+                    ctx.put(varName, vars.get(varName));
+                } else {
+                    Object value = vars.get(varName);
+                    if (value != null && value instanceof DocumentModel) {
+                        ctx.getVars().put(
+                                varName,
+                                session.getDocument(((DocumentModel) value).getRef()));
+                    } else {
+                        ctx.getVars().put(varName, value);
                     }
-                }.runUnrestricted();
-            } catch (ClientException e) {
-                TransactionHelper.setTransactionRollbackOnly();
-                failed = true;
-                log.error("Error while executing operation " + opName, e);
-            } finally {
-                TransactionHelper.commitOrRollbackTransaction();
+                }
             }
         }
-
-        public boolean isFailed() {
-            return failed;
-        }
-
     }
+
 }
