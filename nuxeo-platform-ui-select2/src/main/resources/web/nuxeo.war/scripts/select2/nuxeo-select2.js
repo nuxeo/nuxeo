@@ -1,5 +1,14 @@
 (function() {
 
+  function warnMessage(entry) {
+    var markup = "";
+    if (entry.warn_message) {
+      markup += "<img src='" + window.nxContextPath
+          + "/icons/warning.gif' title='" + entry.warn_message + "'/>"
+    }
+    return markup;
+  }
+
   function userEntryDefaultFormatter(entry) {
     var markup = "";
     if (entry.displayIcon && entry.type) {
@@ -10,10 +19,7 @@
       }
     }
     markup += entry.displayLabel;
-    if (entry.warn_message) {
-      markup += "<img src='" + window.nxContextPath
-          + "/icons/warning.gif' title='" + entry.warn_message + "'/>"
-    }
+    markup += warnMessage(entry);
     return markup;
   }
 
@@ -26,10 +32,7 @@
     }
     markup += "</td><td>";
     markup += doc.title;
-    if (doc.warn_message) {
-      markup += "<img src='" + window.nxContextPath
-          + "/icons/warning.gif' title='" + doc.warn_message + "'/>"
-    }
+    markup += warnMessage(doc);
     if (doc.path) {
       markup += "<span class='displayB detail' style='word-break:break-all;'>" + doc.path + "</span>";
     }
@@ -39,10 +42,7 @@
 
   function dirEntryDefaultFormatter(entry) {
     var markup = entry.displayLabel;
-    if (entry.warn_message) {
-      markup += "<img src='" + window.nxContextPath
-          + "/icons/warning.gif' title='" + entry.warn_message + "'/>"
-    }
+    markup += warnMessage(entry);
     return markup;
   }
 
@@ -55,10 +55,7 @@
           + doc.properties['common:icon'] + "'/>"
     }
     markup += getDocLinkElt(doc);
-    if (doc.warn_message) {
-      markup += "<img src='" + window.nxContextPath
-          + "/icons/warning.gif' title='" + doc.warn_message + "'/>"
-    }
+    markup += warnMessage(doc);
     return markup;
   }
 
