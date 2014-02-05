@@ -25,7 +25,7 @@ import org.nuxeo.runtime.api.Framework;
 public class AuthorizationRequest extends Oauth2Request {
     private static final Log log = LogFactory.getLog(AuthorizationRequest.class);
 
-    private static Map<String, AuthorizationRequest> requests = new HashMap<>();
+    protected static Map<String, AuthorizationRequest> requests = new HashMap<>();
 
     protected String responseType;
 
@@ -48,6 +48,8 @@ public class AuthorizationRequest extends Oauth2Request {
     public static final String SCOPE = "scope";
 
     public static final String STATE = "state";
+
+    public AuthorizationRequest() { }
 
     public AuthorizationRequest(HttpServletRequest request) {
         super(request);

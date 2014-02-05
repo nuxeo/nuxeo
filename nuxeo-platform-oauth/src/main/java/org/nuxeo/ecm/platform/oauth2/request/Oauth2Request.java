@@ -29,6 +29,8 @@ public abstract class Oauth2Request {
 
     protected String redirectUri;
 
+    public Oauth2Request() { }
+
     public Oauth2Request(HttpServletRequest request) {
         clientId = request.getParameter(CLIENT_ID);
         redirectUri = decodeParameter(request, REDIRECT_URI);
