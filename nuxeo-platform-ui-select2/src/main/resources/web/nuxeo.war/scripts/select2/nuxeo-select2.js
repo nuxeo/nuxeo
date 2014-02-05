@@ -46,15 +46,6 @@
     return markup;
   }
 
-  function dirEntryDefaultFormatter(entry) {
-    var markup = entry.displayLabel;
-    if (entry.warn_message) {
-      markup += "<img src='" + window.nxContextPath
-          + "/icons/warning.gif' title='" + entry.warn_message + "'/>"
-    }
-    return markup;
-  }
-
   var userSelectionDefaultFormatter = userEntryDefaultFormatter;
 
   function docSelectionDefaultFormatter(doc) {
