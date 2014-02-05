@@ -17,6 +17,8 @@
  */
 package org.nuxeo.ecm.platform.oauth2.tokens;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +42,8 @@ public class NuxeoOAuth2Token {
 
     protected String clientId;
 
+    protected Calendar creationDate;
+
     private String refreshToken;
 
     private Long expirationTimeMilliseconds;
@@ -55,6 +59,7 @@ public class NuxeoOAuth2Token {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.expirationTimeMilliseconds = expirationTimeMilliseconds;
+        this.creationDate = Calendar.getInstance();
     }
 
     public NuxeoOAuth2Token(Credential credential) {
@@ -71,6 +76,7 @@ public class NuxeoOAuth2Token {
         this.serviceName = (String) entry.getProperty(SCHEMA, "serviceName");
         this.nuxeoLogin = (String) entry.getProperty(SCHEMA, "nuxeoLogin");
         this.clientId = (String) entry.getProperty(SCHEMA, "clientId");
+        this.creationDate = (Calendar) entry.getProperty(SCHEMA, "creationDate");
     }
 
     public Map<String, Object> toMap() {
@@ -81,6 +87,7 @@ public class NuxeoOAuth2Token {
         map.put("refreshToken", refreshToken);
         map.put("expirationTimeMilliseconds", expirationTimeMilliseconds);
         map.put("clientId", clientId);
+        map.put("creationDate", creationDate);
         return map;
     }
 
@@ -89,7 +96,9 @@ public class NuxeoOAuth2Token {
         m.put("access_token", accessToken);
         m.put("refresh_token", refreshToken);
         m.put("token_type", "bearer");
-        m.put("expires_in", 3600);
+        m.put("expires_in",
+                Math.floor((creationDate.getTimeInMillis()
+                        + expirationTimeMilliseconds - new Date().getTime()) / 1000));
         return m;
     }
 
@@ -106,11 +115,12 @@ public class NuxeoOAuth2Token {
     public void refresh() {
         accessToken = RandomStringUtils.random(32, true, true);
         refreshToken = RandomStringUtils.random(64, true, true);
+        creationDate = Calendar.getInstance();
     }
 
     public boolean isExpired() {
-        // XXX
-        return false;
+        return creationDate != null
+                && creationDate.getTimeInMillis() + expirationTimeMilliseconds > Calendar.getInstance().getTimeInMillis();
     }
 
     public void setServiceName(String serviceName) {
