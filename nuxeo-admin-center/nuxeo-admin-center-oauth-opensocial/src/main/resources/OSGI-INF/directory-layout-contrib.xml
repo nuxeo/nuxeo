@@ -1027,6 +1027,15 @@
           <field>oauth2Token.refreshToken</field>
         </fields>
       </widget>
+      <widget name="clientId" type="text">
+        <labels>
+          <label mode="any">Client Id</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.clientId</field>
+        </fields>
+      </widget>
       <widget name="nuxeoLogin" type="text">
         <labels>
           <label mode="any">Nuxeo Login</label>
@@ -1039,17 +1048,12 @@
 
       <widget name="creationDate" type="datetime">
         <labels>
-          <label mode="any">Creation Date </label>
+          <label mode="any">Creation Date</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>oauthToken.creationDate</field>
+          <field>oauth2Token.creationDate</field>
         </fields>
-        <properties mode="any">
-          <property name="help">
-          label.oauth.help.creationDate
-          </property>
-        </properties>
       </widget>
 
     </layout>
