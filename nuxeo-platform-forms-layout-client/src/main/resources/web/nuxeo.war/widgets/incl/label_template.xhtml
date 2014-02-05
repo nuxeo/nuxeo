@@ -19,8 +19,6 @@ Accepted parameters:
 
   <nxu:set var="translatedLabel"
     value="#{nxu:test(translated, messages[label], label)}">
-  <nxu:set var="translatedHelpLabel"
-    value="#{nxu:test(translated, messages[helpLabel], helpLabel)}">
 
     <c:if test="#{empty helpLabel or hideHelp}">
       <h:outputText value="#{translatedLabel}"
@@ -32,11 +30,13 @@ Accepted parameters:
           styleClass="widgetLabel #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
       </div>
       <div class="tooltip">
-        <h:outputText value="#{translatedHelpLabel}" escape="false" />
+        <nxu:set var="translatedHelpLabel"
+          value="#{nxu:test(translated, messages[helpLabel], helpLabel)}">
+          <h:outputText value="#{translatedHelpLabel}" escape="false" />
+        </nxu:set>
       </div>
     </c:if>
 
-  </nxu:set>
   </nxu:set>
 
 </c:if>
