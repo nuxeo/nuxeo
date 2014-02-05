@@ -192,10 +192,6 @@ public class Select2ActionsBean implements Serializable {
 
             final boolean isTranslated = widget.isTranslated();
 
-            // The operation might need to know if we translate the labels or
-            // not.
-            jg.writeStringField("translateLabels", "" + isTranslated);
-
             // Are we writing or reading
             boolean readonly = !widget.getMode().equals("edit")
                     && !widget.getMode().equals("create");
@@ -301,7 +297,7 @@ public class Select2ActionsBean implements Serializable {
 
     @SuppressWarnings("rawtypes")
     protected JSONArray getMultipleDirectoryEntries(final Object value,
-            final String directoryName, final boolean translateLabels,
+            final String directoryName, final boolean localize,
             String keySeparator, final boolean dbl10n,
             final String labelFieldName) {
         JSONArray result = new JSONArray();
@@ -339,7 +335,7 @@ public class Select2ActionsBean implements Serializable {
 
             for (String ref : storedRefs) {
                 JSONObject obj = resolveDirectoryEntry(ref, keySeparator,
-                        session, schema, label, translateLabels, dbl10n);
+                        session, schema, label, localize, dbl10n);
                 if (obj != null) {
                     result.add(obj);
                 }
@@ -604,7 +600,7 @@ public class Select2ActionsBean implements Serializable {
 
     protected JSONObject resolveDirectoryEntry(final String storedReference,
             String keySeparator, final Session session, final Schema schema,
-            final String label, final boolean translateLabels,
+            final String label, final boolean localize,
             final boolean dbl10n) {
         if (storedReference == null || storedReference.isEmpty()) {
             log.trace("No reference provided ");
@@ -632,7 +628,7 @@ public class Select2ActionsBean implements Serializable {
                 String key = fieldName.getLocalName();
                 Serializable value = result.getPropertyValue(fieldName.getPrefixedName());
                 if (label.equals(key)) {
-                    if (translateLabels && !dbl10n) {
+                    if (localize && !dbl10n) {
                         value = messages.get(value);
                     }
                     obj.element(Select2Common.LABEL, value);
