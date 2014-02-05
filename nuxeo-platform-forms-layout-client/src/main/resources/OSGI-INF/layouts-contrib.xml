@@ -582,7 +582,7 @@
       </labels>
       <helpLabels>
         <label mode="any">
-          The textarea width. Defaults to "640". 
+          The textarea width. Defaults to "640".
           Give the exact size in pixels or percentage.
         </label>
       </helpLabels>

@@ -23,7 +23,7 @@
   <c:if test="#{widget.mode == 'pdf'}">
     <nxp:html>
     <nxu:inputList
-      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field_0, widgetProperty_directoryName, widget.translated, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
+      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field_0, widgetProperty_directoryName, , widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
       model="model" rendered="#{not empty field}">
       <h:outputText value="#{model.rowData}" />
       <br />
