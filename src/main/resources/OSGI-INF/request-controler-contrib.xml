@@ -11,4 +11,10 @@
 
   </extension>
 
+  <extension point="openUrl" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+       <openUrl name="segmentio">
+            <grantPattern>${org.nuxeo.ecm.contextPath}/site/segmentIO</grantPattern>
+       </openUrl>
+  </extension>
+
 </component>

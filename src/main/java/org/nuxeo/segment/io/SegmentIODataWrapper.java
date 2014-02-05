@@ -1,16 +1,26 @@
 package org.nuxeo.segment.io;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+
+import com.github.segmentio.models.Props;
 
 public class SegmentIODataWrapper {
 
     public static final String LOGIN_KEY = "login";
 
     public static final String PRINCIPAL_KEY = "principal";
+
+    protected static final Log log = LogFactory.getLog(SegmentIODataWrapper.class);
 
     protected String userId;
     protected Map<String, Serializable> metadata;
@@ -47,8 +57,48 @@ public class SegmentIODataWrapper {
         return userId;
     }
 
+    // code copied from com.github.segmentio.models.Props
+    private boolean isPrimitive (Object value) {
+        boolean primitive = false;
+        if (value != null) {
+            Class<?> clazz = value.getClass();
+            // http://stackoverflow.com/questions/709961/determining-if-an-object-is-of-primitive-type
+            primitive = clazz.isPrimitive() || ClassUtils.wrapperToPrimitive(clazz) != null;
+        }
+        return primitive;
+    }
+
+    // code copied from com.github.segmentio.models.Props
+    protected boolean isAllowed(Object value) {
+        if (isPrimitive(value) ||
+            value instanceof String ||
+            value instanceof Date ||
+            value instanceof Props ||
+            value instanceof BigDecimal ||
+            value instanceof Collection ||
+            value instanceof Map ||
+            value instanceof Object[]) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public Map<String, Serializable> getMetadata() {
-        return metadata;
+        Map<String, Serializable> map = new HashMap<>();
+        for (String key : metadata.keySet()) {
+            Serializable value = metadata.get(key);
+            if (value!=null) {
+                if ( isAllowed(value)) {
+                    map.put(key, value);
+                } else {
+                    map.put(key, value.toString());
+                }
+            } else {
+                log.debug("Skip null value for key " + key);
+            }
+        }
+        return map;
     }
 
 }

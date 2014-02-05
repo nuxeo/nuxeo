@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -18,7 +18,17 @@ import org.nuxeo.segment.io.SegmentIO;
 public class SegmentIOScriptResource extends ModuleRoot {
 
     @GET
-    public Object script(@QueryParam("login") String login) {
+    public Object anonymous() {
+        return buildScript(null);
+    }
+
+    @GET
+    @Path("user/{login}")
+    public Object signed(@PathParam("login") String login) {
+        return buildScript(login);
+    }
+
+    protected Object buildScript(String login) {
 
         SegmentIO segmentIO = Framework.getLocalService(SegmentIO.class);
 
@@ -27,8 +37,10 @@ public class SegmentIOScriptResource extends ModuleRoot {
 
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getPrincipal();
 
-        if (login!=null && principal.getName().equals(login)) {
-            ctx.put("principal", principal);
+        if (principal!=null) {
+            if (login!=null && principal.getName().equals(login)) {
+                ctx.put("principal", principal);
+            }
         }
         return getView("script").args(ctx);
     }

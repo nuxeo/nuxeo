@@ -33,6 +33,7 @@ Install bundle
 Install lib
 
     cp ~/.m2/repository/com/github/segmentio/analytics/0.3.1/analytics-0.3.1.jar  $NX_TOMCAT/nxserver/lib/.
+    cp ~/.m2/repository/com/google/code/gson/gson/2.2/gson-2.2.jar $NX_TOMCAT/nxserver/lib/.
 
 ## Server side integration
 
@@ -154,16 +155,18 @@ A typical call in the context of a WebEngine page would be :
 
     identifyIfNeeded('${Context.principal.name}', '${Context.principal.email}');
 
+NB : this script is served as anonymous.
+
 An alternative is to use a script that is generated for your user:
 
-    <script src="/nuxeo/site/segmentIO?login=XXX"></script>
+    <script src="/nuxeo/site/segmentIO/user/XXX"></script>
 
 XXX should be the actual login of the currently loggedin user.
 
 Typically : 
 
-    <script src="/nuxeo/site/segmentIO?login=${Context.principal.name}"></script>
+    <script src="/nuxeo/site/segmentIO/user/${Context.principal.name}"></script>
 
-
+NB : this script is served for authenticated users.
 
 
