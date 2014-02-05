@@ -526,7 +526,7 @@ class FolderPage(BasePage):
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['document_create:nxl_heading:nxw_description', description],
             ['document_create:nxl_heading:nxw_title', title],
-            ['document_create:nxw_doc_documentCreateButtons_CREATE_DOCUMENT', 'Create'],
+            ['document_create:nxw_documentCreateButtons_CREATE_DOCUMENT', 'Create'],
             ['document_create', 'document_create']],
             description="Create a section submit")
         fl.assert_('Section saved' in fl.getBody())
@@ -539,16 +539,16 @@ class FolderPage(BasePage):
             ['AJAXREQUEST', '_viewRoot'],
             ['nxw_newDocument_form', 'nxw_newDocument_form'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['ajaxSingle', 'nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link'],
-            ['nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link', 'nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link'],
+            ['ajaxSingle', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
+            ['nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
             ['AJAX:EVENTS_COUNT', '1']],
             description="Click on 'New' action")
         fl.assert_('Available document types' in fl.getBody())
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['nxw_doc_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_doc_documentActionSubviewUpperList_newDocument_fancyform'],
+            ['nxw_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_documentActionSubviewUpperList_newDocument_fancyform'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['nxw_doc_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink', 'nxw_doc_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink']],
+            ['nxw_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink', 'nxw_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink']],
             description="Create folder: New Folder")
 
         fl.assert_('document_create' in fl.getBody(),
@@ -557,7 +557,7 @@ class FolderPage(BasePage):
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
             #['parentDocumentPath', '/default-domain/workspaces/flnxtest-page-workspace.1237992970017'],
-            ['document_create:nxw_doc_documentCreateButtons_CREATE_DOCUMENT', 'Create'],
+            ['document_create:nxw_documentCreateButtons_CREATE_DOCUMENT', 'Create'],
             ['document_create', 'document_create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create folder: Submit")
@@ -571,16 +571,16 @@ class FolderPage(BasePage):
             ['AJAXREQUEST', '_viewRoot'],
             ['nxw_newDocument_form', 'nxw_newDocument_form'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['ajaxSingle', 'nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link'],
-            ['nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link', 'nxw_newDocument_form:nxw_doc_documentActionSubviewUpperList_newDocument_subview:nxw_doc_documentActionSubviewUpperList_newDocument_link'],
+            ['ajaxSingle', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
+            ['nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
             ['AJAX:EVENTS_COUNT', '1']],
             description="Click on 'New' action")
         fl.assert_('Available document types' in fl.getBody())
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['nxw_doc_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_doc_documentActionSubviewUpperList_newDocument_fancyform'],
+            ['nxw_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_documentActionSubviewUpperList_newDocument_fancyform'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['nxw_doc_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink', 'nxw_doc_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink']],
+            ['nxw_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink', 'nxw_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink']],
             description="Create file: New document")
 
         fl.assert_('document_create' in fl.getBody(),
@@ -592,7 +592,7 @@ class FolderPage(BasePage):
              file_path and 'upload' or 'none'],
             ['document_create:nxl_file:nxw_file:nxw_file_file:upload',
              Upload(file_path or '')],
-            ['document_create:nxw_doc_documentCreateButtons_CREATE_DOCUMENT', 'Create'],
+            ['document_create:nxw_documentCreateButtons_CREATE_DOCUMENT', 'Create'],
             ['document_create', 'document_create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create file: Submit")
