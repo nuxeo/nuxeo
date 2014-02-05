@@ -101,7 +101,7 @@ public class SuggestDirectoryEntries {
                 String key = fieldName.getLocalName();
                 Serializable value = entry.getPropertyValue(fieldName.getPrefixedName());
                 if (label.equals(key)) {
-                    if (translateLabels && !dbl10n) {
+                    if (localize && !dbl10n) {
                         // translations are in messages*.properties files
                         value = translate(value.toString());
                     }
@@ -346,8 +346,8 @@ public class SuggestDirectoryEntries {
     @Param(name = "directoryName", required = true)
     protected String directoryName;
 
-    @Param(name = "translateLabels", required = false)
-    protected boolean translateLabels;
+    @Param(name = "localize", required = false)
+    protected boolean localize;
 
     @Param(name = "lang", required = false)
     protected String lang;
@@ -434,7 +434,7 @@ public class SuggestDirectoryEntries {
                 filter.put(Select2Common.OBSOLETE_FIELD_ID, Long.valueOf(0));
             }
             Set<String> fullText = new TreeSet<String>();
-            if (dbl10n && !translateLabels) {
+            if (dbl10n || !localize) {
                 postFilter = false;
                 // do the filtering at directory level
                 if (prefix != null && !prefix.isEmpty()) {
