@@ -2,24 +2,20 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core">
 
 <nxu:set var="actionContextDocument"
   value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}"
   cache="true">
-<nxu:set var="actions"
+<nxu:set var="widgetProperty_actions"
   value="#{webActions.getActionsListForDocument(widgetProperty_category, actionContextDocument, not widgetProperty_disableFiltered)}"
   cache="true">
-  <nxl:widgetType name="actions"
-    mode="#{widget.mode}"
-    widgetName="doc_#{widget.name}"
-    label="#{widget.label}"
-    value="#{fieldOrValue}"
-    properties="#{widget.properties}"
-    actions="#{actions}"
-    ignoreTemplateProperty="true"
-    subWidgets="#{widget.subWidgets}"
-    addForm="true" />
+<nxu:set var="widgetProperty_addForm"
+  value="true"
+  cache="true">
+  <ui:include src="/widgets/actions/actions_widget_template.xhtml" />
+</nxu:set>
 </nxu:set>
 </nxu:set>
 

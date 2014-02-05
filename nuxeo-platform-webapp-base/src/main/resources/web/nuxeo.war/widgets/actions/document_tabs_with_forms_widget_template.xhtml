@@ -1,8 +1,6 @@
 <c:if test="#{not empty widgetProperty_category}"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:c="http://java.sun.com/jstl/core">
 
 <nxu:set var="actionContextDocument"
@@ -14,18 +12,11 @@
 <nxu:set var="currentAction"
   value="#{webActions.getCurrentTabAction(widgetProperty_category)}"
   cache="true">
-  <nxl:widgetType name="tabs"
-    mode="#{widget.mode}"
-    widgetName="doc_#{widget.name}"
-    label="#{widget.label}"
-    value="#{fieldOrValue}"
-    properties="#{widget.properties}"
-    actions="#{actions}"
-    currentTabAction="#{currentAction}"
-    widgetProperty_category="#{widgetProperty_category}"
-    ignoreTemplateProperty="true"
-    subWidgets="#{widget.subWidgets}"
-    addForm="true" />
+<nxu:set var="widgetProperty_addForm"
+  value="true"
+  cache="true">
+  <ui:include src="/widgets/actions/tabs_widget_template.xhtml" />
+</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>
