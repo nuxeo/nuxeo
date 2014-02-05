@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.automation.core.operations.execution;
@@ -32,6 +32,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -41,7 +42,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * current input. The output is undefined (Void)
  *
  * @since 5.7.2
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 @Operation(id = RunOperationOnListInNewTransaction.ID, category = Constants.CAT_SUBCHAIN_EXECUTION, label = "Run For Each in new TX", description = "Run an operation/chain in a new Transaction for each element from the list defined by the 'list' paramter. The 'list' parameter is pointing to context variable that represent the list which will be iterated. The 'itemName' parameter represent the name of the context varible which will point to the current element in the list at each iteration. You can use the 'isolate' parameter to specify whether or not the evalution context is the same as the parent context or a copy of it. If the isolate is 'true' then a copy of the current contetx is used and so that modifications in this context will not affect the parent context. Any input is accepted. The input is returned back as output when operation terminate.")
 public class RunOperationOnListInNewTransaction {
@@ -55,6 +55,9 @@ public class RunOperationOnListInNewTransaction {
 
     @Context
     protected AutomationService service;
+
+    @Context
+    protected CoreSession session;
 
     @Param(name = "id")
     protected String chainId;
@@ -74,8 +77,6 @@ public class RunOperationOnListInNewTransaction {
         Map<String, Object> vars = isolate ? new HashMap<String, Object>(
                 ctx.getVars()) : ctx.getVars();
 
-        final CoreSession session = ctx.getCoreSession();
-
         Collection<?> list = null;
         if (ctx.get(listName) instanceof Object[]) {
             list = Arrays.asList((Object[]) ctx.get(listName));
@@ -86,11 +87,10 @@ public class RunOperationOnListInNewTransaction {
                     ctx.get(listName).getClass() + " is not a Collection");
         }
 
-        // commit the ongoing transaction
-        session.save();
+        // commit the current transaction
         TransactionHelper.commitOrRollbackTransaction();
 
-        // execute on list in sub transactions
+        // execute on list in separate transactions
         for (Object value : list) {
             TransactionHelper.startTransaction();
             try {
@@ -98,7 +98,7 @@ public class RunOperationOnListInNewTransaction {
                 subctx.setInput(ctx.getInput());
                 subctx.put(itemName, value);
                 service.run(subctx, chainId, null);
-            } catch (Exception e) {
+            } catch (Exception e) { // no InterruptedException
                 log.error("Cannot proceed on " + value, e);
                 TransactionHelper.setTransactionRollbackOnly();
             } finally {
@@ -107,6 +107,8 @@ public class RunOperationOnListInNewTransaction {
         }
 
         TransactionHelper.startTransaction();
+
+        // reconnect documents in the context
         if (!isolate) {
             for (String varName : vars.keySet()) {
                 if (!ctx.getVars().containsKey(varName)) {
@@ -124,4 +126,5 @@ public class RunOperationOnListInNewTransaction {
             }
         }
     }
+
 }
