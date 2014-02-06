@@ -48,6 +48,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NXQLQueryBuilder {
 
+    // @since 5.9.2
+    public static final String DEFAULT_SELECT_STATEMENT = "SELECT * FROM Document";
+
     // @since 5.9
     public static final String SORTED_COLUMN = "SORTED_COLUMN";
 
@@ -78,7 +81,11 @@ public class NXQLQueryBuilder {
             WhereClauseDefinition whereClause, Object[] params,
             SortInfo... sortInfos) throws ClientException {
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("SELECT * FROM Document");
+        String selectStatement = whereClause.getSelectStatement();
+        if (StringUtils.isBlank(selectStatement)) {
+            selectStatement = DEFAULT_SELECT_STATEMENT;
+        }
+        queryBuilder.append(selectStatement);
         if (whereClause != null) {
             queryBuilder.append(getQueryElement(model, whereClause, params));
         }
