@@ -28,11 +28,11 @@ public interface PageProviderChangedListener {
     /**
      * Called when the current page of the {@code pageProvider} has changed.
      */
-    void pageChanged(PageProvider pageProvider);
+    void pageChanged(PageProvider<?> pageProvider);
 
     /**
      * Called when the {@code pageProvider} has refreshed.
      */
-    void refreshed(PageProvider pageProvider);
+    void refreshed(PageProvider<?> pageProvider);
 
 }

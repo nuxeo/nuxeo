@@ -122,7 +122,7 @@ public class NXQLQueryBuilder {
         }
         // add fixed part if applicable
         String fixedPart = whereClause.getFixedPart();
-        if (fixedPart != null && !fixedPart.equals("")) {
+        if (!StringUtils.isBlank(fixedPart)) {
             if (elements.isEmpty()) {
                 elements.add(getQuery(fixedPart, params,
                         whereClause.getQuoteFixedPartParameters(),
@@ -304,7 +304,7 @@ public class NXQLQueryBuilder {
                 operator = operator.toUpperCase();
             }
         }
-        if (operator == null || "".equals(operator)) {
+        if (StringUtils.isBlank(operator)) {
             operator = predicateDescriptor.getOperator();
         }
 
