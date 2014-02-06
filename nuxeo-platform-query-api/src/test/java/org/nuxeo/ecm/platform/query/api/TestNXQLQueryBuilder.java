@@ -164,12 +164,9 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
     // @Since 5.9
     @Test
     public void testSortedColumnQuery() throws Exception {
-        PageProviderService pps = Framework.getService(PageProviderService.class);
         String pattern = "SELECT * FROM Document WHERE SORTED_COLUMN IS NOT NULL";
         String query = NXQLQueryBuilder.getQuery(pattern, null, true, true);
-        assertEquals(
-                "SELECT * FROM Document WHERE ecm:uuid IS NOT NULL",
-                query);
+        assertEquals("SELECT * FROM Document WHERE ecm:uuid IS NOT NULL", query);
         SortInfo sortInfo = new SortInfo("dc:title", true);
         query = NXQLQueryBuilder.getQuery(pattern, null, true, true, sortInfo);
         assertEquals(
@@ -177,9 +174,29 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
                 query);
         sortInfo = new SortInfo("dc:created", true);
         SortInfo sortInfo2 = new SortInfo("dc:title", true);
-        query = NXQLQueryBuilder.getQuery(pattern, null, true, true, sortInfo, sortInfo2);
+        query = NXQLQueryBuilder.getQuery(pattern, null, true, true, sortInfo,
+                sortInfo2);
         assertEquals(
                 "SELECT * FROM Document WHERE dc:created IS NOT NULL ORDER BY dc:created , dc:title",
                 query);
     }
+
+    // @Since 5.9.2
+    @Test
+    public void testCustomSelectStatement() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        assertNotNull(pps);
+        WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
+                "CUSTOM_SELECT_STATEMENT").getWhereClause();
+        String[] params = { "foo" };
+        DocumentModel model = new DocumentModelImpl("/", "doc",
+                "AdvancedSearch");
+        model.setPropertyValue("search:title", "bar");
+
+        String query = NXQLQueryBuilder.getQuery(model, whereClause, params);
+        assertEquals(
+                "SELECT * FROM Note WHERE dc:title LIKE 'bar' AND (ecm:parentId = 'foo')",
+                query);
+    }
+
 }

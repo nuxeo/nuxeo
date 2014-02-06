@@ -84,6 +84,8 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
         assertEquals(
                 "ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'",
                 def.getWhereClause().getFixedPart());
+        assertEquals("SELECT * FROM Note",
+                def.getWhereClause().getSelectStatement());
         assertEquals(1, def.getSortInfos().size());
         assertEquals("dc:title", def.getSortInfos().get(0).getSortColumn());
         assertTrue(def.getSortInfos().get(0).getSortAscending());
