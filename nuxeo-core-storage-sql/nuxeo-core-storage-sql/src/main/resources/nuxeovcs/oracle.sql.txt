@@ -73,7 +73,7 @@ END;
 
 #CATEGORY: afterTableCreation
 
-
+-- DEPRECATED SINCE 9.2
 CREATE OR REPLACE FUNCTION NX_IN_TREE(id ${argIdType}, baseid ${argIdType})
 RETURN NUMBER IS
   curid hierarchy.id%TYPE := id;

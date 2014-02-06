@@ -481,7 +481,8 @@ public class DialectOracle extends Dialect {
                     idColumnName);
         } else {
             // no optimization
-            return String.format("NX_IN_TREE(%s, ?) = 1", idColumnName);
+            return String.format("%s in (SELECT id FROM hierarchy WHERE LEVEL>1 AND isproperty = 0 START WITH id=? CONNECT BY PRIOR id = parentid)",
+                    idColumnName);
         }
     }
 
