@@ -688,14 +688,12 @@ public class ContentViewImpl implements ContentView,
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
-    public void pageChanged(PageProvider pageProvider) {
+    public void pageChanged(PageProvider<?> pageProvider) {
         raiseEvent(CONTENT_VIEW_PAGE_CHANGED_EVENT);
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
-    public void refreshed(PageProvider pageProvider) {
+    public void refreshed(PageProvider<?> pageProvider) {
         raiseEvent(CONTENT_VIEW_REFRESH_EVENT);
     }
 

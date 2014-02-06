@@ -54,7 +54,7 @@
         <property name="coreSession">#{documentManager}</property>
         <property name="checkQueryCache">true</property>
         <whereClause docType="File">
-          <fixedPart>
+          <fixedPart statement="SELECT * FROM Note">
             ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
             ecm:mixinType !=
             'HiddenInNavigation' AND ecm:currentLifeCycleState

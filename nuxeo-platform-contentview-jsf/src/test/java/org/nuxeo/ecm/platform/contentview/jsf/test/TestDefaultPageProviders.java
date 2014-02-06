@@ -591,7 +591,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         assertTrue(pp instanceof CoreQueryDocumentPageProvider);
         assertEquals(
                 String.format(
-                        "SELECT * FROM Document WHERE ecm:parentId = '%s'"
+                        "SELECT * FROM Note WHERE ecm:parentId = '%s'"
                                 + " AND ecm:isCheckedInVersion = 0"
                                 + " AND ecm:mixinType != 'HiddenInNavigation'"
                                 + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title",
