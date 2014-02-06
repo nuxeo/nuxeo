@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.OutputType;
@@ -38,7 +39,20 @@ public class ScreenShotFileOutput implements OutputType<File> {
 
     private static final Log log = LogFactory.getLog(ScreenShotFileOutput.class);
 
+    protected String targetDir;
+
     protected String screenshotFilePrefix;
+
+    /**
+     * @param targetDir name of the target dir (can be null), will be ignored
+     *            if file is created in temp directory.
+     * @param screenshotFilePrefix prefix of the screen shot file.
+     * @since 5.9.2
+     */
+    public ScreenShotFileOutput(String targetDir, String screenshotFilePrefix) {
+        this.targetDir = targetDir;
+        this.screenshotFilePrefix = screenshotFilePrefix;
+    }
 
     /**
      * @param screenshotFilePrefix prefix of the screen shot file.
@@ -62,6 +76,10 @@ public class ScreenShotFileOutput implements OutputType<File> {
             File outputFolder = new File(location);
             if (!outputFolder.exists() || !outputFolder.isDirectory()) {
                 outputFolder = null;
+            }
+            if (outputFolder != null && !StringUtils.isBlank(targetDir)) {
+                outputFolder = new File(outputFolder, targetDir);
+                outputFolder.mkdir();
             }
             File tmpFile = File.createTempFile(screenshotFilePrefix, ".png",
                     outputFolder);

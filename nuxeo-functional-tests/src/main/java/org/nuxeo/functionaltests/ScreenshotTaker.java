@@ -63,11 +63,8 @@ public class ScreenshotTaker {
             try {
                 Thread.sleep(250);
                 String name = filename;
-                if (!StringUtils.isBlank(targetDirName)) {
-                    name = targetDirName + "/" + filename;
-                }
                 return TakesScreenshot.class.cast(driver).getScreenshotAs(
-                        new ScreenShotFileOutput(name));
+                        new ScreenShotFileOutput(targetDirName, name));
             } catch (InterruptedException e) {
                 log.error(e, e);
             }
@@ -83,12 +80,13 @@ public class ScreenshotTaker {
         try {
             String location = System.getProperty("basedir") + File.separator
                     + "target";
-            if (!StringUtils.isBlank(targetDirName)) {
-                location += "/" + filename;
-            }
             File outputFolder = new File(location);
             if (!outputFolder.exists() || !outputFolder.isDirectory()) {
                 outputFolder = null;
+            }
+            if (outputFolder != null && !StringUtils.isBlank(targetDirName)) {
+                outputFolder = new File(outputFolder, targetDirName);
+                outputFolder.mkdir();
             }
             File tmpFile = File.createTempFile(filename, ".html", outputFolder);
             log.trace(String.format("Created page source file named '%s'",
