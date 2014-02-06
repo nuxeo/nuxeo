@@ -40,7 +40,11 @@ import org.nuxeo.ecm.platform.query.api.PageSelections;
  * It builds the query at each call so that it can refresh itself when the
  * query changes.
  * <p>
- * TODO: describe needed properties
+ * <p>
+ * The page provider property named {@link #CORE_SESSION_PROPERTY} is used to
+ * pass the {@link CoreSession} instance that will perform the query. The
+ * optional property {@link #CHECK_QUERY_CACHE_PROPERTY} can be set to "true"
+ * to avoid performing the query again if it did not change.
  *
  * @author Anahide Tchertchian
  * @since 5.4

@@ -39,10 +39,13 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Page provider performing a query on a core session.
  * <p>
- * It builds the query at each call so that it can refresh itself when the query
- * changes.
+ * It builds the query at each call so that it can refresh itself when the
+ * query changes.
  * <p>
- * TODO: describe needed properties
+ * The page provider property named {@link #CORE_SESSION_PROPERTY} is used to
+ * pass the {@link CoreSession} instance that will perform the query. The
+ * optional property {@link #CHECK_QUERY_CACHE_PROPERTY} can be set to "true"
+ * to avoid performing the query again if it did not change.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -109,13 +112,13 @@ public class CoreQueryDocumentPageProvider extends
 
                 DocumentModelList docs;
                 if (getMaxResults() > 0) {
-                    docs = coreSession.query(query, getFilter(), minMaxPageSize,
-                            offset, getMaxResults());
+                    docs = coreSession.query(query, getFilter(),
+                            minMaxPageSize, offset, getMaxResults());
                 } else {
                     // use a totalCount=true instead of countUpTo=-1 to enable
                     // global limitation described in NXP-9381
-                    docs = coreSession.query(query, getFilter(), minMaxPageSize,
-                            offset, true);
+                    docs = coreSession.query(query, getFilter(),
+                            minMaxPageSize, offset, true);
                 }
                 long resultsCount = docs.totalSize();
                 if (resultsCount < 0) {
@@ -167,8 +170,8 @@ public class CoreQueryDocumentPageProvider extends
                 }
 
                 if (getResultsCount() < 0) {
-                    // additional info to handle next page when results count is
-                    // unknown
+                    // additional info to handle next page when results count
+                    // is unknown
                     if (currentPageDocuments != null
                             && currentPageDocuments.size() > 0) {
                         int higherNonEmptyPage = getCurrentHigherNonEmptyPageIndex();
@@ -250,8 +253,9 @@ public class CoreQueryDocumentPageProvider extends
      */
     public long getMaxResults() {
         if (maxResults == null) {
-            maxResults = 0L;
-            String maxResultsStr = (String) getProperties().get(MAX_RESULTS_PROPERTY);
+            maxResults = Long.valueOf(0);
+            String maxResultsStr = (String) getProperties().get(
+                    MAX_RESULTS_PROPERTY);
             if (maxResultsStr != null) {
                 if (DEFAULT_NAVIGATION_RESULTS_KEY.equals(maxResultsStr)) {
                     maxResultsStr = Framework.getProperty(
@@ -261,7 +265,7 @@ public class CoreQueryDocumentPageProvider extends
                     maxResultsStr = Long.valueOf(getPageSize()).toString();
                 }
                 try {
-                    maxResults = Long.parseLong(maxResultsStr);
+                    maxResults = Long.valueOf(maxResultsStr);
                 } catch (NumberFormatException e) {
                     log.warn(String.format(
                             "Invalid maxResults property value: %s for page provider: %s, fallback to unlimited.",
@@ -269,7 +273,7 @@ public class CoreQueryDocumentPageProvider extends
                 }
             }
         }
-        return maxResults;
+        return maxResults.longValue();
     }
 
     /**
@@ -293,7 +297,7 @@ public class CoreQueryDocumentPageProvider extends
      * @since 5.6
      */
     public void setMaxResults(long maxResults) {
-        this.maxResults = maxResults;
+        this.maxResults = Long.valueOf(maxResults);
     }
 
     @Override
