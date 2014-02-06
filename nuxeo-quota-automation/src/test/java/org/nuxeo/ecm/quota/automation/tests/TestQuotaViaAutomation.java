@@ -19,11 +19,6 @@ package org.nuxeo.ecm.quota.automation.tests;
 import static org.junit.Assert.assertEquals;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,12 +30,13 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.ecm.quota.automation.GetQuotaInfoOperation;
@@ -63,8 +59,9 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @TransactionalConfig(autoStart = false)
+@RepositoryConfig(repositoryFactoryClass = PoolingRepositoryFactory.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.quota.core", "org.nuxeo.ecm.quota.automation",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
+        "org.nuxeo.ecm.automation.core" })
 public class TestQuotaViaAutomation {
 
     @Inject
@@ -103,25 +100,6 @@ public class TestQuotaViaAutomation {
 
     @Before
     public void cleanupSessionAssociationBeforeTest() throws Exception {
-        // temp fix to be sure the session tx
-        // will be correctly handled in the test
-        dispose(session);
-    }
-
-    protected void dispose(CoreSession session) throws Exception {
-        if (Proxy.isProxyClass(session.getClass())) {
-            InvocationHandler handler = Proxy.getInvocationHandler(session);
-            if (handler instanceof TransactionalCoreSessionWrapper) {
-                Field field = TransactionalCoreSessionWrapper.class.getDeclaredField("session");
-                field.setAccessible(true);
-                session = (CoreSession) field.get(handler);
-            }
-        }
-        if (!(session instanceof LocalSession)) {
-            throw new UnsupportedOperationException(
-                    "Cannot dispose session of class " + session.getClass());
-        }
-        ((LocalSession) session).getSession().dispose();
     }
 
     protected Blob getFakeBlob(int size) {
