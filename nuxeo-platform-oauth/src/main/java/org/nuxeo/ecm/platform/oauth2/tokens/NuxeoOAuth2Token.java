@@ -120,7 +120,7 @@ public class NuxeoOAuth2Token {
 
     public boolean isExpired() {
         return creationDate != null
-                && creationDate.getTimeInMillis() + expirationTimeMilliseconds > Calendar.getInstance().getTimeInMillis();
+                && creationDate.getTimeInMillis() + expirationTimeMilliseconds < Calendar.getInstance().getTimeInMillis();
     }
 
     public void setServiceName(String serviceName) {
