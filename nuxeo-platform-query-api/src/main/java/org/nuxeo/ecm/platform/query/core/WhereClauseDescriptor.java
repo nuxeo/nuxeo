@@ -47,6 +47,16 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
 
     protected String fixedPart;
 
+    /**
+     * This parameter allows to override the default select statement used by
+     * the fixed part ("select * from Document" for NXQL queries, for
+     * instance).
+     *
+     * @since 5.9.2
+     */
+    @XNode("fixedPart@statement")
+    protected String selectStatement;
+
     @XNode("fixedPart@quoteParameters")
     protected boolean quoteFixedPartParameters = true;
 
@@ -91,6 +101,11 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
         return escaperClass;
     }
 
+    @Override
+    public String getSelectStatement() {
+        return selectStatement;
+    }
+
     /**
      * @since 5.6
      */
@@ -107,6 +122,7 @@ public class WhereClauseDescriptor implements WhereClauseDefinition {
         clone.fixedPart = fixedPart;
         clone.quoteFixedPartParameters = quoteFixedPartParameters;
         clone.escapeFixedPartParameters = escapeFixedPartParameters;
+        clone.selectStatement = selectStatement;
         return clone;
     }
 }

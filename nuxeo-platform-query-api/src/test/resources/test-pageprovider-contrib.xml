@@ -19,7 +19,7 @@
 
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT">
       <whereClause docType="File">
-        <fixedPart>
+        <fixedPart statement="SELECT * FROM Note">
           ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
           ecm:mixinType !=
           'HiddenInNavigation' AND ecm:currentLifeCycleState !=
@@ -58,6 +58,27 @@
           <field schema="advanced_search" name="isPresent" />
         </predicate>
         <fixedPart>
+          ecm:parentId = ?
+        </fixedPart>
+      </whereClause>
+      <parameter>#{currentDocument.id}</parameter>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="CUSTOM_SELECT_STATEMENT">
+      <property name="coreSession">#{documentManager}</property>
+      <whereClause docType="AdvancedSearch">
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="advanced_search" name="fulltext_all" />
+        </predicate>
+        <predicate parameter="dc:title" operator="LIKE">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+        <predicate parameter="dc:modified" operator="IS NULL">
+          <field schema="advanced_search" name="isPresent" />
+        </predicate>
+        <fixedPart statement="SELECT * FROM Note">
           ecm:parentId = ?
         </fixedPart>
       </whereClause>

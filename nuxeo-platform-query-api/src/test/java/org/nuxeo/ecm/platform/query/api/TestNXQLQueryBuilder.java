@@ -146,4 +146,22 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
                 query);
     }
 
+    // @Since 5.9.2
+    @Test
+    public void testCustomSelectStatement() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        assertNotNull(pps);
+        WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
+                "CUSTOM_SELECT_STATEMENT").getWhereClause();
+        String[] params = { "foo" };
+        DocumentModel model = new DocumentModelImpl("/", "doc",
+                "AdvancedSearch");
+        model.setPropertyValue("search:title", "bar");
+
+        String query = NXQLQueryBuilder.getQuery(model, whereClause, params);
+        assertEquals(
+                "SELECT * FROM Note WHERE dc:title LIKE 'bar' AND (ecm:parentId = 'foo')",
+                query);
+    }
+
 }
