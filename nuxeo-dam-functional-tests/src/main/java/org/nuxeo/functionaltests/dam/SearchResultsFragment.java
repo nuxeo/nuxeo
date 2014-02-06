@@ -19,6 +19,8 @@ package org.nuxeo.functionaltests.dam;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.forms.LayoutElement;
 import org.nuxeo.functionaltests.fragment.WebFragment;
@@ -30,10 +32,14 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
 
+import com.google.common.base.Function;
+
 /**
  * @since 5.7.3
  */
 public class SearchResultsFragment extends WebFragmentImpl {
+
+    protected static final Log log = LogFactory.getLog(SearchResultsFragment.class);
 
     @FindBy(id = "nxl_gridDamLayout:nxw_damNewAsset_form:nxw_doc_damSearchResultsActions_damNewAsset_subview:nxw_doc_damSearchResultsActions_damNewAsset_link")
     public WebElement newAssetButton;
@@ -95,8 +101,15 @@ public class SearchResultsFragment extends WebFragmentImpl {
      * Click on the bubble box element containing the given {@code text} to
      * select an asset.
      */
-    public void selectAsset(String text) {
+    public void selectAsset(final String text) {
         getBubbleBox(text).click();
+        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                log.warn("Waiting for " + text + " to be selected");
+                return getBubbleBox(text).getAttribute("class").contains(
+                        "selectedItem");
+            }
+        });
     }
 
     /**
