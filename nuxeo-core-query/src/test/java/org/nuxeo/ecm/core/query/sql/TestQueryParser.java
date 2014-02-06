@@ -327,6 +327,18 @@ public class TestQueryParser {
     }
 
     @Test
+    public void testFunctions() {
+        SQLQuery query = SQLQueryParser.parse("SELECT COUNT(p), AVG(p) FROM t");
+        SelectList select = query.getSelectClause().elements;
+        assertEquals(2, select.size());
+
+        OperandList ops = new OperandList();
+        ops.add(new Reference("p"));
+        assertEquals(new Function("COUNT", ops), select.get(0));
+        assertEquals(new Function("AVG", ops), select.get(1));
+    }
+
+    @Test
     public void testDateCast() {
         SQLQuery query = SQLQueryParser.parse("SELECT p FROM t WHERE DATE(dc:modified) = DATE '2010-01-01'");
 

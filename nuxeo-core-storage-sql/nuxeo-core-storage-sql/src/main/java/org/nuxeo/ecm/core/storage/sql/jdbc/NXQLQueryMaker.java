@@ -165,6 +165,13 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected static final String DATE_CAST = "DATE";
 
+    protected static final String COUNT_FUNCTION = "COUNT";
+
+    protected static final String AVG_FUNCTION = "AVG";
+
+    protected static final List<String> AGGREGATE_FUNCTIONS = Arrays.asList(
+            COUNT_FUNCTION, AVG_FUNCTION, "SUM", "MIN", "MAX");
+
     /**
      * These mixins never match an instance mixin when used in a clause
      * ecm:mixinType = 'foo'. This is in addition to those configured in the
@@ -1245,8 +1252,17 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitFunction(Function node) {
-            throw new QueryMakerException("Function not supported: "
-                    + node.toString());
+            if (!inSelect) {
+                throw new QueryMakerException(
+                        "Function not supported in WHERE clause: " + node);
+            }
+            String func = node.name.toUpperCase();
+            Operand arg;
+            if (!AGGREGATE_FUNCTIONS.contains(func) || node.args.size() != 1
+                    || !((arg = node.args.get(0)) instanceof Reference)) {
+                throw new QueryMakerException("Function not supported: " + node);
+            }
+            visitReference((Reference) arg);
         }
 
         @Override
@@ -1289,9 +1305,9 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public static final String PATH_SEP = "/";
 
-        public final List<Column> whatColumns = new LinkedList<Column>();
+        public final LinkedList<Column> whatColumns = new LinkedList<Column>();
 
-        public final List<String> whatKeys = new LinkedList<String>();
+        public final LinkedList<String> whatKeys = new LinkedList<String>();
 
         public final StringBuilder buf = new StringBuilder();
 
@@ -2176,6 +2192,48 @@ public class NXQLQueryMaker implements QueryMaker {
         public void visitBooleanLiteral(BooleanLiteral node) {
             buf.append('?');
             whereParams.add(Boolean.valueOf(node.value));
+        }
+
+        @Override
+        public void visitFunction(Function node) {
+            String func = node.name.toUpperCase();
+            Reference ref = (Reference) node.args.get(0);
+            ref.accept(this); // whatColumns / whatKeys for column
+
+            // replace column info with aggregate
+            Column col = whatColumns.removeLast();
+            final String aggFQN = func + "(" + col.getFullQuotedName() + ")";
+            final ColumnType aggType = getAggregateType(func, col.getType());
+            final int aggJdbcType = dialect.getJDBCTypeAndString(aggType).jdbcType;
+            Column cc = new Column(col, col.getTable()) {
+                private static final long serialVersionUID = 1L;
+                @Override
+                public String getFullQuotedName() {
+                    return aggFQN;
+                }
+                @Override
+                public ColumnType getType() {
+                    return aggType;
+                }
+                @Override
+                public int getJdbcType() {
+                    return aggJdbcType;
+                }
+            };
+            whatColumns.add(cc);
+            String key = whatKeys.removeLast();
+            whatKeys.addLast(func + "(" + key + ")");
+        }
+
+        protected ColumnType getAggregateType(String func, ColumnType arg) {
+            if (COUNT_FUNCTION.equals(func)) {
+                return ColumnType.LONG;
+            }
+            if (AVG_FUNCTION.equals(func)) {
+                return ColumnType.DOUBLE;
+            }
+            // SUM, MIN, MAX
+            return arg;
         }
 
         @Override

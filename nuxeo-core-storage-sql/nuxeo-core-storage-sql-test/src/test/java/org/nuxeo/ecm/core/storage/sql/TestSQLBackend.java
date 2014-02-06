@@ -3888,6 +3888,79 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
+    public void testQueryAggregatesErrors() throws Exception {
+        Session session = repository.getConnection();
+        try {
+            session.queryAndFetch(
+                    "SELECT tst:title FROM TestDoc WHERE COUNT(tst:title) = 1",
+                    "NXQL", QueryFilter.EMPTY);
+            fail("Should fail");
+        } catch (StorageException e) {
+            String msg = e.getCause().getMessage();
+            assertTrue(msg,
+                    msg.contains("Function not supported in WHERE clause"));
+        }
+        try {
+            session.queryAndFetch("SELECT COUNT(*) FROM TestDoc", "NXQL",
+                    QueryFilter.EMPTY);
+            fail("Should fail");
+        } catch (StorageException e) {
+            String msg = e.getCause().getMessage();
+            assertTrue(msg, msg.contains("Syntax error"));
+        }
+    }
+
+    @Test
+    public void testQueryAggregates() throws Exception {
+        IterableQueryResult it;
+        Map<String, Serializable> map;
+
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node doc1 = session.addChildNode(root, "doc1", null, "TestDoc", false);
+        doc1.setSimpleProperty("tst:title", "hello1");
+        doc1.setSimpleProperty("tst:count", Long.valueOf(123));
+        doc1.setSimpleProperty("tst:rate", Double.valueOf(1));
+        Node doc2 = session.addChildNode(root, "doc2", null, "TestDoc", false);
+        doc2.setSimpleProperty("tst:title", "hello2");
+        doc2.setSimpleProperty("tst:count", Long.valueOf(456));
+        doc2.setSimpleProperty("tst:rate", Double.valueOf(3));
+        session.save();
+
+        it = session.queryAndFetch(
+                "SELECT COUNT(tst:title) FROM TestDoc WHERE ecm:isProxy = 0",
+                "NXQL", QueryFilter.EMPTY);
+        assertEquals(1, it.size());
+        map = it.iterator().next();
+        assertEquals(Long.valueOf(2), map.get("COUNT(tst:title)"));
+        it.close();
+
+        it = session.queryAndFetch(
+                "SELECT SUM(tst:count), AVG(tst:count), MIN(tst:count), MAX(tst:count)"
+                        + " FROM TestDoc WHERE ecm:isProxy = 0", "NXQL",
+                QueryFilter.EMPTY);
+        assertEquals(1, it.size());
+        map = it.iterator().next();
+        assertEquals(Long.valueOf(579), map.get("SUM(tst:count)"));
+        assertEquals(Double.valueOf(290.0), map.get("AVG(tst:count)"));
+        assertEquals(Long.valueOf(123), map.get("MIN(tst:count)"));
+        assertEquals(Long.valueOf(456), map.get("MAX(tst:count)"));
+        it.close();
+
+        it = session.queryAndFetch(
+                "SELECT SUM(tst:rate), AVG(tst:rate), MIN(tst:rate), MAX(tst:rate)"
+                        + " FROM TestDoc WHERE ecm:isProxy = 0", "NXQL",
+                QueryFilter.EMPTY);
+        assertEquals(1, it.size());
+        map = it.iterator().next();
+        assertEquals(Double.valueOf(4.0), map.get("SUM(tst:rate)"));
+        assertEquals(Double.valueOf(2.0), map.get("AVG(tst:rate)"));
+        assertEquals(Double.valueOf(1.0), map.get("MIN(tst:rate)"));
+        assertEquals(Double.valueOf(3.0), map.get("MAX(tst:rate)"));
+        it.close();
+    }
+
+    @Test
     public void testPath() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
