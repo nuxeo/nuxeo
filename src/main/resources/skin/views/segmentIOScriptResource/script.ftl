@@ -6,12 +6,12 @@
 
   function identifyIfNeeded(login, email) {
     if (login) {
-      if (document.cookie.indexOf("_nxIdentified=")<0) {
+      if (document.cookie.indexOf("_nxIdentified="+login)<0) {
         // do the identify
          analytics.identify('login', {
           email   : 'email'
          });
-         document.cookie = "_nxIdentified=yes";
+         document.cookie = "_nxIdentified="+login;
       }
     }
    }
