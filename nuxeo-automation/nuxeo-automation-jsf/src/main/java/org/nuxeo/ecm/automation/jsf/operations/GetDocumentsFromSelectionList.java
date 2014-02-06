@@ -34,7 +34,7 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsPersistenceManager;
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */
-@Operation(id = GetDocumentsFromSelectionList.ID, category = Constants.CAT_FETCH, requires = Constants.SEAM_CONTEXT, label = "UI Selected documents form list", description = "Fetch the documents selected in the selection list passed as a parameter. If the list name is empty, the current folder selection list is used.")
+@Operation(id = GetDocumentsFromSelectionList.ID, category = Constants.CAT_FETCH, requires = Constants.SEAM_CONTEXT, label = "UI Selected documents from list", description = "Fetch the documents selected in the selection list passed as a parameter. If the list name is empty, the current folder selection list is used.")
 public class GetDocumentsFromSelectionList {
 
     public static final String ID = "Seam.GetDocumentsFromSelectionList";
