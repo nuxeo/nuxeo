@@ -19,10 +19,9 @@ package org.nuxeo.ecm.quota.automation.tests;
 import static org.junit.Assert.assertEquals;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,13 +32,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.quota.QuotaStatsService;
@@ -63,10 +61,12 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @TransactionalConfig(autoStart = false)
-@RepositoryConfig(repositoryFactoryClass = PoolingRepositoryFactory.class)
+@RepositoryConfig(repositoryFactoryClass = PoolingRepositoryFactory.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.quota.core", "org.nuxeo.ecm.quota.automation",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
+        "org.nuxeo.ecm.automation.core" })
 public class TestQuotaViaAutomation {
+
+    private Log log = LogFactory.getLog(TestQuotaViaAutomation.class);
 
     @Inject
     AutomationService automationService;
@@ -106,23 +106,6 @@ public class TestQuotaViaAutomation {
     public void cleanupSessionAssociationBeforeTest() throws Exception {
         // temp fix to be sure the session tx
         // will be correctly handled in the test
-        dispose(session);
-    }
-
-    protected void dispose(CoreSession session) throws Exception {
-        if (Proxy.isProxyClass(session.getClass())) {
-            InvocationHandler handler = Proxy.getInvocationHandler(session);
-            if (handler instanceof TransactionalCoreSessionWrapper) {
-                Field field = TransactionalCoreSessionWrapper.class.getDeclaredField("session");
-                field.setAccessible(true);
-                session = (CoreSession) field.get(handler);
-            }
-        }
-        if (!(session instanceof LocalSession)) {
-            throw new UnsupportedOperationException(
-                    "Cannot dispose session of class " + session.getClass());
-        }
-        ((LocalSession) session).getSession().dispose();
     }
 
     protected Blob getFakeBlob(int size) {
@@ -184,11 +167,11 @@ public class TestQuotaViaAutomation {
                     ws.getPathAsString(), "folder2", "Folder");
             secondFolder = session.createDocument(secondFolder);
             secondFolderRef = secondFolder.getRef();
+
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
         eventService.waitForAsyncCompletion();
-        dispose(session);
     }
 
     protected void assertQuota(SimpleQuotaInfo sqi, long innerSize,
@@ -260,23 +243,16 @@ public class TestQuotaViaAutomation {
 
     @Test
     public void testSetQuotasViaAutomation() throws Exception {
-
         addContent();
 
         SimpleQuotaInfo sqi_ws = getQuotaInfo(wsRef);
         assertQuota(sqi_ws, 0L, 300L);
-
         assertEquals(400L, sqi_ws.getMaxQuota());
 
         Long newSize = setQuota(wsRef, 500L);
-
         assertEquals(500L, newSize.longValue());
-
         sqi_ws = getQuotaInfo(wsRef);
         assertEquals(500L, sqi_ws.getMaxQuota());
-
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
     }
 
 }
