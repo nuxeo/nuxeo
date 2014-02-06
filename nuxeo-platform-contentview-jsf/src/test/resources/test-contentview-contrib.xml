@@ -54,7 +54,7 @@
         <property name="coreSession">#{documentManager}</property>
         <property name="checkQueryCache">true</property>
         <whereClause docType="File">
-          <fixedPart statement="SELECT * FROM Note">
+          <fixedPart statement="SELECT * FROM Folder">
             ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
             ecm:mixinType !=
             'HiddenInNavigation' AND ecm:currentLifeCycleState
@@ -192,7 +192,7 @@
 
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_PP">
       <whereClause docType="File">
-        <fixedPart>
+        <fixedPart statement="SELECT * FROM Folder">
           ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
           ecm:mixinType !=
           'HiddenInNavigation' AND ecm:currentLifeCycleState !=
