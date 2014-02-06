@@ -28,11 +28,11 @@ import org.openqa.selenium.WebDriverException;
 
 /**
  * Screenshot into a temp file (will try to save it in maven base dir/target,
- * save it in the system temp folder if can't find it). This temp file won't be
- * deleted on exist.
+ * save it in the system temp folder if can't find it).
+ * <p>
+ * This temp file won't be deleted on exist.
  *
  * @author Sun Seng David TAN <stan@nuxeo.com>
- *
  */
 public class ScreenShotFileOutput implements OutputType<File> {
 
@@ -76,4 +76,5 @@ public class ScreenShotFileOutput implements OutputType<File> {
             IOUtils.closeQuietly(fos);
         }
     }
+
 }

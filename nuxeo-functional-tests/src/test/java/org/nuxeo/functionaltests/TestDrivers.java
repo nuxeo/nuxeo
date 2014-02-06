@@ -50,8 +50,9 @@ public class TestDrivers extends AbstractTest {
         watchman.setDriver(driver);
         watchman.setServerURL(NUXEO_URL);
         driver.get("http://google.com");
-        assertTrue(watchman.takeScreenshot("firefox").delete());
-        assertTrue(watchman.dumpPageSource("firefox").delete());
+        ScreenshotTaker taker = new ScreenshotTaker();
+        assertTrue(taker.takeScreenshot(driver, "firefox").delete());
+        assertTrue(taker.dumpPageSource(driver, "firefox").delete());
         quitDriver();
         removeFireBug();
         stopProxy();
@@ -62,8 +63,9 @@ public class TestDrivers extends AbstractTest {
     public void testGoogleChrome() throws Exception {
         initChromeDriver();
         driver.get("http://google.com");
-        assertTrue(watchman.takeScreenshot("google-chrome").delete());
-        assertTrue(watchman.dumpPageSource("google-chrome").delete());
+        ScreenshotTaker taker = new ScreenshotTaker();
+        assertTrue(taker.takeScreenshot(driver, "google-chrome").delete());
+        assertTrue(taker.dumpPageSource(driver, "google-chrome").delete());
         quitDriver();
         stopProxy();
     }

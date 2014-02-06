@@ -18,13 +18,10 @@
 package org.nuxeo.functionaltests;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.internal.runners.statements.RunAfters;
@@ -32,8 +29,6 @@ import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.nuxeo.common.utils.URIUtils;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
@@ -84,8 +79,8 @@ public class LogTestWatchman extends TestWatchman {
                         if (afters != null && !afters.isEmpty()) {
                             try {
                                 // Improve this and instead of finding a
-                                // special function, we could register functions
-                                // specially annotated.
+                                // special function, we could register
+                                // functions specially annotated.
                                 FrameworkMethod first = afters.get(0);
                                 Method m = AbstractTest.class.getMethod(
                                         "runBeforeAfters", (Class<?>[]) null);
@@ -110,29 +105,15 @@ public class LogTestWatchman extends TestWatchman {
         };
     }
 
+    /**
+     * @deprecated since 5.9.2, use
+     *             {@link ScreenshotTaker#dumpPageSource(org.openqa.selenium.WebDriver, String)}
+     *             instead.
+     */
+    @Deprecated
     public File dumpPageSource(String filename) {
-        if (driver == null) {
-            return null;
-        }
-        FileWriter writer = null;
-        try {
-            String location = System.getProperty("basedir") + File.separator
-                    + "target";
-            File outputFolder = new File(location);
-            if (!outputFolder.exists() || !outputFolder.isDirectory()) {
-                outputFolder = null;
-            }
-            File tmpFile = File.createTempFile(filename, ".html", outputFolder);
-            log.trace(String.format("Created page source file named '%s'",
-                    tmpFile.getPath()));
-            writer = new FileWriter(tmpFile);
-            writer.write(driver.getPageSource());
-            return tmpFile;
-        } catch (IOException e) {
-            throw new WebDriverException(e);
-        } finally {
-            IOUtils.closeQuietly(writer);
-        }
+        ScreenshotTaker taker = new ScreenshotTaker();
+        return taker.dumpPageSource(driver, filename);
     }
 
     @Override
@@ -143,13 +124,15 @@ public class LogTestWatchman extends TestWatchman {
                 e);
 
         if (lastScreenshot == null || lastPageSource == null) {
+            ScreenshotTaker taker = new ScreenshotTaker();
+
             if (lastScreenshot == null) {
-                File temp = takeScreenshot(filePrefix);
+                File temp = taker.takeScreenshot(driver, filePrefix);
                 lastScreenshot = temp != null ? temp.getAbsolutePath() : null;
             }
 
             if (lastPageSource == null) {
-                File temp = dumpPageSource(filePrefix);
+                File temp = taker.dumpPageSource(driver, filePrefix);
                 lastPageSource = temp != null ? temp.getAbsolutePath() : null;
             }
 
@@ -193,8 +176,9 @@ public class LogTestWatchman extends TestWatchman {
     }
 
     public void runBeforeAfters() {
-        lastScreenshot = takeScreenshot(filePrefix).getAbsolutePath();
-        lastPageSource = dumpPageSource(filePrefix).getAbsolutePath();
+        ScreenshotTaker taker = new ScreenshotTaker();
+        lastScreenshot = taker.takeScreenshot(driver, filePrefix).getAbsolutePath();
+        lastPageSource = taker.dumpPageSource(driver, filePrefix).getAbsolutePath();
     }
 
     public void setDriver(RemoteWebDriver driver) {
@@ -227,17 +211,15 @@ public class LogTestWatchman extends TestWatchman {
         }
     }
 
+    /**
+     * @deprecated since 5.9.2, use
+     *             {@link ScreenshotTaker#takeScreenshot(org.openqa.selenium.WebDriver, String)}
+     *             instead.
+     */
+    @Deprecated
     public File takeScreenshot(String filename) {
-        if (TakesScreenshot.class.isInstance(driver)) {
-            try {
-                Thread.sleep(250);
-                return TakesScreenshot.class.cast(driver).getScreenshotAs(
-                        new ScreenShotFileOutput(filename));
-            } catch (InterruptedException e) {
-                log.error(e, e);
-            }
-        }
-        return null;
+        ScreenshotTaker taker = new ScreenshotTaker();
+        return taker.takeScreenshot(driver, filename);
     }
 
 }
