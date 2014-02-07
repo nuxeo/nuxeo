@@ -144,6 +144,9 @@
     <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.IntegerToLong"
       accept="java.lang.Integer"
       produce="java.lang.Long" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.LongToInteger"
+      accept="java.lang.Long"
+      produce="java.lang.Integer" />
     <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.ArrayStringToList"
       accept="[Ljava.lang.String;"
       produce="org.nuxeo.ecm.automation.core.util.StringList" />
