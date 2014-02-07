@@ -282,6 +282,11 @@
       select2_params.allowClear = !required;
     }
 
+    // dropdown on arrow only
+    if (params.dropdownOnArrow == 'true' && params.multiple == 'false') {
+      select2_params.dropdownOnArrow = true;
+    }
+
     // init select2
     el.select2(select2_params);
 

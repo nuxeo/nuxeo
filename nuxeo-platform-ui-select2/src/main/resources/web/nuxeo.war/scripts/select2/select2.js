@@ -21,6 +21,7 @@ the specific language governing permissions and limitations under the Apache Lic
 /*
  * Nuxeo WARN: This script has been patched for:
  *   - https://jira.nuxeo.com/browse/NXP-13149
+ *   - https://jira.nuxeo.com/browse/NXP-13715
  *
  * Please re-apply any patch when upgrading this script.
  */
@@ -1950,20 +1951,28 @@ the specific language governing permissions and limitations under the Apache Lic
                 this.selection.focus();
             }));
 
-            selection.on("mousedown", this.bind(function (e) {
+            // NXP-13715
+            var mouseDownEvent = function(e) {
 
-                if (!this.container.hasClass("select2-container-active")) {
-                    this.opts.element.trigger($.Event("select2-focus"));
-                }
+              if (!this.container.hasClass("select2-container-active")) {
+                this.opts.element.trigger($.Event("select2-focus"));
+              }
 
-                if (this.opened()) {
-                    this.close();
-                } else if (this.isInterfaceEnabled()) {
-                    this.open();
-                }
+              if (this.opened()) {
+                this.close();
+              } else if (this.isInterfaceEnabled()) {
+                this.open();
+              }
 
-                killEvent(e);
-            }));
+              killEvent(e);
+            };
+
+            if (this.opts.dropdownOnArrow === true) {
+              selection.on("mousedown", ".select2-arrow", this
+                  .bind(mouseDownEvent));
+            } else {
+              selection.on("mousedown", this.bind(mouseDownEvent));
+            }
 
             dropdown.on("mousedown", this.bind(function() { this.search.focus(); }));
 
