@@ -128,6 +128,25 @@
       </fields>
     </widget>
 
+    <widget name="select2_dropdownOnArrow" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Dropdown on Arrow </label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Check this option to dropdown the suggestions only when clicking the arrow on
+          the right of the single suggestion widget. By default the suggestions are
+          dropped down wherever you click.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>dropdownOnArrow</field>
+      </fields>
+    </widget>
+
     <widget name="select2_directory_labelFieldName" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -1066,6 +1085,9 @@
                 <row>
                   <widget category="widgetTypeConf">select2_suggestionFormatter</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_dropdownOnArrow</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -1329,6 +1351,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_suggestionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_dropdownOnArrow</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_directorySuggestion_canAddNewEntry</widget>
@@ -1763,6 +1788,9 @@
                 <row>
                   <widget category="widgetTypeConf">select2_suggestionFormatter
                   </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_dropdownOnArrow</widget>
                 </row>
               </rows>
             </layout>
