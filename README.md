@@ -35,6 +35,12 @@ Install lib
     cp ~/.m2/repository/com/github/segmentio/analytics/0.3.1/analytics-0.3.1.jar  $NX_TOMCAT/nxserver/lib/.
     cp ~/.m2/repository/com/google/code/gson/gson/2.2/gson-2.2.jar $NX_TOMCAT/nxserver/lib/.
 
+## Downloadling 
+
+The project is automatically built by http://qa.nuxeo.org/jenkins/job/nuxeo-segment.io-connector-master/
+
+You can download the last stable jat from : http://qa.nuxeo.org/jenkins/job/nuxeo-segment.io-connector-master/lastSuccessfulBuild/artifact/target/
+
 ## Server side integration
 
 The SegmentIO API is exposed a Nuxeo Service and plugged to Nuxeo event bus via a mapping system.
