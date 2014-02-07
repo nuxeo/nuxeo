@@ -49,11 +49,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
+import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.runtime.api.Framework;
@@ -132,6 +137,15 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                 log.trace("doc with uuid " + uuid + " already up to date");
             }
             target.removeFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
+            target.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER,
+                    true);
+            target.putContextData(
+                    DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
+            target.putContextData(
+                    NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
+            // force no versioning after quota modifications
+            target.putContextData(VersioningService.VERSIONING_OPTION,
+                    VersioningOption.NONE);
             target = unrestrictedSession.saveDocument(target);
         }
     }
