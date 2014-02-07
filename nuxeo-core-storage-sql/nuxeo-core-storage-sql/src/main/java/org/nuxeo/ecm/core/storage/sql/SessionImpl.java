@@ -362,6 +362,9 @@ public class SessionImpl implements Session, XAResource {
             works = Collections.emptyList();
         }
         flush();
+        if (readAclsChanged) {
+            updateReadAcls();
+        }
         scheduleWork(works);
         checkInvalidationsConflict();
     }
@@ -381,15 +384,10 @@ public class SessionImpl implements Session, XAResource {
 
     protected void flush() throws StorageException {
         RowBatch batch = context.getSaveBatch();
-        if (!batch.isEmpty() || readAclsChanged) {
+        if (!batch.isEmpty()) {
             log.debug("Saving session");
-            if (!batch.isEmpty()) {
-                // execute the batch
-                mapper.write(batch);
-            }
-            if (readAclsChanged) {
-                updateReadAcls();
-            }
+            // execute the batch
+            mapper.write(batch);
             log.debug("End of save");
         }
     }
