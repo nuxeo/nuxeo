@@ -3919,11 +3919,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
         Node doc1 = session.addChildNode(root, "doc1", null, "TestDoc", false);
         doc1.setSimpleProperty("tst:title", "hello1");
-        doc1.setSimpleProperty("tst:count", Long.valueOf(123));
+        doc1.setSimpleProperty("tst:count", Long.valueOf(100));
         doc1.setSimpleProperty("tst:rate", Double.valueOf(1));
         Node doc2 = session.addChildNode(root, "doc2", null, "TestDoc", false);
         doc2.setSimpleProperty("tst:title", "hello2");
-        doc2.setSimpleProperty("tst:count", Long.valueOf(456));
+        doc2.setSimpleProperty("tst:count", Long.valueOf(300));
         doc2.setSimpleProperty("tst:rate", Double.valueOf(3));
         session.save();
 
@@ -3941,10 +3941,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 QueryFilter.EMPTY);
         assertEquals(1, it.size());
         map = it.iterator().next();
-        assertEquals(Long.valueOf(579), map.get("SUM(tst:count)"));
-        assertEquals(Double.valueOf(290.0), map.get("AVG(tst:count)"));
-        assertEquals(Long.valueOf(123), map.get("MIN(tst:count)"));
-        assertEquals(Long.valueOf(456), map.get("MAX(tst:count)"));
+        assertEquals(Long.valueOf(400), map.get("SUM(tst:count)"));
+        assertEquals(Double.valueOf(200.0), map.get("AVG(tst:count)"));
+        assertEquals(Long.valueOf(100), map.get("MIN(tst:count)"));
+        assertEquals(Long.valueOf(300), map.get("MAX(tst:count)"));
         it.close();
 
         it = session.queryAndFetch(
