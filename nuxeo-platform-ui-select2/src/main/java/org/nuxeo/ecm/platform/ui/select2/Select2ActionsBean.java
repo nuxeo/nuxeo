@@ -554,7 +554,7 @@ public class Select2ActionsBean implements Serializable {
 
     public boolean isMultiSelection(final Widget widget) {
         String wtCat = widget.getTypeCategory();
-        if (wtCat == null) {
+        if (StringUtils.isBlank(wtCat)) {
             wtCat = "jsf";
         }
         WidgetTypeDefinition wtDef = getLayoutStore().getWidgetTypeDefinition(
