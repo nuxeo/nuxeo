@@ -186,7 +186,7 @@
           <property name="placeholder">Choose a country</property>
           <property name="inlinejs"> <![CDATA[
   function dirformatter(entry) {
-    var markup = entry.label;
+    var markup = entry.displayLabel;
     if (entry.warn_message) {
       markup += "<img src='/nuxeo/icons/warning.gif' title='"
           + entry.warn_message + "'/>"
@@ -223,7 +223,7 @@
           <property name="placeholder">Choose one or more topics</property>
           <property name="inlinejs"> <![CDATA[
   function dirformatter(entry) {
-    var markup = entry.label;
+    var markup = entry.displayLabel;
     if (entry.warn_message) {
       markup += "<img src='/nuxeo/icons/warning.gif' title='"
           + entry.warn_message + "'/>"
@@ -255,17 +255,18 @@
           <property name="suggestionFormatter">userformatter</property>
           <property name="selectionFormatter">userformatter</property>
           <property name="inlinejs"> <![CDATA[
-   function userformatter(entry) {
-    var icon = "user.png";
-    if (entry.type == "GROUP_TYPE") {
-      icon = "group.png";
+     function userformatter(entry) {
+    var markup = "";
+    if (entry.displayIcon && entry.type) {
+      if (entry.type == "USER_TYPE") {
+        markup += "<img src='" + window.nxContextPath + "/icons/user.png'/>";
+      } else if (entry.type == "GROUP_TYPE") {
+        markup += "<img src='" + window.nxContextPath + "/icons/group.png'/>";
+      }
     }
-     var markup = "<table><tr>";
-     markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + icon + "'/></td>";
-     markup += "<td style='padding:2px'>" + entry.label + "</td>";
-     markup += "</tr></table>";
-     return markup;
-    }]]></property>
+    markup += entry.displayLabel;
+    return markup;
+  }]]></property>
         </defaultProperties>
       </preview>
       <layouts>
@@ -291,16 +292,17 @@
           <property name="suggestionFormatter">userformatter</property>
           <property name="selectionFormatter">userformatter</property>
           <property name="inlinejs"> <![CDATA[
-  function userformatter(entry) {
-  var icon = "user.png";
-  if (entry.type == "GROUP_TYPE") {
-    icon = "group.png";
-  }
-   var markup = "<table><tr>";
-   markup += "<td style='padding:4px'><img src='/nuxeo/icons/" + icon + "'/></td>";
-   markup += "<td style='padding:2px'>" + entry.label + "</td>";
-   markup += "</tr></table>";
-   return markup;
+   function userformatter(entry) {
+    var markup = "";
+    if (entry.displayIcon && entry.type) {
+      if (entry.type == "USER_TYPE") {
+        markup += "<img src='" + window.nxContextPath + "/icons/user.png'/>";
+      } else if (entry.type == "GROUP_TYPE") {
+        markup += "<img src='" + window.nxContextPath + "/icons/group.png'/>";
+      }
+    }
+    markup += entry.displayLabel;
+    return markup;
   }]]></property>
         </defaultProperties>
       </preview>
