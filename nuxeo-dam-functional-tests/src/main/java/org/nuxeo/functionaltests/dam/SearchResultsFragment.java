@@ -105,7 +105,7 @@ public class SearchResultsFragment extends WebFragmentImpl {
         getBubbleBox(text).click();
         Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
             public Boolean apply(WebDriver driver) {
-                log.warn("Waiting for " + text + " to be selected");
+                log.trace("Waiting for " + text + " to be selected");
                 return getBubbleBox(text).getAttribute("class").contains(
                         "selectedItem");
             }
