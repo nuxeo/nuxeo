@@ -183,9 +183,7 @@ public class OAuth2TokenStore implements CredentialStore {
         try {
             session = ds.open(DIRECTORY_NAME);
             DocumentModel entry = session.createEntry(aToken.toMap());
-            session.updateEntry(entry);
-
-            return getToken(serviceName, aToken.getNuxeoLogin());
+            return getTokenFromDirectoryEntry(entry);
         } finally {
             if (session != null) {
                 session.close();

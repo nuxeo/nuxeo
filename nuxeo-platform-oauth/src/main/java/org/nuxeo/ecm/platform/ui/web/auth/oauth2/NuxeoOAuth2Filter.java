@@ -138,7 +138,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
             return;
         }
 
-        if (token.isExpired()) {
+        if (token.isExpired() || !getClientRegistry().hasClient(token.getClientId())) {
             response.setStatus(401);
             return;
         }
