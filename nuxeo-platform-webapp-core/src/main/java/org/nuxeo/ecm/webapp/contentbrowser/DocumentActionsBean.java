@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -499,8 +500,8 @@ public class DocumentActionsBean extends InputController implements
         if (!(docList == null || docList.isEmpty())
                 && deleteActions.checkDeletePermOnParents(docList)) {
             for (DocumentModel document : docList) {
-                if (document.getType().equals("SectionRoot")
-                        || document.getType().equals("Section")) {
+                if (document.hasFacet(FacetNames.PUBLISH_SPACE)
+                        || document.hasFacet(FacetNames.MASTER_PUBLISH_SPACE)) {
                     return false;
                 }
             }
