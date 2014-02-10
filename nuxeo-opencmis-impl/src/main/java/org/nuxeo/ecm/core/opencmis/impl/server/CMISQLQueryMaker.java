@@ -496,28 +496,45 @@ public class CMISQLQueryMaker implements QueryMaker {
                 if (dialect.supportsReadAcl()) {
                     /* optimized read acl */
                     String readAclTable;
-                    String readAclIdCol;
-                    String readAclAclIdCol;
+                    String readAclTableAlias;
+                    String aclrumTable;
+                    String aclrumTableAlias;
                     if (joins.size() == 0) {
-                        readAclTable = model.HIER_READ_ACL_TABLE_NAME;
-                        readAclIdCol = model.HIER_READ_ACL_TABLE_NAME + '.'
-                                + model.HIER_READ_ACL_ID;
-                        readAclAclIdCol = model.HIER_READ_ACL_TABLE_NAME + '.'
-                                + model.HIER_READ_ACL_ACL_ID;
+                        readAclTable = Model.HIER_READ_ACL_TABLE_NAME;
+                        readAclTableAlias = readAclTable;
+                        aclrumTable = Model.ACLR_USER_MAP_TABLE_NAME;
+                        aclrumTableAlias = aclrumTable;
                     } else {
-                        String al = "nxr" + (njoin + 1);
-                        readAclTable = model.HIER_READ_ACL_TABLE_NAME + " "
-                                + al; // TODO dialect
-                        readAclIdCol = al + '.' + model.HIER_READ_ACL_ID;
-                        readAclAclIdCol = al + '.' + model.HIER_READ_ACL_ACL_ID;
+                        readAclTableAlias = "nxr" + (njoin + 1);
+                        readAclTable = Model.HIER_READ_ACL_TABLE_NAME + ' '
+                                + readAclTableAlias; // TODO dialect
+                        aclrumTableAlias = "aclrum" + (njoin + 1);
+                        aclrumTable = Model.ACLR_USER_MAP_TABLE_NAME + ' '
+                                + aclrumTableAlias; // TODO dialect
                     }
-                    String securityCheck = dialect.getReadAclsCheckSql(readAclAclIdCol);
-                    String joinOn = String.format("%s = %s", tableMainId,
-                            readAclIdCol);
+                    String readAclIdCol = readAclTableAlias + '.'
+                            + Model.HIER_READ_ACL_ID;
+                    String readAclAclIdCol = readAclTableAlias + '.'
+                            + Model.HIER_READ_ACL_ACL_ID;
+                    String aclrumAclIdCol = aclrumTableAlias + '.'
+                            + Model.ACLR_USER_MAP_ACL_ID;
+                    String aclrumUserIdCol = aclrumTableAlias + '.'
+                            + Model.ACLR_USER_MAP_USER_ID;
+                    // first join with hierarchy_read_acl
                     if (outerJoin) {
-                        // outer join, security check must be part of JOIN
                         from.append(" ");
                         from.append(join.kind);
+                    }
+                    from.append(String.format(" JOIN %s ON (%s = %s)",
+                            readAclTable, tableMainId, readAclIdCol));
+                    // second join with aclr_user_map
+                    String securityCheck = dialect.getReadAclsCheckSql(aclrumUserIdCol);
+                    String joinOn = String.format("%s = %s", readAclAclIdCol,
+                            aclrumAclIdCol);
+                    if (outerJoin) {
+                        from.append(" ");
+                        from.append(join.kind);
+                        // outer join, security check must be part of JOIN
                         joinOn = String.format("%s AND %s", joinOn,
                                 securityCheck);
                         fromParams.add(principals);
@@ -526,7 +543,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                         whereClauses.add(securityCheck);
                         whereParams.add(principals);
                     }
-                    from.append(String.format(" JOIN %s ON (%s)", readAclTable,
+                    from.append(String.format(" JOIN %s ON (%s)", aclrumTable,
                             joinOn));
                 } else {
                     String securityCheck = dialect.getSecurityCheckSql(tableMainId);
