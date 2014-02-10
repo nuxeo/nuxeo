@@ -711,9 +711,14 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public String getReadAclsCheckSql(String idColumnName) {
-        return String.format("%s IN (SELECT * FROM nx_get_read_acls_for(?))",
-                idColumnName);
+    public String getPrepareUserReadAclsSql() {
+        return "SELECT nx_prepare_user_read_acls(?)";
+    }
+
+    @Override
+    public String getReadAclsCheckSql(String userIdCol) {
+        return String.format("%s = md5(array_to_string(?, '%s'))", userIdCol,
+                getUsersSeparator());
     }
 
     @Override

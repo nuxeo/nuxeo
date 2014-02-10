@@ -808,28 +808,22 @@ BEGIN
 END;
 
 
-CREATE OR REPLACE FUNCTION nx_get_read_acls_for(users NX_STRING_TABLE)
-RETURN NX_STRING_TABLE
--- List read acl ids for a list of user/groups, using the cache
+CREATE OR REPLACE PROCEDURE nx_prepare_user_read_acls(users NX_STRING_TABLE)
+-- prepare the aclr for the user
 IS
-  PRAGMA AUTONOMOUS_TRANSACTION; -- needed for insert, ok since what we fill is a cache
   user_md5 VARCHAR2(34) := nx_hash_users(users);
   in_cache NUMBER;
   aclids NX_STRING_TABLE;
 BEGIN
-  SELECT acl_id BULK COLLECT INTO aclids FROM aclr_user_map WHERE user_id = user_md5;
+  SELECT acl_id BULK COLLECT INTO aclids FROM aclr_user_map WHERE user_id = user_md5 AND ROWNUM = 1;
   SELECT COUNT(*) INTO in_cache FROM TABLE(aclids);
   IF in_cache = 0 THEN
-    -- dbms_output.put_line('no cache');
     aclids := nx_list_read_acls_for(users);
-    -- below INSERT needs the PRAGMA AUTONOMOUS_TRANSACTION
     INSERT INTO aclr_user VALUES (user_md5, users);
-    COMMIT;
     INSERT INTO aclr_user_map SELECT user_md5, COLUMN_VALUE FROM TABLE(aclids);
-    COMMIT;
   END IF;
-  RETURN aclids;
 END;
+
 
 CREATE OR REPLACE TRIGGER nx_trig_acls_modified
   AFTER INSERT OR UPDATE OR DELETE ON acls

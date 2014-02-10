@@ -897,22 +897,6 @@ BEGIN
 END;
 
 
-IF OBJECT_ID('dbo.nx_get_read_acls_for', 'TF') IS NOT NULL
-  DROP FUNCTION dbo.nx_get_read_acls_for;
-
-#IF: aclOptimizationsEnabled
-CREATE FUNCTION nx_get_read_acls_for(@users NVARCHAR(4000))
-RETURNS @output TABLE (acl_id CHAR(32)) AS
- -- List read acl ids for a list of user/groups, using the cache
-BEGIN
-  DECLARE @user_md5 CHAR(32);
-  SET @user_md5 = dbo.nx_md5(@users);
-  INSERT INTO @output (acl_id)
-    SELECT acl_id FROM aclr_user_map WHERE user_id = @user_md5;
-  RETURN;
-END;
-
-
 # -- TRIGGERS --------------------------------------------------
 IF OBJECT_ID('dbo.nx_trig_acls_modified', 'TR') IS NOT NULL
   DROP TRIGGER dbo.nx_trig_acls_modified;

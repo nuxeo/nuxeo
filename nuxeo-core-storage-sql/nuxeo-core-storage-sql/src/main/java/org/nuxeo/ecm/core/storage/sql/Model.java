@@ -254,6 +254,12 @@ public class Model {
 
     public static final String HIER_READ_ACL_ACL_ID = "acl_id";
 
+    public static final String ACLR_USER_MAP_TABLE_NAME = "aclr_user_map";
+
+    public static final String ACLR_USER_MAP_USER_ID = "user_id";
+
+    public static final String ACLR_USER_MAP_ACL_ID = "acl_id";
+
     /** Specified in ext. point to use CLOBs. */
     public static final String FIELD_TYPE_LARGETEXT = "largetext";
 

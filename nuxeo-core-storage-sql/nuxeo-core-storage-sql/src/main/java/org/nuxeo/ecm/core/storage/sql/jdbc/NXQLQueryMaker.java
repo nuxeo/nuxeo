@@ -163,6 +163,8 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected static final String READ_ACL_ALIAS = "_RACL";
 
+    protected static final String READ_ACL_USER_MAP_ALIAS = "_ACLRUSERMAP";
+
     protected static final String DATE_CAST = "DATE";
 
     protected static final String COUNT_FUNCTION = "COUNT";
@@ -519,7 +521,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
             String securityClause = null;
             List<Serializable> securityParams = new LinkedList<Serializable>();
-            Join securityJoin = null;
+            List<Join> securityJoins = new ArrayList<Join>(2);
             if (queryFilter.getPrincipals() != null) {
                 Serializable principals = queryFilter.getPrincipals();
                 Serializable permissions = queryFilter.getPermissions();
@@ -534,14 +536,25 @@ public class NXQLQueryMaker implements QueryMaker {
                 String id = dialect.supportsWith() ? mainAlias : hierId;
                 if (dialect.supportsReadAcl()) {
                     /* optimized read acl */
+                    // JOIN hierarchy_read_acl _RACL ON hierarchy.id = _RACL.id
+                    // JOIN aclr_user_map _ACLRUSERMAP ON _RACL.acl_id =
+                    // _ACLRUSERMAP.acl_id
+                    // WHERE _ACLRUSERMAP.user_id = md5('bob,Everyone')
                     String racl = dialect.openQuote() + READ_ACL_ALIAS
                             + dialect.closeQuote();
-                    securityClause = dialect.getReadAclsCheckSql(racl
-                            + ".acl_id");
+                    String aclrum = dialect.openQuote()
+                            + READ_ACL_USER_MAP_ALIAS + dialect.closeQuote();
+                    securityJoins.add(new Join(Join.INNER,
+                            Model.HIER_READ_ACL_TABLE_NAME, READ_ACL_ALIAS,
+                            null, id, racl + '.' + Model.HIER_READ_ACL_ID));
+                    securityJoins.add(new Join(Join.INNER,
+                            Model.ACLR_USER_MAP_TABLE_NAME,
+                            READ_ACL_USER_MAP_ALIAS, null, racl + '.'
+                                    + Model.HIER_READ_ACL_ACL_ID, aclrum + '.'
+                                    + Model.ACLR_USER_MAP_ACL_ID));
+                    securityClause = dialect.getReadAclsCheckSql(aclrum + '.'
+                            + Model.ACLR_USER_MAP_USER_ID);
                     securityParams.add(principals);
-                    securityJoin = new Join(Join.INNER,
-                            model.HIER_READ_ACL_TABLE_NAME, READ_ACL_ALIAS,
-                            null, id, racl + ".id");
                 } else {
                     securityClause = dialect.getSecurityCheckSql(id);
                     securityParams.add(principals);
@@ -561,18 +574,18 @@ public class NXQLQueryMaker implements QueryMaker {
                     withTables.add(withTable);
                     Select withSelect = new Select(null);
                     withSelect.setWhat("*");
-                    withSelect.setFrom(withTable
-                            + (securityJoin == null ? ""
-                                    : (" " + securityJoin.toSql(dialect))));
+                    String withFrom = withTable;
+                    for (Join j : securityJoins) {
+                        withFrom += j.toSql(dialect);
+                    }
+                    withSelect.setFrom(withFrom);
                     withSelect.setWhere(securityClause);
                     withSelects.add(withSelect);
                     withSelectsStatements.add(withSelect.getStatement());
                     withParams.addAll(securityParams);
                 } else {
                     // add directly to main select
-                    if (securityJoin != null) {
-                        joins.add(securityJoin);
-                    }
+                    joins.addAll(securityJoins);
                     whereClauses.add(securityClause);
                     whereParams.addAll(securityParams);
                 }
@@ -583,8 +596,8 @@ public class NXQLQueryMaker implements QueryMaker {
             selectParams.addAll(whatNamesParams);
 
             StringBuilder fromb = new StringBuilder(from);
-            if (dialect.needsOracleJoins() && doUnion && securityJoin != null
-                    && ftMatchInfo != null) {
+            if (dialect.needsOracleJoins() && doUnion
+                    && !securityJoins.isEmpty() && ftMatchInfo != null) {
                 // NXP-5410 we must use Oracle joins
                 // when there's union all + fulltext + security
                 for (Join join : joins) {

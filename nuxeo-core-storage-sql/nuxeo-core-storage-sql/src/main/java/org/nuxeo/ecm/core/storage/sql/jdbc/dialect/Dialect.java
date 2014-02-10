@@ -1103,7 +1103,7 @@ public abstract class Dialect {
      * @since 5.5
      */
     public boolean needsPrepareUserReadAcls() {
-        return false;
+        return supportsReadAcl();
     }
 
     /**
@@ -1367,14 +1367,15 @@ public abstract class Dialect {
     }
 
     /**
-     * Gets the expression to check if access is allowed using read acl the
-     * dialect must suppportsReadAcl
+     * Gets the expression to check if access is allowed using read acls. The
+     * dialect must suppportsReadAcl.
      *
-     * @param idColumnName the quoted name of the read acl_id column to use
+     * @param userIdCol the quoted name of the aclr_user_map user_id column to
+     *            use
      * @return an SQL expression with one parameter (principals) that is true if
      *         access is allowed
      */
-    public String getReadAclsCheckSql(String idColumnName) {
+    public String getReadAclsCheckSql(String userIdCol) {
         return null;
     }
 
