@@ -39,11 +39,11 @@ public class SearchFormFragment extends WebFragmentImpl {
     public static final String LAYOUT_ID = FORM_ID + "nxl_dam_search_layout:";
 
     @Required
-    @FindBy(id = FORM_ID + "nxw_doc_damSearchActions_damSubmitSearch")
+    @FindBy(id = FORM_ID + "nxw_damSearchActions_damSubmitSearch")
     public WebElement filterButton;
 
     @Required
-    @FindBy(id = FORM_ID + "nxw_doc_damSearchActions_damClearSearch")
+    @FindBy(id = FORM_ID + "nxw_damSearchActions_damClearSearch")
     public WebElement clearButton;
 
     @Required

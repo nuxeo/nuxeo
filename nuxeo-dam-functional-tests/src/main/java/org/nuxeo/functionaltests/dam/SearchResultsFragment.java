@@ -41,7 +41,7 @@ public class SearchResultsFragment extends WebFragmentImpl {
 
     protected static final Log log = LogFactory.getLog(SearchResultsFragment.class);
 
-    @FindBy(id = "nxl_gridDamLayout:nxw_damNewAsset_form:nxw_doc_damSearchResultsActions_damNewAsset_subview:nxw_doc_damSearchResultsActions_damNewAsset_link")
+    @FindBy(id = "nxl_gridDamLayout:nxw_damNewAsset_form:nxw_damSearchResultsActions_damNewAsset_subview:nxw_damSearchResultsActions_damNewAsset_link")
     public WebElement newAssetButton;
 
     @FindBy(id = "nxl_gridDamLayout:dam_search_nxw_searchResults:nxl_dam_box_listing_ajax:damPanelLeft_header")
@@ -56,7 +56,7 @@ public class SearchResultsFragment extends WebFragmentImpl {
         newAssetButton.click();
         AssetCreationFancyBoxFragment fancyBoxFragment = showAssetCreation(damPage);
         LayoutElement layout = new LayoutElement(driver,
-                "nxl_gridDamLayout:nxw_doc_damSearchResultsActions_damNewAsset_fancyform");
+                "nxl_gridDamLayout:nxw_damSearchResultsActions_damNewAsset_fancyform");
         Select select = new Select(
                 layout.getSubElement("nxw_damNewAsset_after_view_select"));
         select.selectByValue(type);

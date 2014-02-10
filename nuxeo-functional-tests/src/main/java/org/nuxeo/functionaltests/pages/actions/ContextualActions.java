@@ -35,7 +35,7 @@ public class ContextualActions extends AbstractPage {
     @FindBy(xpath = "//img[@title=\"Add to worklist\"]")
     public WebElement addToWorklistButton;
 
-    @FindBy(id = "nxw_permalinkAction_form:nxw_doc_documentActionsUpperButtons_permalinkAction_subview:nxw_doc_documentActionsUpperButtons_permalinkAction_link")
+    @FindBy(id = "nxw_permalinkAction_form:nxw_documentActionsUpperButtons_permalinkAction_subview:nxw_documentActionsUpperButtons_permalinkAction_link")
     public WebElement permaButton;
 
     public String permaBoxFocusName = "permalinkFocus";
@@ -43,7 +43,7 @@ public class ContextualActions extends AbstractPage {
     @FindBy(id = "fancybox-close")
     public WebElement closePermaBoxButton;
 
-    @FindBy(xpath = "//div[@id=\"nxw_doc_documentActionsUpperButtons_panel\"]/div/ul/li")
+    @FindBy(xpath = "//div[@id=\"nxw_documentActionsUpperButtons_panel\"]/div/ul/li")
     public WebElement moreButton;
 
     @FindBy(xpath = "//img[@title=\"Export options\"]")

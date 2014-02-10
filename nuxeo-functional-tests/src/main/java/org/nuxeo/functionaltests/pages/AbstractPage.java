@@ -41,7 +41,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public abstract class AbstractPage {
 
-    @FindBy(xpath = "//div[@id='nxw_doc_userMenuActions_panel']/ul/li/span")
+    @FindBy(xpath = "//div[@id='nxw_userMenuActions_panel']/ul/li/span")
     public WebElement userServicesForm;
 
     protected WebDriver driver;
