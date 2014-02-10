@@ -211,6 +211,8 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
         doc.putContextData(DISABLE_NOTIFICATION_SERVICE, true);
         doc.putContextData(DISABLE_DUBLINCORE_LISTENER, true);
         doc.putContextData(DISABLE_AUDIT_LOGGER, true);
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
+                Boolean.TRUE);
         // force no versioning after quota modifications
         doc.putContextData(VersioningService.VERSIONING_OPTION,
                 VersioningOption.NONE);

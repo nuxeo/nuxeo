@@ -47,6 +47,8 @@ public class QuotaAwareDocumentFactory implements DocumentAdapterFactory {
                 doc.putContextData(
                         NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
                         true);
+                doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
+                        Boolean.TRUE);
                 // force no versioning after quota modifications
                 doc.putContextData(VersioningService.VERSIONING_OPTION,
                         VersioningOption.NONE);
