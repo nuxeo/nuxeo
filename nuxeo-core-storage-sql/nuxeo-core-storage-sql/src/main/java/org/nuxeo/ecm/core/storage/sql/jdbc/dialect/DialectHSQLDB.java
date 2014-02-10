@@ -213,11 +213,6 @@ public class DialectHSQLDB extends Dialect {
     }
 
     @Override
-    public String getReadAclsCheckSql(String idColumnName) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public String getUpdateReadAclsSql() {
         throw new UnsupportedOperationException();
     }

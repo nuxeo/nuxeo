@@ -15,7 +15,6 @@ package org.nuxeo.ecm.core.storage.sql.jdbc;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.sql.Array;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -700,28 +699,31 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     protected void prepareUserReadAcls(QueryFilter queryFilter)
             throws StorageException {
         String sql = dialect.getPrepareUserReadAclsSql();
-        String principals = StringUtils.join(queryFilter.getPrincipals(),
-                Dialect.ARRAY_SEP);
+        Serializable principals = queryFilter.getPrincipals();
         if (sql == null || principals == null) {
             return;
         }
-        CallableStatement cs = null;
+        if (!dialect.supportsArrays()) {
+            principals = StringUtils.join((String[]) principals,
+                    Dialect.ARRAY_SEP);
+        }
+        PreparedStatement ps = null;
         try {
-            cs = connection.prepareCall(sql);
+            ps = connection.prepareStatement(sql);
             if (logger.isLogEnabled()) {
-                logger.log(sql + " " + principals);
+                logger.logSQL(sql, Collections.singleton(principals));
             }
-            cs.setString(1, principals);
-            cs.executeUpdate();
+            setToPreparedStatement(ps, 1, principals);
+            ps.execute();
             countExecute();
         } catch (Exception e) {
             checkConnectionReset(e);
             throw new StorageException("Failed to prepare user read acl cache",
                     e);
         } finally {
-            if (cs != null) {
+            if (ps != null) {
                 try {
-                    closeStatement(cs);
+                    closeStatement(ps);
                 } catch (SQLException e) {
                     log.error(e.getMessage(), e);
                 }

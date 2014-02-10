@@ -557,10 +557,10 @@ LANGUAGE plpgsql
 STABLE;
 
 
-CREATE OR REPLACE FUNCTION nx_get_read_acls_for(users varchar[])
-RETURNS SETOF text
+CREATE OR REPLACE FUNCTION nx_prepare_user_read_acls(users varchar[])
+RETURNS void
 AS $$
--- List read acl ids for a list of user/groups using cache
+-- prepare the aclr for the user
 DECLARE
   in_cache boolean;
   user_md5 varchar(34);
@@ -571,8 +571,6 @@ BEGIN
     INSERT INTO aclr_user VALUES (user_md5, users);
     INSERT INTO aclr_user_map SELECT user_md5, acl_id FROM nx_list_read_acls_for(users) AS acl_id;
   END IF;
-  RETURN QUERY SELECT acl_id::text FROM aclr_user_map WHERE user_id = user_md5;
-  RETURN;
 END $$
 LANGUAGE plpgsql
 VOLATILE;
