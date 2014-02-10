@@ -20,11 +20,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 
@@ -42,8 +44,17 @@ public class Select2Converter implements Serializable, Converter {
 
     protected static final String SEP = ",";
 
+    protected static final String SEP_ATTRIBUTE_NAME = "separator";
+
     public static String getSeparator() {
         return SEP;
+    }
+
+    public static String getSeparator(UIComponent component) {
+        String widget_separator = (String) component.getAttributes().get(
+                SEP_ATTRIBUTE_NAME);
+        return StringUtils.isNotBlank(widget_separator) ? widget_separator
+                : getSeparator();
     }
 
     @Override
@@ -52,10 +63,11 @@ public class Select2Converter implements Serializable, Converter {
         if (value == null || value.isEmpty()) {
             return null;
         } else {
-            String[] values = value.split(getSeparator());
+            String[] values = value.split(Pattern.quote(getSeparator(component)));
             // Be careful here, if we just return Arrays.asList(values), the
             // resulting list will be unmodifiable and this might cause an error
-            // if something try to add elements. Let's make sure it'll be modifiable
+            // if something try to add elements. Let's make sure it'll be
+            // modifiable
             return new ArrayList<String>(Arrays.asList(values));
         }
     }
@@ -68,18 +80,19 @@ public class Select2Converter implements Serializable, Converter {
             return null;
         } else {
             String stringValue = "";
+            final String separator = getSeparator(component);
             if (value instanceof List) {
                 for (Object v : (List) value) {
-                    stringValue += v.toString() + getSeparator();
+                    stringValue += v.toString() + separator;
                 }
             } else if (value instanceof Object[]) {
                 for (Object v : (Object[]) value) {
-                    stringValue += v.toString() + getSeparator();
+                    stringValue += v.toString() + separator;
                 }
             }
-            if (stringValue.endsWith(getSeparator())) {
+            if (stringValue.endsWith(separator)) {
                 stringValue = stringValue.substring(0, stringValue.length()
-                        - getSeparator().length());
+                        - separator.length());
             }
             return stringValue;
         }

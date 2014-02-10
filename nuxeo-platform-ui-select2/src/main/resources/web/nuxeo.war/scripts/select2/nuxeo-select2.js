@@ -277,6 +277,11 @@
       select2_params.allowClear = !required;
     }
 
+    // separator
+    if (params.separator) {
+      select2_params.separator = params.separator;
+    }
+
     // init select2
     el.select2(select2_params);
 
