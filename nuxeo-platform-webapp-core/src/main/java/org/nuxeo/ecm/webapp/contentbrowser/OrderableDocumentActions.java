@@ -156,7 +156,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         if (!isOrderable(currentDocument)) {
             return false;
         }
-        if (SECTION_TYPE.equals(currentDocument.getType())) {
+        if (isSectionType(currentDocument)) {
             return getCanMoveDown(currentDocument,
                     CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
@@ -201,7 +201,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         if (currentDocument == null) {
             return null;
         }
-        if (SECTION_TYPE.equals(currentDocument.getType())) {
+        if (isSectionType(currentDocument)) {
             return moveDown(currentDocument, CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
             return moveDown(currentDocument, CURRENT_DOCUMENT_SELECTION);
@@ -242,7 +242,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         if (!isOrderable(currentDocument)) {
             return false;
         }
-        if (SECTION_TYPE.equals(currentDocument.getType())) {
+        if (isSectionType(currentDocument)) {
             return getCanMoveUp(currentDocument,
                     CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
@@ -273,7 +273,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         if (currentDocument == null) {
             return null;
         }
-        if (SECTION_TYPE.equals(currentDocument.getType())) {
+        if (isSectionType(currentDocument)) {
             return moveUp(currentDocument, CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
             return moveUp(currentDocument, CURRENT_DOCUMENT_SELECTION);
@@ -306,7 +306,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         if (!isOrderable(currentDocument)) {
             return false;
         }
-        if (SECTION_TYPE.equals(currentDocument.getType())) {
+        if (isSectionType(currentDocument)) {
             return getCanMoveToTop(currentDocument,
                     CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
@@ -337,7 +337,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         if (currentDocument == null) {
             return null;
         }
-        if (SECTION_TYPE.equals(currentDocument.getType())) {
+        if (isSectionType(currentDocument)) {
             return moveToTop(currentDocument,
                     CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
@@ -368,7 +368,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         if (!isOrderable(currentDocument)) {
             return false;
         }
-        if (SECTION_TYPE.equals(currentDocument.getType())) {
+        if (isSectionType(currentDocument)) {
             return getCanMoveToBottom(currentDocument,
                     CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
@@ -400,7 +400,7 @@ public class OrderableDocumentActions implements SelectDataModelListener,
         if (currentDocument == null) {
             return null;
         }
-        if (SECTION_TYPE.equals(currentDocument.getType())) {
+        if (isSectionType(currentDocument)) {
             return moveToBottom(currentDocument,
                     CURRENT_DOCUMENT_SECTION_SELECTION);
         } else {
@@ -424,6 +424,10 @@ public class OrderableDocumentActions implements SelectDataModelListener,
 
     protected boolean isOrderable(DocumentModel doc) {
         return doc.hasFacet(FacetNames.ORDERABLE);
+    }
+
+    protected boolean isSectionType(DocumentModel doc) {
+        return doc.hasFacet(FacetNames.PUBLISH_SPACE);
     }
 
     protected void addFacesMessage(String messageLabel) {

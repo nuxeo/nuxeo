@@ -377,11 +377,9 @@ public class FileManageActionsBean extends InputController implements
                     resourcesAccessor.getMessages().get("move_impossible"));
             return MOVE_IMPOSSIBLE;
         }
-        if (!doc.isProxy() && container.getType().equals("Section")
-                && !doc.getType().equals("Section")) {
+        if (!doc.isProxy() && container.hasFacet(FacetNames.PUBLISH_SPACE)
+                && !doc.hasFacet(FacetNames.PUBLISH_SPACE)) {
             // we try to do a publication check browse in sections
-            // TODO: use a PUBLICATION_TARGET facet instead of hardcoding the
-            // Section type name
             if (!documentManager.hasPermission(containerRef,
                     SecurityConstants.ADD_CHILDREN)) {
                 // only publish via D&D if this can be done directly (no wf)
@@ -428,11 +426,9 @@ public class FileManageActionsBean extends InputController implements
         }
 
         if (doc.isProxy()) {
-            if (!container.getType().equals("Section")) {
+            if (!container.hasFacet(FacetNames.PUBLISH_SPACE)) {
                 // do not allow to move a published document back in a
                 // workspace
-                // TODO: use a PUBLICATION_TARGET facet instead of hardcoding
-                // the Section type name
                 facesMessages.add(StatusMessage.Severity.WARN,
                         resourcesAccessor.getMessages().get("move_impossible"));
                 return MOVE_IMPOSSIBLE;
