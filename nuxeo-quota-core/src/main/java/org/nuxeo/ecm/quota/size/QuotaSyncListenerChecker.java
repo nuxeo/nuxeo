@@ -143,6 +143,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                     DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
             target.putContextData(
                     NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
+            target.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
+                    Boolean.TRUE);
             // force no versioning after quota modifications
             target.putContextData(VersioningService.VERSIONING_OPTION,
                     VersioningOption.NONE);
