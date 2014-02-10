@@ -27,9 +27,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 
 /**
  * Adapter to manage a DocumentModel that supports Quotas
@@ -165,9 +165,6 @@ public class QuotaAwareDocument implements QuotaAware {
             doc.putContextData(DISABLE_NOTIFICATION_SERVICE, true);
             doc.putContextData(DISABLE_DUBLINCORE_LISTENER, true);
         }
-        // force no versioning after quota modifications
-        doc.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.NONE);
         save();
     }
 
