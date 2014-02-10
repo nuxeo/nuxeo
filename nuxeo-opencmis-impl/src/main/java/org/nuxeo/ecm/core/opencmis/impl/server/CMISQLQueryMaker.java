@@ -301,15 +301,17 @@ public class CMISQLQueryMaker implements QueryMaker {
         StringBuilder from = new StringBuilder();
         List<Serializable> fromParams = new LinkedList<Serializable>();
         for (int njoin = -1; njoin < joins.size(); njoin++) {
-            boolean firstTable = njoin == -1;
             JoinSpec join;
+            boolean outerJoin;
             String alias;
-
-            if (firstTable) {
+            if (njoin == -1) {
                 join = null;
+                outerJoin = false;
                 alias = query.getMainTypeAlias();
             } else {
                 join = joins.get(njoin);
+                outerJoin = join.kind.equals("LEFT")
+                        || join.kind.equals("RIGHT");
                 alias = join.alias;
             }
 
@@ -338,6 +340,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 // shoudn't happen
                 types = Collections.singletonList("__NOSUCHTYPE__");
             }
+            // build clause
             StringBuilder qms = new StringBuilder();
             for (int i = 0; i < types.size(); i++) {
                 if (i != 0) {
@@ -345,10 +348,15 @@ public class CMISQLQueryMaker implements QueryMaker {
                 }
                 qms.append("?");
             }
+            String primaryTypeClause = String.format(
+                    "%s IN (%s)",
+                    qualHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
+                    qms);
 
             // table this join is about
+
             Table table;
-            if (firstTable) {
+            if (join == null) {
                 table = qualHierTable;
             } else {
                 // find which table in onLeft/onRight refers to current
@@ -366,47 +374,41 @@ public class CMISQLQueryMaker implements QueryMaker {
                     throw new QueryParseException(
                             "Bad query, qualifier not found: " + qual);
                 }
-                // do requested join
-                if (join.kind.equals("LEFT") || join.kind.equals("RIGHT")) {
+            }
+            String tableName;
+            if (table.isAlias()) {
+                tableName = table.getRealTable().getQuotedName() + " "
+                        + table.getQuotedName();
+            } else {
+                tableName = table.getQuotedName();
+            }
+            boolean isRelation = table.getKey().equals(REL_FRAGMENT_NAME);
+
+            // join clause on requested columns
+
+            boolean primaryTypeClauseDone = false;
+
+            if (join == null) {
+                from.append(tableName);
+            } else {
+                if (outerJoin) {
                     from.append(" ");
                     from.append(join.kind);
                 }
                 from.append(" JOIN ");
-            }
-            boolean isRelation = table.getKey().equals(REL_FRAGMENT_NAME);
-
-            // join requested table
-
-            String name;
-            if (table.isAlias()) {
-                name = table.getRealTable().getQuotedName() + " "
-                        + table.getQuotedName();
-            } else {
-                name = table.getQuotedName();
-            }
-            from.append(name);
-
-            String primaryTypeClause = String.format(
-                    "%s IN (%s)",
-                    qualHierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY).getFullQuotedName(),
-                    qms);
-            if (firstTable) {
-                whereClauses.add(primaryTypeClause);
-                whereParams.addAll(types);
-            } else {
-                // emit actual join requested
+                from.append(tableName);
                 from.append(" ON (");
                 from.append(((Column) join.onLeft.getInfo()).getFullQuotedName());
                 from.append(" = ");
                 from.append(((Column) join.onRight.getInfo()).getFullQuotedName());
-                if (isRelation) {
-                    from.append(")");
-                } else {
+                if (outerJoin && table.getKey().equals(Model.HIER_TABLE_NAME)) {
+                    // outer join, type check must be part of JOIN
                     from.append(" AND ");
                     from.append(primaryTypeClause);
-                    from.append(")");
                     fromParams.addAll(types);
+                    primaryTypeClauseDone = true;
                 }
+                from.append(")");
             }
 
             // join other fragments for qualifier
@@ -415,7 +417,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             for (Table t : allTables.get(qual).values()) {
                 if (t.getKey().equals(table.getKey())) {
-                    // this one was the first, already done
+                    // already done above
                     continue;
                 }
                 String n;
@@ -431,14 +433,21 @@ public class CMISQLQueryMaker implements QueryMaker {
                 from.append(t.getColumn(Model.MAIN_KEY).getFullQuotedName());
                 from.append(" = ");
                 from.append(tableMainId);
-                if (t.getKey().equals(Model.HIER_TABLE_NAME)) {
+                if (outerJoin && t.getKey().equals(Model.HIER_TABLE_NAME)) {
+                    // outer join, type check must be part of JOIN
                     from.append(" AND ");
                     from.append(primaryTypeClause);
-                    from.append(")");
                     fromParams.addAll(types);
-                } else {
-                    from.append(")");
+                    primaryTypeClauseDone = true;
                 }
+                from.append(")");
+            }
+
+            // primary type clause, if not included in a JOIN
+
+            if (!primaryTypeClauseDone) {
+                whereClauses.add(primaryTypeClause);
+                whereParams.addAll(types);
             }
 
             // lifecycle not deleted filter
@@ -502,23 +511,30 @@ public class CMISQLQueryMaker implements QueryMaker {
                         readAclIdCol = al + '.' + model.HIER_READ_ACL_ID;
                         readAclAclIdCol = al + '.' + model.HIER_READ_ACL_ACL_ID;
                     }
-                    if (!firstTable) {
-                        from.append(" LEFT");
+                    String securityCheck = dialect.getReadAclsCheckSql(readAclAclIdCol);
+                    String joinOn = String.format("%s = %s", tableMainId,
+                            readAclIdCol);
+                    if (outerJoin) {
+                        // outer join, security check must be part of JOIN
+                        from.append(" ");
+                        from.append(join.kind);
+                        joinOn = String.format("%s AND %s", joinOn,
+                                securityCheck);
+                        fromParams.add(principals);
+                    } else {
+                        // inner join, security check can go in WHERE clause
+                        whereClauses.add(securityCheck);
+                        whereParams.add(principals);
                     }
-                    from.append(String.format(" JOIN %s ON (%s = %s AND %s)",
-                            readAclTable, tableMainId, readAclIdCol,
-                            dialect.getReadAclsCheckSql(readAclAclIdCol)));
-                    fromParams.add(principals);
+                    from.append(String.format(" JOIN %s ON (%s)", readAclTable,
+                            joinOn));
                 } else {
-                    StringBuilder clause = new StringBuilder();
-                    clause.append("(");
-                    clause.append(dialect.getSecurityCheckSql(tableMainId));
-                    if (!firstTable) {
-                        clause.append(String.format(" OR %s IS NULL",
-                                tableMainId));
+                    String securityCheck = dialect.getSecurityCheckSql(tableMainId);
+                    if (outerJoin) {
+                        securityCheck = String.format("(%s OR %s IS NULL)",
+                                securityCheck, tableMainId);
                     }
-                    clause.append(")");
-                    whereClauses.add(clause.toString());
+                    whereClauses.add(securityCheck);
                     whereParams.add(principals);
                     whereParams.add(permissions);
                 }

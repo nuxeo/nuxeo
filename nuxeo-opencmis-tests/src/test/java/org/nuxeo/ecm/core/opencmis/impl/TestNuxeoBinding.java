@@ -1203,6 +1203,25 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     }
 
     @Test
+    public void testQuerySecurity() throws Exception {
+        String statement;
+        ObjectList res;
+
+        statement = "SELECT cmis:objectId FROM File";
+        res = query(statement);
+        assertEquals(3, res.getNumItems().intValue());
+
+        nuxeotc.closeSession();
+        nuxeotc.session = nuxeotc.openSessionAs("bob");
+        init();
+
+        statement = "SELECT cmis:objectId FROM File";
+        res = query(statement);
+        // only testfile1 and testfile2 are accessible by bob
+        assertEquals(2, res.getNumItems().intValue());
+    }
+
+    @Test
     public void testQueryWhereProperties() throws Exception {
         String statement;
         ObjectList res;
@@ -2129,6 +2148,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         String statement;
         ObjectList res;
 
+        // INNER JOIN
         statement = "SELECT A.cmis:objectId, A.dc:title, B.cmis:objectId, B.dc:title" //
                 + " FROM cmis:folder A" //
                 + " JOIN cmis:folder B ON A.cmis:objectId = B.cmis:parentId" //
@@ -2137,6 +2157,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         res = query(statement);
         assertEquals(0, res.getNumItems().intValue());
 
+        // INNER JOIN
+        statement = "SELECT A.cmis:objectId, B.cmis:objectId" //
+                + " FROM cmis:document A" //
+                + " JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
+                + " WHERE B.cmis:name NOT IN ('testfile3_Title', 'testfile4_Title')";
+        res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
+
+        // LEFT JOIN
         statement = "SELECT A.cmis:objectId, B.cmis:objectId" //
                 + " FROM cmis:document A" //
                 + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
@@ -2148,8 +2177,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + " FROM cmis:document A" //
                 + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
                 + " LEFT JOIN Note C ON A.cmis:objectId = C.cmis:objectId" //
-                + " WHERE ANY A.nuxeo:secondaryObjectTypeIds NOT IN ('Foo')" //
-                + "   AND (A.cmis:objectTypeId NOT IN ('File')" //
+                + " WHERE (A.cmis:objectTypeId NOT IN ('File')" //
                 + "     OR B.cmis:name NOT IN ('testfile3_Title', 'testfile4_Title'))";
         res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
@@ -2848,6 +2876,14 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 + " JOIN cmis:document B ON R.cmis:targetId = B.cmis:objectId";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
+
+        // with LEFT JOIN on relation
+        statement = "SELECT A.cmis:objectId, B.cmis:objectId"
+                + " FROM cmis:document A"
+                + " LEFT JOIN cmis:relationship R ON R.cmis:sourceId = A.cmis:objectId"
+                + " LEFT JOIN cmis:document B ON R.cmis:targetId = B.cmis:objectId";
+        res = query(statement);
+        assertEquals(2, res.getNumItems().intValue());
     }
 
     @Test
