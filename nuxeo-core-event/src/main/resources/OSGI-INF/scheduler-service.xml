@@ -6,6 +6,8 @@
      Core scheduler registry service.
   </documentation>
 
+  <require>org.nuxeo.ecm.core.event.EventServiceComponent</require>
+
   <service>
     <provide interface="org.nuxeo.ecm.core.scheduler.SchedulerService" />
   </service>

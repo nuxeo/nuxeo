@@ -5,6 +5,8 @@
     The WorkManager executes Work instances asynchronously.
   </documentation>
 
+  <require>org.nuxeo.ecm.core.api.repository.RepositoryManager</require>
+
   <service>
     <provide interface="org.nuxeo.ecm.core.work.api.WorkManager" />
   </service>
