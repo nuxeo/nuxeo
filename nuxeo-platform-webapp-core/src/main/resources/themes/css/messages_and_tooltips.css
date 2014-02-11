@@ -120,21 +120,33 @@ a.ambiance-close {
   color: "error.status (__FLAVOR__ color)" }
 
 .processMessage {
-  background: url("${basePath}/icons/bullet.png") no-repeat scroll 0 4px transparent;
+  background: url("${basePath}/icons/bullet.png") no-repeat scroll 0.7em 0.9em #f4f4f4;
+  border-radius: 3px;
   display: inline-block;
   font-size: 1.1em;
   font-weight: bold;
-  margin: .1em .5em .3em 0;
-  padding: .2em 0 .2em 1.7em }
+  margin: .3em .5em .3em 0;
+  padding: .8em 1em 1em 2.2em }
+
+.completeInfo{
+  background-image: url("${basePath}/icons/info.png");
+  background-color:"info (__FLAVOR__ background)";
+  color: "info.status (__FLAVOR__ color)" }
 
 .completeSuccess {
-  background-image: url("${basePath}/icons/checked.gif") }
+  background-image: url("${basePath}/icons/checked.gif");
+  background-color:"success (__FLAVOR__ background)";
+  color: "success.status (__FLAVOR__ color)" }
 
 .completeError {
-  background-image: url("${basePath}/icons/delete_red.png") }
+  background-image: url("${basePath}/icons/delete_red.png");
+  background-color:"error (__FLAVOR__ background)";
+  color: "error.status (__FLAVOR__ color)" }
 
 .completeWarning {
-  background-image: url("${basePath}/icons/warning.gif") }
+  background-image: url("${basePath}/icons/warning.gif");
+  background-color: "warning (__FLAVOR__ background)";
+  color: "warning.status (__FLAVOR__ color)" }
 
 .running {
   background-image: url("${basePath}/img/standart_waiter.gif") }
