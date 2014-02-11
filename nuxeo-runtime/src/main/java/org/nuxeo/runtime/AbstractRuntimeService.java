@@ -146,7 +146,6 @@ public abstract class AbstractRuntimeService implements RuntimeService {
                 isStarted = false;
                 Framework.sendEvent(new RuntimeServiceEvent(
                         RuntimeServiceEvent.RUNTIME_STOPPED, this));
-                manager.shutdown();
                 // NXRuntime.setRuntime(null);
                 manager = null;
                 JavaUtilLoggingHelper.reset();

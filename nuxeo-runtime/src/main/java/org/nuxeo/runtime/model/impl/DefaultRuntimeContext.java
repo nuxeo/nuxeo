@@ -182,11 +182,7 @@ public class DefaultRuntimeContext implements RuntimeContext {
     public void destroy() {
         Iterator<ComponentName> it = deployedFiles.values().iterator();
         ComponentManager mgr = runtime.getComponentManager();
-        while (it.hasNext()) {
-            ComponentName name = it.next();
-            it.remove();
-            mgr.unregister(name);
-        }
+        mgr.shutdown();
     }
 
     @Override
