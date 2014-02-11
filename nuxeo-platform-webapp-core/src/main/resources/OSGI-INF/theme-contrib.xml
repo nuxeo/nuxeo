@@ -63,6 +63,8 @@
       <resource>jquery.ambiance.js</resource>
       <resource>jquery.ambiance.css</resource>
       <resource>jquery.nuxeo.dropdown.js</resource>
+      <resource>jquery.tipsy.js</resource>
+      <resource>tipsy.css</resource>
     </view>
 
     <view name="Nuxeo header" template-engine="jsf-facelets">
@@ -224,6 +226,13 @@
     <resource name="jquery.nuxeo.dropdown.js">
       <path>scripts/jquery/jquery.nuxeo.dropdown.js</path>
       <require>jquery.js</require>
+    </resource>
+    <resource name="jquery.tipsy.js">
+      <path>scripts/jquery/jquery.tipsy.js</path>
+      <require>jquery.js</require>
+    </resource>
+    <resource name="tipsy.css">
+      <path>css/tipsy.css</path>
     </resource>
   </extension>
 
