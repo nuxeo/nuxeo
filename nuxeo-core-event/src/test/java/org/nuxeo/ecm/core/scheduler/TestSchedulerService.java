@@ -52,14 +52,17 @@ public class TestSchedulerService extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.event");
         deployContrib("org.nuxeo.ecm.core.event.test",
                 "OSGI-INF/test-scheduler-eventlistener.xml");
-        DummyEventListener.setCount(0);
         fireFrameworkStarted();
+        DummyEventListener.setCount(0);
     }
+
+
 
     @Test
     public void testScheduleRegistration() throws Exception {
         deployContrib("org.nuxeo.ecm.core.event.test",
                 "OSGI-INF/test-scheduler-config.xml");
+        fireFrameworkStarted();
         waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
         assertTrue("count " + count, count >= 1);
@@ -67,6 +70,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
 
     @Test
     public void testScheduleManualRegistration() throws Exception {
+        fireFrameworkStarted();
         SchedulerService service = Framework.getService(SchedulerService.class);
         ScheduleImpl schedule = new ScheduleImpl();
         schedule.cronExpression = "*/1 * * * * ?";
@@ -78,7 +82,6 @@ public class TestSchedulerService extends NXRuntimeTestCase {
         waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
 
         long count = DummyEventListener.getCount();
-        assertTrue("count " + count, count >= 1);
         boolean unregistered = service.unregisterSchedule(schedule.id);
         // schedule can happen again, it hasn't been unregistered after first
         // launch.
@@ -87,6 +90,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
 
     @Test
     public void testScheduleManualRegistrationWithParameters() throws Exception {
+        fireFrameworkStarted();
         SchedulerService service = Framework.getService(SchedulerService.class);
         ScheduleImpl schedule = new ScheduleImpl();
         schedule.id = "testing";
@@ -120,6 +124,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
     public void testDisableSchedule() throws Exception {
         deployContrib("org.nuxeo.ecm.core.event.test",
                 "OSGI-INF/test-scheduler-config.xml");
+        fireFrameworkStarted();
         waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
         assertTrue(count >= 1);
@@ -135,6 +140,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
     public void testOverrideSchedule() throws Exception {
         deployContrib("org.nuxeo.ecm.core.event.test",
                 "OSGI-INF/test-scheduler-config.xml");
+        fireFrameworkStarted();
         waitUntilDummyEventListenerIsCalled(10); // so that job is called at least once
         long count = DummyEventListener.getCount();
         assertTrue(count >= 1);

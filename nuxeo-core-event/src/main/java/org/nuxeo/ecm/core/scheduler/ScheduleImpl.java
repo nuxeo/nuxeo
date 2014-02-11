@@ -25,6 +25,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("schedule")
 public class ScheduleImpl implements Schedule {
 
+    private static final long serialVersionUID = 1L;
+
     @XNode("@id")
     public String id;
 
@@ -81,6 +83,22 @@ public class ScheduleImpl implements Schedule {
     @Override
     public String toString() {
         return "Schedule " + id + " (cron=" + cronExpression + ')';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Schedule)) {
+            return false;
+        }
+        return id.equals(((Schedule)obj).getId());
+    }
+
+    @Override
+    public int hashCode() {
+       return id.hashCode();
     }
 
     @Override
