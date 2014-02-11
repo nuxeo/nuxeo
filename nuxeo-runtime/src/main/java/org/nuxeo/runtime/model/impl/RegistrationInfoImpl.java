@@ -74,23 +74,23 @@ public class RegistrationInfoImpl implements RegistrationInfo {
 
     // my aliases
     @XNodeList(value = "alias", type = HashSet.class, componentType = ComponentName.class)
-    Set<ComponentName> aliases = new HashSet<>();
+    Set<ComponentName> aliases;
 
     // the object names I depend of
     @XNodeList(value = "require", type = HashSet.class, componentType = ComponentName.class)
-    Set<ComponentName> requires = new HashSet<>();
+    Set<ComponentName> requires;
 
     @XNode("implementation@class")
     String implementation;
 
     @XNodeList(value = "extension-point", type = ExtensionPointImpl[].class, componentType = ExtensionPointImpl.class)
-    ExtensionPointImpl[] extensionPoints = new ExtensionPointImpl[0];
+    ExtensionPointImpl[] extensionPoints;
 
     @XNodeList(value = "extension", type = ExtensionImpl[].class, componentType = ExtensionImpl.class)
-    ExtensionImpl[] extensions = new ExtensionImpl[0];
+    ExtensionImpl[] extensions;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = Property.class)
-    Map<String, Property> properties  = new HashMap<>();
+    Map<String, Property> properties;
 
     @XNode("@version")
     Version version = Version.ZERO;
@@ -145,12 +145,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                     + "' was already attached to a manager");
         }
         this.manager = manager;
-        for (Extension each:extensions) {
-        	ComponentName target = each.getTargetComponent();
-        	if (!getName().equals(target)) {
-        		requires.add(each.getTargetComponent());
-        	}
-        }
     }
 
     public void setContext(RuntimeContext rc) {
@@ -173,12 +167,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     }
 
     public void destroy() {
-        requires.clear();
-        aliases.clear();
-        properties.clear();
-        extensionPoints = new ExtensionPointImpl[0];
-        extensions = new ExtensionImpl[0];
-        version = null;
+        if (requires != null) {
+            requires.clear();
+            requires = null;
+        }
         component = null;
         name = null;
         manager = null;
@@ -502,6 +494,9 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     }
 
     public void checkExtensions() {
+        if (extensions == null) {
+            return;
+        }
         // HashSet<String> targets = new HashSet<String>();
         for (ExtensionImpl xt : extensions) {
             if (xt.target == null) {
