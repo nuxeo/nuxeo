@@ -59,7 +59,11 @@
     return markup;
   }
 
-  var dirSelectionDefaultFormatter = dirEntryDefaultFormatter;
+  function dirSelectionDefaultFormatter(entry) {
+    var markup = entry.absoluteLabel;
+    markup += warnMessage(entry);
+    return markup;
+  }
 
   function getOperationName(params) {
     var opName = params.operationId;

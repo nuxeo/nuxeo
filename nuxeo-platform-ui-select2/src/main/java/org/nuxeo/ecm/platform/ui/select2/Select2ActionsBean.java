@@ -63,6 +63,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -632,6 +633,10 @@ public class Select2ActionsBean implements Serializable {
                         value = messages.get(value);
                     }
                     obj.element(Select2Common.LABEL, value);
+                    obj.element(
+                            Select2Common.ABSOLUTE_LABEL,
+                            getParentAbsoluteLabel(storedReference, keySeparator,
+                                    session, fieldName, localize, dbl10n));
                 } else {
                     obj.element(key, value);
                 }
@@ -650,6 +655,27 @@ public class Select2ActionsBean implements Serializable {
             log.error("An error occured while resolving directoryEntry", e);
             return null;
         }
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    protected String getParentAbsoluteLabel(final String entryId,
+            final String keySeparator, final Session session,
+            final QName labelFieldName, final boolean localize,
+            final boolean dbl10n) throws PropertyException, ClientException {
+        String[] split = entryId.split(keySeparator);
+        String result = "";
+        for (int i = 0; i < split.length; i++) {
+            DocumentModel entry = session.getEntry(split[i]);
+            Serializable value = entry.getPropertyValue(labelFieldName.getPrefixedName());
+            if (localize && !dbl10n) {
+                value = messages.get(value);
+            }
+            result += value + (i < split.length - 1 ? "/" : "");
+        }
+
+        return result;
     }
 
     public String resolveMultipleDirectoryEntries(final Object value,
