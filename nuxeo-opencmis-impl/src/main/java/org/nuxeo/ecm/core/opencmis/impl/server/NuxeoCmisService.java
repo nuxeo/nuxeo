@@ -124,6 +124,7 @@ import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -900,8 +901,10 @@ public class NuxeoCmisService extends AbstractCmisService {
             throws ClientException, CmisObjectNotFoundException {
         DocumentModel doc = coreSession.getRootDocument();
         for (String name : new Path(path).segments()) {
-            String query = String.format(
-                    "SELECT * FROM Document WHERE ecm:parentId = %s AND dc:title = %s",
+            String query = String.format("SELECT * FROM Document WHERE "
+                    + NXQL.ECM_PARENTID + " = %s AND "
+                    + NuxeoTypeHelper.NX_DC_TITLE + " = %s AND "
+                    + NXQL.ECM_ISPROXY + " = 0",
                     escapeStringForNXQL(doc.getId()), escapeStringForNXQL(name));
             DocumentModelList docs = coreSession.query(query);
             if (docs.isEmpty()) {
