@@ -147,6 +147,26 @@
       </fields>
     </widget>
 
+    <widget name="select2_separator" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Select2 separator</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Separator character or string used to delimit ids
+          in value attribute of the multi-valued selects.
+          The default delimiter is the , character.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>separator</field>
+      </fields>
+    </widget>
+
+
     <widget name="select2_directory_labelFieldName" type="text">
       <categories>
         <category>widgetTypeConf</category>
@@ -1219,6 +1239,9 @@
                 <row>
                   <widget category="widgetTypeConf">select2_suggestionFormatter</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_separator</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -1427,6 +1450,9 @@
                 <row>
                   <widget category="widgetTypeConf">select2_selectionFormatter</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_separator</widget>
+                </row>
               </rows>
             </layout>
           </layouts>
@@ -1502,6 +1528,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_directorySuggestion_addNewEntryFilter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_separator</widget>
                 </row>
               </rows>
             </layout>
@@ -1684,6 +1713,9 @@
                 <row>
                   <widget category="widgetTypeConf">select2_suggestionFormatter
                   </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_separator</widget>
                 </row>
               </rows>
             </layout>
