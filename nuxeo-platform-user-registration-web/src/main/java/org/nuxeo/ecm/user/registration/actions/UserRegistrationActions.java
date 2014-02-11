@@ -25,6 +25,13 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -43,6 +50,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
@@ -195,7 +203,7 @@ public class UserRegistrationActions implements Serializable {
         }
     }
 
-    public void submitMultipleUserRegistration(String configurationName) {
+    public void submitMultipleUserRegistration(String configurationName) throws AddressException {
         if (StringUtils.isBlank(multipleEmails)) {
             facesMessages.add(
                     ERROR,
@@ -205,16 +213,41 @@ public class UserRegistrationActions implements Serializable {
         }
         docinfo.setDocumentId(navigationContext.getCurrentDocument().getId());
 
-        String[] emails = multipleEmails.split(MULTIPLE_EMAILS_SEPARATOR);
-        for (String email : emails) {
-            userinfo.setLogin(email.trim());
-            userinfo.setEmail(email.trim());
+        InternetAddress[] emails = splitAddresses(multipleEmails);
+        for (InternetAddress email : emails) {
+            userinfo.setLogin(email.getAddress());
+            userinfo.setEmail(email.getAddress());
 
             log.debug("Request email: " + email + " with multiple invitation.");
             doSubmitUserRegistration(configurationName);
         }
         resetPojos();
         Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
+    }
+
+    protected InternetAddress[] splitAddresses(String emails) throws AddressException {
+        return StringUtils.isNotBlank(emails) ? InternetAddress.parse(
+                emails.replace(MULTIPLE_EMAILS_SEPARATOR, ","), false) : new InternetAddress[]{};
+    }
+
+    public void validateMultipleUser(FacesContext context, UIComponent component,
+                                 Object value) {
+        if (value instanceof String) {
+            try {
+                splitAddresses((String) value);
+                return;
+            } catch (AddressException e) {
+                // Nothing to do, error is handled after
+            }
+        }
+
+        FacesMessage message = new FacesMessage(
+                FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                context, "label.request.error.multiple.emails"), null);
+
+        // also add global message
+        context.addMessage(null, message);
+        throw new ValidatorException(message);
     }
 
     public boolean getCanValidate() {
