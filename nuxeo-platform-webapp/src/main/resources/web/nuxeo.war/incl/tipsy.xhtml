@@ -7,7 +7,13 @@
   <a4j:outputPanel ajaxRendered="true">
     <script>
           jQuery(document).ready(function() {
-            jQuery('a').tipsy();
+            jQuery('img').each(function() {
+              jQuery(this).tipsy({
+                title : 'title',
+                gravity : 'se',
+                delayOut : 30000
+              });
+            });
           });
         </script>
   </a4j:outputPanel>
