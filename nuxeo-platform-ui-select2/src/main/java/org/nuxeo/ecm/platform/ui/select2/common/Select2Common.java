@@ -122,6 +122,8 @@ public class Select2Common {
 
     public static final String DIRECTORY_ORDER_FIELD_NAME = "ordering";
 
+    public static final String ABSOLUTE_LABEL = "absoluteLabel";
+
     private static Boolean forceDisplayEmailInSuggestion = null;
 
     private static boolean isForceDisplayEmailInSuggestion() {

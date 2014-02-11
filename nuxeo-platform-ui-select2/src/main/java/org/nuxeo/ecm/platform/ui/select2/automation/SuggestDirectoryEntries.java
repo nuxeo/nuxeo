@@ -172,6 +172,10 @@ public class SuggestDirectoryEntries {
                         Select2Common.COMPUTED_ID,
                         (!isRoot ? (getComputedId() + keySeparator) : "")
                                 + ja.getId());
+                ja.getObj().element(
+                        Select2Common.ABSOLUTE_LABEL,
+                        (!isRoot ? (getAbsoluteLabel() + absoluteLabelSeparator) : "")
+                                + ja.getLabel());
                 result.add(ja.toJSONObject());
             }
             return result;
@@ -187,6 +191,10 @@ public class SuggestDirectoryEntries {
 
         public String getLabel() {
             return isRoot ? null : obj.optString(Select2Common.LABEL);
+        }
+
+        public String getAbsoluteLabel() {
+            return isRoot ? null : obj.optString(Select2Common.ABSOLUTE_LABEL);
         }
 
         public JSONObject getObj() {
@@ -372,6 +380,14 @@ public class SuggestDirectoryEntries {
 
     @Param(name = "displayObsoleteEntries", required = false)
     protected boolean displayObsoleteEntries = false;
+
+    /**
+     * Separator to display absolute label
+     *
+     * @since 5.9.2
+     */
+    @Param(name = "absoluteLabelSeparator", required = false)
+    protected String absoluteLabelSeparator = "/";
 
     private String label = null;
 

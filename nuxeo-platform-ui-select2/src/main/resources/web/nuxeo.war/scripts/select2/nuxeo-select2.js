@@ -56,7 +56,14 @@
     return markup;
   }
 
-  var dirSelectionDefaultFormatter = dirEntryDefaultFormatter;
+  function dirSelectionDefaultFormatter(entry) {
+    var markup = entry.absoluteLabel;
+    if (entry.warn_message) {
+      markup += "<img src='" + window.nxContextPath
+          + "/icons/warning.gif' title='" + entry.warn_message + "'/>"
+    }
+    return markup;
+  }
 
   function getOperationName(params) {
     var opName = params.operationId;
