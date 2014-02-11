@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.scheduler;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
@@ -59,12 +60,16 @@ public class SchedulerServiceImpl extends DefaultComponent implements
 
     protected boolean applicationStarted;
 
+    protected final ScheduleExtensionRegistry registry = new ScheduleExtensionRegistry();
+
     @Override
     public void activate(ComponentContext context) throws Exception {
         log.debug("Activate");
         bundle = context.getRuntimeContext();
+    }
 
-        // Find a scheduler
+    protected void setupScheduler(ComponentContext context) throws IOException,
+            SchedulerException {
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
         URL cfg = context.getRuntimeContext().getResource(
                 "config/quartz.properties");
@@ -75,7 +80,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements
             } finally {
                 stream.close();
             }
-        } else {
+         } else {
             // use default config (unit tests)
             Properties props = new Properties();
             props.put("org.quartz.scheduler.instanceName", "Quartz");
@@ -102,17 +107,24 @@ public class SchedulerServiceImpl extends DefaultComponent implements
         for (String job : jobs) {
             unregisterSchedule(job);
         }
+        for (Schedule each:registry.getSchedules()) {
+            registerSchedule(each);
+        }
+        log.info("scheduler started");
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         log.debug("Deactivate");
-        scheduler.shutdown();
+	if (scheduler != null) {
+	    scheduler.shutdown();
+	}
     }
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
         applicationStarted = true;
+        setupScheduler(context);
     }
 
     @Override
@@ -124,12 +136,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements
     public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
-            Schedule schedule = (Schedule) contrib;
-            if (schedule.isEnabled()) {
-                registerSchedule(schedule);
-            } else {
-                unregisterSchedule(schedule);
-            }
+            registerSchedule((Schedule)contrib);
         }
     }
 
@@ -151,6 +158,20 @@ public class SchedulerServiceImpl extends DefaultComponent implements
 
     @Override
     public void registerSchedule(Schedule schedule,
+            Map<String, Serializable> parameters) {
+        registry.addContribution(schedule);
+        if (!applicationStarted) {
+            return;
+        }
+        Schedule contributed = registry.getSchedule(schedule);
+        if (contributed != null) {
+            schedule(contributed, parameters);
+        } else {
+            unschedule(schedule.getId());
+        }
+    }
+
+    protected void schedule(Schedule schedule,
             Map<String, Serializable> parameters) {
         log.info("Registering " + schedule);
         JobDetail job = new JobDetail(schedule.getId(), "nuxeo", EventJob.class);
@@ -201,13 +222,22 @@ public class SchedulerServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public boolean unregisterSchedule(String scheduleId) {
-        log.info("Unregistering schedule with id" + scheduleId);
+    public boolean unregisterSchedule(String id) {
+        log.info("Unregistering schedule with id" + id);
+        Schedule schedule = registry.getSchedule(id);
+        if (schedule == null) {
+            return false;
+        }
+        registry.removeContribution(schedule, true);
+        return unschedule(id);
+    }
+
+    protected boolean unschedule(String jobId) {
         try {
-            return scheduler.deleteJob(scheduleId, "nuxeo");
+            return scheduler.deleteJob(jobId, "nuxeo");
         } catch (SchedulerException e) {
             log.error(String.format("failed to unschedule job with '%s': %s",
-                    scheduleId, e.getMessage()), e);
+                    jobId, e.getMessage()), e);
         }
         return false;
     }

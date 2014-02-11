@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.core.scheduler;
 
+import java.io.Serializable;
+
 /**
  * Schedule entry.
  * <p>
@@ -23,7 +25,7 @@ package org.nuxeo.ecm.core.scheduler;
  * the username to use to open the session, and the
  * periodicity for the schedule.
  */
-public interface Schedule {
+public interface Schedule extends Serializable {
 
     /**
      * Returns the schedule job id.
