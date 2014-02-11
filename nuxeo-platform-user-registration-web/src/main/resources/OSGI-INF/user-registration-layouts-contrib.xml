@@ -310,6 +310,9 @@
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
         <property name="required">true</property>
+        <property name="validator">
+          #{userRegistrationActions.validateMultipleUser}
+        </property>
       </properties>
     </widget>
 
