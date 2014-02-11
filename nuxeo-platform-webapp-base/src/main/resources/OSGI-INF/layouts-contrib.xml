@@ -161,6 +161,10 @@
           The default delimiter is the , character.
         </label>
       </helpLabels>
+      <widgetModes>
+        <mode value="any">hidden</mode>
+        <mode value="view_reference">view</mode>
+      </widgetModes>
       <fields>
         <field>separator</field>
       </fields>
