@@ -84,7 +84,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     // TODO: OG: we should use an overridable query model instead of hardcoding
     // the NXQL query
-    public static final String QUERY = "SELECT * FROM Document WHERE file:content:digest = '%s'";
+    public static final String QUERY = "SELECT * FROM Document WHERE file:content/digest = '%s'";
 
     public static final int MAX = 15;
 
