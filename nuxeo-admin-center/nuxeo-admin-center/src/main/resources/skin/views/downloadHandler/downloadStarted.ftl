@@ -60,7 +60,7 @@ function install() {
           <div class="downloadProgressBar alignCenter" style="width:${pkg.getDownloadProgress()}px;">&nbsp;</div>
         </div>
         <div class="downloadSize">
-        ${Context.getMessage('label.downloadStarted.size.label')} ${pkg.getSourceSize()} ${Context.getMessage('label.downloadStarted.size.label')}
+        ${Context.getMessage('label.downloadStarted.size.label')} ${pkg.getSourceSize()}
         </div>
         <script>
          window.setTimeout(refresh,1500);
