@@ -128,6 +128,11 @@ a.ambiance-close {
   margin: .3em .5em .3em 0;
   padding: .8em 1em 1em 2.2em }
 
+.processMessage .button {
+  font-size: .85em;
+  margin: 0 .2em 0 .5em;
+  padding: .2em .7em .3em }
+
 .completeInfo{
   background-image: url("${basePath}/icons/info.png");
   background-color:"info (__FLAVOR__ background)";
