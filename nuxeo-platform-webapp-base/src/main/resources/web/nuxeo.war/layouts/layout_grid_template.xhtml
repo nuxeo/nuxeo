@@ -15,7 +15,7 @@
 
     <div class="gridContainer #{layoutStyleClass}">
       <nxl:layoutRow>
-        <div class="gridRow">
+        <div class="gridRow #{layoutRow.properties['gridRowStyleClassProp']}">
           <nxl:layoutRowWidget>
             <c:set var="gridStyleClassProp" value="nxl_gridStyleClass_#{widgetIndex}" />
             <div class="gridBox #{layoutRow.properties[gridStyleClassProp]}">
