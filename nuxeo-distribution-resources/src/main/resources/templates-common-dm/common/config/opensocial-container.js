@@ -142,9 +142,9 @@
     // Path to fetch opensocial data from
     // Must be on the same domain as the gadget rendering server
 	//    "path" : "http://%host%${org.nuxeo.ecm.contextPath}/opensocial/gadgets/rpc",
-	    "path" : "http://%host%${org.nuxeo.ecm.contextPath}/opensocial/social/rpc",
+	    "path" : "//%host%${org.nuxeo.ecm.contextPath}/opensocial/social/rpc",
     // Path to issue invalidate calls
-    "invalidatePath" : "http://%host%${org.nuxeo.ecm.contextPath}/opensocial/gadgets/api/rpc",
+    "invalidatePath" : "//%host%${org.nuxeo.ecm.contextPath}/opensocial/gadgets/api/rpc",
     "domain" : "shindig",
     "enableCaja" : false,
     "supportedFields" : {
