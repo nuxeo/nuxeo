@@ -53,7 +53,8 @@ author: lkemen@nuxeo.com
 .foldableBox .boxBody {
   clear: both;
   font-size: 1.1em;
-  padding: 1em }
+  padding: 1em;
+  overflow-x: auto  }
 
 .foldableBox .listingLayoutSelector {
   margin: 0 0 0 .7em }
