@@ -90,14 +90,6 @@ public class MistralMetadataUtils implements MetadataUtils {
                 }
             }
 
-            if (exif.isUserCommentAvailable()) {
-                String comment = ExifHelper.decodeUndefined(
-                        exif.getUserComment()).trim();
-                if (comment.length() > 0) {
-                    metadata.put(META_COMMENT, comment);
-                }
-            }
-
             if (exif.isMakeAvailable() || exif.isModelAvailable()) {
                 String equipment = (exif.getMake() + " " + exif.getModel()).trim();
                 if (equipment.length() > 0) {
