@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <extension target="faces-config#NAVIGATION">
+
+    <navigation-case>
+      <from-outcome>suggest_add_new_directory_entry</from-outcome>
+      <to-view-id>/widgets/suggest_add_new_directory_entry_iframe.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+  </extension>
+
+  <install>
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+  </install>
+
+</fragment>
