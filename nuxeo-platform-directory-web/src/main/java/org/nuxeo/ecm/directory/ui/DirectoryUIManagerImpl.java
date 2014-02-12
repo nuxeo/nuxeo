@@ -114,7 +114,7 @@ public class DirectoryUIManagerImpl extends DefaultComponent implements
 
     public List<String> getDirectoryNames() throws ClientException {
         List<String> dirNames = new ArrayList<String>(registry.keySet());
-        Collections.sort(dirNames);
+        Collections.sort(dirNames, String.CASE_INSENSITIVE_ORDER);
         return dirNames;
     }
 
