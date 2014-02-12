@@ -16,11 +16,13 @@
  */
 package org.nuxeo.ecm.webapp.security;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.webapp.security.AbstractUserGroupManagement.USERS_GROUPS_MANAGEMENT_ACCESS_FILTER;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -78,6 +80,7 @@ public class UserManagementTest extends BaseUserGroupMock {
         // Given a power user (not admin)
         actions.currentUser = getMockedUser("Administrator", true, actions.userManager);
 
+
         // When selected user is administrators
         actions.selectedUser = mockUserDM("Administrator");
 
@@ -92,5 +95,16 @@ public class UserManagementTest extends BaseUserGroupMock {
         assertTrue(actions.getAllowEditUser());
 
     }
+
+
+    @Test
+    public void aPowerUserShouldNotBeAbleToAddAdminGroups() throws Exception {
+        actions.currentUser = getMockedUser("jdoe", false, actions.userManager);
+
+        assertTrue(actions.isAllowedToAdminGroups(singleGroup("members")));
+        assertFalse(actions.isAllowedToAdminGroups(singleGroup("administrators")));
+        assertFalse(actions.isAllowedToAdminGroups(singleGroup("subadmin")));
+    }
+
 
 }

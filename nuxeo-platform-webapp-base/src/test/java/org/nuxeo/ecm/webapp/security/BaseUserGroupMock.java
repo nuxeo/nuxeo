@@ -21,11 +21,13 @@ import static org.mockito.Mockito.when;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.List;
 
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
@@ -42,7 +44,7 @@ public class BaseUserGroupMock {
      * @return
      */
     protected Principal getMockedUser(String username, boolean admin) {
-        Principal user = mock(NuxeoPrincipal.class);
+        Principal user = mock(NuxeoPrincipalImpl.class);
         when(((NuxeoPrincipal) user).isAdministrator()).thenReturn(admin);
         when(((NuxeoPrincipal) user).getName()).thenReturn(username);
 
@@ -102,8 +104,13 @@ public class BaseUserGroupMock {
         when(um.areUsersReadOnly()).thenReturn(false);
         when(um.getAnonymousUserId()).thenReturn(null);
         when(um.areGroupsReadOnly()).thenReturn(false);
-        when(um.getAdministratorsGroups()).thenReturn(
-                Arrays.asList(new String[] { "administrators" }));
+        when(um.getAdministratorsGroups()).thenReturn(singleGroup("administrators"));
+        when(um.getGroupsInGroup("administrators")).thenReturn(singleGroup("subadmin"));
         return um;
     }
+
+    protected List<String> singleGroup(String groupName) {
+        return Arrays.asList(new String[]{groupName});
+    }
+
 }

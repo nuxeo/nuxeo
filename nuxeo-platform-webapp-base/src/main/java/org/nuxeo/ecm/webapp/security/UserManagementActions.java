@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_CHANGED_E
 import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_SELECTED_EVENT;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -326,7 +327,8 @@ public class UserManagementActions extends AbstractUserGroupManagement
         NuxeoPrincipalImpl nuxeoPrincipal = (NuxeoPrincipalImpl) currentUser;
 
         if (!nuxeoPrincipal.isAdministrator()) {
-            List<String> adminGroups = userManager.getAdministratorsGroups();
+            List<String> adminGroups = getAllAdminGroups();
+
             for (String group : groups) {
                 if (adminGroups.contains(group)) {
                     return false;
@@ -336,6 +338,57 @@ public class UserManagementActions extends AbstractUserGroupManagement
         }
         return true;
     }
+
+    /**
+     * Retrieve recursively the list of all groups that are admins.
+     * @return
+     * @throws ClientException
+     *
+     * @since 5.9.2
+     */
+    private List<String> getAllAdminGroups() throws ClientException {
+        List<String> adminGroups = new ArrayList<>();
+        for(String adminGroup : userManager.getAdministratorsGroups()) {
+            adminGroups.add(adminGroup);
+            adminGroups.addAll(getAllSubGroups(adminGroup));
+        }
+        return adminGroups;
+    }
+
+    /**
+     * Recursively lookup all the sub groups of a given group.
+     * @param groupName
+     * @return
+     * @throws ClientException
+     *
+     * @since 5.9.2
+     */
+    private List<String> getAllSubGroups(String groupName) throws ClientException {
+        return getAllSubGroups(groupName, new ArrayList<String>());
+    }
+
+    /**
+     * Recursively accumulate all the sub groups a a given group.
+     * @param groupName
+     * @param accumulator
+     * @return
+     * @throws ClientException
+     *
+     * @since 5.9.2
+     */
+    private List<String> getAllSubGroups(String groupName, List<String> accumulator)
+            throws ClientException {
+        List<String> subGroups = userManager.getGroupsInGroup(groupName);
+        if (!subGroups.isEmpty()) {
+            accumulator.addAll(subGroups);
+            for (String name : subGroups) {
+                getAllSubGroups(name, accumulator);
+            }
+        }
+        return accumulator;
+    }
+
+
 
     /**
      * Throw a validation exception with a translated message that is show in
