@@ -101,27 +101,18 @@
 	<td>nature</td>
 	<td></td>
 </tr>
-<!-- make sure continent is not already selected -->
+<!-- make sure nature is not already selected -->
 <tr>
 	<td>verifyNotValue</td>
 	<td>id=selectDirectoryForm:directoriesList</td>
-	<td>continent</td>
+	<td>nature</td>
 </tr>
 <tr>
 	<td>watchA4jRequests</td>
 	<td></td>
 	<td></td>
 </tr>
-<tr>
-	<td>select</td>
-	<td>selectDirectoryForm:directoriesList</td>
-	<td>label=continent</td>
-</tr>
-<tr>
-	<td>waitForA4jRequest</td>
-	<td>10000</td>
-	<td></td>
-</tr>
+<!-- continent is selected now by default (sorting updated) -->
 <tr>
 	<td>storeEval</td>
 	<td>selenium.browserbot.getCurrentWindow().document.body.innerHTML</td>
