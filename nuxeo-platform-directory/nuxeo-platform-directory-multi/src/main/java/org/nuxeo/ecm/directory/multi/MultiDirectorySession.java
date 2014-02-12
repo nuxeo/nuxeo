@@ -657,7 +657,9 @@ public class MultiDirectorySession extends BaseSession {
                 dirInfo.getSession().createEntry(map);
             } else {
                 final DocumentModel entry = BaseSession.createEntryModel(null,
-                        dirInfo.dirSchemaName, id, map);
+                        dirInfo.dirSchemaName, id, null);
+                // Do not set dataModel values with constructor to force fields dirty
+                entry.getDataModel(dirInfo.dirSchemaName).setMap(map);
                 dirInfo.getSession().updateEntry(entry);
             }
         }

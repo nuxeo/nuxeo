@@ -199,10 +199,6 @@ public class SQLDirectory extends AbstractDirectory {
                         column.setNullable(false);
                         hasPrimary = true;
                     }
-                    Object defaultValue = f.getDefaultValue();
-                    if (defaultValue != null) {
-                        column.setDefaultValue(defaultValue.toString());
-                    }
                 }
             }
             if (!hasPrimary) {

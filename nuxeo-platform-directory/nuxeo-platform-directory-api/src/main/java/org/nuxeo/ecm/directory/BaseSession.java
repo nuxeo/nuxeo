@@ -65,12 +65,9 @@ public abstract class BaseSession implements Session {
                 new HashSet<String>(), null, null);
         DataModel dataModel;
         if (values == null) {
-            dataModel = new DataModelImpl(schema,
-                    Collections.<String, Object> emptyMap());
-        } else {
-            dataModel = new DataModelImpl(schema);
-            dataModel.setMap(values); // makes fields dirty
+            values = Collections.emptyMap();
         }
+        dataModel = new DataModelImpl(schema, values);
         entry.addDataModel(dataModel);
         return entry;
     }

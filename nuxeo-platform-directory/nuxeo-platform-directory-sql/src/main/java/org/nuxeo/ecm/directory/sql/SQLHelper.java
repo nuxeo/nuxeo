@@ -364,8 +364,10 @@ public class SQLHelper {
                     // columnLength, value));
                     // }
                     Serializable v;
-                    if (column.getType().spec == ColumnSpec.STRING) {
-                        v = SQL_NULL_MARKER.equals(value) ? null : value;
+                    if (SQL_NULL_MARKER.equals(value)) {
+                        v = null;
+                    } else if (column.getType().spec == ColumnSpec.STRING) {
+                        v = value;
                     } else if (column.getType().spec == ColumnSpec.BOOLEAN) {
                         v = Boolean.valueOf(value);
                     } else if (column.getType().spec == ColumnSpec.LONG) {

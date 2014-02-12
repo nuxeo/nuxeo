@@ -269,6 +269,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertEquals(Long.valueOf(10), dm.getProperty(SCHEMA, "intField"));
             assertCalendarEquals(getCalendar(1982, 3, 25, 16, 30, 47, 123),
                     (Calendar) dm.getProperty(SCHEMA, "dateField"));
+            assertTrue((Boolean) dm.getProperty(SCHEMA, "booleanField"));
             groups = (List<String>) dm.getProperty(SCHEMA, "groups");
             assertEquals(1, groups.size());
             assertTrue(groups.contains("administrators"));
@@ -299,6 +300,7 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertCalendarEquals(getCalendar(2007, 9, 7, 14, 36, 28, 0),
                     (Calendar) dm.getProperty(SCHEMA, "dateField"));
             assertEquals(Long.valueOf(3), dm.getProperty(SCHEMA, "intField"));
+            assertTrue((Boolean) dm.getProperty(SCHEMA, "booleanField"));
             // XXX: getEntries does not fetch references anymore => groups is
             // null
 
@@ -310,6 +312,8 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertCalendarEquals(getCalendar(1982, 3, 25, 16, 30, 47, 123),
                     (Calendar) dm.getProperty(SCHEMA, "dateField"));
 
+            dm = entryMap.get("user_3");
+            assertFalse((Boolean) dm.getProperty(SCHEMA, "booleanField"));
         } finally {
             session.close();
         }
