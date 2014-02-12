@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Service generating a path segment from the title by just removing slashes and
@@ -25,7 +26,10 @@ public class PathSegmentServiceDefault implements PathSegmentService {
 
     public Pattern stupidRegexp = Pattern.compile("^[- .,;?!:/\\\\'\"]*$");
 
-    public int maxSize = 24;
+    public static final String NUXEO_MAX_SEGMENT_SIZE_PROPERTY = "nuxeo.max.segment.size";
+
+    public int maxSize = Integer.parseInt(Framework.getProperty(
+            NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
 
     @Override
     public String generatePathSegment(DocumentModel doc) throws ClientException {
