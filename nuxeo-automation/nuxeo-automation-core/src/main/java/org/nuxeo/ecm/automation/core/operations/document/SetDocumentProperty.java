@@ -46,7 +46,7 @@ public class SetDocumentProperty {
     @Param(name = "save", required = false, values = "true")
     protected boolean save = true;
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws Exception {
         Property p = doc.getProperty(xpath);
         Type type = p.getField().getType();

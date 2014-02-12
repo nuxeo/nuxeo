@@ -181,8 +181,9 @@ public class CoreOperationsTest {
     }
 
     /**
-     * Create | Copy | Set Property. This is also testing
-     * {@link StringToProperties} adapter
+     * Create | Copy | Set Property.
+     * <p>
+     * This is also testing {@link StringToProperties} adapter
      *
      * @throws Exception
      */
@@ -210,8 +211,9 @@ public class CoreOperationsTest {
     }
 
     /**
-     * Same as before but tests relative paths Create | Copy | Set Property This
-     * is also testing {@link StringToProperties} adapter
+     * Same as before but tests relative paths Create | Copy | Set Property.
+     * <p>
+     * This is also testing {@link StringToProperties} adapter
      *
      * @throws Exception
      */
