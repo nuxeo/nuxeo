@@ -40,7 +40,7 @@ public class SetDocumentProperty {
     @Param(name = "xpath")
     protected String xpath;
 
-    @Param(name = "value")
+    @Param(name = "value", required = false)
     protected Serializable value;
 
     @Param(name = "save", required = false, values = "true")
@@ -54,7 +54,9 @@ public class SetDocumentProperty {
             throw new OperationException(
                     "Only scalar types can be set using update operation");
         }
-        if (value.getClass() == String.class) {
+        if (value == null) {
+            p.setValue(null);
+        } else if (value.getClass() == String.class) {
             p.setValue(((SimpleType) type).getPrimitiveType().decode(
                     (String) value));
         } else {

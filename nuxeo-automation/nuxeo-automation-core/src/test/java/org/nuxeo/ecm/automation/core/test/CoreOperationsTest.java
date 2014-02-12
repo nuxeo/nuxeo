@@ -705,4 +705,38 @@ public class CoreOperationsTest {
         }
     }
 
+    @Test
+    // non regression test for NXP-13748
+    public void testSetPropertyNullValue() throws Exception {
+        src.setPropertyValue("dc:description", "foo");
+        src.setPropertyValue("dc:format", "bar");
+        src.setPropertyValue("dc:language", "baz");
+        session.saveDocument(src);
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+
+        // check values before
+        assertEquals("Source", src.getPropertyValue("dc:title"));
+        assertEquals("foo", src.getPropertyValue("dc:description"));
+        assertEquals("bar", src.getPropertyValue("dc:format"));
+        assertEquals("baz", src.getPropertyValue("dc:language"));
+
+        // run the chain
+        OperationChain chain = new OperationChain("testChain");
+        chain.add(FetchContextDocument.ID);
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
+                "value", null);
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:format").set(
+                "value", "expr:empty");
+        chain.add(SetDocumentProperty.ID).set("xpath", "dc:language").set(
+                "value", "expr:null");
+        DocumentModel out = (DocumentModel) service.run(ctx, chain);
+
+        // check values after
+        assertEquals("Source", out.getPropertyValue("dc:title"));
+        assertEquals(null, out.getPropertyValue("dc:description"));
+        assertEquals("", out.getPropertyValue("dc:format"));
+        assertEquals(null, out.getPropertyValue("dc:language"));
+    }
+
 }
