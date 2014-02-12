@@ -5,14 +5,18 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core">
 
-  <p>#{messages['label.themes.management.description']}</p>
-  <div class="warningFeedback">
+  <div class="processMessage completeInfo">
+    <h:outputText escape="false"
+      value="#{messages['label.themes.management.description']}" />
+  </div>
+  <div class="processMessage completeWarning">
     <h:outputText escape="false"
       value="#{messages['label.themes.management.migrationWarning']}" />
   </div>
   <h:form>
     <h:commandLink action="#{themeEditorAction.startEditor}"
-      value="#{messages['label.themes.management.editor']}"/>
+      value="#{messages['label.themes.management.editor']}"
+      styleClass="button"/>
   </h:form>
 
 </div>

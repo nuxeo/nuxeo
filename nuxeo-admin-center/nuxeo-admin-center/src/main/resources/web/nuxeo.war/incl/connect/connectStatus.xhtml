@@ -14,12 +14,10 @@
 
     <h:panelGroup rendered="#{!registredConnectInstance}">
 
-      <div class="loginInfos">
-        <p class="connectNotRegistered">
+      <div class="processMessage completeInfo">
           #{messages['connect.message.notregistred']} <a
             href="https://doc.nuxeo.com/x/l4FH" class="connectLink"
             target="NuxeoConnectSite">#{messages['connect.message.discoverconnect']}</a>
-        </p>
       </div>
 
       <table class="login">
@@ -224,14 +222,14 @@
 
       <c:if test="#{!connectStatus.status.isError()}">
 
-        <div class="infoMessage">#{messages['connect.message.registred']}</div>
+        <div class="processMessage completeSuccess">#{messages['connect.message.registred']}</div>
 
         <h3>
           <h:outputText
             value="#{messages['label.nuxeo.connect.registration.summary.title']}" />
         </h3>
 
-        <table class="dataInput">
+        <table class="dataTable">
           <tr>
             <td class="labelColumn"><h:outputText
                 value="#{messages['label.nuxeo.connect.contractStatus']}" /></td>
@@ -242,7 +240,7 @@
           <tr>
             <td class="labelColumn"><h:outputText
                 value="#{messages['label.nuxeo.connect.contractEndDate']}" /></td>
-            <td><h:outputText value="#{connectStatus.status.endDate}" /></td>
+            <td><h:outputText value="#{connectStatus.status.endDate}" styleClass="label label-warning"/></td>
           </tr>
           <tr>
             <td class="labelColumn"><h:outputText
@@ -297,7 +295,7 @@
       </c:if>
       <c:if test="#{connectStatus.status.isError()}">
         <br />
-        <div class="warningMessage">
+        <div class="processMessage completeWarning">
           #{messages['connect.message.registred.problem']}</div>
         <br />
         <h:form>

@@ -30,10 +30,8 @@
         <td class="adminContentColumn">
 
           <c:if test="#{adminViews.productionServer}">
-            <div class="warningFeedback">
-              <div class="processMessage completeWarning">
-                #{messages['label.admin.productionWarning']}
-              </div>
+            <div class="processMessage completeWarning">
+              #{messages['label.admin.productionWarning']}
             </div>
           </c:if>
 
@@ -41,7 +39,7 @@
             layout="block"
             ajaxRendered="true">
             <c:if test="#{setupRequiresRestart}">
-              <div class="warningFeedback">
+              <div class="processMessage completeWarning">
                 <h:form id="restartRequiredForm">
                   <h:outputText value="#{messages['label.setup.restartNeeded']} " />
                   <h:commandButton onclick="return confirmRestart();"
