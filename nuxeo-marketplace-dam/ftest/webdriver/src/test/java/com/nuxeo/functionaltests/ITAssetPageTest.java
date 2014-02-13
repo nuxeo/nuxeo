@@ -76,7 +76,7 @@ public class ITAssetPageTest extends AbstractDAMTest {
         page.checkDocTitle("One File");
 
         page.getContextualActions().moreButton.click();
-        driver.findElement(By.xpath("//img[@title=\"DAM view\"]")).click();
+        driver.findElement(By.xpath("//img[@alt=\"DAM view\"]")).click();
 
         DAMAssetPage assetPage = getDAMassetPage();
         assetPage.checkAssetTitle("One File");

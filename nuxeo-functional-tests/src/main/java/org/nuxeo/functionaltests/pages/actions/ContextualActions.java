@@ -26,13 +26,13 @@ import org.openqa.selenium.support.FindBy;
  */
 public class ContextualActions extends AbstractPage {
 
-    @FindBy(xpath = "//img[@title=\"Lock\"]")
+    @FindBy(xpath = "//img[@alt=\"Lock\"]")
     public WebElement lockButton;
 
-    @FindBy(xpath = "//img[@title=\"Follow this document\"]")
+    @FindBy(xpath = "//img[@alt=\"Follow this document\"]")
     public WebElement followButton;
 
-    @FindBy(xpath = "//img[@title=\"Add to worklist\"]")
+    @FindBy(xpath = "//img[@alt=\"Add to worklist\"]")
     public WebElement addToWorklistButton;
 
     @FindBy(id = "nxw_permalinkAction_form:nxw_documentActionsUpperButtons_permalinkAction_subview:nxw_documentActionsUpperButtons_permalinkAction_link")
@@ -46,10 +46,10 @@ public class ContextualActions extends AbstractPage {
     @FindBy(xpath = "//div[@id=\"nxw_documentActionsUpperButtons_panel\"]/div/ul/li")
     public WebElement moreButton;
 
-    @FindBy(xpath = "//img[@title=\"Export options\"]")
+    @FindBy(xpath = "//img[@alt=\"Export options\"]")
     public WebElement exportButton;
 
-    @FindBy(xpath = "//img[@title=\"Download\"]")
+    @FindBy(xpath = "//img[@alt=\"Download\"]")
     public WebElement downloadButton;
 
     public ContextualActions(WebDriver driver) {
