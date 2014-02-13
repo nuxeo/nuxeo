@@ -29,7 +29,7 @@
   <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
     <nxu:inputList value="#{field}" model="model">
       <nxu:set var="info"
-        value="#{userSuggestionActions.getUserInfo(model.rowData)}">
+        value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(model.rowData) : userSuggestionActions.getUserInfo(model.rowData)}">
         <nxu:set var="hideIcon" value="true">
           <ui:include src="user_group_display_template.xhtml" />
         </nxu:set>
@@ -44,7 +44,7 @@
       rendered="#{not empty field}">
       <h:column>
         <nxu:set var="info"
-          value="#{userSuggestionActions.getUserInfo(item)}"
+          value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(item) : userSuggestionActions.getUserInfo(item)}"
           cache="true">
           <ui:include src="user_group_display_template.xhtml" />
         </nxu:set>
@@ -63,7 +63,7 @@
         rendered="#{not empty field}">
         <h:column>
           <nxu:set var="info"
-            value="#{userSuggestionActions.getUserInfo(item)}">
+            value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(item) : userSuggestionActions.getUserInfo(item)}">
             <ui:include src="user_group_display_template.xhtml" />
           </nxu:set>
         </h:column>
