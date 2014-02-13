@@ -909,6 +909,9 @@
             <layout name="singleUserSuggestion_widget_type_properties_view">
               <rows>
                 <row>
+                  <widget category="widgetTypeConf">userSuggestion_prefixed</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">userSuggestion_firstLabelField
                   </widget>
                 </row>
@@ -1036,6 +1039,9 @@
           <layouts mode="view">
             <layout name="multipleUsersSuggestion_widget_type_properties_view">
               <rows>
+                <row>
+                  <widget category="widgetTypeConf">userSuggestion_prefixed</widget>
+                </row>
                 <row>
                   <widget category="widgetTypeConf">userSuggestionSearchType</widget>
                 </row>
