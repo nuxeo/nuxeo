@@ -236,6 +236,10 @@ a.ambiance-close {
   margin: .3em 0;
   text-indent: 1.7em }
 
+/* Tipsy tooltips */
+.tipsy-inner {
+  padding: 5px 8px 4px }
+
 /* Visible lists style, as lists are invisible in Nuxeo by default */
 ul.visibleList {
    list-style: disc outside none;
