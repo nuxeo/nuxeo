@@ -56,8 +56,8 @@ public class WorkflowHomePage extends AbstractPage {
 
     public boolean taskExistsOnTasksDashboard(String taskName) {
         WebElement taskNameEl = Locator.findElementWithTimeout(
-            By.xpath("//span[contains(@id, 'nxw_routing_task_name')]"),
-            userTasksPanel);
+                By.xpath("//span[contains(@id, 'nxw_routing_task_name')]"),
+                userTasksPanel);
         return taskName.equals(taskNameEl.getText());
     }
 
@@ -107,11 +107,9 @@ public class WorkflowHomePage extends AbstractPage {
      * @since 5.9.1
      */
     public TaskFancyBoxFragment showTaskFancyBox(String taskAction) {
-        WebElement relatedTasksActions = findElementWithTimeout(By.xpath("//div[contains(@id, 'nxw_doc_task_related_actions_panel')]"));
-        // click on More
-        relatedTasksActions.findElement(
-                By.cssSelector("ul.actionList li:nth-of-type(1)")).click();
-        relatedTasksActions.findElement(By.linkText(taskAction)).click();
+        driver.findElement(
+                By.xpath(String.format(
+                        "//input[@type='button' and @value='%s']", taskAction))).click();
         WebElement element = this.getFancyBoxContent();
         return getWebFragment(element,
                 WorkflowHomePage.TaskFancyBoxFragment.class);
