@@ -25,6 +25,6 @@
     styleClass="sticker" />
   <h:outputText value="#{messages['label.document.lock']}"
     title="#{messages['label.summary.by']} #{nxu:userFullName(currentDocumentLockDetails['document.locker'])}, #{messages['label.summary.the']} #{currentDocumentLockDetails['document.lock.created'].time}"
-    styleClass="sticker warningLabel"
+    styleClass="sticker warningLabel tipsyShow"
     rendered="#{!empty currentDocumentLockDetails}" />
 </div>
