@@ -23,6 +23,7 @@ import java.io.Serializable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -242,6 +243,7 @@ public class TestQuotaViaAutomation {
     }
 
     @Test
+    @Ignore
     public void testSetQuotasViaAutomation() throws Exception {
         addContent();
 
