@@ -148,8 +148,8 @@ public class OperationServiceImpl implements AutomationService {
         try {
             Object input = ctx.getInput();
             Class<?> inputType = input == null ? Void.TYPE : input.getClass();
+            tracer.onChain(operationType);
             if (ChainTypeImpl.class.isAssignableFrom(operationType.getClass())) {
-                tracer.onChain(operationType);
                 CacheKey cacheKey = new CacheKey(operationType.getId(),
                         inputType.getName());
                 chain = compiledChains.get(cacheKey);
