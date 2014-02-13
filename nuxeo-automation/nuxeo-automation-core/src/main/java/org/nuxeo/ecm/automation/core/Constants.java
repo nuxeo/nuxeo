@@ -38,6 +38,8 @@ public class Constants {
 
     public static final String T_INTEGER = "integer"; // integer number
 
+    public static final String T_LONG = "long"; // long number
+
     // injectable as Long
 
     public static final String T_FLOAT = "float"; // float number injectable

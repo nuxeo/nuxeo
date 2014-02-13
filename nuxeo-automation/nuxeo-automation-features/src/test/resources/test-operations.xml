@@ -20,5 +20,17 @@
       	<param type="boolean" name="isolate">false</param>
       </operation>
     </chain>
+    <chain id="testChainParameterType">
+      <operation id="Document.PageProvider">
+        <param type="string" name="providerName">simpleProviderTest1</param>
+        <!-- testing if integer parameter is well registered in automation
+        could be a long one and adapters can handle it as well -->
+        <param type="integer" name="pageSize">1</param>
+      </operation>
+      <operation id="Context.RunOperationOnProvider">
+        <param type="string" name="id">testChain</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+    </chain>
   </extension>
 </component>

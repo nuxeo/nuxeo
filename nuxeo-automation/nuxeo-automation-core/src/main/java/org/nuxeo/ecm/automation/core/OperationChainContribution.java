@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.automation.core.Constants.T_DOCUMENT;
 import static org.nuxeo.ecm.automation.core.Constants.T_DOCUMENTS;
 import static org.nuxeo.ecm.automation.core.Constants.T_FLOAT;
 import static org.nuxeo.ecm.automation.core.Constants.T_INTEGER;
+import static org.nuxeo.ecm.automation.core.Constants.T_LONG;
 import static org.nuxeo.ecm.automation.core.Constants.T_PROPERTIES;
 import static org.nuxeo.ecm.automation.core.Constants.T_RESOURCE;
 import static org.nuxeo.ecm.automation.core.Constants.T_STRING;
@@ -176,6 +177,11 @@ public class OperationChainContribution {
                         break;
                     case 'i':
                         if (T_INTEGER.equals(type)) {
+                            val = Integer.parseInt(param.value);
+                        }
+                        break;
+                    case 'l':
+                        if (T_LONG.equals(type)) {
                             val = Long.valueOf(param.value);
                         }
                         break;

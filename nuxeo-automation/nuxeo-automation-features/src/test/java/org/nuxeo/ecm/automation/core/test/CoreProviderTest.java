@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
@@ -236,6 +237,17 @@ public class CoreProviderTest {
         // number of pages should not be set !!!
         assertEquals(0, result.getNumberOfPages());
 
+    }
+
+    /**
+     * Covering the use case when contributing integer parameter value in xml
+     */
+    @Test
+    public void testParameterType() throws Exception {
+        OperationContext context = new OperationContext(session);
+        service.run(context, "testChainParameterType");
+        DocumentModelList list = (DocumentModelList) context.get("result");
+        assertEquals(3, list.size());
     }
 
 }
