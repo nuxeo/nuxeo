@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -33,6 +34,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 public class DocumentRoutingEngineServiceImpl extends DefaultComponent
         implements DocumentRoutingEngineService {
+
+    public static final String WORKFLOW_NAME_EVENT_PROPERTY_KEY = "wfName";
 
     @Override
     public void start(DocumentRoute routeInstance,
@@ -68,8 +71,10 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
         }
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put(WORKFLOW_NAME_EVENT_PROPERTY_KEY, routeInstance.getName());
         EventFirer.fireEvent(session,
-                routeInstance.getAttachedDocuments(session), null,
+                routeInstance.getAttachedDocuments(session), properties,
                 DocumentRoutingConstants.Events.workflowCanceled.name());
     }
 }
