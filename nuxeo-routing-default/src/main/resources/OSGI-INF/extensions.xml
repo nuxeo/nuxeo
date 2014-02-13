@@ -5,6 +5,11 @@
   <extension target="org.nuxeo.runtime.services.resource.ResourceService" point="resources">
     <resource name="NRD-PR-TasksInfo">data/templates/NRD-PR-TasksInfo</resource>
   </extension>
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="event-handlers">
+    <handler chainId="cancelWorkflow">
+      <event>workflowCanceled</event>
+    </handler>
+  </extension>
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="chains">
     <chain id="NRD-AC-PR-ChooseParticipants-Output">
       <operation id="Context.FetchDocument"/>
@@ -89,6 +94,17 @@
       <operation id="Context.SetWorkflowVar">
         <param type="string" name="name">review_result</param>
         <param type="object" name="value">expr:This.get(0).getString()</param>
+      </operation>
+    </chain>
+    <chain id="cancelWorkflow">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Context.SetVar">
+        <param type="string" name="name">isParallelWF</param>
+        <param type="object" name="value">expr:Event.context.getProperty("wfName").equals("wf.parallelDocumentReview.ParallelDocumentReview")?true:false</param>
+      </operation>
+      <operation id="Context.RunOperation">
+        <param type="string" name="id">expr:isParallelWF?"Document.Unlock":"voidChain"</param>
+        <param type="boolean" name="isolate">false</param>
       </operation>
     </chain>
     <chain id="initInitiatorComment">
