@@ -462,6 +462,81 @@
       </rows>
     </layout>
 
+    <layout name="routing_task_actions_layout">
+      <templates>
+        <template mode="any">/layouts/layout_grid_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="gridRowStyleClass">floatR</property>
+          </properties>
+          <widget>go_back_to_tasks_view_widget</widget>
+          <widget>delegate_task_widget</widget>
+          <widget>reassign_task_widget</widget>
+        </row>
+      </rows>
+      <widget name="go_back_to_tasks_view_widget" type="documentActionWithForms">
+        <fields>
+          <field>#{routingTaskActions.getTaskInfo(layoutValue,
+            true)}
+          </field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="actionId">#{webActions.getActionForDocument("go_back_to_tasks_view",null,
+            false)}
+          </property>
+          <property name="styleClass">smallButton</property>
+          <property name="actionsDisplay">buttons</property>
+          <property name="useAjaxForm">true</property>
+          <property name="ignoreTemplateProperty">true</property>
+          <property name="actionContextDocument">#{layoutValue.getDocument()}
+          </property>
+        </properties>
+      </widget>
+      <widget name="reassign_task_widget" type="documentActionWithForms">
+        <fields>
+          <field>#{routingTaskActions.getTaskInfo(layoutValue,
+            true)}
+          </field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="actionId">#{webActions.getActionForDocument("reassignTask",null,
+            false)}
+          </property>
+          <property name="styleClass">smallButton</property>
+          <property name="actionsDisplay">buttons</property>
+          <property name="useAjaxForm">true</property>
+          <property name="ignoreTemplateProperty">true</property>
+          <property name="actionContextDocument">#{layoutValue.getDocument()}
+          </property>
+        </properties>
+        <widgetModes>
+          <mode value="any">#{routingTaskActions.canBeReassign()?'edit':'hidden'}
+          </mode>
+        </widgetModes>
+      </widget>
+      <widget name="delegate_task_widget" type="documentActionWithForms">
+        <fields>
+          <field>#{routingTaskActions.getTaskInfo(layoutValue,
+            true)}
+          </field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="actionId">#{webActions.getActionForDocument("delegateTask",null,
+            false)}
+          </property>
+          <property name="styleClass">smallButton</property>
+          <property name="actionsDisplay">buttons</property>
+          <property name="useAjaxForm">true</property>
+          <property name="ignoreTemplateProperty">true</property>
+          <property name="actionContextDocument">#{layoutValue.getDocument()}
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
     <layout name="routing_task_resolution_layout">
       <templates>
         <template mode="any">/layouts/layout_grid_template.xhtml
@@ -470,8 +545,8 @@
       <rows>
         <row>
           <properties mode="any">
-            <property name="nxl_gridStyleClass_0">gridStyle10</property>
-            <property name="nxl_gridStyleClass_1">gridStyle2</property>
+            <property name="nxl_gridStyleClass_0">gridStyle7</property>
+            <property name="nxl_gridStyleClass_1">gridStyle5</property>
           </properties>
           <widget>container_0</widget>
           <widget>container_01</widget>
@@ -524,25 +599,12 @@
         </controls>
         <properties mode="any">
           <property name="hideSubLabels">true</property>
+          <property name="styleClass">horizontal_block</property>
         </properties>
         <subWidgets>
-          <widget name="task_related_actions" type="documentActionsWithForms">
-            <fields>
-              <field>#{routingTaskActions.getTaskInfo(layoutValue,
-                true)}
-              </field>
-            </fields>
-            <properties widgetMode="view">
-              <property name="category">TASK_ADDITIONAL_ACTIONS</property>
-              <property name="styleClass">globalActionBar</property>
-              <property name="subStyleClass">contextActions</property>
-              <property name="overallDisplay">horizontal_block</property>
-              <property name="actionStyleClass">button</property>
-              <property name="actionsDisplay">buttons</property>
-              <property name="useAjaxForm">true</property>
-              <property name="ignoreTemplateProperty">true</property>
-              <property name="maxActionsNumber">1</property>
-              <property name="actionContextDocument">#{layoutValue.getDocument()}
+          <widget name="task_actions" type="layout">
+            <properties mode="any">
+              <property name="name">routing_task_actions_layout
               </property>
             </properties>
           </widget>

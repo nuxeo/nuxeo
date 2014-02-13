@@ -158,7 +158,6 @@
    <action id="reassignTask" order="100" label="label.workflow.task.reassign"
       type="fancybox">
       <category>TASK_ADDITIONAL_ACTIONS</category>
-      <filter-id>canBeReassign</filter-id>
       <properties>
         <property name="include">/incl/tasks/task_reassignment_box.xhtml</property>
         <property name="autoDimensions">true</property>
@@ -286,12 +285,6 @@
        <condition>
         #{routingActions.getCurrentWorkflowInitiator().equals(currentUser.getName())}
        </condition>
-      </rule>
-    </filter>
-
-    <filter id="canBeReassign">
-      <rule grant="true">
-        <condition>#{routingTaskActions.canBeReassign()}</condition>
       </rule>
     </filter>
 
