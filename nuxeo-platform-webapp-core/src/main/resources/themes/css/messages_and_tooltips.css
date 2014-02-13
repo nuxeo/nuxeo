@@ -237,6 +237,9 @@ a.ambiance-close {
   text-indent: 1.7em }
 
 /* Tipsy tooltips */
+.tipsy {
+  padding: 5px }
+
 .tipsy-inner {
   padding: 5px 8px 4px }
 
