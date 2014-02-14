@@ -10,9 +10,9 @@
 	
 
 	<groupId>org.nuxeo</groupId>
-	<artifactId>easyshare</artifactId>
+	<artifactId>easyshare-plugin</artifactId>
 	<version>1.0-SNAPSHOT</version>
-	<name>easyshare</name>
+	<name>easyshare-plugin</name>
 	<description />
 	<dependencies>
 		<dependency>
