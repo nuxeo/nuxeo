@@ -8,15 +8,15 @@
       <include>web/nuxeo.war/**</include>
     </unzip>
 
-    <mkdir path="nuxeo.collections.tmp" />
-    <unzip from="${bundle.fileName}" to="nuxeo.collections.tmp" />
+    <mkdir path="nuxeo.collections.jsf.tmp" />
+    <unzip from="${bundle.fileName}" to="nuxeo.collections.jsf.tmp" />
     <append
-      from="nuxeo.collections.tmp/OSGI-INF/l10n/messages_fr.properties"
+      from="nuxeo.collections.jsf.tmp/OSGI-INF/l10n/messages_fr.properties"
       to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
     <append
-      from="nuxeo.collections.tmp/OSGI-INF/l10n/messages_en.properties"
+      from="nuxeo.collections.jsf.tmp/OSGI-INF/l10n/messages_en.properties"
       to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
-    <delete path="nuxeo.collections.tmp" />
+    <delete path="nuxeo.collections.jsf.tmp" />
   </install>
 
 </fragment>
