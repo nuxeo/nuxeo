@@ -553,7 +553,6 @@
         </row>
         <row>
           <properties mode="any">
-            <property name="gridRowStyleClass">simpleBox</property>
             <property name="nxl_gridStyleClass_0">gridStyle5</property>
             <property name="nxl_gridStyleClass_1">gridStyle7</property>
           </properties>
@@ -656,8 +655,7 @@
           <control name="requireSurroundingForm">true</control>
         </controls>
         <properties widgetMode="any">
-          <property name="styleClass">simpleBox fullWidth focusColumn
-          </property>
+          <property name="styleClass">grayBox</property>
           <property name="hideSubLabels">true</property>
         </properties>
         <subWidgetRefs>
