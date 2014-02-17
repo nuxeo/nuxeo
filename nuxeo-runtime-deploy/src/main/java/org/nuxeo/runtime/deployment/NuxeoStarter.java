@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Florent Guillaume
+ *     Julien Carsique
  */
 package org.nuxeo.runtime.deployment;
 
@@ -25,7 +26,10 @@ import static org.nuxeo.common.Environment.NUXEO_TMP_DIR;
 import static org.nuxeo.common.Environment.NUXEO_WEB_DIR;
 import static org.nuxeo.common.Environment.TOMCAT_HOST;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -65,11 +69,18 @@ public class NuxeoStarter implements ServletContextListener {
     /** Default location of the home in the server current directory. */
     private static final String DEFAULT_HOME = "nuxeo";
 
-    protected final Map<String, Object> env = new HashMap<String, Object>();
+    /**
+     * Name of the file listing Nuxeo bundles. If existing, this file will be
+     * used at start, else {@code "/WEB-INF/lib/"} will be scanned.
+     *
+     * @since 5.9.3
+     * @see #findBundles(ServletContext)
+     */
+    public static final String NUXEO_BUNDLES_LIST = ".nuxeo-bundles";
 
-    protected List<File> bundleFiles = new ArrayList<File>();
+    protected final Map<String, Object> env = new HashMap<>();
 
-    protected String webinflib;
+    protected List<File> bundleFiles = new ArrayList<>();
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
@@ -115,18 +126,34 @@ public class NuxeoStarter implements ServletContextListener {
     }
 
     protected void findBundles(ServletContext servletContext) throws Exception {
-        @SuppressWarnings("unchecked")
-        Set<String> ctxpaths = servletContext.getResourcePaths("/WEB-INF/lib/");
-        for (String ctxpath : ctxpaths) {
-            if (!ctxpath.endsWith(".jar")) {
-                continue;
+        InputStream bundlesListStream = servletContext.getResourceAsStream("/WEB-INF/"
+                + NUXEO_BUNDLES_LIST);
+        if (bundlesListStream != null) {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(bundlesListStream))) {
+                String bundleName;
+                while ((bundleName = reader.readLine()) != null) {
+                    String path = servletContext.getRealPath("/WEB-INF/lib/"
+                            + bundleName);
+                    if (path == null) {
+                        continue;
+                    }
+                    bundleFiles.add(new File(path));
+                }
             }
-            String path = servletContext.getRealPath(ctxpath);
-            if (path == null) {
-                continue;
+        }
+        if (bundleFiles.isEmpty()) { // Fallback on directory scan
+            Set<String> ctxpaths = servletContext.getResourcePaths("/WEB-INF/lib/");
+            for (String ctxpath : ctxpaths) {
+                if (!ctxpath.endsWith(".jar")) {
+                    continue;
+                }
+                String path = servletContext.getRealPath(ctxpath);
+                if (path == null) {
+                    continue;
+                }
+                bundleFiles.add(new File(path));
             }
-            bundleFiles.add(new File(path));
-            webinflib = path.substring(0, path.lastIndexOf('/'));
         }
     }
 
@@ -145,7 +172,7 @@ public class NuxeoStarter implements ServletContextListener {
         }
         // default env values
         if (!env.containsKey(NUXEO_CONFIG_DIR)) {
-            String webinf = webinflib.substring(0, webinflib.lastIndexOf('/'));
+            String webinf = servletContext.getRealPath("/WEB-INF");
             env.put(NUXEO_CONFIG_DIR, webinf);
         }
         if (!env.containsKey(NUXEO_RUNTIME_HOME)) {
