@@ -43,6 +43,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
@@ -261,7 +262,16 @@ public class PublishActionsBean extends AbstractPublishActions implements
         }
         navigationContext.invalidateCurrentDocument();
         currentPublicationTree = null;
+        resetCache();
         return null;
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    protected void resetCache() {
+        Contexts.getEventContext().remove("availablePublicationTrees");
+        Contexts.getEventContext().remove("publishedDocuments");
     }
 
     public void setCurrentPublicationTreeNameForPublishing(
@@ -357,6 +367,7 @@ public class PublishActionsBean extends AbstractPublishActions implements
         // raise event without the container document as user may not have read
         // rights on it
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
+        resetCache();
         return null;
     }
 

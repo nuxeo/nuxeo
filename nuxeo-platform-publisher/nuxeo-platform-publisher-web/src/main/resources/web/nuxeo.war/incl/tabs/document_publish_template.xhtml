@@ -8,7 +8,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:rich="http://richfaces.org/rich" class="menu">
 
-  <a4j:outputPanel ajaxRendered="true" layout="block">
+  <a4j:outputPanel ajaxRendered="false" layout="block">
     <a4j:form ajaxSubmit="true" id="publishTreeForm">
 
       <h:outputText value="#{messages['label.sections.not.defined']}"
@@ -85,10 +85,10 @@
       </h:panelGroup>
 
 
-      <a4j:outputPanel id="publishingInfoList" layout="block"
-        rendered="#{publishActions.currentPublicationTreeForPublishing != null and !empty publishActions.publishedDocuments}">
+      <a4j:outputPanel id="publishingInfoList" layout="block">
 
-        <nxu:dataTable value="#{publishActions.publishedDocuments}"
+        <nxu:dataTable value="#{publishedDocuments}"
+          rendered="#{publishActions.currentPublicationTreeForPublishing != null and !empty publishedDocuments}"
           var="publishedDocument" preserveSort="true"
           preserveDataModel="false" rowClasses="dataRowEven,dataRowOdd"
           sortable="false" styleClass="dataList">
@@ -151,7 +151,6 @@
             </a4j:commandLink>
           </h:column>
         </nxu:dataTable>
-
       </a4j:outputPanel>
     </a4j:form>
   </a4j:outputPanel>
