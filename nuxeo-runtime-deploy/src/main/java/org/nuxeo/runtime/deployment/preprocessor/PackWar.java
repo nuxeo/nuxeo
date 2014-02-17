@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,10 +18,13 @@
  */
 package org.nuxeo.runtime.deployment.preprocessor;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,27 +71,23 @@ public class PackWar {
     private static final List<String> MISSING_LIBS = Arrays.asList( //
             // WSS
             "nuxeo-generic-wss-front", //
-            // dependencies of above
+            // Commons and logging
             "log4j", //
             "commons-logging", //
             "commons-lang", //
-            // JDBC drivers
-            "derby", //
-            "h2", //
-            "ojdbc", //
-            "postgresql", //
-            "mysql-connector-java", //
+            "jcl-over-slf4j", //
+            "slf4j-api", //
+            "slf4j-log4j12", //
+            "tomcat-juli-adapters", //
             // JDBC
+            "derby", // Derby
+            "h2", // H2
+            "ojdbc", // Oracle
+            "postgresql", // PostgreSQL
+            "mysql-connector-java", // MySQL
             "nuxeo-core-storage-sql-extensions", // for Derby/H2
             "lucene" // for H2
     );
-
-    private static final List<String> ENDORSED_LIBS = Arrays.asList( //
-            "jaxb-api", //
-            "jaxws-api" //
-    );
-
-    private static final String ZIP_ENDORSED = "endorsed/";
 
     private static final String ZIP_LIB = "lib/";
 
@@ -109,7 +108,7 @@ public class PackWar {
 
     private static final String README_END = "\n\n" //
             + "Make sure that the 'url' attribute above is correct.\n" //
-            + "Note that the following file also contains database configuration:\n" //
+            + "Note that the following file can also contains database configuration:\n" //
             + "\n" //
             + "  webapps/nuxeo/WEB-INF/default-repository-config.xml\n" //
             + "\n" //
@@ -169,8 +168,7 @@ public class PackWar {
 
     protected void runTemplatePreprocessor() throws Exception {
         if (System.getProperty(Environment.NUXEO_HOME) == null) {
-            System.setProperty(Environment.NUXEO_HOME,
-                    tomcat.getAbsolutePath());
+            System.setProperty(Environment.NUXEO_HOME, tomcat.getAbsolutePath());
         }
         if (System.getProperty(ConfigurationGenerator.NUXEO_CONF) == null) {
             System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(
@@ -212,6 +210,10 @@ public class PackWar {
                     zout);
             zipTree(zipWebappsNuxeo + ZIP_WEBINF, new File(nxserver, "config"),
                     false, zout);
+            File nuxeoBundles = listNuxeoBundles();
+            zipFile(zipWebappsNuxeo + ZIP_WEBINF
+                    + NuxeoStarter.NUXEO_BUNDLES_LIST, nuxeoBundles, zout, null);
+            nuxeoBundles.delete();
             zipTree(zipWebappsNuxeo + ZIP_WEBINF_LIB, new File(nxserver,
                     "bundles"), false, zout);
             zipTree(zipWebappsNuxeo + ZIP_WEBINF_LIB,
@@ -219,8 +221,6 @@ public class PackWar {
             zipLibs(zipWebappsNuxeo + ZIP_WEBINF_LIB, new File(tomcat, "lib"),
                     MISSING_WEBINF_LIBS, zout);
             zipLibs(ZIP_LIB, new File(tomcat, "lib"), MISSING_LIBS, zout);
-            zipLibs(ZIP_ENDORSED, new File(tomcat, "endorsed"), ENDORSED_LIBS,
-                    zout);
             // add log4j.xml
             zipFile(ZIP_LIB + "log4j.xml", newFile(tomcat, "lib/log4j.xml"),
                     zout, null);
@@ -228,6 +228,29 @@ public class PackWar {
             zout.finish();
             zout.close();
         }
+    }
+
+    /**
+     * @throws IOException
+     * @since 5.9.3
+     */
+    private File listNuxeoBundles() throws IOException {
+        File nuxeoBundles = File.createTempFile(
+                NuxeoStarter.NUXEO_BUNDLES_LIST, "");
+        File[] bundles = new File(nxserver, "bundles").listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".jar");
+            }
+        });
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(
+                nuxeoBundles))) {
+            for (File bundle : bundles) {
+                writer.write(bundle.getName());
+                writer.newLine();
+            }
+        }
+        return nuxeoBundles;
     }
 
     protected static File newFile(File base, String path) {
@@ -298,8 +321,10 @@ public class PackWar {
                 FileProcessor processor;
                 if (name.equals(zipWebappsNuxeo + ZIP_WEBINF + "web.xml")) {
                     processor = WebXmlProcessor.INSTANCE;
-                } else if (name.equals(zipWebappsNuxeo + ZIP_WEBINF + "opensocial.properties")) {
-                    processor = new PropertiesFileProcessor("res://config/", zipWebappsNuxeo + ZIP_WEBINF);
+                } else if (name.equals(zipWebappsNuxeo + ZIP_WEBINF
+                        + "opensocial.properties")) {
+                    processor = new PropertiesFileProcessor("res://config/",
+                            zipWebappsNuxeo + ZIP_WEBINF);
                 } else {
                     processor = null;
                 }
@@ -333,7 +358,7 @@ public class PackWar {
 
         protected String replacement;
 
-        public PropertiesFileProcessor(String target, String replacement){
+        public PropertiesFileProcessor(String target, String replacement) {
             this.target = target;
             this.replacement = replacement;
         }
@@ -342,9 +367,8 @@ public class PackWar {
         public void process(File file, OutputStream out) throws IOException {
             FileInputStream in = new FileInputStream(file);
             try {
-                @SuppressWarnings("unchecked")
                 List<String> lines = IOUtils.readLines(in, "UTF-8");
-                List<String> outLines = new ArrayList<String>();
+                List<String> outLines = new ArrayList<>();
                 for (String line : lines) {
                     outLines.add(line.replace(target, replacement));
                 }
