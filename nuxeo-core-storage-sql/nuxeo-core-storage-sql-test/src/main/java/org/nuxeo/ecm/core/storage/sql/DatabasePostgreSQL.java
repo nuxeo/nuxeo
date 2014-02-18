@@ -107,4 +107,9 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         return true;
     }
 
+    @Override
+    public boolean supportsSequenceId() {
+        return true;
+    }
+
 }

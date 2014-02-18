@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -42,6 +43,12 @@ public abstract class DatabaseHelper {
     public static DatabaseHelper DATABASE;
 
     public static final String DB_CLASS_NAME_BASE = "org.nuxeo.ecm.core.storage.sql.Database";
+
+    /**
+     * Maximum number of times we retry a connection if the server says it's
+     * overloaded.
+     */
+    private static final int MAX_CONNECTION_TRIES = 5;
 
     protected static final Class<? extends RepositoryFactory> defaultRepositoryFactory = SQLRepositoryFactory.class;
 
@@ -121,6 +128,43 @@ public abstract class DatabaseHelper {
         // System.out used on purpose, don't remove
         System.out.println(DatabaseHelper.class.getSimpleName() + ": " + msg);
         log.info(msg);
+    }
+
+    /**
+     * Gets a database connection, retrying if the server says it's overloaded.
+     *
+     * @since 5.9.3
+     */
+    public static Connection getConnection(String url, String user,
+            String password) throws SQLException {
+        for (int tryNo = 1;; tryNo++) {
+            try {
+                return DriverManager.getConnection(url, user, password);
+            } catch (SQLException e) {
+                if (tryNo >= MAX_CONNECTION_TRIES) {
+                    throw e;
+                }
+                if (e.getErrorCode() != 12519) {
+                    throw e;
+                }
+                // Oracle: Listener refused the connection with the
+                // following error: ORA-12519, TNS:no appropriate
+                // service handler found
+                // SQLState = "66000"
+                // Happens when connections are open too fast (unit tests)
+                // -> retry a few times after a small delay
+                log.warn(String.format(
+                        "Connections open too fast, retrying in %ds: %s",
+                        tryNo, e.getMessage().replace("\n", " ")));
+                try {
+                    Thread.sleep(1000 * tryNo);
+                } catch (InterruptedException ie) {
+                    // restore interrupted status
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("interrupted");
+                }
+            }
+        }
     }
 
     /**
@@ -274,6 +318,15 @@ public abstract class DatabaseHelper {
     }
 
     public boolean supportsSoftDelete() {
+        return false;
+    }
+
+    /**
+     * Whether this database supports "sequence" as an id type.
+     *
+     * @since 5.9.3
+     */
+    public boolean supportsSequenceId() {
         return false;
     }
 

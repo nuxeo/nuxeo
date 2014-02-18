@@ -9,6 +9,7 @@
     <repository name="${nuxeo.test.vcs.repository}"
       factory="${nuxeo.test.vcs.repository-factory}">
       <repository sendInvalidationEvents="true">
+        <idType>${nuxeo.test.vcs.idtype}</idType>
         <schema>
           <field type="largetext">note</field>
           <field type="largetext">relatedtext</field>
