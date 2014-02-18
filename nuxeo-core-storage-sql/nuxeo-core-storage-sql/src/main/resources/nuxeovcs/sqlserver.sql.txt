@@ -707,29 +707,8 @@ CREATE CLUSTERED INDEX [hierarchy_read_acl_acl_id_idx] ON [dbo].[hierarchy_read_
 
 
 # -- Log modified document that require an aclr update
-#TEST:
-SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr_modified' AND TABLE_CATALOG = db_name();
-
-#IF: emptyResult
-CREATE TABLE aclr_modified (
-  id INT NOT NULL IDENTITY,
-  hierarchy_id ${idType},
-  is_new TINYINT
-)
-
-# add index
-#TEST:
-SELECT 1 FROM sys.indexes WHERE name = 'aclr_modified_is_new_idx';
-
-#IF: emptyResult
-CREATE INDEX [aclr_modified_is_new_idx] ON [dbo].[aclr_modified] ([is_new])
-
-#TEST:
-SELECT 1 FROM sys.indexes WHERE name = 'aclr_modified_id_idx';
-
-#IF: emptyResult
-CREATE CLUSTERED INDEX [aclr_modified_id_idx] ON [dbo].[aclr_modified] ([id])
-
+# -- Since 5.9.3 the aclr_modified table is replaced by a temporary table #aclr_modified created just after the connection is opened
+# -- CREATE TABLE #aclr_modified (id INT NOT NULL IDENTITY, hierarchy_id NVARCHAR(36) COLLATE DATABASE_DEFAULT, is_new TINYINT)
 
 #-- List of permission that grant the read access
 #TEST:
@@ -915,9 +894,9 @@ CREATE TRIGGER nx_trig_acls_modified ON [acls]
 AFTER INSERT, UPDATE, DELETE AS
 BEGIN
   SET NOCOUNT ON;
-  INSERT INTO aclr_modified (hierarchy_id, is_new)
+  INSERT INTO #aclr_modified (hierarchy_id, is_new)
     SELECT DISTINCT(id), 0 FROM inserted;
-  INSERT INTO aclr_modified (hierarchy_id, is_new)
+  INSERT INTO #aclr_modified (hierarchy_id, is_new)
     SELECT DISTINCT(id), 0 FROM deleted;
 END;
 
@@ -931,7 +910,7 @@ CREATE TRIGGER nx_trig_hierarchy_insert ON [hierarchy]
 AFTER INSERT AS
 BEGIN
   SET NOCOUNT ON;
-  INSERT INTO aclr_modified (hierarchy_id, is_new)
+  INSERT INTO #aclr_modified (hierarchy_id, is_new)
     SELECT DISTINCT(id), 1 FROM inserted
     WHERE isproperty = 0;
 END;
@@ -946,7 +925,7 @@ CREATE TRIGGER nx_trig_hierarchy_update ON [hierarchy]
 AFTER UPDATE AS
 BEGIN
   SET NOCOUNT ON;
-  INSERT INTO aclr_modified (hierarchy_id, is_new)
+  INSERT INTO #aclr_modified (hierarchy_id, is_new)
     SELECT DISTINCT(OLD.id), 0 FROM deleted OLD
       JOIN [inserted] NEW ON OLD.id = NEW.id
       WHERE NEW.isproperty = 0 AND OLD.parentid <> NEW.parentid;
@@ -1078,8 +1057,7 @@ BEGIN
   TRUNCATE TABLE aclr;
   TRUNCATE TABLE aclr_user;
   TRUNCATE TABLE aclr_user_map;
-  TRUNCATE TABLE hierarchy_read_acl;
-  TRUNCATE TABLE aclr_modified;
+  TRUNCATE TABLE hierarchy_read_acl;  
   INSERT INTO hierarchy_read_acl
     SELECT id, dbo.nx_get_read_acl_id(id)
       FROM (SELECT id FROM hierarchy WHERE isproperty = 0) AS foo;
@@ -1100,8 +1078,6 @@ BEGIN
     WHERE h.acl_id IS NULL);
   TRUNCATE TABLE aclr_user;
   TRUNCATE TABLE aclr_user_map;
-  TRUNCATE TABLE aclr_modified;
-  ${reseedAclrModified}
 END;
 
 
@@ -1124,15 +1100,14 @@ BEGIN
   INSERT INTO hierarchy_read_acl
     SELECT id, NULL
     FROM (SELECT DISTINCT(hierarchy_id) AS id
-        FROM aclr_modified
+        FROM #aclr_modified
         WHERE is_new = 1 AND
-            EXISTS (SELECT 1 FROM hierarchy WHERE aclr_modified.hierarchy_id=hierarchy.id)) AS uids;
-  DELETE FROM aclr_modified WHERE is_new = 1;
+            EXISTS (SELECT 1 FROM hierarchy WHERE #aclr_modified.hierarchy_id=hierarchy.id)) AS uids;
   --
   -- 2/ Handles new ACLs, marking read acl with a NULL marker
   UPDATE hierarchy_read_acl SET acl_id = NULL WHERE id IN (
-    SELECT DISTINCT(hierarchy_id) AS hierarchy_id FROM aclr_modified WHERE is_new = 0);
-  DELETE FROM aclr_modified WHERE is_new = 0;
+    SELECT DISTINCT(hierarchy_id) AS hierarchy_id FROM #aclr_modified WHERE is_new = 0);
+  DELETE FROM #aclr_modified;
   --
   -- 3/ Mark all children with the NULL marker
   WHILE @@rowcount > 0 BEGIN
