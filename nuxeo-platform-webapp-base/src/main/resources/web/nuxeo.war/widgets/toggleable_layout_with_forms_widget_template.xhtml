@@ -69,6 +69,7 @@
       value="#{widget.properties['toggledLayoutName']}"
       resolveTwice="true" cache="true">
     <nxu:set var="toggledLayoutName"
+      blockMerge="true"
       value="#{nxu:test(empty toggledLayoutName, initialLayoutName, toggledLayoutName)}"
       cache="false">
 
