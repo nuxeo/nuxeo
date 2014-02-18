@@ -1297,6 +1297,9 @@
                   <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select2_dbl10n</widget>
                 </row>
                 <row>
@@ -1437,6 +1440,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">directory_localize</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_dbl10n</widget>
