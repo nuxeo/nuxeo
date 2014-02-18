@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,6 +66,14 @@ public class DialectOracle extends Dialect {
 
     private static final Log log = LogFactory.getLog(DialectOracle.class);
 
+    private static boolean arrayReflectionInitialized;
+
+    private static Constructor<?> arrayDescriptorConstructor;
+
+    private static Constructor<?> arrayConstructor;
+
+    private static Method arrayGetLongArrayMethod;
+
     protected final String fulltextParameters;
 
     protected boolean pathOptimizationsEnabled;
@@ -74,6 +83,10 @@ public class DialectOracle extends Dialect {
     private static final String DEFAULT_USERS_SEPARATOR = "|";
 
     protected String usersSeparator;
+
+    protected final DialectIdType idType;
+
+    protected String idSequenceName;
 
     protected XAErrorLogger xaErrorLogger;
 
@@ -132,7 +145,22 @@ public class DialectOracle extends Dialect {
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
+        String idt = repositoryDescriptor == null ? null : repositoryDescriptor.idType;
+        if (idt == null || "".equals(idt) || "varchar".equalsIgnoreCase(idt)) {
+            idType = DialectIdType.VARCHAR;
+        } else if (idt.toLowerCase().startsWith("sequence")) {
+            idType = DialectIdType.SEQUENCE;
+            if (idt.toLowerCase().startsWith("sequence:")) {
+                String[] split = idt.split(":");
+                idSequenceName = split[1].toUpperCase(Locale.ENGLISH);
+            } else {
+                idSequenceName = "HIERARCHY_SEQ";
+            }
+        } else {
+            throw new StorageException("Unknown id type: '" + idt + "'");
+        }
         xaErrorLogger = newXAErrorLogger();
+        initArrayReflection();
     }
 
     protected XAErrorLogger newXAErrorLogger() throws StorageException {
@@ -144,6 +172,25 @@ public class DialectOracle extends Dialect {
         } catch (Exception e) {
             throw new StorageException("Cannot introspect oracle driver classes", e);
         }
+    }
+
+    // use reflection to avoid linking dependencies
+    private static void initArrayReflection() throws StorageException {
+        if (arrayReflectionInitialized) {
+            return;
+        }
+        try {
+            Class<?> arrayDescriptorClass = Class.forName("oracle.sql.ArrayDescriptor");
+            arrayDescriptorConstructor = arrayDescriptorClass.getConstructor(
+                    String.class, Connection.class);
+            Class<?> arrayClass = Class.forName("oracle.sql.ARRAY");
+            arrayConstructor = arrayClass.getConstructor(arrayDescriptorClass,
+                    Connection.class, Object.class);
+            arrayGetLongArrayMethod = arrayClass.getDeclaredMethod("getLongArray");
+        } catch (Exception e) {
+            throw new StorageException(e.toString(), e);
+        }
+        arrayReflectionInitialized = true;
     }
 
     @Override
@@ -199,7 +246,14 @@ public class DialectOracle extends Dialect {
         case NODEIDFKNULL:
         case NODEIDPK:
         case NODEVAL:
-            return jdbcInfo("VARCHAR2(36)", Types.VARCHAR);
+            switch (idType) {
+            case VARCHAR:
+                return jdbcInfo("VARCHAR2(36)", Types.VARCHAR);
+            case SEQUENCE:
+                return jdbcInfo("NUMBER(10,0)", Types.INTEGER);
+            default:
+                throw new AssertionError("Unknown id type: " + idType);
+            }
         case SYSNAME:
         case SYSNAMEARRAY:
             return jdbcInfo("VARCHAR2(250)", Types.VARCHAR);
@@ -265,6 +319,38 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
+    public Serializable getGeneratedId(Connection connection)
+            throws SQLException {
+        if (idType != DialectIdType.SEQUENCE) {
+            return super.getGeneratedId(connection);
+        }
+        String sql = String.format("SELECT %s.NEXTVAL FROM DUAL", idSequenceName);
+        Statement s = connection.createStatement();
+        try {
+            ResultSet rs = s.executeQuery(sql);
+            rs.next();
+            return Long.valueOf(rs.getLong(1));
+        } finally {
+            s.close();
+        }
+    }
+
+    @Override
+    public void setId(PreparedStatement ps, int index, Serializable value)
+            throws SQLException {
+        switch (idType) {
+        case VARCHAR:
+            ps.setObject(index, value);
+            break;
+        case SEQUENCE:
+            setIdLong(ps, index, value);
+            break;
+        default:
+            throw new AssertionError("Unknown id type: " + idType);
+        }
+    }
+
+    @Override
     public void setToPreparedStatement(PreparedStatement ps, int index,
             Serializable value, Column column) throws SQLException {
         switch (column.getJdbcType()) {
@@ -289,6 +375,16 @@ public class DialectOracle extends Dialect {
         case Types.TIMESTAMP:
             setToPreparedStatementTimestamp(ps, index, value, column);
             return;
+        case Types.OTHER:
+            ColumnType type = column.getType();
+            if (type.isId()) {
+                setId(ps, index, value);
+                return;
+            } else if (type == ColumnType.FTSTORED) {
+                ps.setString(index, (String) value);
+                return;
+            }
+            throw new SQLException("Unhandled type: " + column.getType());
         default:
             throw new SQLException("Unhandled JDBC type: "
                     + column.getJdbcType());
@@ -554,44 +650,64 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
+    public Serializable[] getArrayResult(Array array) throws SQLException {
+        Serializable[] ids;
+        if (array.getBaseType() == Types.NUMERIC) {
+            long[] longs;
+            try {
+                longs = (long[]) arrayGetLongArrayMethod.invoke(array);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+            ids = new Serializable[longs.length];
+            for (int i = 0; i < ids.length; i++) {
+                ids[i] = Long.valueOf(longs[i]);
+            }
+        } else {
+            ids = (Serializable[]) array.getArray();
+        }
+        return ids;
+    }
+
+    @Override
     public boolean hasNullEmptyString() {
         return true;
     }
 
-    private static boolean initialized;
-
-    private static Constructor<?> arrayDescriptorConstructor;
-
-    private static Constructor<?> arrayConstructor;
-
-    private static void init() throws SQLException {
-        if (!initialized) {
-            try {
-                Class<?> arrayDescriptorClass = Class.forName("oracle.sql.ArrayDescriptor");
-                arrayDescriptorConstructor = arrayDescriptorClass.getConstructor(
-                        String.class, Connection.class);
-                Class<?> arrayClass = Class.forName("oracle.sql.ARRAY");
-                arrayConstructor = arrayClass.getConstructor(
-                        arrayDescriptorClass, Connection.class, Object.class);
-            } catch (Exception e) {
-                throw new SQLException(e.toString());
-            }
-            initialized = true;
-        }
-    }
-
-    // use reflection to avoid linking dependencies
     @Override
     public Array createArrayOf(int type, Object[] elements,
             Connection connection) throws SQLException {
         if (elements == null || elements.length == 0) {
             return null;
         }
-        init();
+        String typeName;
+        switch (type) {
+        case Types.VARCHAR:
+            typeName = "NX_STRING_TABLE";
+            break;
+        case Types.OTHER: // id
+            switch (idType) {
+            case VARCHAR:
+                typeName = "NX_STRING_TABLE";
+                break;
+            case SEQUENCE:
+                typeName = "NX_INT_TABLE";
+                break;
+            default:
+                throw new AssertionError("Unknown id type: " + idType);
+            }
+            break;
+        default:
+            throw new AssertionError("Unknown type: " + type);
+        }
         try {
             connection = ConnectionHelper.unwrap(connection);
             Object arrayDescriptor = arrayDescriptorConstructor.newInstance(
-                    "NX_STRING_TABLE", connection);
+                    typeName, connection);
             return (Array) arrayConstructor.newInstance(arrayDescriptor,
                     connection, elements);
         } catch (Exception e) {
@@ -613,8 +729,25 @@ public class DialectOracle extends Dialect {
     public Map<String, Serializable> getSQLStatementsProperties(Model model,
             Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put("idType", "VARCHAR2(36)");
-        properties.put("argIdType", "VARCHAR2"); // in function args
+        switch (idType) {
+        case VARCHAR:
+            properties.put("idType", "VARCHAR2(36)");
+            properties.put("idTypeParam", "VARCHAR2");
+            properties.put("idArrayType", "NX_STRING_TABLE");
+            properties.put("idNotPresent", "'-'");
+            properties.put("sequenceEnabled", Boolean.FALSE);
+            break;
+        case SEQUENCE:
+            properties.put("idType", "NUMBER(10,0)");
+            properties.put("idTypeParam", "NUMBER");
+            properties.put("idArrayType", "NX_INT_TABLE");
+            properties.put("idNotPresent", "-1");
+            properties.put("sequenceEnabled", Boolean.TRUE);
+            properties.put("idSequenceName", idSequenceName);
+            break;
+        default:
+            throw new AssertionError("Unknown id type: " + idType);
+        }
         properties.put("aclOptimizationsEnabled",
                 Boolean.valueOf(aclOptimizationsEnabled));
         properties.put("pathOptimizationsEnabled",
@@ -796,6 +929,23 @@ public class DialectOracle extends Dialect {
         // literals because the internal representation seems to be a float and
         // CAST AS DATE does not truncate it
         return "TRUNC(%s)";
+    }
+
+    @Override
+    public String castIdToVarchar(String expr) {
+        switch (idType) {
+        case VARCHAR:
+            return expr;
+        case SEQUENCE:
+            return "CAST(" + expr + " AS VARCHAR2(36))";
+        default:
+            throw new AssertionError("Unknown id type: " + idType);
+        }
+    }
+
+    @Override
+    public DialectIdType getIdType() {
+        return idType;
     }
 
     public String getUsersSeparator() {

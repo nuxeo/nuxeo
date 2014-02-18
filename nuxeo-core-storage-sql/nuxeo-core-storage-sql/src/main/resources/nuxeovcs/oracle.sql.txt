@@ -10,8 +10,11 @@
 #     Benoit Delbosc
 
 # Variables used:
-# ${idType} VARCHAR2(36)
-# ${argIdType} VARCHAR2
+# ${idType} VARCHAR2(36) / NUMBER(10,0)
+# ${idTypeParam} VARCHAR2 / NUMBER
+# ${idArrayType} NX_STRING_TABLE / NX_INT_TABLE
+# ${idNotPresent} '-' / '00000000-FFFF-FFFF-FFFF-FFFF00000000', a non-existing uuid to use as marker
+# ${idSequenceName} hierarchy_seq
 # ${fulltextTriggerStatements} repeated for all suffixes SFX:
 #   :NEW.fulltextSFX := :NEW.simpletextSFX || :NEW.binarytextSFX;
 # ${readPermissions} is
@@ -24,6 +27,7 @@
 # ${usersSeparator} default to '|'
 
 # Conditions used:
+# sequenceEnabled
 # fulltextEnabled
 # aclOptimizationsEnabled
 # pathOptimizationsEnabled
@@ -39,6 +43,16 @@
 #CATEGORY: beforeTableCreation
 
 
+#IF: sequenceEnabled
+#TEST:
+SELECT 1 FROM USER_SEQUENCES WHERE SEQUENCE_NAME = '${idSequenceName}'
+
+
+#IF: sequenceEnabled
+#IF: emptyResult
+CREATE SEQUENCE ${idSequenceName}
+
+
 CREATE OR REPLACE TYPE NX_STRING_ARRAY AS VARRAY(32767) OF VARCHAR2(32767);
 
 # -- CREATE OR REPLACE will not work if ACLR_USER_USERS nested table is not empty
@@ -47,6 +61,13 @@ SELECT 1 FROM USER_TYPES WHERE type_name = 'NX_STRING_TABLE'
 
 #IF: emptyResult
 CREATE TYPE NX_STRING_TABLE AS TABLE OF VARCHAR2(4000)
+
+
+#TEST:
+SELECT 1 FROM USER_TYPES WHERE TYPE_NAME = 'NX_INT_TABLE'
+
+#IF: emptyResult
+CREATE TYPE NX_INT_TABLE AS TABLE OF NUMBER(10,0)
 
 
 # needs: GRANT EXECUTE ON DBMS_CRYPTO TO nuxeo;
@@ -74,7 +95,7 @@ END;
 #CATEGORY: afterTableCreation
 
 # -- DEPRECATED SINCE 5.9.2
-CREATE OR REPLACE FUNCTION NX_IN_TREE(id ${argIdType}, baseid ${argIdType})
+CREATE OR REPLACE FUNCTION NX_IN_TREE(id ${idTypeParam}, baseid ${idTypeParam})
 RETURN NUMBER IS
   curid hierarchy.id%TYPE := id;
 BEGIN
@@ -92,7 +113,7 @@ BEGIN
 END;
 
 
-CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED(id ${argIdType}, users NX_STRING_TABLE, permissions NX_STRING_TABLE)
+CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED(id ${idTypeParam}, users NX_STRING_TABLE, permissions NX_STRING_TABLE)
 RETURN NUMBER IS
   curid hierarchy.id%TYPE := id;
   newid hierarchy.id%TYPE;
@@ -127,7 +148,7 @@ END;
 # For Oracle running on Amazon RDS, stored procedures and functions are not allowed
 # to access GV$SESSION, so the cluster nodeid has to be passed in.
 #IF: clusteringEnabled
-CREATE OR REPLACE PROCEDURE NX_CLUSTER_INVAL(i ${argIdType}, f VARCHAR2, k INTEGER, nid VARCHAR)
+CREATE OR REPLACE PROCEDURE NX_CLUSTER_INVAL(i ${idTypeParam}, f VARCHAR2, k INTEGER, nid VARCHAR)
 IS
 BEGIN
   FOR c IN (SELECT nodeid FROM cluster_nodes WHERE nodeid <> nid) LOOP
@@ -225,8 +246,8 @@ SELECT 1 FROM USER_TABLES WHERE table_name = 'ANCESTORS'
 #IF: emptyResult
 #IF: pathOptimizationsVersion1
 CREATE TABLE ANCESTORS (
-  hierarchy_id VARCHAR2(36) NOT NULL,
-  ancestors NX_STRING_TABLE,
+  hierarchy_id ${idType} NOT NULL,
+  ancestors ${idArrayType},
   need_update NUMBER(1),
   CONSTRAINT ANCESTORS_HIERARCHY_ID_FK FOREIGN KEY (hierarchy_id) REFERENCES hierarchy (id) ON DELETE CASCADE
 ) NESTED TABLE ancestors STORE AS ancestors_ancestors
@@ -235,8 +256,8 @@ CREATE TABLE ANCESTORS (
 #IF: emptyResult
 #IF: pathOptimizationsVersion2
 CREATE TABLE ANCESTORS (
-  hierarchy_id VARCHAR2(36) NOT NULL,
-  ancestor VARCHAR2(36) NOT NULL,
+  hierarchy_id ${idType} NOT NULL,
+  ancestor ${idType} NOT NULL,
   need_update NUMBER(1),
   CONSTRAINT ANCESTORS_HIERARCHY_ID_FK FOREIGN KEY (hierarchy_id) REFERENCES hierarchy (id) ON DELETE CASCADE,
   CONSTRAINT ANCESTORS_PK PRIMARY KEY (hierarchy_id, ancestor)
@@ -269,12 +290,12 @@ CREATE INDEX ANCESTORS_ANCESTOR_IDX ON ANCESTORS(ancestor)
 
 
 #IF: pathOptimizationsVersion1
-CREATE OR REPLACE FUNCTION nx_get_ancestors(id VARCHAR2)
-RETURN NX_STRING_TABLE
+CREATE OR REPLACE FUNCTION nx_get_ancestors(id ${idTypeParam})
+RETURN ${idArrayType}
 IS
   curid hierarchy.id%TYPE := id;
   newid hierarchy.id%TYPE;
-  ret NX_STRING_TABLE := NX_STRING_TABLE();
+  ret ${idArrayType} := ${idArrayType}();
   first BOOLEAN := TRUE;
 BEGIN
   WHILE curid IS NOT NULL LOOP
@@ -303,8 +324,8 @@ END;
 
 
 #IF: pathOptimizationsVersion2
-CREATE OR REPLACE FUNCTION nx_get_ancestors(id VARCHAR2)
-RETURN NX_STRING_TABLE PIPELINED
+CREATE OR REPLACE FUNCTION nx_get_ancestors(id ${idTypeParam})
+RETURN ${idArrayType} PIPELINED
 IS
   curid hierarchy.id%TYPE := id;
   newid hierarchy.id%TYPE;
@@ -475,8 +496,8 @@ LOG.INFO Initializing ancestors table for pathOptimizations, this can take a lon
 # -- ancestors ids (since Nuxeo 5.5)
 
 #IF: !pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids NX_STRING_TABLE)
-RETURN NX_STRING_TABLE PIPELINED
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids ${idArrayType})
+RETURN ${idArrayType} PIPELINED
 IS
   id hierarchy.id%TYPE;
   curid hierarchy.id%TYPE;
@@ -492,8 +513,8 @@ BEGIN
 END;
 
 #IF: pathOptimizationsVersion1
-CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids NX_STRING_TABLE)
-RETURN NX_STRING_TABLE PIPELINED
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids ${idArrayType})
+RETURN ${idArrayType} PIPELINED
 IS
   id hierarchy.id%TYPE;
   a ancestors.ancestors%TYPE;
@@ -508,8 +529,8 @@ BEGIN
 END;
 
 #IF: pathOptimizationsVersion2
-CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids NX_STRING_TABLE)
-RETURN NX_STRING_TABLE PIPELINED IS
+CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids ${idArrayType})
+RETURN ${idArrayType} PIPELINED IS
 BEGIN
    FOR r in (SELECT DISTINCT(ancestor) AS ancestor FROM ancestors
      -- don't use MEMBER OF, it causes a full table scan
@@ -642,7 +663,7 @@ SELECT 1 FROM USER_TABLES WHERE table_name='ACLR_MODIFIED'
 
 #IF: emptyResult
 CREATE GLOBAL TEMPORARY TABLE ACLR_MODIFIED (
-  hierarchy_id VARCHAR2(36),
+  hierarchy_id ${idType},
   is_new NUMBER(1)
 ) ON COMMIT PRESERVE ROWS
 
@@ -1014,7 +1035,7 @@ LOG.INFO Soft delete enabled
 
 #IF: softDeleteEnabled
 #IF: proxiesEnabled
-CREATE OR REPLACE PROCEDURE NX_DELETE(ids NX_STRING_TABLE, nowTimeIn TIMESTAMP)
+CREATE OR REPLACE PROCEDURE NX_DELETE(ids ${idArrayType}, nowTimeIn TIMESTAMP)
 -- Marks the given ids as deleted at the given time (null means now)
 -- Simulates foreign keys except for the parent-child one which is done in Java
 IS
@@ -1036,7 +1057,7 @@ END;
 
 #IF: softDeleteEnabled
 #IF: ! proxiesEnabled
-CREATE OR REPLACE PROCEDURE NX_DELETE(ids NX_STRING_TABLE, nowTimeIn TIMESTAMP)
+CREATE OR REPLACE PROCEDURE NX_DELETE(ids ${idArrayType}, nowTimeIn TIMESTAMP)
 -- Marks the given ids as deleted at the given time (null means now)
 -- Simulates foreign keys except for the parent-child one which is done in Java
 IS

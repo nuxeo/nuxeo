@@ -3271,7 +3271,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         for (Map<String, Serializable> map : res) {
             Serializable uuid = map.get("ecm:uuid");
             String info = (String) map.get("info:info");
-            actual.put(uuid, info);
+            actual.put(uuid.toString(), info); // toString() for sequence ids
         }
         res.close();
         assertEquals(Collections.singletonMap(proxy.getId(), "proxyinfo"),

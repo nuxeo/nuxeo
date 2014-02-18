@@ -13,7 +13,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -53,14 +52,14 @@ public class DatabaseOracle extends DatabaseHelper {
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
         setProperty(DRIVER_PROPERTY, DRIVER);
+        setProperty(ID_TYPE_PROPERTY, DEF_ID_TYPE);
     }
 
     @Override
     public void setUp() throws Exception {
         Class.forName(DRIVER);
         setProperties();
-        Connection connection = DriverManager.getConnection(
-                System.getProperty(URL_PROPERTY),
+        Connection connection = getConnection(System.getProperty(URL_PROPERTY),
                 System.getProperty(USER_PROPERTY),
                 System.getProperty(PASSWORD_PROPERTY));
         doOnAllTables(connection, null,
@@ -104,6 +103,7 @@ public class DatabaseOracle extends DatabaseHelper {
         properties.put("User", System.getProperty(USER_PROPERTY));
         properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
+        descriptor.idType = System.getProperty(ID_TYPE_PROPERTY);
         return descriptor;
     }
 
@@ -114,6 +114,11 @@ public class DatabaseOracle extends DatabaseHelper {
 
     @Override
     public boolean supportsSoftDelete() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsSequenceId() {
         return true;
     }
 
