@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -384,8 +385,9 @@ public class ITSafeEditTest extends AbstractTest {
         triggerSafeEditResotre();
 
         WebElement savedCoverage = driver.findElement(By.xpath(ITSelect2Test.S2_COVERAGE_FIELD_XPATH));
-        assertTrue(savedCoverage.getText() != null);
-        assertTrue(savedCoverage.getText().equals(ITSelect2Test.COVERAGE));
+        final String text = savedCoverage.getText();
+        assertNotNull(text);
+        assertTrue(text.endsWith(ITSelect2Test.COVERAGE));
 
         editTabSubPage.save();
         logout();

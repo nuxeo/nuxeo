@@ -17,6 +17,7 @@
 package org.nuxeo.functionaltests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -138,8 +139,9 @@ public class ITSelect2Test extends AbstractTest {
         editTabSubPage = filePage.getEditTab();
 
         WebElement savedCoverage = driver.findElement(By.xpath(S2_COVERAGE_FIELD_XPATH));
-        assertTrue(savedCoverage.getText() != null);
-        assertTrue(savedCoverage.getText().equals(COVERAGE));
+        final String text = savedCoverage.getText();
+        assertNotNull(text);
+        assertTrue(text.endsWith(COVERAGE));
 
         List<WebElement> savedSubjects = driver.findElements(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_select2']/ul/li/div"));
         assertEquals(savedSubjects.size(), SUBJECTS.length);
