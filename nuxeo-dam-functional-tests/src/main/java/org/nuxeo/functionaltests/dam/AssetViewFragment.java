@@ -50,7 +50,7 @@ public class AssetViewFragment extends WebFragmentImpl {
 
     public void clickOnAction(String actionTitle) {
         String xpath = String.format(
-                "//div[@id='nxl_gridDamLayout:nxw_doc_damAssetView_panel']//img[@alt='%s']",
+                "//div[@id='nxl_gridDamLayout:nxw_damAssetView_panel']//img[@alt='%s']",
                 actionTitle);
         element.findElement(By.xpath(xpath)).click();
     }
