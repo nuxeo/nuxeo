@@ -321,9 +321,9 @@
         <field>displayAction</field>
       </fields>
       <selectOptions>
-        <option itemLabel="Nothing" itemValue="nothing" />
         <option itemLabel="View" itemValue="view" />
         <option itemLabel="Edit" itemValue="edit" />
+        <option itemLabel="Nothing" itemValue="nothing" />
       </selectOptions>
     </widget>
 
