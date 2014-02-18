@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth.test.clientsConfig">
+
+  <extension target="org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry"
+    point="clients">
+    <client name="my client" id="xxx-xxx" secret="aSecret" />
+    <client name="another client" id="yyy-yyy" secret="aSecret" enabled="false" />
+  </extension>
+</component>

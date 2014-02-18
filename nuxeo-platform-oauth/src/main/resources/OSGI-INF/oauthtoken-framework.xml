@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth.tokens.OAuthTokenStoreImpl">
+  <implementation
+          class="org.nuxeo.ecm.platform.oauth.tokens.OAuthTokenStoreImpl" />
+  <documentation>
+    Component and Service to manage the OAuth tokens
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+
+  <service>
+        <provide interface="org.nuxeo.ecm.platform.oauth.tokens.OAuthTokenStore" />
+  </service>
+
+</component>

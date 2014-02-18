@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://nuxeo.org/schemas/oauth2/provider"
+  xmlns:oauthprovider2="http://nuxeo.org/schemas/oauth2/providernamespace">
+
+  <xs:element name="id" type="xs:integer"/>
+  <xs:element name="serviceName" type="xs:string"/>
+  <xs:element name="authorizationServerURL" type="xs:string"/>
+  <xs:element name="tokenServerURL" type="xs:string"/>
+  <xs:element name="description" type="xs:string"/>
+
+  <xs:element name="clientId"  type="xs:string"/>
+  <xs:element name="userAuthorizationURL"  type="xs:string"/>
+  <xs:element name="clientSecret" type="xs:string"/>
+  <xs:element name="scopes" type="xs:string"/>
+
+  <xs:element name="enabled" type="xs:boolean"/>
+
+</xs:schema>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://nuxeo.org/schemas/oauth/token"
+  xmlns:oauthtoken="http://nuxeo.org/schemas/oauth/tokennamespace">
+
+  <xs:element name="appId" type="xs:string"/>
+  <xs:element name="token" type="xs:string"/>
+  <xs:element name="tokenSecret" type="xs:string"/>
+  <xs:element name="callbackUrl" type="xs:string"/>
+  <xs:element name="nuxeoLogin" type="xs:string"/>
+  <xs:element name="consumerKey" type="xs:string"/>
+  <xs:element name="verifier" type="xs:string"/>
+  <xs:element name="durationInMinutes" type="xs:integer"/>
+  <xs:element name="creationDate" type="xs:date"/>
+
+  <xs:element name="clientToken" type="xs:integer"/>
+  <xs:element name="clientId" type="xs:string"/>
+
+</xs:schema>
