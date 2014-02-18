@@ -693,7 +693,7 @@ public class DialectSQLServer extends Dialect {
         Statement stmt = connection.createStatement();
         try {
             stmt.execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
-            stmt.execute("CREATE TABLE #aclr_modified (id INT NOT NULL IDENTITY, hierarchy_id NVARCHAR(36) COLLATE DATABASE_DEFAULT, is_new TINYINT)");
+            stmt.execute("IF OBJECT_ID('tempdb..#aclr_modified') IS NULL CREATE TABLE #aclr_modified (id INT NOT NULL IDENTITY, hierarchy_id NVARCHAR(36) COLLATE DATABASE_DEFAULT, is_new TINYINT)");
         } finally {
             stmt.close();
         }
