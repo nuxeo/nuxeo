@@ -66,13 +66,11 @@ public class DialectOracle extends Dialect {
 
     private static final Log log = LogFactory.getLog(DialectOracle.class);
 
-    private static boolean arrayReflectionInitialized;
+    private Constructor<?> arrayDescriptorConstructor;
 
-    private static Constructor<?> arrayDescriptorConstructor;
+    private Constructor<?> arrayConstructor;
 
-    private static Constructor<?> arrayConstructor;
-
-    private static Method arrayGetLongArrayMethod;
+    private Method arrayGetLongArrayMethod;
 
     protected final String fulltextParameters;
 
@@ -175,10 +173,7 @@ public class DialectOracle extends Dialect {
     }
 
     // use reflection to avoid linking dependencies
-    private static void initArrayReflection() throws StorageException {
-        if (arrayReflectionInitialized) {
-            return;
-        }
+    private void initArrayReflection() throws StorageException {
         try {
             Class<?> arrayDescriptorClass = Class.forName("oracle.sql.ArrayDescriptor");
             arrayDescriptorConstructor = arrayDescriptorClass.getConstructor(
@@ -187,10 +182,12 @@ public class DialectOracle extends Dialect {
             arrayConstructor = arrayClass.getConstructor(arrayDescriptorClass,
                     Connection.class, Object.class);
             arrayGetLongArrayMethod = arrayClass.getDeclaredMethod("getLongArray");
+        } catch (ClassNotFoundException e) {
+            // query syntax unit test run without Oracle JDBC driver
+            return;
         } catch (Exception e) {
             throw new StorageException(e.toString(), e);
         }
-        arrayReflectionInitialized = true;
     }
 
     @Override
