@@ -2,7 +2,7 @@
 
 <@block name="content">
 
-<div style="margin: 10px 10px 10px 10px">
+<div>
 <p>
 This is the view corresponding to your root object: ${This.class.simpleName}.
 </p>

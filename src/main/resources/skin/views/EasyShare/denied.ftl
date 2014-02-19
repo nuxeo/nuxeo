@@ -2,12 +2,9 @@
 
 <@block name="content">
 
-<div style="margin: 10px 10px 10px 10px">
-
-<p>
-The shared files are not available
-</p>
-
+<div>
+  <div class="denied"><i class="icon-unhappy"></i>Oh no! This folder doesn't exist.</div>
+</div>
 
 </@block>
 </@extends>

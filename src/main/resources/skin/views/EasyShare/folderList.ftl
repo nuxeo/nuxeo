@@ -2,18 +2,32 @@
 
 <@block name="content">
 
-<div style="margin: 10px 10px 10px 10px">
-
-
-<h2>${docFolder.name}</h2>
-<p>${docFolder.easysharefolder.shareComment}</p>
-<p>These files were shared with you by <a href="mailto:${docFolder.easysharefolder.contactEmail}">${docFolder.easysharefolder.contactEmail}</a> </p>
-
-<br>
-
-<#list docList as doc>
-      <li>${doc.name} - <a href="${docFolder.id}/${doc.id}/${doc.file.filename}">${doc.file.filename}</a>
-</#list>
+<div>
+  <header>
+    <button><i class="icon-download"></i>Download</button>
+    <h2>${docFolder.name}</h2>
+    <detail>Shared by <a title="email address" href="mailto:${docFolder.easysharefolder.contactEmail}">
+    ${docFolder.easysharefolder.contactEmail}</a></detail>
+  </header>
+  <content>
+    <div class="comment">
+      <i class="icon-user"></i>
+      <blockquote>${docFolder.easysharefolder.shareComment}</blockquote>
+    </div>
+    <div class="shared-items">
+    <#list docList as doc>
+      <a class="item" title="document name" href="${docFolder.id}/${doc.id}/${doc.file.filename}">
+        <span class="document">
+          <i class="icon-file"></i>${doc.title}
+        </span>
+        <i class="icon-download"></i>
+      </a>
+    </#list>
+    <#if !docList>
+      <div class="empty"><i class="icon-unhappy"></i>There is no files in this folder.</div>
+    </#if>
+  </content>
+</div>
 
 </@block>
 </@extends>
