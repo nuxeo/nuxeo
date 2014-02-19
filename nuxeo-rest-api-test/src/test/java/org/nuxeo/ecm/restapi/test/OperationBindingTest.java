@@ -68,9 +68,6 @@ public class OperationBindingTest extends BaseTest {
     private static String PARAMS = "{\"params\":{\"one\":\"1\",\"two\": 2}}";
 
     @Inject
-    protected AutomationService automationService;
-
-    @Inject
     protected TracerFactory factory;
 
     @Override
@@ -128,11 +125,11 @@ public class OperationBindingTest extends BaseTest {
         Map parameters = trace.getCalls().get(0).getParmeters();
 
         assertEquals("One", parameters.get("one"));
-        assertEquals("2", parameters.get("two"));
+        assertEquals(2L, parameters.get("two"));
         assertEquals(note.getId(), ((DocumentModel) trace.getOutput()).getId());
 
         parameters = trace.getCalls().get(1).getParmeters();
-        assertEquals("4", parameters.get("two"));
+        assertEquals(4L, parameters.get("two"));
         assertEquals("Two", parameters.get("one"));
 
     }
