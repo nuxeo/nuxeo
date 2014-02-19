@@ -1,0 +1,17 @@
+<component name="org.nuxeo.ecm.collections.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <require>org.nuxeo.ecm.platform.actions</require>
+
+    <filter id="create" append="true">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <type>Collections</type>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>
