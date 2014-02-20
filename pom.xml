@@ -51,8 +51,9 @@
       <artifactId>jboss-seam</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.richfaces.framework</groupId>
-      <artifactId>richfaces-api</artifactId>
+      <groupId>org.richfaces.ui</groupId>
+      <artifactId>richfaces-components-api</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
