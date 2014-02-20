@@ -29,10 +29,20 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Basic implementation for a {@link PageProvider}
+ * Basic implementation for a {@link PageProvider}.
+ * <p>
+ * Provides next/prev standard logics, and helper methods for retrieval of
+ * items and first/next/prev/last buttons display as well as other display
+ * information (number of pages for instance).
+ * <p>
+ * Also handles selection by providing a default implementation of
+ * {@link #getCurrentSelectPage()} working in conjunction with
+ * {@link #setSelectedEntries(List)}.
  *
  * @author Anahide Tchertchian
  */
@@ -85,14 +95,42 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     protected PageProviderChangedListener pageProviderChangedListener;
 
+    /**
+     * Returns the list of current page items.
+     * <p>
+     * Custom implementation can be added here, based on the page provider
+     * properties, parameters and {@link WhereClauseDefinition} on the
+     * {@link PageProviderDefinition}, as well as search document, sort
+     * information, etc...
+     * <p>
+     * Implementation of this method usually consists in setting a non-null
+     * value to a field caching current items, and nullifying this field by
+     * overriding {@link #pageChanged()} and {@link #refresh()}.
+     * <p>
+     * Fields {@link #errorMessage} and {@link #error} can also be filled to
+     * provide accurate feedback in case an error occurs during the search.
+     * <p>
+     * When items are retrieved, a call to {@link #setResultsCount(long)}
+     * should be made to ensure proper pagination as implemented in this
+     * abstract class. The implementation in
+     * {@link CoreQueryAndFetchPageProvider} is a good example when the total
+     * results count is known.
+     * <p>
+     * If for performance reasons, for instance, the number of results cannot
+     * be known, a fall-back strategy can be applied to provide the "next"
+     * button but not the "last" one, by calling
+     * {@link #getCurrentHigherNonEmptyPageIndex()} and
+     * {@link #setCurrentHigherNonEmptyPageIndex(int)}. In this case,
+     * {@link CoreQueryDocumentPageProvider} is a good example.
+     */
     public abstract List<T> getCurrentPage();
 
     /**
      * Page change hook, to override for custom behavior
      * <p>
-     * When overriding it, call {@code super.pageChanged()} as last statement to
-     * make sure that the {@link PageProviderChangedListener} is called with the
-     * up-to-date @{code PageProvider} state.
+     * When overriding it, call {@code super.pageChanged()} as last statement
+     * to make sure that the {@link PageProviderChangedListener} is called with
+     * the up-to-date @{code PageProvider} state.
      */
     protected void pageChanged() {
         currentEntryIndex = 0;
@@ -393,8 +431,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     /**
      * Refresh hook, to override for custom behavior
      * <p>
-     * When overriding it, call {@code super.refresh()} as last statement
-     * to make sure that the {@link PageProviderChangedListener} is called with
+     * When overriding it, call {@code super.refresh()} as last statement to
+     * make sure that the {@link PageProviderChangedListener} is called with
      * the up-to-date @{code PageProvider} state.
      */
     public void refresh() {
