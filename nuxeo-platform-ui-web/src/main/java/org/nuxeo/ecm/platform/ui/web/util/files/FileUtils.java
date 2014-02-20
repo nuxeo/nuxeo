@@ -31,6 +31,7 @@ import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
 public class FileUtils {
 
@@ -111,9 +112,9 @@ public class FileUtils {
     /**
      * A Blob based on a File but whose contract says that the file is allowed
      * to be moved to another filesystem location if needed.
-     *
-     * (The move is done by getting the StreamSource from the Blob, casting to
-     * FileSource,
+     * <p>
+     * The move is done by getting the StreamSource from the Blob, casting to
+     * FileSource.
      *
      * @since 5.7.2
      */
@@ -124,6 +125,15 @@ public class FileUtils {
         public TemporaryFileBlob(File file, String mimeType, String encoding,
                 String filename, String digest) {
             super(new FileSource(file), mimeType, encoding, filename, digest);
+        }
+
+        /**
+         * @since 5.9.2
+         */
+        public TemporaryFileBlob(InputStream in, String mimeType,
+                String encoding, String filename, String digest) {
+            super(new InputStreamSource(in), mimeType, encoding, filename,
+                    digest);
         }
 
         @Override
@@ -138,9 +148,8 @@ public class FileUtils {
     }
 
     /**
-     * Creates a TemporaryFileBlob.
-     *
-     * Similar to FileUtils.createSerializableBlob.
+     * Creates a TemporaryFileBlob. Similar to
+     * FileUtils.createSerializableBlob.
      *
      * @since 5.7.2
      */
@@ -150,6 +159,23 @@ public class FileUtils {
             filename = FileUtils.getCleanFileName(filename);
         }
         Blob blob = new TemporaryFileBlob(file, mimeType, null, filename, null);
+        return configureFileBlob(blob, filename, mimeType);
+    }
+
+    /**
+     * @since 5.9.2
+     */
+    public static Blob createTemporaryFileBlob(InputStream in, String filename,
+            String mimeType) {
+        if (filename != null) {
+            filename = FileUtils.getCleanFileName(filename);
+        }
+        Blob blob = new TemporaryFileBlob(in, mimeType, null, filename, null);
+        return configureFileBlob(blob, filename, mimeType);
+    }
+
+    protected static Blob configureFileBlob(Blob blob, String filename,
+            String mimeType) {
         try {
             // mimetype detection
             MimetypeRegistry mimeService = Framework.getLocalService(MimetypeRegistry.class);
