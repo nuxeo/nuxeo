@@ -59,16 +59,12 @@
       <artifactId>dom4j</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.faces</groupId>
+      <groupId>com.sun.faces</groupId>
       <artifactId>jsf-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.faces</groupId>
+      <groupId>com.sun.faces</groupId>
       <artifactId>jsf-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.facelets</groupId>
-      <artifactId>jsf-facelets</artifactId>
     </dependency>
 
     <!-- scope test -->
