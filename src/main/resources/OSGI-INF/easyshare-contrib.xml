@@ -4,6 +4,8 @@
  <extension point="openUrl" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
     <openUrl name="EasyShare">
       <grantPattern>/nuxeo/site/easyshare/.*</grantPattern>
+      <grantPattern>/nuxeo/site/easyshare/css/.*</grantPattern>
+      <grantPattern>/nuxeo/site/easyshare/image/.*</grantPattern>
     </openUrl>
  </extension>
  
