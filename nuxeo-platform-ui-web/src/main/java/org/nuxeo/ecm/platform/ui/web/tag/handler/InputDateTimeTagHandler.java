@@ -20,18 +20,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.faces.view.facelets.ComponentConfig;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.MetaRuleset;
+import javax.faces.view.facelets.Metadata;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagAttributes;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.international.TimeZoneSelector;
-import org.richfaces.component.html.HtmlCalendar;
-
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.tag.MetaRuleset;
-import com.sun.facelets.tag.Metadata;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagAttributes;
-import com.sun.facelets.tag.jsf.ComponentConfig;
+import org.richfaces.component.UICalendar;
 
 /**
  * @since 5.4.2
@@ -100,22 +100,22 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
 
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
-            if (!(instance instanceof HtmlCalendar)) {
+            if (!(instance instanceof UICalendar)) {
                 log.error("Cannot apply date time component metadata, "
                         + "not a HtmlCalendar instance: " + instance);
                 return;
             }
-            HtmlCalendar c = (HtmlCalendar) instance;
+            UICalendar c = (UICalendar) instance;
             c.setTimeZone(TimeZoneSelector.instance().getTimeZone());
             c.setLocale(LocaleSelector.instance().getLocale());
         }
     }
 
     @Override
-    protected void setAttributes(FaceletContext ctx, Object instance) {
+    public void setAttributes(FaceletContext ctx, Object instance) {
         super.setAttributes(ctx, instance);
         // set default time in timezone
-        HtmlCalendar c = (HtmlCalendar) instance;
+        UICalendar c = (UICalendar) instance;
         c.setPopup(Boolean.parseBoolean(getValue(attributes, "popup", "true")));
         c.setEnableManualInput(Boolean.parseBoolean(getValue(attributes,
                 "enableManualInput", "true")));
@@ -125,8 +125,8 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         setDefaultTime(c);
     }
 
-    protected void setDefaultTime(HtmlCalendar instance) {
-        HtmlCalendar c = instance;
+    protected void setDefaultTime(UICalendar instance) {
+        UICalendar c = instance;
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         format.setTimeZone(instance.getTimeZone());
         Date date;

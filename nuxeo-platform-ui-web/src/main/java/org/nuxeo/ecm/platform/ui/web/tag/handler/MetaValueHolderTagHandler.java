@@ -20,12 +20,12 @@
 package org.nuxeo.ecm.platform.ui.web.tag.handler;
 
 import javax.faces.component.ValueHolder;
+import javax.faces.view.facelets.ComponentConfig;
+import javax.faces.view.facelets.MetaRuleset;
 
 import org.nuxeo.ecm.platform.ui.web.tag.jsf.MetaValueHolderRule;
 
-import com.sun.facelets.tag.MetaRuleset;
-import com.sun.facelets.tag.jsf.ComponentConfig;
-import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
+import com.sun.faces.facelets.tag.jsf.html.HtmlComponentHandler;
 
 /**
  * Component tag handler that wires a value holder rule attributes to a

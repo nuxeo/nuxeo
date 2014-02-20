@@ -114,12 +114,16 @@
       <artifactId>nuxeo-invite</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.richfaces.framework</groupId>
-      <artifactId>richfaces-impl</artifactId>
+      <groupId>org.richfaces.core</groupId>
+      <artifactId>richfaces-core-impl</artifactId>
     </dependency>
     <dependency>
       <groupId>org.richfaces.ui</groupId>
-      <artifactId>richfaces-ui</artifactId>
+      <artifactId>richfaces-components-ui</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.richfaces.ui</groupId>
+      <artifactId>richfaces-components-api</artifactId>
     </dependency>
 
     <dependency>
@@ -135,20 +139,12 @@
       <artifactId>tomcat-el-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.faces</groupId>
+      <groupId>com.sun.faces</groupId>
       <artifactId>jsf-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.faces</groupId>
+      <groupId>com.sun.faces</groupId>
       <artifactId>jsf-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.facelets</groupId>
-      <artifactId>jsf-facelets</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.richfaces.framework</groupId>
-      <artifactId>richfaces-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

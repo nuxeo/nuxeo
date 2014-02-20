@@ -26,6 +26,9 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
+import javax.faces.view.facelets.ComponentConfig;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.TagAttribute;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -33,10 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.jsf.ComponentConfig;
-import com.sun.facelets.tag.jsf.ComponentSupport;
+import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
 /**
  * Tag handler for a {@link UIValueHolder} component, that exposes the value
@@ -56,7 +56,7 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
     }
 
     @Override
-    protected void applyNextHandler(FaceletContext ctx, UIComponent c)
+    public void applyNextHandler(FaceletContext ctx, UIComponent c)
             throws IOException, FacesException, ELException {
 
         String varName = null;

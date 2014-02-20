@@ -33,12 +33,11 @@ import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletException;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletException;
-import com.sun.facelets.TemplateClient;
-import com.sun.facelets.el.DefaultVariableMapper;
-import com.sun.facelets.el.ELAdaptor;
+import com.sun.faces.facelets.TemplateClient;
+import com.sun.faces.facelets.el.DefaultVariableMapper;
 
 /**
  * Default FaceletContext implementation.

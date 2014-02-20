@@ -17,9 +17,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.component.html;
 
-import org.richfaces.component.html.HtmlInputText;
-
 import javax.el.ValueExpression;
+import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 
 /**
@@ -67,7 +66,7 @@ public class NXHtmlInputText extends HtmlInputText {
     public void restoreState(FacesContext _context, Object _state) {
         _values = (Object[]) _state;
         super.restoreState(_context, _values[0]);
-        this.placeholder= (java.lang.String) _values[1];
+        this.placeholder = (java.lang.String) _values[1];
     }
 
 }

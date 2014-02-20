@@ -24,11 +24,10 @@ import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
+import javax.faces.view.facelets.FaceletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.sun.facelets.FaceletContext;
 
 /**
  * Component tag utils.

@@ -26,16 +26,12 @@ import java.util.logging.Logger;
 
 import javax.el.ELException;
 import javax.faces.FacesException;
+import javax.faces.view.facelets.Facelet;
+import javax.faces.view.facelets.FaceletException;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.ResourceResolver;
 
 import org.nuxeo.runtime.api.Framework;
-
-import com.sun.facelets.Facelet;
-import com.sun.facelets.FaceletException;
-import com.sun.facelets.FaceletFactory;
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.compiler.Compiler;
-import com.sun.facelets.impl.ResourceResolver;
-import com.sun.facelets.util.ParameterCheck;
 
 /**
  * Default FaceletFactory implementation.

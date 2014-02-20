@@ -44,7 +44,7 @@ import org.nuxeo.ecm.platform.forms.layout.functions.LayoutFunctions;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.runtime.api.Framework;
 
-import com.sun.facelets.tag.AbstractTagLibrary;
+import com.sun.faces.facelets.tag.AbstractTagLibrary;
 
 /**
  * Layout tag library

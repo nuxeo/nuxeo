@@ -18,19 +18,16 @@
 package org.nuxeo.ecm.platform.ui.web.tag.handler;
 
 import javax.faces.component.ActionSource;
+import javax.faces.view.facelets.ComponentConfig;
+import javax.faces.view.facelets.MetaRuleset;
 
-import org.ajax4jsf.webapp.taglib.AjaxComponentHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.jsf.MetaActionSourceRule;
-
-import com.sun.facelets.tag.MetaRuleset;
-import com.sun.facelets.tag.jsf.ComponentConfig;
 
 /**
  * Ajax Component tag handler that wires an action source attributes to a
  * {@link MetaActionSourceRule} set.
  *
  * @author <a href="mailto:qlamerand@nuxeo.com">Quentin Lamerand</a>
- *
  */
 public class AjaxMetaActionSourceTagHandler extends AjaxComponentHandler {
 

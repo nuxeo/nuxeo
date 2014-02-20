@@ -32,6 +32,13 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.MetaRuleset;
+import javax.faces.view.facelets.MetaTagHandler;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,13 +49,7 @@ import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.el.VariableMapperWrapper;
-import com.sun.facelets.tag.MetaTagHandler;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.TagException;
+import com.sun.faces.facelets.el.VariableMapperWrapper;
 
 /**
  * Widget tag handler.
@@ -318,8 +319,8 @@ public class WidgetTagHandler extends MetaTagHandler {
                     RenderVariables.globalVariables.value.name(),
                     Integer.valueOf(widget.getLevel())), valueExpr);
             // document as alias to value
-            variables.put(RenderVariables.globalVariables.document.name(),
-                    valueExpr);
+            // variables.put(RenderVariables.globalVariables.document.name(),
+            // valueExpr);
 
             FaceletHandler handlerWithVars = helper.getAliasTagHandler(
                     widget.getTagConfigId(), variables, null, handler);
@@ -331,4 +332,11 @@ public class WidgetTagHandler extends MetaTagHandler {
             handler.apply(ctx, parent);
         }
     }
+
+    @Override
+    protected MetaRuleset createMetaRuleset(Class type) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

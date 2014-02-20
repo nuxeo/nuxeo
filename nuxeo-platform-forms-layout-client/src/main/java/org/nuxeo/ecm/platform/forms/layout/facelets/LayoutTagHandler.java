@@ -33,6 +33,13 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
+import javax.faces.view.facelets.ComponentHandler;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagException;
+import javax.faces.view.facelets.TagHandler;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -44,15 +51,8 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.el.VariableMapperWrapper;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.TagException;
-import com.sun.facelets.tag.TagHandler;
-import com.sun.facelets.tag.jsf.ComponentHandler;
-import com.sun.facelets.tag.ui.IncludeHandler;
+import com.sun.faces.facelets.el.VariableMapperWrapper;
+import com.sun.faces.facelets.tag.ui.IncludeHandler;
 
 /**
  * Layout tag handler.
@@ -418,7 +418,7 @@ public class LayoutTagHandler extends TagHandler {
         Map<String, ValueExpression> vars = new HashMap<String, ValueExpression>();
         ValueExpression valueExpr = value.getValueExpression(ctx, Object.class);
         vars.put(RenderVariables.globalVariables.value.name(), valueExpr);
-        vars.put(RenderVariables.globalVariables.document.name(), valueExpr);
+        //vars.put(RenderVariables.globalVariables.document.name(), valueExpr);
         vars.put(RenderVariables.globalVariables.layoutValue.name(), valueExpr);
         ExpressionFactory eFactory = ctx.getExpressionFactory();
         ValueExpression modeVe = eFactory.createValueExpression(modeValue,

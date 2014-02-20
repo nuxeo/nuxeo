@@ -26,15 +26,14 @@ import javax.faces.application.Application;
 import javax.faces.component.ActionSource2;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.view.facelets.ComponentConfig;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.MetaRuleset;
+import javax.faces.view.facelets.TagAttribute;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
-
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.tag.MetaRuleset;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.jsf.ComponentConfig;
 
 /**
  * Component tag handler that wires a document link tag to a command link tag.
@@ -73,7 +72,7 @@ public class DocumentLinkTagHandler extends GenericHtmlComponentHandler {
      * Sets action after component has been created.
      */
     @Override
-    protected void onComponentCreated(FaceletContext ctx, UIComponent c,
+    public void onComponentCreated(FaceletContext ctx, UIComponent c,
             UIComponent parent) {
         if (c instanceof ActionSource2) {
             ActionSource2 command = (ActionSource2) c;

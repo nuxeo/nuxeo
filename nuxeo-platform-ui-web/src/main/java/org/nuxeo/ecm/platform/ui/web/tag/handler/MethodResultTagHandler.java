@@ -25,20 +25,20 @@ import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.component.UIComponent;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.MetaRuleset;
+import javax.faces.view.facelets.MetaTagHandler;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagConfig;
 
 import org.nuxeo.ecm.platform.ui.web.binding.MethodValueExpression;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.el.VariableMapperWrapper;
-import com.sun.facelets.tag.MetaTagHandler;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagConfig;
+import com.sun.faces.facelets.el.VariableMapperWrapper;
 
 /**
  * Tag handler that exposes the result of a method binding in the variable map.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
  * @deprecated since Seam 2.0 handles method results
  * @see SetTagHandler for caching features using parameter immediate
  */
@@ -97,6 +97,12 @@ public class MethodResultTagHandler extends MetaTagHandler {
         } finally {
             ctx.setVariableMapper(orig);
         }
+    }
+
+    @Override
+    protected MetaRuleset createMetaRuleset(Class type) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

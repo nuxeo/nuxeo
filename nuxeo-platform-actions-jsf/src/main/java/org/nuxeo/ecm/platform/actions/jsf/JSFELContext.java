@@ -23,7 +23,7 @@ import javax.el.ELResolver;
 import javax.el.FunctionMapper;
 import javax.el.VariableMapper;
 
-import com.sun.facelets.el.VariableMapperWrapper;
+import com.sun.faces.facelets.el.VariableMapperWrapper;
 
 /**
  * Wrapper around another EL context to allow override of the variable mapper

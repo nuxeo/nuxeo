@@ -20,12 +20,12 @@
 package org.nuxeo.ecm.platform.ui.web.tag.handler;
 
 import javax.faces.component.ActionSource;
+import javax.faces.view.facelets.ComponentConfig;
+import javax.faces.view.facelets.MetaRuleset;
 
 import org.nuxeo.ecm.platform.ui.web.tag.jsf.MetaActionSourceRule;
 
-import com.sun.facelets.tag.MetaRuleset;
-import com.sun.facelets.tag.jsf.ComponentConfig;
-import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
+import com.sun.faces.facelets.tag.jsf.html.HtmlComponentHandler;
 
 /**
  * Component tag handler that wires an action source attributes to a

@@ -19,17 +19,17 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import javax.faces.view.facelets.TagAttribute;
+
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
-
-import com.sun.facelets.tag.TagAttribute;
 
 /**
  * List widget type, using a fixed template.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  * @deprecated widget type can be declared as using
- *             {@link TemplateWidgetTypeHandler} class, setting property value
+ *             {@link TemplateWidgetTypeHandler²} class, setting property value
  *             in XML configuration.
  */
 @Deprecated

@@ -27,6 +27,13 @@ import java.util.Map;
 import javax.faces.component.html.HtmlColumn;
 import javax.faces.component.html.HtmlDataTable;
 import javax.faces.component.html.HtmlOutputText;
+import javax.faces.view.facelets.ComponentHandler;
+import javax.faces.view.facelets.CompositeFaceletHandler;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagAttributes;
+import javax.faces.view.facelets.TagConfig;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,13 +49,7 @@ import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryEntryOutputComponent;
 import org.nuxeo.ecm.platform.ui.web.directory.SelectManyListboxComponent;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.CompositeFaceletHandler;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagAttributes;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.jsf.ComponentHandler;
+import com.sun.faces.facelets.tag.TagAttributesImpl;
 
 /**
  * Select many directory widget
@@ -184,7 +185,7 @@ public class DirectorySelectManyWidgetTypeHandler extends
                 if (BuiltinWidgetModes.PDF.equals(mode)) {
                     // add a surrounding p:html tag handler
                     return helper.getHtmlComponentHandler(widgetTagConfigId,
-                            new TagAttributes(new TagAttribute[0]), table,
+                            new TagAttributesImpl(new TagAttribute[0]), table,
                             UIHtmlText.class.getName(), null);
                 } else {
                     return table;

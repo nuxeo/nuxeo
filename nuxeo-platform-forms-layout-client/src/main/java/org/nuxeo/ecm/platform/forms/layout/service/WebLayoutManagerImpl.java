@@ -31,6 +31,10 @@ import java.util.Set;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
+import javax.faces.view.facelets.ComponentHandler;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.TagConfig;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -69,11 +73,7 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.el.VariableMapperWrapper;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.jsf.ComponentHandler;
+import com.sun.faces.facelets.el.VariableMapperWrapper;
 
 /**
  * Layout service implementation.

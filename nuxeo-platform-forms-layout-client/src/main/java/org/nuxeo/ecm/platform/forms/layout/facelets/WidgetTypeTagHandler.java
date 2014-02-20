@@ -32,6 +32,12 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagAttributes;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -47,13 +53,9 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.el.VariableMapperWrapper;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagAttributes;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.TagHandler;
+import com.sun.faces.facelets.el.VariableMapperWrapper;
+import com.sun.faces.facelets.tag.TagAttributeImpl;
+import com.sun.faces.facelets.tag.TagAttributesImpl;
 
 /**
  * Widget type tag handler.
@@ -299,7 +301,7 @@ public class WidgetTypeTagHandler extends TagHandler {
                 // this is a quick fix that can be optimized, as the widget
                 // variable is already exposed in the current variable mapper.
                 String setTagConfigId = widget.getTagConfigId();
-                TagAttributes aliasAttrs = new TagAttributes(
+                TagAttributes aliasAttrs = new TagAttributesImpl(
                         new TagAttribute[] {
                                 createAttribute(
                                         this.config,
@@ -323,7 +325,7 @@ public class WidgetTypeTagHandler extends TagHandler {
 
     protected TagAttribute createAttribute(TagConfig tagConfig, String name,
             String value) {
-        return new TagAttribute(tagConfig.getTag().getLocation(), "", name,
+        return new TagAttributeImpl(tagConfig.getTag().getLocation(), "", name,
                 name, value);
     }
 

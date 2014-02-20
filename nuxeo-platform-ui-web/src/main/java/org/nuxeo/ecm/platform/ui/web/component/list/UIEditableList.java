@@ -54,7 +54,7 @@ import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelRowEvent;
 import org.nuxeo.ecm.platform.ui.web.model.impl.ProtectedEditableModelImpl;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
-import com.sun.facelets.tag.jsf.ComponentSupport;
+import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
 /**
  * Editable table component.

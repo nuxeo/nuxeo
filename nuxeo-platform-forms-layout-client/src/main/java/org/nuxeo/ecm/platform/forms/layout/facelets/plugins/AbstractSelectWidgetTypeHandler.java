@@ -19,6 +19,10 @@ package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.view.facelets.CompositeFaceletHandler;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.TagAttributes;
+
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOptions;
@@ -26,10 +30,6 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItem;
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
-
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.CompositeFaceletHandler;
-import com.sun.facelets.tag.TagAttributes;
 
 /**
  * Helper class for options generation depending on the widget definition

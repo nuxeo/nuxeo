@@ -19,6 +19,14 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import javax.faces.view.facelets.ComponentHandler;
+import javax.faces.view.facelets.CompositeFaceletHandler;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagAttributes;
+import javax.faces.view.facelets.TagConfig;
+
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -30,13 +38,7 @@ import org.nuxeo.ecm.platform.ui.web.component.file.UIInputFile;
 import org.nuxeo.ecm.platform.ui.web.component.file.UIOutputFile;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.CompositeFaceletHandler;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagAttributes;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.jsf.ComponentHandler;
+import com.sun.faces.facelets.tag.TagAttributesImpl;
 
 /**
  * File widget.
@@ -67,7 +69,8 @@ public class FileWidgetTypeHandler extends AbstractWidgetTypeHandler {
         FieldDefinition[] fields = widget.getFieldDefinitions();
         if (fields != null && fields.length > 1) {
             FieldDefinition filenameField = fields[1];
-            TagAttribute filenameAttr = helper.createAttribute("filename",
+            TagAttribute filenameAttr = helper.createAttribute(
+                    "filename",
                     ValueExpressionHelper.createExpressionString(
                             widget.getValueName(), filenameField));
             attributes = FaceletHandlerHelper.addTagAttribute(attributes,
@@ -96,7 +99,7 @@ public class FileWidgetTypeHandler extends AbstractWidgetTypeHandler {
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
                 return helper.getHtmlComponentHandler(widgetTagConfigId,
-                        new TagAttributes(new TagAttribute[0]), output,
+                        new TagAttributesImpl(new TagAttribute[0]), output,
                         UIHtmlText.class.getName(), null);
             } else {
                 return output;

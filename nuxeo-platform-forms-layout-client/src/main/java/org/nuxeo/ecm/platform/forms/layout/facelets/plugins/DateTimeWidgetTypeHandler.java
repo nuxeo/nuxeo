@@ -23,30 +23,30 @@ import java.util.Arrays;
 
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
+import javax.faces.view.facelets.ComponentConfig;
+import javax.faces.view.facelets.ComponentHandler;
+import javax.faces.view.facelets.CompositeFaceletHandler;
+import javax.faces.view.facelets.ConverterConfig;
+import javax.faces.view.facelets.ConverterHandler;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagAttributes;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.ValidatorConfig;
+import javax.faces.view.facelets.ValidatorHandler;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.LeafFaceletHandler;
-import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.InputDateTimeTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.richfaces.component.UICalendar;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.CompositeFaceletHandler;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagAttributes;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.jsf.ComponentConfig;
-import com.sun.facelets.tag.jsf.ComponentHandler;
-import com.sun.facelets.tag.jsf.ConvertHandler;
-import com.sun.facelets.tag.jsf.ConverterConfig;
-import com.sun.facelets.tag.jsf.ValidateHandler;
-import com.sun.facelets.tag.jsf.ValidatorConfig;
-import com.sun.facelets.tag.jsf.core.ConvertDateTimeHandler;
+import com.sun.faces.facelets.tag.TagAttributesImpl;
+import com.sun.faces.facelets.tag.jsf.core.ConvertDateTimeHandler;
 
 /**
  * Date time widget
@@ -78,10 +78,10 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
             ValidatorConfig validatorConfig = TagConfigFactory.createValidatorConfig(
                     tagConfig,
                     widget.getTagConfigId(),
-                    new TagAttributes(new TagAttribute[0]),
+                    new TagAttributesImpl(new TagAttribute[0]),
                     new LeafFaceletHandler(),
                     org.nuxeo.ecm.platform.ui.web.component.date.DateTimeValidator.VALIDATOR_ID);
-            ValidateHandler validateHandler = new ValidateHandler(
+            ValidatorHandler validateHandler = new ValidatorHandler(
                     validatorConfig);
 
             if (subHandlers != null) {
@@ -116,7 +116,7 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     tagConfig, widget.getTagConfigId(), attributes,
                     new LeafFaceletHandler(),
                     javax.faces.convert.DateTimeConverter.CONVERTER_ID);
-            ConvertHandler convert = new ConvertDateTimeHandler(convertConfig);
+            ConverterHandler convert = new ConvertDateTimeHandler(convertConfig);
 
             if (subHandlers != null) {
                 leaf = new CompositeFaceletHandler(addNewSubHandler(
@@ -131,7 +131,7 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
                 return helper.getHtmlComponentHandler(widgetTagConfigId,
-                        new TagAttributes(new TagAttribute[0]), output,
+                        new TagAttributesImpl(new TagAttribute[0]), output,
                         UIHtmlText.class.getName(), null);
             } else {
                 return output;

@@ -28,19 +28,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.ajax4jsf.resource.CompressedScriptRenderer;
-import org.ajax4jsf.resource.InternetResource;
-import org.ajax4jsf.resource.JarResource;
-import org.ajax4jsf.resource.ResourceBuilderImpl;
-import org.ajax4jsf.resource.ResourceNotFoundException;
-import org.ajax4jsf.resource.ResourceRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mortbay.resource.JarResource;
 import org.nuxeo.common.utils.Path;
+import org.richfaces.renderkit.html.ResourceRenderer;
 
 /**
- * Extended {@link ResourceBuilderImpl} that tries to dynamically generate
- * the JS packs.
+ * Extended {@link ResourceBuilderImpl} that tries to dynamically generate the
+ * JS packs.
  *
  * @author tiry
  */
@@ -49,6 +45,7 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
     private static final Log log = LogFactory.getLog(NuxeoInternetResourceBuilderImpl.class);
 
     protected static final String JS_FRAMEWORK_ALL_KEY = "/org/ajax4jsf/framework.pack.js";
+
     protected static final String JS_UI_ALL_KEY = "/org/richfaces/ui.pack.js";
 
     protected final Map<String, String> jsRegistredResources = new HashMap<String, String>();
@@ -56,10 +53,11 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
     protected final List<String> blackListedScripts = new ArrayList<String>();
 
     protected InternetResource UIPack;
+
     protected InternetResource A4JPack;
 
-
-    protected void trackRegistredJSResource(String key, InternetResource resource) {
+    protected void trackRegistredJSResource(String key,
+            InternetResource resource) {
         if (key == null) {
             key = resource.getKey();
         }
@@ -85,7 +83,8 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
             String scriptNameByKey = new Path(key).lastSegment();
             String scriptNameByPath = new Path(jsRegistredResources.get(key)).lastSegment();
 
-            if (!blackList.contains(scriptNameByKey) && !blackList.contains(scriptNameByPath)) {
+            if (!blackList.contains(scriptNameByKey)
+                    && !blackList.contains(scriptNameByPath)) {
                 scripts.add(key);
             } else {
                 log.debug("bypass script with key " + key);
@@ -110,22 +109,16 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
     }
 
     /*
-    @Override
-    public InternetResource getResourceForKey(String key) throws ResourceNotFoundException {
-
-        if (JS_FRAMEWORK_ALL_KEY.equals(key)) {
-            return super.getResourceForKey(key);
-        }
-        else if (JS_UI_ALL_KEY.equals(key)) {
-            return super.getResourceForKey(key);
-        }
-        else {
-            return super.getResourceForKey(key);
-        }
-    }*/
+     * @Override public InternetResource getResourceForKey(String key) throws
+     * ResourceNotFoundException { if (JS_FRAMEWORK_ALL_KEY.equals(key)) {
+     * return super.getResourceForKey(key); } else if
+     * (JS_UI_ALL_KEY.equals(key)) { return super.getResourceForKey(key); }
+     * else { return super.getResourceForKey(key); } }
+     */
 
     @Override
-    public InternetResource getResource(String key) throws ResourceNotFoundException {
+    public InternetResource getResource(String key)
+            throws ResourceNotFoundException {
 
         InternetResource res = null;
 
@@ -141,22 +134,24 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
         return res;
     }
 
-
-    protected InternetResource getA4JPack(InternetResource defaultResource, String key) {
+    protected InternetResource getA4JPack(InternetResource defaultResource,
+            String key) {
         if (A4JPack == null) {
             buildA4JPack(defaultResource, key);
         }
         return A4JPack;
     }
 
-    protected InternetResource getUIPack(InternetResource defaultResource, String key) {
+    protected InternetResource getUIPack(InternetResource defaultResource,
+            String key) {
         if (UIPack == null) {
             buildUIPack(defaultResource, key);
         }
         return UIPack;
     }
 
-    protected synchronized void buildA4JPack(InternetResource defaultResource, String key) {
+    protected synchronized void buildA4JPack(InternetResource defaultResource,
+            String key) {
         if (A4JPack == null) {
             StringBuffer sb;
             try {
@@ -174,7 +169,8 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
         }
     }
 
-    protected synchronized void buildUIPack(InternetResource defaultResource, String key) {
+    protected synchronized void buildUIPack(InternetResource defaultResource,
+            String key) {
         if (UIPack == null) {
             UIPack = new AggregatedResources(defaultResource.getKey());
             ResourceRenderer renderer = defaultResource.getRenderer(null);
@@ -191,8 +187,8 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
                 blackListedScripts.add("framework.pack.js");
                 blackListedScripts.add("ui.pack.js");
                 blackListedScripts.add("jquery.js");
-                //blackListedScripts.add("org/richfaces/renderkit/html/scripts/scrollable-data-table.js");
-                //blackListedScripts.add("org/ajax4jsf/javascript/scripts/prototype.js");
+                // blackListedScripts.add("org/richfaces/renderkit/html/scripts/scrollable-data-table.js");
+                // blackListedScripts.add("org/ajax4jsf/javascript/scripts/prototype.js");
             }
         }
         return blackListedScripts;
@@ -204,7 +200,8 @@ public class NuxeoInternetResourceBuilderImpl extends ResourceBuilderImpl {
             InternetResource res = super.getResource(key);
             InputStream is = res.getResourceAsStream(null);
             if (is != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(is));
                 String line = null;
                 StringBuilder sb = new StringBuilder();
                 while ((line = reader.readLine()) != null) {

@@ -23,9 +23,8 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
-
-import com.sun.facelets.Facelet;
-import com.sun.facelets.FaceletException;
+import javax.faces.view.facelets.Facelet;
+import javax.faces.view.facelets.FaceletException;
 
 /**
  * Facelet used when the underlying URL is not found on the server.

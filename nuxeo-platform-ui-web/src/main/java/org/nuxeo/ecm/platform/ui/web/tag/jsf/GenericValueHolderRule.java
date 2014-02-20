@@ -24,17 +24,16 @@ import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.convert.Converter;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.MetaRule;
+import javax.faces.view.facelets.Metadata;
+import javax.faces.view.facelets.MetadataTarget;
+import javax.faces.view.facelets.TagAttribute;
 
 import org.nuxeo.ecm.platform.ui.web.binding.MethodValueExpression;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.el.LegacyValueBinding;
-import com.sun.facelets.tag.MetaRule;
-import com.sun.facelets.tag.Metadata;
-import com.sun.facelets.tag.MetadataTarget;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.util.FacesAPI;
+import com.sun.faces.facelets.el.LegacyValueBinding;
 
 /**
  * Generic value rule, used to evaluate an expression as a regular value
@@ -62,23 +61,6 @@ public class GenericValueHolderRule extends MetaRule {
         public void applyMetadata(FaceletContext ctx, Object instance) {
             ((ValueHolder) instance).setConverter(ctx.getFacesContext().getApplication().createConverter(
                     converterId));
-        }
-    }
-
-    static final class DynamicConverterMetadata extends Metadata {
-
-        private final TagAttribute attr;
-
-        DynamicConverterMetadata(TagAttribute attr) {
-            this.attr = attr;
-        }
-
-        @Override
-        public void applyMetadata(FaceletContext ctx, Object instance) {
-            ((UIComponent) instance).setValueBinding(
-                    "converter",
-                    new LegacyValueBinding(attr.getValueExpression(ctx,
-                            Converter.class)));
         }
     }
 
@@ -126,23 +108,6 @@ public class GenericValueHolderRule extends MetaRule {
         }
     }
 
-    static final class DynamicValueBindingMetadata extends Metadata {
-
-        private final TagAttribute attr;
-
-        DynamicValueBindingMetadata(TagAttribute attr) {
-            this.attr = attr;
-        }
-
-        @Override
-        public void applyMetadata(FaceletContext ctx, Object instance) {
-            ((UIComponent) instance).setValueBinding(
-                    "value",
-                    new LegacyValueBinding(attr.getValueExpression(ctx,
-                            Object.class)));
-        }
-    }
-
     static final class MethodValueBindingMetadata extends Metadata {
 
         private final TagAttribute attr;
@@ -176,11 +141,7 @@ public class GenericValueHolderRule extends MetaRule {
                 if (attribute.isLiteral()) {
                     return new LiteralConverterMetadata(attribute.getValue());
                 } else {
-                    if (FacesAPI.getComponentVersion(meta.getTargetClass()) >= 12) {
-                        return new DynamicConverterMetadata2(attribute);
-                    } else {
-                        return new DynamicConverterMetadata(attribute);
-                    }
+                    return new DynamicConverterMetadata2(attribute);
                 }
             }
 
@@ -195,11 +156,7 @@ public class GenericValueHolderRule extends MetaRule {
                         return new MethodValueBindingMetadata(attribute);
                     } else {
                         // regular value expression
-                        if (FacesAPI.getComponentVersion(meta.getTargetClass()) >= 12) {
-                            return new DynamicValueExpressionMetadata(attribute);
-                        } else {
-                            return new DynamicValueBindingMetadata(attribute);
-                        }
+                        return new DynamicValueExpressionMetadata(attribute);
                     }
                 }
             }

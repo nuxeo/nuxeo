@@ -27,6 +27,8 @@ import javax.faces.context.ResponseWriter;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 
+import com.sun.faces.renderkit.Attribute;
+import com.sun.faces.renderkit.AttributeManager;
 import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.OutputLinkRenderer;
 
@@ -48,12 +50,7 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
         return new Param[0];
     }
 
-    protected static final String[] PASSTHROUGHATTRIBUTES = { "accesskey",
-            "charset", "coords", "dir", "hreflang", "lang", "onblur",
-            "onclick", "ondblclick", "onfocus", "onkeydown", "onkeypress",
-            "onkeyup", "onmousedown", "onmousemove", "onmouseout",
-            "onmouseover", "onmouseup", "rel", "rev", "shape", "style",
-            "tabindex", "title", "type", };
+    private static final Attribute[] PASSTHROUGHATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.OUTPUTLINK);
 
     protected void renderAsActive(FacesContext context, UIComponent component)
             throws IOException {
@@ -119,7 +116,7 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
             writer.writeAttribute("onclick", onclickJS, "onclick");
         }
 
-        RenderKitUtils.renderPassThruAttributes(writer, component,
+        RenderKitUtils.renderPassThruAttributes(context, writer, component,
                 PASSTHROUGHATTRIBUTES);
         RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
 

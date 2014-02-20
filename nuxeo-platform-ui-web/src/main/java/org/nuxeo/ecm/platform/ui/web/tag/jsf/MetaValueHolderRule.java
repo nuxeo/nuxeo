@@ -22,14 +22,13 @@ package org.nuxeo.ecm.platform.ui.web.tag.jsf;
 import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.MetaRule;
+import javax.faces.view.facelets.Metadata;
+import javax.faces.view.facelets.MetadataTarget;
+import javax.faces.view.facelets.TagAttribute;
 
 import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
-
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.tag.MetaRule;
-import com.sun.facelets.tag.Metadata;
-import com.sun.facelets.tag.MetadataTarget;
-import com.sun.facelets.tag.TagAttribute;
 
 /**
  * Meta value rule, used to evaluate an expression as a regular value

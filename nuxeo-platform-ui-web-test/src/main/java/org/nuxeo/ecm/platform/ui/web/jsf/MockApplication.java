@@ -128,7 +128,7 @@ public class MockApplication extends Application {
     }
 
     @Override
-    public Iterator<Class> getConverterTypes() {
+    public Iterator<Class<?>> getConverterTypes() {
         return null;
     }
 

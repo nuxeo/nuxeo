@@ -25,6 +25,7 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import com.sun.faces.renderkit.Attribute;
 import com.sun.faces.renderkit.AttributeManager;
 import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.TextRenderer;
@@ -36,9 +37,9 @@ import com.sun.faces.renderkit.html_basic.TextRenderer;
  */
 public class NXTextRenderer extends TextRenderer {
 
-    private static final String[] INPUT_ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.INPUTTEXT);
+    private static final Attribute[] INPUT_ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.INPUTTEXT);
 
-    private static final String[] OUTPUT_ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.OUTPUTTEXT);
+    private static final Attribute[] OUTPUT_ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.OUTPUTTEXT);
 
     @Override
     protected void getEndTextToRender(FacesContext context,
@@ -77,13 +78,13 @@ public class NXTextRenderer extends TextRenderer {
                 writer.writeAttribute("class", styleClass, "styleClass");
             }
 
-            // HTML5 attributes not handled by default TextRenderer
+            // HTML5 attributes added for NXTextRenderer
             if (null != placeholder) {
                 writer.writeAttribute("placeholder", placeholder, "placeholder");
             }
 
             // style is rendered as a passthur attribute
-            RenderKitUtils.renderPassThruAttributes(writer, component,
+            RenderKitUtils.renderPassThruAttributes(context, writer, component,
                     INPUT_ATTRIBUTES);
             RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
 
@@ -102,8 +103,8 @@ public class NXTextRenderer extends TextRenderer {
                     writer.writeAttribute("class", styleClass, "styleClass");
                 }
                 // style is rendered as a passthru attribute
-                RenderKitUtils.renderPassThruAttributes(writer, component,
-                        OUTPUT_ATTRIBUTES);
+                RenderKitUtils.renderPassThruAttributes(context, writer,
+                        component, OUTPUT_ATTRIBUTES);
 
             }
             if (currentValue != null) {

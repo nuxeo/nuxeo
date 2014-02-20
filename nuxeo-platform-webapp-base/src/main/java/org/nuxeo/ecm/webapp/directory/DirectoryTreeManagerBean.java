@@ -49,7 +49,6 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloader;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.component.UITree;
-import org.richfaces.event.NodeExpandedEvent;
 
 /**
  * Manage trees defined by xvocabulary directories. Update the associated

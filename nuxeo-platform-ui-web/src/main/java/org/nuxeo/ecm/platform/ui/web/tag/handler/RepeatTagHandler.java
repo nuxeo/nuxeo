@@ -29,17 +29,19 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletException;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagAttributes;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletException;
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagAttributes;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.TagHandler;
-import com.sun.facelets.tag.jstl.core.ForEachHandler;
+import com.sun.faces.facelets.tag.TagAttributeImpl;
+import com.sun.faces.facelets.tag.TagAttributesImpl;
+import com.sun.faces.facelets.tag.jstl.core.ForEachHandler;
 
 /**
  * Repeat handler, similar to the standard ForEach handler.
@@ -193,7 +195,7 @@ public class RepeatTagHandler extends TagHandler {
                     varStatusAttr = createAttribute(this.config, "varStatus",
                             varStatusValue);
                 }
-                TagAttributes indexVarAttrs = new TagAttributes(
+                TagAttributes indexVarAttrs = new TagAttributesImpl(
                         new TagAttribute[] {
                                 createAttribute(this.config, "var", indexValue),
                                 createAttribute(this.config, "value",
@@ -211,15 +213,17 @@ public class RepeatTagHandler extends TagHandler {
                 String.format("#{%s}", getVarName("items"))));
         forEachAttrs.addAll(copyAttributes(this.config, var, begin, end, step,
                 varStatusAttr, tranzient));
-        TagConfig forEachConfig = TagConfigFactory.createTagConfig(this.config,
+        TagConfig forEachConfig = TagConfigFactory.createTagConfig(
+                this.config,
                 this.tagId,
-                new TagAttributes(forEachAttrs.toArray(new TagAttribute[] {})),
+                new TagAttributesImpl(
+                        forEachAttrs.toArray(new TagAttribute[] {})),
                 nextHandler);
         ForEachHandler forEachHandler = new ForEachHandler(forEachConfig);
 
         String setTagConfigId = getTagConfigId(ctx);
         TagAttribute itemsAttr = getItemsAttribute();
-        TagAttributes aliasAttrs = new TagAttributes(new TagAttribute[] {
+        TagAttributes aliasAttrs = new TagAttributesImpl(new TagAttribute[] {
                 createAttribute(this.config, "var", getVarName("items")),
                 createAttribute(this.config, "value",
                         itemsAttr != null ? itemsAttr.getValue() : null),
@@ -238,13 +242,13 @@ public class RepeatTagHandler extends TagHandler {
 
     protected TagAttribute createAttribute(TagConfig tagConfig, String name,
             String value) {
-        return new TagAttribute(tagConfig.getTag().getLocation(), "", name,
+        return new TagAttributeImpl(tagConfig.getTag().getLocation(), "", name,
                 name, value);
     }
 
     protected TagAttribute copyAttribute(TagConfig tagConfig,
             TagAttribute attribute) {
-        return new TagAttribute(tagConfig.getTag().getLocation(), "",
+        return new TagAttributeImpl(tagConfig.getTag().getLocation(), "",
                 attribute.getLocalName(), attribute.getLocalName(),
                 attribute.getValue());
     }

@@ -22,12 +22,12 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.TagConfig;
+
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
-
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.TagConfig;
 
 /**
  * Widget type handler interface.

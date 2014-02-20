@@ -24,13 +24,13 @@ import java.io.IOException;
 import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
+import javax.faces.view.facelets.ComponentConfig;
+import javax.faces.view.facelets.FaceletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.tag.jsf.ComponentConfig;
-import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
+import com.sun.faces.facelets.tag.jsf.html.HtmlComponentHandler;
 
 /**
  * Handler for deprecated components.
@@ -49,7 +49,7 @@ public class DeprecatedComponentHandler extends HtmlComponentHandler {
     }
 
     @Override
-    protected void applyNextHandler(FaceletContext ctx, UIComponent c)
+    public void applyNextHandler(FaceletContext ctx, UIComponent c)
             throws IOException, FacesException, ELException {
         if (log.isWarnEnabled()) {
             log.warn("Component '" + c

@@ -26,7 +26,7 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.MetaActionSourceTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.MetaValueHolderTagHandler;
 
-import com.sun.facelets.tag.jsf.html.AbstractHtmlLibrary;
+import com.sun.faces.facelets.tag.jsf.html.AbstractHtmlLibrary;
 
 /**
  * Replicate the HTML Library with facelet handlers to use a specific

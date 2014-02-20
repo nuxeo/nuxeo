@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.platform.ui.web.renderer;
 
+import static com.sun.faces.renderkit.Attribute.attr;
+import static com.sun.faces.util.CollectionsUtils.ar;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
@@ -28,6 +31,7 @@ import javax.faces.context.ResponseWriter;
 import org.apache.commons.lang.StringUtils;
 
 import com.sun.faces.RIConstants;
+import com.sun.faces.renderkit.Attribute;
 import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.ImageRenderer;
 
@@ -41,11 +45,31 @@ public class NXImageRenderer extends ImageRenderer {
 
     // remove attributes height and width from default attributes to avoid
     // adding them when empty
-    protected static final String[] ATTRIBUTES = new String[] { "alt", "dir",
-            "lang", "longdesc", "onclick", "ondblclick", "onkeydown",
-            "onkeypress", "onkeyup", "onmousedown", "onmousemove",
-            "onmouseout", "onmouseover", "onmouseup", "style", "title",
-            "usemap" };
+    protected static final Attribute[] ATTRIBUTES = ar(
+            //
+            attr("alt"),
+            //
+            attr("dir"),
+            //
+            // attr("height"),
+            //
+            attr("lang"),
+            //
+            attr("longdesc"),
+            //
+            attr("onclick", "click"),
+            attr("ondblclick", "dblclick"),
+            //
+            attr("onkeydown", "keydown"), attr("onkeypress", "keypress"),
+            attr("onkeyup", "keyup"), attr("onmousedown", "mousedown"),
+            //
+            attr("onmousemove", "mousemove"), attr("onmouseout", "mouseout"),
+            attr("onmouseover", "mouseover"), attr("onmouseup", "mouseup"),
+            //
+            attr("role"), attr("style"), attr("title"), attr("usemap")
+    //
+    // attr("width")
+    );
 
     public static final String RENDERER_TYPE = "javax.faces.NXImage";
 
@@ -84,7 +108,7 @@ public class NXImageRenderer extends ImageRenderer {
                 writer.writeAttribute("alt", "", "alt");
             }
 
-            RenderKitUtils.renderPassThruAttributes(writer, component,
+            RenderKitUtils.renderPassThruAttributes(context, writer, component,
                     ATTRIBUTES);
             // add back height and width attributes if any
             String width = (String) attrs.get("width");

@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasEvent;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.component.ResettableComponent;
 
-import com.sun.facelets.tag.jsf.ComponentSupport;
+import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
 /**
  * Component that keeps and exposes a value to the context during each JSF

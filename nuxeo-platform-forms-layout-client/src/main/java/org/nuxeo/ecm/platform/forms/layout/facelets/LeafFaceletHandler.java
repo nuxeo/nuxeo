@@ -24,9 +24,8 @@ import java.io.IOException;
 import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
-
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletHandler;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletHandler;
 
 /**
  * Leaf Facelet Handler

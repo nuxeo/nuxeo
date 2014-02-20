@@ -19,13 +19,13 @@
 
 package org.nuxeo.ecm.platform.ui.web.tag.handler;
 
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.Tag;
-import com.sun.facelets.tag.TagAttributes;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.jsf.ComponentConfig;
-import com.sun.facelets.tag.jsf.ConverterConfig;
-import com.sun.facelets.tag.jsf.ValidatorConfig;
+import javax.faces.view.facelets.ComponentConfig;
+import javax.faces.view.facelets.ConverterConfig;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.Tag;
+import javax.faces.view.facelets.TagAttributes;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.ValidatorConfig;
 
 /**
  * Helper for generating configs outside of a library context.

@@ -62,8 +62,8 @@ import com.sun.faces.util.MessageUtils;
 
 /**
  * CSV specific response writer copied pasted from
- * com.sun.faces.renderkit.html_basic.HtmlResponseWriter without the HTML encode
- * part.
+ * com.sun.faces.renderkit.html_basic.HtmlResponseWriter without the HTML
+ * encode part.
  *
  * @since 5.9.1, 5.8-HF01
  */
@@ -175,7 +175,8 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     }
 
-    // ------------------------------------------------------------ Constructors
+    // ------------------------------------------------------------
+    // Constructors
 
     /**
      * Constructor sets the <code>ResponseWriter</code> and encoding, and
@@ -184,7 +185,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @param writer the <code>ResponseWriter</code>
      * @param contentType the content type.
      * @param encoding the character encoding.
-     *
      * @throws javax.faces.FacesException the encoding is not recognized.
      */
     public NXHtmlResponseWriter(Writer writer, String contentType,
@@ -196,12 +196,10 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * <p>
      * Constructor sets the <code>ResponseWriter</code> and encoding.
      * </p>
-     *
      * <p>
      * The argument configPrefs is a map of configurable prefs that affect this
      * instance's behavior. Supported keys are:
      * </p>
-     *
      * <p>
      * BooleanWebContextInitParameter.EnableJSStyleHiding: <code>true</code> if
      * the writer should attempt to hide JS from older browsers
@@ -210,7 +208,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @param writer the <code>ResponseWriter</code>
      * @param contentType the content type.
      * @param encoding the character encoding.
-     *
      * @throws javax.faces.FacesException the encoding is not recognized.
      */
     public NXHtmlResponseWriter(Writer writer, String contentType,
@@ -303,7 +300,8 @@ public class NXHtmlResponseWriter extends ResponseWriter {
         return webConfig;
     }
 
-    // -------------------------------------------------- Methods From Closeable
+    // -------------------------------------------------- Methods From
+    // Closeable
 
     /** Methods From <code>java.io.Writer</code> */
 
@@ -314,7 +312,8 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     }
 
-    // -------------------------------------------------- Methods From Flushable
+    // -------------------------------------------------- Methods From
+    // Flushable
 
     /**
      * Flush any buffered output to the contained writer.
@@ -334,7 +333,8 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     }
 
-    // ---------------------------------------------------------- Public Methods
+    // ---------------------------------------------------------- Public
+    // Methods
 
     /** @return the content type such as "text/html" for this ResponseWriter. */
     public String getContentType() {
@@ -348,15 +348,16 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * Create a new instance of this <code>ResponseWriter</code> using a
      * different <code>Writer</code>.
      *
-     * @param writer The <code>Writer</code> that will be used to create another
-     *            <code>ResponseWriter</code>.
+     * @param writer The <code>Writer</code> that will be used to create
+     *            another <code>ResponseWriter</code>.
      */
     public ResponseWriter cloneWithWriter(Writer writer) {
 
         try {
             return new HtmlResponseWriter(writer, getContentType(),
                     getCharacterEncoding(), isScriptHidingEnabled,
-                    isScriptInAttributeValueEnabled, disableUnicodeEscaping);
+                    isScriptInAttributeValueEnabled, disableUnicodeEscaping,
+                    false);
         } catch (FacesException e) {
             // This should never happen
             throw new IllegalStateException();
@@ -377,7 +378,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * element created by a call to <code>startElement()</code>.
      *
      * @param name Name of the element to be ended
-     *
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>name</code> is <code>null</code>
      */
@@ -508,8 +508,8 @@ public class NXHtmlResponseWriter extends ResponseWriter {
     /**
      * @return the character encoding, such as "ISO-8859-1" for this
      *         ResponseWriter. Refer to: <a
-     *         href="http://www.iana.org/assignments/character-sets">theIANA</a>
-     *         for a list of character encodings.
+     *         href="http://www.iana.org/assignments/character-sets"
+     *         >theIANA</a> for a list of character encodings.
      */
     public String getCharacterEncoding() {
 
@@ -540,7 +540,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @param name Name of the starting element
      * @param componentForElement The UIComponent instance that applies to this
      *            element. This argument may be <code>null</code>.
-     *
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>name</code> is <code>null</code>
      */
@@ -627,7 +626,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @param componentPropertyName The name of the component property to which
      *            this attribute argument applies. This argument may be
      *            <code>null</code>.
-     *
      * @throws IllegalStateException if this method is called when there is no
      *             currently open element
      * @throws IOException if an input/output error occurs
@@ -694,9 +692,9 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * </p>
      *
      * @param comment Text content of the comment
-     *
      * @throws IOException if an input/output error occurs
-     * @throws NullPointerException if <code>comment</code> is <code>null</code>
+     * @throws NullPointerException if <code>comment</code> is
+     *             <code>null</code>
      */
     public void writeComment(Object comment) throws IOException {
 
@@ -732,7 +730,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * </p>
      *
      * @param text Text to be written
-     *
      * @throws IOException if an input/output error occurs
      */
     public void writeText(char text) throws IOException {
@@ -757,7 +754,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * </p>
      *
      * @param text Text to be written
-     *
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>text</code> is <code>null</code>
      */
@@ -776,16 +772,16 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     /**
      * <p>
-     * Write a properly escaped object. The object will be converted to a String
-     * if necessary. If there is an open element that has been created by a call
-     * to <code>startElement()</code>, that element will be closed first.
+     * Write a properly escaped object. The object will be converted to a
+     * String if necessary. If there is an open element that has been created
+     * by a call to <code>startElement()</code>, that element will be closed
+     * first.
      * </p>
      *
      * @param text Text to be written
      * @param componentPropertyName The name of the component property to which
      *            this text argument applies. This argument may be
      *            <code>null</code>.
-     *
      * @throws IOException if an input/output error occurs
      * @throws NullPointerException if <code>text</code> is <code>null</code>
      */
@@ -817,7 +813,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @param text Text to be written
      * @param off Starting offset (zero-relative)
      * @param len Number of characters to be written
-     *
      * @throws IndexOutOfBoundsException if the calculated starting or ending
      *             position is outside the bounds of the character array
      * @throws IOException if an input/output error occurs
@@ -851,7 +846,6 @@ public class NXHtmlResponseWriter extends ResponseWriter {
      * @param componentPropertyName The name of the component property to which
      *            this attribute argument applies. This argument may be
      *            <code>null</code>.
-     *
      * @throws IllegalStateException if this method is called when there is no
      *             currently open element
      * @throws IOException if an input/output error occurs
@@ -902,7 +896,8 @@ public class NXHtmlResponseWriter extends ResponseWriter {
 
     }
 
-    // --------------------------------------------------------- Private Methods
+    // --------------------------------------------------------- Private
+    // Methods
 
     private void ensureTextBufferCapacity(String source) {
         int len = source.length();

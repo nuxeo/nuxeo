@@ -36,15 +36,15 @@ import javax.el.ExpressionFactory;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.view.facelets.Facelet;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletException;
+import javax.faces.view.facelets.FaceletHandler;
 
 import org.nuxeo.theme.ResourceResolver;
 import org.nuxeo.theme.jsf.FacesResourceResolver;
 
-import com.sun.facelets.Facelet;
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletException;
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.jsf.ComponentSupport;
+import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
 /**
  * Default Facelet implementation. Copied from facelets-1.1.15.B1 by Jean-Marc

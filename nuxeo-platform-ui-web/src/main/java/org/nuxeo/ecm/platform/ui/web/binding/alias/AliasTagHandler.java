@@ -30,18 +30,19 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletException;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.MetaRuleset;
+import javax.faces.view.facelets.MetaTagHandler;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletException;
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.MetaTagHandler;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.TagException;
-import com.sun.facelets.tag.jsf.ComponentSupport;
+import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
 /**
  * Tag handler that exposes variables to the variable map. Behaviour is close
@@ -186,6 +187,11 @@ public class AliasTagHandler extends MetaTagHandler {
         // been part of the tree or not yet
         parent.getChildren().add(c);
 
+    }
+
+    @Override
+    protected MetaRuleset createMetaRuleset(Class type) {
+        return null;
     }
 
 }

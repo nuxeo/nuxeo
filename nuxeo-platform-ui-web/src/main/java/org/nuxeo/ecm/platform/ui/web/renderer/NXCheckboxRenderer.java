@@ -28,6 +28,7 @@ import javax.faces.convert.ConverterException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sun.faces.renderkit.Attribute;
 import com.sun.faces.renderkit.AttributeManager;
 import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.CheckboxRenderer;
@@ -42,7 +43,7 @@ public class NXCheckboxRenderer extends CheckboxRenderer {
 
     private static final Log log = LogFactory.getLog(NXCheckboxRenderer.class);
 
-    private static final String[] ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.SELECTBOOLEANCHECKBOX);
+    private static final Attribute[] ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.SELECTBOOLEANCHECKBOX);
 
     public static final String RENDERER_TYPE = "javax.faces.NXCheckbox";
 
@@ -82,6 +83,7 @@ public class NXCheckboxRenderer extends CheckboxRenderer {
         }
     }
 
+    // Seems this is not needed anymore for JSF 2.2.5 (NXP-5813 not present)
     protected void getEndTextToRender(FacesContext context,
             UIComponent component, String currentValue) throws IOException {
 
@@ -104,7 +106,8 @@ public class NXCheckboxRenderer extends CheckboxRenderer {
                 "styleClass"))) {
             writer.writeAttribute("class", styleClass, "styleClass");
         }
-        RenderKitUtils.renderPassThruAttributes(writer, component, ATTRIBUTES);
+        RenderKitUtils.renderPassThruAttributes(context, writer, component,
+                ATTRIBUTES);
         RenderKitUtils.renderXHTMLStyleBooleanAttributes(writer, component);
 
         writer.endElement("input");

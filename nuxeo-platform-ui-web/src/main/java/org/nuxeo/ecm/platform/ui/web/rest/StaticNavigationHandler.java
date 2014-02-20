@@ -22,7 +22,10 @@ package org.nuxeo.ecm.platform.ui.web.rest;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
+import javax.faces.application.NavigationCase;
+import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
@@ -34,7 +37,6 @@ import org.jboss.seam.util.DTDEntityResolver;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.application.ApplicationAssociate;
-import com.sun.faces.application.ConfigNavigationCase;
 
 /**
  * View id helper that matches view ids and outcomes thanks to navigation cases
@@ -53,9 +55,10 @@ public class StaticNavigationHandler {
 
     public StaticNavigationHandler(ServletContext context) {
         ApplicationAssociate associate = ApplicationAssociate.getCurrentInstance();
-        for (List<ConfigNavigationCase> cases : associate.getNavigationCaseListMappings().values()) {
-            for (ConfigNavigationCase cnc : cases) {
-                String toViewId = cnc.getToViewId();
+        FacesContext faces = FacesContext.getCurrentInstance();
+        for (Set<NavigationCase> cases : associate.getNavigationCaseListMappings().values()) {
+            for (NavigationCase cnc : cases) {
+                String toViewId = cnc.getToViewId(faces);
                 String fromOutcome = cnc.getFromOutcome();
                 outcomeToViewId.put(fromOutcome, toViewId);
                 viewIdToOutcome.put(toViewId, fromOutcome);

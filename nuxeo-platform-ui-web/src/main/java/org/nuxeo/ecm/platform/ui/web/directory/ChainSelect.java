@@ -44,7 +44,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.platform.ui.web.component.ResettableComponent;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
-import com.sun.facelets.component.UIRepeat;
+import com.sun.faces.facelets.component.UIRepeat;
 
 /**
  * DOCUMENT ME.
