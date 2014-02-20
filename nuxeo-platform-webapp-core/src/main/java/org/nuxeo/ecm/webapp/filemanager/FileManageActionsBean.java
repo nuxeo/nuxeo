@@ -70,8 +70,8 @@ import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
-import org.richfaces.event.UploadEvent;
-import org.richfaces.model.UploadItem;
+import org.richfaces.event.FileUploadEvent;
+import org.richfaces.model.UploadedFile;
 
 @Name("FileManageActions")
 @Scope(ScopeType.EVENT)
@@ -583,11 +583,16 @@ public class FileManageActionsBean implements FileManageActions {
         }
     }
 
-    public void processUpload(UploadEvent uploadEvent) {
+    public void processUpload(FileUploadEvent uploadEvent) {
         try {
             if (fileUploadHolder != null) {
-                fileUploadHolder.setTempFile(uploadEvent.getUploadItem().getFile());
-                fileUploadHolder.setFileName(uploadEvent.getUploadItem().getFileName());
+                // FIXME this might not be necessary anymore with RichFaces
+                // 4.3.5.
+                File file = File.createTempFile("FileManageActionsFile", null);
+                InputStream in = uploadEvent.getUploadedFile().getInputStream();
+                org.nuxeo.common.utils.FileUtils.copyToFile(in, file);
+                fileUploadHolder.setTempFile(file);
+                fileUploadHolder.setFileName(uploadEvent.getUploadedFile().getName());
             } else {
                 log.error("Unable to reach fileUploadHolder");
             }
@@ -597,25 +602,25 @@ public class FileManageActionsBean implements FileManageActions {
     }
 
     public void validateMultiplesUpload() throws ClientException,
-            FileNotFoundException {
+            FileNotFoundException, IOException {
         DocumentModel current = navigationContext.getCurrentDocument();
         validateMultipleUploadForDocument(current);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void validateMultipleUploadForDocument(DocumentModel current)
-            throws ClientException, FileNotFoundException {
+            throws ClientException, FileNotFoundException, IOException {
         if (!current.hasSchema(FILES_SCHEMA)) {
             return;
         }
-        Collection<UploadItem> uploadFiles = getUploadedFiles();
+        Collection<UploadedFile> uploadFiles = getUploadedFiles();
         try {
             ArrayList files = (ArrayList) current.getPropertyValue(FILES_PROPERTY);
             if (uploadFiles != null) {
-                for (UploadItem uploadItem : uploadFiles) {
-                    String filename = FileUtils.getCleanFileName(uploadItem.getFileName());
+                for (UploadedFile uploadItem : uploadFiles) {
+                    String filename = FileUtils.getCleanFileName(uploadItem.getName());
                     Blob blob = FileUtils.createTemporaryFileBlob(
-                            uploadItem.getFile(), filename,
+                            uploadItem.getInputStream(), filename,
                             uploadItem.getContentType());
                     HashMap<String, Object> fileMap = new HashMap<String, Object>(
                             2);
@@ -630,11 +635,12 @@ public class FileManageActionsBean implements FileManageActions {
             documentActions.updateDocument(current, Boolean.TRUE);
         } finally {
             if (uploadFiles != null) {
-                for (UploadItem uploadItem : uploadFiles) {
-                    File tempFile = uploadItem.getFile();
-                    if (tempFile != null && tempFile.exists()) {
-                        Framework.trackFile(tempFile, tempFile);
-                    }
+                for (UploadedFile uploadItem : uploadFiles) {
+                    // FIXME: check if a temp file needs to be tracked for
+                    // deletion
+                    // if (tempFile != null && tempFile.exists()) {
+                    // Framework.trackFile(tempFile, tempFile);
+                    // }
                 }
             }
         }
@@ -729,7 +735,7 @@ public class FileManageActionsBean implements FileManageActions {
         navigationContext.setChangeableDocument(changeableDocument);
     }
 
-    public Collection<UploadItem> getUploadedFiles() {
+    public Collection<UploadedFile> getUploadedFiles() {
         if (fileUploadHolder != null) {
             return fileUploadHolder.getUploadedFiles();
         } else {
@@ -737,7 +743,7 @@ public class FileManageActionsBean implements FileManageActions {
         }
     }
 
-    public void setUploadedFiles(Collection<UploadItem> uploadedFiles) {
+    public void setUploadedFiles(Collection<UploadedFile> uploadedFiles) {
         if (fileUploadHolder != null) {
             fileUploadHolder.setUploadedFiles(uploadedFiles);
         }
@@ -774,13 +780,17 @@ public class FileManageActionsBean implements FileManageActions {
     @WebRemote
     public String removeAllUploadedFile() throws ClientException {
         if (fileUploadHolder != null) {
-            Collection<UploadItem> files = getUploadedFiles();
+            Collection<UploadedFile> files = getUploadedFiles();
             if (files != null) {
-                for (UploadItem item : files) {
-                    item.getFile().delete();
+                for (UploadedFile item : files) {
+                    try {
+                        item.delete();
+                    } catch (IOException e) {
+                        log.error(e, e);
+                    }
                 }
             }
-            setUploadedFiles(new ArrayList<UploadItem>());
+            setUploadedFiles(new ArrayList<UploadedFile>());
         }
         return "";
     }
@@ -788,16 +798,16 @@ public class FileManageActionsBean implements FileManageActions {
     @Override
     @WebRemote
     public String removeUploadedFile(String fileName) throws ClientException {
-        UploadItem fileToDelete = null;
+        UploadedFile fileToDelete = null;
 
         // Retrieve only the real filename
         // IE stores the full path of the file as the filename (ie.
         // Z:\\path\\to\\file)
         fileName = FilenameUtils.getName(fileName);
-        Collection<UploadItem> files = getUploadedFiles();
+        Collection<UploadedFile> files = getUploadedFiles();
         if (files != null) {
-            for (UploadItem file : files) {
-                String uploadedFileName = file.getFileName();
+            for (UploadedFile file : files) {
+                String uploadedFileName = file.getName();
                 if (fileName.equals(uploadedFileName)) {
                     fileToDelete = file;
                     break;
@@ -805,7 +815,11 @@ public class FileManageActionsBean implements FileManageActions {
             }
         }
         if (fileToDelete != null) {
-            fileToDelete.getFile().delete();
+            try {
+                fileToDelete.delete();
+            } catch (IOException e) {
+                log.error(e, e);
+            }
             files.remove(fileToDelete);
             setUploadedFiles(files);
         }

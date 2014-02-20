@@ -31,7 +31,7 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.richfaces.model.UploadItem;
+import org.richfaces.model.UploadedFile;
 
 /**
  * Holds FileUpload data at PAGE scope level, useful for
@@ -43,7 +43,7 @@ public class UploadItemHolder implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Collection<UploadItem> uploadedFiles = new ArrayList<UploadItem>();
+    protected Collection<UploadedFile> uploadedFiles = new ArrayList<UploadedFile>();
 
     protected InputStream fileUpload;
 
@@ -67,11 +67,11 @@ public class UploadItemHolder implements Serializable {
         this.fileName = fileName;
     }
 
-    public Collection<UploadItem> getUploadedFiles() {
+    public Collection<UploadedFile> getUploadedFiles() {
         return uploadedFiles;
     }
 
-    public void setUploadedFiles(Collection<UploadItem> uploadedFiles) {
+    public void setUploadedFiles(Collection<UploadedFile> uploadedFiles) {
         this.uploadedFiles = uploadedFiles;
     }
 
@@ -87,7 +87,7 @@ public class UploadItemHolder implements Serializable {
             EventNames.DOCUMENT_CHANGED }, create = false)
     @BypassInterceptors
     public void reset() {
-        uploadedFiles = new ArrayList<UploadItem>();
+        uploadedFiles = new ArrayList<UploadedFile>();
         fileUpload = null;
         fileName = null;
         if (tempFile != null) {
