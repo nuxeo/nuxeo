@@ -48,6 +48,14 @@ public class UIAliasHolder extends UIOutput {
 
     public static final String COMPONENT_FAMILY = UIAliasHolder.class.getName();
 
+    public UIAliasHolder() {
+        super();
+        // marked as transient as dynamically created, as per recommendations
+        // for JSF2 state saving strategy, see
+        // http://sfjsf.blogspot.com/2006/03/how-were-going-to-fix-jsf-state-saving.html
+        setTransient(true);
+    }
+
     @Override
     public String getFamily() {
         return COMPONENT_FAMILY;
