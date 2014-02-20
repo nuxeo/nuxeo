@@ -297,14 +297,17 @@
     </context-param>
 
     <!-- use the JS Minimizer built into RichFaces -->
-    <context-param>
+    <!-- disabled, to migrate to JSF2 -->
+    <!--
+      <context-param>
       <param-name>
-        org.nuxeo.ecm.platform.web.common.resources.JSMinimizer
+      org.nuxeo.ecm.platform.web.common.resources.JSMinimizer
       </param-name>
       <param-value>
-        org.nuxeo.ecm.platform.ui.web.richfaces.RichFacesJSMinimizer
+      org.nuxeo.ecm.platform.ui.web.richfaces.RichFacesJSMinimizer
       </param-value>
-    </context-param>
+      </context-param>
+    -->
 
     <!-- Mark this component so that it is always re-rendered on ajax calls
       (so that it can expose to the context the values it holds) -->
