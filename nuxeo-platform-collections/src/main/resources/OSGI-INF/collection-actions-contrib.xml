@@ -1,9 +1,9 @@
 <component name="org.nuxeo.ecm.collections.actions">
 
+  <require>org.nuxeo.ecm.platform.actions</require>
+
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
-
-    <require>org.nuxeo.ecm.platform.actions</require>
 
     <filter id="create" append="true">
       <rule grant="true">
