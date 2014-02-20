@@ -43,8 +43,7 @@ public class NXHtmlForm extends HtmlForm {
             // there is a parent container that is a form
             UIComponent parent = getParent();
             while (parent != null) {
-                if (parent instanceof NXHtmlForm
-                        || parent instanceof NXAjaxForm) {
+                if (parent instanceof NXHtmlForm) {
                     log.error(String.format(
                             "Form component with id '%s' is already surrounded"
                                     + " by a form with id '%s'", this.getId(),
