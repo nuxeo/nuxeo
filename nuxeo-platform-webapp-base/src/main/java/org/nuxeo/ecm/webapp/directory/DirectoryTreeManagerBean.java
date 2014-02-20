@@ -49,6 +49,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloader;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.component.UITree;
+import org.richfaces.event.CollapsibleSubTableToggleEvent;
 
 /**
  * Manage trees defined by xvocabulary directories. Update the associated
@@ -193,7 +194,7 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         return directoryTreeService;
     }
 
-    public void changeExpandListener(NodeExpandedEvent event) {
+    public void changeExpandListener(CollapsibleSubTableToggleEvent event) {
 
         // Toggle the expanded/collapse state for this node:
         // its only used for multi-select (see DirectoryTreeNode.isOpened())

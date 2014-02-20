@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.richfaces.component.UITree;
-import org.richfaces.event.NodeExpandedEvent;
+import org.richfaces.event.CollapsibleSubTableToggleEvent;
 
 public interface DirectoryTreeManager extends Serializable {
 
@@ -45,7 +45,7 @@ public interface DirectoryTreeManager extends Serializable {
      * <p/>
      * Used to not interfere with node state when manually changing open nodes.
      */
-    void changeExpandListener(NodeExpandedEvent event);
+    void changeExpandListener(CollapsibleSubTableToggleEvent event);
 
     /**
      * Returns true if node should be opened according to last selection.

@@ -99,8 +99,12 @@ public class NXRadioRenderer extends RadioRenderer {
 
         boolean checked = null != newValue && newValue.equals(curValue);
 
-        if (optionInfo.isHideNoSelection() && curItem.isNoSelectionOption()
-                && curValue != null && !checked) {
+        // FIXME: curItem.isNoSelectionOption() method not found
+        // if (optionInfo.isHideNoSelection() && curItem.isNoSelectionOption()
+        // && curValue != null && !checked) {
+        // return;
+        // }
+        if (optionInfo.isHideNoSelection() && curValue != null && !checked) {
             return;
         }
 
@@ -128,7 +132,7 @@ public class NXRadioRenderer extends RadioRenderer {
         writer.writeAttribute("name", component.getClientId(context),
                 "clientId");
         String idString = component.getClientId(context)
-                + UINamingContainer.getSeparatorChar(context)
+                + UINamingContainer.SEPARATOR_CHAR
                 + Integer.toString(itemNumber);
         writer.writeAttribute("id", idString, "id");
 

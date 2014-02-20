@@ -219,7 +219,7 @@
     </context-param>
 
     <context-param>
-      <param-name>facelets.LIBRARIES</param-name>
+      <param-name>javax.faces.FACELETS_LIBRARIES</param-name>
       <param-value>
         /WEB-INF/nxdirectory.taglib.xml;
         /WEB-INF/nxweb-html.taglib.xml;
@@ -250,17 +250,12 @@
       Default: 2 seconds.
     -->
     <context-param>
-      <param-name>facelets.REFRESH_PERIOD</param-name>
+      <param-name>javax.faces.FACELETS_REFRESH_PERIOD</param-name>
       <param-value>-1</param-value>
     </context-param>
 
     <context-param>
       <param-name>com.sun.faces.responseBufferSize</param-name>
-      <param-value>500000</param-value>
-    </context-param>
-
-    <context-param>
-      <param-name>facelets.BUFFER_SIZE</param-name>
       <param-value>500000</param-value>
     </context-param>
 

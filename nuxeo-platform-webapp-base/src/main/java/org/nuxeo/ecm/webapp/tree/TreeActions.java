@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.richfaces.component.UITree;
-import org.richfaces.event.NodeExpandedEvent;
+import org.richfaces.event.CollapsibleSubTableToggleEvent;
 
 /**
  * Local interface for the Seam component that manages the tree.
@@ -35,7 +35,8 @@ public interface TreeActions {
     String DEFAULT_TREE_PLUGIN_NAME = "navigation";
 
     /**
-     * Returns tree roots according to current document first accessible parent.
+     * Returns tree roots according to current document first accessible
+     * parent.
      */
     List<DocumentTreeNode> getTreeRoots() throws ClientException;
 
@@ -44,7 +45,7 @@ public interface TreeActions {
      * <p>
      * Used to not interfere with node state when manually changing open nodes.
      */
-    void changeExpandListener(NodeExpandedEvent event);
+    void changeExpandListener(CollapsibleSubTableToggleEvent event);
 
     /**
      * Returns true if node should be opened according to current document.
