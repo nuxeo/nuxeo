@@ -28,6 +28,10 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletException;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagConfig;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
@@ -40,22 +44,19 @@ import org.nuxeo.theme.jsf.negotiation.JSFNegotiator;
 import org.nuxeo.theme.negotiation.NegotiationException;
 import org.nuxeo.theme.types.TypeFamily;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletException;
-import com.sun.facelets.TemplateClient;
-import com.sun.facelets.el.VariableMapperWrapper;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.TagHandler;
-import com.sun.facelets.tag.ui.DefineHandler;
-import com.sun.facelets.tag.ui.ParamHandler;
+import com.sun.faces.facelets.FaceletContextImplBase;
+import com.sun.faces.facelets.TemplateClient;
+import com.sun.faces.facelets.el.VariableMapperWrapper;
+import com.sun.faces.facelets.tag.TagHandlerImpl;
+import com.sun.faces.facelets.tag.ui.DefineHandler;
+import com.sun.faces.facelets.tag.ui.ParamHandler;
 
 /**
  * @author Jacob Hookom
  * @version $Id: CompositionHandler.java,v 1.15 2009/02/02 22:58:59 driscoll
  *          Exp $
  */
-public final class CompositionHandler extends TagHandler implements
+public final class CompositionHandler extends TagHandlerImpl implements
         TemplateClient {
 
     private static final Log log = LogFactory.getLog(CompositionHandler.class);
@@ -110,8 +111,9 @@ public final class CompositionHandler extends TagHandler implements
      * javax.faces.component.UIComponent)
      */
     @Override
-    public void apply(FaceletContext ctx, UIComponent parent)
+    public void apply(FaceletContext ctxObj, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
+        FaceletContextImplBase ctx = (FaceletContextImplBase) ctxObj;
 
         VariableMapper orig = ctx.getVariableMapper();
         if (this.params != null) {

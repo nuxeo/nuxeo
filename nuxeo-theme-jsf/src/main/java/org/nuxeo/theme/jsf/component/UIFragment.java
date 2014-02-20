@@ -24,13 +24,10 @@ import javax.faces.component.UIOutput;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.faces.view.facelets.Facelet;
 
-import org.nuxeo.theme.jsf.facelets.NXThemesFaceletFactory;
-
-import com.sun.facelets.Facelet;
-import com.sun.facelets.FaceletFactory;
-import com.sun.facelets.compiler.SAXCompiler;
-import com.sun.facelets.impl.DefaultResourceResolver;
+import com.sun.faces.application.ApplicationAssociate;
+import com.sun.faces.facelets.impl.DefaultFaceletFactory;
 
 public class UIFragment extends UIOutput {
 
@@ -41,9 +38,6 @@ public class UIFragment extends UIOutput {
     private String engine;
 
     private String mode;
-
-    private static final FaceletFactory faceletFactory = new NXThemesFaceletFactory(
-            new SAXCompiler(), new DefaultResourceResolver(), -1L);
 
     @Override
     public void encodeAll(final FacesContext context) throws IOException {
@@ -70,7 +64,9 @@ public class UIFragment extends UIOutput {
         // Render the view
         final String faceletId = String.format("nxtheme://element/%s/%s/%s/%s",
                 engine, mode, templateEngine, uid);
-        final Facelet facelet = faceletFactory.getFacelet(faceletId);
+        ApplicationAssociate associate = ApplicationAssociate.getCurrentInstance();
+        DefaultFaceletFactory faceletFactory = associate.getFaceletFactory();
+        final Facelet facelet = faceletFactory.getFacelet(context, faceletId);
         facelet.apply(context, viewRoot);
         renderChildren(context, viewRoot);
 
