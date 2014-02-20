@@ -25,8 +25,6 @@ import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
-import org.ajax4jsf.renderkit.AjaxRendererUtils;
-import org.ajax4jsf.renderkit.RendererUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -100,13 +98,15 @@ public class JSFResetActionsBean {
         String baseCompId = getBaseComponentId();
         if (baseCompId != null) {
             FacesContext ctx = FacesContext.getCurrentInstance();
-            UIComponent target = RendererUtils.getInstance().findComponentFor(
-                    component, baseCompId);
-            if (target != null) {
-                baseCompId = AjaxRendererUtils.getAbsoluteId(target);
-            }
-            UIComponent anchor = ctx.getViewRoot().findComponent(baseCompId);
-            resetComponentResursive(anchor);
+            // TODO migrate to JSF2
+            // UIComponent target = component.findComponentFor(
+            // component, baseCompId);
+            // if (target != null) {
+            // baseCompId = AjaxRendererUtils.getAbsoluteId(target);
+            // }
+            // UIComponent anchor =
+            // ctx.getViewRoot().findComponent(baseCompId);
+            // resetComponentResursive(anchor);
         } else {
             log.error("No base component id given => cannot reset "
                     + "components state.");
