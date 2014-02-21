@@ -21,7 +21,6 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.dam.DamConstants.REFRESH_DAM_SEARCH;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,7 +69,7 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.dnd.DndConfigurationHelper;
 import org.nuxeo.runtime.api.Framework;
-import org.richfaces.model.UploadItem;
+import org.richfaces.model.UploadedFile;
 
 /**
  * Handles DAM import related actions.
@@ -116,7 +115,7 @@ public class DamImportActions implements Serializable {
 
     protected String currentBatchId;
 
-    protected Collection<UploadItem> uploadedFiles = null;
+    protected Collection<UploadedFile> uploadedFiles = null;
 
     protected String selectedNewAssetType;
 
@@ -287,10 +286,10 @@ public class DamImportActions implements Serializable {
         }
         try {
             List<Blob> blobs = new ArrayList<>();
-            for (UploadItem uploadItem : uploadedFiles) {
-                String filename = FileUtils.getCleanFileName(uploadItem.getFileName());
+            for (UploadedFile uploadItem : uploadedFiles) {
+                String filename = FileUtils.getCleanFileName(uploadItem.getName());
                 Blob blob = FileUtils.createTemporaryFileBlob(
-                        uploadItem.getFile(), filename,
+                        uploadItem.getInputStream(), filename,
                         uploadItem.getContentType());
                 blobs.add(blob);
             }
@@ -313,11 +312,13 @@ public class DamImportActions implements Serializable {
             log.error("Error while executing automation batch ", e);
             throw ClientException.wrap(e);
         } finally {
-            for (UploadItem uploadItem : getUploadedFiles()) {
-                File tempFile = uploadItem.getFile();
-                if (tempFile != null && tempFile.exists()) {
-                    Framework.trackFile(tempFile, tempFile);
-                }
+            for (UploadedFile uploadItem : getUploadedFiles()) {
+                // FIXME: check if a temp file needs to be tracked for
+                // deletion
+                // File tempFile = uploadItem.getFile();
+                // if (tempFile != null && tempFile.exists()) {
+                // Framework.trackFile(tempFile, tempFile);
+                // }
             }
             uploadedFiles = null;
         }
@@ -334,14 +335,14 @@ public class DamImportActions implements Serializable {
         currentBatchId = null;
     }
 
-    public Collection<UploadItem> getUploadedFiles() {
+    public Collection<UploadedFile> getUploadedFiles() {
         if (uploadedFiles == null) {
             uploadedFiles = new ArrayList<>();
         }
         return uploadedFiles;
     }
 
-    public void setUploadedFiles(Collection<UploadItem> uploadedFiles) {
+    public void setUploadedFiles(Collection<UploadedFile> uploadedFiles) {
         this.uploadedFiles = uploadedFiles;
     }
 
