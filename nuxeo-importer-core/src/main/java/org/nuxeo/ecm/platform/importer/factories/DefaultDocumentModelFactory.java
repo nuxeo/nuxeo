@@ -130,6 +130,11 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
             leafTypeToUse = leafType;
         }
 
+        String mimeType = bh.getBlob().getMimeType();
+        if (mimeType == null) {
+            mimeType = getMimeType(node.getName());
+        }
+
         String name = getValidNameFromFileName(node.getName());
         String fileName = node.getName();
 
