@@ -1,0 +1,10 @@
+-- character uuid to bigint migration for Oracle
+-- v0.2 2013-02-21
+
+BEGIN
+  -- cleanup phase
+  EXECUTE IMMEDIATE 'DROP TABLE tmp_fk';
+  EXECUTE IMMEDIATE 'DROP TABLE tmp_pk';
+  EXECUTE IMMEDIATE 'DROP TABLE tmp_idx';
+  EXECUTE IMMEDIATE 'DROP TABLE tmp_ftidx';
+END;
