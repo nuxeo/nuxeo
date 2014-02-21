@@ -43,7 +43,7 @@ public class TestDefaultImporterServiceWithMetaAndDocType extends SQLRepositoryT
 
     public static final String IMPORTER_CORE_BUNDLE = "org.nuxeo.ecm.platform.importer.core";
 
-    private static final String kIMPORT_FOLDER_NAME = "import-src-with-metadatas3";
+    private static final String kIMPORT_FOLDER_NAME = "metadatas-with-doctype";
     private static final String kIMPORT_FOLDER_PATH = "/default-domain/workspaces/" + kIMPORT_FOLDER_NAME;
     private static final String kBRANCH_FOLDER_PATH = "/default-domain/workspaces/" + kIMPORT_FOLDER_NAME + "/branch1";
 
@@ -103,12 +103,12 @@ public class TestDefaultImporterServiceWithMetaAndDocType extends SQLRepositoryT
         assertEquals("src1", file.getPropertyValue("dc:source"));
 
         DocumentModel note = session.getDocument(new PathRef(
-                kBRANCH_FOLDER_PATH + "/do_Note.pdf"));
+                kBRANCH_FOLDER_PATH + "/do_Note.html"));
         assertNotNull(note);
-        assertEquals("Note", file.getType());
-        assertEquals("the note", file.getPropertyValue("note:note"));
+        assertEquals("Note", note.getType());
+        assertEquals("the note", note.getPropertyValue("note:note"));
 
-        /*
+        /* MailMessage not a default type...
         DocumentModel mailMess = session.getDocument(new PathRef(
                 kBRANCH_FOLDER_PATH + "/do_MailMessage.pdf"));
         assertNotNull(mailMess);
