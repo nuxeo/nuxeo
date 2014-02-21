@@ -386,7 +386,7 @@ public class DownloadServlet extends HttpServlet {
             read = Math.min(read, range.getEnd() - offset + 1);
             out.write(buffer, 0, (int) read);
             out.flush();
-            offset += BUFFER_SIZE;
+            offset += read;
         }
 
     }
