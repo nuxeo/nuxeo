@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright ${year} Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,12 +13,14 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Thibaud Arguillere (Nuxeo)
  *
  * $Id$
  */
 
 package org.nuxeo.ecm.platform.importer.factories;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,11 +35,21 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  * constructor create Folder for folderish file and File for other. But you can
  * specify them using the other constructor.
  *
+ * Also, if you are using .properties files to setup metada, you can use
+ * the ecm:primaryType xpath to specify the type of document to create. This
+ * will override the default ones, and works for files and folders. If no
+ * .properties file is provided of it the current node has a .properties
+ * file but no ecm:primaryType, the default types are created. This works
+ * for leafType but also for folderish type.
+ *
  * @author Thierry Delprat
  * @author Daniel Tellez
+ * @author Thibaud Arguillere
  *
  */
 public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
+
+    private static final String kDOCTYPE_XPATH = "ecm:primaryType";
 
     protected String folderishType;
 
@@ -70,15 +82,28 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
      * org.nuxeo.ecm.core.api.DocumentModel,
      * org.nuxeo.ecm.platform.importer.base.SourceNode)
      */
+    @Override
     public DocumentModel createFolderishNode(CoreSession session,
             DocumentModel parent, SourceNode node) throws Exception {
+
         String name = getValidNameFromFileName(node.getName());
 
+        BlobHolder bh = node.getBlobHolder();
+        String folderishTypeToUse = getDocTypeToUse(bh);
+        if(folderishTypeToUse == null) {
+            folderishTypeToUse = folderishType;
+        }
+
         Map<String, Object> options = new HashMap<String, Object>();
-        DocumentModel doc = session.createDocumentModel(folderishType, options);
+        DocumentModel doc = session.createDocumentModel(folderishTypeToUse, options);
         doc.setPathInfo(parent.getPathAsString(), name);
         doc.setProperty("dublincore", "title", node.getName());
         doc = session.createDocument(doc);
+
+        if(bh != null) {
+            doc = setDocumentProperties(session, bh.getProperties(), doc);
+        }
+
         return doc;
     }
 
@@ -90,6 +115,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
      * org.nuxeo.ecm.core.api.DocumentModel,
      * org.nuxeo.ecm.platform.importer.base.SourceNode)
      */
+    @Override
     public DocumentModel createLeafNode(CoreSession session,
             DocumentModel parent, SourceNode node) throws Exception {
         return defaultCreateLeafNode(session, parent, node);
@@ -99,25 +125,49 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
             DocumentModel parent, SourceNode node) throws Exception {
 
         BlobHolder bh = node.getBlobHolder();
-
-        String mimeType = bh.getBlob().getMimeType();
-        if (mimeType == null) {
-            mimeType = getMimeType(node.getName());
+        String leafTypeToUse = getDocTypeToUse(bh);
+        if(leafTypeToUse == null) {
+            leafTypeToUse = leafType;
         }
 
         String name = getValidNameFromFileName(node.getName());
         String fileName = node.getName();
 
         Map<String, Object> options = new HashMap<String, Object>();
-        DocumentModel doc = session.createDocumentModel(leafType, options);
+        DocumentModel doc = session.createDocumentModel(leafTypeToUse, options);
         doc.setPathInfo(parent.getPathAsString(), name);
         doc.setProperty("dublincore", "title", node.getName());
         doc.setProperty("file", "filename", fileName);
         doc.setProperty("file", "content", bh.getBlob());
 
         doc = session.createDocument(doc);
-        doc = setDocumentProperties(session, bh.getProperties(), doc);
+
+        if(bh != null) {
+            doc = setDocumentProperties(session, bh.getProperties(), doc);
+        }
+
         return doc;
+    }
+
+    /*
+     * Return null if kDOCTYPE_XPATH is not in the properties or has been
+     * set to nothing.
+     */
+    protected String getDocTypeToUse(BlobHolder inBH) {
+        String type = null;
+
+        if(inBH != null) {
+            Map<String, Serializable> props = inBH.getProperties();
+            if(props != null) {
+                type = (String) props.get(kDOCTYPE_XPATH);
+                if(type!= null && type.isEmpty()) {
+                    type = null;
+                }
+            }
+        }
+
+
+        return type;
     }
 
     /** Modify this to get right mime types depending on the file input */
