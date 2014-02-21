@@ -17,9 +17,8 @@
 
 package org.nuxeo.ecm.csv;
 
-import static org.nuxeo.ecm.csv.CSVImportLog.Status;
-
 import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -32,11 +31,12 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.csv.CSVImportLog.Status;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-import org.richfaces.event.UploadEvent;
-import org.richfaces.model.UploadItem;
+import org.richfaces.event.FileUploadEvent;
+import org.richfaces.model.UploadedFile;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
@@ -71,10 +71,13 @@ public class CSVImportActions implements Serializable {
         this.notifyUserByEmail = notifyUserByEmail;
     }
 
-    public void uploadListener(UploadEvent event) throws Exception {
-        UploadItem item = event.getUploadItem();
-        csvFile = item.getFile();
-        csvFileName = FilenameUtils.getName(item.getFileName());
+    public void uploadListener(FileUploadEvent event) throws Exception {
+        UploadedFile item = event.getUploadedFile();
+        // FIXME: check if this needs to be tracked for deletion
+        csvFile = File.createTempFile("FileManageActionsFile", null);
+        InputStream in = event.getUploadedFile().getInputStream();
+        org.nuxeo.common.utils.FileUtils.copyToFile(in, csvFile);
+        csvFileName = FilenameUtils.getName(item.getName());
     }
 
     public void importCSVFile() {
