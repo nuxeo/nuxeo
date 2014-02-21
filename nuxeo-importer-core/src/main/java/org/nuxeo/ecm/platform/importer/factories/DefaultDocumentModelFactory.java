@@ -24,6 +24,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -50,6 +52,8 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
 public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
 
     private static final String kDOCTYPE_XPATH = "ecm:primaryType";
+
+    private static final Log log = LogFactory.getLog(DefaultDocumentModelFactory.class);
 
     protected String folderishType;
 
@@ -150,6 +154,9 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         if(bh != null) {
             doc = setDocumentProperties(session, bh.getProperties(), doc);
         }
+
+        log.warn("DOC CREATED: " + name);
+        log.warn("At path: " + doc.getPathAsString());
 
         return doc;
     }
