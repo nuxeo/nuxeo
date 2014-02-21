@@ -2,6 +2,27 @@
 
   <require>org.nuxeo.ecm.platform.actions</require>
 
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="Collections" link="user_center_fragment.xhtml"
+      label="user.center.collections" order="80" icon="/icons/collection_tab.png">
+      <category>USER_CENTER</category>
+      <properties>
+        <property name="alwaysDisplaySubTabs">true</property>
+      </properties>
+      <filter-id>not_anonymous</filter-id>
+    </action>
+
+    <action id="CollectionList" link="/incl/collection_listing.xhtml"
+      label="user.center.collections" order="0">
+      <category>Collections_sub_tab</category>
+      <filter-id>not_readonly</filter-id>
+    </action>
+
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
 

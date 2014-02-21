@@ -22,7 +22,7 @@
       <schema name="collectionMember" />
     </facet>
 
-    <doctype name="Collection">
+    <doctype name="Collection" extends="Document">
       <facet name="Collection" />
       <schema name="dublincore"/>
     </doctype>

@@ -1,20 +1,22 @@
 <?xml version="1.0"?>
 <fragment version="1">
 
-  <extension target="faces-config#NAVIGATION">
-
-    <navigation-case>
-      <from-outcome>suggest_add_new_directory_entry</from-outcome>
-      <to-view-id>/widgets/suggest_add_new_directory_entry_iframe.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-  </extension>
+  <require>org.nuxeo.ecm.platform.lang</require>
 
   <install>
     <unzip from="${bundle.fileName}" to="/" prefix="web">
       <include>web/nuxeo.war/**</include>
     </unzip>
+
+    <mkdir path="nuxeo.collections.tmp" />
+    <unzip from="${bundle.fileName}" to="nuxeo.collections.tmp" />
+    <append
+      from="nuxeo.collections.tmp/OSGI-INF/l10n/messages_fr.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
+    <append
+      from="nuxeo.collections.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
+    <delete path="nuxeo.collections.tmp" />
   </install>
 
 </fragment>
