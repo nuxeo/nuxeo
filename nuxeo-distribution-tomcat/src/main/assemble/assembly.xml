@@ -196,7 +196,7 @@
           tofile="${tomcat}/setupWizardDownloads/${DAMMPMD5}" />
     <move file="${maven.project.build.directory}/nuxeo-marketplace-social-collaboration-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${SCMPMD5}" />
-          <move file="${maven.project.build.directory}/nuxeo-marketplace-rest-api-${nuxeo.distribution.version}.zip"
+    <move file="${maven.project.build.directory}/nuxeo-marketplace-rest-api-${nuxeo.distribution.version}.zip"
           tofile="${tomcat}/setupWizardDownloads/${RESTMD5}" />
 
     <echo file="${tomcat}/nxserver/data/installAfterRestart-DM.log">init
@@ -267,9 +267,6 @@ install nuxeo-dam
         </includes>
       </artifact:set>
     </copy>
-
-    <nx:rmdups dir="${distribution.dir}/nxserver/lib" />
-
     <!-- remove libraries already provided by Tomcat or unneeded -->
     <delete>
       <fileset dir="${distribution.dir}/nxserver/lib">
@@ -281,9 +278,7 @@ install nuxeo-dam
         <include name="jsp-*" />
         <include name="juel-api-*" />
         <include name="tomcat-dbcp-*" />
-      </fileset>
-      <!-- replaced by sl4j bridge -->
-      <fileset dir="${distribution.dir}/nxserver/lib">
+        <!-- replaced by sl4j bridge -->
         <include name="commons-logging*" />
       </fileset>
     </delete>
@@ -295,11 +290,10 @@ install nuxeo-dam
         <include name="commons-lang-*" />
         <include name="freemarker-*" />
         <include name="mail-*" />
+        <include name="xercesImpl-*" />
         <!-- move WSS front filter as external lib since it must be referenced from root Web context-->
         <include name="nuxeo-generic-wss-front*" />
-      </fileset>
-      <!-- install sl4j bridge in container classpath -->
-      <fileset dir="${distribution.dir}/nxserver/lib">
+        <!-- install sl4j bridge in container classpath -->
         <include name="slf4j*" />
         <include name="jcl-over-slf4j*" />
         <include name="log4j-*" />
@@ -310,9 +304,10 @@ install nuxeo-dam
         <include name="nuxeo-runtime-launcher*" />
       </fileset>
     </move>
+    <nx:rmdups dir="${distribution.dir}/nxserver/lib" />
     <nx:rmdups dir="${distribution.dir}/lib" />
 
-    <!-- Move JAX libraries more recent that those from JDK6 into endorsed -->
+    <!-- Move JAX libraries more recent than those from JDK6 into endorsed -->
     <move todir="${distribution.dir}/endorsed">
       <fileset dir="${distribution.dir}/nxserver/lib">
         <include name="jaxb-api-*" />
