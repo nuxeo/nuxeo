@@ -625,6 +625,10 @@ CREATE TABLE aclr (
   acl NVARCHAR(4000)
 )
 
+#IF: emptyResult
+ALTER TABLE aclr SET (LOCK_ESCALATION=DISABLE);
+
+
 #TEST:
 SELECT 1 FROM sys.indexes WHERE name = 'aclr_acl_id_idx'
 
@@ -700,6 +704,9 @@ CREATE TABLE hierarchy_read_acl (
 )
 
 #IF: emptyResult
+ALTER TABLE hierarchy_read_acl SET (LOCK_ESCALATION=DISABLE);
+
+#IF: emptyResult
 CREATE CLUSTERED INDEX [hierarchy_read_acl_oid_idx] ON [dbo].[hierarchy_read_acl] ([_oid])
 
 
@@ -712,20 +719,22 @@ CREATE INDEX [hierarchy_read_acl_acl_id_idx] ON [dbo].[hierarchy_read_acl] ([acl
 
 
 # -- Log modified document that require an aclr update
-# -- Since 5.9.3 the aclr_modified table is replaced by a global temporary table ##aclr_modified
 #TEST:
-SELECT 1 WHERE OBJECT_ID('tempdb..##aclr_modified') IS NOT NULL;
+SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr_modified' AND TABLE_CATALOG = db_name();
 
-#IF: emptyResult
-CREATE TABLE ##aclr_modified (
+#IF: ! emptyResult
+DROP TABLE aclr_modified;
+
+CREATE TABLE aclr_modified (
   id INT NOT NULL IDENTITY,
   spid INTEGER NOT NULL,
   hierarchy_id ${idType} COLLATE DATABASE_DEFAULT,
   is_new TINYINT
 )
 
-#IF: emptyResult
-CREATE CLUSTERED INDEX aclr_modified_spid_idx ON ##aclr_modified (spid)
+CREATE CLUSTERED INDEX aclr_modified_spid_idx ON aclr_modified (spid)
+
+ALTER TABLE aclr_modified SET (LOCK_ESCALATION=DISABLE);
 
 
 #-- List of permission that grant the read access
@@ -912,9 +921,9 @@ CREATE TRIGGER nx_trig_acls_modified ON [acls]
 AFTER INSERT, UPDATE, DELETE AS
 BEGIN
   SET NOCOUNT ON;
-  INSERT INTO ##aclr_modified (hierarchy_id, is_new, spid)
+  INSERT INTO aclr_modified (hierarchy_id, is_new, spid)
     SELECT DISTINCT(id), 0, @@SPID FROM inserted;
-  INSERT INTO ##aclr_modified (hierarchy_id, is_new, spid)
+  INSERT INTO aclr_modified (hierarchy_id, is_new, spid)
     SELECT DISTINCT(id), 0, @@SPID FROM deleted;
 END;
 
@@ -928,7 +937,7 @@ CREATE TRIGGER nx_trig_hierarchy_insert ON [hierarchy]
 AFTER INSERT AS
 BEGIN
   SET NOCOUNT ON;
-  INSERT INTO ##aclr_modified (hierarchy_id, is_new, spid)
+  INSERT INTO aclr_modified (hierarchy_id, is_new, spid)
     SELECT DISTINCT(id), 1, @@SPID FROM inserted
     WHERE isproperty = 0;
 END;
@@ -943,7 +952,7 @@ CREATE TRIGGER nx_trig_hierarchy_update ON [hierarchy]
 AFTER UPDATE AS
 BEGIN
   SET NOCOUNT ON;
-  INSERT INTO ##aclr_modified (hierarchy_id, is_new, spid)
+  INSERT INTO aclr_modified (hierarchy_id, is_new, spid)
     SELECT DISTINCT(OLD.id), 0, @@SPID FROM deleted OLD
       JOIN [inserted] NEW ON OLD.id = NEW.id
       WHERE NEW.isproperty = 0 AND OLD.parentid <> NEW.parentid;
@@ -1118,7 +1127,7 @@ BEGIN
   DELETE FROM @ids;
   --
   -- 1/ Get new doc to insert into hierarchy_read_acl
-  DELETE FROM ##aclr_modified OUTPUT DELETED.hierarchy_id, NULL INTO @ids WHERE spid = @@SPID AND is_new = 1;
+  DELETE FROM aclr_modified OUTPUT DELETED.hierarchy_id, NULL INTO @ids WHERE spid = @@SPID AND is_new = 1;
   INSERT INTO hierarchy_read_acl SELECT i.id, dbo.nx_get_read_acl_id(i.id) FROM @ids i
     JOIN hierarchy h ON i.id = h.id
     LEFT JOIN hierarchy_read_acl r ON r.id = i.id
@@ -1126,7 +1135,7 @@ BEGIN
   DELETE FROM @ids;
   --
   -- 2/ Get the list of doc to update
-  DELETE FROM ##aclr_modified OUTPUT DELETED.hierarchy_id, NULL INTO @ids WHERE spid = @@SPID AND is_new = 0;
+  DELETE FROM aclr_modified OUTPUT DELETED.hierarchy_id, NULL INTO @ids WHERE spid = @@SPID AND is_new = 0;
   WHILE @@rowcount > 0 BEGIN
     INSERT INTO @ids SELECT h.id, NULL
       FROM hierarchy AS h
