@@ -213,10 +213,12 @@ public class TestAuditFileSystemChangeFinder {
             doc1.setPropertyValue("file:content", new StringBlob(
                     "The content of file 1."));
             doc1 = session.createDocument(doc1);
+            waitToEnsureDistinctAuditEventDate();
             doc2 = session.createDocumentModel("/folder2", "doc2", "File");
             doc2.setPropertyValue("file:content", new StringBlob(
                     "The content of file 2."));
             doc2 = session.createDocument(doc2);
+            waitToEnsureDistinctAuditEventDate();
             doc3 = session.createDocumentModel("/folder3", "doc3", "File");
             doc3.setPropertyValue("file:content", new StringBlob(
                     "The content of file 3."));
@@ -292,14 +294,7 @@ public class TestAuditFileSystemChangeFinder {
             // synchronized root
             session.followTransition(doc1.getRef(), "undelete");
             session.move(doc3.getRef(), folder2.getRef(), null);
-            // Wait 100 ms as next assertion randomly fails because of
-            // "documentMoved" being placed before "documentModified" in the
-            // audit query result list. Both log entries probably have the same
-            // event date to the millisecond in this case.
-            // Don't know why it only seems to fail for this set of changes,
-            // maybe the move operation is very fast?
-            // cf. https://jira.nuxeo.com/browse/NXP-11964
-            Thread.sleep(100);
+            waitToEnsureDistinctAuditEventDate();
             nuxeoDriveManager.registerSynchronizationRoot(
                     session.getPrincipal(), folder2, session);
         } finally {
@@ -621,9 +616,7 @@ public class TestAuditFileSystemChangeFinder {
             doc1.setPropertyValue("file:content", new StringBlob(
                     "The content of file 1."));
             doc1 = session.createDocument(doc1);
-            // Wait 100 ms to avoid random assertion failure due to audit log
-            // entries probably having the same event date to the millisecond.
-            Thread.sleep(100);
+            waitToEnsureDistinctAuditEventDate();
             doc2 = session.createDocumentModel("/folder2", "doc2", "File");
             doc2.setPropertyValue("file:content", new StringBlob(
                     "The content of file 2."));
@@ -1012,6 +1005,15 @@ public class TestAuditFileSystemChangeFinder {
 
     protected void commitAndWaitForAsyncCompletion() throws Exception {
         commitAndWaitForAsyncCompletion(session);
+    }
+
+    protected void waitToEnsureDistinctAuditEventDate()
+            throws InterruptedException {
+        // Wait 100 ms to avoid random assertion failures due to audit log
+        // entries probably having the same event date to the millisecond.
+        // See https://jira.nuxeo.com/browse/NXP-11964
+        // and https://jira.nuxeo.com/browse/NXP-13811
+        Thread.sleep(100);
     }
 
     protected void dispose(CoreSession session) throws Exception {
