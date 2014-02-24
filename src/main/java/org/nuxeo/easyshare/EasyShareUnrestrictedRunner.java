@@ -37,7 +37,7 @@ public abstract class EasyShareUnrestrictedRunner {
 
     protected CoreSession session;
 
-    public Object runUnrestricted(String docId) throws ClientException {
+    public Object runUnrestricted(String docId) {
         try {
             IdRef docRef = new IdRef(docId);
 
@@ -48,8 +48,6 @@ public abstract class EasyShareUnrestrictedRunner {
             try {
                 rm = Framework.getLocalService(RepositoryManager.class);
                 coreSession = rm.getDefaultRepository().open();
-
-
 
                 // Run unrestricted operation
                 return run(coreSession, docRef);
