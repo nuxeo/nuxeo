@@ -49,7 +49,7 @@ import org.nuxeo.ecm.platform.importer.source.SourceNode;
  */
 public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
 
-    private static final String kDOCTYPE_XPATH = "ecm:primaryType";
+    public static final String DOCTYPE_KEY_NAME = "ecm:primaryType";
 
     protected String folderishType;
 
@@ -155,7 +155,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
     }
 
     /*
-     * Return null if kDOCTYPE_XPATH is not in the properties or has been
+     * Return null if DOCTYPE_KEY_NAME is not in the properties or has been
      * set to nothing.
      */
     protected String getDocTypeToUse(BlobHolder inBH) {
@@ -164,7 +164,7 @@ public class DefaultDocumentModelFactory extends AbstractDocumentModelFactory {
         if(inBH != null) {
             Map<String, Serializable> props = inBH.getProperties();
             if(props != null) {
-                type = (String) props.get(kDOCTYPE_XPATH);
+                type = (String) props.get(DOCTYPE_KEY_NAME);
                 if(type!= null && type.isEmpty()) {
                     type = null;
                 }
