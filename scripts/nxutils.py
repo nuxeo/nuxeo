@@ -46,7 +46,7 @@ class Repository(object):
 
     Provides recursive Git and Shell functions."""
 
-    def __init__(self, basedir, alias, dirmapping=True):
+    def __init__(self, basedir, alias, dirmapping=True, is_nuxeoecm=True):
         assert_git_config()
         (self.basedir, self.driveletter,
          self.oldbasedir) = long_path_workaround_init(basedir, dirmapping)
@@ -67,7 +67,7 @@ class Repository(object):
         self.modules = []
         self.addons = []
         self.optional_addons = []
-        self.is_nuxeoecm = True
+        self.is_nuxeoecm = is_nuxeoecm
 
     def cleanup(self):
         long_path_workaround_cleanup(self.driveletter, self.oldbasedir)
@@ -329,9 +329,11 @@ class Repository(object):
         profiles_param = ""
         if profiles is not None:
             profiles_param = "-P%s" % profiles
-        system("mvn %s %s -Paddons,distrib,all-distributions %s" %
-               (commands, skip_tests_param, profiles_param),
-               delay_stdout=False, run=(not dryrun))
+        system("mvn %s %s %s %s" %
+               (commands, "-Paddons,distrib,all-distributions" if
+                self.is_nuxeoecm else "",
+                skip_tests_param, profiles_param),
+                delay_stdout=False, run=(not dryrun))
 
 
 def log(message, out=sys.stdout):
