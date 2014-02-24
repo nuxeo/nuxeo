@@ -307,7 +307,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         nbCreatedDocsByThreads = new ConcurrentHashMap<String, Long>();
 
         importTP = new ThreadPoolExecutor(nbThreads, nbThreads, 500L,
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100),
+                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
                 new NamedThreadFactory("Nuxeo-Importer-"));
 
         initRootTask(importSource, targetContainer, skipRootContainerCreation,
