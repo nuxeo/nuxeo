@@ -38,10 +38,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
@@ -2514,28 +2514,44 @@ public class TestSQLBackend extends SQLBackendTestCase {
     @Test
     public void testBulkFetch() throws Exception {
         Session session = repository.getConnection();
+        Model model = ((SessionImpl) session).getModel();
+
+        // fragments that are always present
+        Set<String> alwaysFragments = new HashSet<String>();
+        if (!model.miscInHierarchy) {
+            alwaysFragments.add(Model.MISC_TABLE_NAME);
+        }
+
+        boolean subjectsIsArray = !model.getFragmentNames().contains("tst:subjects");
+        boolean tagsIsArray = !model.getFragmentNames().contains("tst:tags");
 
         // check computed prefetch info
-        Model model = ((SessionImpl) session).getModel();
-        HashSet<String> expectedFragments = new HashSet<String>(Arrays.asList(
-                "testschema", "tst:subjects", "tst:bignotes", "tst:tags",
-                "acls", "versions"));
-        if (!model.miscInHierarchy) {
-            expectedFragments.add(Model.MISC_TABLE_NAME);
+        HashSet<String> expectedFragments;
+        expectedFragments = new HashSet<String>(Arrays.asList("testschema",
+                "tst:bignotes", "acls", "versions"));
+        expectedFragments.addAll(alwaysFragments);
+        if (!subjectsIsArray) {
+            expectedFragments.add("tst:subjects");
+        }
+        if (!tagsIsArray) {
+            expectedFragments.add("tst:tags");
         }
         assertEquals(expectedFragments,
                 model.getTypePrefetchedFragments("TestDoc"));
+
         expectedFragments = new HashSet<String>(Arrays.asList("testschema2",
                 "acls", "versions"));
-        if (!model.miscInHierarchy) {
-            expectedFragments.add(Model.MISC_TABLE_NAME);
-        }
+        expectedFragments.addAll(alwaysFragments);
         assertEquals(expectedFragments,
                 model.getTypePrefetchedFragments("TestDoc2"));
-        expectedFragments = new HashSet<String>(Arrays.asList("tst:subjects",
-                "acls", "versions"));
-        if (!model.miscInHierarchy) {
-            expectedFragments.add(Model.MISC_TABLE_NAME);
+
+        expectedFragments = new HashSet<String>(Arrays.asList("acls",
+                "versions"));
+        expectedFragments.addAll(alwaysFragments);
+        if (subjectsIsArray) {
+            expectedFragments.add("testschema");
+        } else {
+            expectedFragments.add("tst:subjects");
         }
         assertEquals(expectedFragments,
                 model.getTypePrefetchedFragments("TestDoc3"));
@@ -3399,6 +3415,15 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, it.size());
         assertEquals("hello world", it.iterator().next().get("tst:title"));
         it.close();
+
+        clause = "tst:subjects IN ('foo', 'bar')";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL",
+                QueryFilter.EMPTY);
+        assertEquals(1, it.size());
+        assertEquals("hello world", it.iterator().next().get("tst:title"));
+        it.close();
     }
 
     @Test
@@ -3642,8 +3667,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // WHERE s.pos = 0
         // AND s.item = 'bar'
         clause = "tst:subjects/0 = 'foo'";
-        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
         it = session.queryAndFetch("SELECT tst:subjects/0" + FROM_WHERE
                 + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(1, it.size());
@@ -3655,8 +3678,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // JOIN tst_subjects s0 ON h.id = s0.id // not LEFT JOIN
         // JOIN tst_subjects s1 ON h.id = s1.id // not LEFT JOIN
         // WHERE s0.pos = 0 AND s1.pos = 1
-        // AND s0.item = 'foo'
-        clause = "tst:subjects/0 = 'foo'";
+        // AND s0.item LIKE 'foo%'
+        clause = "tst:subjects/0 LIKE 'foo%'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
         assertEquals(oneDoc, res.list);
         it = session.queryAndFetch("SELECT tst:subjects/1" + FROM_WHERE
@@ -3680,6 +3703,20 @@ public class TestSQLBackend extends SQLBackendTestCase {
             set.add((String) map.get("tst:subjects/*1"));
         }
         assertEquals(new HashSet<String>(Arrays.asList("foo", "moo")), set);
+        it.close();
+
+        clause = "tst:subjects/* LIKE '%oo'";
+        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
+        assertEquals(oneDoc, res.list);
+        it = session.queryAndFetch("SELECT tst:subjects/*" + FROM_WHERE
+                + clause, "NXQL", QueryFilter.EMPTY);
+        // two uncorrelated stars, resulting in a cross join
+        assertEquals(6, it.size());
+        set = new HashSet<String>();
+        for (Map<String, Serializable> map : it) {
+            set.add((String) map.get("tst:subjects/*"));
+        }
+        assertEquals(new HashSet<String>(Arrays.asList("foo", "moo", "bar")), set);
         it.close();
 
         // WHAT

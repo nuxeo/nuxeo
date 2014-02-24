@@ -116,9 +116,20 @@ public abstract class Dialect {
 
         public final int jdbcType;
 
+        public final String jdbcBaseTypeString;
+
+        public final int jdbcBaseType;
+
         public JDBCInfo(String string, int jdbcType) {
+            this(string, jdbcType, null, 0);
+        }
+
+        public JDBCInfo(String string, int jdbcType,
+                String jdbcBaseTypeString, int jdbcBaseType) {
             this.string = string;
             this.jdbcType = jdbcType;
+            this.jdbcBaseTypeString = jdbcBaseTypeString;
+            this.jdbcBaseType = jdbcBaseType;
         }
     }
 
@@ -139,6 +150,17 @@ public abstract class Dialect {
     public static JDBCInfo jdbcInfo(String string, int length, int jdbcType) {
         return new JDBCInfo(String.format(string, Integer.valueOf(length)),
                 jdbcType);
+    }
+
+    public static JDBCInfo jdbcInfo(String string, int jdbcType,
+            String jdbcBaseTypeString, int jdbcBaseType) {
+        return new JDBCInfo(string, jdbcType, jdbcBaseTypeString, jdbcBaseType);
+    }
+
+    public static JDBCInfo jdbcInfo(String string, int length, int jdbcType,
+            String jdbcBaseTypeString, int jdbcBaseType) {
+        return new JDBCInfo(String.format(string, Integer.valueOf(length)), jdbcType,
+                String.format(jdbcBaseTypeString, Integer.valueOf(length)), jdbcBaseType);
     }
 
     protected final BinaryManager binaryManager;
@@ -378,6 +400,41 @@ public abstract class Dialect {
         Timestamp ts = cal == null ? null
                 : new Timestamp(cal.getTimeInMillis());
         ps.setTimestamp(index, ts, cal); // cal passed for timezone
+    }
+
+    public Timestamp getTimestampFromCalendar(Calendar value) {
+        return new Timestamp(value.getTimeInMillis());
+    }
+
+    public Timestamp[] getTimestampFromCalendar(Serializable[] value) {
+        if (value == null) {
+            return null;
+        }
+        Timestamp[] ts = new Timestamp[value.length];
+        for (int i = 0; i < value.length; i++) {
+            ts[i] = getTimestampFromCalendar((Calendar) value[i]);
+        }
+        return ts;
+    }
+
+    public Calendar getCalendarFromTimestamp(Timestamp value) {
+        if (value == null) {
+            return null;
+        }
+        Calendar cal = new GregorianCalendar(); // XXX timezone
+        cal.setTimeInMillis(value.getTime());
+        return cal;
+    }
+
+    public Calendar[] getCalendarFromTimestamp(Timestamp[] value) {
+        if (value == null) {
+            return null;
+        }
+        Calendar[] cal = new GregorianCalendar[value.length];
+        for (int i = 0; i < value.length; i++) {
+            cal[i] = getCalendarFromTimestamp(value[i]);
+        }
+        return cal;
     }
 
     public abstract Serializable getFromResultSet(ResultSet rs, int index,
@@ -1227,6 +1284,85 @@ public abstract class Dialect {
     }
 
     /**
+     * Does the dialect support storing arrays in table columns.
+     * <p>
+     *
+     * @return true if ARRAY columns are supported
+     */
+    public boolean supportsArrayColumns() {
+        return false;
+    }
+
+    /**
+     * Structured Array Subquery Abstract Class.
+     */
+    public static abstract class ArraySubQuery {
+        protected Column arrayColumn;
+
+        protected String subQueryAlias;
+
+        public ArraySubQuery(Column arrayColumn, String subqueryAlias) {
+            this.arrayColumn = arrayColumn;
+            this.subQueryAlias = subqueryAlias;
+        }
+
+        public abstract Column getSubQueryIdColumn();
+
+        public abstract Column getSubQueryValueColumn();
+
+        public abstract String toSql();
+    }
+
+    /**
+     * Gets the dialect-specific subquery for an array column.
+     */
+    public ArraySubQuery getArraySubQuery(Column arrayColumn,
+            String subQueryAlias) throws QueryMakerException {
+        throw new QueryMakerException("Not supported");
+    }
+
+    /**
+     * Get SQL Array Element Subscripted string.
+     *
+     * @throws QueryMakerException
+     */
+    public String getArrayElementString(String arrayColumnName,
+            int arrayElementIndex) throws QueryMakerException {
+        throw new QueryMakerException("Not supported");
+    }
+
+    /**
+     * Gets the SQL string for an array column IN expression.
+     *
+     * @throws QueryMakerException
+     */
+    public String getArrayInSql(Column arrayColumn, String cast,
+            boolean positive, List<Serializable> params)
+            throws QueryMakerException {
+        throw new QueryMakerException("Not supported");
+    }
+
+    /**
+     * Gets the SQL string for an array column LIKE expression.
+     *
+     * @throws QueryMakerException
+     */
+    public String getArrayLikeSql(Column arrayColumn, String refName,
+            boolean positive, Table dataHierTable) throws QueryMakerException {
+        throw new QueryMakerException("Not supported");
+    }
+
+    /**
+     * Gets the SQL string for an array column ILIKE expression.
+     *
+     * @throws QueryMakerException
+     */
+    public String getArrayIlikeSql(Column arrayColumn, String refName,
+            boolean positive, Table dataHierTable) throws QueryMakerException {
+        throw new QueryMakerException("Not supported");
+    }
+
+    /**
      * Factory method for creating Array objects, suitable for passing to
      * {@link PreparedStatement#setArray}.
      * <p>
@@ -1330,7 +1466,6 @@ public abstract class Dialect {
     public boolean supportsConcurrentUpdateReadAcls() {
         return aclOptimizationsConcurrentUpdate;
     }
-
 
     /**
      * Does the dialect support SQL-99 WITH common table expressions.

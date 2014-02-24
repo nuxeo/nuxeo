@@ -270,11 +270,21 @@ public class Node {
     protected CollectionProperty makeCollectionProperty(String name,
             ModelProperty propertyInfo) throws StorageException {
         String fragmentName = propertyInfo.fragmentName;
-        RowId rowId = new RowId(fragmentName, getId());
-        Fragment fragment = context.get(rowId, true);
-        CollectionProperty property = new CollectionProperty(name,
-                propertyInfo.propertyType, false, (CollectionFragment) fragment);
-        return property;
+        Fragment fragment = fragments.get(fragmentName);
+        if (fragment == null) {
+            // lazy fragment, fetch from session
+            RowId rowId = new RowId(fragmentName, getId());
+            fragment = context.get(rowId, true);
+        }
+        if (fragment instanceof CollectionFragment) {
+            return new CollectionProperty(name, propertyInfo.propertyType,
+                    propertyInfo.readonly, (CollectionFragment) fragment);
+        } else {
+            fragments.put(fragmentName, fragment);
+            return new CollectionProperty(name, propertyInfo.propertyType,
+                    propertyInfo.readonly, (SimpleFragment) fragment,
+                    propertyInfo.fragmentKey);
+        }
     }
 
     public BaseProperty getProperty(String name) throws StorageException {

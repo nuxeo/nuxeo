@@ -112,4 +112,9 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         return true;
     }
 
+    @Override
+    public boolean supportsArrayColumns() {
+        return true;
+    }
+
 }

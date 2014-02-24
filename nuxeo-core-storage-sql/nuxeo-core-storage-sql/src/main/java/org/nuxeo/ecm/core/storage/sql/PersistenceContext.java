@@ -390,9 +390,11 @@ public class PersistenceContext {
                 for (String key : keys) {
                     PropertyType type = model.getFulltextFieldType(tableName,
                             key);
-                    if (type == PropertyType.STRING) {
+                    if (type == PropertyType.STRING
+                            || type == PropertyType.ARRAY_STRING) {
                         dirtyStrings.add(docId);
-                    } else if (type == PropertyType.BINARY) {
+                    } else if (type == PropertyType.BINARY
+                            || type == PropertyType.ARRAY_BINARY) {
                         dirtyBinaries.add(docId);
                     }
                 }
