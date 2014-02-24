@@ -100,6 +100,10 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
     protected GenericThreadedImportTask rootImportTask;
 
+    protected final static int DEFAULT_QUEUE_SIZE = 10000;
+
+    protected int queueSize = DEFAULT_QUEUE_SIZE;
+
     public static ThreadPoolExecutor getExecutor() {
         return importTP;
     }
@@ -122,7 +126,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
     public GenericMultiThreadedImporter(SourceNode sourceNode,
             String importWritePath, Boolean skipRootContainerCreation,
-            Integer batchSize, Integer nbThreads, ImporterLogger log)
+            Integer batchSize, Integer nbThreads, ImporterLogger log, int queueSize)
             throws Exception {
         importSource = sourceNode;
         this.importWritePath = importWritePath;
@@ -137,6 +141,14 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
             this.skipRootContainerCreation = skipRootContainerCreation;
         }
     }
+
+    public GenericMultiThreadedImporter(SourceNode sourceNode,
+            String importWritePath, Boolean skipRootContainerCreation,
+            Integer batchSize, Integer nbThreads, ImporterLogger log)
+            throws Exception {
+        this(sourceNode, importWritePath, skipRootContainerCreation, batchSize, nbThreads, log, DEFAULT_QUEUE_SIZE);
+    }
+
 
     public GenericMultiThreadedImporter(SourceNode sourceNode,
             String importWritePath, Integer batchSize, Integer nbThreads,
@@ -307,7 +319,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         nbCreatedDocsByThreads = new ConcurrentHashMap<String, Long>();
 
         importTP = new ThreadPoolExecutor(nbThreads, nbThreads, 500L,
-                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+                TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(queueSize),
                 new NamedThreadFactory("Nuxeo-Importer-"));
 
         initRootTask(importSource, targetContainer, skipRootContainerCreation,
