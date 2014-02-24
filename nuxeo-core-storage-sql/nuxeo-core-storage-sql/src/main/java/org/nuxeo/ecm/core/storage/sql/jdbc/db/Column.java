@@ -17,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Calendar;
 
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
@@ -57,6 +58,20 @@ public class Column implements Serializable {
 
     /** The JDBC type string. */
     private final String jdbcTypeString;
+    
+    /*
+     * {@see java.sql.Array.getBaseType()
+     * 
+     * value is 0 if this is not an array column
+     */
+    private int jdbcBaseType;
+    
+    /*
+     * {@see java.sql.Array.getBaseTypeName()
+     * 
+     * value is null if this is not an array column
+     */
+    private final String jdbcBaseTypeString;
 
     private final String key;
 
@@ -89,6 +104,8 @@ public class Column implements Serializable {
         JDBCInfo jdbcInfo = dialect.getJDBCTypeAndString(type);
         jdbcType = jdbcInfo.jdbcType;
         jdbcTypeString = jdbcInfo.string;
+        jdbcBaseType = jdbcInfo.jdbcBaseType;
+        jdbcBaseTypeString = jdbcInfo.jdbcBaseTypeString;
         this.key = key;
         quotedName = dialect.openQuote() + physicalName + dialect.closeQuote();
         freeVariableSetter = dialect.getFreeVariableSetterForType(type);
@@ -120,13 +137,45 @@ public class Column implements Serializable {
     public int getJdbcType() {
         return jdbcType;
     }
+    
+    public int getJdbcBaseType() {
+        return jdbcBaseType;
+    }
 
     public ColumnType getType() {
         return type;
     }
 
+    public ColumnType getBaseType() {
+        ColumnType baseType;
+        if (type == ColumnType.ARRAY_BLOBID) {
+            baseType = ColumnType.BLOBID;
+        } else if (type == ColumnType.ARRAY_BOOLEAN) {
+            baseType = ColumnType.BOOLEAN;
+        } else if (type == ColumnType.ARRAY_CLOB) {
+            baseType = ColumnType.CLOB;
+        } else if (type == ColumnType.ARRAY_DOUBLE) {
+            baseType = ColumnType.DOUBLE;
+        } else if (type == ColumnType.ARRAY_INTEGER) {
+            baseType = ColumnType.INTEGER;
+        } else if (type == ColumnType.ARRAY_LONG) {
+            baseType = ColumnType.LONG;
+        } else if (type == ColumnType.ARRAY_STRING) {
+            baseType = ColumnType.STRING;
+        } else if (type == ColumnType.ARRAY_TIMESTAMP) {
+            baseType = ColumnType.TIMESTAMP;
+        } else {
+            baseType = type;
+        }
+        return baseType;
+    }
+    
     public String getFreeVariableSetter() {
         return freeVariableSetter;
+    }
+
+    public boolean isArray() {
+        return type.isArray();
     }
 
     public boolean isOpaque() {
@@ -197,6 +246,10 @@ public class Column implements Serializable {
     public String getSqlTypeString() {
         return jdbcTypeString;
     }
+    
+    public String getSqlBaseTypeString() {
+        return jdbcBaseTypeString;
+    }
 
     public void setToPreparedStatement(PreparedStatement ps, int index,
             Serializable value) throws SQLException {
@@ -204,8 +257,8 @@ public class Column implements Serializable {
             ps.setNull(index, jdbcType);
             return;
         }
-        if (jdbcType == Types.ARRAY && !(value instanceof String[])) {
-            throw new SQLException("Expected String[] instead of: " + value);
+        if ((jdbcType == Types.ARRAY) && !(value instanceof Object[])) {
+            throw new SQLException("Expected an array value instead of: " + value);
         }
         dialect.setToPreparedStatement(ps, index, value, this);
     }

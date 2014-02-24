@@ -23,7 +23,13 @@ public enum ColumnSpec {
     DOUBLE(), //
     TIMESTAMP(), //
     BLOBID(), // attached files
-
+    ARRAY_STRING(), // may be VARCHAR or CLOB array depending on length
+    ARRAY_BOOLEAN(), //
+    ARRAY_LONG(), //
+    ARRAY_DOUBLE(), //
+    ARRAY_TIMESTAMP(), //
+    ARRAY_BLOBID(), // attached files array
+    ARRAY_INTEGER(),
     // ----- system columns -----
     NODEID, // node id primary generated key
     NODEIDFK, // fk to main node id, not nullable (frag id)

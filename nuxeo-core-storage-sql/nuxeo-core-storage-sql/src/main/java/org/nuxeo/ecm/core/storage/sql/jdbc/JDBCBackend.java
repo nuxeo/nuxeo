@@ -154,6 +154,7 @@ public class JDBCBackend implements RepositoryBackend {
             throw new StorageException(e);
         }
         modelSetup.materializeFulltextSyntheticColumn = dialect.getMaterializeFulltextSyntheticColumn();
+        modelSetup.supportsArrayColumns = dialect.supportsArrayColumns();
         switch (dialect.getIdType()) {
         case VARCHAR:
         case UUID:

@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.ColumnType.WrappedId;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.LockManager;
@@ -858,22 +859,42 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
-    protected int setToPreparedStatement(PreparedStatement ps, int i,
+    public int setToPreparedStatement(PreparedStatement ps, int i,
             Serializable object) throws SQLException {
         if (object instanceof Calendar) {
             Calendar cal = (Calendar) object;
-            Timestamp ts = new Timestamp(cal.getTimeInMillis());
-            ps.setTimestamp(i, ts, cal); // cal passed for timezone
+            ps.setTimestamp(i, dialect.getTimestampFromCalendar(cal), cal);
         } else if (object instanceof java.sql.Date) {
             ps.setDate(i, (java.sql.Date) object);
-        } else if (object instanceof String[]) {
-            Array array = dialect.createArrayOf(Types.VARCHAR,
-                    (Object[]) object, connection);
-            ps.setArray(i, array);
         } else if (object instanceof Long) {
             ps.setLong(i, ((Long) object).longValue());
         } else if (object instanceof WrappedId) {
             dialect.setId(ps, i, object.toString());
+        } else if (object instanceof Object[]) {
+            int jdbcType;
+            if (object instanceof String[]) {
+                jdbcType = dialect.getJDBCTypeAndString(ColumnType.STRING).jdbcType;
+            } else if (object instanceof Boolean[]) {
+                jdbcType = dialect.getJDBCTypeAndString(ColumnType.BOOLEAN).jdbcType;
+            } else if (object instanceof Long[]) {
+                jdbcType = dialect.getJDBCTypeAndString(ColumnType.LONG).jdbcType;
+            } else if (object instanceof Double[]) {
+                jdbcType = dialect.getJDBCTypeAndString(ColumnType.DOUBLE).jdbcType;
+            } else if (object instanceof java.sql.Date[]) {
+                jdbcType = Types.DATE;
+            } else if (object instanceof java.sql.Clob[]) {
+                jdbcType = Types.CLOB;
+            } else if (object instanceof Calendar[]) {
+                jdbcType = dialect.getJDBCTypeAndString(ColumnType.TIMESTAMP).jdbcType;
+                object = dialect.getTimestampFromCalendar((Calendar) object);
+            } else if (object instanceof Integer[]) {
+                jdbcType = dialect.getJDBCTypeAndString(ColumnType.INTEGER).jdbcType;
+            } else {
+                jdbcType = dialect.getJDBCTypeAndString(ColumnType.CLOB).jdbcType;
+            }
+            Array array = dialect.createArrayOf(jdbcType, (Object[]) object,
+                    connection);
+            ps.setArray(i, array);
         } else {
             ps.setObject(i, object);
         }

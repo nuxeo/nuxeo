@@ -171,6 +171,9 @@ public class RepositoryDescriptor {
     @XNodeList(value = "schema/field", type = ArrayList.class, componentType = FieldDescriptor.class)
     public List<FieldDescriptor> schemaFields = Collections.emptyList();
 
+    @XNode("schema/arrayColumns")
+    public boolean arrayColumns;
+
     @XNode("indexing/fulltext@disabled")
     public boolean fulltextDisabled;
 
@@ -250,6 +253,7 @@ public class RepositoryDescriptor {
         softDeleteEnabled = other.softDeleteEnabled;
         proxiesEnabled = other.proxiesEnabled;
         schemaFields = other.schemaFields;
+        arrayColumns = other.arrayColumns;
         fulltextDisabled = other.fulltextDisabled;
         fulltextAnalyzer = other.fulltextAnalyzer;
         fulltextCatalog = other.fulltextCatalog;

@@ -330,4 +330,8 @@ public abstract class DatabaseHelper {
         return false;
     }
 
+    public boolean supportsArrayColumns() {
+        return false;
+    }
+
 }

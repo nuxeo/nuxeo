@@ -18,14 +18,17 @@ import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
  * A {@link CollectionProperty} gives access to a collection value stored in an
- * underlying {@link CollectionFragment}.
+ * underlying {@link Fragment}.
  *
  * @author Florent Guillaume
  */
 public class CollectionProperty extends BaseProperty {
 
-    /** The {@link CollectionFragment} holding the information. */
-    private final CollectionFragment fragment;
+    /** The {@link Fragment} holding the information. */
+    private final Fragment fragment;
+
+    /** The key in the row if it is a SimpleFragment otherwise null */
+    private final String key;
 
     /**
      * Creates a {@link CollectionProperty}.
@@ -34,18 +37,38 @@ public class CollectionProperty extends BaseProperty {
             CollectionFragment fragment) {
         super(name, type, readonly);
         this.fragment = fragment;
+        this.key = null;
+    }
+
+    /**
+     * Creates a {@link CollectionProperty}.
+     */
+    public CollectionProperty(String name, PropertyType type, boolean readonly,
+            SimpleFragment fragment, String key) {
+        super(name, type, readonly);
+        this.fragment = fragment;
+        this.key = key;
     }
 
     // ----- getters -----
 
     public Serializable[] getValue() throws StorageException {
-        return fragment.get();
+        Serializable[] value = null;
+        if (hasCollectionFragment()) {
+            value = ((CollectionFragment) fragment).get();
+        } else {
+            value = (Serializable[]) ((SimpleFragment) fragment).get(key);
+            if (value == null) {
+                value = type.getEmptyArray();
+            }
+        }
+        return value;
     }
 
     public String[] getStrings() throws StorageException {
         switch (type) {
         case ARRAY_STRING:
-            Serializable[] res = fragment.get();
+            Serializable[] res = getValue();
             if (res.length == 0) {
                 // special case because we may have an empty Serializable[]
                 res = new String[0];
@@ -61,12 +84,20 @@ public class CollectionProperty extends BaseProperty {
     public void setValue(Object[] value) throws StorageException {
         checkWritable();
         try {
-            fragment.set(type.normalize(value));
+            if (hasCollectionFragment()) {
+                ((CollectionFragment) fragment).set(type.normalize(value));
+            } else {
+                ((SimpleFragment) fragment).put(key, type.normalize(value));
+            }
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("item of list property '" +
                     name + "': " + e.getMessage());
         }
         // mark fragment dirty!
+    }
+    
+    private boolean hasCollectionFragment() {
+        return key == null;
     }
 
 }

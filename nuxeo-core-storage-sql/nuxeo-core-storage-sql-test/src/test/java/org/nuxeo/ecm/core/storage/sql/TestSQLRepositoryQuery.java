@@ -32,10 +32,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,8 +66,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
-    private static final Log log = LogFactory.getLog(TestSQLRepositoryQuery.class);
-
     protected boolean proxies;
 
     @Override
@@ -99,7 +94,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
     protected Calendar getCalendar(int year, int month, int day, int hours,
             int minutes, int seconds) {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
+        Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, month - 1); // 0-based
         cal.set(Calendar.DAY_OF_MONTH, day);
@@ -2543,7 +2538,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         DocumentModelList dml;
         createDocs();
 
-        String query = "SELECT * \n 		FROM File \n      WHERE dc:title IS NOT NULL \n       ORDER BY ecm:path";
+        String query = "SELECT * \n            FROM File \n      WHERE dc:title IS NOT NULL \n       ORDER BY ecm:path";
         dml = session.query(query);
         assertEquals(3, dml.size());
 

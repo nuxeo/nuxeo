@@ -22,11 +22,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +53,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
 
 /**
@@ -184,16 +188,35 @@ public class DialectPostgreSQL extends Dialect {
             } else {
                 return jdbcInfo("varchar(%d)", type.length, Types.VARCHAR);
             }
+        case ARRAY_STRING:
+            if (type.isUnconstrained()) {
+                return jdbcInfo("varchar[]", Types.ARRAY, "varchar", Types.VARCHAR);
+            } else if (type.isClob()) {
+                return jdbcInfo("text[]", Types.ARRAY, "text", Types.CLOB);
+            } else {
+                return jdbcInfo("varchar(%d)[]", type.length, Types.ARRAY,
+                        "varchar", Types.VARCHAR);
+            }
         case BOOLEAN:
             return jdbcInfo("bool", Types.BIT);
+        case ARRAY_BOOLEAN:
+            return jdbcInfo("bool[]", Types.ARRAY, "bool", Types.BOOLEAN);
         case LONG:
             return jdbcInfo("int8", Types.BIGINT);
+        case ARRAY_LONG:
+            return jdbcInfo("int8[]", Types.ARRAY, "int8", Types.BIGINT);
         case DOUBLE:
             return jdbcInfo("float8", Types.DOUBLE);
+        case ARRAY_DOUBLE:
+            return jdbcInfo("float8[]", Types.ARRAY, "float8", Types.DOUBLE);
         case TIMESTAMP:
             return jdbcInfo("timestamp", Types.TIMESTAMP);
+        case ARRAY_TIMESTAMP:
+            return jdbcInfo("timestamp[]", Types.ARRAY, "timestamp", Types.TIMESTAMP);
         case BLOBID:
             return jdbcInfo("varchar(40)", Types.VARCHAR);
+        case ARRAY_BLOBID:
+            return jdbcInfo("varchar(40)[]", Types.ARRAY, "varchar", Types.VARCHAR);
             // -----
         case NODEID:
         case NODEIDFK:
@@ -213,20 +236,22 @@ public class DialectPostgreSQL extends Dialect {
         case NODEARRAY:
             switch (idType) {
             case VARCHAR:
-                return jdbcInfo("varchar(36)[]", Types.ARRAY);
+                return jdbcInfo("varchar(36)[]", Types.ARRAY, "varchar", Types.VARCHAR);
             case UUID:
-                return jdbcInfo("uuid[]", Types.ARRAY);
+                return jdbcInfo("uuid[]", Types.ARRAY, "uuid", Types.OTHER);
             case SEQUENCE:
-                return jdbcInfo("int8[]", Types.ARRAY);
+                return jdbcInfo("int8[]", Types.ARRAY, "int8", Types.BIGINT);
             }
         case SYSNAME:
             return jdbcInfo("varchar(250)", Types.VARCHAR);
         case SYSNAMEARRAY:
-            return jdbcInfo("varchar(250)[]", Types.ARRAY);
+            return jdbcInfo("varchar(250)[]", Types.ARRAY, "varchar", Types.VARCHAR);
         case TINYINT:
             return jdbcInfo("int2", Types.SMALLINT);
         case INTEGER:
             return jdbcInfo("int4", Types.INTEGER);
+        case ARRAY_INTEGER:
+            return jdbcInfo("int4[]", Types.ARRAY, "int4", Types.INTEGER);
         case AUTOINC:
             return jdbcInfo("serial", Types.INTEGER);
         case FTINDEXED:
@@ -244,7 +269,7 @@ public class DialectPostgreSQL extends Dialect {
         case CLUSTERNODE:
             return jdbcInfo("int4", Types.INTEGER);
         case CLUSTERFRAGS:
-            return jdbcInfo("varchar[]", Types.ARRAY);
+            return jdbcInfo("varchar[]", Types.ARRAY, "varchar", Types.VARCHAR);
         }
         throw new AssertionError(type);
     }
@@ -330,11 +355,16 @@ public class DialectPostgreSQL extends Dialect {
             ps.setDouble(index, ((Double) value).doubleValue());
             return;
         case Types.TIMESTAMP:
-            setToPreparedStatementTimestamp(ps, index, value, column);
+            ps.setTimestamp(index, getTimestampFromCalendar((Calendar) value));
             return;
         case Types.ARRAY:
-            Array array = createArrayOf(Types.VARCHAR, (Object[]) value,
-                    ps.getConnection());
+            int jdbcBaseType = column.getJdbcBaseType();
+            String jdbcBaseTypeName = column.getSqlBaseTypeString();
+            if (jdbcBaseType == Types.TIMESTAMP) {
+                value = getTimestampFromCalendar((Serializable[] ) value);
+            }
+            Array array = ps.getConnection().createArrayOf(
+                    jdbcBaseTypeName, (Object[]) value);
             ps.setArray(index, array);
             return;
         case Types.OTHER:
@@ -357,7 +387,13 @@ public class DialectPostgreSQL extends Dialect {
     @SuppressWarnings("boxing")
     public Serializable getFromResultSet(ResultSet rs, int index, Column column)
             throws SQLException {
-        switch (column.getJdbcType()) {
+        int jdbcType = rs.getMetaData().getColumnType(index);
+        if (column.getJdbcType() == Types.ARRAY && jdbcType != Types.ARRAY) {
+            jdbcType = column.getJdbcBaseType();
+        } else {
+            jdbcType = column.getJdbcType();
+        }
+        switch(jdbcType) {
         case Types.VARCHAR:
         case Types.CLOB:
             return getFromResultSetString(rs, index, column);
@@ -370,12 +406,17 @@ public class DialectPostgreSQL extends Dialect {
         case Types.DOUBLE:
             return rs.getDouble(index);
         case Types.TIMESTAMP:
-            return getFromResultSetTimestamp(rs, index, column);
+            return getCalendarFromTimestamp(rs.getTimestamp(index));
         case Types.ARRAY:
             Array array = rs.getArray(index);
-            return array == null ? null : (Serializable) array.getArray();
-        case Types.OTHER:
-            return getFromResultSetString(rs, index, column);
+            if (array == null) {
+                return null;
+            }
+            if (array.getBaseType() == Types.TIMESTAMP) {
+                return getCalendarFromTimestamp((Timestamp[]) array.getArray());
+            } else {
+                return (Serializable) array.getArray();
+            }
         }
         throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
     }
@@ -773,6 +814,148 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
+    public boolean supportsArrayColumns() {
+        return true;
+    }
+
+    public static class ArraySubQueryPostgreSQL extends ArraySubQuery {
+
+        protected Dialect dialect = null;
+
+        protected Table fakeSubqueryTableAlias = null;
+
+        public ArraySubQueryPostgreSQL(Column arrayColumn, String alias) {
+            super(arrayColumn, alias);
+            dialect = arrayColumn.getTable().getDialect();
+            fakeSubqueryTableAlias = new TableAlias(arrayColumn.getTable(), alias);
+        }
+
+        @Override
+        public Column getSubQueryIdColumn() {
+            Column column = fakeSubqueryTableAlias.getColumn(Model.MAIN_KEY);
+            return new ArraySubQueryPostgreSQLColumn(
+                    column.getPhysicalName(), column.getType());
+        }
+
+        @Override
+        public Column getSubQueryValueColumn() {
+            return new ArraySubQueryPostgreSQLColumn(
+                        Model.COLL_TABLE_VALUE_KEY, arrayColumn.getBaseType());
+        }
+
+        public class ArraySubQueryPostgreSQLColumn extends Column {
+            private static final long serialVersionUID = 1L;
+
+            ArraySubQueryPostgreSQLColumn(String columnName, ColumnType columnType) {
+                super(fakeSubqueryTableAlias, columnName, columnType, columnName);
+            }
+
+            @Override
+            public String getFullQuotedName() {
+                return dialect.openQuote() + subQueryAlias + dialect.closeQuote()
+                        + '.' + getQuotedName();
+            }
+        }
+
+        @Override
+        public String toSql() {
+            Table table = arrayColumn.getTable();
+            return String.format(
+                    "(SELECT %s, UNNEST(%s) AS %s, generate_subscripts(%s, 1) AS %s FROM %s) ",
+                    table.getColumn(Model.MAIN_KEY).getQuotedName(),
+                    arrayColumn.getQuotedName(), Model.COLL_TABLE_VALUE_KEY,
+                    arrayColumn.getQuotedName(), Model.COLL_TABLE_POS_KEY,
+                    table.getRealTable().getQuotedName());
+        }
+    }
+
+    @Override
+    public ArraySubQuery getArraySubQuery(Column arrayColumn,
+            String subQueryAlias) throws QueryMakerException {
+        return new ArraySubQueryPostgreSQL(arrayColumn, subQueryAlias);
+    }
+
+    @Override
+    public String getArrayElementString(String arrayColumnName,
+            int arrayElementIndex) throws QueryMakerException {
+        // PostgreSQL arrays index start at 1
+        return arrayColumnName + "[" + (arrayElementIndex + 1) + "]";
+    }
+
+    @Override
+    public String getArrayInSql(Column arrayColumn, String cast,
+            boolean positive, List<Serializable> params) {
+        StringBuilder sql = new StringBuilder();
+        if (!positive) {
+            sql.append("(NOT(");
+        }
+        if (params.size() == 1) {
+            // ? = ANY(arrayColumn)
+            sql.append("? = ANY(");
+            sql.append(arrayColumn.getFullQuotedName());
+            if (cast != null) {
+                // DATE cast
+                sql.append("::");
+                sql.append(cast);
+                sql.append("[]");
+            }
+            sql.append(")");
+        } else {
+            // arrayColumn && ARRAY[?, ?, ?]
+            sql.append(arrayColumn.getFullQuotedName());
+            sql.append(" && ");
+            sql.append("ARRAY[");
+            for (int i = 0; i < params.size(); i++) {
+                if (i != 0) {
+                    sql.append(", ");
+                }
+                sql.append('?');
+            }
+            sql.append("]::");
+            sql.append(arrayColumn.getSqlTypeString());
+        }
+        if (!positive) {
+            sql.append(") OR ");
+            sql.append(arrayColumn.getFullQuotedName());
+            sql.append(" IS NULL)");
+        }
+        return sql.toString();
+    }
+
+    @Override
+    public String getArrayLikeSql(Column arrayColumn, String refName,
+            boolean positive, Table dataHierTable) {
+        return getArrayOpSql(arrayColumn, refName, positive, dataHierTable,
+                "LIKE");
+    }
+
+    @Override
+    public String getArrayIlikeSql(Column arrayColumn, String refName,
+            boolean positive, Table dataHierTable) {
+        return getArrayOpSql(arrayColumn, refName, positive, dataHierTable,
+                "ILIKE");
+    }
+
+    protected String getArrayOpSql(Column arrayColumn, String refName,
+            boolean positive, Table dataHierTable, String op) {
+        Table table = arrayColumn.getTable();
+        String tableAliasName = openQuote() + getTableName(refName)
+                + closeQuote();
+        String sql = String.format(
+                "EXISTS (SELECT 1 FROM %s AS %s WHERE %s = %s AND %s %s ?)",
+                getArraySubQuery(arrayColumn, tableAliasName).toSql(),
+                tableAliasName,
+                dataHierTable.getColumn(Model.MAIN_KEY).getFullQuotedName(),
+                tableAliasName + '.'
+                        + table.getColumn(Model.MAIN_KEY).getQuotedName(),
+                tableAliasName + '.' + Model.COLL_TABLE_VALUE_KEY, op);
+        if (!positive) {
+            sql = "NOT(" + sql + ")";
+        }
+        return sql;
+    }
+
+    @Override
     public Array createArrayOf(int type, Object[] elements,
             Connection connection) throws SQLException {
         if (elements == null || elements.length == 0) {
@@ -782,6 +965,27 @@ public class DialectPostgreSQL extends Dialect {
         switch (type) {
         case Types.VARCHAR:
             typeName = "varchar";
+            break;
+        case Types.CLOB:
+            typeName = "text";
+            break;
+        case Types.BIT:
+            typeName = "bool";
+            break;
+        case Types.BIGINT:
+            typeName = "int8";
+            break;
+        case Types.DOUBLE:
+            typeName = "float8";
+            break;
+        case Types.TIMESTAMP:
+            typeName = "timestamp";
+            break;
+        case Types.SMALLINT:
+            typeName = "int2";
+            break;
+        case Types.INTEGER:
+            typeName = "int4";
             break;
         case Types.OTHER: // id
             switch (idType) {
@@ -801,130 +1005,7 @@ public class DialectPostgreSQL extends Dialect {
         default:
             throw new AssertionError("Unknown type: " + type);
         }
-        return new PostgreSQLArray(type, typeName, elements);
-    }
-
-    public static class PostgreSQLArray implements Array {
-
-        private static final String NOT_SUPPORTED = "Not supported";
-
-        protected final int type;
-
-        protected final String typeName;
-
-        protected final Object[] elements;
-
-        protected final String string;
-
-        public PostgreSQLArray(int type, String typeName, Object[] elements) {
-            this.type = type;
-            if (type == Types.VARCHAR) {
-                typeName = "varchar";
-            }
-            this.typeName = typeName;
-            this.elements = elements;
-            StringBuilder b = new StringBuilder();
-            appendArray(b, elements);
-            string = b.toString();
-        }
-
-        protected static void appendArray(StringBuilder b, Object[] elements) {
-            b.append('{');
-            for (int i = 0; i < elements.length; i++) {
-                Object e = elements[i];
-                if (i > 0) {
-                    b.append(',');
-                }
-                if (e == null) {
-                    b.append("NULL");
-                } else if (e.getClass().isArray()) {
-                    appendArray(b, (Object[]) e);
-                } else {
-                    if (e instanceof Number) {
-                        b.append(e);
-                    } else {
-                        // we always transform to a string, the postgres
-                        // array parsing methods will then reparse this as
-                        // needed
-                        String s = e.toString();
-                        b.append('"');
-                        for (int j = 0; j < s.length(); j++) {
-                            char c = s.charAt(j);
-                            if (c == '"' || c == '\\') {
-                                b.append('\\');
-                            }
-                            b.append(c);
-                        }
-                        b.append('"');
-                    }
-                }
-            }
-            b.append('}');
-        }
-
-        @Override
-        public String toString() {
-            return string;
-        }
-
-        @Override
-        public int getBaseType() {
-            return type;
-        }
-
-        @Override
-        public String getBaseTypeName() {
-            return typeName;
-        }
-
-        @Override
-        public Object getArray() {
-            return elements;
-        }
-
-        @Override
-        public Object getArray(Map<String, Class<?>> map) throws SQLException {
-            throw new SQLException(NOT_SUPPORTED);
-        }
-
-        @Override
-        public Object getArray(long index, int count) throws SQLException {
-            throw new SQLException(NOT_SUPPORTED);
-        }
-
-        @Override
-        public Object getArray(long index, int count, Map<String, Class<?>> map)
-                throws SQLException {
-            throw new SQLException(NOT_SUPPORTED);
-        }
-
-        @Override
-        public ResultSet getResultSet() throws SQLException {
-            throw new SQLException(NOT_SUPPORTED);
-        }
-
-        @Override
-        public ResultSet getResultSet(Map<String, Class<?>> map)
-                throws SQLException {
-            throw new SQLException(NOT_SUPPORTED);
-        }
-
-        @Override
-        public ResultSet getResultSet(long index, int count)
-                throws SQLException {
-            throw new SQLException(NOT_SUPPORTED);
-        }
-
-        @Override
-        public ResultSet getResultSet(long index, int count,
-                Map<String, Class<?>> map) throws SQLException {
-            throw new SQLException(NOT_SUPPORTED);
-        }
-
-        // this is needed by JDBC 4 (Java 6)
-        @Override
-        public void free() {
-        }
+        return connection.createArrayOf(typeName, elements);
     }
 
     @Override

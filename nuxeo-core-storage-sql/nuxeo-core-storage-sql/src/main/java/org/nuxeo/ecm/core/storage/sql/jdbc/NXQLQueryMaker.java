@@ -73,6 +73,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.ArraySubQuery;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextMatchInfo;
 
 /**
@@ -154,6 +155,8 @@ public class NXQLQueryMaker implements QueryMaker {
     protected static final String TABLE_HIER_ALIAS = "_H";
 
     protected static final String TABLE_FRAG_ALIAS = "_F";
+
+    protected static final String SUBQUERY_ARRAY_ALIAS = "_A";
 
     protected static final String COL_ALIAS_PREFIX = "_C";
 
@@ -418,10 +421,10 @@ public class NXQLQueryMaker implements QueryMaker {
             WhereBuilder whereBuilder;
             try {
                 whereBuilder = newWhereBuilder(docKind == DocKind.PROXY);
+                sqlQuery.select.accept(whereBuilder);
             } catch (QueryMakerException e) {
                 throw new StorageException(e.getMessage(), e);
             }
-            sqlQuery.select.accept(whereBuilder);
             whatColumns = whereBuilder.whatColumns;
             whatKeys = whereBuilder.whatKeys;
 
@@ -438,7 +441,7 @@ public class NXQLQueryMaker implements QueryMaker {
                         + dialect.closeQuote();
                 aliasesByName.put(key, alias);
                 aliases.add(alias);
-                String whatName = getSelectColName(col);
+                String whatName = getSelectColName(col, key);
                 whatName += " AS " + alias;
                 if (col.getTable().getRealTable() == hier
                         && col.getKey().equals(model.MAIN_KEY)) {
@@ -454,7 +457,11 @@ public class NXQLQueryMaker implements QueryMaker {
              */
 
             if (queryAnalyzer.wherePredicate != null) {
-                queryAnalyzer.wherePredicate.accept(whereBuilder);
+                try {
+                    queryAnalyzer.wherePredicate.accept(whereBuilder);
+                } catch (QueryMakerException e) {
+                    throw new StorageException(e.getMessage(), e);
+                }
                 // WHERE clause
                 String where = whereBuilder.buf.toString();
                 if (where.length() != 0) {
@@ -777,6 +784,25 @@ public class NXQLQueryMaker implements QueryMaker {
         return col.getFullQuotedName();
     }
 
+    /** key used to extract array index if needed */
+    protected String getSelectColName(Column col, String key) {
+        String colName = col.getFullQuotedName();
+        if (col.isArray()) {
+            String[] segments = canonicalXPath(key).split("/");
+            if (segments.length > 1) {
+                // last segment
+                String segment = segments[segments.length - 1];
+                if (INDEX.matcher(segment).matches()
+                        && !segment.startsWith("*")) {
+                    int arrayElementIndex = Integer.parseInt(segment);
+                    colName = dialect.getArrayElementString(colName,
+                            arrayElementIndex);
+                }
+            }
+        }
+        return colName;
+    }
+
     // overridden by specialized query makers that need to add COUNT
     protected void fixWhatColumns(List<Column> whatColumns) {
         // to be overridden
@@ -887,6 +913,37 @@ public class NXQLQueryMaker implements QueryMaker {
             set.add(((StringLiteral) literal).value);
         }
         return set;
+    }
+
+    protected static Serializable getSerializableLiteral(Literal literal)
+            throws QueryMakerException {
+        Serializable value;
+        if (literal instanceof BooleanLiteral) {
+            value = Boolean.valueOf(((BooleanLiteral) literal).value);
+        } else if (literal instanceof DateLiteral) {
+            DateLiteral dLit = (DateLiteral) literal;
+            value = dLit.onlyDate ? dLit.toSqlDate() : dLit.toCalendar();
+        } else if (literal instanceof DoubleLiteral) {
+            value = Double.valueOf(((DoubleLiteral) literal).value);
+        } else if (literal instanceof IntegerLiteral) {
+            value = Long.valueOf(((IntegerLiteral) literal).value);
+        } else if (literal instanceof StringLiteral) {
+            value = ((StringLiteral) literal).value;
+        } else {
+            throw new QueryMakerException(
+                    "type of literal in list is not recognized: "
+                            + literal.getClass());
+        }
+        return value;
+    }
+
+    protected static List<Serializable> getSerializableLiterals(LiteralList list)
+            throws QueryMakerException {
+        List<Serializable> serList = new ArrayList<Serializable>(list.size());
+        for (Literal literal : list) {
+            serList.add(getSerializableLiteral(literal));
+        }
+        return serList;
     }
 
     /**
@@ -1278,14 +1335,19 @@ public class NXQLQueryMaker implements QueryMaker {
 
         public final Column column;
 
+        public final int arrayElementIndex;
+
         public final boolean isArrayElement;
 
         public final boolean needsSubSelect;
 
-        public ColumnInfo(Column column, boolean isArrayElement, boolean isArray) {
+        public ColumnInfo(Column column, int arrayElementIndex,
+                boolean isArrayElement, boolean isArray) {
             this.column = column;
+            this.arrayElementIndex = arrayElementIndex;
             this.isArrayElement = isArrayElement;
-            this.needsSubSelect = !isArrayElement && isArray;
+            this.needsSubSelect = !isArrayElement && isArray
+                    && !column.getType().isArray();
         }
     }
 
@@ -1336,6 +1398,12 @@ public class NXQLQueryMaker implements QueryMaker {
         // true when visiting the rvalue of an id expression
         protected boolean visitingId;
 
+        // arrayColumnName or prefix/arrayColumnName -> array column subquery to join
+        protected Map<String, ArraySubQuery> propertyArraySubQueries =
+                new HashMap<String, ArraySubQuery>();
+
+        protected int arraySubQueryJoinCount = 0;
+
         public WhereBuilder(boolean isProxies) {
             this.isProxies = isProxies;
         }
@@ -1344,6 +1412,34 @@ public class NXQLQueryMaker implements QueryMaker {
             return ++uniqueJoinIndex;
         }
 
+        /**
+         * Gets the arraySubquery for the given arrayColumn in the given contextKey,
+         * and maybe adds a JOIN if one is not already done.
+         * <p>
+         * LEFT JOIN (SELECT id, UNNEST(somecol) AS item,
+         * generate_subscripts(somecol, 1) AS pos FROM someschema) _A1 ON _A1.id =
+         * hierarchy.id
+         */
+        protected ArraySubQuery getArraySubQuery(Table contextHier,
+                String contextKey, Column arrayColumn, boolean skipJoin) {
+            ArraySubQuery arraySubQuery = propertyArraySubQueries.get(contextKey);
+            if (arraySubQuery == null) {
+                String alias = SUBQUERY_ARRAY_ALIAS + ++arraySubQueryJoinCount;
+                arraySubQuery = dialect.getArraySubQuery(arrayColumn, alias);
+                propertyArraySubQueries.put(contextKey, arraySubQuery);
+                if (!skipJoin) {
+                    Join join = new Join(
+                            Join.LEFT,
+                            arraySubQuery.toSql(),
+                            alias,
+                            null,
+                            arraySubQuery.getSubQueryIdColumn().getFullQuotedName(),
+                            contextHier.getColumn(Model.MAIN_KEY).getFullQuotedName());
+                    joins.add(join);
+                }
+            }
+            return arraySubQuery;
+        }
         protected Column getSpecialColumn(String name) {
             String propertyName = null;
             Table table = null;
@@ -1459,7 +1555,7 @@ public class NXQLQueryMaker implements QueryMaker {
         public ColumnInfo getColumnInfo(String name) {
             if (name.startsWith(NXQL.ECM_PREFIX)) {
                 Column column = getSpecialColumn(name);
-                return new ColumnInfo(column, false, false);
+                return new ColumnInfo(column, -1, false, false);
             } else {
                 return getRegularColumnInfo(name);
             }
@@ -1563,15 +1659,27 @@ public class NXQLQueryMaker implements QueryMaker {
                         throw new QueryMakerException("No such property: "
                                 + xpath);
                     }
-                    // use fragment name, not segment, for table context key
-                    contextKey = contextStart + prop.fragmentName
-                            + contextSuffix;
+                    Table table = database.getTable(prop.fragmentName);
+                    Column column = table.getColumn(prop.fragmentKey);
                     boolean skipJoin = !isArrayElement
-                            && prop.propertyType.isArray();
-                    Table table = getFragmentTable(contextHier, contextKey,
-                            prop.fragmentName, index, skipJoin);
-                    return new ColumnInfo(table.getColumn(prop.fragmentKey),
-                            isArrayElement, prop.propertyType.isArray());
+                            && prop.propertyType.isArray() && !column.isArray();
+                    if (column.isArray() && star) {
+                        contextKey = contextStart + segment + contextSuffix;
+                        ArraySubQuery arraySubQuery = getArraySubQuery(
+                                contextHier, contextKey, column, skipJoin);
+                        column = arraySubQuery.getSubQueryValueColumn();
+                    } else {
+                        // use fragment name, not segment, for table context key
+                        contextKey = contextStart + prop.fragmentName
+                                + contextSuffix;
+                        table = getFragmentTable(contextHier, contextKey,
+                                prop.fragmentName, column.isArray() ? -1
+                                        : index, skipJoin);
+                        column = table.getColumn(prop.fragmentKey);
+                    }
+                    return new ColumnInfo(column,
+                            column.isArray() ? index : -1, isArrayElement,
+                            prop.propertyType.isArray());
                 }
             }
             throw new AssertionError("not reached");
@@ -1650,7 +1758,8 @@ public class NXQLQueryMaker implements QueryMaker {
                     }
                     generateExistsStart(buf, info.column.getTable());
                     allowSubSelect = true;
-                    visitColumnExpression(info.column, directOp, rvalue, cast);
+                    visitColumnExpression(info.column, directOp, rvalue, cast,
+                            name, info.arrayElementIndex);
                     allowSubSelect = false;
                     generateExistsEnd(buf);
                 } else if (info != null) {
@@ -1659,7 +1768,8 @@ public class NXQLQueryMaker implements QueryMaker {
                     if (info.column.getType() == ColumnType.BOOLEAN) {
                         rvalue = getBooleanLiteral(rvalue);
                     }
-                    visitColumnExpression(info.column, op, rvalue, cast);
+                    visitColumnExpression(info.column, op, rvalue, cast, name,
+                            info.arrayElementIndex);
                 } else {
                     super.visitExpression(node);
                 }
@@ -1696,17 +1806,31 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         protected void visitColumnExpression(Column column, Operator op,
-                Operand rvalue, String cast) {
-            if (op == Operator.ILIKE || op == Operator.NOTILIKE) {
-                visitExpressionIlike(column, op, rvalue);
+                Operand rvalue, String cast, String lvalueName,
+                int arrayElementIndex) {
+            if (op == Operator.EQ || op == Operator.NOTEQ || op == Operator.IN
+                    || op == Operator.NOTIN) {
+                visitExpressionEqOrIn(column, op, rvalue, cast,
+                        arrayElementIndex);
+            } else if (op == Operator.LIKE || op == Operator.NOTLIKE) {
+                visitExpressionLike(column, op, rvalue, lvalueName,
+                        arrayElementIndex);
+            } else if (op == Operator.ILIKE || op == Operator.NOTILIKE) {
+                visitExpressionIlike(column, op, rvalue, lvalueName,
+                        arrayElementIndex);
             } else {
-                visitReference(column, cast);
-                op.accept(this);
-                boolean oldVisitingId = visitingId;
-                visitingId = column.getType().isId();
-                rvalue.accept(this);
-                visitingId = oldVisitingId;
+                visitSimpleExpression(column, op, rvalue, cast, -1);
             }
+        }
+
+        protected void visitSimpleExpression(Column column, Operator op,
+                Operand rvalue, String cast, int arrayElementIndex) {
+            visitReference(column, cast, arrayElementIndex);
+            op.accept(this);
+            boolean oldVisitingId = visitingId;
+            visitingId = column.getType().isId();
+            rvalue.accept(this);
+            visitingId = oldVisitingId;
         }
 
         /**
@@ -1790,14 +1914,12 @@ public class NXQLQueryMaker implements QueryMaker {
                 generateExistsStart(buf, info.column.getTable());
             }
             buf.append('(');
-            visitReference(info.column);
-            buf.append(" = ");
-            visitStringLiteral(path);
-            buf.append(" OR ");
-            visitReference(info.column);
-            buf.append(" LIKE ");
+            visitExpressionEqOrIn(info.column, Operator.EQ,
+                    new StringLiteral(path), null, -1);
+            visitOperator(Operator.OR);
             // TODO escape % chars...
-            visitStringLiteral(path + PATH_SEP + '%');
+            visitExpressionLike(info.column, Operator.LIKE,
+                    new StringLiteral(path + PATH_SEP + '%'), name, -1);
             buf.append(')');
             if (info.needsSubSelect) {
                 generateExistsEnd(buf);
@@ -2059,15 +2181,63 @@ public class NXQLQueryMaker implements QueryMaker {
             }
         }
 
-        protected void visitExpressionIlike(Column lvalue, Operator op,
-                Operand rvalue) {
-            if (dialect.supportsIlike()) {
-                visitReference(lvalue);
-                op.accept(this);
-                rvalue.accept(this);
+        protected void visitExpressionEqOrIn(Column column, Operator op,
+                Operand rvalue, String cast, int arrayElementIndex) {
+            if (column.isArray() && arrayElementIndex == -1) {
+                List<Serializable> params;
+                if (rvalue instanceof Literal) {
+                    Serializable param = getSerializableLiteral((Literal) rvalue);
+                    params = Collections.singletonList(param);
+                } else {
+                    params = getSerializableLiterals((LiteralList) rvalue);
+                }
+                boolean positive = op == Operator.EQ || op == Operator.IN;
+                String sql = dialect.getArrayInSql(column, cast, positive,
+                        params);
+                buf.append(sql);
+                whereParams.addAll(params);
+            } else {
+                visitSimpleExpression(column, op, rvalue, cast,
+                        arrayElementIndex);
+            }
+        }
+
+        protected void visitExpressionLike(Column column, Operator op,
+                Operand rvalue, String lvalueName, int arrayElementIndex) {
+            if (column.isArray() && arrayElementIndex == -1) {
+                if (lvalueName == null) {
+                    throw new AssertionError(
+                            "Name is required when lvalue is an array");
+                }
+                boolean positive = (op == Operator.LIKE);
+                String sql = dialect.getArrayLikeSql(column, lvalueName,
+                        positive, dataHierTable);
+                buf.append(sql);
+                whereParams.add(getSerializableLiteral((Literal) rvalue));
+            } else {
+                visitSimpleExpression(column, op, rvalue, null,
+                        arrayElementIndex);
+            }
+        }
+
+        protected void visitExpressionIlike(Column column, Operator op,
+                Operand rvalue, String lvalueName, int arrayElementIndex) {
+            if (column.isArray() && arrayElementIndex == -1) {
+                if (lvalueName == null) {
+                    throw new AssertionError(
+                            "Name is required when lvalue is an array");
+                }
+                boolean positive = op == Operator.ILIKE;
+                String sql = dialect.getArrayIlikeSql(column, lvalueName,
+                        positive, dataHierTable);
+                buf.append(sql);
+                whereParams.add(getSerializableLiteral((Literal) rvalue));
+            } else if (dialect.supportsIlike()) {
+                visitSimpleExpression(column, op, rvalue, null,
+                        arrayElementIndex);
             } else {
                 buf.append("LOWER(");
-                visitReference(lvalue);
+                visitReference(column, arrayElementIndex);
                 buf.append(") ");
                 if (op == Operator.NOTILIKE) {
                     buf.append("NOT ");
@@ -2106,16 +2276,35 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         protected void visitReference(Column column) {
-            visitReference(column, null);
+            visitReference(column, null, -1);
         }
 
         protected void visitReference(Column column, String cast) {
+            visitReference(column, cast, -1);
+        }
+
+        protected void visitReference(Column column, int arrayElementIndex) {
+            visitReference(column, null, arrayElementIndex);
+        }
+
+        protected void visitReference(Column column, String cast,
+                int arrayElementIndex) {
             if (DATE_CAST.equals(cast)
                     && column.getType() != ColumnType.TIMESTAMP) {
                 throw new QueryMakerException("Cannot cast to " + cast + ": "
                         + column);
             }
             String qname = column.getFullQuotedName();
+            if (arrayElementIndex != -1) {
+                if (column.isArray()) {
+                    qname = dialect.getArrayElementString(qname,
+                            arrayElementIndex);
+                } else {
+                    throw new QueryMakerException("Cannot use array index "
+                            + arrayElementIndex + " for non-array column "
+                            + column);
+                }
+            }
             // some databases (Derby) can't do comparisons on CLOB
             if (column.getJdbcType() == Types.CLOB) {
                 String colFmt = dialect.getClobCast(inOrderBy);

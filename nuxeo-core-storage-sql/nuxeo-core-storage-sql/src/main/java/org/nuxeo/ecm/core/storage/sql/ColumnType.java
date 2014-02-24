@@ -50,6 +50,30 @@ public class ColumnType implements Serializable {
 
     public static final ColumnType BLOBID = new ColumnType(ColumnSpec.BLOBID);
 
+    public static final ColumnType ARRAY_STRING = new ColumnType(
+            ColumnSpec.ARRAY_STRING, -1, true);
+
+    public static final ColumnType ARRAY_CLOB = new ColumnType(
+            ColumnSpec.ARRAY_STRING, CLOB_LENGTH, true);
+
+    public static final ColumnType ARRAY_BOOLEAN = new ColumnType(
+            ColumnSpec.ARRAY_BOOLEAN, -1, true);
+
+    public static final ColumnType ARRAY_LONG = new ColumnType(
+            ColumnSpec.ARRAY_LONG, -1, true);
+
+    public static final ColumnType ARRAY_DOUBLE = new ColumnType(
+            ColumnSpec.ARRAY_DOUBLE, -1, true);
+
+    public static final ColumnType ARRAY_TIMESTAMP = new ColumnType(
+            ColumnSpec.ARRAY_TIMESTAMP, -1, true);
+
+    public static final ColumnType ARRAY_BLOBID = new ColumnType(
+            ColumnSpec.ARRAY_BLOBID, -1, true);
+
+    public static final ColumnType ARRAY_INTEGER = new ColumnType(
+            ColumnSpec.ARRAY_INTEGER, -1, true);
+
     public static final ColumnType NODEID = new ColumnType(ColumnSpec.NODEID);
 
     public static final ColumnType NODEIDFK = new ColumnType(
@@ -70,12 +94,12 @@ public class ColumnType implements Serializable {
     public static final ColumnType NODEVAL = new ColumnType(ColumnSpec.NODEVAL);
 
     public static final ColumnType NODEARRAY = new ColumnType(
-            ColumnSpec.NODEARRAY);
+            ColumnSpec.NODEARRAY, -1, true);
 
     public static final ColumnType SYSNAME = new ColumnType(ColumnSpec.SYSNAME);
 
     public static final ColumnType SYSNAMEARRAY = new ColumnType(
-            ColumnSpec.SYSNAMEARRAY);
+            ColumnSpec.SYSNAMEARRAY, -1, true);
 
     public static final ColumnType TINYINT = new ColumnType(ColumnSpec.TINYINT);
 
@@ -98,10 +122,17 @@ public class ColumnType implements Serializable {
     public final ColumnSpec spec;
 
     public final int length;
+    
+    public final boolean array;
 
-    public ColumnType(ColumnSpec spec, int length) {
+    public ColumnType(ColumnSpec spec, int length, boolean array) {
         this.spec = spec;
         this.length = length;
+        this.array = array;
+    }
+
+    public ColumnType(ColumnSpec spec, int length) {
+        this(spec, length, false);
     }
 
     public ColumnType(ColumnSpec spec) {
@@ -116,6 +147,10 @@ public class ColumnType implements Serializable {
         return length == CLOB_LENGTH;
     }
 
+    public boolean isArray() {
+        return array;
+    }
+    
     /**
      * Checks if this column holds a Nuxeo unique id (usually UUID).
      */
@@ -149,7 +184,7 @@ public class ColumnType implements Serializable {
         if (isUnconstrained()) {
             return spec.toString();
         } else if (isClob()) {
-            return "CLOB";
+            return  isArray() ? "ARRAY_CLOB" : "CLOB";
         } else {
             return spec.toString() + '(' + length + ')';
         }
@@ -170,25 +205,37 @@ public class ColumnType implements Serializable {
         return fromFieldType(type, -1);
     }
 
+    /**
+     * Gets the column type from a Nuxeo Schema field type (unconstrained)
+     * with array {@code true} if an array type is required
+     */
+    public static ColumnType fromFieldType(Type type, boolean array) {
+        return fromFieldType(type, -1, array);
+    }
+
     protected static ColumnType fromFieldType(Type type, int maxLength) {
+        return fromFieldType(type, -1, false);
+    }
+    
+    protected static ColumnType fromFieldType(Type type, int maxLength, boolean array) {
         if (type instanceof StringType) {
             if (maxLength == -1) {
-                return STRING; // unconstrained
+                return array ? ARRAY_STRING : STRING; // unconstrained
             } else {
-                return new ColumnType(ColumnSpec.STRING, maxLength);
+                return new ColumnType(ColumnSpec.STRING, maxLength, array);
             }
         } else if (type instanceof BooleanType) {
-            return BOOLEAN;
+            return array ? ARRAY_BOOLEAN : BOOLEAN;
         } else if (type instanceof LongType) {
-            return LONG;
+            return array ? ARRAY_LONG : LONG;
         } else if (type instanceof DoubleType) {
-            return DOUBLE;
+            return array ? ARRAY_DOUBLE : DOUBLE;
         } else if (type instanceof DateType) {
-            return TIMESTAMP;
+            return array ? ARRAY_TIMESTAMP : TIMESTAMP;
         } else if (type instanceof BinaryType) {
-            return BLOBID;
+            return array ? ARRAY_BLOBID : BLOBID;
         } else if (type instanceof IntegerType) {
-            return INTEGER;
+            return array ? ARRAY_INTEGER : INTEGER;
         } else if (type instanceof SimpleTypeImpl) {
             // comes from a constraint
             return fromFieldType(type.getSuperType(), maxLength);

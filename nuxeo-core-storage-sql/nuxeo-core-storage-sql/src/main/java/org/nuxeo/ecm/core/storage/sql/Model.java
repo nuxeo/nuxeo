@@ -263,6 +263,12 @@ public class Model {
     /** Specified in ext. point to use CLOBs. */
     public static final String FIELD_TYPE_LARGETEXT = "largetext";
 
+    /** Specified in ext. point to use array instead of collection table. */
+    public static final String FIELD_TYPE_ARRAY = "array";
+
+    /** Specified in ext. point to use CLOB array instead of collection table. */
+    public static final String FIELD_TYPE_ARRAY_LARGETEXT = "array_largetext";
+
     protected final boolean softDeleteEnabled;
 
     protected final boolean proxiesEnabled;
@@ -405,9 +411,12 @@ public class Model {
 
     private final boolean materializeFulltextSyntheticColumn;
 
+    private final boolean supportsArrayColumns;
+
     public Model(ModelSetup modelSetup) throws StorageException {
         repositoryDescriptor = modelSetup.repositoryDescriptor;
         materializeFulltextSyntheticColumn = modelSetup.materializeFulltextSyntheticColumn;
+        supportsArrayColumns = modelSetup.supportsArrayColumns;
         idType = modelSetup.idType;
         switch (idType) {
         case STRING:
@@ -1591,33 +1600,103 @@ public class Model {
                     Type listFieldType = ((ListType) fieldType).getFieldType();
                     if (listFieldType.isSimpleType()) {
                         /*
-                         * Array: use a collection table.
+                         * Simple list.
                          */
-                        String fragmentName = collectionFragmentName(propertyName);
-                        String fragmentKey = COLL_TABLE_VALUE_KEY;
-                        PropertyType propertyType = PropertyType.fromFieldType(
-                                listFieldType, true);
-                        ColumnType type = ColumnType.fromFieldType(listFieldType);
-                        if (type.spec == ColumnSpec.STRING) {
-                            if (fieldDescriptor != null
-                                    && FIELD_TYPE_LARGETEXT.equals(fieldDescriptor.type)) {
-                                type = ColumnType.CLOB;
-                            }
-                            log.debug("  String array field '" + propertyName
-                                    + "' using column type " + type);
+                        PropertyType propertyType = PropertyType.fromFieldType(listFieldType, true);
+                        boolean useArray = false;
+                        ColumnType columnType = null;
+                        if (repositoryDescriptor.arrayColumns
+                                && fieldDescriptor == null) {
+                            fieldDescriptor = new FieldDescriptor();
+                            fieldDescriptor.type = FIELD_TYPE_ARRAY;
                         }
-                        addPropertyInfo(complexType, propertyName,
-                                propertyType, fragmentName, fragmentKey, false,
-                                null, null);
+                        if (fieldDescriptor != null) {
+                            if (FIELD_TYPE_ARRAY.equals(fieldDescriptor.type)) {
+                                if (!supportsArrayColumns) {
+                                    log.warn("  Field '"
+                                            + propertyName
+                                            + "' array specification is ignored since"
+                                            + " this database does not support arrays");
+                                }
+                                useArray = supportsArrayColumns;
+                                columnType = ColumnType.fromFieldType(
+                                        listFieldType, useArray);
+                            } else if (FIELD_TYPE_ARRAY_LARGETEXT.equals(fieldDescriptor.type)) {
+                                boolean isStringColSpec = ColumnType.fromFieldType(listFieldType).spec == ColumnSpec.STRING;
+                                if (supportsArrayColumns && !isStringColSpec) {
+                                    log.warn("  Field '"
+                                            + propertyName
+                                            + "' is not a String yet it is specified"
+                                            + " as array_largetext, using ARRAY_CLOB for it");
+                                } else if (!supportsArrayColumns
+                                        && isStringColSpec) {
+                                    log.warn("  Field '"
+                                            + propertyName
+                                            + "' array specification is ignored since"
+                                            + " this database does not support arrays,"
+                                            + " using CLOB for it");
+                                } else if (!supportsArrayColumns
+                                        && !isStringColSpec) {
+                                    log.warn("  Field '"
+                                            + propertyName
+                                            + "' array specification is ignored since"
+                                            + " this database does not support arrays, also"
+                                            + " Field is not a String yet it is specified"
+                                            + " as array_largetext, using CLOB for it");
+                                }
+                                useArray = supportsArrayColumns;
+                                columnType = (supportsArrayColumns) ? ColumnType.ARRAY_CLOB
+                                        : ColumnType.CLOB;
+                            } else if (FIELD_TYPE_LARGETEXT.equals(fieldDescriptor.type)) {
+                                if (ColumnType.fromFieldType(listFieldType).spec != ColumnSpec.STRING) {
+                                    log.warn("  Field '"
+                                            + propertyName
+                                            + "' is not a String yet it is specified "
+                                            + " as largetext, using CLOB for it");
+                                }
+                                columnType = ColumnType.CLOB;
+                            } else {
+                                log.warn("  Field '"
+                                        + propertyName
+                                        + "' specified but not successfully mapped");
+                            }
+                        }
 
-                        Map<String, ColumnType> keysType = new LinkedHashMap<String, ColumnType>();
-                        keysType.put(COLL_TABLE_POS_KEY, ColumnType.INTEGER);
-                        keysType.put(fragmentKey, type);
-                        addCollectionFragmentInfos(fragmentName, propertyType,
-                                COLL_TABLE_POS_KEY, keysType);
+                        if (columnType == null) {
+                            columnType = ColumnType.fromFieldType(listFieldType);
+                        }
+                        log.debug("  List field '" + propertyName
+                                + "' using column type " + columnType);
 
-                        fragmentNames.add(fragmentName);
-                        addFieldFragment(field, fragmentName);
+                        if (useArray) {
+                            /*
+                             * Array: use an array.
+                             */
+                            String fragmentName = typeFragmentName(complexType);
+                            String fragmentKey = field.getName().getLocalName();
+                            addPropertyInfo(complexType, propertyName,
+                                    propertyType, fragmentName, fragmentKey,
+                                    false, null, columnType);
+                            addFieldFragment(field, fragmentName);
+                        } else {
+                            /*
+                             * Array: use a collection table.
+                             */
+                            String fragmentName = collectionFragmentName(propertyName);
+                            addPropertyInfo(complexType, propertyName,
+                                    propertyType, fragmentName,
+                                    COLL_TABLE_VALUE_KEY, false, null,
+                                    columnType);
+
+                            Map<String, ColumnType> keysType = new LinkedHashMap<String, ColumnType>();
+                            keysType.put(COLL_TABLE_POS_KEY, ColumnType.INTEGER);
+                            keysType.put(COLL_TABLE_VALUE_KEY, columnType);
+                            addCollectionFragmentInfos(fragmentName, propertyType,
+                                    COLL_TABLE_POS_KEY, keysType);
+
+                            fragmentNames.add(fragmentName);
+                            addFieldFragment(field, fragmentName);
+                        }
                     } else {
                         /*
                          * Complex list.

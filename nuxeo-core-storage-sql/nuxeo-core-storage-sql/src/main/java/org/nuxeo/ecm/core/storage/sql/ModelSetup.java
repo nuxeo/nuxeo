@@ -25,6 +25,8 @@ public class ModelSetup {
     public SchemaManager schemaManager;
 
     public boolean materializeFulltextSyntheticColumn;
+    
+    public boolean supportsArrayColumns;
 
     public IdType idType;
 
