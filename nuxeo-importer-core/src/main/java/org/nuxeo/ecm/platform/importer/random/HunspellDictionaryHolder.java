@@ -16,7 +16,6 @@
  *
  * $Id$
  */
-
 package org.nuxeo.ecm.platform.importer.random;
 
 import java.io.BufferedReader;
@@ -29,11 +28,11 @@ import java.util.List;
 import java.util.Random;
 
 /**
- *
- * @author Thierry Delprat
- *
- */
-public class FrenchDictionaryHolder implements DictionaryHolder {
+*
+* @author Thierry Delprat
+*
+*/
+public class HunspellDictionaryHolder implements DictionaryHolder {
 
     protected List<String> words = new LinkedList<String>();
 
@@ -41,12 +40,16 @@ public class FrenchDictionaryHolder implements DictionaryHolder {
 
     protected int wordCount;
 
-    public FrenchDictionaryHolder() throws Exception {
+    protected String dicName;
+
+    public HunspellDictionaryHolder(String dicName) throws Exception {
         generator = new Random(System.currentTimeMillis());
+        this.dicName = dicName;
     }
 
+    @Override
     public void init() throws Exception {
-        loadDic("fr_FR.dic");
+        loadDic(dicName);
         wordCount = words.size();
     }
 
@@ -87,6 +90,7 @@ public class FrenchDictionaryHolder implements DictionaryHolder {
      * @see
      * org.nuxeo.ecm.platform.importer.random.DictionaryHolder#getWordCount()
      */
+    @Override
     public int getWordCount() {
         return wordCount;
     }
@@ -97,9 +101,9 @@ public class FrenchDictionaryHolder implements DictionaryHolder {
      * @see
      * org.nuxeo.ecm.platform.importer.random.DictionaryHolder#getRandomWord()
      */
+    @Override
     public String getRandomWord() {
         int idx = generator.nextInt(wordCount);
         return words.get(idx);
     }
-
 }

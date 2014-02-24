@@ -27,6 +27,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.platform.importer.random.DictionaryHolder;
+import org.nuxeo.ecm.platform.importer.random.HunspellDictionaryHolder;
 import org.nuxeo.ecm.platform.importer.random.RandomTextGenerator;
 
 /**
@@ -89,7 +91,12 @@ public class RandomTextSourceNode implements SourceNode {
 
     public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB,
             boolean onlyText) throws Exception {
-        gen = new RandomTextGenerator();
+        return init(maxSize, blobSizeInKB, onlyText, new HunspellDictionaryHolder("fr_FR.dic"));
+    }
+
+    public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB,
+            boolean onlyText, DictionaryHolder dictionaryHolder) throws Exception {
+        gen = new RandomTextGenerator(dictionaryHolder);
         gen.prefilCache();
         maxNode = maxSize;
         nbNodes = 1;
@@ -108,6 +115,7 @@ public class RandomTextSourceNode implements SourceNode {
             return "text/partial";
         }
     }
+
 
     public BlobHolder getBlobHolder() {
         if (folderish) {
@@ -155,14 +163,15 @@ public class RandomTextSourceNode implements SourceNode {
         return getMidRandom(minFoldersPerNode);
     }
 
+    @Override
     public List<SourceNode> getChildren() {
 
         if (!folderish) {
             return null;
         }
 
-        if (this.cachedChildren != null) {
-            return this.cachedChildren;
+        if (cachedChildren != null) {
+            return cachedChildren;
         }
 
         List<SourceNode> children = new ArrayList<SourceNode>();
@@ -189,11 +198,12 @@ public class RandomTextSourceNode implements SourceNode {
             }
         }
         if (CACHE_CHILDREN) {
-            this.cachedChildren = children;
+            cachedChildren = children;
         }
         return children;
     }
 
+    @Override
     public String getName() {
         if (name == null) {
             if (folderish) {
@@ -211,6 +221,7 @@ public class RandomTextSourceNode implements SourceNode {
         return name;
     }
 
+    @Override
     public boolean isFolderish() {
         return folderish;
     }
@@ -227,6 +238,7 @@ public class RandomTextSourceNode implements SourceNode {
         return level;
     }
 
+    @Override
     public String getSourcePath(){
         return null;
     }
