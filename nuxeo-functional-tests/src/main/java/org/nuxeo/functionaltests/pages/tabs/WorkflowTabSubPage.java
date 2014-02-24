@@ -22,6 +22,7 @@ package org.nuxeo.functionaltests.pages.tabs;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.junit.Assert;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
@@ -45,7 +46,8 @@ public class WorkflowTabSubPage extends DocumentBasePage {
      * Add reviewer in default serial workflow
      */
     public void addWorkflowReviewer(final String username) {
-        Select2WidgetElement particpants = new Select2WidgetElement(driver,
+        Select2WidgetElement particpants = new Select2WidgetElement(
+                driver,
                 driver.findElement(By.xpath("//div[contains(@id, 'nxw_participants_select2')]")),
                 true);
         particpants.selectValue(username);
@@ -58,7 +60,8 @@ public class WorkflowTabSubPage extends DocumentBasePage {
      * @since 5.9.1
      */
     public void addParallelWorkflowReviewer(String user) {
-        Select2WidgetElement particpants = new Select2WidgetElement(driver,
+        Select2WidgetElement particpants = new Select2WidgetElement(
+                driver,
                 driver.findElement(By.xpath("//div[contains(@id, 'nxw_participants_select2')]")),
                 true);
         particpants.selectValue(user);
@@ -71,6 +74,9 @@ public class WorkflowTabSubPage extends DocumentBasePage {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
         WebElement endDate = driver.findElement((By.xpath("//input[contains(@id, 'nxw_end_dateInputDate')]")));
         endDate.sendKeys(sdf.format(new Date()));
+        // validate input date
+        Assert.assertTrue(endDate.getAttribute("value").equals(
+                sdf.format(new Date())));
     }
 
     public void showGraphView() {
@@ -90,9 +96,7 @@ public class WorkflowTabSubPage extends DocumentBasePage {
      * @since 5.9.1
      */
     public void endTask(String taskName, String comment) {
-        findElementAndWaitUntilEnabled(
-                By.tagName("textarea")).sendKeys(
-                comment);
+        findElementAndWaitUntilEnabled(By.tagName("textarea")).sendKeys(comment);
         findElementAndWaitUntilEnabled(
                 By.xpath(String.format("//input[@value='%s']", taskName))).click();
     }
