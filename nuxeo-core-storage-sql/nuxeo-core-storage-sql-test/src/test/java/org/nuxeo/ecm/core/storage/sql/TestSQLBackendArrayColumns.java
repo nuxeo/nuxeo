@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import static org.junit.Assume.assumeTrue;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 
 /**
  * All the tests of TestSQLBackend with storage of collections as array columns
@@ -36,6 +37,30 @@ public class TestSQLBackendArrayColumns extends TestSQLBackend {
                 fulltextDisabled);
         descriptor.arrayColumns = true;
         return descriptor;
+    }
+
+    @Ignore
+    @Override
+    public void testBasicsUpgrade() {
+        // ignored
+    }
+
+    @Ignore
+    @Override
+    public void testVersionsUpgrade() {
+        // ignored
+    }
+
+    @Ignore
+    @Override
+    public void testLastContributorUpgrade() {
+        // ignored
+    }
+
+    @Ignore
+    @Override
+    public void testLocksUpgrade() {
+        // ignored
     }
 
     // TODO add to TestSQLBackend these tests that exercise arrays:
