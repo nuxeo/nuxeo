@@ -36,6 +36,7 @@ A templating zone is also available for compatibility:
           <h:graphicImage value="/icons/refresh.png"
            alt="#{messages['label.refresh']}"
            title="#{messages['label.refresh']}"
+           styleClass="tipsyShow"
            id="refreshContentViewImage" />
         </a4j:commandLink>
       </span>
@@ -58,6 +59,7 @@ A templating zone is also available for compatibility:
             <f:param name="contentViewState" value="#{contentViewState}" />
             <h:graphicImage value="/icons/xls_export.png"
               alt="#{messages['label.contentview.export.xl']}"
+              styleClass="tipsyShow"
               title="#{messages['label.contentview.export.xl']}" />
           </nxd:restDocumentLink>
         </span>
@@ -77,6 +79,7 @@ A templating zone is also available for compatibility:
             <f:param name="contentViewState" value="#{contentViewState}" />
             <h:graphicImage value="/icons/pdf_export.png"
               alt="#{messages['label.contentview.export.pdf']}"
+              styleClass="tipsyShow"
               title="#{messages['label.contentview.export.pdf']}" />
           </nxd:restDocumentLink>
         </span>
