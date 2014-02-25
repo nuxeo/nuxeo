@@ -52,10 +52,10 @@ if [ ! -z $PROFILES ]; then
   OPTIONS="$OPTIONS -p $PROFILES"
 fi
 if [ ! -z "$MSG_COMMIT" ]; then
-  OPTIONS="$OPTIONS --mc="$(printf %q "$MSG_COMMIT")
+  OPTIONS="$OPTIONS --mc "$(printf %q "$MSG_COMMIT")
 fi
 if [ ! -z "$MSG_TAG" ]; then
-  OPTIONS="$OPTIONS --mt="$(printf %q "$MSG_TAG")
+  OPTIONS="$OPTIONS --mt "$(printf %q "$MSG_TAG")
 fi
 
 echo Prepare release
