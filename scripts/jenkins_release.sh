@@ -36,21 +36,21 @@ done
 
 chmod +x *.py
 
-OPTIONS=
+OPTIONS=()
 if [ $NO_STAGGING != true ]; then
-  OPTIONS=-d
+  OPTIONS += ("-d")
 fi
 if [ $FINAL = true ]; then
-  OPTIONS="$OPTIONS -f"
+  OPTIONS += ("-f")
 fi
 if [ ! -z $OTHER_VERSION_TO_REPLACE ]; then
-  OPTIONS="$OPTIONS --arv=$OTHER_VERSION_TO_REPLACE"
+  OPTIONS += ("--arv=$OTHER_VERSION_TO_REPLACE")
 fi
 if [ $SKIP_TESTS = true ]; then
-  OPTIONS="$OPTIONS --skipTests"
+  OPTIONS += ("--skipTests")
 fi
 if [ ! -z $PROFILES ]; then
-  OPTIONS="$OPTIONS -p $PROFILES"
+  OPTIONS += ("-p $PROFILES")
 fi
 if [ ! -z "$MSG_COMMIT" ]; then
   # FIXME this should properly escape the message, the following line is not
@@ -63,8 +63,8 @@ if [ ! -z "$MSG_TAG" ]; then
 fi
 
 echo Prepare release
-echo "./release.py prepare -b $BRANCH -t $TAG -n $NEXT_SNAPSHOT -m $MAINTENANCE $OPTIONS"
-./release.py prepare -b $BRANCH -t $TAG -n $NEXT_SNAPSHOT -m $MAINTENANCE $OPTIONS
+echo "./release.py prepare -b $BRANCH -t $TAG -n $NEXT_SNAPSHOT -m $MAINTENANCE ${OPTIONS[@]}"
+./release.py prepare -b "$BRANCH" -t "$TAG" -n "$NEXT_SNAPSHOT" -m "$MAINTENANCE" "${OPTIONS[@]}"
 
 # . $WORKSPACE/release.log
 echo Check prepared release
