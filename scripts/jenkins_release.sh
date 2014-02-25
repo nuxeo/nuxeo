@@ -30,7 +30,7 @@ export PATH=$MAVEN_PATH/bin:$PATH
 
 rm -rf $WORKSPACE/archives/
 
-for file in release.py nxutils.py terminalsize.py IndentedHelpFormatterWithNL.py jenkins_perform.py; do
+for file in release.py nxutils.py terminalsize.py IndentedHelpFormatterWithNL.py jenkins_perform.sh; do
   wget --no-check-certificate https://raw.github.com/nuxeo/nuxeo/feature-NXP-13826-release-scripts/scripts/$file -O $file
 done
 
