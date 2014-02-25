@@ -202,20 +202,18 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         }
         BlobSizeInfo bsi = computeSizeImpact(targetDoc, false);
 
+        // always add the quota facet
+        QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
+        if (quotaDoc == null) {
+            log.trace("  add Quota Facet on " + targetDoc.getPathAsString());
+            QuotaAwareDocumentFactory.make(targetDoc, true);
+        }
         // only process if blobs are present
         if (bsi.getBlobSizeDelta() != 0) {
             checkConstraints(session, targetDoc, targetDoc.getParentRef(), bsi);
             SizeUpdateEventContext asyncEventCtx = new SizeUpdateEventContext(
                     session, docCtx, bsi, DOCUMENT_CREATED);
             sendUpdateEvents(asyncEventCtx);
-        } else {
-            // make the doc quota aware even if the impact size is 0, see
-            // NXP-10718
-            QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
-            if (quotaDoc == null) {
-                log.trace("  add Quota Facet on " + targetDoc.getPathAsString());
-                quotaDoc = QuotaAwareDocumentFactory.make(targetDoc, true);
-            }
         }
     }
 
