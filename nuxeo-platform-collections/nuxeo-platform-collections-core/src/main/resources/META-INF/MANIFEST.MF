@@ -7,7 +7,9 @@ Bundle-Name: Nuxeo ECM Collections
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/collection-core-types-contrib.xml,
  OSGI-INF/collection-lifecycle-contrib.xml,
- OSGI-INF/collection-ui-types-contrib.xml,
- OSGI-INF/collection-pageprovider-contrib.xml
+ OSGI-INF/collection-pageprovider-contrib.xml,
+ OSGI-INF/collection-service.xml,
+ OSGI-INF/collection-adapter-contrib.xml,
+ OSGI-INF/collection-security-contrib.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.collections.core;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

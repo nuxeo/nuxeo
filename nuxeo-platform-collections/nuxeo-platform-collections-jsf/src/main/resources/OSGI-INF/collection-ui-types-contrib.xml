@@ -51,13 +51,8 @@
         <layout>heading</layout>
         <layout>dublincore</layout>
       </layouts>
-      <contentViews category="content">
-        <contentView>document_content</contentView>
-      </contentViews>
-      <contentViews category="trash_content">
-        <contentView showInExportView="false">
-          document_trash_content
-        </contentView>
+      <contentViews category="collectionContent">
+        <contentView showInExportView="false">collection_content_contentview</contentView>
       </contentViews>
     </type>
 

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.collections.security">
+
+  <require>org.nuxeo.ecm.core.security.defaultPermissions</require>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissions">
+
+    <permission name="CanCollect">
+      <include>Read</include>
+      <include>WriteProperties</include>
+    </permission>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissionsVisibility">
+
+    <visibility type="ClassificationRoot">
+      <item show="true" order="10">Read</item>
+      <item show="true" order="50">CanCollect</item>
+      <item show="true" order="100">Everything</item>
+    </visibility>
+
+  </extension>
+
+</component>

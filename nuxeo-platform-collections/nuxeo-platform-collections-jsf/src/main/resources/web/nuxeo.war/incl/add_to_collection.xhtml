@@ -1,0 +1,61 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h3>
+    <h:outputText value="#{messages['label.addToCollection.title']}" />
+  </h3>
+
+  <h:form id="#{fancyboxFormId}">
+
+    <div class="content">
+
+      <table class="dataInput fullWidth">
+        <tbody>
+          <tr>
+            <td class="labelColumn required">
+              #{messages['label.addToCollection.collection']}</td>
+            <td class="fieldColumn"><nxl:widgetType
+                name="singleDocumentSuggestion" mode="edit"
+                value="#{collectionActions}"
+                field="selectedCollectionUid" required="true"
+                width="100%" translated="true" minChars="0"
+                placeholder="label.addToCollection.collection.placeHolder"
+                ajaxReRender="#{fancyboxFormId}_collectionDescriptionsPanel #{fancyboxFormId}_buttons"
+                pageProviderName="default_collection"
+                documentSchemas="dublincore,common">
+              </nxl:widgetType></td>
+          </tr>
+          <c:if test="false">
+          <tr>
+            <td class="labelColumn">
+              #{messages['label.addToCollection.collection.description']}</td>
+            <td class="fieldColumn"><a4j:outputPanel
+                id="#{fancyboxFormId}_collectionDescriptionsPanel">
+              </a4j:outputPanel></td>
+          </tr>
+          </c:if>
+        </tbody>
+      </table>
+
+    </div>
+
+
+    <a4j:outputPanel id="#{fancyboxFormId}_buttons" layout="block">
+      <div class="buttonsGadget"></div>
+      <nxh:commandButton value="#{messages['command.import']}"
+        action="#{collectionActions.addToCollection()}"
+        styleClass="button #{collectionActions.canAddToCollection()}" />
+      <nxh:commandButton value="#{messages['command.cancel']}"
+        immediate="true" action="#{collectionActions.cancel()}"
+        styleClass="button" />
+    </a4j:outputPanel>
+  </h:form>
+
+</div>

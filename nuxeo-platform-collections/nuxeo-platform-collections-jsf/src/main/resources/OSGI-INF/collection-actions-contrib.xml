@@ -6,8 +6,8 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="Collections" link="user_center_fragment.xhtml"
-      label="user.center.collections" order="80" icon="/icons/collection_tab.png">
+    <action id="Collections" link="user_center_fragment.xhtml" label="user.center.collections"
+      order="80" icon="/icons/collection_tab.png">
       <category>USER_CENTER</category>
       <properties>
         <property name="alwaysDisplaySubTabs">true</property>
@@ -21,6 +21,26 @@
       <filter-id>not_readonly</filter-id>
     </action>
 
+    <action id="addToCollectioAction" order="0" label="label.addToCollection"
+      type="fancybox" icon="/icons/collection.png" accessKey="u">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>canAddToCollection</filter-id>
+      <properties>
+        <property name="include">/incl/add_to_collection.xhtml</property>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
+    <action id="collectionContent" link="/incl/collection_content_listing.xhtml"
+      order="-1" label="Content">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="collectionContentFilter">
+        <rule grant="true">
+          <type>Collection</type>
+        </rule>
+      </filter>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -30,6 +50,13 @@
       <rule grant="true">
         <permission>AddChildren</permission>
         <type>Collections</type>
+      </rule>
+    </filter>
+
+    <filter id="canAddToCollection">
+      <rule grant="false">
+        <type>Domain</type>
+        <type>WorkspaceRoot</type>
       </rule>
     </filter>
 
