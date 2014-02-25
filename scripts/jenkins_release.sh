@@ -38,9 +38,6 @@ chmod +x *.py
 chmod +x *.sh
 
 OPTIONS=( )
-if [ $NO_STAGGING = true ]; then
-  OPTIONS+=("-d")
-fi
 if [ $FINAL = true ]; then
   OPTIONS+=("-f")
 fi
