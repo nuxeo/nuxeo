@@ -30,12 +30,11 @@ export PATH=/opt/apache-maven-2.2.1/bin:$PATH
 rm -rf $WORKSPACE/archives/
 
 for file in release.py nxutils.py terminalsize.py IndentedHelpFormatterWithNL.py ; do
-  wget --no-check-certificate https://raw.github.com/nuxeo/nuxeo/master/scripts/$file -O $file
+  wget --no-check-certificate https://raw.github.com/nuxeo/nuxeo/feature-NXP-13826-release-scripts/scripts/$file -O $file
 done
 
 chmod +x *.py
 
-cd addon
 OPTIONS=
 if [ $NO_STAGGING != true ]; then
   OPTIONS=-d
@@ -52,14 +51,14 @@ fi
 if [ ! -z $PROFILES ]; then
   OPTIONS="$OPTIONS -p $PROFILES"
 fi
-if [ ! -z $MSG_COMMIT ]; then
-  OPTIONS="$OPTIONS --mc='$MSG_COMMIT'"
+if [ ! -z "$MSG_COMMIT" ]; then
+  OPTIONS="$OPTIONS --mc="$(printf %q "$MSG_COMMIT")
 fi
-if [ ! -z $MSG_TAG ]; then
-  OPTIONS="$OPTIONS --mt='$MSG_TAG'"
+if [ ! -z "$MSG_TAG" ]; then
+  OPTIONS="$OPTIONS --mt="$(printf %q "$MSG_TAG")
 fi
 
-../release.py prepare -b $BRANCH -t $TAG -n $NEXT_SNAPSHOT -m $MAINTENANCE $OPTIONS
+./release.py prepare -b $BRANCH -t $TAG -n $NEXT_SNAPSHOT -m $MAINTENANCE $OPTIONS
 
 # . $WORKSPACE/release.log
 echo Check prepared release
@@ -70,5 +69,5 @@ git log $BRANCH..origin/$BRANCH
 echo
 
 if [ $NO_STAGGING = true ]; then
-  ../release.py perform
+  ./release.py perform
 fi
