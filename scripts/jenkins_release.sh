@@ -74,5 +74,7 @@ git log $BRANCH..origin/$BRANCH || exit 1
 echo
 
 if [ $NO_STAGGING = true ]; then
+  echo Perform release
+  echo "./release.py perform"
   ./release.py perform || exit 1
 fi
