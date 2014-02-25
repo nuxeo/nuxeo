@@ -1,13 +1,18 @@
-<a4j:outputPanel ajaxRendered="true"
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="http://richfaces.org/a4j">
-  <script>
-    jQuery(document).ready(function() {
-      jQuery('.nxMainContainer a img, .nxMainContainer .tipsyShow').each(function() {
-        jQuery(this).tipsy({
-          title : 'title',
-          gravity: jQuery.fn.tipsy.autoNS
-        });
-      });
-    });
+
+  <script type="text/javascript" src="scripts/jquery.nuxeo.tipsy.js">
   </script>
-</a4j:outputPanel>
+
+  <a4j:outputPanel ajaxRendered="true">
+    <script>
+          jQuery(document).ready(function() {
+            jQuery('.tipsyShow').initTipsy(500, 5000);
+          });
+        </script>
+  </a4j:outputPanel>
+
+</div>
