@@ -61,16 +61,16 @@ fi
 
 echo Prepare release
 echo "./release.py prepare -b $BRANCH -t $TAG -n $NEXT_SNAPSHOT -m $MAINTENANCE ${OPTIONS[@]}"
-./release.py prepare -b "$BRANCH" -t "$TAG" -n "$NEXT_SNAPSHOT" -m "$MAINTENANCE" "${OPTIONS[@]}"
+./release.py prepare -b "$BRANCH" -t "$TAG" -n "$NEXT_SNAPSHOT" -m "$MAINTENANCE" "${OPTIONS[@]}" || exit 1
 
 # . $WORKSPACE/release.log
 echo Check prepared release
-git checkout $BRANCH
-git pull
-git push -n origin $BRANCH
-git log $BRANCH..origin/$BRANCH
+git checkout $BRANCH || exit 1
+git pull || exit 1
+git push -n origin $BRANCH || exit 1
+git log $BRANCH..origin/$BRANCH || exit 1
 echo
 
 if [ $NO_STAGGING = true ]; then
-  ./release.py perform
+  ./release.py perform || exit 1
 fi
