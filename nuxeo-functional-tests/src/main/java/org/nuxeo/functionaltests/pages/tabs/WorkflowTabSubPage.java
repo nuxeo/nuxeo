@@ -19,8 +19,9 @@ package org.nuxeo.functionaltests.pages.tabs;
 /**
  * @since 5.7
  */
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.junit.Assert;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
@@ -71,7 +72,8 @@ public class WorkflowTabSubPage extends DocumentBasePage {
      * @since 5.9.1
      */
     public void addParallelWorkflowEndDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+        DateFormat sdf = DateFormat.getDateInstance(DateFormat.MEDIUM,
+                Locale.ENGLISH);
         WebElement endDate = driver.findElement((By.xpath("//input[contains(@id, 'nxw_end_dateInputDate')]")));
         endDate.sendKeys(sdf.format(new Date()));
         // validate input date

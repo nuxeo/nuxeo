@@ -386,10 +386,6 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         workflowTab.addParallelWorkflowEndDate();
         workflowTab.startWorkflow();
 
-        // take screenshot
-        ScreenshotTaker taker = new ScreenshotTaker();
-        taker.takeScreenshot(driver, "debug-parallel-wf");
-
         summaryTabPage = filePage.getSummaryTab();
         assertTrue(summaryTabPage.workflowAlreadyStarted());
         return filePage;
