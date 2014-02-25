@@ -36,35 +36,32 @@ done
 
 chmod +x *.py
 
-OPTIONS=()
+OPTIONS=( )
 if [ $NO_STAGGING != true ]; then
-  OPTIONS += ("-d")
+  OPTIONS+=("-d")
 fi
 if [ $FINAL = true ]; then
-  OPTIONS += ("-f")
+  OPTIONS+=("-f")
 fi
 if [ ! -z $OTHER_VERSION_TO_REPLACE ]; then
-  OPTIONS += ("--arv=$OTHER_VERSION_TO_REPLACE")
+  OPTIONS+=("--arv=$OTHER_VERSION_TO_REPLACE")
 fi
 if [ $SKIP_TESTS = true ]; then
-  OPTIONS += ("--skipTests")
+  OPTIONS+=("--skipTests")
 fi
 if [ ! -z $PROFILES ]; then
-  OPTIONS += ("-p $PROFILES")
+  OPTIONS+=("-p $PROFILES")
 fi
 if [ ! -z "$MSG_COMMIT" ]; then
-  # FIXME this should properly escape the message, the following line is not
-  # parsed correctly further down the line (surely in release.py)
-  # OPTIONS="$OPTIONS --mc "$(printf %q "$MSG_COMMIT")
-  OPTIONS="$OPTIONS --mc '$MSG_COMMIT'"
+  OPTIONS+=("--mc "$(printf %q "$MSG_COMMIT"))
 fi
 if [ ! -z "$MSG_TAG" ]; then
-  OPTIONS="$OPTIONS --mt '$MSG_TAG'"
+  OPTIONS+=("--mt "$(printf %q "$MSG_TAG"))
 fi
 
 echo Prepare release
-echo "./release.py prepare -b $BRANCH -t $TAG -n $NEXT_SNAPSHOT -m $MAINTENANCE ${OPTIONS[@]}"
-./release.py prepare -b "$BRANCH" -t "$TAG" -n "$NEXT_SNAPSHOT" -m "$MAINTENANCE" "${OPTIONS[@]}"
+echo "./release.py prepare -b $BRANCH -t $TAG -n $NEXT_SNAPSHOT -m $MAINTENANCE ${OPTIONS[*]}"
+./release.py prepare -b "$BRANCH" -t "$TAG" -n "$NEXT_SNAPSHOT" -m "$MAINTENANCE" "${OPTIONS[*]}"
 
 # . $WORKSPACE/release.log
 echo Check prepared release
