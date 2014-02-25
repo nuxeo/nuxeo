@@ -738,8 +738,8 @@ Default files and properties patterns are respectively:
         if len(args) == 1:
             command = args[0]
         elif len(args) > 1:
-            raise ExitException(1, "'command' must be a single argument. "
-                                "See usage with '-h'.")
+            raise ExitException(1,
+                                "'command' must be a single argument: '%s'. See usage with '-h'." % (args,))
 
         if ("command" in locals() and command == "perform"
             and os.path.isfile(Release.get_release_log(os.getcwd()))
