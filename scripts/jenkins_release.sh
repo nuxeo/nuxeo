@@ -58,6 +58,8 @@ if [ ! -z "$MSG_TAG" ]; then
   OPTIONS="$OPTIONS --mt="$(printf %q "$MSG_TAG")
 fi
 
+echo Prepare release
+echo "./release.py prepare -b $BRANCH -t $TAG -n $NEXT_SNAPSHOT -m $MAINTENANCE $OPTIONS"
 ./release.py prepare -b $BRANCH -t $TAG -n $NEXT_SNAPSHOT -m $MAINTENANCE $OPTIONS
 
 # . $WORKSPACE/release.log
