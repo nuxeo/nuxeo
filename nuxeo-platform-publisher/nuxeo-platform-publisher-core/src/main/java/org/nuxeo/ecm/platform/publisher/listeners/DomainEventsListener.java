@@ -40,8 +40,14 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DomainEventsListener implements EventListener {
 
+    public static final String DISABLE_DOMAIN_LISTENER = "disableDomainListener";
+
     public void handleEvent(Event event) throws ClientException {
         EventContext ctx = event.getContext();
+        Boolean disableListener = (Boolean) ctx.getProperty(DISABLE_DOMAIN_LISTENER);
+        if (Boolean.TRUE.equals(disableListener)) {
+            return;
+        }
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             DocumentModel doc = docCtx.getSourceDocument();
