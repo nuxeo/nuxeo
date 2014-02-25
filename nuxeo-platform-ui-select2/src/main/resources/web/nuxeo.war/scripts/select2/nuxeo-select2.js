@@ -95,6 +95,7 @@
   }
 
   function configureOperationParameters(op, params, query) {
+    var restoreSeamCtx = params.restoreSeamCtx == 'true';
     var temp = {};
     jQuery.extend(temp, params);
     temp.lang = currentUserLang;
@@ -115,7 +116,7 @@
       // custom operation, pass at least the query term
       temp.searchTerm = query.term;
     }
-    if (typeof currentConversationId != 'undefined') {
+    if (restoreSeamCtx && typeof currentConversationId != 'undefined') {
       // Give needed info to restore Seam context
       op.addParameter("id", getOperationName(params));
       op.addParameter("conversationId", currentConversationId);
@@ -172,6 +173,7 @@
 
     var readonly = params.readonly == 'true';
     var required = params.required == 'true';
+    var restoreSeamCtx = params.restoreSeamCtx == 'true';
 
     var initId = (elid + "_init").split(":").join("\\:");
     var initHolder = jQuery("#" + initId);
@@ -199,7 +201,7 @@
 
     // init Automation Operation
     var op = null;
-    if (typeof currentConversationId != 'undefined') {
+    if (restoreSeamCtx && typeof currentConversationId != 'undefined') {
       // If Seam context is available, let's restore it
       op = jQuery().automation('Seam.RunOperation', automationParams);
     } else {
