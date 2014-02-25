@@ -53,15 +53,15 @@ if [ ! -z $PROFILES ]; then
   OPTIONS+=("-p $PROFILES")
 fi
 if [ ! -z "$MSG_COMMIT" ]; then
-  OPTIONS+=("--mc "$(printf %q "$MSG_COMMIT"))
+  OPTIONS+=("--mc="$(printf %q "$MSG_COMMIT"))
 fi
 if [ ! -z "$MSG_TAG" ]; then
-  OPTIONS+=("--mt "$(printf %q "$MSG_TAG"))
+  OPTIONS+=("--mt="$(printf %q "$MSG_TAG"))
 fi
 
 echo Prepare release
-echo "./release.py prepare -b $BRANCH -t $TAG -n $NEXT_SNAPSHOT -m $MAINTENANCE ${OPTIONS[*]}"
-./release.py prepare -b "$BRANCH" -t "$TAG" -n "$NEXT_SNAPSHOT" -m "$MAINTENANCE" "${OPTIONS[*]}"
+echo "./release.py prepare -b $BRANCH -t $TAG -n $NEXT_SNAPSHOT -m $MAINTENANCE ${OPTIONS[@]}"
+./release.py prepare -b "$BRANCH" -t "$TAG" -n "$NEXT_SNAPSHOT" -m "$MAINTENANCE" "${OPTIONS[@]}"
 
 # . $WORKSPACE/release.log
 echo Check prepared release
