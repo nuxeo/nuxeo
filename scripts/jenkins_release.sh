@@ -18,7 +18,7 @@
 # Contributors:
 #
 
-export MAVEN_OPTS="-Xmx4g -Xms1g -XX:MaxPermSize=512m"
+export MAVEN_OPTS="-Xmx1g -Xms1g -XX:MaxPermSize=512m"
 echo JAVA_OPTS: $JAVA_OPTS
 
 if [ ! -z $JDK_PATH ]; then
