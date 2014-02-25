@@ -73,7 +73,7 @@ public class SummaryTabSubPage extends AbstractPage {
 
     public boolean workflowAlreadyStarted() {
           return findElementWithTimeout(
-                By.xpath("//form[@id='nxl_grid_summary_layout:nxw_summary_document_route_form']")).getText().contains("review has been started");
+                By.xpath("//*[@id='nxl_grid_summary_layout:nxw_summary_document_route_form']")).getText().contains("review has been started");
     }
 
     public boolean openTaskForCurrentUser() {
