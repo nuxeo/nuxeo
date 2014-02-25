@@ -53,10 +53,14 @@ if [ ! -z $PROFILES ]; then
   OPTIONS+=("-p $PROFILES")
 fi
 if [ ! -z "$MSG_COMMIT" ]; then
-  OPTIONS+=("--mc="$(printf %q "$MSG_COMMIT"))
+  #OPTIONS+=("--mc="$(printf %q "$MSG_COMMIT"))
+  # FIXME: this will fail if message contains a quote
+  OPTIONS+=("--mc=$MSG_COMMIT")
 fi
 if [ ! -z "$MSG_TAG" ]; then
-  OPTIONS+=("--mt="$(printf %q "$MSG_TAG"))
+  #OPTIONS+=("--mt="$(printf %q "$MSG_TAG"))
+  # FIXME: this will fail if message contains a quote
+  OPTIONS+=("--mt=$MSG_TAG")
 fi
 
 echo Prepare release
