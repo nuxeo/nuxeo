@@ -35,6 +35,7 @@ for file in release.py nxutils.py terminalsize.py IndentedHelpFormatterWithNL.py
 done
 
 chmod +x *.py
+chmod +x *.sh
 
 OPTIONS=( )
 if [ $NO_STAGGING != true ]; then
