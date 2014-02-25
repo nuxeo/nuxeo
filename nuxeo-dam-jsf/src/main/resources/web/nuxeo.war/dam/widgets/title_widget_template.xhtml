@@ -6,19 +6,18 @@
   <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
     <div class="documentTitle">
       <nxu:set var="title" value="#{nxd:titleOrId(field_0)}">
-      <nxu:set var="hideExtension" value="#{widgetProperty_hideExtension}">
-
-        <c:if test="#{not empty hideExtension}">
+      <nxu:set var="hideExtension"
+        value="#{nxu:test(!empty widgetProperty_hideExtension, widgetProperty_hideExtension, false)}">
+        <c:if test="#{hideExtension}">
           <span title="#{title}">
             #{nxu:fileBaseName(title)}
           </span>
         </c:if>
-        <c:if test="#{empty hideExtension}">
+        <c:if test="#{not hideExtension}">
           <span title="#{title}">
             #{title}
           </span>
         </c:if>
-
       </nxu:set>
       </nxu:set>
     </div>
