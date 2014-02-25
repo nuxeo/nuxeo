@@ -26,7 +26,8 @@ if [ ! -z $JDK_PATH ]; then
   export PATH=$JDK_PATH/bin:$PATH
 fi
 
-export PATH=/opt/apache-maven-2.2.1/bin:$PATH
+export PATH=$MAVEN_PATH/bin:$PATH
+
 rm -rf $WORKSPACE/archives/
 
 for file in release.py nxutils.py terminalsize.py IndentedHelpFormatterWithNL.py ; do
