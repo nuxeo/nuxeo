@@ -18,7 +18,7 @@
 # Contributors:
 #
 
-export MAVEN_OPTS=&quot;-Xmx4g -Xms1g -XX:MaxPermSize=512m&quot;
+export MAVEN_OPTS="-Xmx4g -Xms1g -XX:MaxPermSize=512m"
 echo JAVA_OPTS: $JAVA_OPTS
 
 if [ ! -z $JDK_PATH ]; then
@@ -41,22 +41,22 @@ if [ $NO_STAGGING != true ]; then
   OPTIONS=-d
 fi
 if [ $FINAL = true ]; then
-  OPTIONS=&quot;$OPTIONS -f&quot;
+  OPTIONS="$OPTIONS -f"
 fi
 if [ ! -z $OTHER_VERSION_TO_REPLACE ]; then
-  OPTIONS=&quot;$OPTIONS --arv=$OTHER_VERSION_TO_REPLACE&quot;
+  OPTIONS="$OPTIONS --arv=$OTHER_VERSION_TO_REPLACE"
 fi
 if [ $SKIP_TESTS = true ]; then
-  OPTIONS=&quot;$OPTIONS --skipTests&quot;
+  OPTIONS="$OPTIONS --skipTests"
 fi
 if [ ! -z $PROFILES ]; then
-  OPTIONS=&quot;$OPTIONS -p $PROFILES&quot;
+  OPTIONS="$OPTIONS -p $PROFILES"
 fi
 if [ ! -z $MSG_COMMIT ]; then
-  OPTIONS=&quot;$OPTIONS --mc=&apos;$MSG_COMMIT&apos;&quot;
+  OPTIONS="$OPTIONS --mc='$MSG_COMMIT'"
 fi
 if [ ! -z $MSG_TAG ]; then
-  OPTIONS=&quot;$OPTIONS --mt=&apos;$MSG_TAG&apos;&quot;
+  OPTIONS="$OPTIONS --mt='$MSG_TAG'"
 fi
 
 ../release.py prepare -b $BRANCH -t $TAG -n $NEXT_SNAPSHOT -m $MAINTENANCE $OPTIONS
