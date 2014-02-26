@@ -19,6 +19,7 @@
       }
     }
     markup += entry.displayLabel;
+    markup += "&nbsp;<span class='detail'>" + entry.id + "</span>";
     markup += warnMessage(entry);
     return markup;
   }
