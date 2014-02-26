@@ -160,7 +160,7 @@
         <h:panelGroup>
           <h:outputText value="#{messages['label.security.searchGroups']}" class="rightsAddLabel" /><br/>
         <rich:tree id="#{widget.id}_tree">
-          <rich:recursiveTreeNodesAdaptor
+          <rich:treeModelRecursiveAdaptor
             roots="#{shibbUserSuggestionWithGroupTree.treeRoot}"
             nodes="#{node.childrens}"
             var="node">
@@ -185,7 +185,7 @@
                 </span>
               </div>
             </rich:treeNode>
-          </rich:recursiveTreeNodesAdaptor>
+          </rich:treeModelRecursiveAdaptor>
         </rich:tree>
         </h:panelGroup>
 
