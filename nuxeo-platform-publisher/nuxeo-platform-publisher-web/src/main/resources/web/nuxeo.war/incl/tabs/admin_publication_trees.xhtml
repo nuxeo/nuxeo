@@ -39,7 +39,7 @@
                       iconCollapsed="/icons/toggle_plus.png"
                       rowKeyVar="rowKey"
                       stateVar="nodeState">
-                <rich:recursiveTreeNodesAdaptor
+                <rich:treeModelRecursiveAdaptor
                         roots="#{adminPublishActions.currentSectionsTree}"
                         nodes="#{node.children}"
                         var="node">
@@ -59,7 +59,7 @@
                       </a4j:commandLink>
                     </nxu:methodResult>
                   </rich:treeNode>
-                </rich:recursiveTreeNodesAdaptor>
+                </rich:treeModelRecursiveAdaptor>
               </rich:tree>
             </h:panelGroup>
           </dd>

@@ -49,7 +49,7 @@
                 iconExpanded="/icons/toggle_minus.png"
                 iconCollapsed="/icons/toggle_plus.png"
                 rowKeyVar="rowKey" stateVar="nodeState" id="publishTree">
-                <rich:recursiveTreeNodesAdaptor
+                <rich:treeModelRecursiveAdaptor
                   roots="#{publishActions.currentPublicationTreeForPublishing}"
                   nodes="#{node.childrenNodes}" var="node"
                   id="publishRecursiveAdaptor">
@@ -68,7 +68,7 @@
                         value="#{messages['label.publish.publish']}" />
                     </a4j:commandLink>
                   </rich:treeNode>
-                </rich:recursiveTreeNodesAdaptor>
+                </rich:treeModelRecursiveAdaptor>
               </rich:tree>
 
             </a4j:outputPanel>
