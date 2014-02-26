@@ -97,16 +97,17 @@ public class DownloadDescriptorParser {
             }
 
             // get presets
-            if (document.getRootElement().element("presets")!=null) {
-                for (Object el : document.getRootElement().element("presets").elements("preset")) {
-                    Element preset = (Element)el;
+            if (document.getRootElement().element("presets") != null) {
+                for (Object el : document.getRootElement().element("presets").elements(
+                        "preset")) {
+                    Element preset = (Element) el;
                     String presetId = preset.attribute("id").getValue();
                     String presetLabel = preset.attribute("label").getValue();
                     String pkgList = preset.getText();
                     String[] presetPackages = pkgList.split(",");
                     options.addPreset(presetId, presetLabel, presetPackages);
-                    }
                 }
+            }
         }
         return options;
     }
@@ -135,7 +136,7 @@ public class DownloadDescriptorParser {
             }
 
             String implies = el.attributeValue("implies");
-            if (implies!=null && !implies.trim().equals("")) {
+            if (implies != null && !implies.trim().equals("")) {
                 String[] deps = implies.split(",");
                 pkg.addDeps(deps);
             }
@@ -176,18 +177,16 @@ public class DownloadDescriptorParser {
         }
 
         String id = el.attributeValue("ref");
-        if (id==null) {
+        if (id == null) {
             id = ref;
         }
         DownloadablePackageOption pkgOption;
         nodeCounter++;
 
-        if (id!=null) {
-            pkgOption = new DownloadablePackageOption(
-                    targetPkg, id);
+        if (id != null) {
+            pkgOption = new DownloadablePackageOption(targetPkg, id);
         } else {
-            pkgOption = new DownloadablePackageOption(
-                    targetPkg, nodeCounter);
+            pkgOption = new DownloadablePackageOption(targetPkg, nodeCounter);
         }
 
         String label = el.attributeValue("label");

@@ -79,7 +79,7 @@ public class DownloadablePackageOptions {
     public List<String> checkSelectionValid(List<String> ids) {
         for (String id : ids) {
             DownloadablePackageOption option = findById(id, pkgOptions);
-            if (option==null) {
+            if (option == null) {
                 List<String> newIds = new ArrayList<String>();
                 newIds.addAll(ids);
                 newIds.remove(id);

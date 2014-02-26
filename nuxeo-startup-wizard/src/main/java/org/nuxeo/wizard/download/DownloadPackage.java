@@ -101,8 +101,8 @@ public class DownloadPackage {
     }
 
     public void setBaseUrl(String baseUrl) {
-        if (baseUrl!=null && !baseUrl.endsWith("/")) {
-            baseUrl = baseUrl+ "/";
+        if (baseUrl != null && !baseUrl.endsWith("/")) {
+            baseUrl = baseUrl + "/";
         }
         this.baseUrl = baseUrl;
     }
@@ -170,7 +170,7 @@ public class DownloadPackage {
     }
 
     public void addDeps(String[] depIds) {
-        for (String depId: depIds) {
+        for (String depId : depIds) {
             addDep(depId);
         }
     }
