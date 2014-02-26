@@ -327,9 +327,12 @@
   </extension>
 
   <extension target="faces-config#APPLICATION">
-    <view-handler>
+    <!-- disabled since JSF2 -->
+    <!--
+      <view-handler>
       org.nuxeo.theme.jsf.facelets.NXThemesFaceletViewHandler
-    </view-handler>
+      </view-handler>
+    -->
 
     <navigation-handler>
       org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler
@@ -343,11 +346,13 @@
     -->
   </extension>
 
-  <extension target="faces-config#FACTORY">
+  <!--
+    <extension target="faces-config#FACTORY">
     <lifecycle-factory>
-      org.nuxeo.ecm.platform.ui.web.lifecycle.NuxeoLifeCycleFactory
+    org.nuxeo.ecm.platform.ui.web.lifecycle.NuxeoLifeCycleFactory
     </lifecycle-factory>
-  </extension>
+    </extension>
+  -->
 
   <extension target="faces-config#PHASE-LISTENER">
     <!-- This is registered after SeamPhaseListener because
