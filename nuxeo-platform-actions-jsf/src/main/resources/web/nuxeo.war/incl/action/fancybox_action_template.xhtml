@@ -23,52 +23,9 @@
     <c:if test="#{empty iframe}">
 
       <c:if test="#{not widgetProperty_useButton}">
-        <a4j:commandLink id="#{fancyboxIdPrefix}link"
-          ajaxSingle="true"
-          ignoreDupResponses="true" requestDelay="100"
-          onclick="#{onclick}"
-          styleClass="actionLink #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
-          disabled="#{!action.available}"
-          reRender="#{fancyboxIdPrefix}ajax_panel"
-          accesskey="#{action.accessKey}">
-          <f:setPropertyActionListener value="#{nxu:test(widgetProperty_formAdded,'2','1')}"
-            target="#{selectionActions.lookupLevelValue}" />
-          <f:setPropertyActionListener value="#{action.id}"
-            target="#{selectionActions.selectedValue}" />
-          <f:setPropertyActionListener
-            value="#{widgetProperty_clickedActionIdHolder}"
-            target="#{selectionActions.selectedValueHolder}" />
-          <nxu:actionListenerMethod
-            value="#{selectionActions.onClick}" />
-          <ui:include src="/incl/action/action_icon_label_template.xhtml">
-            <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
-            <ui:param name="hideLabel" value="#{widgetProperty_hideLabel}" />
-          </ui:include>
-          <ui:insert name="inside_action" />
-        </a4j:commandLink>
       </c:if>
 
       <c:if test="#{useButton}">
-        <a4j:commandButton id="#{fancyboxIdPrefix}link"
-          ajaxSingle="true"
-          ignoreDupResponses="true" requestDelay="100"
-          onclick="#{onclick}"
-          value="#{messages[action.label]}"
-          styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
-          disabled="#{!action.available}"
-          reRender="#{fancyboxIdPrefix}ajax_panel"
-          accesskey="#{action.accessKey}">
-          <f:setPropertyActionListener value="#{nxu:test(widgetProperty_formAdded,'2','1')}"
-            target="#{selectionActions.lookupLevelValue}" />
-          <f:setPropertyActionListener value="#{action.id}"
-            target="#{selectionActions.selectedValue}" />
-          <f:setPropertyActionListener
-            value="#{widgetProperty_clickedActionIdHolder}"
-            target="#{selectionActions.selectedValueHolder}" />
-          <nxu:actionListenerMethod
-            value="#{selectionActions.onClick}" />
-          <ui:insert name="inside_action" />
-        </a4j:commandButton>
       </c:if>
 
     </c:if>
@@ -151,15 +108,6 @@
           <c:if test="#{actionClicked}">
 
             <a4j:form>
-              <a4j:jsFunction name="#{fancyboxIdPrefix}closeFancybox">
-                <f:setPropertyActionListener value=""
-                  target="#{selectionActions.selectedValue}" />
-                <f:setPropertyActionListener
-                  value="#{widgetProperty_clickedActionIdHolder}"
-                  target="#{selectionActions.selectedValueHolder}" />
-                <nxu:actionListenerMethod
-                  value="#{selectionActions.onClick}" />
-              </a4j:jsFunction>
             </a4j:form>
 
             <script>

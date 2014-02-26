@@ -64,50 +64,6 @@ empty:
         </h:commandButton>
       </a4j:form>
 
-      <a4j:form id="#{quickFilterFormId}_more" ajaxSubmit="true"
-        styleClass="action_bar">
-        <a4j:commandLink value="..."
-          reRender="#{filterFormId}_panel"
-          id="moreButton"
-          ajaxSingle="true"
-          ignoreDupResponses="true"
-          requestDelay="100"
-          styleClass="button">
-          <f:setPropertyActionListener value="true"
-            target="#{selectionActions.selectedValue}" />
-          <f:setPropertyActionListener
-            value="#{cvid}_showFilterFormBox"
-            target="#{selectionActions.selectedValueHolder}" />
-          <nxu:actionListenerMethod
-            value="#{selectionActions.onClick}" />
-        </a4j:commandLink>
-      </a4j:form>
-
-      <a4j:form id="#{resetFilterFormId}" ajaxSubmit="true"
-        styleClass="action_bar">
-        <a4j:commandLink
-          value="#{messages['label.contentview.filter.clearFilter']}"
-          id="resetFilter"
-          ajaxSingle="true"
-          rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
-          reRender="#{elementsToReRender}"
-          ignoreDupResponses="true"
-          requestDelay="100"
-          styleClass="button">
-          <nxu:actionListenerMethod
-            value="#{jsfResetActions.resetComponents}" />
-          <nxu:actionListenerMethod
-            value="#{contentView.resetSearchDocumentModel()}" />
-          <f:setPropertyActionListener value="false"
-            target="#{selectionActions.selectedValue}" />
-          <f:setPropertyActionListener
-            value="#{cvid}_showFilterFormBox"
-            target="#{selectionActions.selectedValueHolder}" />
-          <nxu:actionListenerMethod
-            value="#{selectionActions.onClick}" />
-        </a4j:commandLink>
-      </a4j:form>
-
       <div class="action_bar">
         <a4j:status>
           <f:facet name="start">
@@ -146,35 +102,6 @@ empty:
             </div>
 
             <p class="buttonsGadget">
-              <h:commandButton
-                value="#{messages['label.contentview.filter.filterAction']}"
-                id="submitFilter"
-                action="#{contentView.resetPageProvider()}"
-                styleClass="button">
-                <nxu:actionListenerMethod
-                  value="#{jsfResetActions.resetComponents}" />
-                <f:setPropertyActionListener value="false"
-                  target="#{selectionActions.selectedValue}" />
-                <f:setPropertyActionListener
-                  value="#{cvid}_showFilterFormBox"
-                  target="#{selectionActions.selectedValueHolder}" />
-                <nxu:actionListenerMethod
-                  value="#{selectionActions.onClick}" />
-              </h:commandButton>
-              <a4j:commandButton
-                value="#{messages['label.contentview.filter.clearFilterButton']}"
-                id="resetFilter"
-                ajaxSingle="true"
-                disabled="#{not nxd:isDirty(contentView.searchDocumentModel)}"
-                reRender="#{filterFormId}"
-                ignoreDupResponses="true"
-                requestDelay="100"
-                styleClass="button">
-                <nxu:actionListenerMethod
-                  value="#{jsfResetActions.resetComponents}" />
-                <nxu:actionListenerMethod
-                  value="#{contentView.resetSearchDocumentModel()}" />
-              </a4j:commandButton>
             </p>
 
           </a4j:form>
