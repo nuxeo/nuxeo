@@ -1,6 +1,6 @@
 <packages>
   <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-@VERSION@/mp/">
-    <package id="nuxeo-cap" label="Content Application Platform (CAP)" md5="" color="#635959" textcolor="#FFF" shortlabel="CAP"/>
+    <package id="nuxeo-cap" label="Content Application Platform (CAP)" color="#635959" textcolor="#FFF" shortlabel="CAP" virtual="true"/>
     <package id="nuxeo-dm" label="Advanced Document Management (DM)" filename="nuxeo-dm-@VERSION@.zip" md5="@DMMPMD5@" color="#5e9adf" textcolor="#FFF" shortlabel="DM"/>
     <package id="nuxeo-dam" label="Digital Asset Management (DAM)" filename="nuxeo-dam-@VERSION@.zip" md5="@DAMMPMD5@" color="#ffeb6d" textcolor="#333" shortlabel="DAM"/>
     <package id="nuxeo-social-collaboration" label="Social Collaboration (SC)" filename="nuxeo-social-collaboration-@VERSION@.zip" md5="@SCMPMD5@" color="#ff736e" textcolor="#FFF" shortlabel="SC"/>
