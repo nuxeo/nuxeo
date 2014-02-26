@@ -30,7 +30,9 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.ui.util.cdk.RendererUtils;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.richfaces.renderkit.util.AjaxRendererUtils;
 
 /**
  * Managed bean, request-scoped, that resets the components value for ajax
