@@ -71,6 +71,7 @@
           </h:column>
           <h:column>
             <h:outputText value="#{result.label}" styleClass="resultLabel" />
+            <h:outputText rendered="#{result.type == 'user'}" value=" #{result.userId}" styleClass="detail"/> 
           </h:column>
         </rich:suggestionbox>
         <a4j:commandButton
