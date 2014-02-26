@@ -33,8 +33,12 @@ String selectedPackageIds="";
 <%for (DownloadPackage pkg : packages) {
     selectedPackageIds+=pkg.getId() + "|";
 %>
-  <li><%=pkg.getLabel()%> <br/>(<%=pkg.getFilename()%>) &nbsp;
-  <%if (pkg.isAlreadyInLocal()) {%>
+  <li><%=pkg.getLabel()%> <br/>(<%=pkg.getId()%>) &nbsp;
+  <%if (pkg.isVirtual()) {%>
+    (already in local)
+  <%} else if (pkg.getFilename() == null || "".equals(pkg.getFilename())) {%>
+    (later download)
+  <%} else if (pkg.isAlreadyInLocal()) {%>
     (already in local)
   <%} else {
      needDownload = true;%>

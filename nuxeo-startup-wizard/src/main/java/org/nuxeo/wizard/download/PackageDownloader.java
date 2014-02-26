@@ -38,6 +38,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
@@ -390,7 +391,7 @@ public class PackageDownloader {
     }
 
     public List<DownloadPackage> getSelectedPackages() {
-        List<DownloadPackage> pkgs = getPackageOptions().getPkg4Download();
+        List<DownloadPackage> pkgs = getPackageOptions().getPkg4Install();
         for (DownloadPackage pkg : pkgs) {
             if (needToDownload(pkg)) {
                 pkg.setAlreadyInLocal(false);
@@ -406,10 +407,14 @@ public class PackageDownloader {
         List<String> fileEntries = new ArrayList<String>();
         fileEntries.add("init");
 
-        List<DownloadPackage> pkgs = downloadOptions.getPkg4Download();
+        List<DownloadPackage> pkgs = downloadOptions.getPkg4Install();
         List<String> pkgInstallIds = new ArrayList<String>();
         for (DownloadPackage pkg : pkgs) {
-            if (pkg.isAlreadyInLocal()) {
+            if (pkg.isVirtual()) {
+                log.debug("No install for virtual package: " + pkg.getId());
+            } else if (pkg.isAlreadyInLocal()
+                    || StringUtils.isBlank(pkg.getFilename())) {
+                // Blank filename means later downloaded
                 fileEntries.add("install " + pkg.getId());
                 pkgInstallIds.add(pkg.getId());
             } else {
@@ -469,7 +474,7 @@ public class PackageDownloader {
     }
 
     public void startDownload() {
-        startDownload(downloadOptions.getPkg4Download());
+        startDownload(downloadOptions.getPkg4Install());
     }
 
     public void startDownload(List<DownloadPackage> pkgs) {

@@ -5,6 +5,7 @@
     <package id="nuxeo-dam" label="Digital Assets Management features (DAM)" filename="nuxeo-dam.zip" md5="" shortlabel="DAM"/>
     <package id="nuxeo-social-collaboration" label="Collaboration features (social collab)" filename="nuxeo-collab.zip" md5="" shortlabel="SC"/>
     <package id="nuxeo-cmf" label="Case Management Framework (CMF)" filename="nuxeo-cmf.zip" md5="" shortlabel="CMF"/>
+    <package id="nuxeo-drive" label="Drive" color="#5AC456" textcolor="#FFF" shortlabel="Drive"/>
   </packageDefinitions>
   <install>
     <packageOptions>
@@ -14,6 +15,7 @@
           <package ref="nuxeo-social-collaboration" exclusive="false" />
         </package>
         <package ref="nuxeo-cmf" exclusive="true" />
+        <package ref="nuxeo-drive" exclusive="false" />
       </package>
     </packageOptions>
   </install>

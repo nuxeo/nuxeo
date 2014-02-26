@@ -17,13 +17,16 @@
  */
 package org.nuxeo.wizard.download.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.wizard.download.DownloadDescriptorParser;
 import org.nuxeo.wizard.download.DownloadPackage;
 import org.nuxeo.wizard.download.DownloadablePackageOption;
@@ -69,7 +72,7 @@ public class TestParser {
         ids.add(pkgs.get(1).getChildrenPackages().get(1).getId()); // Collab
 
         pkgs.select(ids);
-        List<DownloadPackage> pkg4Download = pkgs.getPkg4Download();
+        List<DownloadPackage> pkg4Download = pkgs.getPkg4Install();
         // System.out.println(pkg4Download.toString());
         assertEquals(4, pkg4Download.size()); // CAP + DM + DAM + COLLAB
 
@@ -79,11 +82,12 @@ public class TestParser {
         ids.add(pkgs.get(0).getChildrenPackages().get(0).getId()); // DAM
 
         pkgs.select(ids);
-        pkg4Download = pkgs.getPkg4Download();
+        pkg4Download = pkgs.getPkg4Install();
         // System.out.println(pkg4Download.toString());
         assertEquals(2, pkg4Download.size()); // CAP + DAM
 
     }
+
     @Test
     public void testParserAndSelection() {
 
@@ -98,38 +102,40 @@ public class TestParser {
         DownloadablePackageOption root = pkgs.get(0);
         assertEquals("nuxeo-cap", root.getPackage().getId());
 
-        assertEquals(3, root.getChildrenPackages().size()); // DAM / DM / CMF
+        assertEquals(4, root.getChildrenPackages().size()); // DAM / DM / CMF /
+                                                            // nuxeo-drive
 
         // System.out.println(pkgs.asJson());
 
-        // Check selections
+        // Check automatic selection of package dependencies
         List<String> selectedIds = new ArrayList<String>();
         selectedIds.add("nuxeo-social-collaboration");
 
         pkgs.select(selectedIds);
-        assertEquals(3, pkgs.getPkg4Download().size()); // Collab / DM / CAP
-        assertEquals("nuxeo-social-collaboration", pkgs.getPkg4Download().get(0).getId());
-        assertEquals("SC", pkgs.getPkg4Download().get(0).getShortLabel());
-        assertEquals("nuxeo-dm", pkgs.getPkg4Download().get(1).getId());
-        assertEquals("DM", pkgs.getPkg4Download().get(1).getShortLabel());
-        assertEquals("nuxeo-cap", pkgs.getPkg4Download().get(2).getId());
-        assertEquals("CAP", pkgs.getPkg4Download().get(2).getShortLabel());
+        assertEquals(3, pkgs.getPkg4Install().size()); // CAP / DM / Collab
+        assertEquals("nuxeo-cap", pkgs.getPkg4Install().get(0).getId());
+        assertEquals("CAP", pkgs.getPkg4Install().get(0).getShortLabel());
+        assertTrue(pkgs.getPkg4Install().get(0).isVirtual());
+        assertEquals("nuxeo-dm", pkgs.getPkg4Install().get(1).getId());
+        assertEquals("DM", pkgs.getPkg4Install().get(1).getShortLabel());
+        assertEquals("nuxeo-social-collaboration",
+                pkgs.getPkg4Install().get(2).getId());
+        assertEquals("SC", pkgs.getPkg4Install().get(2).getShortLabel());
 
         selectedIds.clear();
-        selectedIds.add("nuxeo-cmf");
+        selectedIds.add("nuxeo-drive");
         pkgs.select(selectedIds);
-        assertEquals(2, pkgs.getPkg4Download().size()); // CMF / CAP
-        assertEquals("nuxeo-cmf", pkgs.getPkg4Download().get(0).getId());
-        assertEquals("nuxeo-cap", pkgs.getPkg4Download().get(1).getId());
+        assertEquals(2, pkgs.getPkg4Install().size()); // CAP / nuxeo-drive
+        assertEquals("nuxeo-cap", pkgs.getPkg4Install().get(0).getId());
+        assertEquals("nuxeo-drive", pkgs.getPkg4Install().get(1).getId());
 
         selectedIds.clear();
         selectedIds.add("nuxeo-cmf");
         selectedIds.add("nuxeo-dm");
         pkgs.select(selectedIds);
-        assertEquals(2, pkgs.getPkg4Download().size()); // DM / CAP
-        assertEquals("nuxeo-dm", pkgs.getPkg4Download().get(0).getId());
-        assertEquals("nuxeo-cap", pkgs.getPkg4Download().get(1).getId());
-
+        assertEquals(2, pkgs.getPkg4Install().size()); // CAP / DM
+        assertEquals("nuxeo-cap", pkgs.getPkg4Install().get(0).getId());
+        assertEquals("nuxeo-dm", pkgs.getPkg4Install().get(1).getId());
     }
 
 }

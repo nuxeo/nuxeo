@@ -32,7 +32,7 @@ public class DownloadablePackageOptions {
 
     protected List<DownloadablePackageOption> pkgOptions = new ArrayList<DownloadablePackageOption>();
 
-    protected List<DownloadPackage> pkg4Download = new ArrayList<DownloadPackage>();
+    protected List<DownloadPackage> pkg4Install = new ArrayList<DownloadPackage>();
 
     protected List<DownloadPackage> commonPackages = new ArrayList<DownloadPackage>();
 
@@ -63,7 +63,7 @@ public class DownloadablePackageOptions {
     }
 
     public void resetSelection() {
-        pkg4Download = new ArrayList<DownloadPackage>();
+        pkg4Install = new ArrayList<DownloadPackage>();
         for (DownloadablePackageOption option : pkgOptions) {
             resetSelection(option);
         }
@@ -90,7 +90,7 @@ public class DownloadablePackageOptions {
                     && !ids.contains(option.getParent().getId())) {
                 List<String> newIds = new ArrayList<String>();
                 newIds.addAll(ids);
-                newIds.add(option.getParent().getId());
+                newIds.add(0, option.getParent().getId());
                 return checkSelectionValid(newIds);
             }
             // check constraints
@@ -123,13 +123,15 @@ public class DownloadablePackageOptions {
             }
         }
     }
+
     protected void markForDownload(DownloadPackage pkg) {
-        if (!pkg4Download.contains(pkg) && pkg.getFilename() != null
-                && !"".equals(pkg.getFilename())) {
-            pkg4Download.add(pkg);
-            for (String dep : pkg.getImpliedDeps()) {
-                markForDownload(dep);
+        if (!pkg4Install.contains(pkg)) {
+            if (pkg.getFilename() != null && !"".equals(pkg.getFilename())) {
+                for (String dep : pkg.getImpliedDeps()) {
+                    markForDownload(dep);
+                }
             }
+            pkg4Install.add(pkg);
         }
     }
 
@@ -161,10 +163,10 @@ public class DownloadablePackageOptions {
         return null;
     }
 
-    public List<DownloadPackage> getPkg4Download() {
+    public List<DownloadPackage> getPkg4Install() {
         List<DownloadPackage> pkgs = new ArrayList<DownloadPackage>(
                 commonPackages);
-        pkgs.addAll(pkg4Download);
+        pkgs.addAll(pkg4Install);
         return pkgs;
     }
 
@@ -219,6 +221,5 @@ public class DownloadablePackageOptions {
     public void setAllPackages(List<DownloadPackage> allPackages) {
         this.allPackages = allPackages;
     }
-
 
 }
