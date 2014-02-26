@@ -638,6 +638,7 @@ public class FileManageActionsBean implements FileManageActions {
                 for (UploadedFile uploadItem : uploadFiles) {
                     // FIXME: check if a temp file needs to be tracked for
                     // deletion
+                    // File tempFile = uploadItem.getFile();
                     // if (tempFile != null && tempFile.exists()) {
                     // Framework.trackFile(tempFile, tempFile);
                     // }

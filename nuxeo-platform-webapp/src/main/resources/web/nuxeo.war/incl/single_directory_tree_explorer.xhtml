@@ -27,7 +27,7 @@
         rowKeyVar="rowKey"
         id="directoryNavTree"
         stateVar="nodeState">
-        <rich:recursiveTreeNodesAdaptor
+        <rich:treeModelRecursiveAdaptor
           roots="#{treeModel}"
           nodes="#{node.children}"
           id="directoryNavRecursiveAdaptor"
@@ -44,7 +44,7 @@
               </a4j:commandLink>
             </div>
           </rich:treeNode>
-        </rich:recursiveTreeNodesAdaptor>
+        </rich:treeModelRecursiveAdaptor>
       </rich:tree>
     </h:panelGroup>
   </a4j:form>

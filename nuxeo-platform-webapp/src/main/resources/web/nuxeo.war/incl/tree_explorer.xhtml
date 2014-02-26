@@ -14,7 +14,7 @@
   <a4j:region renderRegionOnly="true" id="treeExplorerRegion">
     <a4j:form ajaxSubmit="true" id="treeExplorer">
       <div style="float:right">
-        <a4j:commandLink action="#{treeActions.reset}" reRender="treeNav">
+        <a4j:commandLink action="#{treeActions.reset()}" reRender="treeNav">
          <h:graphicImage value="/icons/refresh.png"
           alt="#{messages['label.refresh']}"
           title="#{messages['label.refresh']}"
@@ -33,7 +33,7 @@
               iconCollapsed="/icons/toggle_plus.png"
               rowKeyVar="rowKey"
               stateVar="nodeState">
-              <rich:recursiveTreeNodesAdaptor
+              <rich:treeModelRecursiveAdaptor
                 roots="#{treeActions.treeRoots}"
                 nodes="#{node.children}"
                 var="node">
@@ -60,7 +60,7 @@
                     </nxu:set>
                   </div>
                 </rich:treeNode>
-              </rich:recursiveTreeNodesAdaptor>
+              </rich:treeModelRecursiveAdaptor>
             </rich:tree>
           </h:panelGroup>
         </dd>

@@ -6,7 +6,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf"
   id="#{widget.id}">
-<c:set var="andLabel" value=" #{messages['label.and']} " scope="page" />
+<c:set var="andLabel" value=" #{messages['label.and']} " scope="view" />
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
   <nxu:inputList value="#{field}" model="contributorsModel">
     <h:outputText value="#{nxu:userFullName(contributorsModel.rowData)}" />
