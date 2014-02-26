@@ -11,6 +11,14 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
@@ -23,10 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
@@ -40,7 +45,6 @@ import org.apache.chemistry.opencmis.client.api.QueryResult;
 import org.apache.chemistry.opencmis.client.api.Relationship;
 import org.apache.chemistry.opencmis.client.api.Rendition;
 import org.apache.chemistry.opencmis.client.api.Session;
-import org.apache.chemistry.opencmis.client.runtime.OperationContextImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
@@ -52,8 +56,15 @@ import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
+import org.apache.chemistry.opencmis.commons.impl.Base64;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -90,6 +101,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     protected String rootFolderId;
 
     protected boolean isAtomPub;
+
+    protected boolean isBrowser;
 
     protected Map<String, String> repoDetails;
 
@@ -136,6 +149,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertNotNull(rootFolderId);
 
         isAtomPub = this instanceof TestNuxeoSessionAtomPub;
+        isBrowser = this instanceof TestNuxeoSessionBrowser;
     }
 
     @Override
@@ -274,7 +288,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     @Test
     public void testCreateDocumentWithContentStream() throws Exception {
         Folder root = session.getRootFolder();
-        ContentStream cs = new ContentStreamImpl(null, "text/plain",
+        ContentStream cs = new ContentStreamImpl("myfile", "text/plain",
                 Helper.FILE1_CONTENT);
         OperationContext context = NuxeoSession.DEFAULT_CONTEXT;
         VersioningState versioningState = null;
@@ -290,7 +304,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertNotNull(cs);
         assertEquals("text/plain", cs.getMimeType());
         assertEquals("myfile", cs.getFileName());
-        if (!isAtomPub) {
+        if (!(isAtomPub || isBrowser)) {
             assertEquals(Helper.FILE1_CONTENT.length(), cs.getLength());
         }
         assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
@@ -309,14 +323,14 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         properties.put(PropertyIds.NAME, "myfile");
         Document doc = root.createDocument(properties, null, versioningState,
                 policies, addAces, removeAces, context);
-        ContentStream cs = new ContentStreamImpl(null, "text/plain",
+        ContentStream cs = new ContentStreamImpl("myfile", "text/plain",
                 Helper.FILE1_CONTENT);
         doc.setContentStream(cs, true);
         cs = doc.getContentStream();
         assertNotNull(cs);
         assertEquals("text/plain", cs.getMimeType());
         assertEquals("myfile", cs.getFileName());
-        if (!isAtomPub) {
+        if (!(isAtomPub || isBrowser)) {
             assertEquals(Helper.FILE1_CONTENT.length(), cs.getLength());
         }
         assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
@@ -388,16 +402,35 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     public void testContentStream() throws Exception {
         Document file = (Document) session.getObjectByPath("/testfolder1/testfile1");
 
+        // check ETag header
+        if (isAtomPub || isBrowser) {
+            RepositoryInfo ri = session.getRepositoryInfo();
+            String uri = ri.getThinClientUri() + ri.getId() + "/";
+            uri += isAtomPub ? "content?id=" : "root?objectId=";
+            uri += file.getId();
+            String eTag = file.getPropertyValue("nuxeo:contentStreamDigest");
+            String encoding = Base64.encodeBytes(
+                    new String(USERNAME + ":" + PASSWORD).getBytes());
+            DefaultHttpClient client = new DefaultHttpClient();
+            HttpGet request = new HttpGet(uri);
+            request.setHeader("Authorization", "Basic " + encoding);
+            request.setHeader("If-None-Match", eTag);
+            try {
+                HttpResponse response = client.execute(request);
+                assertEquals(HttpServletResponse.SC_NOT_MODIFIED,
+                response.getStatusLine().getStatusCode());
+            } finally {
+                client.getConnectionManager().shutdown();
+            }
+        }
+
         // get stream
         ContentStream cs = file.getContentStream();
         assertNotNull(cs);
         assertEquals("text/plain", cs.getMimeType());
-        if (!isAtomPub) {
-            // TODO fix AtomPub case where the filename is null
-            assertEquals("testfile.txt", cs.getFileName());
-        }
-        if (!isAtomPub) {
-            // TODO fix AtomPub case where the length is unknown (streaming)
+        assertEquals("testfile.txt", cs.getFileName());
+        if (!(isAtomPub || isBrowser)) {
+            // TODO fix AtomPub/Browser case where the length is unknown (streaming)
             assertEquals(Helper.FILE1_CONTENT.length(), cs.getLength());
         }
         assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
@@ -418,10 +451,10 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         // AtomPub lowercases charset -> TODO proper mime type comparison
         String mimeType = cs.getMimeType().toLowerCase().replace(" ", "");
         assertEquals("text/plain;charset=utf-8", mimeType);
-        if (!isAtomPub) {
-            // TODO fix AtomPub case where the filename is null
-            assertEquals("foo.txt", cs.getFileName());
-            // TODO fix AtomPub case where the length is unknown (streaming)
+        // TODO fix AtomPub case where the filename is null
+        assertEquals("foo.txt", cs.getFileName());
+        if (!(isAtomPub || isBrowser)) {
+            // TODO fix AtomPub/Browser case where the length is unknown (streaming)
             assertEquals(streamBytes.length, cs.getLength());
         }
         assertEquals(STREAM_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
@@ -836,7 +869,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         checkValue("dc:title", "newtitle", ver);
         ContentStream cs2 = ((Document) ver).getContentStream();
         assertEquals("application/pdf", cs2.getMimeType());
-        if (!isAtomPub) {
+        if (!(isAtomPub || isBrowser)) {
             assertEquals(bytes.length, cs2.getLength());
             assertEquals("test.pdf", cs2.getFileName());
         }
@@ -848,7 +881,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     @Test
     public void testUserWorkspace() throws ClientException {
         String wsPath = Helper.createUserWorkspace(getCoreSession(),
-                isAtomPub ? USERNAME : "Administrator");
+                (isAtomPub || isBrowser) ? USERNAME : "Administrator");
         Folder ws = (Folder) session.getObjectByPath(wsPath);
         assertNotNull(ws);
     }
