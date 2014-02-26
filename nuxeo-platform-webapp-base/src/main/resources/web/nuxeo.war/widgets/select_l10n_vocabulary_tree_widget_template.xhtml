@@ -120,7 +120,7 @@
             id="#{widget.id}_treeId"
             iconExpanded="/icons/toggle_minus.png"
             iconCollapsed="/icons/toggle_plus.png">
-            <rich:recursiveTreeNodesAdaptor
+            <rich:treeModelRecursiveAdaptor
               id="#{widget.id}_recursiveTreeNodesAdaptorId"
               roots="#{vocabularyTreeActions.getRoots(widgetProperty_directoryName, widgetProperty_displayObsoleteEntries, keySeparator, widgetProperty_ordering)}"
               nodes="#{node.children}" var="node">
@@ -147,7 +147,7 @@
                   <h:outputText value="#{node.label}" />
                 </a4j:commandLink>
               </rich:treeNode>
-            </rich:recursiveTreeNodesAdaptor>
+            </rich:treeModelRecursiveAdaptor>
           </rich:tree>
         </a4j:region>
     </div>

@@ -106,7 +106,7 @@
         rowKeyVar="rowKey"
         styleClass="labelTool"
         stateVar="nodeState">
-        <rich:recursiveTreeNodesAdaptor
+        <rich:treeModelRecursiveAdaptor
           id="#{widget.id}_recursiveTreeNodesAdaptorId"
           roots="#{widget.properties.showAllDomains ? reducedTreeActions.rootNode : reducedTreeActions.treeRoots}"
           nodes="#{node.children}"
@@ -125,7 +125,7 @@
               <h:outputText value="#{nxd:titleOrId(node.document)}" />
             </a4j:commandLink>
           </rich:treeNode>
-        </rich:recursiveTreeNodesAdaptor>
+        </rich:treeModelRecursiveAdaptor>
       </rich:tree>
     </div>
   </div>
