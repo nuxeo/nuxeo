@@ -49,12 +49,14 @@ import org.jboss.seam.annotations.web.Filter;
  *
  * @author Shane Bryzak
  */
-@Scope(APPLICATION)
-@Name("org.jboss.seam.web.multipartFilter")
-@Install(precedence = DEPLOYMENT)
-@BypassInterceptors
-@Filter(within = { "org.jboss.seam.web.ajax4jsfFilter",
-        "org.jboss.seam.web.exceptionFilter" })
+// FIXME: disable override, maybe not needed anymore + MultiPartRequest should
+// be adapted to JSF2
+//@Scope(APPLICATION)
+//@Name("org.jboss.seam.web.multipartFilter")
+//@Install(precedence = DEPLOYMENT)
+//@BypassInterceptors
+//@Filter(within = { "org.jboss.seam.web.ajax4jsfFilter",
+//        "org.jboss.seam.web.exceptionFilter" })
 public class MultipartFilter extends org.jboss.seam.web.MultipartFilter {
 
     public void doFilter(ServletRequest request, ServletResponse response,

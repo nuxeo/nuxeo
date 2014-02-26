@@ -45,7 +45,9 @@ import org.nuxeo.ecm.platform.ui.web.multipart.ByteSequenceMatcher.BytesHandler;
 
 /**
  * Request wrapper for supporting multipart requests, used for file uploading.
- * 
+ *
+ * FIXME: throws error about prolog on JSF2 upgrade
+ *
  * @author Shane Bryzak
  */
 public class MultipartRequest extends org.jboss.seam.web.MultipartRequestImpl {
