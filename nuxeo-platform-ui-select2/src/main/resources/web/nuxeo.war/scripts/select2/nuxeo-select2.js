@@ -10,10 +10,7 @@
       }
     }
     markup += entry.displayLabel;
-    if (entry.warn_message) {
-      markup += "<img src='" + window.nxContextPath
-          + "/icons/warning.gif' title='" + entry.warn_message + "'/>"
-    }
+    markup += "&nbsp;<span class='detail'>" + entry.id + "</span>";
     return markup;
   }
 
