@@ -35,6 +35,11 @@ public class DownloadPackage {
 
     protected String md5;
 
+    /**
+     * @since 5.9.3 Virtual package, no download nor install, typically CAP
+     */
+    protected boolean virtual;
+
     protected File localFile;
 
     protected String color;
@@ -189,6 +194,20 @@ public class DownloadPackage {
 
     public void setShortLabel(String shortLabel) {
         this.shortLabel = shortLabel;
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public boolean isVirtual() {
+        return virtual;
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public void setVirtual(boolean virtual) {
+        this.virtual = virtual;
     }
 
 }

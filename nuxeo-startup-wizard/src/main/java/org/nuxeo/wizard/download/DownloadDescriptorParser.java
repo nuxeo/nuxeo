@@ -126,6 +126,7 @@ public class DownloadDescriptorParser {
             pkg.setLabel(el.attributeValue("label"));
             pkg.setFilename(el.attributeValue("filename"));
             pkg.setMd5(el.attributeValue("md5"));
+            pkg.setVirtual(Boolean.parseBoolean(el.attributeValue("virtual")));
             pkg.setBaseUrl(bUrl);
             pkg.setColor(el.attributeValue("color"));
             pkg.setTextColor(el.attributeValue("textcolor"));
