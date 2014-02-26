@@ -58,10 +58,11 @@ public class StaticNavigationHandler {
         FacesContext faces = FacesContext.getCurrentInstance();
         for (Set<NavigationCase> cases : associate.getNavigationCaseListMappings().values()) {
             for (NavigationCase cnc : cases) {
-                String toViewId = cnc.getToViewId(faces);
-                String fromOutcome = cnc.getFromOutcome();
-                outcomeToViewId.put(fromOutcome, toViewId);
-                viewIdToOutcome.put(toViewId, fromOutcome);
+                // FIXME: cases view ids now require the faces context not to be null
+                // String toViewId = cnc.getToViewId(faces);
+                // String fromOutcome = cnc.getFromOutcome();
+                // outcomeToViewId.put(fromOutcome, toViewId);
+                // viewIdToOutcome.put(toViewId, fromOutcome);
             }
         }
         if (Framework.isDevModeSet()) {
