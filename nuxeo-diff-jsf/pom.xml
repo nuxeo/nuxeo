@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -26,6 +27,12 @@
       <artifactId>nuxeo-platform-webapp-core</artifactId>
     </dependency>
 
+    <!-- nuxeo jsf -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-webapp-base</artifactId>
+    </dependency>
+
     <!-- nuxeo diff -->
     <dependency>
       <groupId>org.nuxeo.ecm</groupId>
@@ -34,6 +41,11 @@
     <dependency>
       <groupId>org.nuxeo.ecm</groupId>
       <artifactId>nuxeo-diff-content</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam</artifactId>
     </dependency>
 
     <!-- test -->
