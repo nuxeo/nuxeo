@@ -168,7 +168,7 @@ a.documentTypeLink {
   max-width: 16px }
 
 .suggestionBoxResult .rich-sb-cell-padding span {
-  display: block;
+  /* display: block;*/
   width: 250px;
   overflow: hidden;
   text-overflow: ellipsis }
