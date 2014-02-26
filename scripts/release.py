@@ -66,7 +66,7 @@ import sys
 import tempfile
 
 from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
-from nxutils import ExitException, Repository, assert_git_config, extract_zip,\
+from nxutils import ExitException, Repository, assert_git_config, extract_zip, \
      log, make_zip, system
 from terminalsize import get_terminal_size
 
@@ -452,6 +452,22 @@ given the path parameter.
         sources_archive_name = "nuxeo-%s-sources.zip" % version
         self.repo.archive(os.path.join(self.archive_dir, sources_archive_name))
 
+    def get_message(self, message, additional_message):
+        if message and message.strip():
+            if additional_message and additional_message.strip():
+                return "%s: %s" % (message, additional_message)
+            return message
+        return additional_message
+
+    def get_commit_message(self, additional_message):
+        return self.get_message(self.msg_commit, additional_message)
+
+    def get_tag_message(self, additional_message):
+        message = self.msg_tag
+        if not message or not message.strip():
+            message = self.msg_commit
+        return self.get_message(message, additional_message)
+
     def prepare(self, dodeploy=False, dryrun=False):
         """ Prepare the release: build, change versions, tag and package source
         and distributions."""
@@ -475,13 +491,13 @@ given the path parameter.
                 self.update_versions(other_version[0], other_version[1])
                 msg_commit += ", update %s to %s" % (other_version[0],
                                                      other_version[1])
-        self.repo.system_recurse("git commit -m'%s %s' -a" % (self.msg_commit,
-                                                              msg_commit))
+        self.repo.system_recurse("git commit -m'%s' -a" %
+                                 (self.get_commit_message(msg_commit)))
         msg_tag = "Release release-%s from %s on %s" % (self.tag,
                                                         self.snapshot,
                                                         self.branch)
-        self.repo.system_recurse("git tag -a release-%s -m'%s %s'" % (self.tag,
-                                                        self.msg_tag, msg_tag))
+        self.repo.system_recurse("git tag -a release-%s -m'%s'" % (self.tag,
+                                                self.get_tag_message(msg_tag)))
 
         # TODO NXP-8569 Optionally merge maintenance branch on source
         if self.maintenance_version != "auto":
@@ -490,7 +506,8 @@ given the path parameter.
             msg_commit = "Update %s to %s" % (self.tag,
                                               self.maintenance_version)
             self.update_versions(self.tag, self.maintenance_version)
-            self.repo.system_recurse("git commit -m'%s' -a" % msg_commit)
+            self.repo.system_recurse("git commit -m'%s' -a" %
+                                     (self.get_commit_message(msg_commit)))
 
         log("\n[INFO] Released branch %s (update version and commit)..." %
             self.branch)
@@ -510,7 +527,8 @@ given the path parameter.
                 msg_commit += ", update %s to %s" % (other_version[0],
                                                      other_version[2])
         if post_release_change:
-            self.repo.system_recurse("git commit -m'%s' -a" % msg_commit,
+            self.repo.system_recurse("git commit -m'%s' -a" %
+                                     (self.get_commit_message(msg_commit)),
                                      with_optionals=True)
 
         if self.maintenance_version == "auto":
@@ -569,7 +587,8 @@ given the path parameter.
                 self.update_versions(other_version[0], other_version[1])
                 msg_commit += ", update %s to %s" % (other_version[0],
                                                      other_version[1])
-        self.repo.system_recurse("git commit -m'%s' -a" % msg_commit)
+        self.repo.system_recurse("git commit -m'%s' -a" %
+                                 (self.get_commit_message(msg_commit)))
         os.chdir(cwd)
 
     def perform(self):
@@ -623,9 +642,7 @@ def main():
         description = """Release Nuxeo from a given branch, tag the release, then
 set the next SNAPSHOT version. If a maintenance version was provided, then a
 maintenance branch is kept, else it is deleted after release."""
-        help_formatter = IndentedHelpFormatterWithNL(
-#                 max_help_position=6,
-                 width=get_terminal_size()[0])
+        help_formatter = IndentedHelpFormatterWithNL(width=80)
         parser = optparse.OptionParser(usage=usage, description=description,
                                        formatter=help_formatter)
         parser.add_option('-r', action="store", type="string",
@@ -701,22 +718,22 @@ Default files and properties patterns are respectively:
 '(nuxeo|marketplace)\..*version'. They can't be removed.""")
         versioning_options.add_option('--mc', '--msg-commit', action="store",
             type="string", dest='msg_commit', default='',
-            help="""Additional release commit message.
-Default: 'Release $BRANCH, update $SNAPSHOT to $TAG, update ...'.\n
-Post-release commits' messages are not customizable.
+            help="""Additional release commit message to put in front of
+ default: 'Release $BRANCH, update $SNAPSHOT to $TAG, update ...'.
 """)
         versioning_options.add_option('--mt', '--msg-tag', action="store",
             type="string", dest='msg_tag', default='',
-            help="""Additional tag message.
-Default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'.
+            help="""Additional tag message, to put in front of
+ default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'. If not set,
+ the --mc option is used instead (if set).
 """)
         parser.add_option_group(versioning_options)
         (options, args) = parser.parse_args()
         if len(args) == 1:
             command = args[0]
         elif len(args) > 1:
-            raise ExitException(1, "'command' must be a single argument. "
-                                "See usage with '-h'.")
+            raise ExitException(1,
+                                "'command' must be a single argument: '%s'. See usage with '-h'." % (args,))
 
         if ("command" in locals() and command == "perform"
             and os.path.isfile(Release.get_release_log(os.getcwd()))
