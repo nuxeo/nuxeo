@@ -474,7 +474,7 @@ given the path parameter.
             message = self.msg_commit
         return self.get_message(message, additional_message)
 
-    def prepare(self, dodeploy=False, dryrun=False):
+    def prepare(self, dodeploy=False, dopush=False, dryrun=False):
         """ Prepare the release: build, change versions, tag and package source
         and distributions."""
         cwd = os.getcwd()
@@ -546,9 +546,20 @@ given the path parameter.
         log("\n[INFO] Build and package release-%s..." % self.tag)
         self.repo.system_recurse("git checkout release-%s" % self.tag)
         if dodeploy:
-            self.repo.mvn("clean deploy", skip_tests=self.skipTests,
-                        profiles="release,-qa,nightly" + self.profiles,
-                        dryrun=dryrun)
+            deploy_profiles="release,-qa" + self.profiles
+            if self.repo.is_nuxeoecm:
+                deploy_profiles="release,-qa,nightly" + self.profiles
+
+            if dopush:
+                # call perform to deploy maven artifacts and push commits
+                self.perform(skip_tests=self.skipTests,
+                             profiles=deploy_profiles,
+                             dryrun=dryrun)
+            else:
+                self.repo.mvn("clean deploy", skip_tests=self.skipTests,
+                              profiles=deploy_profiles,
+                              dryrun=dryrun)
+
         else:
             self.repo.mvn("clean install", skip_tests=self.skipTests,
                         profiles="release,-qa" + self.profiles,
@@ -597,23 +608,26 @@ given the path parameter.
                                  (self.get_commit_message(msg_commit)))
         os.chdir(cwd)
 
-    def perform(self):
+    def perform(self, profiles=None, skip_tests=True, dryrun=False):
         """ Perform the release: push source, deploy artifacts and upload
         packages."""
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
         self.repo.clone(self.branch, with_optionals=True)
-        self.repo.system_recurse("git push %s %s" % (self.repo.alias,
-                                                     self.branch),
-                                 with_optionals=True)
-        if self.maintenance_version != "auto":
+        if not dryrun:
             self.repo.system_recurse("git push %s %s" % (self.repo.alias,
-                                                    self.maintenance_branch))
-        self.repo.system_recurse("git push %s release-%s" % (self.repo.alias,
-                                                             self.tag))
+                                                         self.branch),
+                                     with_optionals=True)
+            if self.maintenance_version != "auto":
+                self.repo.system_recurse("git push %s %s" % (self.repo.alias,
+                                                             self.maintenance_branch))
+                self.repo.system_recurse("git push %s release-%s" % (self.repo.alias,
+                                                                     self.tag))
         self.repo.system_recurse("git checkout release-%s" % self.tag)
-        self.repo.mvn("clean deploy", skip_tests=True,
-                        profiles="release,-qa" + self.profiles)
+        if profiles is None:
+            profiles = "release,-qa" + self.profiles
+        self.repo.mvn("clean deploy", skip_tests=skip_tests,
+                      profiles=profiles, dryrun=dryrun)
         os.chdir(cwd)
 
     def check(self):
@@ -634,7 +648,7 @@ def main():
             raise ExitException(1, "That script must be ran from root of a Git"
                                 + " repository")
         usage = ("""usage: %prog <command> [options]
-       %prog prepare [-r alias] [-f] [-d] [--skipTests] [-p profiles] \
+       %prog prepare [-r alias] [-f] [-d] [--push] [--skipTests] [-p profiles] \
 [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] \
 [--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
        %prog perform [-r alias] [-f] [-p profiles] [-b branch] [-t tag] [-m maintenance]
@@ -663,7 +677,11 @@ mode. Default: '%default'""")
         parser.add_option('-d', '--deploy', action="store_true",
                           dest='deploy', default=False,
                           help="""Deploy artifacts to nightly/staging repository
-by activating the 'nightly' Maven profile. Default: '%default'""")
+(activating the 'nightly' Maven profile if artifact is nuxeo_ecm) Default: '%default'""")
+        parser.add_option('--push', '--push', action="store_true",
+                          dest='push', default=False,
+                          help="""Pushes commits to the git repositories, ignored
+ if deploy option is False. Default: '%default'""")
         parser.add_option('--skipTests', action="store_true",
                           dest='skipTests', default=False,
                           help="""Skip tests execution (but compile them).
@@ -674,8 +692,8 @@ Default: '%default'""")
                           help="""Additional Maven profiles.
 Default: '%default'.
 Those profiles are also always activated (unless deactivated by that parameter):\n
- - 'addons,distrib,all-distributions' for all commands\n
- - 'release,-qa' for prepare command (plus 'nightly' if deploy option passed),\n
+ - 'addons,distrib,all-distributions' for all commands (only if artifact is nuxeo-ecm)\n
+ - 'release,-qa' for prepare command (plus 'nightly' if deploy option is used and if artifact is nuxeo-ecm),\n
  - 'release,-qa' for perform command,\n
  - 'qa' for package command.
 """)
@@ -782,7 +800,7 @@ Default files and properties patterns are respectively:
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
         elif command == "prepare":
-            release.prepare(options.deploy)
+            release.prepare(options.deploy, options.push)
         elif command == "maintenance":
             release.maintenance()
         elif command == "perform":
