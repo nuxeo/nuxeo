@@ -16,6 +16,12 @@
 
     <div class="content">
 
+      <script>
+              function checkNewCollection() {
+                alert('toto');
+              }
+            </script>
+
       <table class="dataInput fullWidth">
         <tbody>
           <tr>
@@ -27,22 +33,34 @@
                 field="selectedCollectionUid" required="true"
                 width="100%" translated="true" minChars="0"
                 placeholder="label.addToCollection.collection.placeHolder"
-                ajaxReRender="#{fancyboxFormId}_collectionDescriptionsPanel #{fancyboxFormId}_buttons"
-                pageProviderName="default_collection"
-                documentSchemas="dublincore,common">
+                ajaxReRender="#{fancyboxFormId}_collectionDescriptionsPanel,#{fancyboxFormId}_buttons"
+                operationId="Collection.Suggestion"
+                selectionFormatter="formatSelectedCollection"
+                suggestionFormatter="formatSuggestedCollection"
+                documentSchemas="dublincore,common"
+                onchange="checkNewCollection">
               </nxl:widgetType></td>
           </tr>
-          <c:if test="false">
-          <tr>
-            <td class="labelColumn">
-              #{messages['label.addToCollection.collection.description']}</td>
-            <td class="fieldColumn"><a4j:outputPanel
-                id="#{fancyboxFormId}_collectionDescriptionsPanel">
-              </a4j:outputPanel></td>
-          </tr>
-          </c:if>
         </tbody>
       </table>
+
+      <a4j:outputPanel
+        id="#{fancyboxFormId}_collectionDescriptionsPanel">
+        <c:if test="#{collectionActions.isCreateNewCollection()}">
+          <table class="dataInput fullWidth">
+            <tbody>
+              <tr>
+                <td class="labelColumn">
+                  #{messages['label.addToCollection.collection.description']}</td>
+                <td class="fieldColumn"><h:inputTextarea
+                    class="dataInputText" id="description"
+                    value="#{collectionActions.newDescription}" rows="3"
+                    cols="40" /></td>
+              </tr>
+            </tbody>
+          </table>
+        </c:if>
+      </a4j:outputPanel>
 
     </div>
 
@@ -51,6 +69,7 @@
       <div class="buttonsGadget"></div>
       <nxh:commandButton value="#{messages['command.import']}"
         action="#{collectionActions.addToCollection()}"
+        disabled="#{!collectionActions.canAddToCollection()}"
         styleClass="button #{collectionActions.canAddToCollection()}" />
       <nxh:commandButton value="#{messages['command.cancel']}"
         immediate="true" action="#{collectionActions.cancel()}"

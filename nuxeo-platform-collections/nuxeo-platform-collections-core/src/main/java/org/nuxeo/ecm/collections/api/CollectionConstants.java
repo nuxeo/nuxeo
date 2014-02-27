@@ -25,6 +25,8 @@ public class CollectionConstants {
 
     public static final String COLLECTION_FACET = "Collection";
 
+    public static final String COLLECTION_TYPE = "Collection";
+
     public static final String COLLECTION_DOCUMENT_IDS_PROPERTY_NAME = "collection:documentIds";
 
     public static final String DOCUMENT_COLLECTION_IDS_PROPERTY_NAME = "collectionMember:collectionIds";
@@ -32,5 +34,15 @@ public class CollectionConstants {
     public static final String COLLECTION_SCHEMA_NAME = "collection";
 
     public static final String COLLECTION_MEMBER_SCHEMA_NAME = "collectionMember";
+
+    public static final String CAN_COLLECT_PERMISSION = "CanCollect";
+
+    public static final String COLLECTION_PAGE_PROVIDER = "default_collection";
+
+    public static final String MAGIC_PREFIX_ID = "-999999";
+
+    public static final String DEFAULT_COLLECTIONS_NAME = "Collections";
+
+    public static final String COLLECTIONS_TYPE = "Collections";
 
 }

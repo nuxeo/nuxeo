@@ -30,6 +30,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -66,12 +67,35 @@ public class CollectionActionsBean implements Serializable {
 
     private DocumentModel selectedCollection;
 
+    private String newDescription;
+
+    private String newTitle;
+
+    public String getNewDescription() {
+        return newDescription;
+    }
+
+    public void setNewDescription(String newDescription) {
+        this.newDescription = newDescription;
+    }
+
+    public String getNewTitle() {
+        return newTitle;
+    }
+
+    public void setNewTitle(String newTitle) {
+        this.newTitle = newTitle;
+    }
+
     public String getSelectedCollectionUid() {
         return selectedCollectionUid;
     }
 
     public void setSelectedCollectionUid(final String selectedCollectionUid) {
         this.selectedCollectionUid = selectedCollectionUid;
+        if (isCreateNewCollection()) {
+            setNewTitle(selectedCollectionUid.substring(CollectionConstants.MAGIC_PREFIX_ID.length()));
+        }
     }
 
     public void addDocumentToCollection() {
@@ -82,18 +106,26 @@ public class CollectionActionsBean implements Serializable {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
             CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
-            collectionManager.addToCollection(getSelectedCollection(), currentDocument);
+            if (isCreateNewCollection()) {
+                collectionManager.addToNewCollection(getNewTitle(), getNewDescription(),
+                        currentDocument, documentManager);
+            } else {
+                collectionManager.addToCollection(getSelectedCollection(),
+                        currentDocument, documentManager);
+            }
             facesMessages.add(StatusMessage.Severity.INFO,
                     messages.get("collection.addedToCollection"),
-                    messages.get(getSelectedCollection().getTitle()));
+                    messages.get(isCreateNewCollection() ? getNewTitle() : getSelectedCollection().getTitle()));
         }
     }
 
     protected DocumentModel getSelectedCollection() {
-        if (selectedCollection == null && StringUtils.isNotBlank(selectedCollectionUid)) {
+        if (selectedCollection == null
+                && StringUtils.isNotBlank(selectedCollectionUid)
+                && !isCreateNewCollection()) {
             try {
                 selectedCollection = documentManager.getDocument(new IdRef(
-                            selectedCollectionUid));
+                        selectedCollectionUid));
             } catch (ClientException e) {
                 log.error("Cannot fetch collection");
             }
@@ -101,16 +133,28 @@ public class CollectionActionsBean implements Serializable {
         return selectedCollection;
     }
 
-
+    public boolean canCurrentDocumentBeCollected() {
+        final DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        return collectionManager.isCollectable(currentDocument);
+    }
 
     public boolean canAddToCollection() {
-        boolean result = getSelectedCollection() != null && getSelectedCollection().getType().equals("Collection");
+        CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        boolean result = (getSelectedCollection() != null && collectionManager.isCollection(getSelectedCollection()))
+                || isCreateNewCollection();
         return result;
     }
 
     public void cancel() {
         selectedCollectionUid = null;
-        selectedCollectionUid = null;
+        newDescription = null;
+        newTitle = null;
+    }
+
+    public boolean isCreateNewCollection() {
+        return selectedCollectionUid != null
+                && selectedCollectionUid.startsWith(CollectionConstants.MAGIC_PREFIX_ID);
     }
 
 }

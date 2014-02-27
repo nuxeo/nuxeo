@@ -19,6 +19,7 @@ package org.nuxeo.ecm.collections.api;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -27,17 +28,25 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface CollectionManager {
 
     void addToCollection(final DocumentModel collection,
-            final List<DocumentModel> documentListToBeAdded) throws ClientException;
+            final List<DocumentModel> documentListToBeAdded, final CoreSession session) throws ClientException;
 
     void addToCollection(final DocumentModel collection,
-            final DocumentModel documentToBeAdded) throws ClientException;
+            final DocumentModel documentToBeAdded, final CoreSession session) throws ClientException;
 
     void removeFromCollection(final DocumentModel collection,
-            final List<DocumentModel> documentListToBeRemoved) throws ClientException;
+            final List<DocumentModel> documentListToBeRemoved, final CoreSession session) throws ClientException;
 
     void removeFromCollection(final DocumentModel collection,
-            final DocumentModel documentToBeRemoved) throws ClientException;
+            final DocumentModel documentToBeRemoved, final CoreSession session) throws ClientException;
 
     boolean isCollectable(final DocumentModel doc);
+
+    boolean canAddToCollection(final DocumentModel collection,
+            final CoreSession session) throws ClientException;
+
+    boolean isCollection(final DocumentModel doc);
+
+    void addToNewCollection(String newTitle, String newDescription,
+            DocumentModel documentToBeAdded, CoreSession session) throws ClientException;
 
 }

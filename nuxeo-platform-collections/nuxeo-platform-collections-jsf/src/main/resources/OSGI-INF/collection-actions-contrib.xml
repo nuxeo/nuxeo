@@ -22,12 +22,14 @@
     </action>
 
     <action id="addToCollectioAction" order="0" label="label.addToCollection"
-      type="fancybox" icon="/icons/collection.png" accessKey="u">
+      type="fancybox" icon="/icons/add_to_collection.png" accessKey="u">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>canAddToCollection</filter-id>
       <properties>
         <property name="include">/incl/add_to_collection.xhtml</property>
-        <property name="ajaxSupport">true</property>
+        <property name="autoDimensions">false</property>
+        <property name="height">400</property>
+        <property name="width">500</property>
       </properties>
     </action>
 
@@ -57,6 +59,11 @@
       <rule grant="false">
         <type>Domain</type>
         <type>WorkspaceRoot</type>
+      </rule>
+      <rule grant="true">
+        <condition>
+          #{collectionActions.canCurrentDocumentBeCollected()}
+        </condition>
       </rule>
     </filter>
 

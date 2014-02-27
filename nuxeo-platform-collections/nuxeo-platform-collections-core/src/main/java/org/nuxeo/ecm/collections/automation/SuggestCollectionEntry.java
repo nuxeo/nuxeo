@@ -16,14 +16,33 @@
  */
 package org.nuxeo.ecm.collections.automation;
 
-import net.sf.json.JSONArray;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.collections.api.CollectionConstants;
+import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.9.3
@@ -33,10 +52,72 @@ public class SuggestCollectionEntry {
 
     public static final String ID = "Collection.Suggestion";
 
+    @Param(name = "currentPageIndex", required = false)
+    protected Integer currentPageIndex = 0;
+
+    @Param(name = "pageSize", required = false)
+    protected Integer pageSize = 20;
+
+    @Context
+    protected OperationContext ctx;
+
+    @Context
+    protected CoreSession session;
+
+    @Context
+    protected CollectionManager collectionManager;
+
+    @Param(name = "searchTerm", required = false)
+    protected String searchTerm;
+
     @OperationMethod
     public Blob run() throws ClientException {
         JSONArray result = new JSONArray();
-        // TODO
+       /* String query = "SELECT * FROM Collection WHERE dc:title ILIKE ? AND ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'";
+        DocumentModelList docs = session.query(query, filter);
+        for (DocumentModel doc : docs) {
+            JSONObject obj = new JSONObject();
+            if (collectionManager.canAddToCollection(doc, session)) {
+                obj.element(Select2Common.ID, doc.getId());
+            }
+            obj.element(Select2Common.LABEL, doc.getTitle());
+        }*/
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+        PageProviderService pps = Framework.getLocalService(PageProviderService.class);
+        Object[] paramaters = new Object[1];
+        paramaters[0] = searchTerm + (searchTerm.endsWith("%") ? "" : "%");
+        Long targetPageSize = Long.valueOf(pageSize.longValue());
+        Long targetPage = Long.valueOf(currentPageIndex.longValue());
+        List<DocumentModel> docs = (DocumentModelList) pps.getPageProvider(
+                CollectionConstants.COLLECTION_PAGE_PROVIDER,
+                null,
+                targetPageSize,
+                targetPage,
+                props,
+                paramaters).getCurrentPage();
+
+        boolean found = false;
+        for (DocumentModel doc : docs) {
+            JSONObject obj = new JSONObject();
+            if (collectionManager.canAddToCollection(doc, session)) {
+                obj.element(Select2Common.ID, doc.getId());
+            }
+            if (doc.getTitle().equals(searchTerm)) {
+                found = true;
+            }
+            obj.element(Select2Common.LABEL, doc.getTitle());
+            result.add(obj);
+        }
+
+        if (!found && StringUtils.isNotBlank(searchTerm)) {
+            JSONObject obj = new JSONObject();
+            obj.element(Select2Common.LABEL, searchTerm);
+            obj.element(Select2Common.ID, CollectionConstants.MAGIC_PREFIX_ID + searchTerm);
+            result.add(0, obj);
+        }
+
         return new StringBlob(result.toString(), "application/json");
     }
 }
