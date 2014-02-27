@@ -2,6 +2,12 @@
 // version 1.0.0a
 // (c) 2008-2010 jason frame [jason@onehackoranother.com]
 // released under the MIT license
+/*
+ * Nuxeo WARN: This script has been patched for:
+ *   - https://jira.nuxeo.com/browse/ NXP-13855
+ *
+ * Please re-apply any patch when upgrading this script.
+ */
 
 (function($) {
 
@@ -77,6 +83,9 @@
                 } else {
                     $tip.css({visibility: 'visible', opacity: this.options.opacity});
                 }
+
+                // NXP-13855
+                $tip.trigger("tipsy-show");
             }
         },
 
