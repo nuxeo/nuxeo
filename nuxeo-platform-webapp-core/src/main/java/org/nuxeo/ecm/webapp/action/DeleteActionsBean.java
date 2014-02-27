@@ -263,10 +263,16 @@ public class DeleteActionsBean extends InputController implements
         navigationContext.setCurrentDocument(targetContext);
 
         // Notify parents
-        for (DocumentRef parentRef : parentRefs) {
-            DocumentModel parent = documentManager.getDocument(parentRef);
-            if (parent != null) {
-                Events.instance().raiseEvent(DOCUMENT_CHILDREN_CHANGED, parent);
+        if (parentRefs.isEmpty()) {
+            // Globally refresh content views
+            Events.instance().raiseEvent(DOCUMENT_CHILDREN_CHANGED);
+        } else {
+            for (DocumentRef parentRef : parentRefs) {
+                DocumentModel parent = documentManager.getDocument(parentRef);
+                if (parent != null) {
+                    Events.instance().raiseEvent(DOCUMENT_CHILDREN_CHANGED,
+                            parent);
+                }
             }
         }
 
