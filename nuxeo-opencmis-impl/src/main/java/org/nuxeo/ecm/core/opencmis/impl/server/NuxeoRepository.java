@@ -221,6 +221,10 @@ public class NuxeoRepository {
         return typec == null ? null : typec.getTypeDefinition();
     }
 
+    public boolean hasType(String typeId) {
+        return getTypeManager().hasType(typeId);
+    }
+
     // Structures are not copied when returned
     public TypeDefinitionList getTypeChildren(String typeId,
             Boolean includePropertyDefinitions, BigInteger maxItems,

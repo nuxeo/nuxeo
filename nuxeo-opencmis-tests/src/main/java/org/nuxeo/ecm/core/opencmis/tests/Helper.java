@@ -98,7 +98,7 @@ public class Helper {
         DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1",
                 "Folder");
         folder1.setPropertyValue("dc:title", "testfolder1_Title");
-        folder1 = session.createDocument(folder1);
+        folder1 = createDocument(session, folder1);
 
         DocumentModel file1 = new DocumentModelImpl("/testfolder1",
                 "testfile1", "File");
@@ -117,7 +117,7 @@ public class Helper {
         file1.setPropertyValue("dc:lastContributor", "john");
         file1.setPropertyValue("dc:coverage", "foo/bar");
         file1.setPropertyValue("dc:subjects", new String[] { "foo", "gee/moo" });
-        file1 = session.createDocument(file1);
+        file1 = createDocument(session, file1);
 
         ACPImpl acp;
         ACL acl;
@@ -138,7 +138,7 @@ public class Helper {
                 new String[] { "pete", "bob" });
         file2.setPropertyValue("dc:lastContributor", "bob");
         file2.setPropertyValue("dc:coverage", "football");
-        file2 = session.createDocument(file2);
+        file2 = createDocument(session, file2);
 
         acl = new ACLImpl();
         acl.add(new ACE("bob", SecurityConstants.BROWSE, true));
@@ -155,35 +155,35 @@ public class Helper {
         file3.setPropertyValue("dc:contributors",
                 new String[] { "bob", "john" });
         file3.setPropertyValue("dc:lastContributor", "john");
-        file3 = session.createDocument(file3);
+        file3 = createDocument(session, file3);
 
         DocumentModel folder2 = new DocumentModelImpl("/", "testfolder2",
                 "Folder");
         folder2.setPropertyValue("dc:title", "testfolder2_Title");
-        folder2 = session.createDocument(folder2);
+        folder2 = createDocument(session, folder2);
 
         DocumentModel folder3 = new DocumentModelImpl("/testfolder2",
                 "testfolder3", "Folder");
         folder3.setPropertyValue("dc:title", "testfolder3_Title");
-        folder3 = session.createDocument(folder3);
+        folder3 = createDocument(session, folder3);
 
         DocumentModel folder4 = new DocumentModelImpl("/testfolder2",
                 "testfolder4", "Folder");
         folder4.setPropertyValue("dc:title", "testfolder4_Title");
-        folder4 = session.createDocument(folder4);
+        folder4 = createDocument(session, folder4);
 
         DocumentModel file4 = new DocumentModelImpl("/testfolder2/testfolder3",
                 "testfile4", "File");
         file4.setPropertyValue("dc:title", "testfile4_Title");
         file4.setPropertyValue("dc:description", "something");
-        file4 = session.createDocument(file4);
+        file4 = createDocument(session, file4);
 
         DocumentModel file5 = new DocumentModelImpl("/testfolder1",
                 "testfile5", "File");
         file5.setPropertyValue("dc:title", "title5");
-        file5 = session.createDocument(file5);
+        file5 = createDocument(session, file5);
         file5.followTransition(DELETE_TRANSITION);
-        session.saveDocument(file5);
+        file5 = saveDocument(session, file5);
         info.put("file5id", file5.getId());
 
         session.save();
@@ -192,6 +192,25 @@ public class Helper {
         DatabaseHelper.DATABASE.sleepForFulltext();
 
         return info;
+    }
+
+    /**
+     * For audit, make sure event dates don't have the same millisecond.
+     */
+    public static void sleepForAuditGranularity() throws InterruptedException {
+        Thread.sleep(2);
+    }
+
+    public static DocumentModel createDocument(CoreSession session,
+            DocumentModel doc) throws Exception {
+        sleepForAuditGranularity();
+        return session.createDocument(doc);
+    }
+
+    public static DocumentModel saveDocument(CoreSession session,
+            DocumentModel doc) throws Exception {
+        sleepForAuditGranularity();
+        return session.saveDocument(doc);
     }
 
     public static String createUserWorkspace(CoreSession repo, String username) throws ClientException {

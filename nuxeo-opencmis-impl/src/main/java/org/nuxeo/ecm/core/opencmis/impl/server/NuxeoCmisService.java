@@ -1161,7 +1161,6 @@ public class NuxeoCmisService extends AbstractCmisService {
         if (changeLogTokenHolder == null) {
             throw new CmisInvalidArgumentException(
                     "Missing change log token holder");
-
         }
         String changeLogToken = changeLogTokenHolder.getValue();
         long minDate;
@@ -1181,70 +1180,119 @@ public class NuxeoCmisService extends AbstractCmisService {
                 throw new CmisRuntimeException("Cannot find audit service");
             }
             int max = maxItems == null ? -1 : maxItems.intValue();
-            if (max < 0) {
+            if (max <= 0) {
                 max = DEFAULT_CHANGE_LOG_SIZE;
             }
-            Map<String, Object> params = new HashMap<String, Object>();
-            String query = "FROM LogEntry log" //
-                    + " WHERE log.eventDate >= :minDate" //
-                    + "   AND log.eventId IN (:evCreated, :evModified, :evRemoved)" //
-                    + "   AND log.repositoryId = :repoId" //
-                    + " ORDER BY log.eventDate";
-            params.put("minDate", new Date(minDate));
-            params.put("evCreated", DOCUMENT_CREATED);
-            params.put("evModified", DOCUMENT_UPDATED);
-            params.put("evRemoved", DOCUMENT_REMOVED);
-            params.put("repoId", repositoryId);
-            List<?> entries = reader.nativeQuery(query, params, 1, max + 1);
-            ObjectListImpl ol = new ObjectListImpl();
-            boolean hasMoreItems = entries.size() > max;
-            ol.setHasMoreItems(Boolean.valueOf(hasMoreItems));
-            if (hasMoreItems) {
-                entries = entries.subList(0, max);
-            }
-            List<ObjectData> ods = new ArrayList<ObjectData>(entries.size());
-            Date date = null;
-            for (Object entry : entries) {
-                LogEntry logEntry = (LogEntry) entry;
-                ObjectDataImpl od = new ObjectDataImpl();
-                ChangeEventInfoDataImpl cei = new ChangeEventInfoDataImpl();
-                // change type
-                String eventId = logEntry.getEventId();
-                ChangeType changeType;
-                if (DOCUMENT_CREATED.equals(eventId)) {
-                    changeType = ChangeType.CREATED;
-                } else if (DOCUMENT_UPDATED.equals(eventId)) {
-                    changeType = ChangeType.UPDATED;
-                } else if (DOCUMENT_REMOVED.equals(eventId)) {
-                    changeType = ChangeType.DELETED;
-                } else {
-                    continue;
+            List<ObjectData> ods = null;
+            // retry with increasingly larger max if some items are skipped
+            for (int scale = 1;; scale *= 2) {
+                int pageSize = max * scale + 1;
+                ods = readAuditLog(repositoryId, minDate, max, pageSize);
+                if (ods != null) {
+                    break;
                 }
-                cei.setChangeType(changeType);
-                // change time
-                GregorianCalendar changeTime = (GregorianCalendar) Calendar.getInstance();
-                date = logEntry.getEventDate();
-                changeTime.setTime(date);
-                cei.setChangeTime(changeTime);
-                od.setChangeEventInfo(cei);
-                // properties: id, doc type
-                PropertiesImpl properties = new PropertiesImpl();
-                properties.addProperty(new PropertyIdImpl(
-                        PropertyIds.OBJECT_ID, logEntry.getDocUUID()));
-                properties.addProperty(new PropertyIdImpl(
-                        PropertyIds.OBJECT_TYPE_ID, logEntry.getDocType()));
-                od.setProperties(properties);
-                ods.add(od);
             }
+            boolean hasMoreItems = ods.size() > max;
+            if (hasMoreItems) {
+                ods = ods.subList(0, max);
+            }
+            String latestChangeLogToken;
+            if (ods.size() == 0) {
+                latestChangeLogToken = null;
+            } else {
+                ObjectData last = ods.get(ods.size() - 1);
+                latestChangeLogToken = String.valueOf(last.getChangeEventInfo().getChangeTime().getTimeInMillis());
+            }
+            ObjectListImpl ol = new ObjectListImpl();
+            ol.setHasMoreItems(Boolean.valueOf(hasMoreItems));
             ol.setObjects(ods);
             ol.setNumItems(BigInteger.valueOf(-1));
-            String latestChangeLogToken = date == null ? null
-                    : String.valueOf(date.getTime());
             changeLogTokenHolder.setValue(latestChangeLogToken);
             return ol;
         } catch (Exception e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
+    }
+
+    /**
+     * Reads at most max+1 entries from the audit log.
+     *
+     * @return null if not enough elements found with the current page size
+     */
+    protected List<ObjectData> readAuditLog(String repositoryId, long minDate,
+            int max, int pageSize) {
+        AuditReader reader = Framework.getLocalService(AuditReader.class);
+        if (reader == null) {
+            throw new CmisRuntimeException("Cannot find audit service");
+        }
+        List<ObjectData> ods = new ArrayList<ObjectData>(max + 1);
+        String query = "FROM LogEntry log" //
+                + " WHERE log.eventDate >= :minDate" //
+                + "   AND log.eventId IN (:evCreated, :evModified, :evRemoved)" //
+                + "   AND log.repositoryId = :repoId" //
+                + " ORDER BY log.eventDate";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("minDate", new Date(minDate));
+        params.put("evCreated", DOCUMENT_CREATED);
+        params.put("evModified", DOCUMENT_UPDATED);
+        params.put("evRemoved", DOCUMENT_REMOVED);
+        params.put("repoId", repositoryId);
+        List<?> entries = reader.nativeQuery(query, params, 1, pageSize);
+        for (Object entry : entries) {
+            ObjectData od = getLogEntryObjectData((LogEntry) entry);
+            if (od != null) {
+                ods.add(od);
+                if (ods.size() > max) {
+                    // enough collected
+                    return ods;
+                }
+            }
+        }
+        if (entries.size() < pageSize) {
+            // end of audit log
+            return ods;
+        }
+        return null;
+    }
+
+    /**
+     * Gets object data for a log entry, or null if skipped.
+     */
+    protected ObjectData getLogEntryObjectData(LogEntry logEntry) {
+        String docType = logEntry.getDocType();
+        if (!repository.hasType(docType)) {
+            // ignore types present in the log but not exposed through CMIS
+            return null;
+        }
+        // change type
+        String eventId = logEntry.getEventId();
+        ChangeType changeType;
+        if (DOCUMENT_CREATED.equals(eventId)) {
+            changeType = ChangeType.CREATED;
+        } else if (DOCUMENT_UPDATED.equals(eventId)) {
+            changeType = ChangeType.UPDATED;
+        } else if (DOCUMENT_REMOVED.equals(eventId)) {
+            changeType = ChangeType.DELETED;
+        } else {
+            return null;
+        }
+        ChangeEventInfoDataImpl cei = new ChangeEventInfoDataImpl();
+        cei.setChangeType(changeType);
+        // change time
+        GregorianCalendar changeTime = (GregorianCalendar) Calendar.getInstance();
+        Date date = logEntry.getEventDate();
+        changeTime.setTime(date);
+        cei.setChangeTime(changeTime);
+        ObjectDataImpl od = new ObjectDataImpl();
+        od.setChangeEventInfo(cei);
+        // properties: id, doc type
+        PropertiesImpl properties = new PropertiesImpl();
+        properties.addProperty(new PropertyIdImpl(
+                PropertyIds.OBJECT_ID, logEntry.getDocUUID()));
+        properties.addProperty(new PropertyIdImpl(
+                PropertyIds.OBJECT_TYPE_ID, docType));
+        od.setProperties(properties);
+        return od;
     }
 
     protected String getLatestChangeLogToken(String repositoryId) {
