@@ -20,7 +20,7 @@ Needed parameters:
             value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />
           <c:set var="title"
             value="#{nxu:test(cvLayout.translateTitle, messages[cvLayout.title], cvLayout.title)}" />
-          <nxu:graphicImage value="#{iconPath}" title="#{title}" styleClass="tipsyShow" />
+          <nxu:graphicImage value="#{iconPath}" title="#{title}" styleClass="tipsyShow tipsyGravitySE" />
         </a4j:commandLink>
       </span>
     </c:forEach>
