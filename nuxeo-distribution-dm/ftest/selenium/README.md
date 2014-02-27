@@ -11,7 +11,7 @@ Sample usage:
 
 To run the suites on an already-running Nuxeo instance, use:
 
-    mvn org.nuxeo.build:nuxeo-distribution-tools:integration-test -o -Dtarget=run-selenium -Dsuites=suite1,suite-cap
+    mvn org.nuxeo.build:ant-assembly-maven-plugin:integration-test -o -Dtarget=run-selenium -Dsuites=suite1,suite-cap
 
 # Writing tests
 
