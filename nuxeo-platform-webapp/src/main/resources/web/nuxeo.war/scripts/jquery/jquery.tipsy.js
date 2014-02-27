@@ -162,11 +162,15 @@
         function enter() {
             var tipsy = get(this);
             tipsy.hoverState = 'in';
-            if (options.delayIn == 0) {
+            var delayIn = options.delayIn;
+            if ($(this).data('tipsy-delayin') != undefined) {
+              delayIn = $(this).data('tipsy-delayin');
+            }
+            if (delayIn == 0) {
                 tipsy.show();
             } else {
                 tipsy.fixTitle();
-                setTimeout(function() { if (tipsy.hoverState == 'in') tipsy.show(); }, options.delayIn);
+                setTimeout(function() { if (tipsy.hoverState == 'in') tipsy.show(); }, delayIn);
             }
         };
 
