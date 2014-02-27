@@ -60,7 +60,7 @@
       <resource>hideableAdminMessage.js</resource>
       <resource>accessKey.js</resource>
       <resource>jquery.nuxeo.doubleclickshield.js</resource>
-      <resource>jquery.nuxeo.tipsy.js</resource>
+      <!--resource>jquery.nuxeo.tipsy.js</resource-->
       <resource>jquery.ambiance.js</resource>
       <resource>jquery.ambiance.css</resource>
       <resource>jquery.nuxeo.dropdown.js</resource>
