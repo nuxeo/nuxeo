@@ -40,7 +40,6 @@
       $(document).on("tipsy-show", function() {
         reduceDelay(delayIn, resetDelayInTimeout, $targetElts);
       });
-      alert('timeout is over');
     }, resetDelayInTimeout);
   }
 
