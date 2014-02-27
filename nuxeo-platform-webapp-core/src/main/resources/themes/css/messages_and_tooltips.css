@@ -237,7 +237,8 @@ a.ambiance-close {
   text-indent: 1.7em }
 
 /* Tipsy tooltips */
-.tispsyShow {/* use this class to display a tipsy tooltip */}
+.tispsyShow,
+.tipsyGravity {/* use this class to display a tipsy tooltip and its orientation */}
 .tipsy {
   padding: 5px }
 
