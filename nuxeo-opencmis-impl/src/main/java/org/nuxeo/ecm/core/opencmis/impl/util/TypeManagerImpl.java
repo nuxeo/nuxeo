@@ -54,6 +54,17 @@ public class TypeManagerImpl implements TypeManager {
         return typesMap.get(typeId);
     }
 
+    /**
+     * Checks if a type is known.
+     *
+     * @param typeId the type id
+     * @return {@code true} if known
+     * @since 5.9.3
+     */
+    public boolean hasType(String typeId) {
+        return typesMap.containsKey(typeId);
+    }
+
     @Override
     public TypeDefinition getTypeByQueryName(String typeQueryName) {
         for (Entry<String, TypeDefinitionContainer> entry : typesMap.entrySet()) {
