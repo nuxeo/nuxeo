@@ -118,10 +118,19 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
                 info.forbidden++;
                 continue;
             }
-            if (!session.hasPermission(doc.getParentRef(),
-                    SecurityConstants.REMOVE_CHILDREN)) {
-                info.forbidden++;
-                continue;
+            if (doc.getParentRef() == null) {
+                if (doc.isVersion() && !session.getProxies(doc.getRef(), null).isEmpty()) {
+                    // do not remove versions used by proxies
+                    info.forbidden++;
+                    continue;
+                }
+
+            } else {
+                if (!session.hasPermission(doc.getParentRef(),
+                        SecurityConstants.REMOVE_CHILDREN)) {
+                    info.forbidden++;
+                    continue;
+                }
             }
             if (!session.hasPermission(doc.getRef(), SecurityConstants.REMOVE)) {
                 info.forbidden++;
@@ -194,7 +203,9 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
                 Path path = doc.getPath();
                 info.rootPaths.add(path);
                 info.rootRefs.add(doc.getRef());
-                info.rootParentRefs.add(doc.getParentRef());
+                if (doc.getParentRef() != null) {
+                    info.rootParentRefs.add(doc.getParentRef());
+                }
                 previousPath = path;
             }
         }
@@ -213,7 +224,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
 
     protected static boolean underOneOf(Path testedPath, Set<Path> paths) {
         for (Path path : paths) {
-            if (path.isPrefixOf(testedPath)) {
+            if (path != null && path.isPrefixOf(testedPath)) {
                 return true;
             }
         }
