@@ -18,7 +18,6 @@ package org.nuxeo.ecm.automation.jaxrs.io.documents;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
@@ -42,21 +41,9 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelFactory;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
-import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * JAX-RS reader for a DocumentModel. If an id is given, it tries to reattach
@@ -128,20 +115,14 @@ public class JSONDocumentModelReader implements
         if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
             tok = jp.nextToken();
         }
-        DocumentModel tmp = new SimpleDocumentModel();
-        String id = null;
+        SimpleDocumentModel simpleDoc = new SimpleDocumentModel();
         String type = null;
         String name = null;
         while (tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             jp.nextToken();
-            if ("uid".equals(key)) {
-                id = jp.readValueAs(String.class);
-            } else if ("properties".equals(key)) {
-                Properties props = readProperties(jp);
-                // Put null for CoreSession, only needed for ecm:acl... Won't be
-                // supported for rest API
-                DocumentHelper.setJSONProperties(null, tmp, props);
+            if ("properties".equals(key)) {
+                DocumentHelper.setJSONProperties(null, simpleDoc, readProperties(jp));
             } else if ("name".equals(key)) {
                 name = jp.readValueAs(String.class);
             } else if ("type".equals(key)) {
@@ -160,85 +141,15 @@ public class JSONDocumentModelReader implements
             tok = jp.nextToken();
         }
 
-        CoreSession session = SessionFactory.getSession(request);
-
-        DocumentModel doc = getOrCreateDocumentModel(id, type, name, session);
-
-        applyPropertyValues(tmp, doc);
-
-        return doc;
-
-    }
-
-    private static void applyPropertyValues(DocumentModel src, DocumentModel dst)
-            throws ClientException {
-        for (String schema : src.getSchemas()) {
-            DataModelImpl dataModel = (DataModelImpl) dst.getDataModel(schema);
-            DataModel fromDataModel = src.getDataModel(schema);
-
-            for (String field : fromDataModel.getDirtyFields()) {
-                Serializable data = (Serializable) fromDataModel.getData(field);
-                try {
-                    if (isNotNull(data)) {
-                        if (!(dataModel.getDocumentPart().get(field) instanceof BlobProperty)) {
-                            dataModel.setData(field, data);
-                        } else {
-                            dataModel.setData(field, decodeBlob(data));
-                        }
-                    }
-                } catch (PropertyNotFoundException e) {
-                    log.warn(String.format(
-                            "Trying to deserialize unexistent field : {%s}",
-                            field));
-                }
-            }
+        if(StringUtils.isNotBlank(type)) {
+            simpleDoc.setType(type);
         }
-    }
 
-    /**
-     * Decodes a Serializable to make it a blob.
-     *
-     * @since 5.9.1
-     */
-    private static Serializable decodeBlob(Serializable data) {
-        if (data instanceof Blob) {
-            return data;
-        } else {
-            return null;
+        if(StringUtils.isNotBlank(name)) {
+            simpleDoc.setPathInfo(null, name);
         }
-    }
+        return simpleDoc;
 
-    /**
-     * Check that a serialized data is not null.
-     *
-     * @since 5.9.1
-     */
-    private static boolean isNotNull(Serializable data) {
-        return data != null && !"null".equals(data);
-    }
-
-    private static DocumentModel getOrCreateDocumentModel(String id,
-            String type, String name, CoreSession session)
-            throws ClientException {
-        DocumentModel doc = null;
-        if (StringUtils.isNotBlank(id)) {
-            if (session.exists(new IdRef(id))) {
-                doc = session.getDocument(new IdRef(id));
-            } else {
-                throw new WebApplicationException(Response.Status.NOT_FOUND);
-            }
-        } else {
-            if (StringUtils.isNotBlank(type)) {
-                doc = DocumentModelFactory.createDocumentModel(type);
-                if (StringUtils.isNotBlank(name)) {
-                    PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
-                    doc.setPathInfo(null, pss.generatePathSegment(name));
-                }
-            } else {
-                throw new WebApplicationException(Response.Status.BAD_REQUEST);
-            }
-        }
-        return doc;
     }
 
     static Properties readProperties(JsonParser jp) throws Exception {
