@@ -578,7 +578,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             options.put(CoreEventConstants.DESTINATION_REF, dst);
             options.put(CoreEventConstants.DESTINATION_PATH, dstDoc.getPath());
             options.put(CoreEventConstants.DESTINATION_NAME, name);
-            options.put(CoreEventConstants.DESTINATION_EXISTS, dstDoc.hasChild(name));
+            options.put(CoreEventConstants.DESTINATION_EXISTS,
+                    dstDoc.hasChild(name));
             options.put(CoreEventConstants.RESET_LIFECYCLE, resetLifeCycle);
             DocumentModel srcDocModel = readModel(srcDoc);
             notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, options,
@@ -720,7 +721,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 checkPermission(srcDoc, REMOVE);
             }
 
-
             DocumentModel srcDocModel = readModel(srcDoc);
             if (name == null) {
                 name = srcDocModel.getName();
@@ -732,12 +732,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             options.put(CoreEventConstants.DESTINATION_REF, dst);
             options.put(CoreEventConstants.DESTINATION_PATH, dstDoc.getPath());
             options.put(CoreEventConstants.DESTINATION_NAME, name);
-            options.put(CoreEventConstants.DESTINATION_EXISTS, dstDoc.hasChild(name));
+            options.put(CoreEventConstants.DESTINATION_EXISTS,
+                    dstDoc.hasChild(name));
 
             notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, options,
                     null, null, true, true);
 
-            name = (String)options.get(CoreEventConstants.DESTINATION_NAME);
+            name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
 
             String comment = srcDoc.getRepository().getName() + ':'
                     + srcDoc.getParent().getUUID();
@@ -935,8 +936,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             createDocumentCount.inc();
             return docModel;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to create document: "
-                    + childName, e);
+            throw new ClientException(
+                    "Failed to create document: " + childName, e);
         }
     }
 
@@ -957,7 +958,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             options.put(CoreEventConstants.DESTINATION_REF, parentRef);
             options.put(CoreEventConstants.DESTINATION_PATH, folder.getPath());
             options.put(CoreEventConstants.DESTINATION_NAME, childName);
-            options.put(CoreEventConstants.DESTINATION_EXISTS, folder.hasChild(childName));
+            options.put(CoreEventConstants.DESTINATION_EXISTS,
+                    folder.hasChild(childName));
         }
         return folder;
     }
@@ -999,13 +1001,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             parentRef = null;
         }
         Document parent = fillCreateOptions(parentRef, name, props);
-        notifyEvent(DocumentEventTypes.ABOUT_TO_IMPORT,
-                docModel, props, null, null, false, true);
-        name = (String)props.get(CoreEventConstants.DESTINATION_NAME);
+        notifyEvent(DocumentEventTypes.ABOUT_TO_IMPORT, docModel, props, null,
+                null, false, true);
+        name = (String) props.get(CoreEventConstants.DESTINATION_NAME);
 
         // create the document
-        Document doc = getSession().importDocument(id, parentRef == null ? null : parent, name, typeName,
-                props);
+        Document doc = getSession().importDocument(id,
+                parentRef == null ? null : parent, name, typeName, props);
 
         if (typeName.equals(CoreSession.IMPORT_PROXY_TYPE)) {
             // just reread the final document
@@ -1932,12 +1934,11 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             options.put(CoreEventConstants.DESTINATION_NAME, docModel.getName());
             notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel,
                     options, null, null, true, true);
-            String name = (String)options.get(CoreEventConstants.DESTINATION_NAME);
+            String name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
             // did the event change the name? not applicable to Root whose
             // name is null/empty
             if (name != null && !name.equals(docModel.getName())) {
-                doc = getSession().move(doc, doc.getParent(),
-                        name);
+                doc = getSession().move(doc, doc.getParent(), name);
             }
 
             VersioningOption versioningOption = (VersioningOption) docModel.getContextData(VersioningService.VERSIONING_OPTION);
@@ -2760,10 +2761,13 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
-    public boolean followTransition(DocumentRef docRef, String transition)
+    public boolean followTransition(DocumentModel docModel, String transition)
             throws ClientException {
         boolean operationResult;
         try {
+
+
+            DocumentRef docRef = docModel.getRef();
             Document doc = resolveReference(docRef);
             checkPermission(doc, WRITE_LIFE_CYCLE);
 
@@ -2786,12 +2790,12 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
                 options.put(
                         org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION,
                         transition);
-                DocumentModel docModel = readModel(doc);
+                String comment = (String) docModel.getContextData("comment");
                 notifyEvent(
                         org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT,
                         docModel, options,
                         DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY,
-                        null, true, false);
+                        comment, true, false);
                 if (!docModel.isImmutable()) {
                     writeModel(doc, docModel);
                 }
@@ -2800,13 +2804,28 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         } catch (LifeCycleException e) {
             ClientException ce = new ClientException(
                     "Unable to follow transition <" + transition
-                            + "> for document : " + docRef, e);
+                            + "> for document : " + docModel.getRef(), e);
             ce.fillInStackTrace();
             throw ce;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get content data " + docRef, e);
+            throw new ClientException("Failed to get content data "
+                    + docModel.getRef(), e);
         }
         return operationResult;
+
+    }
+
+    @Override
+    public boolean followTransition(DocumentRef docRef, String transition)
+            throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            DocumentModel docModel = readModel(doc);
+            return followTransition(docModel, transition);
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to get content data " + docRef, e);
+        }
+
     }
 
     @Override
