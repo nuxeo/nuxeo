@@ -39,4 +39,6 @@ public class OpenIDConnectHelper {
         }
         return null;
     }
+
+    private OpenIDConnectHelper() {}
 }

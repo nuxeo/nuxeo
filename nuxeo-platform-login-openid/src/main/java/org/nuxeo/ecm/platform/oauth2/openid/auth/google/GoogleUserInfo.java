@@ -15,14 +15,20 @@
  *     Nelson Silva <nelson.silva@inevo.pt> - initial API and implementation
  *     Nuxeo
  */
+package org.nuxeo.ecm.platform.oauth2.openid.auth.google;
 
-package org.nuxeo.ecm.platform.oauth2.openid.auth;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.DefaultOpenIDUserInfo;
 
-import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.Key;
 
-public class OpenIdUserInfo extends GenericJson {
+public class GoogleUserInfo extends DefaultOpenIDUserInfo {
 
-    @Key("email")
-    public String email;
+    @Key("id")
+    protected String id;
+
+    @Override
+    public String getSubject() {
+        return id;
+    }
+
 }

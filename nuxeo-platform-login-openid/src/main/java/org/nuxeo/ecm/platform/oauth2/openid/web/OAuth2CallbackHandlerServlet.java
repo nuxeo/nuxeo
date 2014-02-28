@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.oauth2.openid.web;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,9 +53,9 @@ import com.google.api.client.json.jackson.JacksonFactory;
 
 /**
  * Servlet that handles OAuth2 Callbacks
- * 
+ *
  * @author Nelson Silva <nelson.silva@inevo.pt>
- * 
+ *
  */
 public class OAuth2CallbackHandlerServlet extends HttpServlet {
 
@@ -132,8 +131,6 @@ public class OAuth2CallbackHandlerServlet extends HttpServlet {
                     HTTP_TRANSPORT, JSON_FACTORY);
 
             String redirectUri = req.getRequestURL().toString();
-
-            Principal principal = req.getUserPrincipal();
 
             HttpResponse response = flow.newTokenRequest(code).setRedirectUri(
                     redirectUri).executeUnparsed();

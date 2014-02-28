@@ -18,7 +18,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy({ "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.directory",
         "org.nuxeo.ecm.directory.api",
         "org.nuxeo.ecm.platform.login.openid.test" })
-public class TestOpenOdProviders {
+public class TestOpenIDProviders {
 
     @Test
     public void verifyServiceRegistration() {

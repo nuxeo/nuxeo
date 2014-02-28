@@ -128,8 +128,13 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
             providers.put(
                     provider.getName(),
                     new OpenIDConnectProvider(oauth2Provider,
-                            provider.getUserInfoURL(), provider.getIcon(),
-                            provider.isEnabled()));
+                            provider.getAccessTokenKey(),
+                            provider.getUserInfoURL(),
+                            provider.getUserInfoClass(),
+                            provider.getIcon(),
+                            provider.isEnabled(),
+                            provider.getRedirectUriResolver().newInstance(),
+                            provider.getUserResolverClass()));
 
             // contribute icon and link to the Login Screen
             LoginScreenHelper.registerLoginProvider(provider.getName(),
@@ -140,8 +145,13 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent
         } else {
             if (Framework.isTestModeSet()) {
                 providers.put(provider.getName(), new OpenIDConnectProvider(
-                        null, provider.getUserInfoURL(), provider.getIcon(),
-                        provider.isEnabled()));
+                        null, provider.getAccessTokenKey(),
+                        provider.getUserInfoURL(),
+                        provider.getUserInfoClass(),
+                        provider.getIcon(),
+                        provider.isEnabled(),
+                        provider.getRedirectUriResolver().newInstance(),
+                        provider.getUserResolverClass()));
             } else {
                 log.error("Can not register OAuth Provider since OAuth Registry is not available");
             }

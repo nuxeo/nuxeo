@@ -23,10 +23,22 @@ import java.io.Serializable;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.DefaultOpenIDUserInfo;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDUserInfo;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.UserResolver;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.EmailBasedUserResolver;
 
 @XObject("provider")
 public class OpenIDConnectProviderDescriptor implements Serializable {
     protected static final long serialVersionUID = 1L;
+
+    public static final String DEFAULT_ACCESS_TOKEN_KEY = "access_token";
+
+    public static final Class<? extends UserResolver> DEFAULT_USER_RESOLVER_CLASS = EmailBasedUserResolver.class;
+
+    public static final Class<? extends RedirectUriResolver> DEFAULT_REDIRECT_URI_RESOLVER_CLASS = RedirectUriResolverHelper.class;
+
+    public static final Class<? extends OpenIDUserInfo> DEFAULT_USER_INFO_CLASS = DefaultOpenIDUserInfo.class;
 
     @XNode("@enabled")
     protected boolean enabled = true;
@@ -43,6 +55,9 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
     @XNode("userInfoURL")
     protected String userInfoURL;
 
+    @XNode("accessTokenKey")
+    protected String accessTokenKey = DEFAULT_ACCESS_TOKEN_KEY;
+
     @XNode("clientId")
     protected String clientId;
 
@@ -50,7 +65,7 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
     protected String clientSecret;
 
     @XNodeList(value = "scope", type = String[].class, componentType = String.class)
-    public String[] scopes;
+    protected String[] scopes;
 
     @XNode("icon")
     protected String icon;
@@ -60,6 +75,15 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
 
     @XNode("description")
     protected String description;
+
+    @XNode("userResolverClass")
+    protected Class<? extends UserResolver> userResolverClass = DEFAULT_USER_RESOLVER_CLASS;
+
+    @XNode("redirectUriResolver")
+    protected Class<? extends RedirectUriResolver> redirectUriResolver = DEFAULT_REDIRECT_URI_RESOLVER_CLASS;
+
+    @XNode("userInfoClass")
+    protected Class<? extends OpenIDUserInfo> userInfoClass = DEFAULT_USER_INFO_CLASS;
 
     public static long getSerialversionuid() {
         return serialVersionUID;
@@ -93,6 +117,10 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
         return userInfoURL;
     }
 
+    public String getAccessTokenKey() {
+        return accessTokenKey;
+    }
+
     public String getIcon() {
         return icon;
     }
@@ -111,6 +139,18 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
 
     public String getDescription() {
         return description;
+    }
+    
+    public Class<? extends UserResolver> getUserResolverClass() {
+        return userResolverClass;
+    }
+
+    public Class<? extends RedirectUriResolver> getRedirectUriResolver() {
+        return redirectUriResolver;
+    }
+
+    public Class<? extends OpenIDUserInfo> getUserInfoClass() {
+        return userInfoClass;
     }
 
 }
