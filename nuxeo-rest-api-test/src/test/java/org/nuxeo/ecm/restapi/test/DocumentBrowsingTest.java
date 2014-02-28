@@ -16,8 +16,7 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -124,6 +123,25 @@ public class DocumentBrowsingTest extends BaseTest {
         dispose(session);
         note = RestServerInit.getNote(0, session);
         assertEquals("New title", note.getTitle());
+
+    }
+
+    @Test
+    public void itCanUpdateADocumentWithoutSpecifyingIdInJSONPayload() throws Exception {
+     // Given a document
+        DocumentModel note = RestServerInit.getNote(0, session);
+        ClientResponse response = getResponse(RequestType.GET,
+                "path" + note.getPathAsString());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // When i do a PUT request on the document with modified data
+        response = getResponse(RequestType.PUT, "id/" + note.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dc:title\":\"Other New title\"}}");
+
+        // Then the document is updated
+        dispose(session);
+        note = RestServerInit.getNote(0, session);
+        assertEquals("Other New title", note.getTitle());
 
     }
 
