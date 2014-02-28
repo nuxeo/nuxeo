@@ -4,13 +4,6 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:c="http://java.sun.com/jstl/core" xmlns:f="http://java.sun.com/jsf/core">
   <a4j:outputPanel id="connectStatusPanel" layout="block">
-    <a4j:status>
-      <f:facet name="start">
-        <h:outputText
-          value="#{messages['label.nuxeo.connect.communicating.with.server']}" />
-        <h:graphicImage value="/img/big_loading.gif" />
-      </f:facet>
-    </a4j:status>
 
     <h:panelGroup rendered="#{!registredConnectInstance}">
 
@@ -19,6 +12,14 @@
             href="https://doc.nuxeo.com/x/l4FH" class="connectLink"
             target="NuxeoConnectSite">#{messages['connect.message.discoverconnect']}</a>
       </div>
+
+      <a4j:status>
+        <f:facet name="start">
+          <h:outputText
+            value="#{messages['label.nuxeo.connect.communicating.with.server']}" />
+          <h:graphicImage value="/img/standart_waiter.gif" />
+        </f:facet>
+      </a4j:status>
 
       <table class="login">
         <tr>
