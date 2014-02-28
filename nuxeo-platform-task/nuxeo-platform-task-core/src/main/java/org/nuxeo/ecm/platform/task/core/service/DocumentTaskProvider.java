@@ -30,8 +30,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskProvider;
@@ -64,6 +66,25 @@ public class DocumentTaskProvider implements TaskProvider {
     }
 
     /**
+     * Provide @param sortInfo to handle sort page-provider contributions
+     * (see {@link #getCurrentTaskInstances})
+     *
+     * @since 5.9.3
+     */
+    @Override
+    public List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos)
+            throws ClientException {
+
+        // Get tasks for current user
+        // We need to build the task actors list: prefixed and unprefixed names
+        // of the principal and all its groups
+        NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
+        List<String> actors = TaskActorsHelper.getTaskActors(principal);
+
+        return getCurrentTaskInstances(actors, coreSession, sortInfos);
+    }
+
+    /**
      * Returns a list of task instances assigned to one of the actors in the
      * list or to its pool.
      *
@@ -81,6 +102,26 @@ public class DocumentTaskProvider implements TaskProvider {
         String userNames = TaskQueryConstant.formatStringList(actors);
         String query = String.format(
                 TaskQueryConstant.GET_TASKS_FOR_ACTORS_QUERY, userNames);
+        return queryTasksUnrestricted(query, coreSession);
+    }
+
+    /**
+     * Provide @param sortInfo to handle sort page-provider contributions
+     * (see {@link #getCurrentTaskInstances})
+     *
+     * @since 5.9.3
+     */
+    @Override
+    public List<Task> getCurrentTaskInstances(List<String> actors,
+            CoreSession coreSession, List<SortInfo> sortInfos) throws ClientException {
+        if (actors == null || actors.isEmpty()) {
+            return new ArrayList<Task>();
+        }
+        String userNames = TaskQueryConstant.formatStringList(actors);
+        String query = String.format(
+                TaskQueryConstant.GET_TASKS_FOR_ACTORS_QUERY, userNames);
+        query += NXQLQueryBuilder.getSortClause(sortInfos.toArray(new
+                SortInfo[sortInfos.size()]));
         return queryTasksUnrestricted(query, coreSession);
     }
 

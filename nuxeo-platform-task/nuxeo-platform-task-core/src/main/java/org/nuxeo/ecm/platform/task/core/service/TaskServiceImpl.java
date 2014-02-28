@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -310,6 +311,26 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     /**
+     * Provide @param sortInfo to handle sort page-provider contributions
+     * (see {@link #getCurrentTaskInstances})
+     *
+     * @since 5.9.3
+     */
+    @Override
+    public List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos)
+            throws ClientException {
+        List<Task> tasks = new ArrayList<Task>();
+        List<Task> newTasks;
+        for (TaskProvider taskProvider : tasksProviders.values()) {
+            newTasks = taskProvider.getCurrentTaskInstances(coreSession, sortInfos);
+            if (newTasks != null) {
+                tasks.addAll(newTasks);
+            }
+        }
+        return tasks;
+    }
+
+    /**
      * Returns a list of task instances assigned to one of the actors in the
      * list or to its pool.
      *
@@ -324,6 +345,26 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
             newTasks = taskProvider.getCurrentTaskInstances(actors, coreSession);
+            if (newTasks != null) {
+                tasks.addAll(newTasks);
+            }
+        }
+        return tasks;
+    }
+
+    /**
+     * Provide @param sortInfo to handle sort page-provider contributions
+     * (see {@link #getCurrentTaskInstances})
+     *
+     * @since 5.9.3
+     */
+    @Override
+    public List<Task> getCurrentTaskInstances(List<String> actors,
+            CoreSession coreSession, List<SortInfo> sortInfos) throws ClientException {
+        List<Task> tasks = new ArrayList<Task>();
+        List<Task> newTasks;
+        for (TaskProvider taskProvider : tasksProviders.values()) {
+            newTasks = taskProvider.getCurrentTaskInstances(actors, coreSession, sortInfos);
             if (newTasks != null) {
                 tasks.addAll(newTasks);
             }
