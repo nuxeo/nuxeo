@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
  * @author Laurent Doguin
@@ -38,6 +39,15 @@ public interface TaskProvider extends Serializable {
      * @throws IllegalStateException If the currentUser is null.
      */
     List<Task> getCurrentTaskInstances(CoreSession coreSession)
+            throws ClientException;
+
+    /**
+     * Provide @param sortInfo to handle sort page-provider contributions
+     * (see {@link #getCurrentTaskInstances})
+     *
+     * @since 5.9.3
+     */
+    List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos)
             throws ClientException;
 
     /**
@@ -57,6 +67,15 @@ public interface TaskProvider extends Serializable {
      */
     List<Task> getCurrentTaskInstances(List<String> actors,
             CoreSession coreSession) throws ClientException;
+
+    /**
+     * Provide @param sortInfo to handle sort page-provider contributions
+     * (see {@link #getCurrentTaskInstances})
+     *
+     * @since 5.9.3
+     */
+    List<Task> getCurrentTaskInstances(List<String> actors,
+            CoreSession coreSession, List<SortInfo> sortInfos) throws ClientException;
 
     /**
      * Returns the list of task instances associated with this document for

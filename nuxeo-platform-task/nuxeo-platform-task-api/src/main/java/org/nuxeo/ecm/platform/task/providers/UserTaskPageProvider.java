@@ -114,7 +114,7 @@ public class UserTaskPageProvider extends
             boolean filterTrashDocs = getFilterDocumentsInTrash();
             NuxeoPrincipal pal = (NuxeoPrincipal) coreSession.getPrincipal();
             TaskService taskService = Framework.getService(TaskService.class);
-            List<Task> tasks = taskService.getCurrentTaskInstances(coreSession);
+            List<Task> tasks = taskService.getCurrentTaskInstances(coreSession, getSortInfos());
             if (tasks != null) {
                 for (Task task : tasks) {
                     try {

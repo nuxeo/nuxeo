@@ -32,6 +32,7 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -157,6 +158,29 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
         assertTrue(taskProvider.isPreviousPageAvailable());
         assertFalse(taskProvider.isNextPageAvailable());
     }
+
+    @Test
+    public void testTaskPageProviderSorting() throws ClientException {
+        Map<String, Serializable> properties = new HashMap<>();
+        properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+        PageProvider<DashBoardItem> taskProvider =
+                (PageProvider<DashBoardItem>) ppService.getPageProvider
+                        ("current_user_tasks_sort_asc", null, null, null,
+                                properties, (Object[]) null);
+        List<DashBoardItem> tasks = taskProvider.getCurrentPage();
+        assertNotNull(tasks);
+        assertEquals("Test Task Name", tasks.get(0).getName());
+        //Check task order
+        taskProvider = (PageProvider<DashBoardItem>) ppService
+                .getPageProvider("current_user_tasks_sort_desc", null, null,
+                        null, properties, (Object[]) null);
+        tasks = taskProvider.getCurrentPage();
+        assertNotNull(tasks);
+        //Check task order update
+        assertEquals("Test Task Name 2", tasks.get(0).getName());
+    }
+
 
     protected DocumentModel getDocument() throws Exception {
         DocumentModel model = session.createDocumentModel(
