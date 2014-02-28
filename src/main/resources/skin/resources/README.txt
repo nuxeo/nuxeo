@@ -1,1 +1,0 @@
-You should put in this folder all public resources. 

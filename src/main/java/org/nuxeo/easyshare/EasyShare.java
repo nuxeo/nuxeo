@@ -27,6 +27,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,17 +35,14 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.ecm.core.api.IdRef;
-
 
 /**
  * The root entry for the WebEngine module.
@@ -65,144 +63,138 @@ public class EasyShare extends ModuleRoot {
 
     @Path("{folderId}")
     @GET
-    public Object getFolderListing(@PathParam("folderId")
-    String folderId) {
-        try {
-            return new EasyShareUnrestrictedRunner() {
-                @Override
-                public Object run(CoreSession session, IdRef docRef)
-                        throws ClientException {
-                    if (session.exists(docRef)) {
-                        DocumentModel docFolder = session.getDocument(docRef);
-
-                        Date today = new Date();
-                        if (today.after(docFolder.getProperty("dc:expired").getValue(
-                                Date.class))) {
-                            return getView("denied");
-                        }
-
-                        if (!docFolder.getType().equals("EasyShareFolder")) {
-                            return Response.serverError().status(
-                                    Response.Status.NOT_FOUND).build();
-                        }
-
-                        DocumentModelList docList = session.getChildren(docRef);
-
-                        // Audit Log
-                        OperationContext ctx = new OperationContext(session);
-                        ctx.setInput(docFolder);
-
-                        // Audit.Log operation parameter setting
-                        try {
-                            Map<String, Object> params = new HashMap<String, Object>();
-                            params.put("event", "Access");
-                            params.put("category", "Document");
-                            params.put("comment",
-                                    "IP: " + request.getRemoteAddr());
-                            AutomationService service = Framework.getLocalService(AutomationService.class);
-                            service.run(ctx, "Audit.Log", params);
-                        } catch (Exception ex) {
-                            log.error(ex.getMessage());
-                            return getView("denied");
-                        }
-
-                        return getView("folderList").arg("docFolder", docFolder).arg(
-                                "docList", docList);
-                    } else {
-
-                        return getView("denied");
+    public Object getFolderListing(@PathParam("folderId") String folderId) {
+        EasyShareUnrestrictedRunner runner = new EasyShareUnrestrictedRunner(
+                getContext().getCoreSession(), folderId) {
+            @Override
+            public void run() throws ClientException {
+                if (session.exists(docRef)) {
+                    DocumentModel docFolder = session.getDocument(docRef);
+                    Date today = new Date();
+                    if (today.after(docFolder.getProperty("dc:expired").getValue(
+                            Date.class))) {
+                        result = getView("denied");
                     }
+                    if (!docFolder.getType().equals("EasyShareFolder")) {
+                        result = Response.status(Status.NOT_FOUND).build();
+                    }
+                    DocumentModelList docList = session.getChildren(docRef);
+                    // Audit Log
+                    OperationContext opCtx = new OperationContext(session);
+                    opCtx.setInput(docFolder);
+                    // Audit.Log operation parameter setting
+                    try {
+                        Map<String, Object> params = new HashMap<String, Object>();
+                        params.put("event", "Access");
+                        params.put("category", "Document");
+                        params.put("comment", "IP: " + request.getRemoteAddr());
+                        AutomationService service = Framework.getLocalService(AutomationService.class);
+                        service.run(opCtx, "Audit.Log", params);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException("interrupted", e);
+                    } catch (Exception e) {
+                        if (Thread.currentThread().isInterrupted()) {
+                            throw new RuntimeException(e);
+                        }
+                        log.error(e.getMessage(), e);
+                        result = getView("denied");
+                    }
+                    result = getView("folderList").arg("docFolder", docFolder).arg(
+                            "docList", docList);
+                } else {
+                    result = getView("denied");
                 }
-            }.runUnrestricted(folderId);
+            }
+        };
+        try {
+            runner.runUnrestricted();
         } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-
+            throw WebException.wrap(e);
         }
-
+        return runner.getResult();
     }
 
     @GET
     @Path("{folderId}/{fileId}/{fileName}")
-    public Response getFileStream(@PathParam("fileId")
-    String fileId) throws ClientException {
-
-        try {
-            return (Response) new EasyShareUnrestrictedRunner() {
-                @Override
-                public Object run(CoreSession session, IdRef docRef)
-                        throws ClientException {
-                    if (session.exists(docRef)) {
-                        try {
-                            DocumentModel doc = session.getDocument(docRef);
-
-                            Blob blob = doc.getAdapter(BlobHolder.class).getBlob();
-                            DocumentModel docFolder = session.getDocument(doc.getParentRef());
-
-                            // Audit Log
-                            OperationContext ctx = new OperationContext(session);
-                            ctx.setInput(doc);
-
-                            Date today = new Date();
-                            if (today.after(docFolder.getProperty("dc:expired").getValue(
-                                    Date.class))) {
-                                return Response.serverError().status(
-                                        Response.Status.NOT_FOUND).build();
-
-                            }
-
-                            // Audit.Log operation parameter setting
-                            Map<String, Object> params = new HashMap<String, Object>();
-                            params.put("event", "Download");
-                            params.put("category", "Document");
-                            params.put("comment",
-                                    "IP: " + request.getRemoteAddr());
-                            AutomationService service = Framework.getLocalService(AutomationService.class);
-                            service.run(ctx, "Audit.Log", params);
-
-                            if (doc.isProxy()) {
-                                DocumentModel liveDoc = session.getSourceDocument(docRef);
-                                ctx.setInput(liveDoc);
-                                service.run(ctx, "Audit.Log", params);
-                            }
-
-                            //Email notification
-                            try{
-                                log.debug("Easyshare: starting email");
-                                EmailHelper emailer = new EmailHelper();
-                                Map<String, Object> mailProps = new Hashtable<String, Object>();
-                                mailProps.put("mail.from", "mobrebski@nuxeo.com");
-                                mailProps.put("mail.to", "mobrebski@nuxeo.com");
-                                mailProps.put("subject", "EasyShare Download");
-                                mailProps.put("body", "File from Share downloaded by IP");
-                                mailProps.put("template", "easyShareEmail");
-                                mailProps.put("subjectTemplate", "easyShareEmail");
-                                emailer.sendmail(mailProps);
-                                log.debug("Easyshare: completed email");
-                            } catch (Exception ex) {
-                                log.error("Cannot send easyShare notification email", ex);
-                            }
-
-
-                            return Response.ok(blob.getStream(),
-                                    blob.getMimeType()).build();
-
-                        } catch (Exception ex) {
-                            log.error("error ", ex);
-                            return Response.serverError().status(
-                                    Response.Status.NOT_FOUND).build();
+    public Object getFileStream(@PathParam("fileId") String fileId) {
+        EasyShareUnrestrictedRunner runner = new EasyShareUnrestrictedRunner(
+                getContext().getCoreSession(), fileId) {
+            @Override
+            public void run() throws ClientException {
+                if (session.exists(docRef)) {
+                    try {
+                        DocumentModel doc = session.getDocument(docRef);
+                        Blob blob = doc.getAdapter(BlobHolder.class).getBlob();
+                        DocumentModel docFolder = session.getDocument(doc.getParentRef());
+                        // Audit Log
+                        OperationContext opCtx = new OperationContext(session);
+                        opCtx.setInput(doc);
+                        Date today = new Date();
+                        if (today.after(docFolder.getProperty("dc:expired").getValue(
+                                Date.class))) {
+                            result = Response.status(Status.NOT_FOUND).build();
                         }
-
-                    } else {
-                        return Response.serverError().status(
-                                Response.Status.NOT_FOUND).build();
+                        // Audit.Log operation parameter setting
+                        Map<String, Object> params = new HashMap<String, Object>();
+                        params.put("event", "Download");
+                        params.put("category", "Document");
+                        params.put("comment", "IP: " + request.getRemoteAddr());
+                        AutomationService service = Framework.getLocalService(AutomationService.class);
+                        service.run(opCtx, "Audit.Log", params);
+                        if (doc.isProxy()) {
+                            DocumentModel liveDoc = session.getSourceDocument(docRef);
+                            opCtx.setInput(liveDoc);
+                            service.run(opCtx, "Audit.Log", params);
+                        }
+                        // Email notification
+                        try {
+                            log.debug("Easyshare: starting email");
+                            EmailHelper emailer = new EmailHelper();
+                            Map<String, Object> mailProps = new Hashtable<String, Object>();
+                            mailProps.put("mail.from", "mobrebski@nuxeo.com");
+                            mailProps.put("mail.to", "mobrebski@nuxeo.com");
+                            mailProps.put("subject", "EasyShare Download");
+                            mailProps.put("body",
+                                    "File from Share downloaded by IP");
+                            mailProps.put("template", "easyShareEmail");
+                            mailProps.put("subjectTemplate", "easyShareEmail");
+                            emailer.sendmail(mailProps);
+                            log.debug("Easyshare: completed email");
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            throw new RuntimeException("interrupted", e);
+                        } catch (Exception e) {
+                            if (Thread.currentThread().isInterrupted()) {
+                                throw e;
+                            }
+                            log.error(
+                                    "Cannot send easyShare notification email",
+                                    e);
+                        }
+                        result = Response.ok(blob.getStream(),
+                                blob.getMimeType()).build();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException("interrupted", e);
+                    } catch (Exception e) {
+                        if (Thread.currentThread().isInterrupted()) {
+                            throw new RuntimeException(e);
+                        }
+                        log.error(e.getMessage(), e);
+                        result = Response.status(Status.NOT_FOUND).build();
                     }
+                } else {
+                    result = Response.status(Status.NOT_FOUND).build();
                 }
-            }.runUnrestricted(fileId);
+            }
+        };
+        try {
+            runner.runUnrestricted();
         } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-
+            throw WebException.wrap(e);
         }
-
+        return runner.getResult();
     }
 
 }
