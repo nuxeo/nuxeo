@@ -31,9 +31,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
 
     private boolean supportsXA;
 
-    private int majorVersion;
-
-    private int engineEdition;
+    private boolean supportsSequences;
 
     private static final String DEF_SERVER = "localhost";
 
@@ -99,7 +97,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
             doOnAllTables(connection, null, null, "DROP TABLE [%s]"); // no CASCADE...
             checkSupports(connection);
             // SEQUENCE in SQL Server 2012, but not Azure
-            if (majorVersion >= 12 && engineEdition != 5) {
+            if (supportsSequences) {
                 Statement st = connection.createStatement();
                 executeSql(st,
                         "IF EXISTS (SELECT 1 FROM sys.sequences WHERE name = 'hierarchy_seq')"
@@ -148,11 +146,14 @@ public class DatabaseSQLServer extends DatabaseHelper {
         try {
             ResultSet rs = st.executeQuery("SELECT SERVERPROPERTY('ProductVersion'), CONVERT(NVARCHAR(100), SERVERPROPERTY('EngineEdition'))");
             rs.next();
-            String aa = rs.getString(1);
-            majorVersion = Integer.parseInt(aa.split("\\.")[0]);
-            engineEdition = rs.getInt(2);
-            boolean azure = majorVersion == 12 && engineEdition == 5;
+            String productVersion = rs.getString(1);
+            /** 9 = SQL Server 2005, 10 = SQL Server 2008, 11 = SQL Server 2012 / Azure */
+            int majorVersion = Integer.parseInt(productVersion.split("\\.")[0]);
+            /** 5 = Azure */
+            int engineEdition = rs.getInt(2);
+            boolean azure = engineEdition == 5;
             supportsXA = !azure;
+            supportsSequences = majorVersion >= 11 && !azure;
         } finally {
             st.close();
         }
@@ -180,7 +181,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
 
     @Override
     public boolean supportsSequenceId() {
-        return true;
+        return supportsSequences;
     }
 
 }
