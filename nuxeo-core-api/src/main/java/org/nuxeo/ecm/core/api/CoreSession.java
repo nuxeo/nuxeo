@@ -1362,6 +1362,20 @@ public interface CoreSession {
             throws ClientException;
 
     /**
+     * Follows a given life cycle transition.
+     * <p>
+     * This will update the current life cycle of the document.
+     *
+     * @param doc the document model
+     * @param transition the name of the transition to follow
+     * @return a boolean representing the status if the operation
+     * @throws ClientException
+     */
+    boolean followTransition(DocumentModel doc, String transition)
+            throws ClientException;
+
+
+    /**
      * Gets the allowed state transitions for this document.
      *
      * @param docRef the document reference
