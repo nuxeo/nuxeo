@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
              point="operations">
 
-    <operation class="org.nuxeo.ecm.collections.automation.SuggestCollectionEntry" />
+    <operation class="org.nuxeo.ecm.collections.core.automation.SuggestCollectionEntry" />
 
   </extension>
 </component>

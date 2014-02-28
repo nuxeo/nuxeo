@@ -6,7 +6,7 @@
   <extension target="org.nuxeo.ecm.core.security.SecurityService"
     point="permissions">
 
-    <permission name="CanCollect">
+    <permission name="ReadCanCollect">
       <include>Read</include>
       <include>WriteProperties</include>
     </permission>
@@ -17,9 +17,7 @@
     point="permissionsVisibility">
 
     <visibility type="Collection">
-      <item show="true" order="10">Read</item>
-      <item show="true" order="50">CanCollect</item>
-      <item show="true" order="100">Everything</item>
+      <item show="true" order="20">ReadCanCollect</item>
     </visibility>
 
   </extension>

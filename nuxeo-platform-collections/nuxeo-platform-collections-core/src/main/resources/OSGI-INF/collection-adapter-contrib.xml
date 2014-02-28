@@ -3,10 +3,10 @@
 
   <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService"
     point="adapters">
-    <adapter class="org.nuxeo.ecm.collections.adapter.Collection"
-      factory="org.nuxeo.ecm.collections.adapter.CollectionAdapterFactory" />
-    <adapter class="org.nuxeo.ecm.collections.adapter.CollectionMember"
-      factory="org.nuxeo.ecm.collections.adapter.CollectionMemberAdapterFactory" />
+    <adapter class="org.nuxeo.ecm.collections.core.adapter.Collection"
+      factory="org.nuxeo.ecm.collections.core.adapter.CollectionAdapterFactory" />
+    <adapter class="org.nuxeo.ecm.collections.core.adapter.CollectionMember"
+      factory="org.nuxeo.ecm.collections.core.adapter.CollectionMemberAdapterFactory" />
   </extension>
 
 </component>

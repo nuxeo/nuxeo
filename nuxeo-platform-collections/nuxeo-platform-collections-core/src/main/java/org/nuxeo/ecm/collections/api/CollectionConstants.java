@@ -35,7 +35,7 @@ public class CollectionConstants {
 
     public static final String COLLECTION_MEMBER_SCHEMA_NAME = "collectionMember";
 
-    public static final String CAN_COLLECT_PERMISSION = "CanCollect";
+    public static final String CAN_COLLECT_PERMISSION = "ReadCanCollect";
 
     public static final String COLLECTION_PAGE_PROVIDER = "default_collection";
 

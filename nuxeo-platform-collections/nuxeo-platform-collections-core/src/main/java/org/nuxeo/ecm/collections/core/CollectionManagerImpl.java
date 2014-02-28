@@ -18,10 +18,10 @@ package org.nuxeo.ecm.collections.core;
 
 import java.util.List;
 
-import org.nuxeo.ecm.collections.adapter.Collection;
-import org.nuxeo.ecm.collections.adapter.CollectionMember;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
+import org.nuxeo.ecm.collections.core.adapter.Collection;
+import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -108,7 +108,7 @@ public class CollectionManagerImpl extends DefaultComponent implements
             final CoreSession session) throws ClientException {
         return isCollection(collection)
                 && session.hasPermission(collection.getRef(),
-                        CollectionConstants.CAN_COLLECT_PERMISSION);
+                        SecurityConstants.WRITE_PROPERTIES);
     }
 
     public void checkCanAddToCollection(final DocumentModel collection,
@@ -140,8 +140,7 @@ public class CollectionManagerImpl extends DefaultComponent implements
                 CollectionConstants.COLLECTION_TYPE);
         newCollection.setProperty("dublincore", "title", newTitle);
         newCollection.setProperty("dublincore", "description", newDescription);
-        newCollection = session.createDocument(newCollection);
-        return session.saveDocument(newCollection);
+        return session.createDocument(newCollection);
     }
 
     protected DocumentModel getUserDefaultCollections(
@@ -192,12 +191,12 @@ public class CollectionManagerImpl extends DefaultComponent implements
         ACP acp = new ACPImpl();
         ACE denyEverything = new ACE(SecurityConstants.EVERYONE,
                 SecurityConstants.EVERYTHING, false);
+        ACE allowEverything = new ACE(session.getPrincipal().getName(),
+                SecurityConstants.EVERYTHING, true);
         ACL acl = new ACLImpl();
-        acl.setACEs(new ACE[] { denyEverything });
+        acl.setACEs(new ACE[] { allowEverything, denyEverything });
         acp.addACL(acl);
         doc.setACP(acp, true);
-
-        session.saveDocument(doc);
 
         return doc;
     }

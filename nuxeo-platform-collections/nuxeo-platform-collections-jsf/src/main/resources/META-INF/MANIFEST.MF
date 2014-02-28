@@ -11,3 +11,4 @@ Nuxeo-Component: OSGI-INF/collection-actions-contrib.xml,
  OSGI-INF/collection-theme-contrib.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.collections.jsf;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.platform.collections.core
