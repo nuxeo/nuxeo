@@ -126,8 +126,8 @@
       <artifactId>jboss-seam-remoting</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-el-api</artifactId>
+      <groupId>javax.el</groupId>
+      <artifactId>el-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.faces</groupId>
