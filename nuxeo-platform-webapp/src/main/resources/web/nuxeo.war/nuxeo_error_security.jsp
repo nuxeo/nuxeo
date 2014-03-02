@@ -5,7 +5,6 @@
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%
   String context = request.getContextPath();
   String user_message = (String) request.getAttribute("user_message");
@@ -94,7 +93,7 @@ a.block.dump { background-image: url("<%=context%>/img/error_pages/view.png") }
     <h1><%= bundle.getString("label.errorPage.security.title") %></h1>
 
     <% if (!isAnonymous) { %>
-      <p>${fn:escapeXml(user_message)}</p>
+      <p><c:out value="${user_message}" /></p>
       <div class="links">
 
         <a class="block back" href="<%=context %>/">
@@ -111,10 +110,10 @@ a.block.dump { background-image: url("<%=context%>/img/error_pages/view.png") }
         </a>
 
         <div class="errorDetail" id="stackTrace" style="display: none;">
-          <h2>${fn:escapeXml(exception_message)}</h2>
+          <h2><c:out value="${exception_message}" /></h2>
           <inputTextarea rows="20" cols="100" readonly="true">
             <pre>
-            ${fn:escapeXml(stackTrace)}
+              <c:out value="${stackTrace}" />
             </pre>
           </inputTextarea>
         </div>
@@ -123,7 +122,7 @@ a.block.dump { background-image: url("<%=context%>/img/error_pages/view.png") }
           <h2><%= bundle.getString("label.errorPage.context") %></h2>
           <inputTextarea rows="20" cols="100" readonly="true">
             <pre>
-            ${fn:escapeXml(request_dump)}
+              <c:out value="${request_dump}" />
             </pre>
           </inputTextarea>
         </div>
