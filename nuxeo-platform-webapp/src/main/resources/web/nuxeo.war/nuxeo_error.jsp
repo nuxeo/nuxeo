@@ -142,7 +142,7 @@ a:hover {
   <tr>
     <td>
 
-      <h1><c:out value="${pageTitle} /></h1>
+      <h1><c:out value="${pageTitle}" /></h1>
 
       <% if (!isAnonymous) { %>
         <h2>${fn:escapeXml(user_message)}</h2>
