@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.FacesLifecycle;
 import org.jboss.seam.contexts.Lifecycle;
-import org.jboss.seam.mock.MockApplication;
 import org.jboss.seam.mock.MockExternalContext;
 import org.jboss.seam.mock.MockFacesContext;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.service.NullExceptionHandlingListener;

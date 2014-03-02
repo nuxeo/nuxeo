@@ -5,7 +5,6 @@
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%
   String context = request.getContextPath();
   String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
@@ -143,7 +142,7 @@ a:hover {
   <tr>
     <td>
 
-      <h1><${fn:escapeXml(pageTitle)}</h1>
+      <h1><c:out value="${pageTitle} /></h1>
 
       <% if (!isAnonymous) { %>
         <h2>${fn:escapeXml(user_message)}</h2>
@@ -161,10 +160,10 @@ a:hover {
             </a>
           </div>
           <div id="stackTrace" style="display: none;">
-            <h2>${fn:escapeXml(exception_message)}</h2>
+            <h2><c:out value="${exception_message}" /></h2>
             <inputTextarea rows="20" cols="300" readonly="true">
               <pre>
-              ${fn:escapeXml(stackTrace)}
+                <c:out value="${stackTrace}" />
               </pre>
             </inputTextarea>
           </div>
@@ -178,7 +177,7 @@ a:hover {
             <h2>Context</h2>
             <inputTextarea rows="20" cols="300" readonly="true">
               <pre>
-              ${fn:escapeXml(request_dump)}
+                <c:out value="${request_dump}" />
               </pre>
             </inputTextarea>
           </div>
