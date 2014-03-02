@@ -1,4 +1,5 @@
 <project name="selenium-tests" xmlns:nx="urn:nuxeo-build"
+  default="run-selenium"
   xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
