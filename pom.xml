@@ -4553,7 +4553,8 @@
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
                 <banSnapshots>true</banSnapshots>
-                <!-- <unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin,org.nuxeo.build:nuxeo-distribution-tools</unCheckedPluginList> -->
+                <!-- to comment when NXP-13880 is fixed -->
+                <unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin,org.nuxeo.build:nuxeo-distribution-tools</unCheckedPluginList>
               </requirePluginVersions>
               <requireReleaseDeps>
                 <message>No Snapshots Allowed!</message>
@@ -4564,8 +4565,6 @@
                   <!-- <exclude>org.richfaces.framework:richfaces-impl:*</exclude> -->
                   <!-- <exclude>org.richfaces.ui:richfaces-ui:*</exclude> -->
                   <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
-                  <!-- to comment when NXP-13880 is fixed -->
-                  <exclude>org.nuxeo.build:ant-assembly-maven-plugin</exclude>
                   <!-- <exclude>org.jboss.seam:*</exclude> -->
                 </excludes>
               </requireReleaseDeps>
