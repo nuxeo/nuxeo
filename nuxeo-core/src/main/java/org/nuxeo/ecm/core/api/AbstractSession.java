@@ -2655,14 +2655,21 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         return lifecyclePolicy;
     }
 
-    @Override
-    public boolean followTransition(DocumentModel docModel, String transition)
-            throws ClientException {
+    /**
+     * Make a document follow a transition.
+     * @param docRef a {@link DocumentRef}
+     * @param transition the transition to follow
+     * @param options an option map than can be used by callers to pass additional params
+     * @return
+     * @throws ClientException
+     *
+     * @since 5.9.3
+     */
+    private boolean followTransition(DocumentRef docRef, String transition,
+            ScopedMap options) throws ClientException {
         boolean operationResult;
+
         try {
-
-
-            DocumentRef docRef = docModel.getRef();
             Document doc = resolveReference(docRef);
             checkPermission(doc, WRITE_LIFE_CYCLE);
 
@@ -2675,20 +2682,21 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             if (operationResult) {
                 // Construct a map holding meta information about the event.
-                Map<String, Serializable> options = new HashMap<String, Serializable>();
-                options.put(
+                Map<String, Serializable> eventOptions = new HashMap<String, Serializable>();
+                eventOptions.put(
                         org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM,
                         formerStateName);
-                options.put(
+                eventOptions.put(
                         org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TO,
                         doc.getLifeCycleState());
-                options.put(
+                eventOptions.put(
                         org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION,
                         transition);
-                String comment = (String) docModel.getContextData("comment");
+                String comment = (String) options.getScopedValue("comment");
+                DocumentModel docModel = readModel(doc);
                 notifyEvent(
                         org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT,
-                        docModel, options,
+                        docModel, eventOptions,
                         DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY,
                         comment, true, false);
                 if (!docModel.isImmutable()) {
@@ -2699,28 +2707,28 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         } catch (LifeCycleException e) {
             ClientException ce = new ClientException(
                     "Unable to follow transition <" + transition
-                            + "> for document : " + docModel.getRef(), e);
+                            + "> for document : " + docRef, e);
             ce.fillInStackTrace();
             throw ce;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get content data "
-                    + docModel.getRef(), e);
+            throw new ClientException("Failed to get content data " + docRef, e);
         }
         return operationResult;
 
     }
 
     @Override
+    public boolean followTransition(DocumentModel docModel, String transition)
+            throws ClientException {
+        return followTransition(docModel.getRef(), transition,
+                docModel.getContextData());
+    }
+
+    @Override
     public boolean followTransition(DocumentRef docRef, String transition)
             throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            DocumentModel docModel = readModel(doc);
-            return followTransition(docModel, transition);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get content data " + docRef, e);
-        }
-
+        return followTransition(docRef, transition,
+                new ScopedMap());
     }
 
     @Override
