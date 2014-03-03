@@ -16,12 +16,6 @@
 
     <div class="content">
 
-      <script>
-              function checkNewCollection() {
-                alert('toto');
-              }
-            </script>
-
       <table class="dataInput fullWidth">
         <tbody>
           <tr>
@@ -37,8 +31,7 @@
                 operationId="Collection.Suggestion"
                 selectionFormatter="formatSelectedCollection"
                 suggestionFormatter="formatSuggestedCollection"
-                documentSchemas="dublincore,common"
-                onchange="checkNewCollection">
+                documentSchemas="dublincore,common">
               </nxl:widgetType></td>
           </tr>
         </tbody>
@@ -64,16 +57,24 @@
 
     </div>
 
-
     <a4j:outputPanel id="#{fancyboxFormId}_buttons" layout="block">
-      <div class="buttonsGadget"></div>
-      <nxh:commandButton value="#{messages['command.import']}"
-        action="#{collectionActions.addCurrentDocumentToSelectedCollection()}"
-        disabled="#{!collectionActions.canAddToSelectedCollection()}"
-        styleClass="button" />
-      <nxh:commandButton value="#{messages['command.cancel']}"
-        immediate="true" action="#{collectionActions.cancel()}"
-        styleClass="button" />
+      <div class="buttonsGadget">
+        <c:if test="#{selection}">
+          <nxh:commandButton value="#{messages['command.import']}"
+            action="#{collectionActions.addCurrentSelectionToSelectedCollection()}"
+            disabled="#{!collectionActions.canAddToSelectedCollection()}"
+            styleClass="button" />
+        </c:if>
+        <c:if test="#{!selection}">
+          <nxh:commandButton value="#{messages['command.import']}"
+            action="#{collectionActions.addCurrentDocumentToSelectedCollection()}"
+            disabled="#{!collectionActions.canAddToSelectedCollection()}"
+            styleClass="button" />
+        </c:if>
+        <nxh:commandButton value="#{messages['command.cancel']}"
+          immediate="true" action="#{collectionActions.cancel()}"
+          styleClass="button" />
+      </div>
     </a4j:outputPanel>
   </h:form>
 

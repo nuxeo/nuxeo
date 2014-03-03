@@ -104,7 +104,7 @@ public class CollectionActionsBean implements Serializable {
     public void addCurrentSelectionToSelectedCollection()
             throws ClientException {
         final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
-        addToSelectedCollection(documentsListsManager.getWorkingList());
+        addToSelectedCollection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION));
     }
 
     public void addToSelectedCollection(
@@ -121,6 +121,13 @@ public class CollectionActionsBean implements Serializable {
                 collectionManager.addToCollection(getSelectedCollection(),
                         documentListToBeAdded, session);
             }
+
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
+
+            addFacesMessage(StatusMessage.Severity.INFO,
+                    "collection.allAddedToCollection",
+                    isCreateNewCollection() ? getNewTitle()
+                            : getSelectedCollection().getTitle());
         }
     }
 
@@ -155,9 +162,9 @@ public class CollectionActionsBean implements Serializable {
         return collectionManager.isCollectable(currentDocument);
     }
 
-    public boolean canAllSelectedDocumentBeCollected() {
+    public boolean canAddSelectedDocumentBeCollected() {
         final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
-        List<DocumentModel> documents = documentsListsManager.getWorkingList("CURRENT_SELECTION");
+        List<DocumentModel> documents = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         if (documents == null || documents.isEmpty()) {
             return false;
         }

@@ -67,7 +67,7 @@
       <category>CURRENT_SELECTION_LIST</category>
       <filter-id>canAddSelectedToCollection</filter-id>
       <properties>
-        <property name="include">/incl/add_to_collection.xhtml</property>
+        <property name="include">/incl/add_selection_to_collection.xhtml</property>
       </properties>
     </action>
 
@@ -94,7 +94,7 @@
     <filter id="canAddSelectedToCollection">
       <rule grant="true">
         <condition>
-          #{collectionActions.canAllSelectedDocumentBeCollected()}
+          #{collectionActions.canAddSelectedDocumentBeCollected()}
         </condition>
       </rule>
     </filter>
