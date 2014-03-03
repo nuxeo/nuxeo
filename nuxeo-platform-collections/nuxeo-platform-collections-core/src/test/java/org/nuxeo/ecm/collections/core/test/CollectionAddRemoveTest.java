@@ -21,17 +21,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.collections.api.CollectionConstants;
-import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.core.adapter.Collection;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -41,8 +37,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import com.google.inject.Inject;
-
 /**
  * @since 5.9.3
  */
@@ -51,22 +45,7 @@ import com.google.inject.Inject;
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.collections.core",
         "org.nuxeo.ecm.platform.userworkspace.types" })
-public class CollectionAddRemoveTest {
-
-    private static final String TEST_FILE_NAME = "testFile";
-
-    private static final String COLLECTION_NAME = "testCollection";
-
-    private static final String COLLECTION_DESCRIPTION = "dummy";
-
-    private static final String COLLECTION_FOLDER_PATH = "/default-domain/UserWorkspaces/Administrator/"
-            + CollectionConstants.DEFAULT_COLLECTIONS_NAME;
-
-    @Inject
-    CoreSession session;
-
-    @Inject
-    CollectionManager collectionManager;
+public class CollectionAddRemoveTest extends CollectionTestCase {
 
     @Test
     public void testAddOneDocToNewCollectionAndRemove() throws Exception {
@@ -118,8 +97,7 @@ public class CollectionAddRemoveTest {
                 "/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
 
-        List<DocumentModel> files = createTestFiles(
-                testWorkspace.getPath().toString(), 3);
+        List<DocumentModel> files = createTestFiles(3);
 
         collectionManager.addToNewCollection(COLLECTION_NAME,
                 COLLECTION_DESCRIPTION, files, session);
@@ -221,18 +199,6 @@ public class CollectionAddRemoveTest {
             return;
         }
         fail("File is not a Collection");
-    }
-
-    private List<DocumentModel> createTestFiles(String parentPath, int nbFile)
-            throws ClientException {
-        List<DocumentModel> result = new ArrayList<DocumentModel>();
-        for (int i = 1; i <= nbFile; i++) {
-            DocumentModel testFile = session.createDocumentModel(parentPath,
-                    TEST_FILE_NAME + i, "File");
-            testFile = session.createDocument(testFile);
-            result.add(testFile);
-        }
-        return result;
     }
 
 }
