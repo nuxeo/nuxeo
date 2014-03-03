@@ -123,6 +123,13 @@ author: lkemen@nuxeo.com
 .widgetTable .simpleBox {
   margin: .1em auto .5em }
 
+.grayBox .textBlock {
+  font-size: 1em;
+  padding: .6em .8em .8em }
+
+.grayBox .textBlock span {
+  line-height: 130% }
+
 /* =Bubble boxes */
 .bubbleBox {
   border-width: 1px; border-style: solid;
