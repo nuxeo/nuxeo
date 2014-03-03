@@ -100,7 +100,7 @@
       <td>${This.getStateLabel(pkg)}</td>
     </#if>
 
-    <td class="alignCenter">
+    <td>
          <#if This.canDownload(pkg)>
            <a class="button download" href="${Root.path}/download/start/${pkg.id}?source=${source}&amp;filterOnPlatform=${filterOnPlatform}&amp;type=${type}&amp;onlyRemote=${onlyRemote}">${Context.getMessage('label.simpleListing.links.download')}</a>
          </#if>

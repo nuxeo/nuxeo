@@ -74,18 +74,19 @@ h3 {
 
 /* Listing style */
 .packageListing {
-  border-bottom: 1px solid #cdcdcd;
-}
+  border-bottom: 1px solid #e7e7e7; }
 
 .packageListing td {
-  padding: 5px;
-  border-top: 1px solid #cdcdcd;
-}
+  border-top: 1px solid #E7E7E7;
+  padding: 0.5em 0.4em; }
 
 .packageListing .detailRow td {
   border-top: none;
   vertical-align: top;
 }
+
+.pkgDetail {
+  background-color: transparent; }
 
 .packagePic {
   border: 1px solid #DEDEDE;
@@ -119,40 +120,33 @@ h3 {
   font-size: 11px;
   font-weight: bold;
   padding: 0;
-  width: 160px;
-}
-
-.packageField {
-  background-color: white;
-  border: 3px solid #F7F7F7;
-  border-radius: 5px 5px 5px 5px;
-}
+  width: 10em;}
 
 .button, a.button {
-  box-shadow: 0 8px 3px rgba(255, 255, 255, 0.5) inset, 1px 1px 0 #efefef;
-  background-color: #EFEFEF;
+  background-color: #fff;
   border-radius: 3px;
   border: 1px solid #bbb;
   color: #333;
   cursor: pointer;
   display: inline-block;
-  margin: 2px;
+  font-size: .9em;
+  margin: .15em;
   max-width: 350px;
-  padding:  0 10px;
+  padding:  .2em .4em;
   text-decoration: none;
-  text-shadow: 1px 1px 0px #fff;
   vertical-align: top;
-  word-wrap: break-word
+  word-wrap: break-word;
+  opacity: .9;
 }
 
-.button:hover, a.button:hover { background-color: #fff; border-color: #999 }
+.button:hover, a.button:hover { opacity: 1 }
 
 .packageListing .restartNeeded {
   color: red;
 }
 
 .packageListing .download {
-  color: #00bc66; font-weight: bold
+  color: #009f1e; font-weight: bold
 }
 
 .packageListing .uninstall {
@@ -168,11 +162,11 @@ h3 {
 }
 
 .row_odd {
-  background-color: #f6f6f6;
+  background-color: #fff;
 }
 
 .row_even {
-  background-color: #eef;
+  background-color: #f6f6f6;
 }
 
 .opentd {
@@ -260,7 +254,7 @@ ul.installInfo li {
   font-weight: bold;
 }
 
-.downloadProgressContainer {;
+.downloadProgressContainer {
   border: 1px solid #939ba4;
   border-radius: 3px;
   padding: 2px;
@@ -305,12 +299,4 @@ a.installButton:hover {
 
 .manualModeCmd {
   display: none;
-}
-
-.pkgDetail {
-  border-color: #ccc;
-  border-radius: 0 0 0 10px;
-  border-style: solid;
-  border-width: 0 1px 1px;
-  background-color: #F7F7F7;
 }
