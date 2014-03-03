@@ -145,7 +145,7 @@ a:hover {
       <h1><c:out value="${pageTitle}" /></h1>
 
       <% if (!isAnonymous) { %>
-        <h2>${fn:escapeXml(user_message)}</h2>
+        <h2><c:out value="${user_message}" /></h2>
         <div class="links">
           <div class="back">
             <a href="<%=context %>/">back</a>
