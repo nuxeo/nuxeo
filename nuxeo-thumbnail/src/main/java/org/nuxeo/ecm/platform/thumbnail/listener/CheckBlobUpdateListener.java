@@ -12,10 +12,12 @@
  */
 package org.nuxeo.ecm.platform.thumbnail.listener;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -43,25 +45,23 @@ public class CheckBlobUpdateListener implements EventListener {
         if (!doc.hasSchema("file")) {
             return;
         }
-        BlobProperty content = (BlobProperty) doc.getProperty("file:content");
-        if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())) {
-            if (content.getValue() == null) {
-                return;
-            }
-        } else if (DocumentEventTypes.BEFORE_DOC_UPDATE.equals(event.getName())) {
-            if (!content.isDirty()) {
-                return;
-            }
 
-            // reset the thumbnail
-            if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
+        Property content = doc.getProperty("file:content");
+        if (DOCUMENT_CREATED.equals(event.getName()) || content.isDirty()) {
+
+            if (BEFORE_DOC_UPDATE.equals(event.getName())
+                    && doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
                 doc.setPropertyValue(
                         ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, null);
             }
+
+            if (content.getValue() != null) {
+                doc.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
+                Framework.getLocalService(EventService.class).fireEvent(
+                        ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name(),
+                        context);
+            }
         }
-        Framework.getLocalService(EventService.class).fireEvent(
-                ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name(),
-                context);
     }
 
 }
