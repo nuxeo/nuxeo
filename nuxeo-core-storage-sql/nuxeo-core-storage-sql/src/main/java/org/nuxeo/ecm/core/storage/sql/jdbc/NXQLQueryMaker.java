@@ -786,7 +786,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
     /** key used to extract array index if needed */
     protected String getSelectColName(Column col, String key) {
-        String colName = col.getFullQuotedName();
+        String colName = getSelectColName(col);
         if (col.isArray()) {
             String[] segments = canonicalXPath(key).split("/");
             if (segments.length > 1) {
