@@ -8,6 +8,7 @@
       class="org.nuxeo.ecm.platform.task.providers.UserTaskPageProvider">
       <property name="locale">#{localeSelector.localeString}</property>
       <pageSize>20</pageSize>
+      <sort ascending="true" column="nt:dueDate"/>
     </genericPageProvider>
 
   </extension>
