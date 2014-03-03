@@ -636,7 +636,7 @@
       </fields>
     </widget>
 
-    <widget name="select2_directorySuggestion_canAddNewEntry" type="textarea">
+    <widget name="select2_directorySuggestion_canAddNewEntry" type="checkbox">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
