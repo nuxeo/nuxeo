@@ -9,11 +9,9 @@
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
   <div class="#{widget.id}">
     <h:outputText value="#{nxu:userFullName(field)}"
-      alt="#{field}" title="#{field}" />
+      alt="#{field}" title="#{field}"
+      styleClass="tipsyShow tipsyGravityS"/>
   </div>
-  <script>
-    jQuery(".#{widget.id} span").tooltip();
-  </script>
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
   <nxp:html>#{nxu:userFullName(field)}</nxp:html>
