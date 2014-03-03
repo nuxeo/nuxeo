@@ -157,7 +157,7 @@ public class CollectionActionsBean implements Serializable {
 
     public boolean canAllSelectedDocumentBeCollected() {
         final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
-        List<DocumentModel> documents = documentsListsManager.getWorkingList();
+        List<DocumentModel> documents = documentsListsManager.getWorkingList("CURRENT_SELECTION");
         if (documents == null || documents.isEmpty()) {
             return false;
         }
