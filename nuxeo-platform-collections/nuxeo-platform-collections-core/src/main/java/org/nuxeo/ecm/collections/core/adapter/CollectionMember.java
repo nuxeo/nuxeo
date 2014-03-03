@@ -29,6 +29,9 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.9.3
@@ -37,20 +40,12 @@ public class CollectionMember {
 
     protected DocumentModel document;
 
-    protected CoreSession getCoreSession() throws ClientException {
-        CoreSession session = document.getCoreSession();
-        if (session == null) {
-            throw new ClientException(
-                    "Trying to resolve classified document with an offline document");
-        }
-        return session;
-    }
-
-    public CollectionMember(DocumentModel doc) {
+    public CollectionMember(final DocumentModel doc) {
         document = doc;
     }
 
-    public void addToCollection(String collectionId) throws ClientException {
+    public void addToCollection(final String collectionId)
+            throws ClientException {
         List<String> collectionIds = getCollectionIds();
         if (!collectionIds.contains(collectionId)) {
             collectionIds.add(collectionId);
@@ -58,23 +53,35 @@ public class CollectionMember {
         setCollectionIds(collectionIds);
     }
 
-    public void setCollectionIds(List<String> collectionIds)
+    public void setCollectionIds(final List<String> collectionIds)
             throws ClientException {
         document.setPropertyValue(
                 CollectionConstants.DOCUMENT_COLLECTION_IDS_PROPERTY_NAME,
                 (Serializable) collectionIds);
     }
 
-    public DocumentModelList getCollectionss() throws ClientException {
+    public DocumentModelList getCollections() throws ClientException {
         DocumentModelList targets = new DocumentModelListImpl();
-        CoreSession session = getCoreSession();
+        Repository repository = Framework.getLocalService(
+                RepositoryManager.class).getRepository(
+                document.getRepositoryName());
+        CoreSession session;
+        try {
+            session = repository.open();
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        try {
 
-        for (String docId : getCollectionIds()) {
-            DocumentRef documentRef = new IdRef(docId);
-            if (session.exists(documentRef)
-                    && session.hasPermission(documentRef, READ)) {
-                targets.add(session.getDocument(documentRef));
+            for (String docId : getCollectionIds()) {
+                DocumentRef documentRef = new IdRef(docId);
+                if (session.exists(documentRef)
+                        && session.hasPermission(documentRef, READ)) {
+                    targets.add(session.getDocument(documentRef));
+                }
             }
+        } finally {
+            Repository.close(session);
         }
         return targets;
     }
@@ -87,6 +94,13 @@ public class CollectionMember {
 
     public DocumentModel getDocument() {
         return document;
+    }
+
+    public void removeFromCollection(final String documentId)
+            throws ClientException {
+        List<String> collectionIds = getCollectionIds();
+        collectionIds.remove(documentId);
+        setCollectionIds(collectionIds);
     }
 
 }
