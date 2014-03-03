@@ -28,25 +28,34 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface CollectionManager {
 
     void addToCollection(final DocumentModel collection,
-            final List<DocumentModel> documentListToBeAdded, final CoreSession session) throws ClientException;
+            final DocumentModel documentToBeAdded, final CoreSession session)
+            throws ClientException;
 
     void addToCollection(final DocumentModel collection,
-            final DocumentModel documentToBeAdded, final CoreSession session) throws ClientException;
+            final List<DocumentModel> documentListToBeAdded,
+            final CoreSession session) throws ClientException;
 
-    void removeFromCollection(final DocumentModel collection,
-            final List<DocumentModel> documentListToBeRemoved, final CoreSession session) throws ClientException;
+    void addToNewCollection(String newTitle, String newDescription,
+            DocumentModel documentToBeAdded, CoreSession session)
+            throws ClientException;
 
-    void removeFromCollection(final DocumentModel collection,
-            final DocumentModel documentToBeRemoved, final CoreSession session) throws ClientException;
-
-    boolean isCollectable(final DocumentModel doc);
+    void addToNewCollection(String newTitle, String newDescription,
+            List<DocumentModel> documentListToBeAdded,
+            CoreSession documentManager) throws ClientException;
 
     boolean canAddToCollection(final DocumentModel collection,
             final CoreSession session) throws ClientException;
 
+    boolean isCollectable(final DocumentModel doc);
+
     boolean isCollection(final DocumentModel doc);
 
-    void addToNewCollection(String newTitle, String newDescription,
-            DocumentModel documentToBeAdded, CoreSession session) throws ClientException;
+    void removeFromCollection(final DocumentModel collection,
+            final DocumentModel documentToBeRemoved, final CoreSession session)
+            throws ClientException;
+
+    void removeAllFromCollection(final DocumentModel collection,
+            final List<DocumentModel> documentListToBeRemoved,
+            final CoreSession session) throws ClientException;
 
 }

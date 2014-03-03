@@ -50,17 +50,9 @@ public class CollectionManagerImpl extends DefaultComponent implements
 
     @Override
     public void addToCollection(final DocumentModel collection,
-            final List<DocumentModel> documentListToBeAdded,
-            final CoreSession session) throws ClientException {
-        checkCanAddToCollection(collection, session);
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addToCollection(final DocumentModel collection,
             final DocumentModel documentToBeAdded, final CoreSession session)
             throws ClientException, DocumentSecurityException {
-        checkCanAddToCollection(collection, session);
+        checkCanAddToCollection(collection, documentToBeAdded, session);
         Collection colAdapter = collection.getAdapter(Collection.class);
         colAdapter.addDocument(documentToBeAdded.getId());
         collection.getCoreSession().saveDocument(colAdapter.getDocument());
@@ -78,29 +70,33 @@ public class CollectionManagerImpl extends DefaultComponent implements
     }
 
     @Override
-    public void removeFromCollection(final DocumentModel collection,
-            final List<DocumentModel> documentListToBeRemoved,
+    public void addToCollection(final DocumentModel collection,
+            final List<DocumentModel> documentListToBeAdded,
             final CoreSession session) throws ClientException {
-        checkCanAddToCollection(collection, session);
-        throw new UnsupportedOperationException();
+        for (DocumentModel documentToBeAdded : documentListToBeAdded) {
+            addToCollection(collection, documentToBeAdded, session);
+        }
     }
 
     @Override
-    public void removeFromCollection(final DocumentModel collection,
-            final DocumentModel documentToBeRemoved, final CoreSession session)
+    public void addToNewCollection(final String newTitle,
+            final String newDescription, final DocumentModel documentToBeAdded,
+            final CoreSession session) throws ClientException {
+        addToCollection(
+                createCollection(newTitle, newDescription, documentToBeAdded,
+                        session), documentToBeAdded, session);
+    }
+
+    @Override
+    public void addToNewCollection(final String newTitle,
+            final String newDescription,
+            final List<DocumentModel> documentListToBeAdded, CoreSession session)
             throws ClientException {
-        checkCanAddToCollection(collection, session);
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isCollectable(final DocumentModel doc) {
-        return doc.hasFacet(CollectionConstants.COLLECTABLE_FACET);
-    }
-
-    @Override
-    public boolean isCollection(final DocumentModel doc) {
-        return doc.hasFacet(CollectionConstants.COLLECTION_FACET);
+        DocumentModel newCollection = createCollection(newTitle,
+                newDescription, documentListToBeAdded.get(0), session);
+        for (DocumentModel documentToBeAdded : documentListToBeAdded) {
+            addToCollection(newCollection, documentToBeAdded, session);
+        }
     }
 
     @Override
@@ -112,22 +108,25 @@ public class CollectionManagerImpl extends DefaultComponent implements
     }
 
     public void checkCanAddToCollection(final DocumentModel collection,
-            final CoreSession session) throws ClientException {
-        if (!canAddToCollection(collection, session)) {
+            final DocumentModel documentToBeAdded, final CoreSession session)
+            throws ClientException {
+        if (!isCollectable(documentToBeAdded)) {
+            throw new IllegalArgumentException(String.format(
+                    "Document %s is not collectable",
+                    documentToBeAdded.getTitle()));
+        }
+        if (!isCollection(collection)) {
+            throw new IllegalArgumentException(String.format(
+                    "Document %s is not a collection",
+                    documentToBeAdded.getTitle()));
+        }
+        if (!session.hasPermission(collection.getRef(),
+                SecurityConstants.WRITE_PROPERTIES)) {
             throw new DocumentSecurityException(String.format(
                     PERMISSION_ERROR_MESSAGE,
                     CollectionConstants.CAN_COLLECT_PERMISSION,
                     session.getPrincipal().getName()));
         }
-    }
-
-    @Override
-    public void addToNewCollection(final String newTitle,
-            final String newDescription, final DocumentModel documentToBeAdded,
-            final CoreSession session) throws ClientException {
-        addToCollection(
-                createCollection(newTitle, newDescription, documentToBeAdded,
-                        session), documentToBeAdded, session);
     }
 
     protected DocumentModel createCollection(final String newTitle,
@@ -141,6 +140,30 @@ public class CollectionManagerImpl extends DefaultComponent implements
         newCollection.setProperty("dublincore", "title", newTitle);
         newCollection.setProperty("dublincore", "description", newDescription);
         return session.createDocument(newCollection);
+    }
+
+    protected DocumentModel createDefaultCollections(final CoreSession session,
+            DocumentModel userWorkspace) throws ClientException {
+        DocumentModel doc = session.createDocumentModel(
+                userWorkspace.getPath().toString(),
+                CollectionConstants.DEFAULT_COLLECTIONS_NAME,
+                CollectionConstants.COLLECTIONS_TYPE);
+        doc.setProperty("dublincore", "title",
+                CollectionConstants.DEFAULT_COLLECTIONS_NAME);
+        doc.setProperty("dublincore", "description", "");
+        doc = session.createDocument(doc);
+
+        ACP acp = new ACPImpl();
+        ACE denyEverything = new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, false);
+        ACE allowEverything = new ACE(session.getPrincipal().getName(),
+                SecurityConstants.EVERYTHING, true);
+        ACL acl = new ACLImpl();
+        acl.setACEs(new ACE[] { allowEverything, denyEverything });
+        acp.addACL(acl);
+        doc.setACP(acp, true);
+
+        return doc;
     }
 
     protected DocumentModel getUserDefaultCollections(
@@ -177,28 +200,44 @@ public class CollectionManagerImpl extends DefaultComponent implements
         }
     }
 
-    protected DocumentModel createDefaultCollections(final CoreSession session,
-            DocumentModel userWorkspace) throws ClientException {
-        DocumentModel doc = session.createDocumentModel(
-                userWorkspace.getPath().toString(),
-                CollectionConstants.DEFAULT_COLLECTIONS_NAME,
-                CollectionConstants.COLLECTIONS_TYPE);
-        doc.setProperty("dublincore", "title",
-                CollectionConstants.DEFAULT_COLLECTIONS_NAME);
-        doc.setProperty("dublincore", "description", "");
-        doc = session.createDocument(doc);
+    @Override
+    public boolean isCollectable(final DocumentModel doc) {
+        return doc.hasFacet(CollectionConstants.COLLECTABLE_FACET);
+    }
 
-        ACP acp = new ACPImpl();
-        ACE denyEverything = new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, false);
-        ACE allowEverything = new ACE(session.getPrincipal().getName(),
-                SecurityConstants.EVERYTHING, true);
-        ACL acl = new ACLImpl();
-        acl.setACEs(new ACE[] { allowEverything, denyEverything });
-        acp.addACL(acl);
-        doc.setACP(acp, true);
+    @Override
+    public boolean isCollection(final DocumentModel doc) {
+        return doc.hasFacet(CollectionConstants.COLLECTION_FACET);
+    }
 
-        return doc;
+    @Override
+    public void removeFromCollection(final DocumentModel collection,
+            final DocumentModel documentToBeRemoved, final CoreSession session)
+            throws ClientException {
+        checkCanAddToCollection(collection, documentToBeRemoved, session);
+        Collection colAdapter = collection.getAdapter(Collection.class);
+        colAdapter.removeDocument(documentToBeRemoved.getId());
+        collection.getCoreSession().saveDocument(colAdapter.getDocument());
+
+        new UnrestrictedSessionRunner(session) {
+
+            @Override
+            public void run() throws ClientException {
+                CollectionMember docAdapter = documentToBeRemoved.getAdapter(CollectionMember.class);
+                docAdapter.removeFromCollection(collection.getId());
+                session.saveDocument(docAdapter.getDocument());
+            }
+
+        }.runUnrestricted();
+    }
+
+    @Override
+    public void removeAllFromCollection(final DocumentModel collection,
+            final List<DocumentModel> documentListToBeRemoved,
+            final CoreSession session) throws ClientException {
+        for (DocumentModel documentToBeRemoved : documentListToBeRemoved) {
+            removeFromCollection(collection, documentToBeRemoved, session);
+        }
     }
 
 }
