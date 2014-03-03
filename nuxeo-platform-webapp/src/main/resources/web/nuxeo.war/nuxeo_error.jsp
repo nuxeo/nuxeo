@@ -142,7 +142,7 @@ a:hover {
   <tr>
     <td>
 
-      <h1><c:out value="${pageTitle}" /></h1>
+      <h1><%=pageTitle%></h1>
 
       <% if (!isAnonymous) { %>
         <h2><c:out value="${user_message}" /></h2>
