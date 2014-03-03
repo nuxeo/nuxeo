@@ -16,19 +16,20 @@
  */
 package org.nuxeo.ecm.collections.jsf.actions;
 
-import static org.jboss.seam.international.StatusMessage.Severity.INFO;
-
 import java.io.Serializable;
-import java.util.Map;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.Messages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
@@ -37,112 +38,106 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
  * @since 5.9.3
  */
 @Name("collectionActions")
 @Scope(ScopeType.PAGE)
+@BypassInterceptors
 public class CollectionActionsBean implements Serializable {
 
-    private static final long serialVersionUID = 6091077088147407371L;
+    public static final String COLLECTION_CURRENT_SELECTION = "COLLECTION_CURRENT_SELECTION";
+
+    public static final String DOCUMENT_ADDED_TO_COLLECTION_EVENT = "documentAddedToCollection";
+
+    public static final String DOCUMENT_REMOVED_FROM_COLLECTION_EVENT = "documentRemovedFromCollection";
 
     private static final Log log = LogFactory.getLog(CollectionActionsBean.class);
 
-    @In
-    protected transient FacesMessages facesMessages;
-
-    @In(create = true)
-    protected Map<String, String> messages;
-
-    @In(create = true)
-    private transient NavigationContext navigationContext;
-
-    @In(create = true, required = false)
-    protected transient CoreSession documentManager;
-
-    private String selectedCollectionUid;
-
-    private DocumentModel selectedCollection;
+    private static final long serialVersionUID = 6091077088147407371L;
 
     private String newDescription;
 
     private String newTitle;
 
-    public String getNewDescription() {
-        return newDescription;
-    }
+    private DocumentModel selectedCollection;
 
-    public void setNewDescription(String newDescription) {
-        this.newDescription = newDescription;
-    }
+    private String selectedCollectionUid;
 
-    public String getNewTitle() {
-        return newTitle;
-    }
-
-    public void setNewTitle(String newTitle) {
-        this.newTitle = newTitle;
-    }
-
-    public String getSelectedCollectionUid() {
-        return selectedCollectionUid;
-    }
-
-    public void setSelectedCollectionUid(final String selectedCollectionUid) {
-        this.selectedCollectionUid = selectedCollectionUid;
-        if (isCreateNewCollection()) {
-            setNewTitle(selectedCollectionUid.substring(CollectionConstants.MAGIC_PREFIX_ID.length()));
-        }
-    }
-
-    public void addDocumentToCollection() {
-        facesMessages.add(INFO, "Hello World");
-    }
-
-    public void addToCollection() throws ClientException {
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+    public void addCurrentDocumentToSelectedCollection() throws ClientException {
+        final NavigationContext navigationContext = (NavigationContext) Component.getInstance(
+                "navigationContext", true);
+        final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
-            CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+            final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+            final CoreSession session = (CoreSession) Component.getInstance(
+                    "documentManager", true);
             if (isCreateNewCollection()) {
-                collectionManager.addToNewCollection(getNewTitle(), getNewDescription(),
-                        currentDocument, documentManager);
+                collectionManager.addToNewCollection(getNewTitle(),
+                        getNewDescription(), currentDocument, session);
             } else {
                 collectionManager.addToCollection(getSelectedCollection(),
-                        currentDocument, documentManager);
+                        currentDocument, session);
             }
-            facesMessages.add(StatusMessage.Severity.INFO,
-                    messages.get("collection.addedToCollection"),
-                    messages.get(isCreateNewCollection() ? getNewTitle() : getSelectedCollection().getTitle()));
+
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
+
+            addFacesMessage(StatusMessage.Severity.INFO,
+                    "collection.addedToCollection",
+                    isCreateNewCollection() ? getNewTitle()
+                            : getSelectedCollection().getTitle());
         }
     }
 
-    protected DocumentModel getSelectedCollection() {
-        if (selectedCollection == null
-                && StringUtils.isNotBlank(selectedCollectionUid)
-                && !isCreateNewCollection()) {
-            try {
-                selectedCollection = documentManager.getDocument(new IdRef(
-                        selectedCollectionUid));
-            } catch (ClientException e) {
-                log.error("Cannot fetch collection");
+    protected static void addFacesMessage(StatusMessage.Severity severity,
+            String message, String arguments) {
+        final FacesMessages facesMessages = (FacesMessages) Component.getInstance(
+                "facesMessages", true);
+        facesMessages.add(severity, Messages.instance().get(message),
+                Messages.instance().get(arguments));
+    }
+
+    public void addCurrentSelectionToSelectedCollection()
+            throws ClientException {
+        final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
+        addToSelectedCollection(documentsListsManager.getWorkingList());
+    }
+
+    public void addToSelectedCollection(
+            final List<DocumentModel> documentListToBeAdded)
+            throws ClientException {
+        if (documentListToBeAdded != null && !documentListToBeAdded.isEmpty()) {
+            final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+            final CoreSession session = (CoreSession) Component.getInstance(
+                    "documentManager", true);
+            if (isCreateNewCollection()) {
+                collectionManager.addToNewCollection(getNewTitle(),
+                        getNewDescription(), documentListToBeAdded, session);
+            } else {
+                collectionManager.addToCollection(getSelectedCollection(),
+                        documentListToBeAdded, session);
             }
         }
-        return selectedCollection;
     }
 
-    public boolean canCurrentDocumentBeCollected() {
-        final DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
-        return collectionManager.isCollectable(currentDocument);
-    }
-
-    public boolean canAddToCollection() {
-        CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
-        boolean result = (getSelectedCollection() != null && collectionManager.isCollection(getSelectedCollection()))
+    public boolean canAddToSelectedCollection() throws ClientException {
+        final boolean result = canAddToCollection(getSelectedCollection())
                 || isCreateNewCollection();
+        return result;
+    }
+
+    public boolean canAddToCollection(DocumentModel collection)
+            throws ClientException {
+        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CoreSession session = (CoreSession) Component.getInstance(
+                "documentManager", true);
+        final boolean result = collection != null
+                && collectionManager.isCollection(collection)
+                && collectionManager.canAddToCollection(collection, session);
         return result;
     }
 
@@ -152,9 +147,123 @@ public class CollectionActionsBean implements Serializable {
         newTitle = null;
     }
 
+    public boolean canCurrentDocumentBeCollected() {
+        final NavigationContext navigationContext = (NavigationContext) Component.getInstance(
+                "navigationContext", true);
+        final DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        return collectionManager.isCollectable(currentDocument);
+    }
+
+    public boolean canAllSelectedDocumentBeCollected() {
+        final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
+        List<DocumentModel> documents = documentsListsManager.getWorkingList();
+        if (documents == null || documents.isEmpty()) {
+            return false;
+        }
+        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        for (DocumentModel doc : documents) {
+            if (!collectionManager.isCollectable(doc)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean canRemoveFromCollection() throws ClientException {
+        final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
+        final List<DocumentModel> doccumentListToBeRemoved = documentsListsManager.getWorkingList(COLLECTION_CURRENT_SELECTION);
+        if (doccumentListToBeRemoved == null
+                || doccumentListToBeRemoved.isEmpty()) {
+            return false;
+        }
+        final NavigationContext navigationContext = (NavigationContext) Component.getInstance(
+                "navigationContext", true);
+        final DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        return canAddToCollection(currentDocument);
+    }
+
+    public boolean canRemoveFromCollection(DocumentModel collection)
+            throws ClientException {
+        return canAddToCollection(collection);
+    }
+
+    public String getNewDescription() {
+        return newDescription;
+    }
+
+    public String getNewTitle() {
+        return newTitle;
+    }
+
+    protected DocumentModel getSelectedCollection() {
+        if (selectedCollection == null
+                && StringUtils.isNotBlank(selectedCollectionUid)
+                && !isCreateNewCollection()) {
+            try {
+                final CoreSession session = (CoreSession) Component.getInstance(
+                        "documentManager", true);
+                selectedCollection = session.getDocument(new IdRef(
+                        selectedCollectionUid));
+            } catch (ClientException e) {
+                log.error("Cannot fetch collection");
+            }
+        }
+        return selectedCollection;
+    }
+
+    public String getSelectedCollectionUid() {
+        return selectedCollectionUid;
+    }
+
     public boolean isCreateNewCollection() {
         return selectedCollectionUid != null
                 && selectedCollectionUid.startsWith(CollectionConstants.MAGIC_PREFIX_ID);
+    }
+
+    public void removeCurrentSelectionFromCollection() throws ClientException {
+        final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
+        final List<DocumentModel> doccumentListToBeRemoved = documentsListsManager.getWorkingList(COLLECTION_CURRENT_SELECTION);
+        final NavigationContext navigationContext = (NavigationContext) Component.getInstance(
+                "navigationContext", true);
+        final DocumentModel collection = navigationContext.getCurrentDocument();
+        removeFromCollection(collection, doccumentListToBeRemoved);
+        documentsListsManager.resetWorkingList(COLLECTION_CURRENT_SELECTION);
+    }
+
+    public void removeFromCollection(DocumentModel collection,
+            List<DocumentModel> documentListToBeRemoved) throws ClientException {
+        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CoreSession session = (CoreSession) Component.getInstance(
+                "documentManager", true);
+        collectionManager.removeAllFromCollection(collection,
+                documentListToBeRemoved, session);
+
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
+
+        addFacesMessage(StatusMessage.Severity.INFO,
+                "collection.removeCurrentSelectionFromCollection",
+                collection.getTitle());
+    }
+
+    public void setNewDescription(String newDescription) {
+        this.newDescription = newDescription;
+    }
+
+    public void setNewTitle(String newTitle) {
+        this.newTitle = newTitle;
+    }
+
+    public void setSelectedCollectionUid(final String selectedCollectionUid) {
+        this.selectedCollectionUid = selectedCollectionUid;
+        if (isCreateNewCollection()) {
+            setNewTitle(selectedCollectionUid.substring(CollectionConstants.MAGIC_PREFIX_ID.length()));
+        }
+    }
+
+    protected DocumentsListsManager getDocumentsListsManager() {
+        return (DocumentsListsManager) Component.getInstance(
+                "documentsListsManager", true);
     }
 
 }

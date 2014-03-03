@@ -68,9 +68,9 @@
     <a4j:outputPanel id="#{fancyboxFormId}_buttons" layout="block">
       <div class="buttonsGadget"></div>
       <nxh:commandButton value="#{messages['command.import']}"
-        action="#{collectionActions.addToCollection()}"
-        disabled="#{!collectionActions.canAddToCollection()}"
-        styleClass="button #{collectionActions.canAddToCollection()}" />
+        action="#{collectionActions.addCurrentDocumentToSelectedCollection()}"
+        disabled="#{!collectionActions.canAddToSelectedCollection()}"
+        styleClass="button" />
       <nxh:commandButton value="#{messages['command.cancel']}"
         immediate="true" action="#{collectionActions.cancel()}"
         styleClass="button" />

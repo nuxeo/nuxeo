@@ -41,6 +41,9 @@
           showCSVExport="true" showSyndicationLinks="true" />
       </resultLayouts>
 
+      <selectionList>COLLECTIONS_CURRENT_SELECTION</selectionList>
+      <actions category="COLLECTIONS_CURRENT_SELECTION_LIST" />
+
     </contentView>
 
     <contentView name="collection_content_contentview">
@@ -71,7 +74,6 @@
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
         <event>documentChanged</event>
-        <event>documentChildrenChanged</event>
       </refresh>
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
@@ -81,6 +83,9 @@
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showSyndicationLinks="true" />
       </resultLayouts>
+
+      <selectionList>COLLECTION_CURRENT_SELECTION</selectionList>
+      <actions category="COLLECTION_ACTION" />
 
     </contentView>
 

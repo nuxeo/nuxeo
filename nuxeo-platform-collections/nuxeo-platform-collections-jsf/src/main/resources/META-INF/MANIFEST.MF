@@ -8,7 +8,8 @@ Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/collection-actions-contrib.xml,
  OSGI-INF/collection-ui-types-contrib.xml,
  OSGI-INF/collection-contentviews-contrib.xml,
- OSGI-INF/collection-theme-contrib.xml
+ OSGI-INF/collection-theme-contrib.xml,
+ OSGI-INF/collection-documentslists-contrib.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.collections.jsf;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.nuxeo.ecm.platform.collections.core
