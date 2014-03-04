@@ -1,0 +1,14 @@
+-- character uuid to bigint migration for Oracle
+-- v0.3 2013-03-04
+-- ORA-00942: table or view does not exist
+-- ORA-04080: trigger does not exist
+-- ORA-00955: name is already used by an existing object
+-- ORA-01031: insufficient privileges
+
+CREATE OR REPLACE PROCEDURE nx_execute(stmt VARCHAR2)
+AUTHID CURRENT_USER IS
+BEGIN
+  EXECUTE IMMEDIATE stmt;
+  EXCEPTION WHEN OTHERS THEN
+    dbms_output.put_line('SQLCODE ' || SQLCODE || ' ' || stmt);
+END;

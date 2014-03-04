@@ -1,5 +1,5 @@
 -- character uuid to bigint migration for Oracle
--- v0.2 2013-02-21
+-- v0.3 2013-03-04
 
 BEGIN
   -- conversion phase
@@ -15,7 +15,7 @@ BEGIN
   -- drop foreign key constraints to HIERARCHY_PK
   FOR rec in (SELECT table_name, constraint_name FROM tmp_fk) LOOP
     dbms_output.put_line('DROP FOREIGN KEY ' || rec.constraint_name);
-    EXECUTE IMMEDIATE 'ALTER TABLE "' || rec.table_name || '" DROP CONSTRAINT "' || rec.constraint_name || '"';
+    nx_execute('ALTER TABLE "' || rec.table_name || '" DROP CONSTRAINT "' || rec.constraint_name || '"');
   END LOOP;
 
   -- find primary keys (locks has a primary key that's not a fk)
@@ -28,7 +28,7 @@ BEGIN
   -- drop primary keys
   FOR rec in (SELECT table_name, constraint_name FROM tmp_pk) LOOP
     dbms_output.put_line('DROP PRIMARY KEY ' || rec.constraint_name);
-    EXECUTE IMMEDIATE 'ALTER TABLE "' || rec.table_name || '" DROP CONSTRAINT "' || rec.constraint_name || '"';
+    nx_execute('ALTER TABLE "' || rec.table_name || '" DROP CONSTRAINT "' || rec.constraint_name || '"');
   END LOOP;
 
   -- find non-unique indexes
@@ -42,15 +42,15 @@ BEGIN
   -- drop non-unique indexes
   FOR rec in (SELECT table_name, index_name FROM tmp_idx) LOOP
     dbms_output.put_line('DROP INDEX ' || rec.index_name);
-    EXECUTE IMMEDIATE 'DROP INDEX "' || rec.index_name || '"';
+    nx_execute('DROP INDEX "' || rec.index_name || '"');
   END LOOP;
   -- drop special case indexes
-  -- EXECUTE IMMEDIATE 'DROP INDEX "ANCESTORS_HIERARCHY_ID_IDX"';
-  EXECUTE IMMEDIATE 'DROP INDEX "HIERARCHY_PARENTID_IDX"';
-  EXECUTE IMMEDIATE 'DROP INDEX "HIER_B0ED9092_IDX"';
-  EXECUTE IMMEDIATE 'DROP INDEX "PROXIES_TARGETID_IDX"';
-  EXECUTE IMMEDIATE 'DROP INDEX "PROXIES_VERSIONABLEID_IDX"';
-  EXECUTE IMMEDIATE 'DROP INDEX "VERS_E6513A3A_IDX"';
+  -- nx_execute('DROP INDEX "ANCESTORS_HIERARCHY_ID_IDX"');
+  nx_execute('DROP INDEX "HIERARCHY_PARENTID_IDX"');
+  nx_execute('DROP INDEX "HIER_B0ED9092_IDX"');
+  nx_execute('DROP INDEX "PROXIES_TARGETID_IDX"');
+  nx_execute('DROP INDEX "PROXIES_VERSIONABLEID_IDX"');
+  nx_execute('DROP INDEX "VERS_E6513A3A_IDX"');
 
   -- find fulltext indexes
   INSERT INTO tmp_ftidx
@@ -59,7 +59,7 @@ BEGIN
   -- drop fulltext indexes
   FOR rec in (SELECT index_name FROM tmp_ftidx) LOOP
     dbms_output.put_line('DROP INDEX ' || rec.index_name);
-    EXECUTE IMMEDIATE 'DROP INDEX "' || rec.index_name || '"';
+    nx_execute('DROP INDEX "' || rec.index_name || '"');
   END LOOP;
 
   -- map ids
@@ -68,106 +68,106 @@ BEGIN
   -- add new columns
   FOR rec in (SELECT DISTINCT table_name FROM tmp_fk UNION ALL SELECT 'LOCKS' FROM DUAL) LOOP
     dbms_output.put_line('ADD COLUMN _NID ON ' || rec.table_name);
-    EXECUTE IMMEDIATE 'ALTER TABLE "' || rec.table_name || '" ADD "_NID" NUMBER(10,0)';
+    nx_execute('ALTER TABLE "' || rec.table_name || '" ADD "_NID" NUMBER(10,0)');
   END LOOP;
   -- add special cases
-  EXECUTE IMMEDIATE 'ALTER TABLE hierarchy ADD "_NPARENTID" NUMBER(10,0)';
-  EXECUTE IMMEDIATE 'ALTER TABLE hierarchy ADD "_NBASEVERSIONID" NUMBER(10,0)';
-  EXECUTE IMMEDIATE 'ALTER TABLE proxies ADD "_NTARGETID" NUMBER(10,0)';
-  EXECUTE IMMEDIATE 'ALTER TABLE proxies ADD "_NVERSIONABLEID" NUMBER(10,0)';
-  EXECUTE IMMEDIATE 'ALTER TABLE versions ADD "_NVERSIONABLEID" NUMBER(10,0)';
-  EXECUTE IMMEDIATE 'ALTER TABLE relation ADD "_NSOURCE" NVARCHAR2(2000)';
-  EXECUTE IMMEDIATE 'ALTER TABLE relation ADD "_NTARGET" NVARCHAR2(2000)';
+  nx_execute('ALTER TABLE hierarchy ADD "_NPARENTID" NUMBER(10,0)');
+  nx_execute('ALTER TABLE hierarchy ADD "_NBASEVERSIONID" NUMBER(10,0)');
+  nx_execute('ALTER TABLE proxies ADD "_NTARGETID" NUMBER(10,0)');
+  nx_execute('ALTER TABLE proxies ADD "_NVERSIONABLEID" NUMBER(10,0)');
+  nx_execute('ALTER TABLE versions ADD "_NVERSIONABLEID" NUMBER(10,0)');
+  nx_execute('ALTER TABLE relation ADD "_NSOURCE" NVARCHAR2(2000)');
+  nx_execute('ALTER TABLE relation ADD "_NTARGET" NVARCHAR2(2000)');
 
   -- fill new columns
   FOR rec in (SELECT DISTINCT table_name FROM tmp_fk WHERE table_name <> 'ANCESTORS' UNION ALL SELECT 'LOCKS' FROM DUAL) LOOP
     dbms_output.put_line('MIGRATE ' || rec.table_name);
-    EXECUTE IMMEDIATE 'MERGE INTO "' || rec.table_name || '" USING nx_idmap ON ("' || rec.table_name || '".id = nx_idmap.id)'
-      || ' WHEN MATCHED THEN UPDATE SET "' || rec.table_name || '"."_NID" = nx_idmap.nid';
+    nx_execute('MERGE INTO "' || rec.table_name || '" USING nx_idmap ON ("' || rec.table_name || '".id = nx_idmap.id)'
+      || ' WHEN MATCHED THEN UPDATE SET "' || rec.table_name || '"."_NID" = nx_idmap.nid');
   END LOOP;
   -- fill special cases
-  EXECUTE IMMEDIATE 'MERGE INTO hierarchy USING nx_idmap ON (hierarchy.parentid = nx_idmap.id)'
-    || ' WHEN MATCHED THEN UPDATE SET hierarchy."_NPARENTID" = nx_idmap.nid';
-  EXECUTE IMMEDIATE 'MERGE INTO hierarchy USING nx_idmap ON (hierarchy.baseversionid = nx_idmap.id)'
-    || ' WHEN MATCHED THEN UPDATE SET hierarchy."_NBASEVERSIONID" = nx_idmap.nid';
-  -- EXECUTE IMMEDIATE 'MERGE INTO ancestors USING nx_idmap ON (ancestors.hierarchy_id = nx_idmap.id)'
-  --  || ' WHEN MATCHED THEN UPDATE SET ancestors."_NID" = nx_idmap.nid';
-  EXECUTE IMMEDIATE 'MERGE INTO proxies USING nx_idmap ON (proxies.targetid = nx_idmap.id)'
-    || ' WHEN MATCHED THEN UPDATE SET proxies."_NTARGETID" = nx_idmap.nid';
-  EXECUTE IMMEDIATE 'MERGE INTO proxies USING nx_idmap ON (proxies.versionableid = nx_idmap.id)'
-    || ' WHEN MATCHED THEN UPDATE SET proxies."_NVERSIONABLEID" = nx_idmap.nid';
-  EXECUTE IMMEDIATE 'MERGE INTO versions USING nx_idmap ON (versions.versionableid = nx_idmap.id)'
-    || ' WHEN MATCHED THEN UPDATE SET versions."_NVERSIONABLEID" = nx_idmap.nid';
+  nx_execute('MERGE INTO hierarchy USING nx_idmap ON (hierarchy.parentid = nx_idmap.id)'
+    || ' WHEN MATCHED THEN UPDATE SET hierarchy."_NPARENTID" = nx_idmap.nid');
+  nx_execute('MERGE INTO hierarchy USING nx_idmap ON (hierarchy.baseversionid = nx_idmap.id)'
+    || ' WHEN MATCHED THEN UPDATE SET hierarchy."_NBASEVERSIONID" = nx_idmap.nid');
+  -- nx_execute('MERGE INTO ancestors USING nx_idmap ON (ancestors.hierarchy_id = nx_idmap.id)'
+  --  || ' WHEN MATCHED THEN UPDATE SET ancestors."_NID" = nx_idmap.nid');
+  nx_execute('MERGE INTO proxies USING nx_idmap ON (proxies.targetid = nx_idmap.id)'
+    || ' WHEN MATCHED THEN UPDATE SET proxies."_NTARGETID" = nx_idmap.nid');
+  nx_execute('MERGE INTO proxies USING nx_idmap ON (proxies.versionableid = nx_idmap.id)'
+    || ' WHEN MATCHED THEN UPDATE SET proxies."_NVERSIONABLEID" = nx_idmap.nid');
+  nx_execute('MERGE INTO versions USING nx_idmap ON (versions.versionableid = nx_idmap.id)'
+    || ' WHEN MATCHED THEN UPDATE SET versions."_NVERSIONABLEID" = nx_idmap.nid');
   -- relations
-  EXECUTE IMMEDIATE 'MERGE INTO relation USING nx_idmap ON (relation.source = nx_idmap.id)'
-    || ' WHEN MATCHED THEN UPDATE SET relation."_NSOURCE" = nx_idmap.nid';
-  EXECUTE IMMEDIATE 'MERGE INTO relation USING nx_idmap ON (relation.target = nx_idmap.id)'
-    || ' WHEN MATCHED THEN UPDATE SET relation."_NTARGET" = nx_idmap.nid';
+  nx_execute('MERGE INTO relation USING nx_idmap ON (relation.source = nx_idmap.id)'
+    || ' WHEN MATCHED THEN UPDATE SET relation."_NSOURCE" = nx_idmap.nid');
+  nx_execute('MERGE INTO relation USING nx_idmap ON (relation.target = nx_idmap.id)'
+    || ' WHEN MATCHED THEN UPDATE SET relation."_NTARGET" = nx_idmap.nid');
 
   -- drop old id columns
   FOR rec in (SELECT DISTINCT table_name FROM tmp_fk WHERE table_name <> 'ANCESTORS' UNION ALL SELECT 'LOCKS' FROM DUAL) LOOP
     dbms_output.put_line('DROP ID ON ' || rec.table_name);
-    EXECUTE IMMEDIATE 'ALTER TABLE "' || rec.table_name || '" DROP COLUMN id';
+    nx_execute('ALTER TABLE "' || rec.table_name || '" DROP COLUMN id');
   END LOOP;
   -- special cases
-  EXECUTE IMMEDIATE 'ALTER TABLE hierarchy DROP COLUMN parentid';
-  EXECUTE IMMEDIATE 'ALTER TABLE hierarchy DROP COLUMN baseversionid';
-  -- EXECUTE IMMEDIATE 'ALTER TABLE ancestors DROP COLUMN hierarchy_id';
-  EXECUTE IMMEDIATE 'ALTER TABLE proxies DROP COLUMN targetid';
-  EXECUTE IMMEDIATE 'ALTER TABLE proxies DROP COLUMN versionableid';
-  EXECUTE IMMEDIATE 'ALTER TABLE versions DROP COLUMN versionableid';
-  EXECUTE IMMEDIATE 'ALTER TABLE relation DROP COLUMN source';
-  EXECUTE IMMEDIATE 'ALTER TABLE relation DROP COLUMN target';
+  nx_execute('ALTER TABLE hierarchy DROP COLUMN parentid');
+  nx_execute('ALTER TABLE hierarchy DROP COLUMN baseversionid');
+  -- nx_execute('ALTER TABLE ancestors DROP COLUMN hierarchy_id');
+  nx_execute('ALTER TABLE proxies DROP COLUMN targetid');
+  nx_execute('ALTER TABLE proxies DROP COLUMN versionableid');
+  nx_execute('ALTER TABLE versions DROP COLUMN versionableid');
+  nx_execute('ALTER TABLE relation DROP COLUMN source');
+  nx_execute('ALTER TABLE relation DROP COLUMN target');
 
   -- move new columns into place
   FOR rec in (SELECT DISTINCT table_name FROM tmp_fk WHERE table_name <> 'ANCESTORS' UNION ALL SELECT 'LOCKS' FROM DUAL) LOOP
     dbms_output.put_line('MOVE _NID TO ID ON ' || rec.table_name);
-    EXECUTE IMMEDIATE 'ALTER TABLE "' || rec.table_name || '" RENAME COLUMN "_NID" TO id';
+    nx_execute('ALTER TABLE "' || rec.table_name || '" RENAME COLUMN "_NID" TO id');
   END LOOP;
   -- special cases
-  EXECUTE IMMEDIATE 'ALTER TABLE hierarchy RENAME COLUMN "_NPARENTID" TO parentid';
-  EXECUTE IMMEDIATE 'ALTER TABLE hierarchy RENAME COLUMN "_NBASEVERSIONID" TO baseversionid';
-  -- EXECUTE IMMEDIATE 'ALTER TABLE ancestors RENAME COLUMN "_NID" TO hierarchy_id';
-  EXECUTE IMMEDIATE 'ALTER TABLE proxies RENAME COLUMN "_NTARGETID" TO targetid';
-  EXECUTE IMMEDIATE 'ALTER TABLE proxies RENAME COLUMN "_NVERSIONABLEID" TO versionableid';
-  EXECUTE IMMEDIATE 'ALTER TABLE versions RENAME COLUMN "_NVERSIONABLEID" TO versionableid';
-  EXECUTE IMMEDIATE 'ALTER TABLE relation RENAME COLUMN "_NSOURCE" TO source';
-  EXECUTE IMMEDIATE 'ALTER TABLE relation RENAME COLUMN "_NTARGET" TO target';
+  nx_execute('ALTER TABLE hierarchy RENAME COLUMN "_NPARENTID" TO parentid');
+  nx_execute('ALTER TABLE hierarchy RENAME COLUMN "_NBASEVERSIONID" TO baseversionid');
+  -- nx_execute('ALTER TABLE ancestors RENAME COLUMN "_NID" TO hierarchy_id');
+  nx_execute('ALTER TABLE proxies RENAME COLUMN "_NTARGETID" TO targetid');
+  nx_execute('ALTER TABLE proxies RENAME COLUMN "_NVERSIONABLEID" TO versionableid');
+  nx_execute('ALTER TABLE versions RENAME COLUMN "_NVERSIONABLEID" TO versionableid');
+  nx_execute('ALTER TABLE relation RENAME COLUMN "_NSOURCE" TO source');
+  nx_execute('ALTER TABLE relation RENAME COLUMN "_NTARGET" TO target');
 
   -- recreate primary keys
   FOR rec in (SELECT table_name, constraint_name FROM tmp_pk) LOOP
     dbms_output.put_line('CREATE PRIMARY KEY ' || rec.constraint_name);
-    EXECUTE IMMEDIATE 'ALTER TABLE "' || rec.table_name || '" ADD CONSTRAINT "' || rec.constraint_name || '" PRIMARY KEY (id)';
+    nx_execute('ALTER TABLE "' || rec.table_name || '" ADD CONSTRAINT "' || rec.constraint_name || '" PRIMARY KEY (id)');
   END LOOP;
 
   -- recreate foreign keys to HIERARCHY_PK
   FOR rec in (SELECT table_name, constraint_name FROM tmp_fk WHERE table_name <> 'HIERARCHY' AND table_name <> 'PROXIES' AND table_name <> 'ANCESTORS') LOOP
     dbms_output.put_line('CREATE FOREIGN KEY ' || rec.constraint_name);
-    EXECUTE IMMEDIATE 'ALTER TABLE "' || rec.table_name || '" ADD CONSTRAINT "' || rec.constraint_name || '" FOREIGN KEY (id) REFERENCES hierarchy(id) ON DELETE CASCADE';
+    nx_execute('ALTER TABLE "' || rec.table_name || '" ADD CONSTRAINT "' || rec.constraint_name || '" FOREIGN KEY (id) REFERENCES hierarchy(id) ON DELETE CASCADE');
   END LOOP;
   -- special cases
-  -- EXECUTE IMMEDIATE 'ALTER TABLE ancestors ADD CONSTRAINT "ANCESTORS_HIERARCHY_ID_FK" FOREIGN KEY (hierarchy_id) REFERENCES hierarchy(id) ON DELETE CASCADE';
-  EXECUTE IMMEDIATE 'ALTER TABLE hierarchy ADD CONSTRAINT "HIER_7A50B200_FK" FOREIGN KEY (parentid) REFERENCES hierarchy(id) ON DELETE CASCADE';
-  EXECUTE IMMEDIATE 'ALTER TABLE proxies ADD CONSTRAINT "PROXIES_ID_HIERARCHY_FK" FOREIGN KEY (id) REFERENCES hierarchy(id) ON DELETE CASCADE';
-  EXECUTE IMMEDIATE 'ALTER TABLE proxies ADD CONSTRAINT "PROXIES_TARGETID_HIERARCHY_FK" FOREIGN KEY (targetid) REFERENCES hierarchy(id) ON DELETE CASCADE';
+  -- nx_execute('ALTER TABLE ancestors ADD CONSTRAINT "ANCESTORS_HIERARCHY_ID_FK" FOREIGN KEY (hierarchy_id) REFERENCES hierarchy(id) ON DELETE CASCADE');
+  nx_execute('ALTER TABLE hierarchy ADD CONSTRAINT "HIER_7A50B200_FK" FOREIGN KEY (parentid) REFERENCES hierarchy(id) ON DELETE CASCADE');
+  nx_execute('ALTER TABLE proxies ADD CONSTRAINT "PROXIES_ID_HIERARCHY_FK" FOREIGN KEY (id) REFERENCES hierarchy(id) ON DELETE CASCADE');
+  nx_execute('ALTER TABLE proxies ADD CONSTRAINT "PROXIES_TARGETID_HIERARCHY_FK" FOREIGN KEY (targetid) REFERENCES hierarchy(id) ON DELETE CASCADE');
 
   -- recreate nonunique indexes
   FOR rec in (SELECT table_name, index_name FROM tmp_idx WHERE table_name <> 'FULLTEXT') LOOP
     dbms_output.put_line('CREATE INDEX ' || rec.index_name);
-    EXECUTE IMMEDIATE 'CREATE INDEX "' || rec.index_name || '" ON "' || rec.table_name || '"(id)';
+    nx_execute('CREATE INDEX "' || rec.index_name || '" ON "' || rec.table_name || '"(id)');
   END LOOP;
   -- special cases
-  -- EXECUTE IMMEDIATE 'CREATE INDEX "ANCESTORS_HIERARCHY_ID_IDX" ON  "ANCESTORS" ("HIERARCHY_ID")';
-  EXECUTE IMMEDIATE 'CREATE INDEX  "HIERARCHY_PARENTID_IDX" ON  "HIERARCHY" ("PARENTID")';
-  EXECUTE IMMEDIATE 'CREATE INDEX  "HIER_B0ED9092_IDX" ON  "HIERARCHY" ("PARENTID", "NAME")';
-  EXECUTE IMMEDIATE 'CREATE INDEX  "PROXIES_TARGETID_IDX" ON  "PROXIES" ("TARGETID")';
-  EXECUTE IMMEDIATE 'CREATE INDEX  "PROXIES_VERSIONABLEID_IDX" ON  "PROXIES" ("VERSIONABLEID")';
-  EXECUTE IMMEDIATE 'CREATE INDEX  "VERS_E6513A3A_IDX" ON  "VERSIONS" ("VERSIONABLEID")';
-  EXECUTE IMMEDIATE 'CREATE INDEX  "FULLTEXT_JOBID_ID_IDX" ON  "FULLTEXT" ("JOBID", "ID")';
+  -- nx_execute('CREATE INDEX "ANCESTORS_HIERARCHY_ID_IDX" ON  "ANCESTORS" ("HIERARCHY_ID")');
+  nx_execute('CREATE INDEX  "HIERARCHY_PARENTID_IDX" ON  "HIERARCHY" ("PARENTID")');
+  nx_execute('CREATE INDEX  "HIER_B0ED9092_IDX" ON  "HIERARCHY" ("PARENTID", "NAME")');
+  nx_execute('CREATE INDEX  "PROXIES_TARGETID_IDX" ON  "PROXIES" ("TARGETID")');
+  nx_execute('CREATE INDEX  "PROXIES_VERSIONABLEID_IDX" ON  "PROXIES" ("VERSIONABLEID")');
+  nx_execute('CREATE INDEX  "VERS_E6513A3A_IDX" ON  "VERSIONS" ("VERSIONABLEID")');
+  nx_execute('CREATE INDEX  "FULLTEXT_JOBID_ID_IDX" ON  "FULLTEXT" ("JOBID", "ID")');
 
   -- recreate fulltext indexes
   FOR rec in (SELECT create_sql FROM tmp_ftidx) LOOP
-    EXECUTE IMMEDIATE rec.create_sql;
+    nx_execute(rec.create_sql);
   END LOOP;
 
 END;
