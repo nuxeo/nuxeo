@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.collections.core.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.nuxeo.ecm.collections.core.adapter.Collection;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -31,24 +31,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.trash.TrashService;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
 /**
  * @since 5.9.3
  */
-@RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, PlatformFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.platform.userworkspace.types" })
-public class CollectionAsymchronousUpdateTest extends CollectionTestCase {
+public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
+
+    final static int MAX_CARDINALITY = 60;
 
     @Inject
     TrashService trashService;
@@ -58,7 +50,7 @@ public class CollectionAsymchronousUpdateTest extends CollectionTestCase {
 
     @Test
     public void testUpdateCollectionMemberOnCollectionRemoved() throws ClientException {
-        List<DocumentModel> files = createTestFiles(60);
+        List<DocumentModel> files = createTestFiles(MAX_CARDINALITY);
 
         collectionManager.addToNewCollection(COLLECTION_NAME,
                 COLLECTION_DESCRIPTION, files, session);
@@ -66,10 +58,13 @@ public class CollectionAsymchronousUpdateTest extends CollectionTestCase {
         final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH + "/"
                 + COLLECTION_NAME;
 
-        DocumentRef newCollectionRef = new PathRef(newlyCreatedCollectionPath);
+        final DocumentRef newCollectionRef = new PathRef(newlyCreatedCollectionPath);
+
         assertTrue(session.exists(newCollectionRef));
 
         DocumentModel newlyCreatedCollection = session.getDocument(newCollectionRef);
+
+        final String newCollectionId = newlyCreatedCollection.getId();
 
         Collection collectionAdapter = newlyCreatedCollection.getAdapter(Collection.class);
 
@@ -79,8 +74,8 @@ public class CollectionAsymchronousUpdateTest extends CollectionTestCase {
 
             CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);
 
-            assertTrue(collectionMemberAdapter.getCollections().contains(
-                    newlyCreatedCollection));
+            assertTrue(collectionMemberAdapter.getCollectionIds().contains(
+                    newCollectionId));
         }
 
         List<DocumentRef> toBePurged = new ArrayList<DocumentRef>();
@@ -90,17 +85,48 @@ public class CollectionAsymchronousUpdateTest extends CollectionTestCase {
         eventService.waitForAsyncCompletion();
 
         for (DocumentModel file : files) {
-            CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);
+            CollectionMember collectionMemberAdapter = session.getDocument(file.getRef()).getAdapter(CollectionMember.class);
 
-            assertFalse(collectionMemberAdapter.getCollections().contains(
-                    newlyCreatedCollection));
+            assertFalse(collectionMemberAdapter.getCollectionIds().contains(
+                    newCollectionId));
         }
     }
 
     @Test
-    public void testUpdateCollectionOnCollectionMemberRemoved() {
-        // TODO
+    public void testUpdateCollectionOnCollectionMemberRemoved() throws ClientException {
+        DocumentModel testWorkspace = session.createDocumentModel(
+                "/default-domain/workspaces", "testWorkspace", "Workspace");
+        testWorkspace = session.createDocument(testWorkspace);
+        DocumentModel testFile = session.createDocumentModel(
+                testWorkspace.getPathAsString(), TEST_FILE_NAME, "File");
+        testFile = session.createDocument(testFile);
+
+        final String testFileId = testFile.getId();
+
+        int nbCollection = MAX_CARDINALITY;
+        for (int i = 1; i <= nbCollection; i++) {
+            collectionManager.addToNewCollection(COLLECTION_NAME + i,
+                    COLLECTION_DESCRIPTION, testFile, session);
+        }
+
+        CollectionMember collectionMember = testFile.getAdapter(CollectionMember.class);
+
+        assertEquals(nbCollection,  collectionMember.getCollectionIds().size());
+
+        List<DocumentRef> toBePurged = new ArrayList<DocumentRef>();
+        toBePurged.add(new PathRef(testFile.getPath().toString()));
+        trashService.purgeDocuments(session, toBePurged);
+
+        eventService.waitForAsyncCompletion();
+
+        for (int i = 1; i <= nbCollection; i++) {
+            DocumentModel collectionModel = session.getDocument(new PathRef(COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME + i));
+            Collection collection = collectionModel.getAdapter(Collection.class);
+            assertFalse(collection.getCollectedDocumentIds().contains(testFileId));
+        }
+
     }
+
 
     @Test
     public void testUpdateCollectionMemberOnCollectionDuplicated() {

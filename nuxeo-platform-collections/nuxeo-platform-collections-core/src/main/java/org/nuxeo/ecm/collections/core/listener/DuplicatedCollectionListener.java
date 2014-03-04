@@ -16,10 +16,7 @@
  */
 package org.nuxeo.ecm.collections.core.listener;
 
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,18 +25,12 @@ import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -52,10 +43,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class DuplicatedCollectionListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(DuplicatedCollectionListener.class);
-
-    protected final static String QUERY = "SELECT * FROM Document WHERE collectionMember:collectionIds/* = ?";
-
-    protected static final Long MAX_RESULT = (long) 50;
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -76,76 +63,61 @@ public class DuplicatedCollectionListener implements EventListener {
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
 
         if (collectionManager.isCollection(doc)) {
-            final Repository repository = Framework.getLocalService(
-                    RepositoryManager.class).getRepository(
-                    doc.getRepositoryName());
-            final CoreSession session;
-            try {
-                session = repository.open();
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
 
-            try {
+            final CoreSession session = docCxt.getCoreSession();
 
-                new UnrestrictedSessionRunner(session) {
+            processUpdate(doc, session);
 
-                    @Override
-                    public void run() throws ClientException {
-
-                        List<DocumentModel> results = null;
-
-                        // Bash style
-                        TransactionHelper.commitOrRollbackTransaction();
-                        TransactionHelper.startTransaction();
-
-                        do {
-                            boolean succeed = false;
-
-                            try {
-                                PageProviderService pps = Framework.getLocalService(PageProviderService.class);
-                                Map<String, Serializable> props = new HashMap<String, Serializable>();
-                                props.put(
-                                        CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
-                                        (Serializable) session);
-
-                                CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
-                                desc.setPattern(QUERY);
-                                desc.getProperties().put("maxResults",
-                                        MAX_RESULT.toString());
-
-                                Object[] parameters = new Object[1];
-                                parameters[0] = doc.getId();
-
-                                results = (DocumentModelList) pps.getPageProvider(
-                                        "", desc, null, null, MAX_RESULT,
-                                        (long) 0, props, parameters).getCurrentPage();
-
-                                for (DocumentModel d : results) {
-                                    log.trace(String.format(
-                                            "Updating CollectionMember %s",
-                                            d.getTitle()));
-                                    CollectionMember collectionMember = d.getAdapter(CollectionMember.class);
-                                    collectionMember.addToCollection(doc.getId());
-                                    session.saveDocument(d);
-                                }
-                                succeed = true;
-                            } finally {
-                                if (succeed) {
-                                    TransactionHelper.commitOrRollbackTransaction();
-                                    TransactionHelper.startTransaction();
-                                }
-                            }
-                        } while (results != null && !results.isEmpty());
-
-                    }
-
-                }.runUnrestricted();
-
-            } finally {
-                Repository.close(session);
-            }
         }
+    }
+
+    private void processUpdate(final DocumentModel doc,
+            final CoreSession session) throws ClientException {
+        List<DocumentModel> results = null;
+
+        // Bash style
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        results = getNextResults(doc, session);
+
+        do {
+            boolean succeed = false;
+
+            try {
+
+                for (DocumentModel d : results) {
+                    log.trace(String.format("Updating CollectionMember %s",
+                            d.getTitle()));
+                    CollectionMember collectionMember = d.getAdapter(CollectionMember.class);
+                    collectionMember.addToCollection(doc.getId());
+                    session.saveDocument(d);
+                }
+                succeed = true;
+            } finally {
+                if (succeed) {
+                    TransactionHelper.commitOrRollbackTransaction();
+                    TransactionHelper.startTransaction();
+                    results = getNextResults(doc, session);
+                }
+            }
+        } while (results != null && !results.isEmpty());
+    }
+
+    private List<DocumentModel> getNextResults(final DocumentModel doc, CoreSession session)
+            throws ClientException {
+        List<DocumentModel> results;
+        Object[] parameters = new Object[1];
+        parameters[0] = doc.getId();
+
+        String query = NXQLQueryBuilder.getQuery(
+                CollectionAsynchrnonousQuery.QUERY_FOR_COLLECTION_DUPLICATED,
+                parameters, true, false);
+
+        results = session.query(query, null,
+                CollectionAsynchrnonousQuery.MAX_RESULT, 0,
+                CollectionAsynchrnonousQuery.MAX_RESULT);
+        return results;
     }
 
 }

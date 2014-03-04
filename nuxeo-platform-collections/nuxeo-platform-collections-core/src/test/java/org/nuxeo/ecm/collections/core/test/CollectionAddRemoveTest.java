@@ -44,7 +44,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features({ TransactionalFeature.class, PlatformFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.platform.userworkspace.types" })
+        "org.nuxeo.ecm.platform.userworkspace.types",
+        "org.nuxeo.ecm.platform.query.api"})
 public class CollectionAddRemoveTest extends CollectionTestCase {
 
     @Test
@@ -67,6 +68,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
         assertTrue(session.exists(newCollectionRef));
 
         DocumentModel newlyCreatedCollection = session.getDocument(newCollectionRef);
+        final String newlyCreatedCollectionId = newlyCreatedCollection.getId();
 
         assertEquals(COLLECTION_NAME, newlyCreatedCollection.getTitle());
 
@@ -75,19 +77,19 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
 
         Collection collectionAdapter = newlyCreatedCollection.getAdapter(Collection.class);
 
-        assertTrue(collectionAdapter.getCollectedDocuments().contains(testFile));
+        assertTrue(collectionAdapter.getCollectedDocumentIds().contains(testFile.getId()));
 
         CollectionMember collectionMemberAdapter = testFile.getAdapter(CollectionMember.class);
 
-        assertTrue(collectionMemberAdapter.getCollections().contains(
-                newlyCreatedCollection));
+        assertTrue(collectionMemberAdapter.getCollectionIds().contains(
+                newlyCreatedCollectionId));
 
         collectionManager.removeFromCollection(newlyCreatedCollection,
                 testFile, session);
 
         assertFalse(collectionAdapter.getCollectedDocuments().contains(testFile));
-        assertFalse(collectionMemberAdapter.getCollections().contains(
-                newlyCreatedCollection));
+        assertFalse(collectionMemberAdapter.getCollectionIds().contains(
+                newlyCreatedCollectionId));
     }
 
     @Test
@@ -111,6 +113,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
         assertTrue(session.exists(newCollectionRef));
 
         DocumentModel newlyCreatedCollection = session.getDocument(newCollectionRef);
+        final String newlyCreatedCollectionId = newlyCreatedCollection.getId();
 
         assertEquals(COLLECTION_NAME, newlyCreatedCollection.getTitle());
 
@@ -124,8 +127,8 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
 
             CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);
 
-            assertTrue(collectionMemberAdapter.getCollections().contains(
-                    newlyCreatedCollection));
+            assertTrue(collectionMemberAdapter.getCollectionIds().contains(
+                    newlyCreatedCollectionId));
         }
 
         collectionManager.removeAllFromCollection(newlyCreatedCollection,
@@ -138,8 +141,8 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
 
             CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);
 
-            assertFalse(collectionMemberAdapter.getCollections().contains(
-                    newlyCreatedCollection));
+            assertFalse(collectionMemberAdapter.getCollectionIds().contains(
+                    newlyCreatedCollectionId));
         }
 
     }
