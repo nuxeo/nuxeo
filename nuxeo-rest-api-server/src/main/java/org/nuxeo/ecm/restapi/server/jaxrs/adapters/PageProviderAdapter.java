@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.2
  */
 @WebAdapter(name = PageProviderAdapter.NAME, type = "PageProviderService")
-@Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
+@Produces({ "application/json+nxentity", "application/json+esentity", MediaType.APPLICATION_JSON })
 public class PageProviderAdapter extends DocumentModelListPaginableAdapter {
 
     public static final String NAME = "pp";

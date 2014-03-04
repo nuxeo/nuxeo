@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.2
  */
 @WebAdapter(name = ChildrenAdapter.NAME, type = "ChildrenService")
-@Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
+@Produces({ "application/json+nxentity", "application/json+esentity", MediaType.APPLICATION_JSON })
 public class ChildrenAdapter extends DocumentModelListPaginableAdapter {
 
     public static final String NAME = "children";

@@ -48,7 +48,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  */
 
 @WebObject(type = "Document")
-@Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
+@Produces({ "application/json+nxentity", "application/json+esentity", MediaType.APPLICATION_JSON })
 public class JSONDocumentObject extends DocumentObject {
 
     /**

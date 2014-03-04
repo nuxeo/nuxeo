@@ -55,7 +55,7 @@ import com.sun.jersey.multipart.impl.MultiPartWriter;
 public class BaseTest {
 
     static enum RequestType {
-        GET, POST, DELETE, PUT, POSTREQUEST
+        GET, POST, DELETE, PUT, POSTREQUEST, GETES
     }
 
     protected ObjectMapper mapper;
@@ -102,22 +102,24 @@ public class BaseTest {
         return getResponse(requestType, path, null, queryParams, null);
     }
 
-    protected ClientResponse getResponse(RequestType requestType, String path,
-            String data) {
+    protected ClientResponse getResponse(RequestType requestType, String path, String data) {
         return getResponse(requestType, path, data, null, null);
     }
 
     protected ClientResponse getResponse(RequestType requestType, String path,
-            String data, MultivaluedMap<String, String> queryParams,
-            MultiPart mp) {
+            String data, MultivaluedMap<String, String> queryParams, MultiPart mp) {
         WebResource wr = service.path(path);
 
         if (queryParams != null && !queryParams.isEmpty()) {
             wr = wr.queryParams(queryParams);
         }
-
-        Builder builder = wr.accept(MediaType.APPLICATION_JSON) //
-        .header("X-NXDocumentProperties", "dublincore");
+        Builder builder;
+        if (requestType == RequestType.GETES) {
+            builder = wr.accept("application/json+esentity");
+        } else {
+            builder = wr.accept(MediaType.APPLICATION_JSON).header(
+                    "X-NXDocumentProperties", "dublincore");
+        }
         if (mp != null) {
             builder = wr.type(MediaType.MULTIPART_FORM_DATA_TYPE);
         }
@@ -130,7 +132,7 @@ public class BaseTest {
 
         switch (requestType) {
         case GET:
-
+        case GETES:
             return builder.get(ClientResponse.class);
         case POST:
         case POSTREQUEST:
@@ -169,8 +171,8 @@ public class BaseTest {
      * @since 5.8
      */
     protected JsonNode getResponseAsJson(RequestType responseType, String url,
-            MultivaluedMap<String, String> queryParams)
-            throws JsonProcessingException, IOException {
+            MultivaluedMap<String, String> queryParams) throws JsonProcessingException,
+            IOException {
         ClientResponse response = getResponse(responseType, url, queryParams);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         return mapper.readTree(response.getEntityInputStream());

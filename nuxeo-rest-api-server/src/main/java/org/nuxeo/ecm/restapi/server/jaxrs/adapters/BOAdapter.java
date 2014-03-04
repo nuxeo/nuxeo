@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.2
  */
 @WebAdapter(name = BOAdapter.NAME, type = "BOService", targetType = "Document")
-@Produces({ "application/json+nxentity", "application/json" })
+@Produces({ "application/json+nxentity", "application/json+esentity", "application/json" })
 public class BOAdapter extends DefaultAdapter {
 
     public static final String NAME = "bo";
