@@ -178,6 +178,12 @@ public abstract class AbstractFileSystemItemFactory implements
     }
 
     /*--------------------------- Protected ---------------------------------*/
+    protected FileSystemItem adaptDocument(DocumentModel doc,
+            boolean forceParentItem, FolderItem parentItem)
+            throws ClientException {
+        return adaptDocument(doc, forceParentItem, parentItem, false);
+    }
+
     protected FileSystemItem getFileSystemItem(DocumentModel doc,
             boolean forceParentItem, FolderItem parentItem,
             boolean includeDeleted, boolean relaxSyncRootConstraint)
