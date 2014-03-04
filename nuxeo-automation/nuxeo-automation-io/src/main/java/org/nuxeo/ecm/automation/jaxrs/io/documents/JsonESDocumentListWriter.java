@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
@@ -39,8 +40,30 @@ import org.nuxeo.runtime.api.Framework;
 public class JsonESDocumentListWriter extends JsonDocumentListWriter {
     private static final Log log = LogFactory.getLog(JsonESDocumentListWriter.class);
 
+    public static final String HEADER_ERROR_MESSAGE = "X-NXErrorMessage";
+
+    public static final String HEADER_HAS_ERROR = "X-NXHasError";
+
+    public static final String HEADER_PAGE_SIZE = "X-NXPageSize";
+
+    public static final String HEADER_RESULTS_COUNT = "X-NXResultsCount";
+
+    public static final String HEADER_IS_LAST_PAGE_AVAILABLE = "X-NXIsLastPageAvailable";
+
+    public static final String HEADER_NUMBER_OF_PAGES = "X-NXnumberOfPages";
+
+    public static final String HEADER_CURRENT_PAGE_INDEX = "X-NXCurrentPageIndex";
+
+    public static final String DEFAULT_ES_INDEX = "nuxeo";
+
+    public static final String DEFAULT_ES_TYPE = "doc";
+
+
     @Context
     private HttpServletResponse response;
+
+    @Context
+    private HttpServletRequest request;
 
     @Override
     public void writeDocuments(OutputStream out, List<DocumentModel> docs,
@@ -50,21 +73,29 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
 
     public void writeDocs(JsonGenerator jg, List<DocumentModel> docs, String[] schemas)
             throws Exception {
+        String esIndex = request.getParameter("esIndex");
+        if (esIndex == null) {
+            esIndex = DEFAULT_ES_INDEX;
+        }
+        String esType = request.getParameter("esType");
+        if (esType == null) {
+            esType = DEFAULT_ES_TYPE;
+        }
 
         if (docs instanceof PaginableDocumentModelList) {
             PaginableDocumentModelList provider = (PaginableDocumentModelList) docs;
-            response.setHeader("X-NXCurrentPageIndex",
+            response.setHeader(HEADER_CURRENT_PAGE_INDEX,
                     Long.valueOf(provider.getCurrentPageIndex()).toString());
-            response.setHeader("X-NXnumberOfPages",
+            response.setHeader(HEADER_NUMBER_OF_PAGES,
                     Long.valueOf(provider.getNumberOfPages()).toString());
-            response.setHeader("X-NXResultsCount",
+            response.setHeader(HEADER_RESULTS_COUNT,
                     Long.valueOf(provider.getResultsCount()).toString());
-            response.setHeader("X-NXPageSize", Long.valueOf(provider.size()).toString());
-            response.setHeader("X-NXIsLastPageAvailable",
+            response.setHeader(HEADER_PAGE_SIZE, Long.valueOf(provider.size()).toString());
+            response.setHeader(HEADER_IS_LAST_PAGE_AVAILABLE,
                     Boolean.valueOf(provider.isLastPageAvailable()).toString());
-            response.setHeader("X-NXHasError", Boolean.valueOf(provider.hasError())
+            response.setHeader(HEADER_HAS_ERROR, Boolean.valueOf(provider.hasError())
                     .toString());
-            response.setHeader("X-NXErrorMessage", provider.getErrorMessage());
+            response.setHeader(HEADER_ERROR_MESSAGE, provider.getErrorMessage());
 
             DocumentViewCodecManager documentViewCodecManager = Framework
                     .getLocalService(DocumentViewCodecManager.class);
@@ -81,8 +112,8 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
                 jg.writeStartObject();
                 jg.writeObjectFieldStart("index");
                 // TODO get index and type name from request
-                jg.writeStringField("_index", "nuxeo");
-                jg.writeStringField("_type", "doc");
+                jg.writeStringField("_index", esIndex);
+                jg.writeStringField("_type", esType);
                 jg.writeStringField("_id", doc.getId());
                 jg.writeEndObject();
                 jg.writeEndObject();
@@ -103,13 +134,13 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
                 jg.writeRaw('\n');
             }
         } else {
-            response.setHeader("X-NXCurrentPageIndex", "1");
-            response.setHeader("X-NXnumberOfPages", "1");
-            response.setHeader("X-NXIsLastPageAvailable", "1");
-            response.setHeader("X-NXResultsCount", Integer.valueOf(docs.size())
+            response.setHeader(HEADER_CURRENT_PAGE_INDEX, "1");
+            response.setHeader(HEADER_NUMBER_OF_PAGES, "1");
+            response.setHeader(HEADER_IS_LAST_PAGE_AVAILABLE, "1");
+            response.setHeader(HEADER_RESULTS_COUNT, Integer.valueOf(docs.size())
                     .toString());
-            response.setHeader("X-NXPageSize", Integer.valueOf(docs.size()).toString());
-            response.setHeader("X-NXHasError", "false");
+            response.setHeader(HEADER_PAGE_SIZE, Integer.valueOf(docs.size()).toString());
+            response.setHeader(HEADER_HAS_ERROR, "false");
             for (DocumentModel doc : docs) {
                 JsonESDocumentWriter.writeESDocument(jg, doc, schemas, null);
                 jg.writeRaw('\n');
