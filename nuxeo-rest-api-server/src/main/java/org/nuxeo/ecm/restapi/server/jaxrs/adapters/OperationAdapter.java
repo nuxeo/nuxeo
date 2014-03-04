@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.2 - Web adapter that expose how to run an operation on a document
  */
 @WebAdapter(name = OperationAdapter.NAME, type = "OperationService")
-@Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
+@Produces({ "application/json+nxentity", "application/json+esentity", MediaType.APPLICATION_JSON })
 public class OperationAdapter extends DefaultAdapter {
 
     public static final String NAME = "op";

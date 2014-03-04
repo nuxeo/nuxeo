@@ -32,7 +32,7 @@ import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
  * @since 5.7.3
  */
 @WebAdapter(name = SearchAdapter.NAME, type = "SearchService")
-@Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
+@Produces({ "application/json+nxentity", "application/json+esentity", MediaType.APPLICATION_JSON })
 public class SearchAdapter extends DocumentModelListPaginableAdapter {
 
     public static final String NAME = "search";
@@ -70,6 +70,7 @@ public class SearchAdapter extends DocumentModelListPaginableAdapter {
     protected PageProviderDefinition getPageProviderDefinition() {
         String query = extractQueryFromRequest(ctx.getRequest());
         CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
+
         desc.setPattern(query);
         if (maxResults != null && !maxResults.isEmpty()
                 && !maxResults.equals("-1")) {
