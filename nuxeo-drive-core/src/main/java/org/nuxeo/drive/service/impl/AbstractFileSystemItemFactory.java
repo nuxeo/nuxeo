@@ -48,9 +48,11 @@ public abstract class AbstractFileSystemItemFactory implements
     protected String name;
 
     /*--------------------------- FileSystemItemFactory ---------------------*/
+    @Override
     public abstract void handleParameters(Map<String, String> parameters)
             throws ClientException;
 
+    @Override
     public abstract boolean isFileSystemItem(DocumentModel doc,
             boolean includeDeleted, boolean relaxSyncRootConstraint)
             throws ClientException;
@@ -74,10 +76,12 @@ public abstract class AbstractFileSystemItemFactory implements
         this.name = name;
     }
 
+    @Override
     public boolean isFileSystemItem(DocumentModel doc) throws ClientException {
         return isFileSystemItem(doc, false);
     }
 
+    @Override
     public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted)
             throws ClientException {
         return isFileSystemItem(doc, includeDeleted, false);
