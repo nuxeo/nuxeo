@@ -51,6 +51,11 @@ public class DocumentBackedFileItem extends
     protected VersioningFileSystemItemFactory factory;
 
     public DocumentBackedFileItem(VersioningFileSystemItemFactory factory,
+            DocumentModel doc) throws ClientException {
+        this(factory, doc, false);
+    }
+
+    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory,
             DocumentModel doc, boolean relaxSyncRootConstraint)
             throws ClientException {
         super(factory.getName(), doc, relaxSyncRootConstraint);
