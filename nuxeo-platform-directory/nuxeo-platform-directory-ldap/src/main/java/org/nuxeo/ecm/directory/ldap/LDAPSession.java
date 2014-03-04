@@ -73,11 +73,12 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFieldMapper;
 import org.nuxeo.ecm.directory.EntryAdaptor;
 import org.nuxeo.ecm.directory.EntrySource;
+import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Reference;
 
 /**
  * This class represents a session against an LDAPDirectory.
- *
+ * 
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
 public class LDAPSession extends BaseSession implements EntrySource {
@@ -112,9 +113,12 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     protected final String rdnField;
 
+    protected final String passwordHashAlgorithm;
+
     public LDAPSession(LDAPDirectory directory, DirContext dirContext) {
         this.directory = directory;
-        this.dirContext = LdapRetryHandler.wrap(dirContext, directory.getServer().getRetries());
+        this.dirContext = LdapRetryHandler.wrap(dirContext,
+                directory.getServer().getRetries());
         DirectoryFieldMapper fieldMapper = directory.getFieldMapper();
         idAttribute = fieldMapper.getBackendField(directory.getConfig().getIdField());
         idCase = directory.getConfig().getIdCase();
@@ -125,6 +129,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         substringMatchType = directory.getConfig().getSubstringMatchType();
         rdnAttribute = directory.getConfig().getRdnAttribute();
         rdnField = directory.getFieldMapper().getDirectoryField(rdnAttribute);
+        passwordHashAlgorithm = directory.getConfig().getPasswordHashAlgorithmField();
     }
 
     public void setSubStringMatchType(String type) {
@@ -175,8 +180,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
                         fieldId);
                 if (backendFieldId.equals(getPasswordField())) {
                     attr = new BasicAttribute(backendFieldId);
-                    attr.add(fieldMap.get(fieldId)); // TODO: encode in ssha
-                    // or md5
+                    String password = (String) fieldMap.get(fieldId);
+                    password = PasswordHelper.hashPassword(password,
+                            passwordHashAlgorithm);
+                    attr.add(password);
                     attrs.put(attr);
                 } else if (directory.isReference(fieldId)) {
                     Reference reference = directory.getReference(fieldId);
@@ -402,7 +409,6 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 String dn = ldapEntry.getNameInNamespace();
                 Attributes attrsToDel = new BasicAttributes();
                 for (String f : updateList) {
-                    // TODO: encode password
                     Object value = docModel.getProperty(schemaName, f);
                     String backendField = directory.getFieldMapper().getBackendField(
                             f);
@@ -428,6 +434,12 @@ public class LDAPSession extends BaseSession implements EntrySource {
                             attr.add(oldattrs.get(backendField).get());
                             attrsToDel.put(attr);
                         }
+                    } else if (f.equals(getPasswordField())) {
+                        // The password has been updated, it has to be encrypted
+                        Attribute attr = new BasicAttribute(backendField);
+                        attr.add(PasswordHelper.hashPassword((String) value,
+                                passwordHashAlgorithm));
+                        attrs.put(attr);
                     } else {
                         attrs.put(getAttributeValue(f, value));
                     }

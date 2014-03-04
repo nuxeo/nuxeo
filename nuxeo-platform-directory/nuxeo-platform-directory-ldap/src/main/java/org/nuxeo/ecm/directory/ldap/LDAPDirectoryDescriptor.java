@@ -97,6 +97,9 @@ public class LDAPDirectoryDescriptor {
     @XNode("passwordField")
     public String passwordField;
 
+    @XNode("passwordHashAlgorithm")
+    public String passwordHashAlgorithm;
+
     @XNodeList(value = "references/ldapReference", type = LDAPReference[].class, componentType = LDAPReference.class)
     private LDAPReference[] ldapReferences;
 
@@ -287,6 +290,10 @@ public class LDAPDirectoryDescriptor {
 
     public String getPasswordField() {
         return passwordField;
+    }
+
+    public String getPasswordHashAlgorithmField() {
+        return passwordHashAlgorithm;
     }
 
     public Map<String, String> getFieldMapping() {

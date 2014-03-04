@@ -63,7 +63,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Implementation of the Directory interface for servers implementing the
  * Lightweight Directory Access Protocol.
- *
+ * 
  * @author ogrisel
  * @author Robert Browning
  */
@@ -143,8 +143,8 @@ public class LDAPDirectory extends AbstractDirectory {
 
         log.debug(String.format(
                 "initialized LDAP directory %s with fields [%s] and references [%s]",
-                config.getName(), StringUtils.join(
-                        schemaFieldMap.keySet().toArray(), ", "),
+                config.getName(),
+                StringUtils.join(schemaFieldMap.keySet().toArray(), ", "),
                 StringUtils.join(references.keySet().toArray(), ", ")));
     }
 
@@ -159,7 +159,8 @@ public class LDAPDirectory extends AbstractDirectory {
 
         if (null == serverConfig) {
             throw new DirectoryException(
-                    "LDAP server configuration not found: " + config.getServerName());
+                    "LDAP server configuration not found: "
+                            + config.getServerName());
         }
 
         props.put(Context.INITIAL_CONTEXT_FACTORY,
@@ -224,7 +225,7 @@ public class LDAPDirectory extends AbstractDirectory {
 
     /**
      * Search controls that only fetch attributes defined by the schema
-     *
+     * 
      * @return common search controls to use for all LDAP search queries
      * @throws DirectoryException
      */
@@ -356,7 +357,6 @@ public class LDAPDirectory extends AbstractDirectory {
         return session;
     }
 
-
     public String getBaseFilter() {
         // NXP-2461: always add control on id field in base filter
         String idField = getIdField();
@@ -382,6 +382,17 @@ public class LDAPDirectory extends AbstractDirectory {
         return schemaFieldMap;
     }
 
+    /**
+     * Get the value of the field passwordHashAlgorithm
+     * 
+     * @return The value
+     * 
+     * @since 5.9.3
+     */
+    public String getPasswordHashAlgorithmField() {
+        return config.getPasswordHashAlgorithmField();
+    }
+
     public void setTestServer(ContextProvider testServer) {
         this.testServer = testServer;
     }
@@ -394,27 +405,32 @@ public class LDAPDirectory extends AbstractDirectory {
         private SSLSocketFactory factory;
 
         /**
-         * Create a new SSLSocketFactory that creates a Socket regardless of the certificate used.
+         * Create a new SSLSocketFactory that creates a Socket regardless of the
+         * certificate used.
+         * 
          * @throws SSLException if initialization fails.
          */
         public TrustingSSLSocketFactory() {
             try {
                 SSLContext sslContext = SSLContext.getInstance("TLS");
-                sslContext.init(null, new TrustManager[] { new TrustingX509TrustManager() },
+                sslContext.init(null,
+                        new TrustManager[] { new TrustingX509TrustManager() },
                         new SecureRandom());
                 factory = sslContext.getSocketFactory();
             } catch (NoSuchAlgorithmException nsae) {
-                throw new RuntimeException("Unable to initialize the SSL context:  ", nsae);
+                throw new RuntimeException(
+                        "Unable to initialize the SSL context:  ", nsae);
             } catch (KeyManagementException kme) {
-                throw new RuntimeException("Unable to register a trust manager:  ", kme);
+                throw new RuntimeException(
+                        "Unable to register a trust manager:  ", kme);
             }
         }
 
         /**
-        * TrustingSSLSocketFactoryHolder is loaded on the first execution of
-        * TrustingSSLSocketFactory.getDefault() or the first access to
-        * TrustingSSLSocketFactoryHolder.INSTANCE, not before.
-        */
+         * TrustingSSLSocketFactoryHolder is loaded on the first execution of
+         * TrustingSSLSocketFactory.getDefault() or the first access to
+         * TrustingSSLSocketFactoryHolder.INSTANCE, not before.
+         */
         private static class TrustingSSLSocketFactoryHolder {
             public static final TrustingSSLSocketFactory INSTANCE = new TrustingSSLSocketFactory();
         }
@@ -434,14 +450,14 @@ public class LDAPDirectory extends AbstractDirectory {
         }
 
         @Override
-        public Socket createSocket(Socket s, String host, int port, boolean autoClose)
-                throws IOException {
+        public Socket createSocket(Socket s, String host, int port,
+                boolean autoClose) throws IOException {
             return factory.createSocket(s, host, port, autoClose);
         }
 
         @Override
-        public Socket createSocket(String host, int port)
-                throws IOException, UnknownHostException {
+        public Socket createSocket(String host, int port) throws IOException,
+                UnknownHostException {
             return factory.createSocket(host, port);
         }
 
@@ -452,14 +468,15 @@ public class LDAPDirectory extends AbstractDirectory {
         }
 
         @Override
-        public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
-                throws IOException, UnknownHostException {
+        public Socket createSocket(String host, int port,
+                InetAddress localHost, int localPort) throws IOException,
+                UnknownHostException {
             return factory.createSocket(host, port, localHost, localPort);
         }
 
         @Override
-        public Socket createSocket(InetAddress address, int port, InetAddress localAddress, int localPort)
-                throws IOException {
+        public Socket createSocket(InetAddress address, int port,
+                InetAddress localAddress, int localPort) throws IOException {
             return factory.createSocket(address, port, localAddress, localPort);
         }
 
