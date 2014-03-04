@@ -33,7 +33,7 @@ public class DummyFolderItem extends DocumentBackedFolderItem {
 
     public DummyFolderItem(String factoryName, DocumentModel doc)
             throws ClientException {
-        super(factoryName, doc, false);
+        super(factoryName, doc);
     }
 
     public DummyFolderItem(String factoryName, FolderItem parentItem,

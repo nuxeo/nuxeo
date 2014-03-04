@@ -60,6 +60,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
     protected String docTitle;
 
     protected AbstractDocumentBackedFileSystemItem(String factoryName,
+            DocumentModel doc) throws ClientException {
+        this(factoryName, doc, false);
+    }
+
+    protected AbstractDocumentBackedFileSystemItem(String factoryName,
             DocumentModel doc, boolean relaxSyncRootConstraint)
             throws ClientException {
         this(factoryName, null, doc);

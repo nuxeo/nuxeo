@@ -51,6 +51,11 @@ public class DocumentBackedFolderItem extends
 
     protected boolean canCreateChild;
 
+    public DocumentBackedFolderItem(String factoryName, DocumentModel doc)
+            throws ClientException {
+        this(factoryName, doc, false);
+    }
+
     public DocumentBackedFolderItem(String factoryName, DocumentModel doc,
             boolean relaxSyncRootConstraint) throws ClientException {
         super(factoryName, doc, relaxSyncRootConstraint);
