@@ -396,7 +396,7 @@ public class SimpleDocumentModel implements DocumentModel {
 
     @Override
     public void setPathInfo(String parentPath, String name) {
-        throw new UnsupportedOperationException();
+        path = new Path(parentPath == null ? name : parentPath + '/' + name);
     }
 
     @Override
