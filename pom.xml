@@ -75,6 +75,30 @@
       <version>0.3.1</version>
     </dependency>
 
+<!-- dependecies for upgrading to segment.io 0.4.x
+    <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.3.1</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>4.3.1</version>
+    </dependency>
+    <dependency>
+	<groupId>joda-time</groupId>
+	<artifactId>joda-time</artifactId>
+	<version>2.1</version>
+    </dependency>
+-->
+   <!-- override Nuxeo version since GSON-1.4 does not work correctly with segment.io-->
+   <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.2.2</version>
+   </dependency>
+
   </dependencies>
 
   <build>
