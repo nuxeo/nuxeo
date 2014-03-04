@@ -58,23 +58,26 @@
     </div>
 
     <a4j:outputPanel id="#{fancyboxFormId}_buttons" layout="block">
-      <div class="buttonsGadget">
-        <c:if test="#{selection}">
-          <nxh:commandButton value="#{messages['command.import']}"
-            action="#{collectionActions.addCurrentSelectionToSelectedCollection()}"
-            disabled="#{!collectionActions.canAddToSelectedCollection()}"
+      <nxu:set var="canNotAddToSelectedCollection"
+        value="#{!collectionActions.canAddToSelectedCollection()}">
+        <div class="buttonsGadget">
+          <c:if test="#{selection}">
+            <nxh:commandButton value="#{messages['command.import']}"
+              action="#{collectionActions.addCurrentSelectionToSelectedCollection()}"
+              disabled="#{canNotAddToSelectedCollection}"
+              styleClass="button" />
+          </c:if>
+          <c:if test="#{!selection}">
+            <nxh:commandButton value="#{messages['command.import']}"
+              action="#{collectionActions.addCurrentDocumentToSelectedCollection()}"
+              disabled="#{canNotAddToSelectedCollection}"
+              styleClass="button" />
+          </c:if>
+          <nxh:commandButton value="#{messages['command.cancel']}"
+            immediate="true" action="#{collectionActions.cancel()}"
             styleClass="button" />
-        </c:if>
-        <c:if test="#{!selection}">
-          <nxh:commandButton value="#{messages['command.import']}"
-            action="#{collectionActions.addCurrentDocumentToSelectedCollection()}"
-            disabled="#{!collectionActions.canAddToSelectedCollection()}"
-            styleClass="button" />
-        </c:if>
-        <nxh:commandButton value="#{messages['command.cancel']}"
-          immediate="true" action="#{collectionActions.cancel()}"
-          styleClass="button" />
-      </div>
+        </div>
+      </nxu:set>
     </a4j:outputPanel>
   </h:form>
 
