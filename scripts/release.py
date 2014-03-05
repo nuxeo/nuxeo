@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 ##
-## (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+## (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
 ##
 ## All rights reserved. This program and the accompanying materials
 ## are made available under the terms of the GNU Lesser General Public License
 ## (LGPL) version 2.1 which accompanies this distribution, and is available at
-## http://www.gnu.org/licenses/lgpl.html
+## http://www.gnu.org/licenses/lgpl-2.1.html
 ##
 ## This library is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -350,7 +350,8 @@ class Release(object):
         if self.maintenance != "auto":
             self.repo.system_recurse("git push %s %s" % (self.repo.alias,
                                                          self.tag))
-        self.repo.system_recurse("git push --tags")
+        self.repo.system_recurse("git push %s release-%s" % (self.repo.alias,
+                                                             self.tag))
         self.repo.system_recurse("git checkout release-%s" % self.tag)
         self.repo.mvn("clean deploy", skip_tests=True,
                         profiles="release,-qa")
