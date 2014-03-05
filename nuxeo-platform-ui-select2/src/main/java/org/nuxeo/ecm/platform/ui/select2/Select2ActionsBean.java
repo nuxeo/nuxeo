@@ -422,7 +422,7 @@ public class Select2ActionsBean implements Serializable {
     }
 
     protected JSONObject getSingleDirectoryEntry(final String storedReference,
-            final String directoryName, final boolean translateLabels,
+            final String directoryName, final boolean localize,
             String keySeparator, final boolean dbl10n,
             final String labelFieldName) {
 
@@ -449,7 +449,7 @@ public class Select2ActionsBean implements Serializable {
                     dbl10n, labelFieldName, locale.getLanguage());
 
             JSONObject obj = resolveDirectoryEntry(storedReference,
-                    keySeparator, session, schema, label, translateLabels,
+                    keySeparator, session, schema, label, localize,
                     dbl10n);
 
             return obj;
@@ -679,11 +679,11 @@ public class Select2ActionsBean implements Serializable {
     }
 
     public String resolveMultipleDirectoryEntries(final Object value,
-            final String directoryName, final boolean translateLabels,
+            final String directoryName, final boolean localize,
             String keySeparator, final boolean dbl10n,
             final String labelFieldName) {
         JSONArray result = getMultipleDirectoryEntries(value, directoryName,
-                translateLabels, keySeparator, dbl10n, labelFieldName);
+                localize, keySeparator, dbl10n, labelFieldName);
         if (result != null) {
             return result.toString();
         } else {
@@ -692,11 +692,11 @@ public class Select2ActionsBean implements Serializable {
     }
 
     public List<String> resolveMultipleDirectoryEntryLabels(final Object value,
-            final String directoryName, final boolean translateLabels,
+            final String directoryName, final boolean localize,
             final String keySeparator, final boolean dbl10n,
             final String labelFieldName) {
         return formatList(getMultipleDirectoryEntries(value, directoryName,
-                translateLabels, keySeparator, dbl10n, labelFieldName));
+                localize, keySeparator, dbl10n, labelFieldName));
     }
 
     @SuppressWarnings("rawtypes")
@@ -945,11 +945,11 @@ public class Select2ActionsBean implements Serializable {
     }
 
     public String resolveSingleDirectoryEntry(final String storedReference,
-            final String directoryName, final boolean translateLabels,
+            final String directoryName, final boolean localize,
             String keySeparator, final boolean dbl10n,
             final String labelFieldName) {
         JSONObject result = getSingleDirectoryEntry(storedReference,
-                directoryName, translateLabels, keySeparator, dbl10n,
+                directoryName, localize, keySeparator, dbl10n,
                 labelFieldName);
         if (result != null) {
             return result.toString();
@@ -960,10 +960,10 @@ public class Select2ActionsBean implements Serializable {
 
     public String resolveSingleDirectoryEntryLabel(
             final String storedReference, final String directoryName,
-            final boolean translateLabels, String keySeparator,
+            final boolean localize, String keySeparator,
             final boolean dbl10n, final String labelFieldName) {
         JSONObject obj = getSingleDirectoryEntry(storedReference,
-                directoryName, translateLabels, keySeparator, dbl10n,
+                directoryName, localize, keySeparator, dbl10n,
                 labelFieldName);
         if (obj == null) {
             return "";
