@@ -25,7 +25,7 @@ public class CollectionAsynchrnonousQuery {
 
     //public final static String QUERY_FOR_COLLECTION_MEMBER_DUPLICATED = "SELECT collectionMember:collectionIds/* FROM Document WHERE ecm:mixinType = 'CollectionMember' AND ecm:isProxy = 0 AND ecm:uuid = ?";
 
-    public final static String QUERY_FOR_COLLECTION_REMOVED = "SELECT * FROM Document WHERE collectionMember:collectionIds/* = ?";
+    public final static String QUERY_FOR_COLLECTION_REMOVED = "SELECT * FROM Document WHERE ecm:mixinType = 'CollectionMember' AND ecm:isProxy = 0 AND collectionMember:collectionIds/* = ?";
 
     public final static String QUERY_FOR_COLLECTION_MEMBER_REMOVED = "SELECT * FROM Collection WHERE collection:documentIds/* = ?";
 
