@@ -40,8 +40,6 @@ import com.google.inject.Inject;
  */
 public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
 
-    final static int MAX_CARDINALITY = 60;
-
     @Inject
     TrashService trashService;
 
@@ -49,7 +47,8 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
     EventService eventService;
 
     @Test
-    public void testUpdateCollectionMemberOnCollectionRemoved() throws ClientException {
+    public void testUpdateCollectionMemberOnCollectionRemoved()
+            throws ClientException {
         List<DocumentModel> files = createTestFiles(MAX_CARDINALITY);
 
         collectionManager.addToNewCollection(COLLECTION_NAME,
@@ -58,7 +57,8 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
         final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH + "/"
                 + COLLECTION_NAME;
 
-        final DocumentRef newCollectionRef = new PathRef(newlyCreatedCollectionPath);
+        final DocumentRef newCollectionRef = new PathRef(
+                newlyCreatedCollectionPath);
 
         assertTrue(session.exists(newCollectionRef));
 
@@ -85,7 +85,8 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
         eventService.waitForAsyncCompletion();
 
         for (DocumentModel file : files) {
-            CollectionMember collectionMemberAdapter = session.getDocument(file.getRef()).getAdapter(CollectionMember.class);
+            CollectionMember collectionMemberAdapter = session.getDocument(
+                    file.getRef()).getAdapter(CollectionMember.class);
 
             assertFalse(collectionMemberAdapter.getCollectionIds().contains(
                     newCollectionId));
@@ -93,7 +94,8 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
     }
 
     @Test
-    public void testUpdateCollectionOnCollectionMemberRemoved() throws ClientException {
+    public void testUpdateCollectionOnCollectionMemberRemoved()
+            throws ClientException {
         DocumentModel testWorkspace = session.createDocumentModel(
                 "/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
@@ -111,7 +113,7 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
 
         CollectionMember collectionMember = testFile.getAdapter(CollectionMember.class);
 
-        assertEquals(nbCollection,  collectionMember.getCollectionIds().size());
+        assertEquals(nbCollection, collectionMember.getCollectionIds().size());
 
         List<DocumentRef> toBePurged = new ArrayList<DocumentRef>();
         toBePurged.add(new PathRef(testFile.getPath().toString()));
@@ -120,17 +122,13 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
         eventService.waitForAsyncCompletion();
 
         for (int i = 1; i <= nbCollection; i++) {
-            DocumentModel collectionModel = session.getDocument(new PathRef(COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME + i));
+            DocumentModel collectionModel = session.getDocument(new PathRef(
+                    COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME + i));
             Collection collection = collectionModel.getAdapter(Collection.class);
-            assertFalse(collection.getCollectedDocumentIds().contains(testFileId));
+            assertFalse(collection.getCollectedDocumentIds().contains(
+                    testFileId));
         }
 
-    }
-
-
-    @Test
-    public void testUpdateCollectionMemberOnCollectionDuplicated() {
-        // TODO
     }
 
 }

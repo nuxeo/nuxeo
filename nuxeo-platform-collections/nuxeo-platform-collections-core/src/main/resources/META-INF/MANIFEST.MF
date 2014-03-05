@@ -12,7 +12,8 @@ Nuxeo-Component: OSGI-INF/collection-core-types-contrib.xml,
  OSGI-INF/collection-adapter-contrib.xml,
  OSGI-INF/collection-security-contrib.xml,
  OSGI-INF/collection-operations-contrib.xml,
- OSGI-INF/collection-event-handlers-contrib.xml
+ OSGI-INF/collection-event-handlers-contrib.xml,
+ OSGI-INF/collection-workmanager-contrib.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.collections.core;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.nuxeo.ecm.platform.collections.api

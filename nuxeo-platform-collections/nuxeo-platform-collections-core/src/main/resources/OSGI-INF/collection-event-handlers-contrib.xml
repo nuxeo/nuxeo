@@ -1,9 +1,9 @@
 <component name="org.nuxeo.ecm.collections.listener">
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
-    <listener name="duplicatedCollectionListener" async="true" postCommit="true"
+    <listener name="duplicatedCollectionListener" async="false" postCommit="true"
       class="org.nuxeo.ecm.collections.core.listener.DuplicatedCollectionListener">
-      <event>documentDuplicated</event>
+      <event>documentCreatedByCopy</event>
     </listener>
     <listener name="removedCollectionListener" async="true" postCommit="true"
       class="org.nuxeo.ecm.collections.core.listener.RemovedCollectionListener">

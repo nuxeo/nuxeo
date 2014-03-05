@@ -53,6 +53,10 @@ public class CollectionTestCase {
     protected static final String COLLECTION_FOLDER_PATH = "/default-domain/UserWorkspaces/Administrator/"
             + CollectionConstants.DEFAULT_COLLECTIONS_NAME;
 
+    protected static final int MAX_CARDINALITY = 60;
+
+    protected static final int WORK_TIME_OUT_MS = 5000;
+
     @Inject
     CollectionManager collectionManager;
 

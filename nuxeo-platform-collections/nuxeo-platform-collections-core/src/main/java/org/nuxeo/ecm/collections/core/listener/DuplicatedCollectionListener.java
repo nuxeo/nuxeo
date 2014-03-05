@@ -21,7 +21,8 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.collections.api.CollectionManager;
-import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
+import org.nuxeo.ecm.collections.core.adapter.Collection;
+import org.nuxeo.ecm.collections.core.worker.DuplicateCollectionMemberWork;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -30,13 +31,19 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Event handler to asynchronously update the list of collection member of a
- * duplicated collection.
+ * Event handler to duplicate the collection members of a duplicated collection.
+ *
+ * The handler is synchronous because it is important to capture the collection
+ * member ids of the duplicated collection at the exact moment of duplication.
+ * We don't want to duplicate a collection member that was indeed added to the
+ * duplicated collection after the duplication.
+ *
+ * The handler will then launch asynchronous tasks to duplicate the collection
+ * members.
  *
  * @since 5.9.3
  */
@@ -53,7 +60,7 @@ public class DuplicatedCollectionListener implements EventListener {
 
         final String eventId = event.getName();
 
-        if (!eventId.equals(DocumentEventTypes.DOCUMENT_DUPLICATED)) {
+        if (!eventId.equals(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY)) {
             return;
         }
         final DocumentEventContext docCxt = (DocumentEventContext) event.getContext();
@@ -73,51 +80,24 @@ public class DuplicatedCollectionListener implements EventListener {
 
     private void processUpdate(final DocumentModel doc,
             final CoreSession session) throws ClientException {
-        List<DocumentModel> results = null;
 
-        // Bash style
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+        Collection collection = doc.getAdapter(Collection.class);
+        List<String> documentIds = collection.getCollectedDocumentIds();
 
-        results = getNextResults(doc, session);
+        int i = 0;
+        while (i < documentIds.size()) {
+            int limit = (int) (((i + CollectionAsynchrnonousQuery.MAX_RESULT) > documentIds.size()) ? documentIds.size()
+                    : (i + CollectionAsynchrnonousQuery.MAX_RESULT));
+            DuplicateCollectionMemberWork work = new DuplicateCollectionMemberWork(
+                    doc.getRepositoryName(), doc.getId(), documentIds.subList(
+                            i, limit), i);
+            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
+                    true);
 
-        do {
-            boolean succeed = false;
+            i = limit;
+        }
 
-            try {
-
-                for (DocumentModel d : results) {
-                    log.trace(String.format("Updating CollectionMember %s",
-                            d.getTitle()));
-                    CollectionMember collectionMember = d.getAdapter(CollectionMember.class);
-                    collectionMember.addToCollection(doc.getId());
-                    session.saveDocument(d);
-                }
-                succeed = true;
-            } finally {
-                if (succeed) {
-                    TransactionHelper.commitOrRollbackTransaction();
-                    TransactionHelper.startTransaction();
-                    results = getNextResults(doc, session);
-                }
-            }
-        } while (results != null && !results.isEmpty());
-    }
-
-    private List<DocumentModel> getNextResults(final DocumentModel doc, CoreSession session)
-            throws ClientException {
-        List<DocumentModel> results;
-        Object[] parameters = new Object[1];
-        parameters[0] = doc.getId();
-
-        String query = NXQLQueryBuilder.getQuery(
-                CollectionAsynchrnonousQuery.QUERY_FOR_COLLECTION_DUPLICATED,
-                parameters, true, false);
-
-        results = session.query(query, null,
-                CollectionAsynchrnonousQuery.MAX_RESULT, 0,
-                CollectionAsynchrnonousQuery.MAX_RESULT);
-        return results;
     }
 
 }
