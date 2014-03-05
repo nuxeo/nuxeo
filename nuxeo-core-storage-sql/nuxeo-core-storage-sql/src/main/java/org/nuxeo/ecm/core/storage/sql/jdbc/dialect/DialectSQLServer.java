@@ -614,8 +614,13 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public String getClusterGetInvalidations() {
-        return "DELETE I OUTPUT DELETED.[id], DELETED.[fragments], DELETED.[kind] "
-                + "FROM [cluster_invals] AS I WHERE I.[nodeid] = @@SPID";
+        return "SELECT [id], [fragments], [kind] FROM [cluster_invals]"
+                + " WHERE [nodeid] = @@SPID";
+    }
+
+    @Override
+    public String getClusterDeleteInvalidations() {
+        return "DELETE FROM [cluster_invals] WHERE [nodeid] = @@SPID";
     }
 
     @Override
