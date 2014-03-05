@@ -10,6 +10,9 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.tag.Tag;
+import org.nuxeo.ecm.platform.tag.TagService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * JSon writer that outputs a format ready to eat by elasticsearch.
@@ -23,20 +26,34 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
 
     public static void writeDoc(JsonGenerator jg, DocumentModel doc, String[] schemas,
             Map<String, String> contextParameters, HttpHeaders headers) throws Exception {
+
         jg.writeStartObject();
         jg.writeStringField("repository", doc.getRepositoryName());
-        jg.writeStringField("uid", doc.getId());
-        jg.writeStringField("path", doc.getPathAsString());
-        jg.writeStringField("type", doc.getType());
-        jg.writeStringField("state", doc.getCurrentLifeCycleState());
-        jg.writeStringField("versionLabel", doc.getVersionLabel());
-        jg.writeBooleanField("isCheckedOut", doc.isCheckedOut());
-        jg.writeStringField("title", doc.getTitle());
-        jg.writeArrayFieldStart("facets");
+        jg.writeStringField("ecm:uuid", doc.getId());
+        jg.writeStringField("ecm:name", doc.getName());
+        jg.writeStringField("ecm:title", doc.getTitle());
+        jg.writeStringField("ecm:path", doc.getPathAsString());
+        jg.writeStringField("ecm:primarytype", doc.getType());
+        jg.writeStringField("ecm:parentId", doc.getParentRef().toString());
+        jg.writeStringField("ecm:currentLifeCycleState", doc.getCurrentLifeCycleState());
+        jg.writeStringField("ecm:versionLabel", doc.getVersionLabel());
+        jg.writeBooleanField("ecm:isCheckedIn", !doc.isCheckedOut());
+        jg.writeBooleanField("ecm:isProxy", doc.isProxy());
+        jg.writeBooleanField("ecm:isVersion", doc.isVersion());
+        jg.writeArrayFieldStart("ecm:mixinType");
         for (String facet : doc.getFacets()) {
             jg.writeString(facet);
         }
         jg.writeEndArray();
+        TagService tagService = Framework.getService(TagService.class);
+        if (tagService != null) {
+            jg.writeArrayFieldStart("ecm:tag");
+            for (Tag tag : tagService.getDocumentTags(doc.getCoreSession(), doc.getId(),
+                    null)) {
+                jg.writeString(tag.getLabel());
+            }
+            jg.writeEndArray();
+        }
         jg.writeStringField("changeToken", doc.getChangeToken());
         // TODO Add acl
         jg.writeArrayFieldStart("acl");
