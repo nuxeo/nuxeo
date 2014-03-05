@@ -214,7 +214,7 @@ public class ColumnType implements Serializable {
     }
 
     protected static ColumnType fromFieldType(Type type, int maxLength) {
-        return fromFieldType(type, -1, false);
+        return fromFieldType(type, maxLength, false);
     }
 
     protected static ColumnType fromFieldType(Type type, int maxLength, boolean array) {

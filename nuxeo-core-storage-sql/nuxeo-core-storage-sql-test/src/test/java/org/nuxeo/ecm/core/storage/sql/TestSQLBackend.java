@@ -408,7 +408,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "RestrictionBig",
                 false);
-        nodea.setSimpleProperty("restrbg:bigstring", "this-is-not-short");
+        StringBuilder buf = new StringBuilder();
+        int size = 10000; // from testrestrictionbig.xsd
+        for (int i = 0; i < size - 1; i++) {
+            buf.append("x");
+        }
+        String bigstring = buf.toString();
+        nodea.setSimpleProperty("restrbg:bigstring", bigstring);
         session.save();
 
         // now read from another session
@@ -417,7 +423,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         root = session.getRootNode();
         nodea = session.getChildNode(root, "foo", false);
         String readtext = nodea.getSimpleProperty("restrbg:bigstring").getString();
-        assertEquals("this-is-not-short", readtext);
+        assertEquals(bigstring, readtext);
     }
 
     @Test
