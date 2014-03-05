@@ -103,8 +103,8 @@ public class ESDocumentsTest extends BaseTest {
         // The first node is the an index action it looks like
         // {"index":{"_index":"nuxeo","_type":"doc","_id":"c0941844-7729-431f-9d07-57c6a6580716"}}
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("myindex", node.get("index").get("_index").getTextValue());
-        assertEquals("mytype", node.get("index").get("_type").getTextValue());
+        assertEquals("myIndex", node.get("index").get("_index").getTextValue());
+        assertEquals("myType", node.get("index").get("_type").getTextValue());
     }
 
     @Test
