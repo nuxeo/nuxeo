@@ -36,11 +36,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -58,7 +55,6 @@ import com.google.inject.Inject;
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.csv", "org.nuxeo.runtime.datasource",
         "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core" })
-@RepositoryConfig(repositoryFactoryClass = PoolingRepositoryFactory.class, cleanup = Granularity.METHOD)
 @LocalDeploy("org.nuxeo.ecm.csv:test-ui-types-contrib.xml")
 public class TestCSVImport {
 
