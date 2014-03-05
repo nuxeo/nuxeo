@@ -1,0 +1,4 @@
+"username","userprofile:avatar","userprofile:birthdate","userprofile:phonenumber","userprofile:gender","userprofile:locale","myuserprofile:schoolworkinfo","myuserprofile:signature","myuserprofile:startdate","myuserprofile:skills","myuserprofile:publicprofile"
+"user1","","01/01/2011","110-220-3330","true","en_US","","","","writing|arithmetic","true"
+"user2","","02/02/2012","220-330-4440","false","fr_CA","","","","arithmetic|athletics","false"
+"user3","","03/03/2013","330-440-5550","true","fr_FR","","","","writing|arithmetic|athletics","true"

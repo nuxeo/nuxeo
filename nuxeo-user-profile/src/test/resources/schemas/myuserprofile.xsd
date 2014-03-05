@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.core/ecm/schemas/myuserprofile/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.core/ecm/schemas/myuserprofile/">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:simpleType name="list">
+      <xs:list itemType="xs:string"/>
+  </xs:simpleType>
+
+  <xs:element name="schoolworkinfo" type="xs:string" />
+  <xs:element name="signature" type="nxs:content" />
+  <xs:element name="startdate" type="xs:date" />
+  <xs:element name="skills" type="nxs:list" />
+  <xs:element name="publicprofile" type="xs:boolean" default="false" />
+</xs:schema>

@@ -24,6 +24,8 @@ import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFIL
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -31,12 +33,17 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -50,11 +57,19 @@ import com.google.common.cache.CacheBuilder;
  */
 public class UserProfileServiceImpl extends DefaultComponent implements UserProfileService {
 
+    private static final Log log = LogFactory.getLog(UserProfileServiceImpl.class);
+
     protected static final Integer CACHE_CONCURRENCY_LEVEL = 10;
 
     protected static final Integer CACHE_TIMEOUT = 10;
 
     protected static final Integer CACHE_MAXIMUM_SIZE = 1000;
+
+    public static final String CONFIG_EP = "config";
+
+    private ImporterConfig config;
+
+    private UserWorkspaceService userWorkspaceService;
 
     protected final Cache<String, String> profileUidCache = CacheBuilder.newBuilder().concurrencyLevel(
             CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
@@ -155,4 +170,62 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
         profileUidCache.invalidateAll();
     }
 
+    @Override
+    public ImporterConfig getImporterConfig() {
+        return config;
+    }
+
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        if (config == null || config.getDataFileName() == null) {
+            return;
+        }
+        boolean started = false;
+        boolean ok = false;
+        try {
+            started = !TransactionHelper.isTransactionActive() && TransactionHelper.startTransaction();
+            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+            Repository defaultRepository = repositoryManager.getDefaultRepository();
+            new UnrestrictedSessionRunner(defaultRepository.getName()) {
+                @Override
+                public void run() throws ClientException {
+                    new UserProfileImporter().doImport(session);
+                }
+            }.runUnrestricted();
+            ok = true;
+        } finally {
+            if (started) {
+                try {
+                    if (!ok) {
+                        TransactionHelper.setTransactionRollbackOnly();
+                    }
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if (CONFIG_EP.equals(extensionPoint)) {
+            if (config != null) {
+                log.warn("Overriding existing user profile importer config");
+            }
+            config = (ImporterConfig) contribution;
+        }
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor)
+            throws Exception {
+        if (CONFIG_EP.equals(extensionPoint)) {
+            if (config != null && config.equals(contribution)) {
+                config = null;
+            }
+        }
+    }
 }

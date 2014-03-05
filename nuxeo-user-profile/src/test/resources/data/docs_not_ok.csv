@@ -1,0 +1,4 @@
+"username","userprofile:avatar","userprofile:birthdate","userprofile:phonenumber","userprofile:gender","userprofile:locale","myuserprofile:schoolworkinfo","myuserprofile:signature","myuserprofile:startdate","myuserprofile:skills","myuserprofile:publicprofile"
+"user1","BadAvatar.jpg","01/01/2001","111-222-3333","false","en_US","","signature1.jpg","","reading|writing","false"
+"user2","","22/22/2222","222-333-4444","true","fr_CA","","signature2.jpg","","reading|arithmetic","true"
+"user3","","03/03/2003","333-444-5555","badboolean","fr_FR","","signature3.jpg","","reading|writing|arithmetic","true"

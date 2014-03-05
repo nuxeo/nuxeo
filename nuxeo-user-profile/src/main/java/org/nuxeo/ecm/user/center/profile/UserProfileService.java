@@ -63,4 +63,10 @@ public interface UserProfileService {
      */
     void clearCache();
 
+    /**
+     * Get the user profile XMap descriptor for the importer config
+     *
+     * @return an XMap ImportConfig descriptor
+     */
+    ImporterConfig getImporterConfig();
 }
