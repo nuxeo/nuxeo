@@ -29,8 +29,8 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy({ "org.nuxeo.ecm.automation.test", "org.nuxeo.ecm.platform.url.api",
         "org.nuxeo.ecm.platform.url.core", "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.automation.io",
-        "org.nuxeo.ecm.platform.restapi.io","org.nuxeo.ecm.platform.restapi.test",
-        "org.nuxeo.ecm.platform.restapi.server"
+        "org.nuxeo.ecm.platform.restapi.io", "org.nuxeo.ecm.platform.restapi.test",
+        "org.nuxeo.ecm.platform.restapi.server", "org.nuxeo.ecm.platform.tag"
          })
 public class RestServerFeature extends SimpleFeature {
 
