@@ -1,6 +1,12 @@
 package org.nuxeo.ecm.automation.jaxrs.io.documents;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
+
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Produces;
@@ -10,6 +16,10 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.tag.Tag;
 import org.nuxeo.ecm.platform.tag.TagService;
 import org.nuxeo.runtime.api.Framework;
@@ -55,10 +65,24 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
             jg.writeEndArray();
         }
         jg.writeStringField("changeToken", doc.getChangeToken());
-        // TODO Add acl
+        // Add a positive ACL only
+        SecurityService securityService = Framework.getService(SecurityService.class);
+        List<String> browsePermissions = new ArrayList<String>(
+                Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
+        ACP acp = doc.getACP();
+        ACL acl = acp.getACL(ACL.INHERITED_ACL);
         jg.writeArrayFieldStart("acl");
-        jg.writeString("fake");
-        jg.writeString("members");
+        for (ACE ace : acl.getACEs()) {
+            if (ace.isGranted() && browsePermissions.contains(ace.getPermission())) {
+                jg.writeString(ace.getUsername());
+            }
+            if (ace.isDenied()) {
+                if (!EVERYONE.equals(ace.getUsername())) {
+                    jg.writeString("UNSUPPORTED_DENIED_ACL");
+                }
+                break;
+            }
+        }
         jg.writeEndArray();
         // TODO Add fulltext
         jg.writeStringField("fulltext", doc.getTitle() + " " + doc.getName());
