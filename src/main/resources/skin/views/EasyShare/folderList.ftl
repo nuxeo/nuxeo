@@ -4,7 +4,9 @@
 
 <div>
   <header>
+  <!--
     <button><i class="icon-download"></i>Download</button>
+  -->
     <h2>${docFolder.name}</h2>
     <detail>Shared by <a title="email address" href="mailto:${docFolder.easysharefolder.contactEmail}">
     ${docFolder.easysharefolder.contactEmail}</a></detail>
@@ -18,7 +20,7 @@
     <#list docList as doc>
       <a class="item" title="document name" href="${docFolder.id}/${doc.id}/${doc.file.filename}">
         <span class="document">
-          <i class="icon-file"></i>${doc.title}
+          <i class="icon-file"></i>${doc.title} - ${doc.file.filename}
         </span>
         <i class="icon-download"></i>
       </a>
