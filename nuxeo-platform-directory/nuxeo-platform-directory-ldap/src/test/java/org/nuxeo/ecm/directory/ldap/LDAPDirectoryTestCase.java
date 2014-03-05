@@ -231,10 +231,17 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
      * update of an entry in the ldap.
      * 
      * @return A X509 certificate
+     * @throws CertificateException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws SignatureException
+     * @throws IllegalStateException
      * 
      * @since 5.9.3
      */
-    protected X509Certificate createCertificate(String dnNameStr) {
+    protected X509Certificate createCertificate(String dnNameStr)
+            throws NoSuchAlgorithmException, CertificateException,
+            InvalidKeyException, IllegalStateException, SignatureException {
         X509Certificate cert = null;
 
         // Parameters used to define the certificate
@@ -245,42 +252,24 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
         Date validityEndDate = new Date(System.currentTimeMillis() + 2 * 365
                 * 24 * 60 * 60 * 1000);
 
-        try {
-            // Generate the key pair
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(1024, new SecureRandom());
-            KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        // Generate the key pair
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(1024, new SecureRandom());
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
-            // Define the content of the certificate
-            X509V1CertificateGenerator certGen = new X509V1CertificateGenerator();
-            X500Principal dnName = new X500Principal(dnNameStr);
+        // Define the content of the certificate
+        X509V1CertificateGenerator certGen = new X509V1CertificateGenerator();
+        X500Principal dnName = new X500Principal(dnNameStr);
 
-            certGen.setSerialNumber(BigInteger.valueOf(System.currentTimeMillis()));
-            certGen.setSubjectDN(dnName);
-            certGen.setIssuerDN(dnName); // use the same
-            certGen.setNotBefore(validityBeginDate);
-            certGen.setNotAfter(validityEndDate);
-            certGen.setPublicKey(keyPair.getPublic());
-            certGen.setSignatureAlgorithm("SHA256WithRSA");
+        certGen.setSerialNumber(BigInteger.valueOf(System.currentTimeMillis()));
+        certGen.setSubjectDN(dnName);
+        certGen.setIssuerDN(dnName); // use the same
+        certGen.setNotBefore(validityBeginDate);
+        certGen.setNotAfter(validityEndDate);
+        certGen.setPublicKey(keyPair.getPublic());
+        certGen.setSignatureAlgorithm("SHA256WithRSA");
 
-            cert = certGen.generate(keyPair.getPrivate());
-
-        } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (CertificateException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SignatureException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        cert = certGen.generate(keyPair.getPrivate());
 
         return cert;
     }
