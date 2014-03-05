@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
-import java.io.Serializable;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -28,19 +26,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.JSONDocumentModelReader;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -72,7 +67,7 @@ public class JSONDocumentObject extends DocumentObject {
     @PUT
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
     public DocumentModel doPut(DocumentModel inputDoc) throws ClientException {
-        applyPropertyValues(inputDoc, doc);
+        JSONDocumentModelReader.applyPropertyValues(inputDoc, doc);
         CoreSession session = ctx.getCoreSession();
         doc = session.saveDocument(doc);
         session.save();
@@ -92,7 +87,7 @@ public class JSONDocumentObject extends DocumentObject {
 
         DocumentModel createdDoc = session.createDocumentModel(
                 doc.getPathAsString(), inputDoc.getName(), inputDoc.getType());
-        applyPropertyValues(inputDoc, createdDoc);
+        JSONDocumentModelReader.applyPropertyValues(inputDoc, createdDoc);
         createdDoc = session.createDocument(createdDoc);
         session.save();
         return Response.ok(createdDoc).status(Status.CREATED).build();
@@ -138,53 +133,6 @@ public class JSONDocumentObject extends DocumentObject {
             return (DocumentObject) ctx.newObject("Document", doc);
         } catch (Exception e) {
             throw WebException.wrap(e);
-        }
-    }
-
-    /**
-     * Decodes a Serializable to make it a blob.
-     *
-     * @since 5.9.1
-     */
-    private static Serializable decodeBlob(Serializable data) {
-        if (data instanceof Blob) {
-            return data;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Check that a serialized data is not null.
-     *
-     * @since 5.9.1
-     */
-    private static boolean isNotNull(Serializable data) {
-        return data != null && !"null".equals(data);
-    }
-
-    private static void applyPropertyValues(DocumentModel src, DocumentModel dst)
-            throws ClientException {
-        for (String schema : src.getSchemas()) {
-            DataModelImpl dataModel = (DataModelImpl) dst.getDataModel(schema);
-            DataModel fromDataModel = src.getDataModel(schema);
-
-            for (String field : fromDataModel.getDirtyFields()) {
-                Serializable data = (Serializable) fromDataModel.getData(field);
-                try {
-                    if (isNotNull(data)) {
-                        if (!(dataModel.getDocumentPart().get(field) instanceof BlobProperty)) {
-                            dataModel.setData(field, data);
-                        } else {
-                            dataModel.setData(field, decodeBlob(data));
-                        }
-                    }
-                } catch (PropertyNotFoundException e) {
-                    log.warn(String.format(
-                            "Trying to deserialize unexistent field : {%s}",
-                            field));
-                }
-            }
         }
     }
 
