@@ -20,7 +20,17 @@
 package org.nuxeo.ecm.directory.ldap;
 
 import java.io.File;
+import java.math.BigInteger;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.SignatureException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.naming.Context;
@@ -30,11 +40,13 @@ import javax.naming.SizeLimitExceededException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
 import org.apache.directory.server.protocol.shared.store.LdifLoadFilter;
+import org.bouncycastle.x509.X509V1CertificateGenerator;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
@@ -214,4 +226,62 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
         return ((LDAPDirectoryProxy) factory.getDirectory(name)).getDirectory();
     }
 
+    /**
+     * Method to create a X509 certificate used to test the creation and the
+     * update of an entry in the ldap.
+     * 
+     * @return A X509 certificate
+     * 
+     * @since 5.9.3
+     */
+    protected X509Certificate createCertificate(String dnNameStr) {
+        X509Certificate cert = null;
+
+        // Parameters used to define the certificate
+        // yesterday
+        Date validityBeginDate = new Date(System.currentTimeMillis() - 24 * 60
+                * 60 * 1000);
+        // in 2 years
+        Date validityEndDate = new Date(System.currentTimeMillis() + 2 * 365
+                * 24 * 60 * 60 * 1000);
+
+        try {
+            // Generate the key pair
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            keyPairGenerator.initialize(1024, new SecureRandom());
+            KeyPair keyPair = keyPairGenerator.generateKeyPair();
+
+            // Define the content of the certificate
+            X509V1CertificateGenerator certGen = new X509V1CertificateGenerator();
+            X500Principal dnName = new X500Principal(dnNameStr);
+
+            certGen.setSerialNumber(BigInteger.valueOf(System.currentTimeMillis()));
+            certGen.setSubjectDN(dnName);
+            certGen.setIssuerDN(dnName); // use the same
+            certGen.setNotBefore(validityBeginDate);
+            certGen.setNotAfter(validityEndDate);
+            certGen.setPublicKey(keyPair.getPublic());
+            certGen.setSignatureAlgorithm("SHA256WithRSA");
+
+            cert = certGen.generate(keyPair.getPrivate());
+
+        } catch (NoSuchAlgorithmException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (SignatureException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return cert;
+    }
 }
