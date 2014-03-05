@@ -122,7 +122,7 @@ public class ColumnType implements Serializable {
     public final ColumnSpec spec;
 
     public final int length;
-    
+
     public final boolean array;
 
     public ColumnType(ColumnSpec spec, int length, boolean array) {
@@ -150,7 +150,7 @@ public class ColumnType implements Serializable {
     public boolean isArray() {
         return array;
     }
-    
+
     /**
      * Checks if this column holds a Nuxeo unique id (usually UUID).
      */
@@ -216,7 +216,7 @@ public class ColumnType implements Serializable {
     protected static ColumnType fromFieldType(Type type, int maxLength) {
         return fromFieldType(type, -1, false);
     }
-    
+
     protected static ColumnType fromFieldType(Type type, int maxLength, boolean array) {
         if (type instanceof StringType) {
             if (maxLength == -1) {
