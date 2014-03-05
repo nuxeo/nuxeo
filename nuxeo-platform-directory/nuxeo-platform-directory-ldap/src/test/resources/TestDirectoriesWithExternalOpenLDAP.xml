@@ -47,6 +47,7 @@
       <schema>user</schema>
       <idField>username</idField>
       <passwordField>userPassword</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
 
       <!-- the following dn weird casing is intentional -->
       <searchBaseDn>ou=people,dc=example, DC=COM</searchBaseDn>

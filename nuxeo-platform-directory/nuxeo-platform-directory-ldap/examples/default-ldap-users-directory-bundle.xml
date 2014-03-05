@@ -52,6 +52,7 @@
       <schema>user</schema>
       <idField>username</idField>
       <passwordField>password</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
 
       <searchBaseDn>ou=people,dc=example,dc=com</searchBaseDn>
       <searchClass>person</searchClass>
