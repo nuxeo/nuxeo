@@ -12,7 +12,7 @@
 
   <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
     <nxu:inputList
-      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field_0, widgetProperty_directoryName, widget.translated, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
+      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field_0, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
       model="model" rendered="#{not empty field}">
       <h:outputText value="#{model.rowData}" />
       <h:outputText value=", "
@@ -23,7 +23,7 @@
   <c:if test="#{widget.mode == 'pdf'}">
     <nxp:html>
     <nxu:inputList
-      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field_0, widgetProperty_directoryName, , widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
+      value="#{select2Actions.resolveMultipleDirectoryEntryLabels(field_0, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}"
       model="model" rendered="#{not empty field}">
       <h:outputText value="#{model.rowData}" />
       <br />
@@ -34,7 +34,7 @@
   <c:if
     test="#{nxl:isLikeViewMode(widget.mode) or widget.mode == 'edit'}">
     <nxu:set var="helpLabel"
-      value="#{nxu:test(empty widgetProperty_helpLabel, messages['label.suggestion.help.minChars'], nxu:test(widget.translated, messages[widgetProperty_helpLabel], widgetProperty_helpLabel))}"
+      value="#{nxu:test(empty widgetProperty_helpLabel, messages['label.suggestion.help.minChars'], nxu:test(widgetProperty_localize, messages[widgetProperty_helpLabel], widgetProperty_helpLabel))}"
       cache="true">
 
       <ui:include src="/incl/select2_js.xhtml" />
@@ -46,7 +46,7 @@
           <f:converter converterId="select2Converter" />
           <f:attribute name="separator" value="#{widgetProperty_separator}" />
           <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
-            value="#{select2Actions.resolveMultipleDirectoryEntries(currentValue, widgetProperty_directoryName, widget.translated, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
+            value="#{select2Actions.resolveMultipleDirectoryEntries(currentValue, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
         </nxu:valueHolder>
 
         <c:if test="#{not empty widgetProperty_ajaxReRender}">
