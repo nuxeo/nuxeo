@@ -1,59 +1,59 @@
 #!/usr/bin/env python
-# #
-# # (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
-# #
-# # All rights reserved. This program and the accompanying materials
-# # are made available under the terms of the GNU Lesser General Public License
-# # (LGPL) version 2.1 which accompanies this distribution, and is available at
-# # http://www.gnu.org/licenses/lgpl.html
-# #
-# # This library is distributed in the hope that it will be useful,
-# # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# # Lesser General Public License for more details.
-# #
-# # Contributors:
-# #     Julien Carsique
-# #
-# # This script manages releasing of Nuxeo source code.
-# # It applies on current Git repository and its sub-repositories.
-# #
-# # Examples from Nuxeo root, checkout on master:
-# # $ ./scripts/release.py
-# # Releasing from branch:   master
-# # Current version:         5.6-SNAPSHOT
-# # Tag:                     5.6-I20120102_1741
-# # Next version:            5.6-SNAPSHOT
-# # No maintenance branch
-# #
-# # $ ./scripts/release.py -f
-# # Releasing from branch:   master
-# # Current version:         5.6-SNAPSHOT
-# # Tag:                     5.6
-# # Next version:            5.7-SNAPSHOT
-# # No maintenance branch
-# #
-# # $ ./scripts/release.py -f -m 5.6.1-SNAPSHOT
-# # Releasing from branch:   master
-# # Current version:         5.6-SNAPSHOT
-# # Tag:                     5.6
-# # Next version:            5.7-SNAPSHOT
-# # Maintenance version:     5.6.1-SNAPSHOT
-# #
-# # $ ./scripts/release.py -f -b 5.5.0
-# # Releasing from branch:   5.5.0
-# # Current version:         5.5.0-HF01-SNAPSHOT
-# # Tag:                     5.5.0-HF01
-# # Next version:            5.5.0-HF02-SNAPSHOT
-# # No maintenance branch
-# #
-# # $ ./scripts/release.py -b 5.5.0 -t sometag
-# # Releasing from branch 5.5.0
-# # Current version:      5.5.0-HF01-SNAPSHOT
-# # Tag:                  sometag
-# # Next version:         5.5.0-HF01-SNAPSHOT
-# # No maintenance branch
-# #
+##
+## (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+##
+## All rights reserved. This program and the accompanying materials
+## are made available under the terms of the GNU Lesser General Public License
+## (LGPL) version 2.1 which accompanies this distribution, and is available at
+## http://www.gnu.org/licenses/lgpl-2.1.html
+##
+## This library is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+## Lesser General Public License for more details.
+##
+## Contributors:
+##     Julien Carsique
+##
+## This script manages releasing of Nuxeo source code.
+## It applies on current Git repository and its sub-repositories.
+##
+## Examples from Nuxeo root, checkout on master:
+## $ ./scripts/release.py
+## Releasing from branch:   master
+## Current version:         5.6-SNAPSHOT
+## Tag:                     5.6-I20120102_1741
+## Next version:            5.6-SNAPSHOT
+## No maintenance branch
+##
+## $ ./scripts/release.py -f
+## Releasing from branch:   master
+## Current version:         5.6-SNAPSHOT
+## Tag:                     5.6
+## Next version:            5.7-SNAPSHOT
+## No maintenance branch
+##
+## $ ./scripts/release.py -f -m 5.6.1-SNAPSHOT
+## Releasing from branch:   master
+## Current version:         5.6-SNAPSHOT
+## Tag:                     5.6
+## Next version:            5.7-SNAPSHOT
+## Maintenance version:     5.6.1-SNAPSHOT
+##
+## $ ./scripts/release.py -f -b 5.5.0
+## Releasing from branch:   5.5.0
+## Current version:         5.5.0-HF01-SNAPSHOT
+## Tag:                     5.5.0-HF01
+## Next version:            5.5.0-HF02-SNAPSHOT
+## No maintenance branch
+##
+## $ ./scripts/release.py -b 5.5.0 -t sometag
+## Releasing from branch 5.5.0
+## Current version:      5.5.0-HF01-SNAPSHOT
+## Tag:                  sometag
+## Next version:         5.5.0-HF01-SNAPSHOT
+## No maintenance branch
+##
 from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
 from collections import namedtuple
 from datetime import datetime
@@ -503,7 +503,8 @@ class Release(object):
         if self.maintenance_version != "auto":
             self.repo.system_recurse("git push %s %s" % (self.repo.alias,
                                                          self.maintenance_branch))
-        self.repo.system_recurse("git push --tags")
+        self.repo.system_recurse("git push %s release-%s" % (self.repo.alias,
+                                                             self.tag))
         self.repo.system_recurse("git checkout release-%s" % self.tag)
         self.repo.mvn("clean deploy", skip_tests=True,
                         profiles="release,-qa" + self.profiles)
