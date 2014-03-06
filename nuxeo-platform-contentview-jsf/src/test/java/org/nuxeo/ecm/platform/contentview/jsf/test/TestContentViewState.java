@@ -23,18 +23,24 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
@@ -418,8 +424,8 @@ public class TestContentViewState extends SQLRepositoryTestCase {
     }
 
     /**
-     * Non regression test for NXP-11419, showing an issue when restoring with
-     * a search doc and a current page > 0
+     * Non regression test for NXP-11419, showing an issue when restoring with a
+     * search doc and a current page > 0
      */
     @Test
     public void testRestoreContentViewWithSearchDocAndCurrentPage()
@@ -468,6 +474,21 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         ContentView contentView = service.getContentView("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT");
         assertNotNull(contentView);
 
+        // set some blob properties on the searchDocument ( has the schema
+        // files)
+        // to check that there are ignored during serialization
+        Map<String, Serializable> file = new HashMap<String, Serializable>();
+        ArrayList<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+        // Attach one file to the list
+        File tmpFile = File.createTempFile("test", ".txt");
+        tmpFile.deleteOnExit();
+        FileUtils.writeFile(tmpFile, "Content");
+        FileBlob blob = new FileBlob(tmpFile);
+        file.put("file", blob);
+        file.put("filename", "initial_name.txt");
+        files.add(file);
+        searchDocument.setPropertyValue("files:files", files);
+
         // init provider with search doc, result columns and save
         contentView.setSearchDocumentModel(searchDocument);
         contentView.getPageProvider();
@@ -480,7 +501,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 + "\"pageSize\":2,"
                 + "\"currentPage\":0,"
                 + "\"queryParameters\":[],"
-                + "\"searchDocument\":{\"type\":\"File\",\"properties\":{\"dc:title\":\"search keywords\"}},"
+                + "\"searchDocument\":{\"type\":\"File\",\"properties\":{\"dc:title\":\"search keywords\",\"files\":[]}},"
                 + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":null," + "\"resultColumns\":[\"column_1\"]"
                 + "}";
@@ -488,7 +509,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
         assertEquals(
-                "H4sIAAAAAAAAAD2QTU%2FDMAyG%2FwryuYfBMbcpHWqlsU3dBgc0VVFqRkSaFCfRVKr%2BdxwqdnPej8dWJtDeRXTx1eBtp3oEAfLcNJvdqS338vySB1nV25Kl9q0%2BVe1xs25kdXehgEFd8Wh%2BuPtUgE5EzDuwBmJVwHdCGg%2BKmB2RAoj3SwEBFenP0uvUcxbEBHEc8u5nYzETyQ9I0WDIXqdFNNFmfyk%2BfOF489QFmGeGeYq1%2B%2FCZPf29pLepdxy%2FN5fUOmh0nXFXEJESznwJYUg2btXoE9%2FhkrX%2F2gLJUP6jPLaPcJl%2FAbtiVTcxAQAA",
+                "H4sIAAAAAAAAAD2QTU%2FDMAyG%2FwryuQfgmNuUDrXSGFO3wQFNVZR6IyJNipNoKlX%2FO84qdnPej8dWJtDeRXTx3eB1q3oEAfLYNOvtoS3f5PE1D7KqNyVL7Ud9qNr9etXI6u5CAYO64N78cve5AJ2ImLdjDcRjAT8JadwpYnZECiA%2BTwUEVKS%2FSq9Tz1kQE8RxyLtfjMVMJD8gRYMhe50W0USb%2FaX48I3j1VMXOHrmxo06z8z1FGt39lmYbi%2FpbeodN%2B%2BQJbUKGl1n3AVEpIQzH0UYko0bNfrEJ7lk7b%2B2QDKUvyuP7ROc5j9KEp18PAEAAA%3D%3D",
                 encodedJson);
     }
 

@@ -25,6 +25,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -32,6 +34,7 @@ import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 
 /**
  * Transforms a document model properties into a json object.
@@ -41,6 +44,8 @@ import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
  * @since 5.4.2
  */
 public class DocumentModelToJSON implements PropertyVisitor {
+
+    Log log = LogFactory.getLog(DocumentModelToJSON.class);
 
     private DateFormat dateFormat = new SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ssZZ");
@@ -71,7 +76,15 @@ public class DocumentModelToJSON implements PropertyVisitor {
         } else {
             value = property.getValue();
         }
-        if (property.getParent().isList()) {
+        if (property instanceof BlobProperty) {
+            log.warn("Property '"
+                    + property.getName()
+                    + "' ignored during serialization. Blob and blob related properties are not written to json object.");
+        } else if (property.getParent() instanceof BlobProperty) {
+            log.warn("Property '"
+                    + property.getName()
+                    + "' ignored during serialization. Blob and blob related properties are not written to json object.");
+        } else if (property.getParent().isList()) {
             ((JSONArray) arg).add(value);
         } else {
             try {
@@ -93,7 +106,11 @@ public class DocumentModelToJSON implements PropertyVisitor {
         } else {
             value = property.getValue();
         }
-        if (property.getParent().isList()) {
+        if (property.getParent() instanceof BlobProperty) {
+            log.warn("Property '"
+                    + property.getName()
+                    + "' ignored during serialization. Blob and blob related properties are not written to json object.");
+        } else if (property.getParent().isList()) {
             ((JSONArray) arg).add(value);
         } else {
             try {
@@ -109,11 +126,17 @@ public class DocumentModelToJSON implements PropertyVisitor {
     @Override
     public Object visit(ScalarProperty property, Object arg)
             throws PropertyException {
+        if (property.getParent() instanceof BlobProperty) {
+            log.warn("Property '"
+                    + property.getName()
+                    + "' ignored during serialization. Blob and blob related properties are not written to json object.");
+            return null;
+        }
+
         Serializable value = property.getValue();
         if (value instanceof Calendar) {
             value = dateFormat.format(((Calendar) value).getTime());
-        }
-        if (property.getParent().isList()) {
+        } else if (property.getParent().isList()) {
             ((JSONArray) arg).add(value);
         } else {
             try {
