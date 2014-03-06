@@ -45,4 +45,6 @@ public class CollectionConstants {
 
     public static final String COLLECTIONS_TYPE = "Collections";
 
+    public static final String COLLECTION_QUEUE_ID = "collections";
+
 }

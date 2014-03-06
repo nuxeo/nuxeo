@@ -16,8 +16,11 @@
  */
 package org.nuxeo.ecm.collections.core.test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
@@ -26,10 +29,14 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.trash.TrashService;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -37,12 +44,24 @@ import com.google.inject.Inject;
  * @since 5.9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, PlatformFeature.class })
+@Features({TransactionalFeature.class, PlatformFeature.class})
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.collections.core",
         "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.query.api" })
-public class CollectionTestCase {
+public class CollectionTestCase extends SimpleFeature {
+
+    @Inject
+    CollectionManager collectionManager;
+
+    @Inject
+    CoreSession session;
+
+    @Inject
+    WorkManager workManager;
+
+    @Inject
+    TrashService trashService;
 
     protected static final String TEST_FILE_NAME = "testFile";
 
@@ -57,13 +76,7 @@ public class CollectionTestCase {
 
     protected static final int WORK_TIME_OUT_MS = 5000;
 
-    @Inject
-    CollectionManager collectionManager;
-
-    @Inject
-    CoreSession session;
-
-    protected List<DocumentModel> createTestFiles(final int nbFile)
+    public static List<DocumentModel> createTestFiles(CoreSession session, final int nbFile)
             throws ClientException {
         DocumentModel testWorkspace = session.createDocumentModel(
                 "/default-domain/workspaces", "testWorkspace", "Workspace");
@@ -77,6 +90,17 @@ public class CollectionTestCase {
             result.add(testFile);
         }
         return result;
+    }
+
+    protected void awaitCollectionWorks() throws InterruptedException {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        workManager.awaitCompletion(CollectionConstants.COLLECTION_QUEUE_ID,
+                WORK_TIME_OUT_MS, TimeUnit.MILLISECONDS);
+
+        assertEquals(0, workManager.getQueueSize(
+                CollectionConstants.COLLECTION_QUEUE_ID, null));
     }
 
 }

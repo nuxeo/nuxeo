@@ -39,11 +39,11 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
 
     public static final String CATEGORY = "duplicateCollectionMember";
 
-    private static final long serialVersionUID = 4985374651436954280L;
+    protected static final long serialVersionUID = 4985374651436954280L;
 
-    private static final String TITLE = "Duplicate CollectionMember Work";
+    protected static final String TITLE = "Duplicate CollectionMember Work";
 
-    private String newCollectionId;
+    protected String newCollectionId;
 
     @Override
     public String getCategory() {

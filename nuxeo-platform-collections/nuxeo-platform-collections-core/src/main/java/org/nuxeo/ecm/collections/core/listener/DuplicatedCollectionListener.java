@@ -78,7 +78,7 @@ public class DuplicatedCollectionListener implements EventListener {
         }
     }
 
-    private void processUpdate(final DocumentModel doc,
+    protected void processUpdate(final DocumentModel doc,
             final CoreSession session) throws ClientException {
 
         Collection collection = doc.getAdapter(Collection.class);
@@ -92,8 +92,7 @@ public class DuplicatedCollectionListener implements EventListener {
                     doc.getRepositoryName(), doc.getId(), documentIds.subList(
                             i, limit), i);
             WorkManager workManager = Framework.getLocalService(WorkManager.class);
-            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
-                    true);
+            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
 
             i = limit;
         }

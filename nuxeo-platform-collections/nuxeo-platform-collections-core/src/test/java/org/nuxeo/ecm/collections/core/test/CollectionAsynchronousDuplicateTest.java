@@ -16,115 +16,84 @@
  */
 package org.nuxeo.ecm.collections.core.test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.nuxeo.ecm.collections.core.adapter.Collection;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
-import org.nuxeo.ecm.collections.core.worker.DuplicateCollectionMemberWork;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
-import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.google.inject.Inject;
 
 /**
  * @since 5.9.3
- */@TransactionalConfig(autoStart = false)
-public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
-
-    @Inject
-    WorkManager workManager;
+ */
+public class CollectionAsynchronousDuplicateTest extends CollectionTestCase  {
 
     @Test
     public void testUpdateCollectionMemberOnCollectionDuplicated()
             throws ClientException, InterruptedException {
 
-        List<DocumentModel> files = null;
+        List<DocumentModel> files = createTestFiles(session, MAX_CARDINALITY);
 
-        TransactionHelper.startTransaction();
-        try {
+        collectionManager.addToNewCollection(COLLECTION_NAME,
+                COLLECTION_DESCRIPTION, files, session);
 
-            files = createTestFiles(MAX_CARDINALITY);
+        final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH + "/"
+                + COLLECTION_NAME;
 
-            collectionManager.addToNewCollection(COLLECTION_NAME,
-                    COLLECTION_DESCRIPTION, files, session);
+        final DocumentRef newCollectionRef = new PathRef(
+                newlyCreatedCollectionPath);
 
-            final String newlyCreatedCollectionPath = COLLECTION_FOLDER_PATH
-                    + "/" + COLLECTION_NAME;
+        assertTrue(session.exists(newCollectionRef));
 
-            final DocumentRef newCollectionRef = new PathRef(
-                    newlyCreatedCollectionPath);
+        DocumentModel newlyCreatedCollection = session.getDocument(newCollectionRef);
 
-            assertTrue(session.exists(newCollectionRef));
+        final String newCollectionId = newlyCreatedCollection.getId();
 
-            DocumentModel newlyCreatedCollection = session.getDocument(newCollectionRef);
+        Collection collectionAdapter = newlyCreatedCollection.getAdapter(Collection.class);
 
-            final String newCollectionId = newlyCreatedCollection.getId();
+        for (DocumentModel file : files) {
 
-            Collection collectionAdapter = newlyCreatedCollection.getAdapter(Collection.class);
+            assertTrue(collectionAdapter.getCollectedDocuments().contains(file));
 
-            for (DocumentModel file : files) {
+            CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);
 
-                assertTrue(collectionAdapter.getCollectedDocuments().contains(
-                        file));
-
-                CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);
-
-                assertTrue(collectionMemberAdapter.getCollectionIds().contains(
-                        newCollectionId));
-            }
-
-            session.copy(newlyCreatedCollection.getRef(), new PathRef(
-                    COLLECTION_FOLDER_PATH), COLLECTION_NAME + "_BIS");
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            assertTrue(collectionMemberAdapter.getCollectionIds().contains(
+                    newCollectionId));
         }
 
-        workManager.awaitCompletion(DuplicateCollectionMemberWork.CATEGORY,
-                WORK_TIME_OUT_MS, TimeUnit.MILLISECONDS);
+        session.copy(newlyCreatedCollection.getRef(), new PathRef(
+                COLLECTION_FOLDER_PATH), COLLECTION_NAME + "_BIS");
 
-        assertEquals(0, workManager.getQueueSize(DuplicateCollectionMemberWork.CATEGORY, null));
+        awaitCollectionWorks();
 
-        TransactionHelper.startTransaction();
+        final String newlyCreatedCollectionPathBis = COLLECTION_FOLDER_PATH
+                + "/" + COLLECTION_NAME + "_BIS";
 
-        try {
-            assertEquals(0, workManager.getQueueSize(
-                    DuplicateCollectionMemberWork.CATEGORY, null));
+        final DocumentRef newCollectionRefBis = new PathRef(
+                newlyCreatedCollectionPathBis);
 
-            final String newlyCreatedCollectionPathBis = COLLECTION_FOLDER_PATH
-                    + "/" + COLLECTION_NAME + "_BIS";
+        DocumentModel newlyCreatedCollectionBis = session.getDocument(newCollectionRefBis);
 
-            final DocumentRef newCollectionRefBis = new PathRef(
-                    newlyCreatedCollectionPathBis);
+        final String newCollectionIdBis = newlyCreatedCollectionBis.getId();
 
-            DocumentModel newlyCreatedCollectionBis = session.getDocument(newCollectionRefBis);
+        Collection collectionAdapterBis = newlyCreatedCollectionBis.getAdapter(Collection.class);
 
-            final String newCollectionIdBis = newlyCreatedCollectionBis.getId();
+        for (DocumentModel file : files) {
 
-            Collection collectionAdapterBis = newlyCreatedCollectionBis.getAdapter(Collection.class);
+            assertTrue(collectionAdapterBis.getCollectedDocuments().contains(
+                    file));
 
-            for (DocumentModel file : files) {
+            CollectionMember collectionMemberAdapter = session.getDocument(
+                    file.getRef()).getAdapter(CollectionMember.class);
 
-                assertTrue(collectionAdapterBis.getCollectedDocuments().contains(
-                        file));
-
-                CollectionMember collectionMemberAdapter =  session.getDocument(
-                        file.getRef()).getAdapter(CollectionMember.class);
-
-                assertTrue(collectionMemberAdapter.getCollectionIds().contains(
-                        newCollectionIdBis));
-            }
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            assertTrue(collectionMemberAdapter.getCollectionIds().contains(
+                    newCollectionIdBis));
         }
     }
 

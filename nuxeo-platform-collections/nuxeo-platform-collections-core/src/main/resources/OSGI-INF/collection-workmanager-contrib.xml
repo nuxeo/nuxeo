@@ -2,9 +2,11 @@
 <component name="org.nuxeo.ecm.collections.workmanager" version="1.0">
 
   <extension target="org.nuxeo.ecm.core.work.service" point="queues">
-    <queue id="duplicateCollectionMember">
+    <queue id="collections">
       <maxThreads>1</maxThreads>
       <category>duplicateCollectionMember</category>
+      <category>removedCollectionMember</category>
+      <category>removedCollection</category>
     </queue>
   </extension>
 

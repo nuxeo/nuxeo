@@ -30,26 +30,17 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.trash.TrashService;
-
-import com.google.inject.Inject;
 
 /**
  * @since 5.9.3
  */
 public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
 
-    @Inject
-    TrashService trashService;
-
-    @Inject
-    EventService eventService;
-
     @Test
     public void testUpdateCollectionMemberOnCollectionRemoved()
-            throws ClientException {
-        List<DocumentModel> files = createTestFiles(MAX_CARDINALITY);
+            throws ClientException, InterruptedException {
+
+        List<DocumentModel> files = createTestFiles(session, MAX_CARDINALITY);
 
         collectionManager.addToNewCollection(COLLECTION_NAME,
                 COLLECTION_DESCRIPTION, files, session);
@@ -82,7 +73,8 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
         toBePurged.add(newCollectionRef);
         trashService.purgeDocuments(session, toBePurged);
 
-        eventService.waitForAsyncCompletion();
+        awaitCollectionWorks();
+
 
         for (DocumentModel file : files) {
             CollectionMember collectionMemberAdapter = session.getDocument(
@@ -95,7 +87,7 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
 
     @Test
     public void testUpdateCollectionOnCollectionMemberRemoved()
-            throws ClientException {
+            throws ClientException, InterruptedException {
         DocumentModel testWorkspace = session.createDocumentModel(
                 "/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
@@ -119,7 +111,7 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
         toBePurged.add(new PathRef(testFile.getPath().toString()));
         trashService.purgeDocuments(session, toBePurged);
 
-        eventService.waitForAsyncCompletion();
+        awaitCollectionWorks();
 
         for (int i = 1; i <= nbCollection; i++) {
             DocumentModel collectionModel = session.getDocument(new PathRef(
