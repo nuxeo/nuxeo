@@ -120,6 +120,7 @@
           <idField>username</idField>
           <idCase>unchanged</idCase>
           <passwordField>password</passwordField>
+          <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
           <searchBaseDn>ou=people,dc=example,dc=com</searchBaseDn>
           <searchClass>person</searchClass>
           <searchFilter>(&amp;(sn=toto*)(myCustomAttribute=somevalue))</searchFilter>
