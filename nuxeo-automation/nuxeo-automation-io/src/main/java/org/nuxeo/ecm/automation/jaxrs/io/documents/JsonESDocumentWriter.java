@@ -38,7 +38,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
             Map<String, String> contextParameters, HttpHeaders headers) throws Exception {
 
         jg.writeStartObject();
-        jg.writeStringField("repository", doc.getRepositoryName());
+        jg.writeStringField("ecm:repository", doc.getRepositoryName());
         jg.writeStringField("ecm:uuid", doc.getId());
         jg.writeStringField("ecm:name", doc.getName());
         jg.writeStringField("ecm:title", doc.getTitle());
@@ -64,7 +64,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
             }
             jg.writeEndArray();
         }
-        jg.writeStringField("changeToken", doc.getChangeToken());
+        jg.writeStringField("ecm:changeToken", doc.getChangeToken());
         // Add a positive ACL only
         SecurityService securityService = Framework.getService(SecurityService.class);
         List<String> browsePermissions = new ArrayList<String>(
@@ -84,8 +84,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
             }
         }
         jg.writeEndArray();
-        // TODO Add fulltext
-        jg.writeStringField("fulltext", doc.getTitle() + " " + doc.getName());
+        // TODO Add binary fulltext
         if (schemas == null || (schemas.length == 1 && "*".equals(schemas[0]))) {
             schemas = doc.getSchemas();
         }

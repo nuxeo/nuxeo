@@ -128,7 +128,7 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
                             + "/"
                             + documentViewCodecManager.getUrlFromDocumentView(codecName,
                                     docView, false, null);
-                    contextParameters.put("documentURL", documentURL);
+                    contextParameters.put("ecm:documentUrl", documentURL);
                 }
                 JsonESDocumentWriter.writeESDocument(jg, doc, schemas, contextParameters);
                 jg.writeRaw('\n');
