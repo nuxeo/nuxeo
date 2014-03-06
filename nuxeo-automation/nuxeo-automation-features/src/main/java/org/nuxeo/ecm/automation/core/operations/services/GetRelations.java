@@ -11,8 +11,7 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
-import java.io.Serializable;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -120,9 +119,8 @@ public class GetRelations {
     protected DocumentModel getDocumentModel(Node node) throws ClientException {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) node;
-            Map<String, Serializable> context = new HashMap<String, Serializable>();
-            context.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY,
-                    session.getSessionId());
+            Map<String, Object> context = Collections.<String, Object> singletonMap(
+                    ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
             Object o = relations.getResourceRepresentation(
                     resource.getNamespace(), resource, context);
             if (o instanceof DocumentModel) {

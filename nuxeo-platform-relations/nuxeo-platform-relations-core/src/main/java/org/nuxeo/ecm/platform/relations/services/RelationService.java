@@ -371,7 +371,7 @@ public class RelationService extends DefaultComponent implements
 
     @Override
     public Resource getResource(String namespace, Serializable object,
-            Map<String, Serializable> context) throws ClientException {
+            Map<String, Object> context) throws ClientException {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {
             log.error("Cannot find adapter for namespace: " + namespace);
@@ -383,7 +383,7 @@ public class RelationService extends DefaultComponent implements
 
     @Override
     public Set<Resource> getAllResources(Serializable object,
-            Map<String, Serializable> context) throws ClientException {
+            Map<String, Object> context) throws ClientException {
         // TODO OPTIM implement reverse map in registerContribution
         Set<Resource> res = new HashSet<Resource>();
         for (String ns : resourceAdapterRegistry.keySet()) {
@@ -404,7 +404,7 @@ public class RelationService extends DefaultComponent implements
 
     @Override
     public Serializable getResourceRepresentation(String namespace,
-            Resource resource, Map<String, Serializable> context)
+            Resource resource, Map<String, Object> context)
             throws ClientException {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {

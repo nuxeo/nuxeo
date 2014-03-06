@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.relations.api.util;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -75,13 +77,12 @@ public class RelationHelper {
     /**
      * Returns the document model corresponding to a relation node.
      */
-    public static DocumentModel getDocumentModel(Node node, String coreSessionId)
+    public static DocumentModel getDocumentModel(Node node, CoreSession session)
             throws ClientException {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) node;
-            Map<String, Serializable> context = new HashMap<String, Serializable>();
-            context.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY,
-                    coreSessionId);
+            Map<String, Object> context = Collections.<String, Object> singletonMap(
+                    ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
             Object o = getRelationManager().getResourceRepresentation(
                     resource.getNamespace(), resource, context);
             if (o instanceof DocumentModel) {
@@ -92,12 +93,13 @@ public class RelationHelper {
     }
 
     public static DocumentModelList getSubjectDocuments(Resource predicat,
-            String stringObject, String sessionId) {
-        return getSubjectDocuments(RelationConstants.GRAPH_NAME, predicat, stringObject, sessionId);
+            String stringObject, CoreSession session) {
+        return getSubjectDocuments(RelationConstants.GRAPH_NAME, predicat,
+                stringObject, session);
     }
 
     public static DocumentModelList getSubjectDocuments(String graphName, Resource predicat,
-            String stringObject, String sessionId) {
+            String stringObject, CoreSession session) {
         try {
             Literal literal = new LiteralImpl(stringObject);
             List<Statement> stmts = getRelationManager().getGraphByName(
@@ -106,7 +108,7 @@ public class RelationHelper {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
                     DocumentModel d = getDocumentModel(stmt.getSubject(),
-                            sessionId);
+                            session);
                     if (d != null) {
                         docs.add(d);
                     }
@@ -134,7 +136,7 @@ public class RelationHelper {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
                     DocumentModel d = getDocumentModel(stmt.getSubject(),
-                            objectDocument.getSessionId());
+                            objectDocument.getCoreSession());
                     if (d != null) {
                         docs.add(d);
                     }
@@ -162,7 +164,7 @@ public class RelationHelper {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
                     DocumentModel d = getDocumentModel(stmt.getObject(),
-                            objectDocument.getSessionId());
+                            objectDocument.getCoreSession());
                     if (d != null) {
                         docs.add(d);
                     }
@@ -188,7 +190,7 @@ public class RelationHelper {
                 DocumentModelList docs = new DocumentModelListImpl();
                 for (Statement stmt : stmts) {
                     DocumentModel d = getDocumentModel(stmt.getObject(),
-                            subjectDoc.getSessionId());
+                            subjectDoc.getCoreSession());
                     if (d != null) {
                         docs.add(d);
                     }

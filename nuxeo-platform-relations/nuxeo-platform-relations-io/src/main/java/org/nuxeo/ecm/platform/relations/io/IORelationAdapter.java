@@ -300,9 +300,8 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             for (DocumentRef docRef : sources) {
                 try {
                     DocumentModel doc = session.getDocument(docRef);
-                    Map<String, Serializable> context = new HashMap<String, Serializable>();
-                    context.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY,
-                            session.getSessionId());
+                    Map<String, Object> context = Collections.<String, Object> singletonMap(
+                            ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
                     Set<Resource> resources = relManager.getAllResources(doc,
                             context);
                     docResources.put(docRef, resources);
@@ -515,9 +514,8 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
                         continue;
                     }
                     QNameResource qnameRes = (QNameResource) resource;
-                    Map<String, Serializable> context = new HashMap<String, Serializable>();
-                    context.put(ResourceAdapter.CORE_SESSION_ID_CONTEXT_KEY,
-                            session.getSessionId());
+                    Map<String, Object> context = Collections.<String, Object> singletonMap(
+                            ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
                     Resource newResource = relManager.getResource(
                             qnameRes.getNamespace(), newDoc, context);
                     Statement newStatement;

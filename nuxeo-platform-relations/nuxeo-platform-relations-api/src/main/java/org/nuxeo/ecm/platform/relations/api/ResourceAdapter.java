@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface ResourceAdapter {
 
-    String CORE_SESSION_ID_CONTEXT_KEY = "CoreSession";
+    String CORE_SESSION_CONTEXT_KEY = "CoreSession";
 
     String getNamespace();
 
@@ -47,7 +47,7 @@ public interface ResourceAdapter {
      * @param context a context map
      * @return the resource
      */
-    Resource getResource(Serializable object, Map<String, Serializable> context);
+    Resource getResource(Serializable object, Map<String, Object> context);
 
     /**
      * Resolves the resource to an applicative representation, for instance a
@@ -59,7 +59,7 @@ public interface ResourceAdapter {
      * @return the representation
      */
     Serializable getResourceRepresentation(Resource resource,
-            Map<String, Serializable> context);
+            Map<String, Object> context);
 
     /**
      * @return the class being adapted

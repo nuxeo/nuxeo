@@ -33,25 +33,30 @@ public abstract class AbstractResourceAdapter implements ResourceAdapter {
 
     protected String namespace;
 
+    @Override
     public String getNamespace() {
         return namespace;
     }
 
+    @Override
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
 
+    @Override
     public Class<?> getKlass() {
         return null;
     }
 
+    @Override
     public Resource getResource(Serializable object,
-            Map<String, Serializable> context) {
+            Map<String, Object> context) {
         return null;
     }
 
+    @Override
     public Serializable getResourceRepresentation(Resource resource,
-            Map<String, Serializable> context) {
+            Map<String, Object> context) {
         return null;
     }
 

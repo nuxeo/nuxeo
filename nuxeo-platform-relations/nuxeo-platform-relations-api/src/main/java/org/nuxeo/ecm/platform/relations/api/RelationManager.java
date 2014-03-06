@@ -79,7 +79,7 @@ public interface RelationManager extends Serializable {
      * @throws ClientException
      */
     Resource getResource(String namespace, Serializable object,
-            Map<String, Serializable> context) throws ClientException;
+            Map<String, Object> context) throws ClientException;
 
     /**
      * Computes all resources corresponding to the given object.
@@ -92,7 +92,7 @@ public interface RelationManager extends Serializable {
      * @throws ClientException
      */
     Set<Resource> getAllResources(Serializable object,
-            Map<String, Serializable> context) throws ClientException;
+            Map<String, Object> context) throws ClientException;
 
     /**
      * Gets an object representing this resource given a namespace.
@@ -104,7 +104,7 @@ public interface RelationManager extends Serializable {
      * @throws ClientException
      */
     Serializable getResourceRepresentation(String namespace, Resource resource,
-            Map<String, Serializable> context) throws ClientException;
+            Map<String, Object> context) throws ClientException;
 
     /**
      * Gets the list containing the graph names.

@@ -31,7 +31,7 @@ public class DummyResourceAdapter extends AbstractResourceAdapter {
 
     @Override
     public Serializable getResourceRepresentation(Resource resource,
-            Map<String, Serializable> context) {
+            Map<String, Object> context) {
         if (resource.isQNameResource()) {
             return new DummyResourceLike(
                     ((QNameResource) resource).getLocalName());
@@ -42,7 +42,7 @@ public class DummyResourceAdapter extends AbstractResourceAdapter {
 
     @Override
     public Resource getResource(Serializable object,
-            Map<String, Serializable> context) {
+            Map<String, Object> context) {
         DummyResourceLike resourceLike = (DummyResourceLike) object;
         return new QNameResourceImpl(namespace, resourceLike.getId());
     }
