@@ -19,6 +19,13 @@
 
 package org.nuxeo.ecm.directory.sql;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -28,11 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
 import org.junit.Ignore;
-
-import static org.junit.Assert.*;
-
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
@@ -40,19 +44,20 @@ import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
+ * 
  */
 public class TestSQLDirectory extends SQLDirectoryTestCase {
 
     private static final String SCHEMA = "user";
 
-    public static Calendar getCalendar(int year, int month, int day,
-            int hours, int minutes, int seconds, int milliseconds) {
+    public static Calendar getCalendar(int year, int month, int day, int hours,
+            int minutes, int seconds, int milliseconds) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, year);
         cal.set(Calendar.MONTH, month - 1); // 0-based

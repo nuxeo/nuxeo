@@ -14,7 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.directory.sql;
+package org.nuxeo.ecm.directory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

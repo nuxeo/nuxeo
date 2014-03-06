@@ -63,6 +63,7 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
+import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.directory.sql.filter.SQLComplexFilter;
@@ -884,8 +885,9 @@ public class SQLSession extends BaseSession implements EntrySource {
             String query = select.getStatement();
             if (limit > 0) {
                 if (!dialect.supportsPaging()) {
-                    throw new UnsupportedOperationException("Trying to use paging with an unsupported dialect: " +
-                            dialect.getClass().getName());
+                    throw new UnsupportedOperationException(
+                            "Trying to use paging with an unsupported dialect: "
+                                    + dialect.getClass().getName());
                 }
 
                 if (offset < 0) {
@@ -959,7 +961,8 @@ public class SQLSession extends BaseSession implements EntrySource {
             Object value = filterMap.get(column.getKey());
 
             if (value instanceof SQLComplexFilter) {
-                index = ((SQLComplexFilter) value).setFieldValue(ps, index, column);
+                index = ((SQLComplexFilter) value).setFieldValue(ps, index,
+                        column);
             } else {
                 setFieldValue(ps, index, column, value);
                 index++;
@@ -1055,15 +1058,18 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     /**
      * Enable connection status checking on SQL directory connections
+     * 
      * @since 5.7.2
      */
     public boolean isLive() throws DirectoryException {
         try {
             return !sqlConnection.isClosed();
         } catch (SQLException e) {
-            throw new DirectoryException("Cannot check connection status of " + this, e);
+            throw new DirectoryException("Cannot check connection status of "
+                    + this, e);
         }
     }
+
     @Override
     public List<String> getProjection(Map<String, Serializable> filter,
             Set<String> fulltext, String columnName) throws ClientException {
@@ -1169,7 +1175,7 @@ public class SQLSession extends BaseSession implements EntrySource {
      * Public getter to allow custom {@link Reference} implementation to access
      * the current connection even if it lives in a separate java package,
      * typically: com.company.custom.nuxeo.project.MyCustomReference
-     *
+     * 
      * @return the current {@link Connection} instance
      */
     public Connection getSqlConnection() {
@@ -1192,9 +1198,10 @@ public class SQLSession extends BaseSession implements EntrySource {
         return principal != null ? principal.getTenantId() : null;
     }
 
-	@Override
-	public String toString() {
-		return "SQLSession [directory=" + directory.getName() + ", sid=" + sid + "]";
-	}
+    @Override
+    public String toString() {
+        return "SQLSession [directory=" + directory.getName() + ", sid=" + sid
+                + "]";
+    }
 
 }
