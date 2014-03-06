@@ -31,13 +31,14 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Given a File document holding a pdf on the file:content property and 2 pdfs
  * on the files:files property, the following operation will provide a pdf that
  * is the result of the merge of all the pdfs, with the content of the one in
  * file:content property first.
- * 
+ *
  * @since 5.8
  */
 @Operation(id = ConcatenatePDFs.ID, category = Constants.CAT_CONVERSION, label = "Concatenate PDFs", description = "Given a File document holding a pdf on the file:content property and 2 pdfs on the files:files property, the following operation will provide a pdf that is the result of the merge of all the pdfs, with the content of the one in file:content property first.")
@@ -87,6 +88,7 @@ public class ConcatenatePDFs {
         ut.setDestinationFileName(tempFile.getAbsolutePath());
         ut.mergeDocuments();
         FileBlob fb = new FileBlob(tempFile);
+        Framework.trackFile(tempFile, fb);
         fb.setFilename(filename);
         return fb;
     }
