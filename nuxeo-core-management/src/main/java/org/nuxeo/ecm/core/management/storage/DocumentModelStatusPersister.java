@@ -23,6 +23,8 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 
 /**
  * Used to control the server administrative status: the status of the server
@@ -239,8 +241,15 @@ public class DocumentModelStatusPersister implements
             fetcher.runUnrestricted();
             return fetcher.statuses;
         } catch (ClientException e) {
-            log.error("Error while fetching all service status for instance "
-                    + instanceId, e);
+            OSGiRuntimeService runtime = (OSGiRuntimeService) Framework.getRuntime();
+            String message = "Error while fetching all service status for instance "
+                    + instanceId;
+            if (!runtime.isShuttingDown()) {
+                log.error(
+                        message, e);
+            } else {
+                log.warn(message + " (Runtime is shutting down)", e);
+            }
             return null;
         }
     }
