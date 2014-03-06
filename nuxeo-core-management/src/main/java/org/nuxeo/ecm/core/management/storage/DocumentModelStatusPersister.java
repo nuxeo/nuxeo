@@ -79,7 +79,8 @@ public class DocumentModelStatusPersister implements
             DocumentRef admRootDocRef = DocumentStoreManager.newPath(ADMINISTRATIVE_INFO_CONTAINER);
 
             if (!session.exists(admRootDocRef)) {
-                DocumentModel doc = session.createDocumentModel(DocumentStoreManager.newPath().toString(),
+                DocumentModel doc = session.createDocumentModel(
+                        DocumentStoreManager.newPath().toString(),
                         ADMINISTRATIVE_INFO_CONTAINER,
                         ADMINISTRATIVE_INFO_CONTAINER_DOCUMENT_TYPE);
                 doc.setPropertyValue("dc:title", ADMINISTRATIVE_INFO_CONTAINER);
@@ -110,16 +111,13 @@ public class DocumentModelStatusPersister implements
                 doc = session.getDocument(statusDocRef);
             }
 
-            doc.setPropertyValue(LOGIN_PROPERTY,
-                    status.getUserLogin());
+            doc.setPropertyValue(LOGIN_PROPERTY, status.getUserLogin());
             doc.setPropertyValue(INSTANCE_PROPERTY,
                     status.getInstanceIdentifier());
             doc.setPropertyValue(SERVICE_PROPERTY,
                     status.getServiceIdentifier());
-            doc.setPropertyValue(MESSAGE_PROPERTY,
-                    status.getMessage());
-            doc.setPropertyValue(STATUS_PROPERTY,
-                    status.getState());
+            doc.setPropertyValue(MESSAGE_PROPERTY, status.getMessage());
+            doc.setPropertyValue(STATUS_PROPERTY, status.getState());
 
             doc.setPropertyValue("dc:title",
                     getAdministrativeStatusDocName(status));
@@ -216,7 +214,8 @@ public class DocumentModelStatusPersister implements
             String state = (String) doc.getPropertyValue(STATUS_PROPERTY);
             Calendar modified = (Calendar) doc.getPropertyValue("dc:modified");
 
-            return new AdministrativeStatus(state, message, modified, userLogin, id, service);
+            return new AdministrativeStatus(state, message, modified,
+                    userLogin, id, service);
         }
     }
 
