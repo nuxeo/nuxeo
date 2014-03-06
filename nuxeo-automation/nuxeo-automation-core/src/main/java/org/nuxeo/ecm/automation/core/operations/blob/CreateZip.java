@@ -29,6 +29,7 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.FileCleanupHandler;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * TODO: detect mine?
@@ -52,8 +53,8 @@ public class CreateZip {
             fileName = blob.getFilename();
         }
         File file = File.createTempFile("nxops-createzip-", ".tmp");
-        ctx.addCleanupHandler(new FileCleanupHandler(file));
         ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file));
+        Framework.trackFile(file, file);
         try {
             zip(blob, out);
         } finally {
@@ -69,8 +70,8 @@ public class CreateZip {
             fileName = blobs.isEmpty() ? null : blobs.get(0).getFilename();
         }
         File file = File.createTempFile("nxops-createzip-", ".tmp");
-        ctx.addCleanupHandler(new FileCleanupHandler(file));
         ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file));
+        Framework.trackFile(file, file);
         try {
             zip(blobs, out);
         } finally {
