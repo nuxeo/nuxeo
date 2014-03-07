@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -55,7 +56,10 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
+
+import com.google.common.base.Joiner;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -73,6 +77,9 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
 
     @Context
     protected HttpHeaders headers;
+
+    @Context
+    private HttpServletRequest servletRequest;
 
     @Override
     public long getSize(DocumentModel arg0, Class<?> arg1, Type arg2,
@@ -120,7 +127,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             String[] schemas, Map<String, String> contextParameters)
             throws Exception {
         writeDocument(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc,
-                schemas, contextParameters, headers);
+                schemas, contextParameters, headers, servletRequest);
     }
 
     public static void writeDocument(JsonGenerator jg, DocumentModel doc,
@@ -134,7 +141,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     public static void writeDocument(JsonGenerator jg, DocumentModel doc,
             String[] schemas, Map<String, String> contextParameters)
             throws Exception {
-        writeDocument(jg, doc, schemas, contextParameters, null);
+        writeDocument(jg, doc, schemas, contextParameters, null, null);
     }
 
     /**
@@ -142,7 +149,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
      */
     public static void writeDocument(JsonGenerator jg, DocumentModel doc,
             String[] schemas, Map<String, String> contextParameters,
-            HttpHeaders headers) throws Exception {
+            HttpHeaders headers, HttpServletRequest request) throws Exception {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "document");
         jg.writeStringField("repository", doc.getRepositoryName());
@@ -176,11 +183,11 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             if (schemas.length == 1 && "*".equals(schemas[0])) {
                 // full document
                 for (String schema : doc.getSchemas()) {
-                    writeProperties(jg, doc, schema);
+                    writeProperties(jg, doc, schema, request);
                 }
             } else {
                 for (String schema : schemas) {
-                    writeProperties(jg, doc, schema);
+                    writeProperties(jg, doc, schema, request);
                 }
             }
             jg.writeEndObject();
@@ -226,7 +233,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     }
 
     protected static void writeProperties(JsonGenerator jg, DocumentModel doc,
-            String schema) throws Exception {
+            String schema, HttpServletRequest request) throws Exception {
         DocumentPart part = doc.getPart(schema);
         if (part == null) {
             return;
@@ -236,10 +243,15 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             prefix = schema;
         }
         prefix = prefix + ":";
-        String filesBaseUrl = "files/" + doc.getId() + "?path=";
+
+        StringBuilder sb = new StringBuilder(
+                VirtualHostHelper.getBaseURL(request));
+        sb.append("nxbigfile/").append(doc.getRepositoryName()).append("/").append(
+                doc.getId()).append("/");
+
         for (Property p : part.getChildren()) {
             jg.writeFieldName(prefix + p.getField().getName().getLocalName());
-            writePropertyValue(jg, p, filesBaseUrl);
+            writePropertyValue(jg, p, sb.toString());
         }
     }
 
@@ -345,8 +357,10 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             jg.writeStringField("digest", v);
         }
         jg.writeStringField("length", Long.toString(blob.getLength()));
+        String fullPropPath = Joiner.on(":").join(prop.getSchema().getName(),
+                prop.getPath().substring(1));
         jg.writeStringField("data",
-                filesBaseUrl + URLEncoder.encode(prop.getPath(), "UTF-8"));
+                filesBaseUrl + URLEncoder.encode(fullPropPath, "UTF-8"));
         jg.writeEndObject();
     }
 

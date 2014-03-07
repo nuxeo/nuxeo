@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -48,7 +47,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -141,7 +139,7 @@ public class RestServiceTest {
 
         // When it is written as Json with appropriate headers
         JsonDocumentWriter.writeDocument(jg, folder, NO_SCHEMA,
-                new HashMap<String, String>(), getFakeHeaders());
+                new HashMap<String, String>(), getFakeHeaders(), null);
         jg.flush();
 
         // Then it contains contextParameters with contributor
@@ -152,7 +150,7 @@ public class RestServiceTest {
         out = new ByteArrayOutputStream();
         jg = getJsonGenerator(out);
         JsonDocumentWriter.writeDocument(jg, folder, NO_SCHEMA,
-                new HashMap<String, String>(), null);
+                new HashMap<String, String>(), null, null);
         jg.flush();
 
         // Then it contains contextParameters with contributor
@@ -243,7 +241,7 @@ public class RestServiceTest {
         JsonGenerator jg = getJsonGenerator(out);
         // When it is written as Json with appropriate headers
         JsonDocumentWriter.writeDocument(jg, doc, NO_SCHEMA,
-                new HashMap<String, String>(), getFakeHeaders(category));
+                new HashMap<String, String>(), getFakeHeaders(category), null);
         jg.flush();
         return out.toString();
     }
