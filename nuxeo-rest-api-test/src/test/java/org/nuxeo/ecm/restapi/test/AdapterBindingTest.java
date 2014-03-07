@@ -86,10 +86,10 @@ public class AdapterBindingTest extends BaseTest {
         ClientResponse response = getResponse(RequestType.PUT,
                 "/id/" + note.getId() + "/@" + BOAdapter.NAME
                         + "/BusinessBeanAdapter", ba);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Then it modifies the description
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        dispose(session);
+        fetchInvalidations();
         note = session.getDocument(note.getRef());
         assertEquals("description",
                 note.getAdapter(BusinessBeanAdapter.class).getDescription());
@@ -111,10 +111,10 @@ public class AdapterBindingTest extends BaseTest {
         ClientResponse response = getResponse(RequestType.POST,
                 "/id/" + folder.getId() + "/@" + BOAdapter.NAME
                         + "/BusinessBeanAdapter/note2", ba);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Then it modifies the description
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        dispose(session);
+        fetchInvalidations();
         assertFalse(session.getChildren(folder.getRef()).isEmpty());
     }
 

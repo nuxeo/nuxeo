@@ -145,10 +145,10 @@ public class DocumentListTest extends BaseTest {
                         "id=" + folder0.getId() }));
         ClientResponse response = getResponse(RequestType.DELETE, "/bulk;"
                 + data);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Then the documents are removed from repository
-        dispose(session);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        fetchInvalidations();
 
         assertFalse(session.exists(note1.getRef()));
         assertFalse(session.exists(folder0.getRef()));
@@ -173,8 +173,7 @@ public class DocumentListTest extends BaseTest {
                 data);
 
         // Then the documents are updated accordingly
-
-        dispose(session);
+        fetchInvalidations();
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         for (int i : new int[] { 1, 2 }) {
             note1 = RestServerInit.getNote(i, session);

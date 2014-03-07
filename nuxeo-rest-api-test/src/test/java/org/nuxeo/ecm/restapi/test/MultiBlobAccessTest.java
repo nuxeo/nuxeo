@@ -75,7 +75,6 @@ public class MultiBlobAccessTest extends BaseTest {
         addBlob(doc, new StringBlob("two"));
         doc = session.createDocument(doc);
         session.save();
-        dispose(session);
     }
 
     @Test
@@ -111,7 +110,7 @@ public class MultiBlobAccessTest extends BaseTest {
         form.close();
 
         // The the blob is updated
-        dispose(session);
+        fetchInvalidations();
         doc = getTestBlob();
         Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
         StringWriter sw = new StringWriter();
@@ -128,14 +127,11 @@ public class MultiBlobAccessTest extends BaseTest {
         getResponse(RequestType.DELETE, "path" + doc.getPathAsString()
                 + "/@blob/mb:blobs/0/content");
 
-        // The the blob is resetted
-        dispose(session);
-
+        // The the blob is reset
+        fetchInvalidations();
         doc = getTestBlob();
-
         Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
         assertNull(blob);
-
     }
 
     private DocumentModel getTestBlob() throws ClientException {

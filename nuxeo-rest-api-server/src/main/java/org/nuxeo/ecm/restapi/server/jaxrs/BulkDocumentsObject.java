@@ -66,6 +66,7 @@ public class BulkDocumentsObject extends DefaultObject {
         for (DocumentModel doc : docs) {
             session.removeDocument(doc.getRef());
         }
+        session.save();
         return Response.ok().build();
     }
 

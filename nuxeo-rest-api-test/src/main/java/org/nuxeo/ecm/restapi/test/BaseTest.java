@@ -21,9 +21,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,10 +33,10 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
-import org.nuxeo.ecm.core.api.local.LocalSession;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
@@ -179,21 +176,17 @@ public class BaseTest {
         return mapper.readTree(response.getEntityInputStream());
     }
 
-    protected void dispose(CoreSession session) throws Exception {
-        if (Proxy.isProxyClass(session.getClass())) {
-
-            InvocationHandler handler = Proxy.getInvocationHandler(session);
-            if (handler instanceof TransactionalCoreSessionWrapper) {
-                Field field = TransactionalCoreSessionWrapper.class.getDeclaredField("session");
-                field.setAccessible(true);
-                session = (CoreSession) field.get(handler);
-            }
+    /**
+     * Fetch session invalidations.
+     *
+     * @since 5.9.3
+     */
+    protected void fetchInvalidations() throws ClientException {
+        session.save();
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
-        if (!(session instanceof LocalSession)) {
-            throw new UnsupportedOperationException(
-                    "Cannot dispose session of class " + session.getClass());
-        }
-        ((LocalSession) session).getSession().dispose();
     }
 
     protected void assertNodeEqualsDoc(JsonNode node, DocumentModel note)

@@ -120,7 +120,7 @@ public class DocumentBrowsingTest extends BaseTest {
                 jsonDoc.asJson());
 
         // Then the document is updated
-        dispose(session);
+        fetchInvalidations();
         note = RestServerInit.getNote(0, session);
         assertEquals("New title", note.getTitle());
 
@@ -139,7 +139,7 @@ public class DocumentBrowsingTest extends BaseTest {
                 "{\"entity-type\":\"document\",\"properties\":{\"dc:title\":\"Other New title\"}}");
 
         // Then the document is updated
-        dispose(session);
+        fetchInvalidations();
         note = RestServerInit.getNote(0, session);
         assertEquals("Other New title", note.getTitle());
 
@@ -166,7 +166,7 @@ public class DocumentBrowsingTest extends BaseTest {
         assertTrue(StringUtils.isNotBlank(id));
 
         // Then a document is created in the database
-        dispose(session);
+        fetchInvalidations();
         DocumentModel doc = session.getDocument(new IdRef(id));
         assertEquals(folder.getPathAsString() + "/newName",
                 doc.getPathAsString());
@@ -187,7 +187,7 @@ public class DocumentBrowsingTest extends BaseTest {
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(),
                 response.getStatus());
 
-        dispose(session);
+        fetchInvalidations();
         // Then the doc is deleted
         assertTrue(!session.exists(doc.getRef()));
 
@@ -244,7 +244,6 @@ public class DocumentBrowsingTest extends BaseTest {
                 folder.getPathAsString(), "doc with space", "Note");
         note = session.createDocument(note);
         session.save();
-        dispose(session);
 
         // When i do a GET Request on the note repository
         ClientResponse response = getResponse(RequestType.GET,
@@ -283,7 +282,7 @@ public class DocumentBrowsingTest extends BaseTest {
                 jsonDoc.asJson());
 
         // Then the document is updated
-        dispose(session);
+        fetchInvalidations();
         note = RestServerInit.getNote(0, session);
         assertEquals("New title", note.getTitle());
 
