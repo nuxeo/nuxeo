@@ -1212,8 +1212,13 @@ public class TestDocumentsSizeUpdater {
                 quotaStatsService.activateQuotaOnUserWorkspaces(300L, session);
                 quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(300L,
                         session.getRootDocument(), session);
+
             }
         });
+
+        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        workManager.awaitCompletion("quota", 3, TimeUnit.SECONDS);
+        assertEquals(0, workManager.getQueueSize("quota", null));
 
         isr.run(new RunnableWithException() {
 
