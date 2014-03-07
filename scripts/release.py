@@ -66,7 +66,7 @@ import sys
 import tempfile
 
 from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
-from nxutils import ExitException, Repository, assert_git_config, extract_zip, \
+from nxutils import ExitException, Repository, assert_git_config, extract_zip,\
      log, make_zip, system
 from terminalsize import get_terminal_size
 
@@ -662,7 +662,9 @@ def main():
         description = """Release Nuxeo from a given branch, tag the release, then
 set the next SNAPSHOT version. If a maintenance version was provided, then a
 maintenance branch is kept, else it is deleted after release."""
-        help_formatter = IndentedHelpFormatterWithNL(width=80)
+        help_formatter = IndentedHelpFormatterWithNL(
+#                 max_help_position=6,
+                 width=get_terminal_size()[0])
         parser = optparse.OptionParser(usage=usage, description=description,
                                        formatter=help_formatter)
         parser.add_option('-r', action="store", type="string",
