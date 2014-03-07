@@ -474,9 +474,16 @@ given the path parameter.
             message = self.msg_commit
         return self.get_message(message, additional_message)
 
-    def prepare(self, dodeploy=False, dopush=False, dryrun=False):
+    #pylint: disable=R0915
+    def prepare(self, dodeploy=False, doperform=False, dryrun=False):
         """ Prepare the release: build, change versions, tag and package source
-        and distributions."""
+        and distributions.
+
+        'dodeploy': staging mode with 'nightly' Maven profile activated
+        'doperform': onestep process = prepare+perform without staging
+        'dryrun': dry run mode (no Maven deployment, nor Git push)"""
+        if dryrun:
+            log("[INFO] #### DRY RUN MODE ####")
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
         self.repo.clone(self.branch, with_optionals=True)
@@ -546,24 +553,17 @@ given the path parameter.
         log("\n[INFO] Build and package release-%s..." % self.tag)
         self.repo.system_recurse("git checkout release-%s" % self.tag)
         if dodeploy:
-            deploy_profiles="release,-qa" + self.profiles
-            if self.repo.is_nuxeoecm:
-                deploy_profiles="release,-qa,nightly" + self.profiles
-
-            if dopush:
-                # call perform to deploy maven artifacts and push commits
-                self.perform(skip_tests=self.skipTests,
-                             profiles=deploy_profiles,
-                             dryrun=dryrun)
-            else:
-                self.repo.mvn("clean deploy", skip_tests=self.skipTests,
-                              profiles=deploy_profiles,
-                              dryrun=dryrun)
-
+            log("\n[INFO] Staging mode: deploy artifacts...")
+            commands = "clean deploy"
+            profiles = "release,-qa,nightly" + self.profiles
         else:
-            self.repo.mvn("clean install", skip_tests=self.skipTests,
-                        profiles="release,-qa" + self.profiles,
-                        dryrun=dryrun)
+            commands = "clean install"
+            profiles = "release,-qa" + self.profiles
+        if doperform:
+            self.perform(skip_tests=self.skipTests, dryrun=dryrun)
+        else:
+            self.repo.mvn(commands, skip_tests=self.skipTests,
+                          profiles=profiles, dryrun=dryrun)
         if not dryrun:
             self.package_all()
         # TODO NXP-8571 package sources
@@ -608,26 +608,29 @@ given the path parameter.
                                  (self.get_commit_message(msg_commit)))
         os.chdir(cwd)
 
-    def perform(self, profiles=None, skip_tests=True, dryrun=False):
+    def perform(self, skip_tests=True, dryrun=False):
         """ Perform the release: push source, deploy artifacts and upload
         packages."""
+        if dryrun:
+            log("[INFO] #### DRY RUN MODE ####")
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
         self.repo.clone(self.branch, with_optionals=True)
-        if not dryrun:
-            self.repo.system_recurse("git push %s %s" % (self.repo.alias,
-                                                         self.branch),
-                                     with_optionals=True)
-            if self.maintenance_version != "auto":
-                self.repo.system_recurse("git push %s %s" % (self.repo.alias,
-                                                             self.maintenance_branch))
-                self.repo.system_recurse("git push %s release-%s" % (self.repo.alias,
-                                                                     self.tag))
+        command = "git push"
+        if dryrun:
+            command += " -n"
+        self.repo.system_recurse("%s %s %s" %
+                                 (command, self.repo.alias, self.branch),
+                                 with_optionals=True)
+        if self.maintenance_version != "auto":
+            self.repo.system_recurse("%s %s %s" %
+                                     (command, self.repo.alias,
+                                      self.maintenance_branch))
+        self.repo.system_recurse("%s %s release-%s" %
+                                 (command, self.repo.alias, self.tag))
         self.repo.system_recurse("git checkout release-%s" % self.tag)
-        if profiles is None:
-            profiles = "release,-qa" + self.profiles
         self.repo.mvn("clean deploy", skip_tests=skip_tests,
-                      profiles=profiles, dryrun=dryrun)
+                      profiles="release,-qa" + self.profiles, dryrun=dryrun)
         os.chdir(cwd)
 
     def check(self):
@@ -648,20 +651,31 @@ def main():
             raise ExitException(1, "That script must be ran from root of a Git"
                                 + " repository")
         usage = ("""usage: %prog <command> [options]
-       %prog prepare [-r alias] [-f] [-d] [--push] [--skipTests] [-p profiles] \
-[-b branch] [-t tag] [-n next_snapshot] [-m maintenance] \
+       %prog prepare [-r alias] [-f] [-d] [--skipTests] [-p profiles] \
+[-b branch] [-t tag] [-n next_snapshot] [-m maintenance] [--dryrun] \
 [--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
-       %prog perform [-r alias] [-f] [-p profiles] [-b branch] [-t tag] [-m maintenance]
+       %prog perform [-r alias] [-f] [-p profiles] [-b branch] [-t tag] \
+[-m maintenance] [--dryrun]
        %prog package [-b branch] [-t tag] [--skipTests] [-p profiles]
-       %prog maintenance [-r alias] [-b branch] [-t tag] [-m maintenance] [--arv versions_replacements]
+       %prog maintenance [-r alias] [-b branch] [-t tag] [-m maintenance] \
+[--arv versions_replacements]
+       %prog onestep [-r alias] [-f] [--skipTests] [-p profiles] \
+[-b branch] [-t tag] [-n next_snapshot] [-m maintenance] [--dryrun] \
+[--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
 \nCommands:
-  prepare: Prepare the release (build, change versions, tag and package source and distributions). The release parameters are stored in a release-*.log file.
-  perform: Perform the release (push sources, deploy artifacts and upload packages, tests are always skipped). If no parameter is given, they are read from the release-*.log file.
+  prepare: Prepare the release (build, change versions, tag and package \
+source and distributions). The release parameters are stored in a \
+release-*.log file.
+  perform: Perform the release (push sources, deploy artifacts and upload \
+packages, tests are always skipped). If no parameter is given, they are read \
+from the release-*.log file.
   package: Package distributions and source code in the archives directory.
-  maintenance: Create a maintenance branch from an existing tag.""")
-        description = """Release Nuxeo from a given branch, tag the release, then
-set the next SNAPSHOT version. If a maintenance version was provided, then a
-maintenance branch is kept, else it is deleted after release."""
+  maintenance: Create a maintenance branch from an existing tag.
+  onestep: Prepare and perform the release in one unique step. No stagging is \
+possible. The release-*.log file is not read.""")
+        description = """Release Nuxeo from a given branch, tag the release, \
+then set the next SNAPSHOT version. If a maintenance version was provided, \
+then a maintenance branch is kept, else it is deleted after release."""
         help_formatter = IndentedHelpFormatterWithNL(
 #                 max_help_position=6,
                  width=get_terminal_size()[0])
@@ -678,12 +692,12 @@ Default: '%default'""")
 mode. Default: '%default'""")
         parser.add_option('-d', '--deploy', action="store_true",
                           dest='deploy', default=False,
-                          help="""Deploy artifacts to nightly/staging repository
-(activating the 'nightly' Maven profile if artifact is nuxeo_ecm) Default: '%default'""")
-        parser.add_option('--push', '--push', action="store_true",
-                          dest='push', default=False,
-                          help="""Pushes commits to the git repositories, ignored
- if deploy option is False. Default: '%default'""")
+                          help="""Deploy artifacts to nightly/staging \
+repository (activating the 'nightly' Maven profile). \
+Default: '%default'""")
+        parser.add_option('--dryrun', action="store_true",
+                          dest='dryrun', default=False,
+                          help="""Dry run mode. Default: '%default'""")
         parser.add_option('--skipTests', action="store_true",
                           dest='skipTests', default=False,
                           help="""Skip tests execution (but compile them).
@@ -691,13 +705,13 @@ Default: '%default'""")
         parser.add_option('-p', '--profiles', action="store", type="string",
                           dest='profiles',
                           default='',
-                          help="""Additional Maven profiles.
-Default: '%default'.
-Those profiles are also always activated (unless deactivated by that parameter):\n
- - 'addons,distrib,all-distributions' for all commands (only if artifact is nuxeo-ecm)\n
- - 'release,-qa' for prepare command (plus 'nightly' if deploy option is used and if artifact is nuxeo-ecm),\n
- - 'release,-qa' for perform command,\n
- - 'qa' for package command.
+                          help="""Comma-separated additional Maven profiles.
+Default: '%default'\n
+Those profiles are activated by default (unless overriden by that parameter):\n
+ - 'addons,distrib,all-distributions' for all commands executed on nuxeo-ecm,\n
+ - 'release,-qa' for 'prepare', 'perform' and 'onestep' commands,\n
+ - 'qa' for 'package' command,\n
+ - 'nightly' if 'deploy' option is used.
 """)
         versioning_options = optparse.OptionGroup(parser, 'Version policy')
         versioning_options.add_option('-f', '--final', action="store_true",
@@ -705,7 +719,8 @@ Those profiles are also always activated (unless deactivated by that parameter):
             help="Is it a final release? Default: '%default'")
         versioning_options.add_option("-b", "--branch", action="store",
             type="string", dest="branch", default="auto",
-            help="""Branch to release. Default: '%default' = the current branch""")
+            help="""Branch to release. \
+Default: '%default' = the current branch""")
         versioning_options.add_option("-t", "--tag", action="store",
             type="string", dest="tag", default="auto",
             help="""Released version. SCM tag is 'release-$TAG'.
@@ -727,8 +742,10 @@ mode 'auto', the maintenance branch is deleted after release.""")
         versioning_options.add_option('--arv', '--also-replace-version',
             action="store", dest='other_versions', default=None,
             help="""Other version(s) to replace. Default: '%default'\n
-Use a slash ('/') as a separator between old and new version: '1.0-SNAPSHOT/1.0'.\n
-A version post-release can also be specified: '1.0-SNAPSHOT/1.0/1.0.1-SNAPSHOT'.\n
+Use a slash ('/') as a separator between old and new version: \
+'1.0-SNAPSHOT/1.0'.\n
+A version post-release can also be specified: \
+'1.0-SNAPSHOT/1.0/1.0.1-SNAPSHOT'.\n
 Multiple versions can be replaced using a coma (',') separator:
 '1.0-SNAPSHOT/1.0/1.0.1-SNAPSHOT,0.0-SNAPSHOT/2.0.1'.\n
 It only applies on files named with xml, properties, txt, defaults, sh, html or
@@ -737,21 +754,23 @@ parent version, the POM version and the properties named
 'nuxeo|marketplace.*version'. Other patterns for filename extensions and
 properties can be provided using two colon (':') separators:
 '.*\\.customextension:my.property:1.0-SNAPSHOT/1.0', '.*\\.text::',
-':my.property:1.0-SNAPSHOT/1.0/1.1-SNAPSHOT', ...
-Those patterns are common to all replacements, including the released version.\n
+':my.property:1.0-SNAPSHOT/1.0/1.1-SNAPSHOT', ... Those patterns are common \
+to all replacements, including the released version.\n
 Default files and properties patterns are respectively:
 '^.*\\.(xml|properties|txt|defaults|sh|html|nxftl)$' and
 '(nuxeo|marketplace)\..*version'. They can't be removed.""")
         versioning_options.add_option('--mc', '--msg-commit', action="store",
             type="string", dest='msg_commit', default='',
-            help="""Additional release commit message to put in front of
- default: 'Release $BRANCH, update $SNAPSHOT to $TAG, update ...'.
+            help="""Additional message to put in front of default commit \
+messages:\n
+'Release $BRANCH, update $SNAPSHOT to $TAG, update ...'.\n
+'Release release-$TAG from $SNAPSHOT on $BRANCH'
 """)
         versioning_options.add_option('--mt', '--msg-tag', action="store",
             type="string", dest='msg_tag', default='',
-            help="""Additional tag message, to put in front of
- default: 'Release release-$TAG from $SNAPSHOT on $BRANCH'. If not set,
- the --mc option is used instead (if set).
+            help="""Like '--mc' option but specific to tag messages. \
+Default tag message:\n
+'Release release-$TAG from $SNAPSHOT on $BRANCH'.
 """)
         parser.add_option_group(versioning_options)
         (options, args) = parser.parse_args()
@@ -759,7 +778,8 @@ Default files and properties patterns are respectively:
             command = args[0]
         elif len(args) > 1:
             raise ExitException(1,
-                                "'command' must be a single argument: '%s'. See usage with '-h'." % (args,))
+                        "'command' must be a single argument: '%s'." % (args)
+                        + " See usage with '-h'.")
 
         if ("command" in locals() and command == "perform"
             and os.path.isfile(Release.get_release_log(os.getcwd()))
@@ -802,11 +822,13 @@ Default files and properties patterns are respectively:
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
         elif command == "prepare":
-            release.prepare(options.deploy, options.push)
+            release.prepare(dodeploy=options.deploy, dryrun=options.dryrun)
         elif command == "maintenance":
             release.maintenance()
         elif command == "perform":
-            release.perform()
+            release.perform(dryrun=options.dryrun)
+        elif command == "onestep":
+            release.prepare(doperform=True, dryrun=options.dryrun)
         elif command == "package":
             log("Packaging %s from %s" % (release.snapshot, release.branch))
             repo.clone(release.branch)
