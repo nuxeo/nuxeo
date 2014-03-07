@@ -132,7 +132,7 @@ public class DefaultSession implements Session {
 
     @Override
     public Blob getFile(String path) throws Exception {
-        Request req = new Request(Request.GET, client.getBaseUrl() + path);
+        Request req = new Request(Request.GET, path);
         return (Blob) connector.execute(req);
     }
 

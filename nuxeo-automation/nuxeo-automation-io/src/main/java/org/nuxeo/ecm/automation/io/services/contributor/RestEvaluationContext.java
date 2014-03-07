@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.io.services.contributor;
 
+import javax.servlet.ServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -44,5 +45,12 @@ public interface RestEvaluationContext {
      *
      */
     HttpHeaders getHeaders();
+
+    /**
+     * Returns the request that is currently served.
+     *
+     * @since 5.9.3
+     */
+    ServletRequest getRequest();
 
 }

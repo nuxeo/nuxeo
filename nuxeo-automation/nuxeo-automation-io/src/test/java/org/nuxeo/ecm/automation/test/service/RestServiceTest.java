@@ -114,7 +114,7 @@ public class RestServiceTest {
         JsonGenerator jg = getJsonGenerator(out);
         DocumentModel folder = session.getDocument(new PathRef("/folder1"));
         RestEvaluationContext ec = new HeaderDocEvaluationContext(folder,
-                getFakeHeaders());
+                getFakeHeaders(),null);
 
         // When the service write to the context
         jg.writeStartObject();

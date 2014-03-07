@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -65,6 +67,9 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
     @Context
     protected HttpHeaders headers;
 
+    @Context
+    protected HttpServletRequest request;
+
     @Override
     protected String getEntityType() {
         return "documents";
@@ -104,11 +109,11 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
     public void writeDocuments(OutputStream out, List<DocumentModel> docs,
             String[] schemas) throws Exception {
         writeDocuments(factory.createJsonGenerator(out, JsonEncoding.UTF8),
-                docs, schemas);
+                docs, schemas, request);
     }
 
     public static void writeDocuments(JsonGenerator jg,
-            List<DocumentModel> docs, String[] schemas) throws Exception {
+            List<DocumentModel> docs, String[] schemas, ServletRequest request) throws Exception {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "documents");
 
@@ -163,13 +168,13 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
                     contextParameters.put("documentURL", documentURL);
                 }
                 JsonDocumentWriter.writeDocument(jg, doc, schemas,
-                        contextParameters);
+                        contextParameters, request);
             }
             jg.writeEndArray();
         } else {
             jg.writeArrayFieldStart("entries");
             for (DocumentModel doc : docs) {
-                JsonDocumentWriter.writeDocument(jg, doc, schemas);
+                JsonDocumentWriter.writeDocument(jg, doc, schemas, request);
             }
             jg.writeEndArray();
         }

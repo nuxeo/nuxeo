@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.io.services.contributor;
 
+import javax.servlet.ServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -33,15 +34,18 @@ public class HeaderDocEvaluationContext implements RestEvaluationContext {
 
     private HttpHeaders headers;
 
+    private ServletRequest request;
+
     /**
      * Creates the evaluation context.
      *
      * @param doc
      * @param headers
      */
-    public HeaderDocEvaluationContext(DocumentModel doc, HttpHeaders headers) {
+    public HeaderDocEvaluationContext(DocumentModel doc, HttpHeaders headers, ServletRequest request) {
         this.doc = doc;
         this.headers = headers;
+        this.request = request;
     }
 
     @Override
@@ -52,6 +56,11 @@ public class HeaderDocEvaluationContext implements RestEvaluationContext {
     @Override
     public HttpHeaders getHeaders() {
         return headers;
+    }
+
+    @Override
+    public ServletRequest getRequest() {
+        return request;
     }
 
 }

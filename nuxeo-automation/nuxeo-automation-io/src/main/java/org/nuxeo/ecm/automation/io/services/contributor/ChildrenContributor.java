@@ -52,7 +52,7 @@ public class ChildrenContributor implements RestContributor {
             if (props != null && !props.isEmpty()) {
                 schemas = StringUtils.split(props.get(0), ',', true);
             }
-            JsonDocumentListWriter.writeDocuments(jg, children, schemas);
+            JsonDocumentListWriter.writeDocuments(jg, children, schemas, ec.getRequest());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("interrupted", e);

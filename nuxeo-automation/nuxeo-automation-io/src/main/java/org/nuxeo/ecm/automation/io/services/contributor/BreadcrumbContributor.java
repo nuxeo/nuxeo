@@ -43,7 +43,7 @@ public class BreadcrumbContributor implements RestContributor {
         try {
 
             JsonDocumentListWriter.writeDocuments(jg,
-                    new DocumentModelListImpl(parentDocuments), new String[] {});
+                    new DocumentModelListImpl(parentDocuments), new String[] {}, ec.getRequest());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("interrupted", e);
