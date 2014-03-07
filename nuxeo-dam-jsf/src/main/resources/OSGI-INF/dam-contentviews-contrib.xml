@@ -48,7 +48,9 @@
           <predicate parameter="ecm:tag" operator="IN">
             <field schema="dam_search" name="ecm_tags" />
           </predicate>
-
+          <predicate parameter="collectionMember:collectionIds" operator="IN">
+            <field schema="dam_search" name="ecm_collections" />
+          </predicate>
         </whereClause>
         <sort column="dc:created" ascending="false" />
         <pageSize>20</pageSize>
@@ -310,6 +312,30 @@
       </subWidgets>
     </widget>
 
+    <widget name="dam_collection_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.dam.search.collectionSearch</label>
+      </labels>
+      <translated>true</translated>
+      <subWidgets>
+        <widget name="visible_collection" type="multipleDocumentsSuggestion">
+          <labels>
+            <label mode="any">label.collections</label>
+          </labels>
+          <fields>
+            <field>dams:ecm_collections</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="width">95%</property>
+            <property name="pageProviderName">default_collection</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
     <widget name="dam_categorization_search" type="container">
       <handlingLabels>true</handlingLabels>
       <labels>
@@ -511,6 +537,9 @@
         </row>
         <row>
           <widget>dam_user_search</widget>
+        </row>
+        <row>
+          <widget>dam_collection_search</widget>
         </row>
         <row>
           <widget>dam_categorization_search</widget>
