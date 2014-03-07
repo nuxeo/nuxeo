@@ -142,6 +142,10 @@
       </properties>
     </action>
 
+    <action id="addToCollectioAction">
+      <category>DAM_ASSET_VIEW_ACTIONS</category>
+    </action>
+
     <action id="damDocumentLike" order="5" type="link"
       link="#{likeActions.like(currentUser, currentDocument)}" icon="/icons/like.png"
       label="command.like">
@@ -239,6 +243,10 @@
     </action>
 
     <action id="CURRENT_SELECTION_TRASH">
+      <category>DAM_CURRENT_SELECTION_LIST</category>
+    </action>
+
+    <action id="addSelectedToCollectionAction">
       <category>DAM_CURRENT_SELECTION_LIST</category>
     </action>
 
