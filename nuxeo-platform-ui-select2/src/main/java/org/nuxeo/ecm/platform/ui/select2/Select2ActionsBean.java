@@ -778,7 +778,8 @@ public class Select2ActionsBean implements Serializable {
             if (doc == null) {
                 processDocumentNotFound(ref, jg);
             } else {
-                JsonDocumentWriter.writeDocument(jg, doc, schemas);
+                HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+                JsonDocumentWriter.writeDocument(jg, doc, schemas,request);
             }
         }
 
@@ -991,9 +992,9 @@ public class Select2ActionsBean implements Serializable {
                     "documentURL",
                     documentIdCodec.getUrlFromDocumentView(new DocumentViewImpl(
                             doc)));
-
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             JsonDocumentWriter.writeDocument(jg, doc, schemas,
-                    contextParameters);
+                    contextParameters, request);
         }
         jg.flush();
         return new String(baos.toByteArray(), "UTF-8");
