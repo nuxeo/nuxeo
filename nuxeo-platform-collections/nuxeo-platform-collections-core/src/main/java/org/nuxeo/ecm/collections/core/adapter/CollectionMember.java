@@ -16,22 +16,12 @@
  */
 package org.nuxeo.ecm.collections.core.adapter;
 
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
-
 import java.io.Serializable;
 import java.util.List;
 
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.9.3
@@ -58,32 +48,6 @@ public class CollectionMember {
         document.setPropertyValue(
                 CollectionConstants.DOCUMENT_COLLECTION_IDS_PROPERTY_NAME,
                 (Serializable) collectionIds);
-    }
-
-    public DocumentModelList getCollections() throws ClientException {
-        DocumentModelList targets = new DocumentModelListImpl();
-        Repository repository = Framework.getLocalService(
-                RepositoryManager.class).getRepository(
-                document.getRepositoryName());
-        CoreSession session;
-        try {
-            session = repository.open();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-        try {
-
-            for (String docId : getCollectionIds()) {
-                DocumentRef documentRef = new IdRef(docId);
-                if (session.exists(documentRef)
-                        && session.hasPermission(documentRef, READ)) {
-                    targets.add(session.getDocument(documentRef));
-                }
-            }
-        } finally {
-            Repository.close(session);
-        }
-        return targets;
     }
 
     public List<String> getCollectionIds() throws ClientException {

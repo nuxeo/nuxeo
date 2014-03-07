@@ -61,7 +61,7 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
 
         for (DocumentModel file : files) {
 
-            assertTrue(collectionAdapter.getCollectedDocuments().contains(file));
+            assertTrue(collectionAdapter.getCollectedDocumentIds().contains(file.getId()));
 
             CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);
 

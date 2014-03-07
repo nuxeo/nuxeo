@@ -59,7 +59,7 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase  {
 
         for (DocumentModel file : files) {
 
-            assertTrue(collectionAdapter.getCollectedDocuments().contains(file));
+            assertTrue(collectionAdapter.getCollectedDocumentIds().contains(file.getId()));
 
             CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);
 
@@ -86,8 +86,8 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase  {
 
         for (DocumentModel file : files) {
 
-            assertTrue(collectionAdapterBis.getCollectedDocuments().contains(
-                    file));
+            assertTrue(collectionAdapterBis.getCollectedDocumentIds().contains(
+                    file.getId()));
 
             CollectionMember collectionMemberAdapter = session.getDocument(
                     file.getRef()).getAdapter(CollectionMember.class);
