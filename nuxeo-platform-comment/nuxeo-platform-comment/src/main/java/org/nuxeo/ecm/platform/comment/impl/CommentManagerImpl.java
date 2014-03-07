@@ -238,6 +238,7 @@ public class CommentManagerImpl implements CommentManager {
             DocumentModel doc = internalCreateComment(session, docModel,
                     comment, null);
             session.save();
+            doc.detach(true);
             return doc;
         } catch (Exception e) {
             throw new ClientException(e);
