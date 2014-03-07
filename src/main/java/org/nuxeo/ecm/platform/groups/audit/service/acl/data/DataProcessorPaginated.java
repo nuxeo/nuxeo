@@ -103,7 +103,6 @@ public class DataProcessorPaginated extends DataProcessor {
                 }
                 pages.nextPage();
                 log.debug("done page " + (p++));
-                // TransactionResetHelper.resetTransaction(session);
             } while (pages.isNextPageAvailable());
         } catch (Exception e) {
             status = ProcessorStatus.ERROR;
