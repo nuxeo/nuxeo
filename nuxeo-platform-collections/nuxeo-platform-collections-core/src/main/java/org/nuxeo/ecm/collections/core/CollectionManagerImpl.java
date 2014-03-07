@@ -22,6 +22,11 @@ import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.core.adapter.Collection;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
+import org.nuxeo.ecm.collections.core.listener.CollectionAsynchrnonousQuery;
+import org.nuxeo.ecm.collections.core.worker.DuplicateCollectionMemberWork;
+import org.nuxeo.ecm.collections.core.worker.RemovedAbstractWork;
+import org.nuxeo.ecm.collections.core.worker.RemovedCollectionMemberWork;
+import org.nuxeo.ecm.collections.core.worker.RemovedCollectionWork;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -35,6 +40,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -237,6 +243,43 @@ public class CollectionManagerImpl extends DefaultComponent implements
             final CoreSession session) throws ClientException {
         for (DocumentModel documentToBeRemoved : documentListToBeRemoved) {
             removeFromCollection(collection, documentToBeRemoved, session);
+        }
+    }
+
+    @Override
+    public void processRemovedCollectionMember(final DocumentModel collectionMember) {
+        final WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        final RemovedAbstractWork work = new RemovedCollectionMemberWork(0);
+        work.setDocument(collectionMember.getRepositoryName(), collectionMember.getId());
+        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
+                true);
+    }
+
+    @Override
+    public void processRemovedCollection(final DocumentModel collection) {
+        final WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        final RemovedAbstractWork work = new RemovedCollectionWork(0);
+        work.setDocument(collection.getRepositoryName(), collection.getId());
+        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
+                true);
+    }
+
+    @Override
+    public void processCopiedCollection(final DocumentModel collection) throws ClientException {
+        Collection collectionAdapter = collection.getAdapter(Collection.class);
+        List<String> documentIds = collectionAdapter.getCollectedDocumentIds();
+
+        int i = 0;
+        while (i < documentIds.size()) {
+            int limit = (int) (((i + CollectionAsynchrnonousQuery.MAX_RESULT) > documentIds.size()) ? documentIds.size()
+                    : (i + CollectionAsynchrnonousQuery.MAX_RESULT));
+            DuplicateCollectionMemberWork work = new DuplicateCollectionMemberWork(
+                    collection.getRepositoryName(), collection.getId(), documentIds.subList(
+                            i, limit), i);
+            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
+
+            i = limit;
         }
     }
 

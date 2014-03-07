@@ -50,12 +50,19 @@ public interface CollectionManager {
 
     boolean isCollection(final DocumentModel doc);
 
-    void removeFromCollection(final DocumentModel collection,
-            final DocumentModel documentToBeRemoved, final CoreSession session)
+    void processCopiedCollection(final DocumentModel collection)
             throws ClientException;
+
+    void processRemovedCollection(final DocumentModel collection);
+
+    void processRemovedCollectionMember(final DocumentModel collectionMember);
 
     void removeAllFromCollection(final DocumentModel collection,
             final List<DocumentModel> documentListToBeRemoved,
             final CoreSession session) throws ClientException;
+
+    void removeFromCollection(final DocumentModel collection,
+            final DocumentModel documentToBeRemoved, final CoreSession session)
+            throws ClientException;
 
 }

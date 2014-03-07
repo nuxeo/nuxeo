@@ -30,7 +30,7 @@ public class RemovedCollectionWork extends RemovedAbstractWork {
 
     private static final Log log = LogFactory.getLog(RemovedCollectionWork.class);
 
-    public RemovedCollectionWork(long offset) {
+    public RemovedCollectionWork(final long offset) {
         super(offset);
     }
 
@@ -59,7 +59,7 @@ public class RemovedCollectionWork extends RemovedAbstractWork {
     protected void updateDocument(final DocumentModel collectionMember) throws ClientException {
             log.trace(String.format("Updating CollectionMember %s",
                     collectionMember.getTitle()));
-            CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
+            final CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
             collectionMemberAdapter.removeFromCollection(docId);
             session.saveDocument(collectionMember);
     }

@@ -16,22 +16,16 @@
  */
 package org.nuxeo.ecm.collections.core.listener;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.collections.api.CollectionManager;
-import org.nuxeo.ecm.collections.core.adapter.Collection;
-import org.nuxeo.ecm.collections.core.worker.DuplicateCollectionMemberWork;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -71,32 +65,11 @@ public class DuplicatedCollectionListener implements EventListener {
 
         if (collectionManager.isCollection(doc)) {
 
-            final CoreSession session = docCxt.getCoreSession();
+            log.trace(String.format("Collection %s copied", doc.getId()));
 
-            processUpdate(doc, session);
+            collectionManager.processCopiedCollection(doc);
 
         }
-    }
-
-    protected void processUpdate(final DocumentModel doc,
-            final CoreSession session) throws ClientException {
-
-        Collection collection = doc.getAdapter(Collection.class);
-        List<String> documentIds = collection.getCollectedDocumentIds();
-
-        int i = 0;
-        while (i < documentIds.size()) {
-            int limit = (int) (((i + CollectionAsynchrnonousQuery.MAX_RESULT) > documentIds.size()) ? documentIds.size()
-                    : (i + CollectionAsynchrnonousQuery.MAX_RESULT));
-            DuplicateCollectionMemberWork work = new DuplicateCollectionMemberWork(
-                    doc.getRepositoryName(), doc.getId(), documentIds.subList(
-                            i, limit), i);
-            WorkManager workManager = Framework.getLocalService(WorkManager.class);
-            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
-
-            i = limit;
-        }
-
     }
 
 }

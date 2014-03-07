@@ -52,6 +52,8 @@ public class SuggestCollectionEntry {
 
     public static final String ID = "Collection.Suggestion";
 
+    private static final String PATH = "path";
+
     @Param(name = "currentPageIndex", required = false)
     protected Integer currentPageIndex = 0;
 
@@ -108,6 +110,7 @@ public class SuggestCollectionEntry {
                 found = true;
             }
             obj.element(Select2Common.LABEL, doc.getTitle());
+            obj.element(PATH, doc.getPath().toString());
             result.add(obj);
         }
 

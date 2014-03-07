@@ -19,9 +19,6 @@ package org.nuxeo.ecm.collections.core.listener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.collections.api.CollectionManager;
-import org.nuxeo.ecm.collections.core.worker.RemovedAbstractWork;
-import org.nuxeo.ecm.collections.core.worker.RemovedCollectionMemberWork;
-import org.nuxeo.ecm.collections.core.worker.RemovedCollectionWork;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -30,7 +27,6 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -72,19 +68,14 @@ public class RemovedCollectionListener implements PostCommitEventListener {
         final boolean isCollectionMemberRemoved = collectionManager.isCollectable(doc);
 
         if (isCollectionRemoved || isCollectionMemberRemoved) {
-            WorkManager workManager = Framework.getLocalService(WorkManager.class);
-            RemovedAbstractWork work = null;
             if (isCollectionRemoved) {
                 log.trace(String.format("Collection %s removed", doc.getId()));
-                work = new RemovedCollectionWork(0);
+                collectionManager.processRemovedCollection(doc);
             } else if (isCollectionMemberRemoved) {
                 log.trace(String.format("CollectionMember %s removed",
                         doc.getId()));
-                work = new RemovedCollectionMemberWork(0);
+                collectionManager.processRemovedCollectionMember(doc);
             }
-            work.setDocument(doc.getRepositoryName(), doc.getId());
-            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
-                    true);
         }
     }
 
