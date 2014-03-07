@@ -140,12 +140,22 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
      * @since 5.6
      */
     public static void writeDocument(JsonGenerator jg, DocumentModel doc,
-            String[] schemas, Map<String, String> contextParameters, ServletRequest request)
-            throws Exception {
+            String[] schemas, Map<String, String> contextParameters,
+            ServletRequest request) throws Exception {
         writeDocument(jg, doc, schemas, contextParameters, null, request);
     }
 
     /**
+     *
+     * @param jg a ready to user JSON generator
+     * @param doc the document to serialize
+     * @param schemas an array of schemas that must be serialized in the
+     *            properties map
+     * @param contextParameters
+     * @param headers
+     * @param request the ServletRequest. If null blob URLs won't be generated.
+     * @throws Exception
+     *
      * @since 5.7.3
      */
     public static void writeDocument(JsonGenerator jg, DocumentModel doc,
@@ -229,7 +239,8 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             DocumentModel doc, HttpHeaders headers, ServletRequest request)
             throws JsonGenerationException, IOException, ClientException {
         RestContributorService rcs = Framework.getLocalService(RestContributorService.class);
-        RestEvaluationContext ec = new HeaderDocEvaluationContext(doc, headers, request);
+        RestEvaluationContext ec = new HeaderDocEvaluationContext(doc, headers,
+                request);
         rcs.writeContext(jg, ec);
     }
 
@@ -245,14 +256,18 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         }
         prefix = prefix + ":";
 
-        StringBuilder sb = new StringBuilder(
-                VirtualHostHelper.getBaseURL(request));
-        sb.append("nxbigfile/").append(doc.getRepositoryName()).append("/").append(
-                doc.getId()).append("/");
+        String blobUrlPrefix = null;
+        if (request != null) {
+            StringBuilder sb = new StringBuilder(
+                    VirtualHostHelper.getBaseURL(request));
+            sb.append("nxbigfile/").append(doc.getRepositoryName()).append("/").append(
+                    doc.getId()).append("/");
+            blobUrlPrefix = sb.toString();
+        }
 
         for (Property p : part.getChildren()) {
             jg.writeFieldName(prefix + p.getField().getName().getLocalName());
-            writePropertyValue(jg, p, sb.toString());
+            writePropertyValue(jg, p, blobUrlPrefix);
         }
     }
 
@@ -315,7 +330,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
 
     protected static void writeMapPropertyValue(JsonGenerator jg,
             ComplexProperty prop, String filesBaseUrl)
-            throws JsonGenerationException, IOException, PropertyException  {
+            throws JsonGenerationException, IOException, PropertyException {
         jg.writeStartObject();
         for (Property p : prop.getChildren()) {
             jg.writeFieldName(p.getName());
@@ -358,8 +373,9 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
             jg.writeStringField("digest", v);
         }
         jg.writeStringField("length", Long.toString(blob.getLength()));
-
-        jg.writeStringField("data",getBlobUrl(prop, filesBaseUrl));
+        if (filesBaseUrl != null) {
+            jg.writeStringField("data", getBlobUrl(prop, filesBaseUrl));
+        }
         jg.writeEndObject();
     }
 
@@ -379,10 +395,11 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         StringBuilder blobUrlBuilder = new StringBuilder(filesBaseUrl);
         blobUrlBuilder.append(prop.getSchema().getName());
         blobUrlBuilder.append(":");
-        String canonicalXPath = ComplexTypeImpl.canonicalXPath(prop.getPath().substring(1));
+        String canonicalXPath = ComplexTypeImpl.canonicalXPath(prop.getPath().substring(
+                1));
         blobUrlBuilder.append(URLEncoder.encode(canonicalXPath, "UTF-8"));
         blobUrlBuilder.append("/");
-        blobUrlBuilder.append(((Blob)prop.getValue()).getFilename());
+        blobUrlBuilder.append(((Blob) prop.getValue()).getFilename());
         return blobUrlBuilder.toString();
     }
 
