@@ -660,7 +660,7 @@
           <properties mode="any">
             <property name="nxl_colspan_0">2</property>
           </properties>
-          <widget>studio_header</widget>
+          <widget>template_rendering_header</widget>
         </row>
         <row>
           <properties mode="any">
@@ -711,7 +711,7 @@
             <property name="nxl_colspan_0">1</property>
             <property name="nxl_colspan_1">1</property>
           </properties>
-          <widget>studio_header_1</widget>
+          <widget>template_rendering_header_1</widget>
           <widget/>
         </row>
         <row>
@@ -772,7 +772,7 @@
         </properties>
         <properties mode="any"/>
       </widget>
-      <widget name="studio_header" type="studio_header">
+      <widget name="template_rendering_header" type="template_rendering_header">
         <handlingLabels>true</handlingLabels>
         <labels>
           <label mode="any">Client Information</label>
@@ -880,7 +880,7 @@
         </fields>
         <properties mode="any"/>
       </widget>
-      <widget name="studio_header_1" type="studio_header">
+      <widget name="template_rendering_header_1" type="template_rendering_header">
         <handlingLabels>true</handlingLabels>
         <labels>
           <label mode="any">Intervention Details</label>
@@ -996,7 +996,7 @@
           <properties mode="any">
             <property name="nxl_colspan_0">2</property>
           </properties>
-          <widget>studio_header</widget>
+          <widget>template_rendering_header</widget>
         </row>
         <row>
           <properties mode="any">
@@ -1047,7 +1047,7 @@
             <property name="nxl_colspan_0">1</property>
             <property name="nxl_colspan_1">1</property>
           </properties>
-          <widget>studio_header_1</widget>
+          <widget>template_rendering_header_1</widget>
           <widget/>
         </row>
         <row>
@@ -1108,7 +1108,7 @@
         </properties>
         <properties mode="any"/>
       </widget>
-      <widget name="studio_header" type="studio_header">
+      <widget name="template_rendering_header" type="template_rendering_header">
         <handlingLabels>true</handlingLabels>
         <labels>
           <label mode="any">Client Information</label>
@@ -1216,7 +1216,7 @@
         </fields>
         <properties mode="any"/>
       </widget>
-      <widget name="studio_header_1" type="studio_header">
+      <widget name="template_rendering_header_1" type="template_rendering_header">
         <handlingLabels>true</handlingLabels>
         <labels>
           <label mode="any">Intervention Details</label>
@@ -1318,7 +1318,7 @@
           <properties mode="any">
             <property name="nxl_colspan_0">2</property>
           </properties>
-          <widget>studio_header</widget>
+          <widget>template_rendering_header</widget>
         </row>
         <row>
           <properties mode="any">
@@ -1373,7 +1373,7 @@
             <property name="nxl_colspan_0">1</property>
             <property name="nxl_colspan_1">1</property>
           </properties>
-          <widget>studio_header_1</widget>
+          <widget>template_rendering_header_1</widget>
           <widget/>
         </row>
         <row>
@@ -1405,7 +1405,7 @@
           <widget>consultant</widget>
         </row>
       </rows>
-      <widget name="studio_header" type="studio_header">
+      <widget name="template_rendering_header" type="template_rendering_header">
         <handlingLabels>true</handlingLabels>
         <labels>
           <label mode="any">Client Information</label>
@@ -1506,7 +1506,7 @@
         </fields>
         <properties mode="any"/>
       </widget>
-      <widget name="studio_header_1" type="studio_header">
+      <widget name="template_rendering_header_1" type="template_rendering_header">
         <handlingLabels>true</handlingLabels>
         <labels>
           <label mode="any">Intervention Details</label>
@@ -1642,5 +1642,34 @@
         <major/>
       </options>
     </versioningRule>
+  </extension>
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes">
+    <widgetType name="template_rendering_header">
+      <configuration>
+        <title>Header</title>
+        <description>
+          The header widget just displays the widget label.
+        </description>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes/>
+          <defaultTypes/>
+        </fields>
+        <categories>
+          <category>configuration_not_ready</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/template_rendering_header_widget.xhtml
+      </property>
+    </widgetType>
   </extension>
 </component>
