@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
   version="2.4">
-  
+
   <filter>
     <display-name>WebEngine Authentication Filter</display-name>
     <filter-name>NuxeoAuthenticationFilter</filter-name>
@@ -78,7 +78,7 @@
     <filter-name>RequestContextFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
+
 
   <servlet>
     <servlet-name>Nuxeo Resource Servlet</servlet-name>
@@ -88,7 +88,7 @@
     <servlet-name>Nuxeo Resource Servlet</servlet-name>
     <url-pattern>/skin/*</url-pattern>
   </servlet-mapping>
-  
+
   <!-- NXThemes -->
   <servlet>
     <servlet-name>NXThemes Resource Library</servlet-name>
@@ -116,6 +116,17 @@
   <servlet-mapping>
     <servlet-name>NXThemes Negotiation Selector</servlet-name>
     <url-pattern>/nuxeo/nxthemes-select/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Nuxeo Downloader</servlet-name>
+    <servlet-class>
+      org.nuxeo.ecm.platform.ui.web.download.DownloadServlet
+    </servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Nuxeo Downloader</servlet-name>
+    <url-pattern>/nxbigfile/*</url-pattern>
   </servlet-mapping>
 
 </web-app>
