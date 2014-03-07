@@ -22,9 +22,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -45,10 +42,8 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -136,8 +131,6 @@ public class TestAuditFileSystemChangeFinder {
         }
         user1Session = repository.openSessionAs("user1");
 
-        dispose(session);
-        dispose(user1Session);
         TransactionHelper.startTransaction();
         try {
             folder1 = session.createDocument(session.createDocumentModel("/",
@@ -999,7 +992,6 @@ public class TestAuditFileSystemChangeFinder {
     protected void commitAndWaitForAsyncCompletion(CoreSession session)
             throws Exception {
         TransactionHelper.commitOrRollbackTransaction();
-        dispose(session);
         eventService.waitForAsyncCompletion();
     }
 
@@ -1014,22 +1006,6 @@ public class TestAuditFileSystemChangeFinder {
         // See https://jira.nuxeo.com/browse/NXP-11964
         // and https://jira.nuxeo.com/browse/NXP-13811
         Thread.sleep(100);
-    }
-
-    protected void dispose(CoreSession session) throws Exception {
-        if (Proxy.isProxyClass(session.getClass())) {
-            InvocationHandler handler = Proxy.getInvocationHandler(session);
-            if (handler instanceof TransactionalCoreSessionWrapper) {
-                Field field = TransactionalCoreSessionWrapper.class.getDeclaredField("session");
-                field.setAccessible(true);
-                session = (CoreSession) field.get(handler);
-            }
-        }
-        if (!(session instanceof LocalSession)) {
-            throw new UnsupportedOperationException(
-                    "Cannot dispose session of class " + session.getClass());
-        }
-        ((LocalSession) session).getSession().dispose();
     }
 
     protected void setPermissions(DocumentModel doc, String userName,
