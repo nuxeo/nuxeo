@@ -258,27 +258,27 @@ public class TestServiceWithCore extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.publisher.test",
                 "OSGI-INF/publisher-remote-contrib-test.xml");
 
-        assertEquals(0, PublisherServiceImpl.getLiveTreeCount());
+        PublisherServiceImpl service = (PublisherServiceImpl) Framework.getLocalService(PublisherService.class);
 
-        PublisherService service = Framework.getLocalService(PublisherService.class);
+        assertEquals(0, service.getLiveTreeCount());
 
         // get a local tree
         PublicationTree ltree = service.getPublicationTree(
                 "DefaultSectionsTree-default-domain", session, null);
-        assertEquals(1, PublisherServiceImpl.getLiveTreeCount());
+        assertEquals(1, service.getLiveTreeCount());
 
         // get a remote tree
         PublicationTree rtree = service.getPublicationTree("ClientRemoteTree",
                 session, null);
-        assertEquals(3, PublisherServiceImpl.getLiveTreeCount());
+        assertEquals(3, service.getLiveTreeCount());
 
         // release local tree
         ltree.release();
-        assertEquals(2, PublisherServiceImpl.getLiveTreeCount());
+        assertEquals(2, service.getLiveTreeCount());
 
         // release remote tree
         rtree.release();
-        assertEquals(0, PublisherServiceImpl.getLiveTreeCount());
+        assertEquals(0, service.getLiveTreeCount());
 
     }
 

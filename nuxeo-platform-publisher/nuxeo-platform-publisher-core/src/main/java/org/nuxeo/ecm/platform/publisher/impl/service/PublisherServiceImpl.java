@@ -59,25 +59,25 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * POJO implementation of the publisher service Implements both
  * {@link PublisherService} and {@link RemotePublicationTreeManager}.
- * 
+ *
  * @author tiry
  */
 public class PublisherServiceImpl extends DefaultComponent implements
         PublisherService, RemotePublicationTreeManager {
 
-    protected static Map<String, PublicationTreeDescriptor> treeDescriptors = new HashMap<String, PublicationTreeDescriptor>();
+    private final Log log = LogFactory.getLog(PublisherServiceImpl.class);
 
-    protected static Map<String, PublishedDocumentFactoryDescriptor> factoryDescriptors = new HashMap<String, PublishedDocumentFactoryDescriptor>();
+    protected Map<String, PublicationTreeDescriptor> treeDescriptors = new HashMap<String, PublicationTreeDescriptor>();
 
-    protected static Map<String, PublicationTreeConfigDescriptor> treeConfigDescriptors = new HashMap<String, PublicationTreeConfigDescriptor>();
+    protected Map<String, PublishedDocumentFactoryDescriptor> factoryDescriptors = new HashMap<String, PublishedDocumentFactoryDescriptor>();
 
-    protected static Map<String, ValidatorsRuleDescriptor> validatorsRuleDescriptors = new HashMap<String, ValidatorsRuleDescriptor>();
+    protected Map<String, PublicationTreeConfigDescriptor> treeConfigDescriptors = new HashMap<String, PublicationTreeConfigDescriptor>();
 
-    protected static Map<String, PublicationTreeConfigDescriptor> pendingDescriptors = new HashMap<String, PublicationTreeConfigDescriptor>();
+    protected Map<String, ValidatorsRuleDescriptor> validatorsRuleDescriptors = new HashMap<String, ValidatorsRuleDescriptor>();
 
-    private static final Log log = LogFactory.getLog(PublisherServiceImpl.class);
+    protected Map<String, PublicationTreeConfigDescriptor> pendingDescriptors = new HashMap<String, PublicationTreeConfigDescriptor>();
 
-    protected static Map<String, PublicationTree> liveTrees = new HashMap<String, PublicationTree>();
+    protected Map<String, PublicationTree> liveTrees = new HashMap<String, PublicationTree>();
 
     protected RootSectionFinderFactory rootSectionFinderFactory = null;
 
@@ -140,11 +140,11 @@ public class PublisherServiceImpl extends DefaultComponent implements
     }
 
     // for testing cleanup
-    public static int getLiveTreeCount() {
+    public int getLiveTreeCount() {
         return liveTrees.size();
     }
 
-    public static PublicationTree getTreeBySid(String sid) {
+    public PublicationTree getTreeBySid(String sid) {
         return liveTrees.get(sid);
     }
 

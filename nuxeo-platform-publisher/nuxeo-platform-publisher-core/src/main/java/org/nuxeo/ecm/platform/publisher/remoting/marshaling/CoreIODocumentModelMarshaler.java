@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.DocumentPipe;
@@ -63,8 +62,7 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
 
         }
 
-        CoreSession coreSession = CoreInstance.getInstance().getSession(
-                doc.getSessionId());
+        CoreSession coreSession = doc.getCoreSession();
         DocumentReader reader = new SingleDocumentReaderWithInLineBlobs(coreSession, doc);
 
         File tmpFile = null;

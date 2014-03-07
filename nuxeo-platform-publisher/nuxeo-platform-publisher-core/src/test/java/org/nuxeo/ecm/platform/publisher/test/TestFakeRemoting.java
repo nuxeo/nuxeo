@@ -250,7 +250,7 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         assertEquals(proxyTreeClientId, proxyNode.getSessionId());
 
         // check client publication tree
-        PublicationTree clientTree = PublisherServiceImpl.getTreeBySid(proxyTreeClientId);
+        PublicationTree clientTree = ((PublisherServiceImpl) service).getTreeBySid(proxyTreeClientId);
         String clientTreeType = clientTree.getTreeType();
         String clientTechTreeType = clientTree.getType();
         String clientTreeClientId = clientTree.getSessionId();
@@ -273,7 +273,7 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         assertEquals(serverSid, nodeServerSid);
 
         // check server publication tree
-        PublicationTree serverTree = PublisherServiceImpl.getTreeBySid(serverSid);
+        PublicationTree serverTree = ((PublisherServiceImpl) service).getTreeBySid(serverSid);
         String serverTreeType = serverTree.getTreeType();
         String serverTechTreeType = serverTree.getType();
         String serverTreeClientId = serverTree.getSessionId();
