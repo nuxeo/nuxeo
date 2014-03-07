@@ -16,13 +16,7 @@
  */
 package org.nuxeo.ecm.quota.count;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
-import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -44,7 +38,6 @@ public class IsolatedSessionRunner {
      */
     public IsolatedSessionRunner(CoreSession session, EventService eventService) throws Exception {
         this.session = session;
-        dispose(session);
         this.eventService = eventService;
     }
 
@@ -63,25 +56,8 @@ public class IsolatedSessionRunner {
             TransactionHelper.commitOrRollbackTransaction();
             Thread.sleep(getWaitTimeInMs());
             eventService.waitForAsyncCompletion();
-            dispose(session);
         }
 
-    }
-
-    protected void dispose(CoreSession session) throws Exception {
-        if (Proxy.isProxyClass(session.getClass())) {
-            InvocationHandler handler = Proxy.getInvocationHandler(session);
-            if (handler instanceof TransactionalCoreSessionWrapper) {
-                Field field = TransactionalCoreSessionWrapper.class.getDeclaredField("session");
-                field.setAccessible(true);
-                session = (CoreSession) field.get(handler);
-            }
-        }
-        if (!(session instanceof LocalSession)) {
-            throw new UnsupportedOperationException(
-                    "Cannot dispose session of class " + session.getClass());
-        }
-        ((LocalSession) session).getSession().dispose();
     }
 
     public long getWaitTimeInMs() {
