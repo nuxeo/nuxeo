@@ -62,13 +62,13 @@
         value="#{!collectionActions.canAddToSelectedCollection()}">
         <div class="buttonsGadget">
           <c:if test="#{selection}">
-            <nxh:commandButton value="#{messages['command.import']}"
+            <nxh:commandButton value="#{messages['label.addToCollection']}"
               action="#{collectionActions.addCurrentSelectionToSelectedCollection()}"
               disabled="#{canNotAddToSelectedCollection}"
               styleClass="button" />
           </c:if>
           <c:if test="#{!selection}">
-            <nxh:commandButton value="#{messages['command.import']}"
+            <nxh:commandButton value="#{messages['label.addToCollection']}"
               action="#{collectionActions.addCurrentDocumentToSelectedCollection()}"
               disabled="#{canNotAddToSelectedCollection}"
               styleClass="button" />
