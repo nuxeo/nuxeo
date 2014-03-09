@@ -30,13 +30,21 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.io.api.IOManager;
 import org.nuxeo.ecm.platform.io.api.IOResourceAdapter;
 import org.nuxeo.ecm.platform.io.api.IOResources;
@@ -59,9 +67,9 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class TestIORelationAdapter extends NXRuntimeTestCase {
+public class TestIORelationAdapter extends SQLRepositoryTestCase {
 
-    private static final String repoName = "demo";
+    private static final String repoName = DatabaseHelper.DATABASE.repositoryName;
 
     private static final String graphName = "myrelations";
 
@@ -80,13 +88,13 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
     private static final String doc1RefCopy = "DOC200600013_02.01_copy";
 
     private static final QNameResource doc1Resource = new QNameResourceImpl(
-            documentNamespace, "demo/DOC200600013_02.01");
+            documentNamespace, "test/DOC200600013_02.01");
 
     private static final QNameResource doc2Resource = new QNameResourceImpl(
-            documentNamespace, "demo/DOC200600015_01.00");
+            documentNamespace, "test/DOC200600015_01.00");
 
     private static final QNameResource doc1ResourceCopy = new QNameResourceImpl(
-            documentNamespace, "demo/DOC200600013_02.01_copy");
+            documentNamespace, "test/DOC200600013_02.01_copy");
 
     private static final Resource simpleResource = new ResourceImpl(
             "http://www.wikipedia.com/Enterprise_Content_Management");
@@ -101,15 +109,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.event");
-        // fake repo setup
-        deployContrib("org.nuxeo.ecm.relations.io.tests",
-                "RepositoryManager.xml");
-        deployContrib("org.nuxeo.ecm.relations.io.tests",
-                "RepositoryService.xml");
-        deployContrib("org.nuxeo.ecm.relations.io.tests", "FakeRepository.xml");
-        deployContrib("org.nuxeo.ecm.relations.io.tests", "SecurityService.xml");
+        openSession();
 
         // specific files
         deployContrib("org.nuxeo.ecm.relations.io.tests",
@@ -126,6 +126,24 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         assertNotNull(graph);
         assertEquals(JenaGraph.class, graph.getClass());
         this.graph = (JenaGraph) graph;
+
+        createDocuments();
+    }
+
+    private void createDocuments() throws ClientException {
+        String type = "File";
+        String id1 = doc1Ref;
+        String id2 = doc1RefCopy;
+        String name = "file1";
+        String parentPath = "/";
+        DocumentModel doc1 = new DocumentModelImpl((String) null, type, id1,
+                new Path(name), null, null, new PathRef(parentPath), null,
+                null, null, session.getRepositoryName());
+        DocumentModel doc2 = new DocumentModelImpl((String) null, type, id2,
+                new Path(name), null, null, new PathRef(parentPath), null,
+                null, null, session.getRepositoryName());
+        session.importDocuments(Arrays.asList(doc1, doc2));
+        session.save();
     }
 
     @Override
@@ -135,6 +153,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
             graph.clear();
         }
         graph = null;
+        closeSession();
         super.tearDown();
     }
 
