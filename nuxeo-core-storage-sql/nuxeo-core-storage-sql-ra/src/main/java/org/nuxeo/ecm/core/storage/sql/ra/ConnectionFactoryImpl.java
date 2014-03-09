@@ -27,10 +27,7 @@ import javax.resource.spi.ConnectionRequestInfo;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
-import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
@@ -38,7 +35,6 @@ import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSecurityManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
 import org.nuxeo.ecm.core.storage.sql.net.MapperClientInfo;
 import org.nuxeo.runtime.api.Framework;
@@ -64,8 +60,6 @@ public class ConnectionFactoryImpl implements Repository,
     private final ConnectionManager connectionManager;
 
     private final String name;
-
-    private SecurityManager securityManager;
 
     private Reference reference;
 
@@ -215,31 +209,6 @@ public class ConnectionFactoryImpl implements Repository,
             throw new DocumentException(e.getMessage(), e);
         }
         return new SQLSession(session, this, context);
-    }
-
-    @Override
-    public synchronized SecurityManager getNuxeoSecurityManager() {
-        if (securityManager != null) {
-            return securityManager;
-        }
-        RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
-        if (repositoryService != null) {
-            RepositoryDescriptor descriptor = repositoryService.getRepositoryManager().getDescriptor(
-                    name);
-            if (descriptor.getSecurityManagerClass() != null) {
-                try {
-                    securityManager = descriptor.getSecurityManager();
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                } catch (InstantiationException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        if (securityManager == null) {
-            securityManager = new SQLSecurityManager();
-        }
-        return securityManager;
     }
 
     @Override

@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
 import org.nuxeo.ecm.core.api.operation.Operation;
 import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 
@@ -1698,19 +1697,6 @@ public interface CoreSession {
      * @throws ClientException
      */
     DocumentModel getSuperSpace(DocumentModel doc) throws ClientException;
-
-    /**
-     * Returns security descriptors of doc and all it's children that hold
-     * explicit security.
-     *
-     * @param docModel the document node from where the security export is done
-     * @param includeParents flag is the parent nodes holding security
-     *            information should be added at the top of the returned list
-     * @return a list of SecuritySummaryEntry
-     * @throws ClientException
-     */
-    List<SecuritySummaryEntry> getSecuritySummary(DocumentModel docModel,
-            Boolean includeParents) throws ClientException;
 
     /**
      * Returns the repository name against which this core session is bound.

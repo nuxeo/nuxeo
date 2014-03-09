@@ -32,8 +32,7 @@ public class TestSQLSecurityManager {
         ACLRow acl1 = new ACLRow(0, "local", true, "Read", "bob", null);
         ACLRow acl2 = new ACLRow(1, "wf", false, "Write", "steve", null);
         ACLRow acl3 = new ACLRow(2, "wf", true, "Zap", "pete", null);
-        ACP acp = SQLSecurityManager.aclRowsToACP(new ACLRow[] { acl1, acl2,
-                acl3 });
+        ACP acp = SQLSession.aclRowsToACP(new ACLRow[] { acl1, acl2, acl3 });
 
         ACL[] acls = acp.getACLs();
         assertEquals(2, acls.length);
@@ -85,7 +84,7 @@ public class TestSQLSecurityManager {
         ace = new ACE("x", "y", true);
         acl.add(ace);
         acp.addACL(acl);
-        ACLRow[] aclrows = SQLSecurityManager.acpToAclRows(acp);
+        ACLRow[] aclrows = SQLSession.acpToAclRows(acp);
         assertEquals(3, aclrows.length);
 
         ACLRow aclrow = aclrows[0];
@@ -125,8 +124,8 @@ public class TestSQLSecurityManager {
         ace = new ACE("x", "y", true);
         acl.add(ace);
         acp.addACL(acl);
-        ACLRow[] aclrows = SQLSecurityManager.updateAclRows(new ACLRow[] {
-                acl1, acl2, acl3 }, acp);
+        ACLRow[] aclrows = SQLSession.updateAclRows(new ACLRow[] { acl1, acl2,
+                acl3 }, acp);
 
         assertEquals(5, aclrows.length);
 

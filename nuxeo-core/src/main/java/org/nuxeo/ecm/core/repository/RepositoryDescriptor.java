@@ -24,7 +24,6 @@ import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 
@@ -59,9 +58,6 @@ public class RepositoryDescriptor {
 
     private String home;
     private String config;
-
-    @XNode("@securityManager")
-    private Class<SecurityManager> securityManager;
 
     @XNode("@forceReloadTypes")
     private boolean forceReloadTypes = false;
@@ -136,22 +132,6 @@ public class RepositoryDescriptor {
         return pool;
     }
 
-    public void setSecurityManagerClass(Class<SecurityManager> securityManager) {
-        this.securityManager = securityManager;
-    }
-
-    public Class<SecurityManager> getSecurityManagerClass() {
-        return securityManager;
-    }
-
-    public SecurityManager getSecurityManager() throws IllegalAccessException,
-            InstantiationException {
-        if (securityManager == null) {
-            return null;
-        }
-        return securityManager.newInstance();
-    }
-
     public final Repository create() throws Exception {
         return getFactory().createRepository(this);
     }
@@ -172,7 +152,6 @@ public class RepositoryDescriptor {
 
     public void dispose() {
         factoryClass = null;
-        securityManager = null;
         name = null;
         home = null;
         config = null;

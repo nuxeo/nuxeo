@@ -25,11 +25,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.security.SecurityManager;
+import org.nuxeo.ecm.core.security.SecurityException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -107,13 +108,6 @@ public interface Session {
      * @return the type manager
      */
     SchemaManager getTypeManager();
-
-    /**
-     * Gets the security manager used by the repository.
-     *
-     * @return the security manager
-     */
-    SecurityManager getSecurityManager();
 
     /**
      * The XAResource corresponding to this session.
@@ -309,5 +303,12 @@ public interface Session {
      */
     Document getVersion(String versionableId, VersionModel versionModel)
             throws DocumentException;
+
+    ACP getMergedACP(Document doc) throws SecurityException;
+
+    ACP getACP(Document doc) throws SecurityException;
+
+    void setACP(Document doc, ACP acp, boolean overwrite)
+            throws SecurityException;
 
 }
