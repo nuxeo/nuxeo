@@ -15,25 +15,17 @@
 package org.nuxeo.ecm.core.security;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
-import org.nuxeo.ecm.core.api.security.impl.SecuritySummaryEntryImpl;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -146,15 +138,12 @@ public class SecurityService extends DefaultComponent {
             return true;
         }
 
-        // get the security store
-        SecurityManager securityManager = doc.getSession().getRepository().getNuxeoSecurityManager();
-
         // fully check each ACE in turn
         String[] resolvedPermissions = getPermissionsToCheck(permission);
         String[] additionalPrincipals = getPrincipalsToCheck(principal);
 
         // get the ordered list of ACE
-        ACP acp = securityManager.getMergedACP(doc);
+        ACP acp = doc.getSession().getMergedACP(doc);
 
         // check pluggable policies
         Access access = securityPolicyService.checkPermission(doc, acp,
@@ -209,83 +198,6 @@ public class SecurityService extends DefaultComponent {
             groups[size] = principal.getName();
             groups[size + 1] = SecurityConstants.EVERYONE;
             return groups;
-        }
-    }
-
-    public static List<SecuritySummaryEntry> getSecuritySummary(Document doc,
-            Boolean includeParents) {
-        List<SecuritySummaryEntry> result = new ArrayList<SecuritySummaryEntry>();
-
-        if (doc == null) {
-            return result;
-        }
-
-        addChildrenToSecuritySummary(doc, result);
-        // TODO: change API to use boolean instead
-        if (includeParents) {
-            addParentsToSecurirySummary(doc, result);
-        }
-        return result;
-    }
-
-    private static SecuritySummaryEntry createSecuritySummaryEntry(Document doc)
-            throws DocumentException {
-        return new SecuritySummaryEntryImpl(new IdRef(doc.getUUID()),
-                new PathRef(doc.getPath()),
-                doc.getSession().getSecurityManager().getACP(doc));
-    }
-
-    private static void addParentsToSecurirySummary(Document doc,
-            List<SecuritySummaryEntry> summary) {
-
-        Document parent;
-        try {
-            parent = doc.getParent();
-        } catch (DocumentException e) {
-            return;
-        }
-
-        if (parent == null) {
-            return;
-        }
-
-        try {
-            SecuritySummaryEntry entry = createSecuritySummaryEntry(parent);
-            final ACP acp = entry.getAcp();
-            if (acp != null) {
-                final ACL[] acls = acp.getACLs();
-                if (acls != null && acls.length > 0) {
-                    summary.add(0, entry);
-                }
-            }
-        } catch (DocumentException e) {
-            return;
-        }
-
-        addParentsToSecurirySummary(parent, summary);
-    }
-
-    private static void addChildrenToSecuritySummary(Document doc,
-            List<SecuritySummaryEntry> summary) {
-        try {
-            SecuritySummaryEntry entry = createSecuritySummaryEntry(doc);
-            ACP acp = entry.getAcp();
-            if (acp != null && acp.getACLs() != null
-                    && acp.getACLs().length > 0) {
-                summary.add(entry);
-            }
-        } catch (DocumentException e) {
-            return;
-        }
-        try {
-            Iterator<Document> iter = doc.getChildren();
-            while (iter.hasNext()) {
-                Document child = iter.next();
-                addChildrenToSecuritySummary(child, summary);
-            }
-        } catch (DocumentException e) {
-            // TODO Auto-generated catch block
-            return;
         }
     }
 

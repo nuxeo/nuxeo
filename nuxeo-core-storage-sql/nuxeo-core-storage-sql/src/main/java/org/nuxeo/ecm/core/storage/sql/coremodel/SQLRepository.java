@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -49,18 +48,11 @@ public class SQLRepository implements Repository {
 
     private final SchemaManager schemaManager;
 
-    private final SecurityManager securityManager;
-
     private final String name;
 
     public SQLRepository(RepositoryDescriptor descriptor) throws Exception {
         schemaManager = Framework.getService(SchemaManager.class);
         repository = new RepositoryImpl(getDescriptor(descriptor));
-        if (descriptor.getSecurityManagerClass() == null) {
-            securityManager = new SQLSecurityManager();
-        } else {
-            securityManager = descriptor.getSecurityManager();
-        }
         name = descriptor.getName();
     }
 
@@ -105,11 +97,6 @@ public class SQLRepository implements Repository {
     @Override
     public SchemaManager getTypeManager() {
         return schemaManager;
-    }
-
-    @Override
-    public SecurityManager getNuxeoSecurityManager() {
-        return securityManager;
     }
 
     /*

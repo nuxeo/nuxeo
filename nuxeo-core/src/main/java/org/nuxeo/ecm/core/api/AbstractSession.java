@@ -73,7 +73,6 @@ import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
 import org.nuxeo.ecm.core.api.operation.Status;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
@@ -770,7 +769,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ_SECURITY);
-            return getSession().getSecurityManager().getMergedACP(doc);
+            return getSession().getMergedACP(doc);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get acp", e);
         }
@@ -792,7 +791,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             notifyEvent(DocumentEventTypes.BEFORE_DOC_SECU_UPDATE, docModel,
                     options, null, null, true, true);
-            getSession().getSecurityManager().setACP(doc, newAcp, overwrite);
+            getSession().setACP(doc, newAcp, overwrite);
             docModel = readModel(doc);
             notifyEvent(DocumentEventTypes.DOCUMENT_SECURITY_UPDATED, docModel,
                     options, null, null, true, false);
@@ -3109,25 +3108,6 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
-    public List<SecuritySummaryEntry> getSecuritySummary(
-            DocumentModel docModel, Boolean includeParents)
-            throws ClientException {
-        if (docModel == null) {
-            docModel = getRootDocument();
-        }
-        Document doc;
-        try {
-            doc = resolveReference(docModel.getRef());
-
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get document "
-                    + docModel.getRef().toString(), e);
-        }
-        getSecurityService();
-        return SecurityService.getSecuritySummary(doc, includeParents);
-    }
-
-    @Override
     public String getRepositoryName() {
         return repositoryName;
     }
@@ -3290,8 +3270,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
 
             // ACPs need the session, so aren't done in the factory method
             if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
-                refresh.acp = getSession().getSecurityManager().getMergedACP(
-                        doc);
+                refresh.acp = getSession().getMergedACP(doc);
             }
 
             return refresh;

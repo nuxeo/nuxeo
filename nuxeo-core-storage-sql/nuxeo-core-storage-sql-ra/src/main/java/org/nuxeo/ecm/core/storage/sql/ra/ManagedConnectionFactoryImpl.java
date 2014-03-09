@@ -69,6 +69,8 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      */
     private RepositoryImpl repository;
 
+    // For JavaEE, called by the ra.xml, then the ds.xml provides properties
+    // through the Java Bean convention
     public ManagedConnectionFactoryImpl() {
         this(new RepositoryDescriptor());
     }
