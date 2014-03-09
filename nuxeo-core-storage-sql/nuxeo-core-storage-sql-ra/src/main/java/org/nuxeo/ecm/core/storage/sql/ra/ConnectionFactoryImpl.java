@@ -140,9 +140,9 @@ public class ConnectionFactoryImpl implements Repository,
                     NuxeoConnectionManagerConfiguration config = cmw.getConfiguration();
                     err = err + ", consider increasing "
                             + "nuxeo.vcs.blocking-timeout-millis (currently "
-                            + config.blockingTimeoutMillis + ") or "
+                            + config.getBlockingTimeoutMillis() + ") or "
                             + "nuxeo.vcs.max-pool-size (currently "
-                            + config.maxPoolSize + ")";
+                            + config.getMaxPoolSize() + ")";
                 }
                 throw new StorageException(err, e);
             }
