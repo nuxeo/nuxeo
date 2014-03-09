@@ -191,7 +191,7 @@ public class NuxeoContainer {
         }
         if (config == null) {
             config = new NuxeoConnectionManagerConfiguration();
-            config.setName(config.name + "/" + repositoryName);
+            config.setName(config.getName() + "/" + repositoryName);
         }
         cm = initConnectionManager(repositoryName, config);
         // also bind it in JNDI
@@ -203,7 +203,7 @@ public class NuxeoContainer {
                         getConnectionManagerReference(repositoryName));
             } catch (NamingException e) {
                 log.error("Cannot bind in JNDI connection manager "
-                        + config.name + " to name " + jndiName);
+                        + config.getName() + " to name " + jndiName);
             }
         }
         for (NuxeoContainerListener listener:listeners) {
@@ -651,16 +651,17 @@ public class NuxeoContainer {
     protected static GenericConnectionManager createConnectionManager(
             NuxeoConnectionManagerConfiguration config) {
         TransactionSupport transactionSupport = new XATransactions(
-                config.useTransactionCaching, config.useThreadCaching);
+                config.getUseTransactionCaching(), config.getUseThreadCaching());
         // note: XATransactions -> TransactionCachingInterceptor ->
         // ConnectorTransactionContext casts transaction to Geronimo's
         // TransactionImpl (from TransactionManagerImpl)
-        PoolingSupport poolingSupport = new PartitionedPool(config.maxPoolSize,
-                config.minPoolSize, config.blockingTimeoutMillis,
-                config.idleTimeoutMinutes, config.matchOne, config.matchAll,
-                config.selectOneNoMatch,
-                config.partitionByConnectionRequestInfo,
-                config.partitionBySubject);
+        PoolingSupport poolingSupport = new PartitionedPool(
+                config.getMaxPoolSize(), config.getMinPoolSize(),
+                config.getBlockingTimeoutMillis(),
+                config.getIdleTimeoutMinutes(), config.getMatchOne(),
+                config.getMatchAll(), config.getSelectOneNoMatch(),
+                config.getPartitionByConnectionRequestInfo(),
+                config.getPartitionBySubject());
 
         final Subject subject = new Subject();
         SubjectSource subjectSource = new SubjectSource() {
@@ -674,7 +675,7 @@ public class NuxeoContainer {
 
         return new GenericConnectionManager(transactionSupport, poolingSupport,
                 subjectSource, connectionTracker, transactionManager,
-                config.name, classLoader);
+                config.getName(), classLoader);
     }
 
     public static class TransactionManagerConfiguration {

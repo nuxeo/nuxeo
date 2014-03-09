@@ -25,98 +25,223 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("pool")
 public class NuxeoConnectionManagerConfiguration {
 
-    public String name = "NuxeoConnectionManager";
+    public static final int DEFAULT_MAX_POOL_SIZE = 20;
+
+    public static final int DEFAULT_MIN_POOL_SIZE = 0;
+
+    public static final int DEFAULT_BLOCKING_TIMEOUT_MILLIS = 100;
+
+    public static final int DEFAULT_IDLE_TIMEOUT_MINUTES = 0; // no timeout
+
+    @XNode("@name")
+    private String name = "NuxeoConnectionManager";
 
     // transaction
 
-    public boolean useTransactionCaching = true;
+    @XNode("@useTransactionCaching")
+    private Boolean useTransactionCaching;
 
-    public boolean useThreadCaching = true;
+    @XNode("@useThreadCaching")
+    private Boolean useThreadCaching;
 
     // pool
 
-    public boolean matchOne = true; // unused by Geronimo?
+    @XNode("@matchOne")
+    private Boolean matchOne; // unused by Geronimo?
 
-    public boolean matchAll = true;
+    @XNode("@matchAll")
+    private Boolean matchAll;
 
-    public boolean selectOneNoMatch = false;
+    @XNode("@selectOneNoMatch")
+    private Boolean selectOneNoMatch;
 
-    public boolean partitionByConnectionRequestInfo = false;
+    @XNode("@partitionByConnectionRequestInfo")
+    private Boolean partitionByConnectionRequestInfo;
 
-    public boolean partitionBySubject = true;
+    @XNode("@partitionBySubject")
+    private Boolean partitionBySubject;
 
-    public int maxPoolSize = 20;
+    @XNode("@maxPoolSize")
+    private Integer maxPoolSize;
 
-    public int minPoolSize = 0;
+    @XNode("@minPoolSize")
+    private Integer minPoolSize;
 
-    public int blockingTimeoutMillis = 100;
+    @XNode("@blockingTimeoutMillis")
+    private Integer blockingTimeoutMillis;
 
-    public int idleTimeoutMinutes = 0; // no timeout
+    @XNode("@idleTimeoutMinutes")
+    private Integer idleTimeoutMinutes;
 
-    /*
-     * Setters used for Bean API to set values from
-     * NuxeoConnectionManagerFactory.
-     */
+    public NuxeoConnectionManagerConfiguration() {
+    }
 
-    @XNode("@name")
+    /** Copy constructor. */
+    public NuxeoConnectionManagerConfiguration(
+            NuxeoConnectionManagerConfiguration other) {
+        name = other.name;
+        useTransactionCaching = other.useTransactionCaching;
+        useThreadCaching = other.useThreadCaching;
+        matchOne = other.matchOne;
+        matchAll = other.matchAll;
+        selectOneNoMatch = other.selectOneNoMatch;
+        partitionByConnectionRequestInfo = other.partitionByConnectionRequestInfo;
+        partitionBySubject = other.partitionBySubject;
+        maxPoolSize = other.maxPoolSize;
+        minPoolSize = other.minPoolSize;
+        blockingTimeoutMillis = other.blockingTimeoutMillis;
+        idleTimeoutMinutes = other.idleTimeoutMinutes;
+    }
+
+    public void merge(NuxeoConnectionManagerConfiguration other) {
+        if (other.name != null) {
+            name = other.name;
+        }
+        if (other.useTransactionCaching != null) {
+            useTransactionCaching = other.useTransactionCaching;
+        }
+        if (other.useThreadCaching != null) {
+            useThreadCaching = other.useThreadCaching;
+        }
+        if (other.matchOne != null) {
+            matchOne = other.matchOne;
+        }
+        if (other.matchAll != null) {
+            matchAll = other.matchAll;
+        }
+        if (other.selectOneNoMatch != null) {
+            selectOneNoMatch = other.selectOneNoMatch;
+        }
+        if (other.partitionByConnectionRequestInfo != null) {
+            partitionByConnectionRequestInfo = other.partitionByConnectionRequestInfo;
+        }
+        if (other.partitionBySubject != null) {
+            partitionBySubject = other.partitionBySubject;
+        }
+        if (other.maxPoolSize != null) {
+            maxPoolSize = other.maxPoolSize;
+        }
+        if (other.minPoolSize != null) {
+            minPoolSize = other.minPoolSize;
+        }
+        if (other.blockingTimeoutMillis != null) {
+            blockingTimeoutMillis = other.blockingTimeoutMillis;
+        }
+        if (other.idleTimeoutMinutes != null) {
+            idleTimeoutMinutes = other.idleTimeoutMinutes;
+        }
+    }
+
+    /** False if the boolean is null or FALSE, true otherwise. */
+    private static boolean defaultFalse(Boolean bool) {
+        return Boolean.TRUE.equals(bool);
+    }
+
+    /** True if the boolean is null or TRUE, false otherwise. */
+    private static boolean defaultTrue(Boolean bool) {
+        return !Boolean.FALSE.equals(bool);
+    }
+
+    private static int defaultInt(Integer value, int def) {
+        return value == null ? def : value.intValue();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean getUseTransactionCaching() {
+        return defaultTrue(useTransactionCaching);
+    }
+
+    public boolean getUseThreadCaching() {
+        return defaultTrue(useThreadCaching);
+    }
+
+    public boolean getMatchOne() {
+        return defaultTrue(matchOne);
+    }
+
+    public boolean getMatchAll() {
+        return defaultTrue(matchAll);
+    }
+
+    public boolean getSelectOneNoMatch() {
+        return defaultFalse(selectOneNoMatch);
+    }
+
+    public boolean getPartitionByConnectionRequestInfo() {
+        return defaultFalse(partitionByConnectionRequestInfo);
+    }
+
+    public boolean getPartitionBySubject() {
+        return defaultTrue(partitionBySubject);
+    }
+
+    public int getMaxPoolSize() {
+        return defaultInt(maxPoolSize, DEFAULT_MAX_POOL_SIZE);
+    }
+
+    public int getMinPoolSize() {
+        return defaultInt(minPoolSize, DEFAULT_MIN_POOL_SIZE);
+    }
+
+    public int getBlockingTimeoutMillis() {
+        return defaultInt(blockingTimeoutMillis,
+                DEFAULT_BLOCKING_TIMEOUT_MILLIS);
+    }
+
+    public int getIdleTimeoutMinutes() {
+        return defaultInt(idleTimeoutMinutes, DEFAULT_IDLE_TIMEOUT_MINUTES);
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    @XNode("@useTransactionCaching")
     public void setUseTransactionCaching(boolean useTransactionCaching) {
-        this.useTransactionCaching = useTransactionCaching;
+        this.useTransactionCaching = Boolean.valueOf(useTransactionCaching);
     }
 
-    @XNode("@useThreadCaching")
     public void setUseThreadCaching(boolean useThreadCaching) {
-        this.useThreadCaching = useThreadCaching;
+        this.useThreadCaching = Boolean.valueOf(useThreadCaching);
     }
 
-    @XNode("@matchOne")
     public void setMatchOne(boolean matchOne) {
-        this.matchOne = matchOne;
+        this.matchOne = Boolean.valueOf(matchOne);
     }
 
-    @XNode("@matchAll")
     public void setMatchAll(boolean matchAll) {
-        this.matchAll = matchAll;
+        this.matchAll = Boolean.valueOf(matchAll);
     }
 
-    @XNode("@selectOneNoMatch")
     public void setSelectOneNoMatch(boolean selectOneNoMatch) {
-        this.selectOneNoMatch = selectOneNoMatch;
+        this.selectOneNoMatch = Boolean.valueOf(selectOneNoMatch);
     }
 
-    @XNode("@partitionByConnectionRequestInfo")
     public void setPartitionByConnectionRequestInfo(
             boolean partitionByConnectionRequestInfo) {
-        this.partitionByConnectionRequestInfo = partitionByConnectionRequestInfo;
+        this.partitionByConnectionRequestInfo = Boolean.valueOf(partitionByConnectionRequestInfo);
     }
 
-    @XNode("@partitionBySubject")
     public void setPartitionBySubject(boolean partitionBySubject) {
-        this.partitionBySubject = partitionBySubject;
+        this.partitionBySubject = Boolean.valueOf(partitionBySubject);
     }
 
-    @XNode("@maxPoolSize")
     public void setMaxPoolSize(int maxPoolSize) {
-        this.maxPoolSize = maxPoolSize;
+        this.maxPoolSize = Integer.valueOf(maxPoolSize);
     }
 
-    @XNode("@minPoolSize")
     public void setMinPoolSize(int minPoolSize) {
-        this.minPoolSize = minPoolSize;
+        this.minPoolSize = Integer.valueOf(minPoolSize);
     }
 
-    @XNode("@blockingTimeoutMillis")
     public void setBlockingTimeoutMillis(int blockingTimeoutMillis) {
-        this.blockingTimeoutMillis = blockingTimeoutMillis;
+        this.blockingTimeoutMillis = Integer.valueOf(blockingTimeoutMillis);
     }
 
-    @XNode("@idleTimeoutMinutes")
     public void setIdleTimeoutMinutes(int idleTimeoutMinutes) {
-        this.idleTimeoutMinutes = idleTimeoutMinutes;
+        this.idleTimeoutMinutes = Integer.valueOf(idleTimeoutMinutes);
     }
 
 }
