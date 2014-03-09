@@ -9,7 +9,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql;
 
 import javax.resource.cci.ConnectionFactory;
@@ -18,7 +17,7 @@ import javax.resource.cci.ConnectionSpec;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * @author Florent Guillaume
+ * Interface for the low-level VCS repository.
  */
 public interface Repository extends ConnectionFactory, RepositoryManagement {
 

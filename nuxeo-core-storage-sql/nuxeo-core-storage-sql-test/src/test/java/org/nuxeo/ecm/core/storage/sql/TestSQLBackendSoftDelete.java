@@ -37,7 +37,7 @@ public class TestSQLBackendSoftDelete extends TestSQLBackend {
             boolean fulltextDisabled) {
         RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay,
                 fulltextDisabled);
-        descriptor.softDeleteEnabled = true;
+        descriptor.setSoftDeleteEnabled(true);
         return descriptor;
     }
 

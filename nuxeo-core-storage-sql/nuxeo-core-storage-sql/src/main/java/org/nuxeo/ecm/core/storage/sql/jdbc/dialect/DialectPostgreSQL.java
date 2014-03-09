@@ -107,7 +107,7 @@ public class DialectPostgreSQL extends Dialect {
                 : repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
                         : repositoryDescriptor.fulltextAnalyzer;
         pathOptimizationsEnabled = repositoryDescriptor == null ? false
-                : repositoryDescriptor.pathOptimizationsEnabled;
+                : repositoryDescriptor.getPathOptimizationsEnabled();
         int major, minor;
         try {
             major = metadata.getDatabaseMajorVersion();

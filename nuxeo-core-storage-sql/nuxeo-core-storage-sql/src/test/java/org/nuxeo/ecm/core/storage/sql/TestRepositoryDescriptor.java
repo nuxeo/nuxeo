@@ -23,9 +23,10 @@ import static org.junit.Assert.*;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.ServerDescriptor;
 
 public class TestRepositoryDescriptor {
+
+    protected XMap xmap;
 
     protected RepositoryDescriptor desc;
 
@@ -36,7 +37,7 @@ public class TestRepositoryDescriptor {
 
     @Before
     public void setUp() throws Exception {
-        XMap xmap = new XMap();
+        xmap = new XMap();
         xmap.register(RepositoryDescriptor.class);
         xmap.register(FulltextIndexDescriptor.class);
         desc = (RepositoryDescriptor) xmap.load(getResource("test-repository-descriptor.xml"));
@@ -45,8 +46,8 @@ public class TestRepositoryDescriptor {
     @Test
     public void testBasic() throws Exception {
         assertEquals("foo", desc.name);
-        assertTrue(desc.clusteringEnabled);
-        assertEquals(1234, desc.clusteringDelay);
+        assertTrue(desc.getClusteringEnabled());
+        assertEquals(1234, desc.getClusteringDelay());
     }
 
     @SuppressWarnings("unchecked")
@@ -119,6 +120,85 @@ public class TestRepositoryDescriptor {
     @Test
     public void testBinaryStorePath() throws Exception {
         assertEquals("/foo/bar", desc.binaryStorePath);
+    }
+
+    @Test
+    public void testMerge() throws Exception {
+        RepositoryDescriptor desc2 = (RepositoryDescriptor) xmap.load(getResource("test-repository-descriptor2.xml"));
+        desc.merge(desc2);
+        assertEquals("/foo/bar2", desc.binaryStorePath);
+        assertFalse(desc.getClusteringEnabled());
+        assertEquals(Arrays.asList("file1", "file2", "file3"),
+                desc.sqlInitFiles);
+        assertTrue(desc.getPathOptimizationsEnabled());
+        assertEquals(2, desc.getPathOptimizationsVersion());
+
+        // schema fields
+
+        assertNotNull(desc.schemaFields);
+        assertEquals(4, desc.schemaFields.size());
+        FieldDescriptor fd;
+        fd = desc.schemaFields.get(0);
+        assertEquals("my:bignote", fd.field);
+        assertEquals("other", fd.type);
+        fd = desc.schemaFields.get(1);
+        assertEquals("foo", fd.field);
+        assertEquals("xyz", fd.type);
+        fd = desc.schemaFields.get(2);
+        assertEquals("bar", fd.field);
+        assertEquals("bartype", fd.type);
+        fd = desc.schemaFields.get(3);
+        assertEquals("def", fd.field);
+        assertEquals("abc", fd.type);
+
+        // fulltext indexes
+
+        assertEquals("english", desc.fulltextAnalyzer);
+        assertEquals("nuxeo", desc.fulltextCatalog);
+        assertEquals(5, desc.fulltextIndexes.size());
+        FulltextIndexDescriptor fti;
+
+        fti = desc.fulltextIndexes.get(0);
+        assertNull(fti.name);
+        assertNull(fti.fieldType);
+        assertEquals(new HashSet<String>(), fti.fields);
+        assertEquals(Collections.singleton("dc:creator"), fti.excludeFields);
+
+        fti = desc.fulltextIndexes.get(1);
+        assertEquals("titraille", fti.name);
+        assertNull(fti.fieldType);
+        assertEquals(
+                new HashSet<String>(Arrays.asList("dc:title", "dc:description",
+                        "my:desc")), fti.fields);
+        assertEquals(new HashSet<String>(), fti.excludeFields);
+
+        fti = desc.fulltextIndexes.get(2);
+        assertEquals("blobs", fti.name);
+        assertEquals("blob", fti.fieldType);
+        assertEquals(new HashSet<String>(), fti.fields);
+        assertEquals(Collections.singleton("foo:bar"), fti.excludeFields);
+
+        fti = desc.fulltextIndexes.get(3);
+        assertEquals("pictures", fti.name);
+        assertNull(fti.fieldType);
+        assertEquals(Collections.singleton("picture:views/*/filename"),
+                fti.fields);
+        assertEquals(new HashSet<String>(), fti.excludeFields);
+        assertEquals("venusian", fti.analyzer);
+        assertEquals("other", fti.catalog);
+
+        fti = desc.fulltextIndexes.get(4);
+        assertEquals("other", fti.name);
+        assertNull(fti.fieldType);
+        assertEquals(Collections.singleton("my:other"), fti.fields);
+        assertEquals(new HashSet<String>(), fti.excludeFields);
+
+        assertEquals(
+                new HashSet<String>(Arrays.asList("Folder", "Workspace",
+                        "OtherExcluded")), desc.fulltextExcludedTypes);
+        assertEquals(
+                new HashSet<String>(Arrays.asList("Note", "File",
+                        "OtherIncluded")), desc.fulltextIncludedTypes);
     }
 
 }

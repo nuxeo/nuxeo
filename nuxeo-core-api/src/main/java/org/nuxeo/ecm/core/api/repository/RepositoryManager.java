@@ -19,8 +19,6 @@ import java.util.Collection;
 /**
  * Manage repositories.
  *
- * TODO: This should be merged with the RepositoryManager from the core module
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface RepositoryManager {

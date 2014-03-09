@@ -356,7 +356,7 @@ public class SessionImpl implements Session, XAResource {
     protected void flushAndScheduleWork() throws StorageException {
         checkThread();
         List<Work> works;
-        if (!repository.getRepositoryDescriptor().fulltextDisabled) {
+        if (!repository.getRepositoryDescriptor().getFulltextDisabled()) {
             works = getFulltextWorks();
         } else {
             works = Collections.emptyList();
@@ -971,7 +971,7 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public Node addProxy(Serializable targetId, Serializable versionableId,
             Node parent, String name, Long pos) throws StorageException {
-        if (!repository.getRepositoryDescriptor().proxiesEnabled) {
+        if (!repository.getRepositoryDescriptor().getProxiesEnabled()) {
             throw new StorageException("Proxies are disabled by configuration");
         }
         Node proxy = addChildNode(parent, name, pos, Model.PROXY_TYPE, false);
@@ -985,7 +985,7 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public void setProxyTarget(Node proxy, Serializable targetId)
             throws StorageException {
-        if (!repository.getRepositoryDescriptor().proxiesEnabled) {
+        if (!repository.getRepositoryDescriptor().getProxiesEnabled()) {
             throw new StorageException("Proxies are disabled by configuration");
         }
         SimpleProperty prop = proxy.getSimpleProperty(Model.PROXY_TARGET_PROP);
@@ -1161,7 +1161,7 @@ public class SessionImpl implements Session, XAResource {
     public List<Node> getProxies(Node document, Node parent)
             throws StorageException {
         checkLive();
-        if (!repository.getRepositoryDescriptor().proxiesEnabled) {
+        if (!repository.getRepositoryDescriptor().getProxiesEnabled()) {
             return Collections.emptyList();
         }
 
@@ -1373,7 +1373,7 @@ public class SessionImpl implements Session, XAResource {
 
     public int cleanupDeletedDocuments(int max, Calendar beforeTime) {
         checkLive();
-        if (!repository.getRepositoryDescriptor().softDeleteEnabled) {
+        if (!repository.getRepositoryDescriptor().getSoftDeleteEnabled()) {
             return 0;
         }
         try {

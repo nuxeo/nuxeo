@@ -276,13 +276,13 @@ public abstract class Dialect {
             softDeleteEnabled = false;
             proxiesEnabled = true;
         } else {
-            fulltextDisabled = repositoryDescriptor.fulltextDisabled;
-            aclOptimizationsEnabled = repositoryDescriptor.aclOptimizationsEnabled;
-            aclOptimizationsConcurrentUpdate = repositoryDescriptor.aclOptimizationsConcurrentUpdate;
-            readAclMaxSize = repositoryDescriptor.readAclMaxSize;
-            clusteringEnabled = repositoryDescriptor.clusteringEnabled;
-            softDeleteEnabled = repositoryDescriptor.softDeleteEnabled;
-            proxiesEnabled = repositoryDescriptor.proxiesEnabled;
+            fulltextDisabled = repositoryDescriptor.getFulltextDisabled();
+            aclOptimizationsEnabled = repositoryDescriptor.getAclOptimizationsEnabled();
+            aclOptimizationsConcurrentUpdate = repositoryDescriptor.getAclOptimizationsConcurrentUpdate();
+            readAclMaxSize = repositoryDescriptor.getReadAclMaxSize();
+            clusteringEnabled = repositoryDescriptor.getClusteringEnabled();
+            softDeleteEnabled = repositoryDescriptor.getSoftDeleteEnabled();
+            proxiesEnabled = repositoryDescriptor.getProxiesEnabled();
         }
     }
 

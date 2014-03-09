@@ -235,7 +235,7 @@ public class RepositoryImpl implements Repository {
     }
 
     protected Class<? extends CachingMapper> getCachingMapperClass() {
-        if (!repositoryDescriptor.cachingMapperEnabled) {
+        if (!repositoryDescriptor.getCachingMapperEnabled()) {
             return null;
         }
         Class<? extends CachingMapper> cachingMapperClass = repositoryDescriptor.cachingMapperClass;
@@ -322,13 +322,13 @@ public class RepositoryImpl implements Repository {
         Mapper lockManagerMapper = backend.newMapper(model, null,
                 MapperKind.LOCK_MANAGER);
         lockManager = new LockManager(lockManagerMapper,
-                repositoryDescriptor.clusteringEnabled);
+                repositoryDescriptor.getClusteringEnabled());
 
         // create the mapper for the cluster node handler
-        if (repositoryDescriptor.clusteringEnabled) {
+        if (repositoryDescriptor.getClusteringEnabled()) {
             backend.newMapper(model, null, MapperKind.CLUSTER_NODE_HANDLER);
             log.info("Clustering enabled with "
-                    + repositoryDescriptor.clusteringDelay
+                    + repositoryDescriptor.getClusteringDelay()
                     + " ms delay for repository: " + getName());
         }
 
@@ -512,7 +512,7 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public int cleanupDeletedDocuments(int max, Calendar beforeTime) {
-        if (!repositoryDescriptor.softDeleteEnabled) {
+        if (!repositoryDescriptor.getSoftDeleteEnabled()) {
             return 0;
         }
         try {

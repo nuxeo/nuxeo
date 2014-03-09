@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,16 +22,16 @@ import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Component and service managing repository instances.
+ * Component and service managing low-level repository instances.
  *
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
@@ -41,6 +41,8 @@ public class RepositoryService extends DefaultComponent implements EventListener
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.repository.RepositoryService");
 
     private static final Log log = LogFactory.getLog(RepositoryService.class);
+
+    public static final String XP_REPOSITORY = "repository";
 
     // event IDs
     public static final String REPOSITORY = "repository";
@@ -97,21 +99,22 @@ public class RepositoryService extends DefaultComponent implements EventListener
     }
 
     @Override
-    public void registerExtension(Extension extension) throws Exception {
-        Object[] repos = extension.getContributions();
-        if (repos != null) {
-            for (Object repo : repos) {
-                repositoryMgr.registerRepository((RepositoryDescriptor) repo);
-            }
+    public void registerContribution(Object contrib, String xpoint,
+            ComponentInstance contributor) {
+        if (XP_REPOSITORY.equals(xpoint)) {
+            repositoryMgr.registerRepository((RepositoryDescriptor) contrib);
+        } else {
+            throw new RuntimeException("Unknown extension point: " + xpoint);
         }
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws Exception {
-        super.unregisterExtension(extension);
-        Object[] repos = extension.getContributions();
-        for (Object repo : repos) {
-            repositoryMgr.unregisterRepository((RepositoryDescriptor) repo);
+    public void unregisterContribution(Object contrib, String xpoint,
+            ComponentInstance contributor) throws Exception {
+        if (XP_REPOSITORY.equals(xpoint)) {
+            repositoryMgr.unregisterRepository((RepositoryDescriptor) contrib);
+        } else {
+            throw new RuntimeException("Unknown extension point: " + xpoint);
         }
     }
 
@@ -122,6 +125,9 @@ public class RepositoryService extends DefaultComponent implements EventListener
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getAdapter(Class<T> adapter) {
+        if (adapter.isAssignableFrom(getClass())) {
+            return (T) this;
+        }
         if (adapter.isAssignableFrom(CoreSession.class)) {
             return (T) LocalSession.createInstance();
         }

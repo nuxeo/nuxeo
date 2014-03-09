@@ -135,10 +135,10 @@ public class DialectOracle extends Dialect {
                 : repositoryDescriptor.fulltextAnalyzer == null ? ""
                         : repositoryDescriptor.fulltextAnalyzer;
         pathOptimizationsEnabled = repositoryDescriptor == null ? false
-                : repositoryDescriptor.pathOptimizationsEnabled;
+                : repositoryDescriptor.getPathOptimizationsEnabled();
         if (pathOptimizationsEnabled) {
             pathOptimizationsVersion = repositoryDescriptor == null ? 0
-                    : repositoryDescriptor.pathOptimizationsVersion;
+                    : repositoryDescriptor.getPathOptimizationsVersion();
         }
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR

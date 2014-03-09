@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,11 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.repository;
 
 import java.io.File;
@@ -28,8 +26,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * Repository descriptor wrapping a more specific low-level (VCS) repository
+ * descriptor.
  */
 // name is required by config
 @XObject(value = "repository", order = { "@name" })
@@ -57,26 +55,41 @@ public class RepositoryDescriptor {
     public NuxeoConnectionManagerConfiguration pool;
 
     private String home;
-    private String config;
 
-    @XNode("@forceReloadTypes")
-    private boolean forceReloadTypes = false;
+    private String config;
 
     private final File REPOS_DIR =
             new File(Framework.getRuntime().getHome(), "repos");
 
-
     public RepositoryDescriptor() {
     }
 
-    public RepositoryDescriptor(String name,
-            Class<RepositoryFactory> factoryClass, String home, String config,
-            boolean forceReloadTypes) {
-        this.name = name;
-        this.factoryClass = factoryClass;
-        this.home = home;
-        this.config = config;
-        this.forceReloadTypes = forceReloadTypes;
+    /** Copy constructor. */
+    public RepositoryDescriptor(RepositoryDescriptor other) {
+        name = other.name;
+        factoryClass = other.factoryClass;
+        pool = other.pool == null ? null
+                : new NuxeoConnectionManagerConfiguration(other.pool);
+        home = other.home;
+        config = other.config;
+    }
+
+    public void merge(RepositoryDescriptor other) {
+        if (other.name != null) {
+            name = other.name;
+        }
+        if (other.factoryClass != null) {
+            factoryClass = other.factoryClass;
+        }
+        if (other.pool != null) {
+            pool = new NuxeoConnectionManagerConfiguration(other.pool);
+        }
+        if (other.home != null) {
+            home = other.home;
+        }
+        if (other.config != null) {
+            config = other.config;
+        }
     }
 
     public String getName() {
@@ -140,14 +153,6 @@ public class RepositoryDescriptor {
             InstantiationException {
         assert factoryClass != null;
         return factoryClass.newInstance();
-    }
-
-    public boolean getForceReloadTypes() {
-        return forceReloadTypes;
-    }
-
-    public void setForceReloadTypes(boolean val) {
-        forceReloadTypes = val;
     }
 
     public void dispose() {

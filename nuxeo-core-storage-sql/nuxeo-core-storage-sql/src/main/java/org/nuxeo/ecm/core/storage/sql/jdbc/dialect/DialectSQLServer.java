@@ -101,7 +101,7 @@ public class DialectSQLServer extends Dialect {
             azure = true;
             fulltextDisabled = true;
             if (repositoryDescriptor != null) {
-                repositoryDescriptor.fulltextDisabled = true;
+                repositoryDescriptor.setFulltextDisabled(true);
             }
         }
         fulltextAnalyzer = repositoryDescriptor == null ? null
@@ -114,7 +114,7 @@ public class DialectSQLServer extends Dialect {
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
         pathOptimizationsEnabled = repositoryDescriptor == null ? false
-                : repositoryDescriptor.pathOptimizationsEnabled;
+                : repositoryDescriptor.getPathOptimizationsEnabled();
         String idt = repositoryDescriptor == null ? null : repositoryDescriptor.idType;
         if (idt == null || "".equals(idt) || "varchar".equalsIgnoreCase(idt)) {
             idType = DialectIdType.VARCHAR;

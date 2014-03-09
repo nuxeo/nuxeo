@@ -34,7 +34,7 @@ public class TestSQLBackendArrayColumns extends TestSQLBackend {
             boolean fulltextDisabled) {
         RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay,
                 fulltextDisabled);
-        descriptor.arrayColumns = true;
+        descriptor.setArrayColumns(true);
         return descriptor;
     }
 

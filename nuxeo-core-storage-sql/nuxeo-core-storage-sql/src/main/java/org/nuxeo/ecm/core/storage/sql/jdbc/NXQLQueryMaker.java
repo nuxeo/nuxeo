@@ -306,7 +306,7 @@ public class NXQLQueryMaker implements QueryMaker {
          * Find whether to check proxies, relations.
          */
 
-        if (!model.getRepositoryDescriptor().proxiesEnabled) {
+        if (!model.getRepositoryDescriptor().getProxiesEnabled()) {
             if (proxyClause == Boolean.TRUE) {
                 throw new StorageException(
                         "Proxies are disabled by configuration, a query with "
@@ -517,7 +517,7 @@ public class NXQLQueryMaker implements QueryMaker {
              * Soft delete.
              */
 
-            if (model.getRepositoryDescriptor().softDeleteEnabled) {
+            if (model.getRepositoryDescriptor().getSoftDeleteEnabled()) {
                 whereClauses.add(hierTable.getColumn(model.MAIN_IS_DELETED_KEY).getFullQuotedName()
                         + " IS NULL");
             }
@@ -1276,7 +1276,7 @@ public class NXQLQueryMaker implements QueryMaker {
                     throw new QueryMakerException("Cannot order by column: "
                             + name);
                 }
-                if (model.getRepositoryDescriptor().fulltextDisabled) {
+                if (model.getRepositoryDescriptor().getFulltextDisabled()) {
                     throw new QueryMakerException(
                             "Fulltext disabled by configuration");
                 }

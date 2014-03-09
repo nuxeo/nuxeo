@@ -2,6 +2,8 @@
 <repository name="foo">
   <binaryStore path="/foo/bar" />
   <clustering enabled="true" delay="1234" />
+  <sqlInitFile>file1</sqlInitFile>
+  <sqlInitFile>file2</sqlInitFile>
   <schema>
     <field type="biig">my:bignote</field> <!-- old syntax -->
     <field name="foo" type="xyz" /> <!-- new syntax -->

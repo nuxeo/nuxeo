@@ -430,8 +430,8 @@ public class Model {
         default:
             throw new AssertionError(idType.toString());
         }
-        softDeleteEnabled = repositoryDescriptor.softDeleteEnabled;
-        proxiesEnabled = repositoryDescriptor.proxiesEnabled;
+        softDeleteEnabled = repositoryDescriptor.getSoftDeleteEnabled();
+        proxiesEnabled = repositoryDescriptor.getProxiesEnabled();
 
         allDocTypeSchemas = new HashMap<String, Set<String>>();
         mixinsDocumentTypes = new HashMap<String, Set<String>>();
@@ -486,7 +486,7 @@ public class Model {
         initMiscModel();
         // models for all document types and mixins
         initModels(modelSetup.schemaManager);
-        if (!repositoryDescriptor.fulltextDisabled) {
+        if (!repositoryDescriptor.getFulltextDisabled()) {
             inferFulltextInfo(modelSetup.schemaManager);
             inferFulltextInfoByFragment(); // needs mixin schemas
             initFullTextModel();
@@ -1269,7 +1269,7 @@ public class Model {
         if (!miscInHierarchy) {
             fragments.add(MISC_TABLE_NAME);
         }
-        if (!repositoryDescriptor.fulltextDisabled
+        if (!repositoryDescriptor.getFulltextDisabled()
                 && fulltextInfo.isFulltextIndexable(typeName)) {
             fragments.add(FULLTEXT_TABLE_NAME);
         }
@@ -1605,7 +1605,7 @@ public class Model {
                         PropertyType propertyType = PropertyType.fromFieldType(listFieldType, true);
                         boolean useArray = false;
                         ColumnType columnType = null;
-                        if (repositoryDescriptor.arrayColumns
+                        if (repositoryDescriptor.getArrayColumns()
                                 && fieldDescriptor == null) {
                             fieldDescriptor = new FieldDescriptor();
                             fieldDescriptor.type = FIELD_TYPE_ARRAY;

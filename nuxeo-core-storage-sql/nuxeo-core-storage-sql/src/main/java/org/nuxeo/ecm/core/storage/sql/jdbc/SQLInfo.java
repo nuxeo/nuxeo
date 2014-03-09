@@ -118,8 +118,8 @@ public class SQLInfo {
         this.model = model;
         this.dialect = dialect;
         RepositoryDescriptor repositoryDescriptor = model.getRepositoryDescriptor();
-        softDeleteEnabled = repositoryDescriptor.softDeleteEnabled;
-        proxiesEnabled = repositoryDescriptor.proxiesEnabled;
+        softDeleteEnabled = repositoryDescriptor.getSoftDeleteEnabled();
+        proxiesEnabled = repositoryDescriptor.getProxiesEnabled();
 
         database = new Database(dialect);
 
@@ -532,7 +532,7 @@ public class SQLInfo {
     protected void initSQL() throws StorageException {
 
         // structural tables
-        if (model.getRepositoryDescriptor().clusteringEnabled) {
+        if (model.getRepositoryDescriptor().getClusteringEnabled()) {
             if (!dialect.isClusteringSupported()) {
                 throw new StorageException("Clustering not supported for "
                         + dialect.getClass().getSimpleName());
@@ -577,7 +577,7 @@ public class SQLInfo {
         /*
          * fulltext
          */
-        if (!model.getRepositoryDescriptor().fulltextDisabled) {
+        if (!model.getRepositoryDescriptor().getFulltextDisabled()) {
             Table table = database.getTable(model.FULLTEXT_TABLE_NAME);
             ModelFulltext fulltextInfo = model.getFulltextInfo();
             if (fulltextInfo.indexNames.size() > 1
@@ -671,7 +671,7 @@ public class SQLInfo {
         // don't index parent+name+isprop, a simple isprop scan will suffice
         maker.table.addIndex(model.MAIN_PRIMARY_TYPE_KEY);
 
-        if (model.getRepositoryDescriptor().softDeleteEnabled) {
+        if (model.getRepositoryDescriptor().getSoftDeleteEnabled()) {
             maker.table.addIndex(model.MAIN_IS_DELETED_KEY);
         }
     }

@@ -59,8 +59,8 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
             boolean fulltextDisabled) {
         RepositoryDescriptor descriptor = DatabaseHelper.DATABASE.getRepositoryDescriptor();
         descriptor.name = DatabaseHelper.DATABASE.repositoryName;
-        descriptor.clusteringEnabled = clusteringDelay != -1;
-        descriptor.clusteringDelay = clusteringDelay;
+        descriptor.setClusteringEnabled(clusteringDelay != -1);
+        descriptor.setClusteringDelay(clusteringDelay);
         FieldDescriptor schemaField1 = new FieldDescriptor();
         schemaField1.field = "tst:bignote";
         schemaField1.type = Model.FIELD_TYPE_LARGETEXT;
@@ -69,7 +69,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         schemaField2.type = Model.FIELD_TYPE_LARGETEXT;
         descriptor.schemaFields = Arrays.asList(schemaField1, schemaField2);
         descriptor.binaryStorePath = "testbinaries";
-        descriptor.fulltextDisabled = fulltextDisabled;
+        descriptor.setFulltextDisabled(fulltextDisabled);
         return descriptor;
     }
 
@@ -95,11 +95,11 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
     }
 
     public boolean isSoftDeleteEnabled() {
-        return ((RepositoryImpl) repository).getRepositoryDescriptor().softDeleteEnabled;
+        return ((RepositoryImpl) repository).getRepositoryDescriptor().getSoftDeleteEnabled();
     }
 
     public boolean isProxiesEnabled() {
-        return ((RepositoryImpl) repository).getRepositoryDescriptor().proxiesEnabled;
+        return ((RepositoryImpl) repository).getRepositoryDescriptor().getProxiesEnabled();
     }
 
 }

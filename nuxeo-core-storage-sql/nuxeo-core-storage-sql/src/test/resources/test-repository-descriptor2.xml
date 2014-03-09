@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<repository name="foo">
+  <binaryStore path="/foo/bar2" />
+  <clustering enabled="false" />
+  <sqlInitFile>file3</sqlInitFile>
+  <schema>
+    <field type="other">my:bignote</field>
+    <field type="abc">def</field>
+  </schema>
+  <indexing>
+    <excludedTypes>
+      <type>OtherExcluded</type>
+    </excludedTypes>
+    <includedTypes>
+      <type>OtherIncluded</type>
+    </includedTypes>
+    <fulltext analyzer="english">
+      <index name="titraille">
+        <field>my:desc</field>
+      </index>
+      <index name="pictures" analyzer="venusian" />
+      <index name="other">
+        <field>my:other</field>
+      </index>
+    </fulltext>
+  </indexing>
+</repository>

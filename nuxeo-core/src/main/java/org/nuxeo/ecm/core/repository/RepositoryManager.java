@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,11 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.repository;
 
 import java.util.Collection;
@@ -25,16 +23,16 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * Holds instance of high-level repositories.
  */
 public class RepositoryManager {
 
-    public static final String REPOSITORY_EVENT = "repository";
-
     private static final Log log = LogFactory.getLog(RepositoryManager.class);
+
+    public static final String REPOSITORY_EVENT = "repository";
 
     // repository descriptors - used to prevent registering repositories twice
     private final Set<RepositoryDescriptor> descriptors = new HashSet<RepositoryDescriptor>();
@@ -86,7 +84,9 @@ public class RepositoryManager {
      * shutdown.
      *
      * @param name the repository name
+     * @deprecated
      */
+    @Deprecated
     public void releaseRepository(String name) {
         if (log.isTraceEnabled()) {
             log.trace("Entering releaseRepository : " + name);
@@ -135,6 +135,8 @@ public class RepositoryManager {
         }
     }
 
+    /** @deprecated unused */
+    @Deprecated
     public Repository getOrRegisterRepository(RepositoryDescriptor rd)
             throws Exception {
         synchronized (repositories) {
@@ -199,6 +201,8 @@ public class RepositoryManager {
             return repository;
         }
 
+        /** @deprecated */
+        @Deprecated
         public synchronized void release() {
             if (repository != null) {
                 if (--refcnt == 0) {

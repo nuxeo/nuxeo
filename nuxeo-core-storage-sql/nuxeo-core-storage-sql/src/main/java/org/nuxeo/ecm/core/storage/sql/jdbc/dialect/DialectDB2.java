@@ -42,10 +42,6 @@ public class DialectDB2 extends Dialect {
 
     protected final String fulltextParameters;
 
-    protected boolean pathOptimizationsEnabled;
-
-    protected int pathOptimizationsVersion = 0;
-
     private static final String DEFAULT_USERS_SEPARATOR = "|";
 
     protected String usersSeparator;
@@ -56,18 +52,12 @@ public class DialectDB2 extends Dialect {
         fulltextParameters = repositoryDescriptor == null ? null
                 : repositoryDescriptor.fulltextAnalyzer == null ? ""
                         : repositoryDescriptor.fulltextAnalyzer;
-        pathOptimizationsEnabled = repositoryDescriptor == null ? false
-                : repositoryDescriptor.pathOptimizationsEnabled;
-        if (pathOptimizationsEnabled) {
-            pathOptimizationsVersion = repositoryDescriptor == null ? 0
-                    : repositoryDescriptor.pathOptimizationsVersion;
-        }
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
         fulltextDisabled = true;
         if (repositoryDescriptor != null) {
-            repositoryDescriptor.fulltextDisabled = true;
+            repositoryDescriptor.setFulltextDisabled(true);
         }
     }
 

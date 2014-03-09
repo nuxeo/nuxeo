@@ -31,7 +31,7 @@ public class TestSQLBackendNoProxies extends TestSQLBackend {
             boolean fulltextDisabled) {
         RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay,
                 fulltextDisabled);
-        descriptor.proxiesEnabled = proxiesEnabled;
+        descriptor.setProxiesEnabled(proxiesEnabled);
         return descriptor;
     }
 

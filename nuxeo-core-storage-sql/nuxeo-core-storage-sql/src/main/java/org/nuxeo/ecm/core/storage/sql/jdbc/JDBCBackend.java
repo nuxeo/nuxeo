@@ -193,7 +193,7 @@ public class JDBCBackend implements RepositoryBackend {
                 xadatasource, clusterNodeHandler, connectionPropagator,
                 noSharing, repository);
         if (create) {
-            if (repositoryDescriptor.noDDL) {
+            if (repositoryDescriptor.getNoDDL()) {
                 log.info("Skipping database creation");
             } else {
                 // first connection, initialize the database

@@ -291,7 +291,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     private void initialize() throws StorageException {
         synchronized (this) {
             if (repository == null) {
-                repositoryDescriptor.mergeFrom(getRepositoryDescriptor(repositoryDescriptor.name));
+                repositoryDescriptor.merge(getRepositoryDescriptor(repositoryDescriptor.name));
                 repository = new RepositoryImpl(repositoryDescriptor);
             }
         }

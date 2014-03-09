@@ -49,7 +49,7 @@ public class ClusterNodeHandler {
             RepositoryDescriptor repositoryDescriptor) throws StorageException {
         this.clusterNodeMapper = clusterNodeMapper;
         nodeId = clusterNodeMapper.createClusterNode();
-        clusteringDelay = repositoryDescriptor.clusteringDelay;
+        clusteringDelay = repositoryDescriptor.getClusteringDelay();
         processClusterInvalidationsNext();
         propagator = new InvalidationsPropagator("cluster-" + this);
     }

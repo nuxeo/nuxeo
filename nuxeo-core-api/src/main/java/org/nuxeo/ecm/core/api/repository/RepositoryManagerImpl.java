@@ -29,15 +29,15 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * High-level service to get to repositories and from there to CoreSession
+ * objects.
  */
 public class RepositoryManagerImpl extends DefaultComponent implements
         RepositoryManager {
 
     private static final Log log = LogFactory.getLog(RepositoryManagerImpl.class);
 
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.core.api.repository.RepositoryManager");
+    public static final String XP_REPOSITORIES = "repositories";
 
     private Map<String, Repository> repositories = Collections.synchronizedMap(new LinkedHashMap<String, Repository>());
 
@@ -45,9 +45,9 @@ public class RepositoryManagerImpl extends DefaultComponent implements
     public void addRepository(Repository repository) {
         String repoName = repository.getName();
         if (repositories.containsKey(repoName)) {
-            log.info("Overriding repository " + repoName);
+            log.info("Overriding repository: " + repoName);
         } else {
-            log.info("Registering repository " + repoName);
+            log.info("Registering repository: " + repoName);
         }
         repositories.put(repoName, repository);
     }
@@ -64,7 +64,7 @@ public class RepositoryManagerImpl extends DefaultComponent implements
 
     @Override
     public void removeRepository(String name) {
-        log.info("Removing repository " + name);
+        log.info("Removing repository: " + name);
         repositories.remove(name);
     }
 
@@ -117,16 +117,22 @@ public class RepositoryManagerImpl extends DefaultComponent implements
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-        if ("repositories".equals(extensionPoint)) {
+        if (XP_REPOSITORIES.equals(extensionPoint)) {
             addRepository((Repository) contribution);
+        } else {
+            throw new RuntimeException("Unknown extension point: "
+                    + extensionPoint);
         }
     }
 
     @Override
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor) {
-        if ("repositories".equals(extensionPoint)) {
+        if (XP_REPOSITORIES.equals(extensionPoint)) {
             removeRepository(((Repository) contribution).getName());
+        } else {
+            throw new RuntimeException("Unknown extension point: "
+                    + extensionPoint);
         }
     }
 

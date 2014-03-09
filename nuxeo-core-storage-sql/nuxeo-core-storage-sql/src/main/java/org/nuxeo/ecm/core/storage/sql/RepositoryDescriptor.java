@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,11 +9,9 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -38,12 +37,13 @@ public class RepositoryDescriptor {
 
     private static final Log log = LogFactory.getLog(RepositoryDescriptor.class);
 
-    public RepositoryDescriptor() {
-        super();
-    }
+    public static final int DEFAULT_READ_ACL_MAX_SIZE = 4096;
+
+    public static final int DEFAULT_PATH_OPTIM_VERSION = 2;
 
     @XObject(value = "index")
     public static class FulltextIndexDescriptor {
+
         @XNode("@name")
         public String name;
 
@@ -58,24 +58,88 @@ public class RepositoryDescriptor {
         public String fieldType;
 
         @XNodeList(value = "field", type = HashSet.class, componentType = String.class)
-        public Set<String> fields;
+        public Set<String> fields = new HashSet<String>(0);
 
         @XNodeList(value = "excludeField", type = HashSet.class, componentType = String.class)
-        public Set<String> excludeFields;
+        public Set<String> excludeFields = new HashSet<String>(0);
+
+        public FulltextIndexDescriptor() {
+        }
+
+        /** Copy constructor. */
+        public FulltextIndexDescriptor(FulltextIndexDescriptor other) {
+            name = other.name;
+            analyzer = other.analyzer;
+            catalog = other.catalog;
+            fieldType = other.fieldType;
+            fields = new HashSet<String>(fields);
+            excludeFields = new HashSet<String>(excludeFields);
+        }
+
+        public static List<FulltextIndexDescriptor> copyList(
+                List<FulltextIndexDescriptor> other) {
+            List<FulltextIndexDescriptor> copy = new ArrayList<FulltextIndexDescriptor>(other.size());
+            for (FulltextIndexDescriptor fid : other) {
+                copy.add(new FulltextIndexDescriptor(fid));
+            }
+            return copy;
+        }
+
+        public void merge(FulltextIndexDescriptor other) {
+            if (other.name != null) {
+                name = other.name;
+            }
+            if (other.analyzer != null) {
+                analyzer = other.analyzer;
+            }
+            if (other.catalog != null) {
+                catalog = other.catalog;
+            }
+            if (other.fieldType != null) {
+                fieldType = other.fieldType;
+            }
+            fields.addAll(other.fields);
+            excludeFields.addAll(other.excludeFields);
+        }
     }
 
     @XObject(value = "field")
     public static class FieldDescriptor {
+
         // empty constructor needed by XMap
         public FieldDescriptor() {
+        }
+
+        /** Copy constructor. */
+        public FieldDescriptor(FieldDescriptor other) {
+            type = other.type;
+            field = other.field;
+        }
+
+        public static List<FieldDescriptor> copyList(
+                List<FieldDescriptor> other) {
+            List<FieldDescriptor> copy = new ArrayList<FieldDescriptor>(other.size());
+            for (FieldDescriptor fd : other) {
+                copy.add(new FieldDescriptor(fd));
+            }
+            return copy;
+        }
+
+        public void merge(FieldDescriptor other) {
+            if (other.field != null) {
+                field = other.field;
+            }
+            if (other.type != null) {
+                type = other.type;
+            }
         }
 
         @XNode("@type")
         public String type;
 
-        @XNode("@name")
         public String field;
 
+        @XNode("@name")
         public void setName(String name) {
             if (!StringUtils.isBlank(name) && field == null) {
                 this.field = name;
@@ -115,6 +179,25 @@ public class RepositoryDescriptor {
         @XNode("path")
         public String path = "/nuxeo";
 
+        public ServerDescriptor() {
+        }
+
+        /** Copy constructor. */
+        public ServerDescriptor(ServerDescriptor other) {
+            disabled = other.disabled;
+            host = other.host;
+            port = other.port;
+            path = other.path;
+        }
+
+        public static List<ServerDescriptor> copyList(List<ServerDescriptor> other) {
+            List<ServerDescriptor> copy = new ArrayList<ServerDescriptor>(other.size());
+            for (ServerDescriptor s : other) {
+                copy.add(new ServerDescriptor(s));
+            }
+            return copy;
+        }
+
         public String getUrl() {
             return "http://" + host + ":" + port
                     + (path.startsWith("/") ? "" : "/") + path;
@@ -124,6 +207,16 @@ public class RepositoryDescriptor {
         public String toString() {
             return getClass().getSimpleName() + '(' + getUrl() + ')';
         }
+    }
+
+    /** False if the boolean is null or FALSE, true otherwise. */
+    private static boolean defaultFalse(Boolean bool) {
+        return Boolean.TRUE.equals(bool);
+    }
+
+    /** True if the boolean is null or TRUE, false otherwise. */
+    private static boolean defaultTrue(Boolean bool) {
+        return !Boolean.FALSE.equals(bool);
     }
 
     @XNode("@name")
@@ -136,40 +229,96 @@ public class RepositoryDescriptor {
     public Class<? extends CachingMapper> cachingMapperClass;
 
     @XNode("cachingMapper@enabled")
-    public boolean cachingMapperEnabled = true;
+    private Boolean cachingMapperEnabled;
+
+    public boolean getCachingMapperEnabled() {
+        return defaultTrue(cachingMapperEnabled);
+    }
 
     @XNodeMap(value = "cachingMapper/property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> cachingMapperProperties = new HashMap<String, String>();
 
     @XNode("noDDL")
-    public boolean noDDL = false;
+    private Boolean noDDL;
+
+    public boolean getNoDDL() {
+        return defaultFalse(noDDL);
+    }
 
     @XNodeList(value = "sqlInitFile", type = ArrayList.class, componentType = String.class)
-    public List<String> sqlInitFiles;
+    public List<String> sqlInitFiles = new ArrayList<String>(0);
 
     @XNode("softDelete@enabled")
-    public boolean softDeleteEnabled;
+    private Boolean softDeleteEnabled;
+
+    public boolean getSoftDeleteEnabled() {
+        return defaultFalse(softDeleteEnabled);
+    }
+
+    protected void setSoftDeleteEnabled(boolean enabled) {
+        softDeleteEnabled = Boolean.valueOf(enabled);
+    }
 
     @XNode("proxies@enabled")
-    public boolean proxiesEnabled = true;
+    private Boolean proxiesEnabled;
+
+    public boolean getProxiesEnabled() {
+        return defaultTrue(proxiesEnabled);
+    }
+
+    protected void setProxiesEnabled(boolean enabled) {
+        proxiesEnabled = Boolean.valueOf(enabled);
+    }
 
     @XNode("idType")
     public String idType; // "varchar", "uuid", "sequence"
 
     @XNode("clustering@enabled")
-    public boolean clusteringEnabled;
+    private Boolean clusteringEnabled;
+
+    public boolean getClusteringEnabled() {
+        return defaultFalse(clusteringEnabled);
+    }
+
+    protected void setClusteringEnabled(boolean enabled) {
+        clusteringEnabled = Boolean.valueOf(enabled);
+    }
 
     @XNode("clustering@delay")
-    public long clusteringDelay;
+    private Long clusteringDelay;
+
+    public long getClusteringDelay() {
+        return clusteringDelay == null ? 0 : clusteringDelay.longValue();
+    }
+
+    protected void setClusteringDelay(long delay) {
+        clusteringDelay = Long.valueOf(delay);
+    }
 
     @XNodeList(value = "schema/field", type = ArrayList.class, componentType = FieldDescriptor.class)
-    public List<FieldDescriptor> schemaFields = Collections.emptyList();
+    public List<FieldDescriptor> schemaFields = new ArrayList<FieldDescriptor>(0);
 
     @XNode("schema/arrayColumns")
-    public boolean arrayColumns;
+    private Boolean arrayColumns;
+
+    public boolean getArrayColumns() {
+        return defaultFalse(arrayColumns);
+    }
+
+    public void setArrayColumns(boolean enabled) {
+        arrayColumns = Boolean.valueOf(enabled);
+    }
 
     @XNode("indexing/fulltext@disabled")
-    public boolean fulltextDisabled;
+    private Boolean fulltextDisabled;
+
+    public boolean getFulltextDisabled() {
+        return defaultFalse(fulltextDisabled);
+    }
+
+    public void setFulltextDisabled(boolean disabled) {
+        fulltextDisabled = Boolean.valueOf(disabled);
+    }
 
     @XNode("indexing/fulltext@analyzer")
     public String fulltextAnalyzer;
@@ -186,34 +335,67 @@ public class RepositoryDescriptor {
     }
 
     @XNodeList(value = "indexing/fulltext/index", type = ArrayList.class, componentType = FulltextIndexDescriptor.class)
-    public List<FulltextIndexDescriptor> fulltextIndexes;
+    public List<FulltextIndexDescriptor> fulltextIndexes = new ArrayList<FulltextIndexDescriptor>(0);
 
     @XNodeList(value = "indexing/excludedTypes/type", type =  HashSet.class, componentType = String.class)
-    public Set<String> fulltextExcludedTypes;
+    public Set<String> fulltextExcludedTypes = new HashSet<String>(0);
 
     @XNodeList(value = "indexing/includedTypes/type", type =  HashSet.class, componentType = String.class)
-    public Set<String> fulltextIncludedTypes;
+    public Set<String> fulltextIncludedTypes = new HashSet<String>(0);
 
     @XNodeList(value = "indexing/neverPerDocumentFacets/facet", type = HashSet.class, componentType = String.class)
     public Set<String> neverPerInstanceMixins;
 
     @XNode("pathOptimizations@enabled")
-    public boolean pathOptimizationsEnabled = true;
+    private Boolean pathOptimizationsEnabled;
+
+    public boolean getPathOptimizationsEnabled() {
+        return defaultTrue(pathOptimizationsEnabled);
+    }
+
+    protected void setPathOptimizationsEnabled(boolean enabled) {
+        pathOptimizationsEnabled = Boolean.valueOf(enabled);
+    }
 
     /* @since 5.7 */
     @XNode("pathOptimizations@version")
-    public int pathOptimizationsVersion = 2;
+    private Integer pathOptimizationsVersion;
+
+    public int getPathOptimizationsVersion() {
+        return pathOptimizationsVersion == null ? DEFAULT_PATH_OPTIM_VERSION
+                : pathOptimizationsVersion.intValue();
+    }
 
     @XNode("aclOptimizations@enabled")
-    public boolean aclOptimizationsEnabled = true;
+    private Boolean aclOptimizationsEnabled;
+
+    public boolean getAclOptimizationsEnabled() {
+        return defaultTrue(aclOptimizationsEnabled);
+    }
+
+    protected void setAclOptimizationsEnabled(boolean enabled) {
+        aclOptimizationsEnabled = Boolean.valueOf(enabled);
+    }
 
     /* @since 5.7 */
     @XNode("aclOptimizations@concurrentUpdate")
-    public boolean aclOptimizationsConcurrentUpdate = true;
+    private Boolean aclOptimizationsConcurrentUpdate;
+
+    public boolean getAclOptimizationsConcurrentUpdate() {
+        return defaultTrue(aclOptimizationsConcurrentUpdate);
+    }
+
+    protected void setAclOptimizationsConcurrentUpdate(boolean allow) {
+        aclOptimizationsConcurrentUpdate = Boolean.valueOf(allow);
+    }
 
     /* @since 5.4.2 */
     @XNode("aclOptimizations@readAclMaxSize")
-    public int readAclMaxSize = 4096;
+    private Integer readAclMaxSize;
+
+    public int getReadAclMaxSize() {
+        return readAclMaxSize == null ? DEFAULT_READ_ACL_MAX_SIZE : readAclMaxSize.intValue();
+    }
 
     @XNode("binaryManager@class")
     public Class<? extends BinaryManager> binaryManagerClass;
@@ -227,42 +409,165 @@ public class RepositoryDescriptor {
     @XNode("@sendInvalidationEvents")
     public boolean sendInvalidationEvents;
 
-    /** Merges only non-JCA properties. */
-    public void mergeFrom(RepositoryDescriptor other) {
-        backendClass = other.backendClass;
-        cachingMapperClass = other.cachingMapperClass;
-        cachingMapperEnabled = other.cachingMapperEnabled;
-        clusteringEnabled = other.clusteringEnabled;
-        clusteringDelay = other.clusteringDelay;
-        noDDL = other.noDDL;
-        sqlInitFiles = other.sqlInitFiles;
-        softDeleteEnabled = other.softDeleteEnabled;
-        proxiesEnabled = other.proxiesEnabled;
-        schemaFields = other.schemaFields;
-        arrayColumns = other.arrayColumns;
-        fulltextDisabled = other.fulltextDisabled;
-        fulltextAnalyzer = other.fulltextAnalyzer;
-        fulltextCatalog = other.fulltextCatalog;
-        fulltextIndexes = other.fulltextIndexes;
-        neverPerInstanceMixins = other.neverPerInstanceMixins;
-        pathOptimizationsEnabled = other.pathOptimizationsEnabled;
-        aclOptimizationsEnabled = other.aclOptimizationsEnabled;
-        aclOptimizationsConcurrentUpdate = other.aclOptimizationsConcurrentUpdate;
-        readAclMaxSize = other.readAclMaxSize;
-        binaryStorePath = other.binaryStorePath;
-        binaryManagerClass = other.binaryManagerClass;
-        binaryManagerKey = other.binaryManagerKey;
-        sendInvalidationEvents = other.sendInvalidationEvents;
-        usersSeparatorKey = other.usersSeparatorKey;
-    }
+    @XNode("usersSeparator@key")
+    public String usersSeparatorKey;
 
     @XNode("xa-datasource")
     public String xaDataSourceName;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> properties;
+    public Map<String, String> properties = new HashMap<String, String>();
 
-    @XNode("usersSeparator@key")
-    public String usersSeparatorKey;
+    public RepositoryDescriptor() {
+    }
+
+    /** Copy constructor. */
+    public RepositoryDescriptor(RepositoryDescriptor other) {
+        name = other.name;
+        backendClass = other.backendClass;
+        cachingMapperClass = other.cachingMapperClass;
+        cachingMapperEnabled = other.cachingMapperEnabled;
+        cachingMapperProperties = new HashMap<String, String>(other.cachingMapperProperties);
+        noDDL = other.noDDL;
+        sqlInitFiles = new ArrayList<String>(other.sqlInitFiles);
+        softDeleteEnabled = other.softDeleteEnabled;
+        proxiesEnabled = other.proxiesEnabled;
+        schemaFields = FieldDescriptor.copyList(other.schemaFields);
+        arrayColumns = other.arrayColumns;
+        idType = other.idType;
+        clusteringEnabled = other.clusteringEnabled;
+        clusteringDelay = other.clusteringDelay;
+        fulltextDisabled = other.fulltextDisabled;
+        fulltextAnalyzer = other.fulltextAnalyzer;
+        fulltextParser = other.fulltextParser;
+        fulltextCatalog = other.fulltextCatalog;
+        fulltextIndexes = FulltextIndexDescriptor.copyList(other.fulltextIndexes);
+        fulltextExcludedTypes = new HashSet<String>(other.fulltextExcludedTypes);
+        fulltextIncludedTypes = new HashSet<String>(other.fulltextIncludedTypes);
+        neverPerInstanceMixins = other.neverPerInstanceMixins;
+        pathOptimizationsEnabled = other.pathOptimizationsEnabled;
+        pathOptimizationsVersion = other.pathOptimizationsVersion;
+        aclOptimizationsEnabled = other.aclOptimizationsEnabled;
+        aclOptimizationsConcurrentUpdate = other.aclOptimizationsConcurrentUpdate;
+        readAclMaxSize = other.readAclMaxSize;
+        binaryManagerClass = other.binaryManagerClass;
+        binaryManagerKey = other.binaryManagerKey;
+        binaryStorePath = other.binaryStorePath;
+        sendInvalidationEvents = other.sendInvalidationEvents;
+        usersSeparatorKey = other.usersSeparatorKey;
+        xaDataSourceName = other.xaDataSourceName;
+        properties = new HashMap<String, String>(other.properties);
+    }
+
+    public void merge(RepositoryDescriptor other) {
+        if (other.name != null) {
+            name = other.name;
+        }
+        if (other.backendClass != null) {
+            backendClass = other.backendClass;
+        }
+        if (other.cachingMapperClass != null) {
+            cachingMapperClass = other.cachingMapperClass;
+        }
+        if (other.cachingMapperEnabled != null) {
+            cachingMapperEnabled = other.cachingMapperEnabled;
+        }
+        cachingMapperProperties.putAll(other.cachingMapperProperties);
+        if (other.noDDL != null) {
+            noDDL = other.noDDL;
+        }
+        sqlInitFiles.addAll(other.sqlInitFiles);
+        if (other.softDeleteEnabled != null) {
+            softDeleteEnabled = other.softDeleteEnabled;
+        }
+        if (other.proxiesEnabled != null) {
+            proxiesEnabled = other.proxiesEnabled;
+        }
+        if (other.idType != null) {
+            idType = other.idType;
+        }
+        if (other.clusteringEnabled != null) {
+            clusteringEnabled = other.clusteringEnabled;
+        }
+        if (other.clusteringDelay != null) {
+            clusteringDelay = other.clusteringDelay;
+        }
+        for (FieldDescriptor of : other.schemaFields) {
+            boolean append = true;
+            for (FieldDescriptor f : schemaFields) {
+                if (f.field.equals(of.field)) {
+                    f.merge(of);
+                    append = false;
+                    break;
+                }
+            }
+            if (append) {
+                schemaFields.add(of);
+            }
+        }
+        if (other.arrayColumns != null) {
+            arrayColumns = other.arrayColumns;
+        }
+        if (other.fulltextDisabled != null) {
+            fulltextDisabled = other.fulltextDisabled;
+        }
+        if (other.fulltextAnalyzer != null) {
+            fulltextAnalyzer = other.fulltextAnalyzer;
+        }
+        if (other.fulltextParser != null) {
+            fulltextParser = other.fulltextParser;
+        }
+        if (other.fulltextCatalog != null) {
+            fulltextCatalog = other.fulltextCatalog;
+        }
+        for (FulltextIndexDescriptor oi : other.fulltextIndexes) {
+            boolean append = true;
+            for (FulltextIndexDescriptor i : fulltextIndexes) {
+                if (ObjectUtils.equals(i.name, oi.name)) {
+                    i.merge(oi);
+                    append = false;
+                    break;
+                }
+            }
+            if (append) {
+                fulltextIndexes.add(oi);
+            }
+        }
+        fulltextExcludedTypes.addAll(other.fulltextExcludedTypes);
+        fulltextIncludedTypes.addAll(other.fulltextIncludedTypes);
+        neverPerInstanceMixins.addAll(other.neverPerInstanceMixins);
+        if (other.pathOptimizationsEnabled != null) {
+            pathOptimizationsEnabled = other.pathOptimizationsEnabled;
+        }
+        if (other.pathOptimizationsVersion != null) {
+            pathOptimizationsVersion = other.pathOptimizationsVersion;
+        }
+        if (other.aclOptimizationsEnabled != null) {
+            aclOptimizationsEnabled = other.aclOptimizationsEnabled;
+        }
+        if (other.aclOptimizationsConcurrentUpdate != null) {
+            aclOptimizationsConcurrentUpdate = other.aclOptimizationsConcurrentUpdate;
+        }
+        if (other.readAclMaxSize != null) {
+            readAclMaxSize = other.readAclMaxSize;
+        }
+        if (other.binaryManagerClass != null) {
+            binaryManagerClass = other.binaryManagerClass;
+        }
+        if (other.binaryManagerKey != null) {
+            binaryManagerKey = other.binaryManagerKey;
+        }
+        if (other.binaryStorePath != null) {
+            binaryStorePath = other.binaryStorePath;
+        }
+        sendInvalidationEvents = other.sendInvalidationEvents; // no merge
+        if (other.usersSeparatorKey != null) {
+            usersSeparatorKey = other.usersSeparatorKey;
+        }
+        if (other.xaDataSourceName != null) {
+            xaDataSourceName = other.xaDataSourceName;
+        }
+        properties.putAll(other.properties);
+    }
 
 }

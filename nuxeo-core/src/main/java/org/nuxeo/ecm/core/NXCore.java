@@ -51,8 +51,7 @@ public final class NXCore {
     }
 
     public static RepositoryService getRepositoryService() {
-        return (RepositoryService) Framework.getRuntime().getComponent(
-                RepositoryService.NAME);
+        return Framework.getLocalService(RepositoryService.class);
     }
 
     public static Repository getRepository(String name)

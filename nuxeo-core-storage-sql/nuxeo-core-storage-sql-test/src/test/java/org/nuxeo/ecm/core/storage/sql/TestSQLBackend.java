@@ -94,7 +94,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay,
                 fulltextDisabled);
         if (aclOptimizationsConcurrentUpdate != null) {
-            descriptor.aclOptimizationsConcurrentUpdate = aclOptimizationsConcurrentUpdate.booleanValue();
+            descriptor.setAclOptimizationsConcurrentUpdate(aclOptimizationsConcurrentUpdate.booleanValue());
         }
         return descriptor;
     }
@@ -4082,7 +4082,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         repository.close();
         // open a repository without path optimization
         RepositoryDescriptor descriptor = newDescriptor(-1, false);
-        descriptor.pathOptimizationsEnabled = false;
+        descriptor.setPathOptimizationsEnabled(false);
         repository = new RepositoryImpl(descriptor);
         Session session = repository.getConnection();
         PartialList<Serializable> res;
@@ -4104,7 +4104,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // reopen repository with path optimization to populate the ancestors
         // table
         repository.close();
-        descriptor.pathOptimizationsEnabled = true;
+        descriptor.setPathOptimizationsEnabled(true);
         repository = new RepositoryImpl(descriptor);
         session = repository.getConnection();
         // this query will use nx_ancestors to bulk load the path
