@@ -165,50 +165,6 @@ public class RepositoryDescriptor {
         }
     }
 
-    @XObject(value = "server")
-    public static class ServerDescriptor {
-        @XNode("@disabled")
-        public boolean disabled;
-
-        @XNode("host")
-        public String host = "localhost";
-
-        @XNode("port")
-        public int port = 8181;
-
-        @XNode("path")
-        public String path = "/nuxeo";
-
-        public ServerDescriptor() {
-        }
-
-        /** Copy constructor. */
-        public ServerDescriptor(ServerDescriptor other) {
-            disabled = other.disabled;
-            host = other.host;
-            port = other.port;
-            path = other.path;
-        }
-
-        public static List<ServerDescriptor> copyList(List<ServerDescriptor> other) {
-            List<ServerDescriptor> copy = new ArrayList<ServerDescriptor>(other.size());
-            for (ServerDescriptor s : other) {
-                copy.add(new ServerDescriptor(s));
-            }
-            return copy;
-        }
-
-        public String getUrl() {
-            return "http://" + host + ":" + port
-                    + (path.startsWith("/") ? "" : "/") + path;
-        }
-
-        @Override
-        public String toString() {
-            return getClass().getSimpleName() + '(' + getUrl() + ')';
-        }
-    }
-
     /** False if the boolean is null or FALSE, true otherwise. */
     private static boolean defaultFalse(Boolean bool) {
         return Boolean.TRUE.equals(bool);
