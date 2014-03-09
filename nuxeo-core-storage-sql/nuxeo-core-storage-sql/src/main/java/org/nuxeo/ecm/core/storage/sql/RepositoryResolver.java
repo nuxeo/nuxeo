@@ -42,8 +42,8 @@ public class RepositoryResolver {
 
     public static List<Repository> getRepositories() {
         List<Repository> repositories = new ArrayList<Repository>();
-        for (RepositoryDescriptor desc : NXCore.getRepositoryService().getRepositoryManager().getDescriptors()) {
-            repositories.add(getRepository(desc.getName()));
+        for (String name : NXCore.getRepositoryService().getRepositoryManager().getRepositoryNames()) {
+            repositories.add(getRepository(name));
         }
         return repositories;
     }

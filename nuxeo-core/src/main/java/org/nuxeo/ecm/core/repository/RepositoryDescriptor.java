@@ -145,14 +145,20 @@ public class RepositoryDescriptor {
         return pool;
     }
 
-    public final Repository create() throws Exception {
+    public final Repository create() {
         return getFactory().createRepository(this);
     }
 
-    public final RepositoryFactory getFactory() throws IllegalAccessException,
-            InstantiationException {
-        assert factoryClass != null;
-        return factoryClass.newInstance();
+    public final RepositoryFactory getFactory() {
+        if (factoryClass == null) {
+            throw new RuntimeException("Bad factory for repository: " + name);
+        }
+        try {
+            return factoryClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("Cannot instantiate repository" + name,
+                    e);
+        }
     }
 
     public void dispose() {

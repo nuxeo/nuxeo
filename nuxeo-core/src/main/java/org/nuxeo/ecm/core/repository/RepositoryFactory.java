@@ -11,12 +11,9 @@
  *
  * $Id$
  */
-
 package org.nuxeo.ecm.core.repository;
 
 import org.nuxeo.ecm.core.model.Repository;
-
-
 
 /**
  * Repository Factory.
@@ -38,6 +35,6 @@ public interface RepositoryFactory {
      * @return the repository instance
      * @throws Exception if an error occurs
      */
-    Repository createRepository(RepositoryDescriptor descriptor) throws Exception;
+    Repository createRepository(RepositoryDescriptor descriptor);
 
 }

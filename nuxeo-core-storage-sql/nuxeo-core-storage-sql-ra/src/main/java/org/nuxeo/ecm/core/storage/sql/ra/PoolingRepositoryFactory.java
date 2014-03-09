@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.sql.ra;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
 
@@ -38,14 +39,17 @@ public class PoolingRepositoryFactory implements RepositoryFactory {
     private static final Log log = LogFactory.getLog(PoolingRepositoryFactory.class);
 
     @Override
-    public Repository createRepository(RepositoryDescriptor descriptor)
-            throws Exception {
+    public Repository createRepository(RepositoryDescriptor descriptor) {
         String repositoryName = descriptor.getName();
         log.info("Creating pooling repository: " + repositoryName);
-        ManagedConnectionFactory managedConnectionFactory = new ManagedConnectionFactoryImpl(
-                SQLRepository.getDescriptor(descriptor));
-        ConnectionManager connectionManager = lookupConnectionManager(descriptor);
-        return (Repository) managedConnectionFactory.createConnectionFactory(connectionManager);
+        try {
+            ManagedConnectionFactory managedConnectionFactory = new ManagedConnectionFactoryImpl(
+                    SQLRepository.getDescriptor(descriptor));
+            ConnectionManager connectionManager = lookupConnectionManager(descriptor);
+            return (Repository) managedConnectionFactory.createConnectionFactory(connectionManager);
+        } catch (NamingException | ResourceException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

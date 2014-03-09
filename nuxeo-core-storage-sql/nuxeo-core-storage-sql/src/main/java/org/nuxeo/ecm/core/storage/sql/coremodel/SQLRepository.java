@@ -13,6 +13,8 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -50,22 +52,36 @@ public class SQLRepository implements Repository {
 
     private final String name;
 
-    public SQLRepository(RepositoryDescriptor descriptor) throws Exception {
-        schemaManager = Framework.getService(SchemaManager.class);
-        repository = new RepositoryImpl(getDescriptor(descriptor));
-        name = descriptor.getName();
+    public SQLRepository(RepositoryDescriptor descriptor) {
+        schemaManager = Framework.getLocalService(SchemaManager.class);
+        try {
+            repository = new RepositoryImpl(getDescriptor(descriptor));
+            name = descriptor.getName();
+        } catch (StorageException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * Fetch SQL-level descriptor from Nuxeo repository descriptor.
      */
     public static org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor getDescriptor(
-            RepositoryDescriptor descriptor) throws Exception {
+            RepositoryDescriptor descriptor) {
         String filename = descriptor.getConfigurationFile();
         XMap xmap = new XMap();
         xmap.register(org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.class);
-        org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor sqldescr = (org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor) xmap.load(new FileInputStream(
-                filename));
+        FileInputStream in;
+        try {
+            in = new FileInputStream(filename);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor sqldescr;
+        try {
+            sqldescr = (org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor) xmap.load(in);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         sqldescr.name = descriptor.getName();
         return sqldescr;
     }
