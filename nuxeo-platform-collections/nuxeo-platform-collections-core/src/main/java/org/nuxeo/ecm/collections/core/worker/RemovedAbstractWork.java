@@ -38,7 +38,12 @@ public abstract class RemovedAbstractWork extends AbstractWork {
 
     protected long offset = 0;
 
-    public RemovedAbstractWork(final long offset) {
+    public RemovedAbstractWork() {
+        this(0);
+    }
+
+    protected RemovedAbstractWork(final long offset) {
+        super();
         this.offset = offset;
     }
 
@@ -62,7 +67,7 @@ public abstract class RemovedAbstractWork extends AbstractWork {
 
             if (nbResult == CollectionAsynchrnonousQuery.MAX_RESULT) {
                 setStatus("Rescheduling next work");
-                Constructor<? extends RemovedAbstractWork> c = this.getClass().getConstructor(long.class);
+                Constructor<? extends RemovedAbstractWork> c = this.getClass().getDeclaredConstructor(long.class);
                 RemovedAbstractWork nextWork = c.newInstance(offset + CollectionAsynchrnonousQuery.MAX_RESULT);
                 nextWork.setDocument(repositoryName, docId);
                 WorkManager workManager = Framework.getLocalService(WorkManager.class);

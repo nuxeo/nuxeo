@@ -28,7 +28,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class RemovedCollectionMemberWork extends RemovedAbstractWork {
 
-    public RemovedCollectionMemberWork(long offset) {
+    public RemovedCollectionMemberWork() {
+        super();
+    }
+
+    protected RemovedCollectionMemberWork(long offset) {
         super(offset);
     }
 

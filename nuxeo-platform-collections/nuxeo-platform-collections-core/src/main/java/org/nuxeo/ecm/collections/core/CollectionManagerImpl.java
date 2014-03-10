@@ -249,7 +249,7 @@ public class CollectionManagerImpl extends DefaultComponent implements
     @Override
     public void processRemovedCollectionMember(final DocumentModel collectionMember) {
         final WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        final RemovedAbstractWork work = new RemovedCollectionMemberWork(0);
+        final RemovedAbstractWork work = new RemovedCollectionMemberWork();
         work.setDocument(collectionMember.getRepositoryName(), collectionMember.getId());
         workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
                 true);
@@ -258,7 +258,7 @@ public class CollectionManagerImpl extends DefaultComponent implements
     @Override
     public void processRemovedCollection(final DocumentModel collection) {
         final WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        final RemovedAbstractWork work = new RemovedCollectionWork(0);
+        final RemovedAbstractWork work = new RemovedCollectionWork();
         work.setDocument(collection.getRepositoryName(), collection.getId());
         workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
                 true);

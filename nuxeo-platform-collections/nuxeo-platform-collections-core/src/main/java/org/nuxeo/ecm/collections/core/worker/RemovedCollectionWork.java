@@ -30,7 +30,11 @@ public class RemovedCollectionWork extends RemovedAbstractWork {
 
     private static final Log log = LogFactory.getLog(RemovedCollectionWork.class);
 
-    public RemovedCollectionWork(final long offset) {
+    public RemovedCollectionWork() {
+        super();
+    }
+
+    protected RemovedCollectionWork(final long offset) {
         super(offset);
     }
 
