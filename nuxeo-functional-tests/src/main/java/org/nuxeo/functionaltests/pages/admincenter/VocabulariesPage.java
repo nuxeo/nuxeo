@@ -26,6 +26,7 @@ import org.nuxeo.functionaltests.forms.NewVocabularyEntryForm;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -152,18 +153,18 @@ public class VocabulariesPage extends AdminCenterBasePage {
      * @since 5.9.3
      */
     protected void waitForLoading() {
-        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+        Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             public Boolean apply(WebDriver driver) {
                 return driver.findElement(By.id("_viewRoot:status.stop")).getAttribute(
                         "style").equals("display: none;");
             }
-        });
-        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+        }, StaleElementReferenceException.class);
+        Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             public Boolean apply(WebDriver driver) {
                 return driver.findElement(By.id("_viewRoot:status.start")).getAttribute(
                         "style").equals("display: none;");
             }
-        });
+        }, StaleElementReferenceException.class);
     }
 
 }
