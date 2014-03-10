@@ -594,6 +594,8 @@ public class Select2ActionsBean implements Serializable {
     protected JSONObject createEntryWithWarnMessage(final String label,
             final String warnMessage) {
         JSONObject obj = new JSONObject();
+        obj.put(Select2Common.ID, label);
+        obj.put(Select2Common.ABSOLUTE_LABEL, label);
         obj.put(Select2Common.LABEL, label);
         obj.put(Select2Common.WARN_MESSAGE_LABEL, warnMessage);
         return obj;
