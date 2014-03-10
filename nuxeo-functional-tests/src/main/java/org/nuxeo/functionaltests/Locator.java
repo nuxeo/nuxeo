@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
@@ -43,6 +45,8 @@ import com.google.common.base.Function;
  * @since 5.9.2
  */
 public class Locator {
+
+    private static final Log log = LogFactory.getLog(Locator.class);
 
     // Timeout for waitUntilURLDifferentFrom in seconds
     public static int URLCHANGE_MAX_WAIT = 30;
@@ -495,7 +499,7 @@ public class Locator {
                 URLCHANGE_MAX_WAIT);
         wait.until(urlchanged);
         if (AbstractTest.driver.getCurrentUrl().equals(refurl)) {
-            System.out.println("Page change failed");
+            log.warn("Page change failed");
         }
     }
 
