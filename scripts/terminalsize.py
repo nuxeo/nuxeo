@@ -54,6 +54,8 @@ def get_terminal_size():
 
 
 def _get_terminal_size_tput():
+    if not os.environ.get("TERM", None):
+        return None
     try:
         cols = int(subprocess.check_output(shlex.split('tput cols')))
         rows = int(subprocess.check_output(shlex.split('tput lines')))

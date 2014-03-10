@@ -40,7 +40,7 @@ class ExitException(Exception):
         self.message = message
 
 
-#pylint: disable=R0902
+# pylint: disable=R0902
 class Repository(object):
     """Nuxeo repository manager.
 
@@ -72,7 +72,7 @@ class Repository(object):
     def cleanup(self):
         long_path_workaround_cleanup(self.driveletter, self.oldbasedir)
 
-    #pylint: disable=C0103
+    # pylint: disable=C0103
     def eval_modules(self):
         """Set the list of Nuxeo addons in 'self.modules'."""
         os.chdir(self.basedir)
@@ -169,8 +169,8 @@ class Repository(object):
             shutil.rmtree(archive_dir)
         os.mkdir(archive_dir)
         log("[.]")
-        p = system("git archive %s" % version, run=False)
-        #pylint: disable=E1103
+        p = system("git archive %s" % version, wait=False)
+        # pylint: disable=E1103
         system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         if not self.modules:
             self.eval_modules()
@@ -178,7 +178,7 @@ class Repository(object):
             os.chdir(os.path.join(self.basedir, module))
             log("[%s]" % module)
             p = system("git archive --prefix=%s/ %s" % (module, version),
-                       run=False)
+                       wait=False)
             system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         if not self.addons:
             self.eval_addons()
@@ -187,7 +187,7 @@ class Repository(object):
             os.chdir(os.path.join(self.basedir, "addons", addon))
             log("[%s]" % addon)
             p = system("git archive --prefix=addons/%s/ %s" % (addon, version),
-                     run=False)
+                     wait=False)
             system("tar -C %s -xf -" % archive_dir, stdin=p.stdout)
         make_zip(archive, archive_dir)
         shutil.rmtree(archive_dir)
@@ -321,19 +321,21 @@ class Repository(object):
         'skip_tests': whether to skip or not the tests.
         'profiles': comma-separated additional Maven profiles to use.
         If 'dryrun', then print command without executing them."""
-        skip_tests_param = ""
         if skip_tests:
             skip_tests_param = "-DskipTests=true"
         else:
             skip_tests_param = "-fae"
-        profiles_param = ""
-        if profiles is not None:
-            profiles_param = "-P%s" % profiles
-        system("mvn %s %s %s %s" %
-               (commands, "-Paddons,distrib,all-distributions" if
-                self.is_nuxeoecm else "",
-                skip_tests_param, profiles_param),
-                delay_stdout=False, run=(not dryrun))
+        profiles_param = []
+        if self.is_nuxeoecm:
+            profiles_param += ["addons", "distrib", "all-distributions"]
+        if profiles:
+            profiles_param += profiles.split(',')
+        if profiles_param:
+            profiles_param = " -P" + ','.join(profiles_param)
+        else:
+            profiles_param = ""
+        system("mvn %s %s%s" % (commands, skip_tests_param, profiles_param),
+               delay_stdout=False, run=(not dryrun))
 
 
 def log(message, out=sys.stdout):
@@ -342,7 +344,7 @@ def log(message, out=sys.stdout):
 
 
 # Can't this method be replaced with system?
-#pylint: disable=C0103
+# pylint: disable=C0103
 def check_output(cmd):
     """Return Shell command output."""
     args = shlex.split(cmd)
@@ -350,7 +352,7 @@ def check_output(cmd):
         p = subprocess.Popen(args, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                              shell=platform.system() == "Windows")
-    #pylint: disable=C0103
+    # pylint: disable=C0103
     except OSError, e:
         log("$> " + cmd)
         if e.errno == errno.ENOENT:
@@ -369,20 +371,23 @@ def check_output(cmd):
     return out.strip()
 
 
-#pylint: disable=R0912,R0913
+# pylint: disable=R0912,R0913
 def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
-           run=True, stdin=subprocess.PIPE,
+           wait=True, run=True, stdin=subprocess.PIPE,
            stdout=subprocess.PIPE, stderr=subprocess.PIPE):
     """Shell execution.
 
     'cmd': the command to execute.
     If 'failonerror', command execution failure raises an ExitException.
     If 'delay_stdout', output is flushed at the end of command execution.
-    If not 'run', the process is not executed but returned.
+    If not 'run', the command is only printed.
+    If not 'wait', the process is executed in background and returned as 'p'.
     'stdin', 'stdout', 'stderr' are only used if 'delay_stdout' is True.
     If not 'logOutput', output is only logged in case of exception. Only
     available if 'delay_stdout'"""
     log("$> " + cmd)
+    if not run:
+        return
     args = shlex.split(cmd)
     try:
         if delay_stdout:
@@ -392,7 +397,7 @@ def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
             p = subprocess.Popen(args, stdin=stdin, stdout=stdout,
                                  stderr=stderr,
                                  shell=platform.system() == "Windows")
-            if run:
+            if wait:
                 out, err = p.communicate()
                 if logOutput:
                     sys.stdout.write(out)
@@ -400,7 +405,7 @@ def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
         else:
             logOutput = True
             p = subprocess.Popen(args, shell=platform.system() == "Windows")
-            if run:
+            if wait:
                 p.wait()
     except OSError, e:
         if e.errno == errno.ENOENT:
@@ -408,9 +413,9 @@ def system(cmd, failonerror=True, delay_stdout=True, logOutput=True,
         else:
             # re-raise unexpected exception
             raise
-    if not run:
+    if not wait:
         return p
-    #pylint: disable=E1103
+    # pylint: disable=E1103
     retcode = p.returncode
     if retcode != 0:
         if failonerror:
