@@ -42,7 +42,7 @@ public abstract class BusinessAdapter {
     @JsonProperty("type")
     protected String type;
 
-    private transient DocumentModel doc;
+    protected transient DocumentModel doc;
 
     /**
      * Default constructor called by jackson
@@ -66,10 +66,9 @@ public abstract class BusinessAdapter {
     }
 
     @JsonIgnore
-    public DocumentModel getDocument() throws ClientException {
+    public DocumentModel getDocument() {
         return doc;
     }
-
 
     public String getId() {
         try {
@@ -80,8 +79,7 @@ public abstract class BusinessAdapter {
     }
 
     public String getType() {
-
-       return doc.getType() == null ? type : doc.getType();
+        return doc.getType() == null ? type : doc.getType();
     }
 
 }
