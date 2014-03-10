@@ -594,15 +594,23 @@ SELECT 1 FROM USER_TABLES WHERE table_name = 'ACLR_USER'
 #IF: emptyResult
 CREATE TABLE ACLR_USER (
   user_id VARCHAR2(34) NOT NULL,
-  users NX_STRING_TABLE
+  users NX_STRING_TABLE,
+  CONSTRAINT user_id_unique UNIQUE (user_id)
 ) NESTED TABLE users STORE AS ACLR_USER_USERS
 
-
+# -- drop index not needed anymore due to below constraint's implicit index
 #TEST:
 SELECT 1 FROM USER_INDEXES WHERE index_name = 'ACLR_USER_USER_ID_IDX'
 
+#IF: ! emptyResult
+DROP INDEX aclr_user_user_id_idx
+
+# -- add unique constraint if missing (upgrade from < 5.9.3)
+#TEST:
+SELECT 1 FROM USER_CONSTRAINTS WHERE constraint_name = 'USER_ID_UNIQUE'
+
 #IF: emptyResult
-CREATE INDEX ACLR_USER_USER_ID_IDX ON ACLR_USER (user_id)
+ALTER TABLE ACLR_USER ADD CONSTRAINT user_id_unique UNIQUE (user_id)
 
 
 # -- Jonction between aclr and aclr_user
@@ -840,8 +848,13 @@ BEGIN
   SELECT COUNT(*) INTO in_cache FROM TABLE(aclids);
   IF in_cache = 0 THEN
     aclids := nx_list_read_acls_for(users);
-    INSERT INTO aclr_user VALUES (user_md5, users);
-    INSERT INTO aclr_user_map SELECT user_md5, COLUMN_VALUE FROM TABLE(aclids);
+    BEGIN
+      INSERT INTO aclr_user VALUES (user_md5, users);
+      INSERT INTO aclr_user_map SELECT user_md5, COLUMN_VALUE FROM TABLE(aclids);
+    EXCEPTION
+      WHEN DUP_VAL_ON_INDEX THEN
+        NULL; -- ignore, don't do double insert in aclr_user
+    END;
   END IF;
 END;
 
