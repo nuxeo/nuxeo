@@ -41,7 +41,7 @@ public class JSONDocumentHelper {
             throws Exception {
         OutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = getJsonGenerator(out);
-        JsonDocumentWriter.writeDocument(jg, doc, DEFAULT_SCHEMAS);
+        JsonDocumentWriter.writeDocument(jg, doc, DEFAULT_SCHEMAS,null);
         return out.toString();
 
     }
@@ -62,7 +62,7 @@ public class JSONDocumentHelper {
         DocumentModelList docList = new DocumentModelListImpl(
                 Arrays.asList(docs));
         JsonDocumentListWriter.writeDocuments(getJsonGenerator(out), docList,
-                schemas);
+                schemas,null);
         return out.toString();
     }
 
