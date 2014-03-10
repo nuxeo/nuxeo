@@ -62,24 +62,24 @@
 	<td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//textarea[@name=&quot;newMiniMessageText&quot;]</td>
-	<td></td>
+  <td>waitForElementPresent</td>
+  <td>//form[@name='newMiniMessageForm']</td>
+  <td></td>
 </tr>
 <tr>
-	<td>type</td>
-	<td>//textarea[@name=&quot;newMiniMessageText&quot;]</td>
-	<td>a new minimessage</td>
+  <td>type</td>
+  <td>newMiniMessageText</td>
+  <td>a new minimessage</td>
 </tr>
 <tr>
-	<td>click</td>
-	<td>//input[@name=&quot;writeMiniMessageButton&quot;]</td>
-	<td></td>
+  <td>click</td>
+  <td>//p[@class='newMiniMessageActions']/input</td>
+  <td></td>
 </tr>
 <tr>
-	<td>waitForElementPresent</td>
-	<td>//div[@class=&quot;message&quot;][text()=&quot;a new minimessage&quot;]</td>
-	<td></td>
+  <td>waitForTextPresent</td>
+  <td>a new minimessage</td>
+  <td></td>
 </tr>
 <tr>
 	<td>selectWindow</td>
