@@ -364,16 +364,23 @@ SELECT 1 FROM pg_tables WHERE tablename = 'aclr_user';
 
 #IF: emptyResult
 CREATE ${unlogged} TABLE aclr_user (
-  user_id varchar(34) NOT NULL,
+  user_id varchar(34) NOT NULL CONSTRAINT aclr_user_user_id_key UNIQUE,
   users varchar(250)[]
 );
 
+# -- add unique constraint if missing (upgrade from < 5.9.3)
+#TEST:
+SELECT 1 FROM pg_constraint WHERE conname = 'aclr_user_user_id_key';
 
+#IF: emptyResult
+ALTER TABLE aclr_user ADD CONSTRAINT aclr_user_user_id_key UNIQUE (user_id);
+
+# -- drop index not needed anymore due to above constraint's implicit index
 #TEST:
 SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_user_user_id_idx';
 
-#IF: emptyResult
-CREATE INDEX aclr_user_user_id_idx ON aclr_user USING btree(user_id);
+#IF: ! emptyResult
+DROP INDEX aclr_user_user_id_idx;
 
 
 # -- Jonction between aclr and aclr_user
@@ -568,8 +575,13 @@ BEGIN
   SELECT md5(array_to_string(users, '${usersSeparator}')) INTO user_md5;
   SELECT true INTO in_cache WHERE EXISTS (SELECT 1 FROM aclr_user WHERE user_id = user_md5);
   IF in_cache IS NULL THEN
-    INSERT INTO aclr_user VALUES (user_md5, users);
-    INSERT INTO aclr_user_map SELECT user_md5, acl_id FROM nx_list_read_acls_for(users) AS acl_id;
+    BEGIN
+      INSERT INTO aclr_user VALUES (user_md5, users);
+      INSERT INTO aclr_user_map SELECT user_md5, acl_id FROM nx_list_read_acls_for(users) AS acl_id;
+    EXCEPTION
+      WHEN unique_violation THEN
+        NULL; -- ignore, don't do double insert in aclr_user
+    END;
   END IF;
 END $$
 LANGUAGE plpgsql

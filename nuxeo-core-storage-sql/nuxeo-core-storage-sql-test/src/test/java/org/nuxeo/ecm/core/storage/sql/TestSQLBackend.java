@@ -4272,4 +4272,115 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(4, res.list.size());
     }
 
+    @Test
+    public void testParallelPrepareUserReadAcls() throws Throwable {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        session.addChildNode(root, "foo", null, "TestDoc", false);
+        session.save();
+        session.close();
+
+        CyclicBarrier barrier = new CyclicBarrier(2);
+        CountDownLatch firstReady = new CountDownLatch(1);
+        PrepareUserReadAclsJob r1 = new PrepareUserReadAclsJob(firstReady,
+                barrier);
+        PrepareUserReadAclsJob r2 = new PrepareUserReadAclsJob(null, barrier);
+        Thread t1 = null;
+        Thread t2 = null;
+        try {
+            t1 = new Thread(r1, "t1");
+            t2 = new Thread(r2, "t2");
+            t1.start();
+            if (firstReady.await(60, TimeUnit.SECONDS)) {
+                t2.start();
+
+                t1.join();
+                t1 = null;
+                t2.join();
+                t2 = null;
+                if (r1.throwable != null) {
+                    throw r1.throwable;
+                }
+                if (r2.throwable != null) {
+                    throw r2.throwable;
+                }
+            } // else timed out
+        } finally {
+            // error condition recovery
+            if (t1 != null) {
+                t1.interrupt();
+            }
+            if (t2 != null) {
+                t2.interrupt();
+            }
+        }
+
+        // after both threads have run, check that we don't see
+        // duplicate documents
+        session = repository.getConnection();
+        checkOneDoc(session);
+        session.close();
+
+    }
+
+    protected static void checkOneDoc(Session session) throws StorageException {
+        String query = "SELECT * FROM TestDoc WHERE ecm:isProxy = 0";
+        QueryFilter qf = new QueryFilter(null,
+                new String[] { "members", "bob" }, new String[] { "Read",
+                        "Everything" }, null,
+                Collections.<SQLQuery.Transformer> emptyList(), 0, 0);
+        PartialList<Serializable> res = session.query(query, qf, false);
+        assertEquals(1, res.list.size());
+    }
+
+    protected class PrepareUserReadAclsJob implements Runnable {
+
+        public CountDownLatch ready;
+
+        public CyclicBarrier barrier;
+
+        public Throwable throwable;
+
+        public PrepareUserReadAclsJob(CountDownLatch ready,
+                CyclicBarrier barrier) {
+            this.ready = ready;
+            this.barrier = barrier;
+        }
+
+        @Override
+        public void run() {
+            Session session = null;
+            try {
+                session = repository.getConnection();
+                if (ready != null) {
+                    ready.countDown();
+                    ready = null;
+                }
+                barrier.await(30, TimeUnit.SECONDS); // throws on timeout
+                barrier = null;
+                checkOneDoc(session);
+            } catch (Throwable t) {
+                t.printStackTrace();
+                throwable = t;
+            } finally {
+                if (session != null) {
+                    try {
+                        session.close();
+                    } catch (ResourceException e) {
+                        e.printStackTrace();
+                    }
+                }
+                // error recovery
+                // still count down as main thread is awaiting us
+                if (ready != null) {
+                    ready.countDown();
+                }
+                // break barrier for other thread
+                if (barrier != null) {
+                    barrier.reset(); // break barrier
+                }
+            }
+        }
+    }
+
 }
