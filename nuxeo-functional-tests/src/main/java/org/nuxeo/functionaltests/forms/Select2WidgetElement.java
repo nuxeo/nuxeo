@@ -20,6 +20,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
@@ -39,18 +42,23 @@ public class Select2WidgetElement {
 
     private static final Log log = LogFactory.getLog(Select2WidgetElement.class);
 
-    private final static String S2_SINGLE_INPUT_XPATH = "//*[@id='select2-drop']/div/input";
+    private static final String S2_CSS_ACTIVE_CLASS = "select2-active";
+
+    private static final String S2_MULTIPLE_CURRENT_SELECTION_XPATH = "ul[@class='select2-choices']/li[@class='select2-search-choice']";
 
     private final static String S2_MULTIPLE_INPUT_XPATH = "ul/li/input";
 
-    private static final String S2_SUGGEST_RESULT_XPATH = "//*[@id='select2-drop']//li[contains(@class,'select2-result-selectable')]/div";
+    private static final String S2_SINGLE_CURRENT_SELECTION_XPATH = "a[@class='select2-choice']/span[@class='select2-chosen']";
 
-    private static final String S2_CSS_ACTIVE_CLASS = "select2-active";
+    private final static String S2_SINGLE_INPUT_XPATH = "//*[@id='select2-drop']/div/input";
+
+    private static final String S2_SUGGEST_RESULT_XPATH = "//*[@id='select2-drop']//li[contains(@class,'select2-result-selectable')]/div";
 
     /**
      * Select2 loading timeout in seconds.
      */
     private static final int SELECT2_LOADING_TIMEOUT = 20;
+
 
     private Function<WebDriver, Boolean> s2SingleWaitFunction;
 
@@ -61,6 +69,8 @@ public class Select2WidgetElement {
     private final WebDriver driver;
 
     private boolean mutliple = false;
+
+    private Function<WebElement, Boolean> s2WaitFunction;
 
     /**
      * Constructor.
@@ -100,6 +110,68 @@ public class Select2WidgetElement {
             final boolean multiple) {
         this(driver, by);
         this.mutliple = multiple;
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public WebElement getSelectedValue() {
+        if (mutliple) {
+            throw new UnsupportedOperationException(
+                    "The select2 is multiple and has multiple selected values");
+        }
+        return element.findElement(By.xpath(S2_SINGLE_CURRENT_SELECTION_XPATH));
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public List<WebElement> getSelectedValues() {
+        if (!mutliple) {
+            throw new UnsupportedOperationException(
+                    "The select2 is not multiple and can't have multiple selected values");
+        }
+        return element.findElements(By.xpath(S2_MULTIPLE_CURRENT_SELECTION_XPATH));
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    protected String getSubmittedValue() {
+        String eltId = element.getAttribute("id");
+        String submittedEltId = element.getAttribute("id").substring("s2id_".length(),
+                eltId.length());
+        return driver.findElement(By.id(submittedEltId)).getAttribute("value");
+    }
+
+    protected List<WebElement> getSuggestedEntries() {
+        try {
+            return driver.findElements(By.xpath(S2_SUGGEST_RESULT_XPATH));
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public void removeFromSelection(final String displayedText) {
+        if (!mutliple) {
+            throw new UnsupportedOperationException(
+                    "The select2 is not multiple and you can't remove a specific value");
+        }
+        final String submittedValueBefore = getSubmittedValue();
+        for (WebElement el : getSelectedValues()) {
+            if (el.getText().endsWith("/" + displayedText)) {
+                el.findElement(
+                        By.xpath("a[@class='select2-search-choice-close']")).click();
+            }
+        }
+        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                return !submittedValueBefore.equals(getSubmittedValue());
+            }
+        });
     }
 
     /**
