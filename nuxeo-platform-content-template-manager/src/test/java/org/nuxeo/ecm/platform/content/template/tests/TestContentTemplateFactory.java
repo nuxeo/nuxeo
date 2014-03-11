@@ -50,13 +50,6 @@ public class TestContentTemplateFactory extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployBundle("org.nuxeo.ecm.core.event");
-
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "CoreTestExtensions.xml");
-        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
-                "DefaultPlatform.xml");
-
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
                 "test-content-template-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.content.template.tests",
