@@ -34,6 +34,9 @@
             <fields>
               <field>stringItem</field>
             </fields>
+            <helpLabels>
+              <label mode="any">String item help</label>
+            </helpLabels>
             <labels>
               <label mode="any">String item</label>
             </labels>
