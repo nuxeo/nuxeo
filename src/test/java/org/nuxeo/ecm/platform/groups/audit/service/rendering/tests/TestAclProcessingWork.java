@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -37,11 +38,11 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.job.AclAuditWork;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.IResultPublisher;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -50,14 +51,19 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 @Deploy({ "org.nuxeo.ecm.platform.query.api", "nuxeo-groups-rights-audit" })
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/test-repo-repository-h2-contrib-nofulltext.xml" })
+        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
 public class TestAclProcessingWork extends AbstractAclLayoutTest {
     @Inject
     CoreSession session;
 
     @Inject
     UserManager userManager;
+
+    @Inject
+    EventService eventService;
+
+    @Inject
+    WorkManager workManager;
 
     private final static Log log = LogFactory.getLog(TestAclProcessingWork.class);
 
@@ -73,11 +79,13 @@ public class TestAclProcessingWork extends AbstractAclLayoutTest {
         int width = 10;
         int groups = 1;
 
-        log.info("Build a test repository: depth=" + depth + ", width:" + width
+        log.debug("Build a test repository: depth=" + depth + ", width:" + width
                 + ", groups:" + groups);
         DocumentModel root = makeDocumentTree(session, depth, width, groups);
         session.save();
-        log.info("done building test data");
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion(60 * 1000);
+        log.debug("done building test data");
 
         // --------------------
         IResultPublisher publisher = new IResultPublisher() {
@@ -85,14 +93,15 @@ public class TestAclProcessingWork extends AbstractAclLayoutTest {
 
             @Override
             public void publish(FileBlob fileBlob) throws ClientException {
-                log.info("audit done");
+                log.debug("audit done");
             }
         };
         Work work = new AclAuditWork("test-work", session.getRepositoryName(), root.getId(), testFile, publisher);
 
         // Go!
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        wm.schedule(work, true);
+        workManager.schedule(work, true);
+
+        eventService.waitForAsyncCompletion(60 * 1000);
     }
 
 }
