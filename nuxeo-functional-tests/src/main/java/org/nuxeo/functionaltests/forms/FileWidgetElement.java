@@ -16,13 +16,9 @@
  */
 package org.nuxeo.functionaltests.forms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
 import java.io.IOException;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.functionaltests.AbstractTest;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -51,7 +47,7 @@ public class FileWidgetElement extends AbstractWidgetElement {
 
     public void uploadTestFile(String prefix, String suffix, String content)
             throws IOException {
-        String fileToUploadPath = getTmpFileToUploadPath(prefix, suffix,
+        String fileToUploadPath = AbstractTest.getTmpFileToUploadPath(prefix, suffix,
                 content);
         WebElement upRadioButton = getSubElement("choiceupload");
         upRadioButton.click();
@@ -70,31 +66,6 @@ public class FileWidgetElement extends AbstractWidgetElement {
             throw new NoSuchElementException(
                     "No delete choice available on widget");
         }
-    }
-
-    /**
-     * Creates a temporary file and returns its absolute path.
-     *
-     * @param tmpFilePrefix the file prefix
-     * @param fileSuffix the file suffix
-     * @param fileContent the file content
-     * @return the temporary file to upload path
-     * @throws IOException if temporary file creation fails
-     */
-    protected String getTmpFileToUploadPath(String filePrefix,
-            String fileSuffix, String fileContent) throws IOException {
-
-        // Create tmp file, deleted on exit
-        File tmpFile = File.createTempFile(filePrefix, fileSuffix);
-        tmpFile.deleteOnExit();
-        FileUtils.writeFile(tmpFile, fileContent);
-        assertTrue(tmpFile.exists());
-
-        // Check file URI protocol
-        assertEquals("file", tmpFile.toURI().toURL().getProtocol());
-
-        // Return file absolute path
-        return tmpFile.getAbsolutePath();
     }
 
 }
