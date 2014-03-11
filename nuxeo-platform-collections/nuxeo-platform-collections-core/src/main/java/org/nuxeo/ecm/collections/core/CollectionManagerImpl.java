@@ -40,7 +40,11 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -67,6 +71,19 @@ public class CollectionManagerImpl extends DefaultComponent implements
 
             @Override
             public void run() throws ClientException {
+
+                // We want to disable the following listener on a
+                // collection member when it is added to a collection
+                documentToBeAdded.putContextData(
+                        DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
+                documentToBeAdded.putContextData(
+                        NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
+                        true);
+                documentToBeAdded.putContextData(
+                        NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
+                documentToBeAdded.putContextData(
+                        VersioningService.DISABLE_AUTO_CHECKOUT, true);
+
                 CollectionMember docAdapter = documentToBeAdded.getAdapter(CollectionMember.class);
                 docAdapter.addToCollection(collection.getId());
                 session.saveDocument(docAdapter.getDocument());
@@ -229,6 +246,19 @@ public class CollectionManagerImpl extends DefaultComponent implements
 
             @Override
             public void run() throws ClientException {
+
+                // We want to disable the following listener on a
+                // collection member when it is removed from a collection
+                documentToBeRemoved.putContextData(
+                        DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
+                documentToBeRemoved.putContextData(
+                        NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
+                        true);
+                documentToBeRemoved.putContextData(
+                        NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
+                documentToBeRemoved.putContextData(
+                        VersioningService.DISABLE_AUTO_CHECKOUT, true);
+
                 CollectionMember docAdapter = documentToBeRemoved.getAdapter(CollectionMember.class);
                 docAdapter.removeFromCollection(collection.getId());
                 session.saveDocument(docAdapter.getDocument());

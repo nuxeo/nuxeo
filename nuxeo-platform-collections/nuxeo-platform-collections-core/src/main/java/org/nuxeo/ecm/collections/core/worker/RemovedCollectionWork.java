@@ -22,6 +22,10 @@ import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.collections.core.listener.CollectionAsynchrnonousQuery;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 
 /**
  * @since 5.9.3
@@ -60,12 +64,25 @@ public class RemovedCollectionWork extends RemovedAbstractWork {
     }
 
     @Override
-    protected void updateDocument(final DocumentModel collectionMember) throws ClientException {
-            log.trace(String.format("Updating CollectionMember %s",
-                    collectionMember.getTitle()));
-            final CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
-            collectionMemberAdapter.removeFromCollection(docId);
-            session.saveDocument(collectionMember);
+    protected void updateDocument(final DocumentModel collectionMember)
+            throws ClientException {
+        log.trace(String.format("Updating CollectionMember %s",
+                collectionMember.getTitle()));
+
+        // We want to disable the following listener on a
+        // collection member when it is removed from a collection
+        collectionMember.putContextData(
+                DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
+        collectionMember.putContextData(
+                NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
+        collectionMember.putContextData(
+                NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
+        collectionMember.putContextData(
+                VersioningService.DISABLE_AUTO_CHECKOUT, true);
+
+        final CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
+        collectionMemberAdapter.removeFromCollection(docId);
+        session.saveDocument(collectionMember);
     }
 
 }

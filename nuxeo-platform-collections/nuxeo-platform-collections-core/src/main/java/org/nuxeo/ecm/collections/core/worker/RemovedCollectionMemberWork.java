@@ -63,6 +63,7 @@ public class RemovedCollectionMemberWork extends RemovedAbstractWork {
     protected void updateDocument(final DocumentModel collection) throws ClientException {
         log.trace(String.format("Updating Collection %s",
                 collection.getTitle()));
+
         Collection collectionAdapter = collection.getAdapter(Collection.class);
         collectionAdapter.removeDocument(docId);
         session.saveDocument(collection);

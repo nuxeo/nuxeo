@@ -22,7 +22,11 @@ import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -72,12 +76,26 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
             initSession();
             for (int i = 0; i < docIds.size(); i++) {
                 if (docIds.get(i) != null) {
-                    DocumentModel doc = session.getDocument(new IdRef(
+                    DocumentModel collectionMember = session.getDocument(new IdRef(
                             docIds.get(i)));
-                    if (collectionManager.isCollectable(doc)) {
-                        CollectionMember collectionMember = doc.getAdapter(CollectionMember.class);
-                        collectionMember.addToCollection(newCollectionId);
-                        session.saveDocument(doc);
+                    if (collectionManager.isCollectable(collectionMember)) {
+
+                        // We want to disable the following listener on a
+                        // collection member when it is added to a collection
+                        collectionMember.putContextData(
+                                DublinCoreListener.DISABLE_DUBLINCORE_LISTENER,
+                                true);
+                        collectionMember.putContextData(
+                                NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
+                                true);
+                        collectionMember.putContextData(
+                                NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
+                        collectionMember.putContextData(
+                                VersioningService.DISABLE_AUTO_CHECKOUT, true);
+
+                        CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
+                        collectionMemberAdapter.addToCollection(newCollectionId);
+                        session.saveDocument(collectionMember);
                     }
                 }
                 setProgress(new Progress(i, docIds.size()));
