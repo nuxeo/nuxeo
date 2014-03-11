@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Test;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -54,20 +53,6 @@ public class ITVocabularyTest extends AbstractTest {
 
     private final static String WORKSPACE_TITLE = "WorkspaceTitle_"
             + new Date().getTime();
-
-    @After
-    public void tearDown() throws UserNotConnectedException {
-        // Let's recreate the entry to leave state as it was
-        DocumentBasePage documentBasePage = login();
-        VocabulariesPage newVocabulariesPage = documentBasePage.getAdminCenter().getVocabulariesPage();
-        newVocabulariesPage = newVocabulariesPage.select(L10N_SUBJECTS);
-        if (!newVocabulariesPage.hasEntry(SAMPLE_SUBJECT_ENTRY_ID)) {
-            newVocabulariesPage = newVocabulariesPage.addEntry(
-                    SAMPLE_SUBJECT_ENTRY_ID, "Art", SAMPLE_SUBJECT_ENTRY_LABEL,
-                    "Bande dessinée", false, 10000000);
-            assertTrue(newVocabulariesPage.hasEntry(SAMPLE_SUBJECT_ENTRY_ID));
-        }
-    }
 
     /**
      * Edit a document and add a directory entry. Remove the entry from the
@@ -148,7 +133,13 @@ public class ITVocabularyTest extends AbstractTest {
                 true);
         assertEquals(0, subjectsWidget.getSelectedValues().size());
 
-        logout();
+        // Let's recreate the entry to leave state as it was
+        VocabulariesPage newVocabulariesPage = documentBasePage.getAdminCenter().getVocabulariesPage();
+        newVocabulariesPage = newVocabulariesPage.select(L10N_SUBJECTS);
+        newVocabulariesPage = newVocabulariesPage.addEntry(
+                SAMPLE_SUBJECT_ENTRY_ID, "Art", SAMPLE_SUBJECT_ENTRY_LABEL,
+                "Bande dessinée", false, 10000000);
+        assertTrue(newVocabulariesPage.hasEntry(SAMPLE_SUBJECT_ENTRY_ID));
 
     }
 
