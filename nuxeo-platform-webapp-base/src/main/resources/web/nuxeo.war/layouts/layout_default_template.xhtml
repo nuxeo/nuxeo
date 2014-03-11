@@ -3,6 +3,7 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   id="#{layout.id}"
@@ -80,10 +81,12 @@
 
   </nxu:set>
 
+<a4j:outputPanel ajaxRendered="true">
 <script>
   jQuery(document).ready(function() {
     jQuery(".widgetHelpLabel").tooltip({relative: true, position: 'bottom center'});
   });
 </script>
+</a4j:outputPanel>
 
 </f:subview>
