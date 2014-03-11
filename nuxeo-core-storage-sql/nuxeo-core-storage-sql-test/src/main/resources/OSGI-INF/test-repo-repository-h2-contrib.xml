@@ -9,6 +9,8 @@
     <repository name="${nuxeo.test.vcs.repository}"
       factory="${nuxeo.test.vcs.repository-factory}">
       <repository sendInvalidationEvents="true">
+        <binaryManager class="${nuxeo.test.vcs.binary-manager}"
+          key="${nuxeo.test.vcs.binary-manager-key}" />
         <schema>
           <field type="largetext">note</field>
           <field type="largetext">relatedtext</field>

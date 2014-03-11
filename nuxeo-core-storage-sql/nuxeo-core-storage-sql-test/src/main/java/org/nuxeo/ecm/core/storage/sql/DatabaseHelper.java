@@ -52,6 +52,8 @@ public abstract class DatabaseHelper {
 
     protected static final Class<? extends RepositoryFactory> defaultRepositoryFactory = SQLRepositoryFactory.class;
 
+    protected static final Class<? extends BinaryManager> defaultBinaryManager = DefaultBinaryManager.class;
+
     static {
         setProperty(DB_PROPERTY, DB_DEFAULT);
         String className = System.getProperty(DB_PROPERTY);
@@ -60,6 +62,7 @@ public abstract class DatabaseHelper {
         }
         setDatabaseForTests(className);
         setRepositoryFactory(defaultRepositoryFactory);
+        setBinaryManager(defaultBinaryManager, "");
         setSingleDataSourceMode();
     }
 
@@ -246,12 +249,20 @@ public abstract class DatabaseHelper {
         setDatabaseName(DEFAULT_DATABASE_NAME);
         setRepositoryName(DEFAULT_REPOSITORY_NAME);
         setRepositoryFactory(defaultRepositoryFactory);
+        setBinaryManager(defaultBinaryManager, "");
     }
 
     public static void setRepositoryFactory(
             Class<? extends RepositoryFactory> factoryClass) {
         System.setProperty("nuxeo.test.vcs.repository-factory",
                 factoryClass.getName());
+    }
+
+    public static void setBinaryManager(
+            Class<? extends BinaryManager> binaryManagerClass, String key) {
+        System.setProperty("nuxeo.test.vcs.binary-manager",
+                binaryManagerClass.getName());
+        System.setProperty("nuxeo.test.vcs.binary-manager-key", key);
     }
 
     public abstract String getDeploymentContrib();
