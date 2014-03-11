@@ -40,7 +40,8 @@
         <title>You are invited to access Nuxeo</title>
         <template>skin/views/userRegistration/ReviveEmailTemplate.ftl</template>
       </reviveEmail>
-      <validationRelUrl>site/userRegistration/validate/</validationRelUrl>
+      <enterPasswordUrl>site/userRegistration/enterpassword/</enterPasswordUrl>
+      <validationRelUrl>site/userRegistration/validate</validationRelUrl>
     </configuration>
   </extension>
 
@@ -55,7 +56,10 @@
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
       point="openUrl">
     <openUrl name="RegisterUser_validate">
-      <grantPattern>${org.nuxeo.ecm.contextPath}/site/userRegistration/validate/.*</grantPattern>
+      <grantPattern>${org.nuxeo.ecm.contextPath}/site/userRegistration/validate</grantPattern>
+    </openUrl>
+    <openUrl name="RegisterUser_enterpassword">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/site/userRegistration/enterpassword/.*</grantPattern>
     </openUrl>
   </extension>
 </component>

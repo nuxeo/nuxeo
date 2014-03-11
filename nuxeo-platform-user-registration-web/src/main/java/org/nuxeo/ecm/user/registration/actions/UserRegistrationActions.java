@@ -145,6 +145,11 @@ public class UserRegistrationActions implements Serializable {
                 + userRegistrationService.getConfiguration(name).getValidationRelUrl();
     }
 
+    public String getEnterPasswordUrl(String name) throws ClientException {
+        return BaseURL.getBaseURL()
+                + userRegistrationService.getConfiguration(name).getEnterPasswordUrl();
+    }
+
     public String getInvitationLayout(String name) {
         return userRegistrationService.getConfiguration(name).getInvitationLayout();
     }
@@ -165,10 +170,14 @@ public class UserRegistrationActions implements Serializable {
         return getValidationBaseUrl(DEFAULT_CONFIGURATION_NAME);
     }
 
+    public String getEnterPasswordUrl() throws ClientException {
+        return getEnterPasswordUrl(DEFAULT_CONFIGURATION_NAME);
+    }
+
     public void acceptRegistrationRequest(DocumentModel request) {
         try {
             Map<String, Serializable> additionalInfo = new HashMap<String, Serializable>();
-            additionalInfo.put("validationBaseURL", getValidationBaseUrl());
+            additionalInfo.put("enterPasswordUrl", getEnterPasswordUrl());
             userRegistrationService.acceptRegistrationRequest(request.getId(),
                     additionalInfo);
             // EventManager.raiseEventsOnDocumentChange(request);
@@ -385,7 +394,6 @@ public class UserRegistrationActions implements Serializable {
         }
 
         try {
-            userinfo.setPassword(RandomStringUtils.randomAlphanumeric(6));
             userRegistrationService.submitRegistrationRequest(
                     configurationName, userinfo, docinfo,
                     getAdditionalsParameters(), EMAIL, false);

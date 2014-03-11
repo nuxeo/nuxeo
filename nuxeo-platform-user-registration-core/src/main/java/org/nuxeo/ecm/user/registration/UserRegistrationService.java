@@ -48,7 +48,7 @@ public interface UserRegistrationService {
 
     /**
      * Stores a registration request and return a unique ID for it
-     * 
+     *
      * @return
      */
     String submitRegistrationRequest(UserRegistrationInfo userInfo,
@@ -58,7 +58,7 @@ public interface UserRegistrationService {
 
     /**
      * accept the registration request
-     * 
+     *
      * @param requestId
      */
     void acceptRegistrationRequest(String requestId,
@@ -67,7 +67,7 @@ public interface UserRegistrationService {
 
     /**
      * reject the registration request
-     * 
+     *
      * @param requestId
      */
     void rejectRegistrationRequest(String requestId,
@@ -76,7 +76,7 @@ public interface UserRegistrationService {
 
     /**
      * Validate a registration request and generate the target User
-     * 
+     *
      * @param requestId
      */
     Map<String, Serializable> validateRegistration(String requestId,
@@ -84,7 +84,7 @@ public interface UserRegistrationService {
 
     /**
      * Validate a registration request and generate the target User
-     * 
+     *
      * @param requestId
      */
     Map<String, Serializable> validateRegistrationAndSendEmail(
@@ -97,7 +97,7 @@ public interface UserRegistrationService {
     /**
      * Send a mail to the invited user to revive his invitation If an error
      * occured while sending an email, it logs it and continue.
-     * 
+     *
      * @since 5.6
      */
     void reviveRegistrationRequests(CoreSession session,
@@ -105,7 +105,7 @@ public interface UserRegistrationService {
 
     /**
      * Delete a registration document
-     * 
+     *
      * @since 5.6
      */
     void deleteRegistrationRequests(CoreSession session,
@@ -114,7 +114,7 @@ public interface UserRegistrationService {
     /**
      * Add an ACL with the right specified in the registration Doc or nothing,
      * if no rights needed.
-     * 
+     *
      * @param registrationDoc containing all registration info
      * @since 5.6
      */
@@ -125,7 +125,7 @@ public interface UserRegistrationService {
 
     /**
      * Retrieve registrations for a document givent the username
-     * 
+     *
      * @since 5.6
      */
     DocumentModelList getRegistrationsForUser(String docId, String username)
@@ -133,7 +133,7 @@ public interface UserRegistrationService {
 
     /**
      * Return specific configuration for the specified name
-     * 
+     *
      * @param name configuration name
      * @since 5.6
      */
@@ -147,7 +147,7 @@ public interface UserRegistrationService {
     /**
      * Get documentmodel that stores request configuration using
      * RegistrationConfiguration facet.
-     * 
+     *
      * @param session
      * @return
      */
@@ -157,7 +157,7 @@ public interface UserRegistrationService {
     /**
      * Stores a resgitration request like submitRegistrationRequest with
      * Document information
-     * 
+     *
      * @return a unique ID for it
      * @since 5.6
      */
@@ -169,7 +169,7 @@ public interface UserRegistrationService {
 
     /**
      * Get registration rules adapter
-     * 
+     *
      * @since 5.6
      */
     RegistrationRules getRegistrationRules(String configurationName)
@@ -179,4 +179,12 @@ public interface UserRegistrationService {
      * List all registered onfiguration name
      */
     Set<String> getConfigurationsName();
+
+    /**
+     * The method checks if the request id is a valid one.
+     * @param requestId The value of the request id.
+     *
+     * @since 5.9.3
+     */
+    void checkRequestId(String requestId) throws ClientException,UserRegistrationException;
 }

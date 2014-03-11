@@ -77,6 +77,9 @@ public class UserRegistrationConfiguration {
     @XNode("validationRelUrl")
     private String validationRelUrl;
 
+    @XNode("enterPasswordUrl")
+    private String enterPasswordUrl;
+
     @XNode("invitationLayout")
     private String invitationLayout = "user_invitation_info";
 
@@ -129,6 +132,14 @@ public class UserRegistrationConfiguration {
             return "";
         }
         return validationRelUrl;
+    }
+
+    public String getEnterPasswordUrl() {
+        if (StringUtils.isBlank(enterPasswordUrl)) {
+            log.info("Configuration " + name + " has empty validation url");
+            return "";
+        }
+        return enterPasswordUrl;
     }
 
     public String getReviveEmailTitle() {
@@ -231,7 +242,7 @@ public class UserRegistrationConfiguration {
         if (!StringUtils.isEmpty(other.validationRelUrl)) {
             this.validationRelUrl = other.validationRelUrl;
         }
-        
+
         if (!StringUtils.isEmpty(other.invitationLayout)) {
             this.invitationLayout = other.invitationLayout;
         }

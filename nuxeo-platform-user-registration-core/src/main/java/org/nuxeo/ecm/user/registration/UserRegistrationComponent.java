@@ -334,11 +334,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         public void run() throws ClientException {
             DocumentRef idRef = new IdRef(uuid);
 
-            if (!session.exists(idRef)) {
-                throw new UserRegistrationException(
-                        "There is no existing registration request with id "
-                                + uuid);
-            }
+            new RequestIdValidator(uuid).runUnrestricted();
 
             DocumentModel registrationDoc = session.getDocument(idRef);
 
@@ -380,6 +376,27 @@ public class UserRegistrationComponent extends DefaultComponent implements
                     evContext.getProperty("registeredUser"));
         }
 
+    }
+
+    protected class RequestIdValidator extends UnrestrictedSessionRunner {
+
+        protected String uuid;
+
+        public RequestIdValidator(String uuid) {
+            super(getTargetRepositoryName());
+            this.uuid = uuid;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            DocumentRef idRef = new IdRef(uuid);
+            // Check if the id matches an existing document
+            if (!session.exists(idRef)) {
+                throw new UserRegistrationException(
+                        "There is no existing registration request with id "
+                                + uuid);
+            }
+        }
     }
 
     protected EventContext sendEvent(CoreSession session, DocumentModel source,
@@ -507,18 +524,18 @@ public class UserRegistrationComponent extends DefaultComponent implements
         if (byPassAdminValidation) {
             // Build validationBaseUrl with nuxeo.url property as request is not
             // accessible.
-            if (!additionnalInfo.containsKey("validationBaseUrl")) {
+            if (!additionnalInfo.containsKey("enterPasswordUrl")) {
                 String baseUrl = Framework.getProperty(NUXEO_URL_KEY);
 
                 baseUrl = StringUtils.isBlank(baseUrl) ? "/" : baseUrl;
                 if (!baseUrl.endsWith("/")) {
                     baseUrl += "/";
                 }
-                String validationRelUrl = getConfiguration(configurationName).getValidationRelUrl();
-                if (validationRelUrl.startsWith("/")) {
-                    validationRelUrl = validationRelUrl.substring(1);
+                String enterPasswordUrl = getConfiguration(configurationName).getEnterPasswordUrl();
+                if (enterPasswordUrl.startsWith("/")) {
+                    enterPasswordUrl = enterPasswordUrl.substring(1);
                 }
-                additionnalInfo.put("validationBaseURL", baseUrl.concat(validationRelUrl));
+                additionnalInfo.put("enterPasswordUrl", baseUrl.concat(enterPasswordUrl));
             }
             acceptRegistrationRequest(registrationUuid, additionnalInfo);
         }
@@ -795,5 +812,12 @@ public class UserRegistrationComponent extends DefaultComponent implements
             }
         }.runUnrestricted();
         return registrationDocs;
+    }
+
+    @Override
+    public void checkRequestId(final String requestId) throws ClientException,
+            UserRegistrationException {
+        RequestIdValidator runner = new RequestIdValidator(requestId);
+        runner.runUnrestricted();
     }
 }
