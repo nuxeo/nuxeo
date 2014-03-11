@@ -155,7 +155,12 @@ public class DefaultBinaryManager implements BinaryManager {
          * Move the tmp file to its destination.
          */
         File file = getFileForDigest(digest, true);
-        tmp.renameTo(file); // atomic move, fails if already there
+        if (!file.exists()) {
+            tmp.renameTo(file); // atomic move, fails if already there
+            log.info("File " + file.getName() + " has been created.");
+        } else {
+            log.info("File " + file.getName() + " already exists. No move has been done.");
+        }
         tmp.delete(); // fails if the move was successful
         if (!file.exists()) {
             throw new IOException("Could not create file: " + file);
