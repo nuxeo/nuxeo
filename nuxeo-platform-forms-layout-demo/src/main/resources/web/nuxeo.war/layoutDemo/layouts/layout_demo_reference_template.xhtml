@@ -1,4 +1,5 @@
 <f:subview
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
@@ -60,10 +61,12 @@
     </ui:define>
   </ui:decorate>
 
+<a4j:outputPanel ajaxRendered="true">
 <script>
   jQuery(document).ready(function() {
     jQuery(".widgetHelpLabel").tooltip({relative: true, position: 'bottom center'});
   });
 </script>
+</a4j:outputPanel>
 
 </f:subview>
