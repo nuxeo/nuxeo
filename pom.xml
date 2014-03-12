@@ -2367,6 +2367,22 @@
         <artifactId>jackson-mapper-asl</artifactId>
         <version>1.8.1</version>
       </dependency>
+      <!-- jackson 2 (used by addon) -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>2.2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>2.2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.2.2</version>
+      </dependency>
       <dependency>
         <groupId>net.sf.ezmorph</groupId>
         <artifactId>ezmorph</artifactId>
