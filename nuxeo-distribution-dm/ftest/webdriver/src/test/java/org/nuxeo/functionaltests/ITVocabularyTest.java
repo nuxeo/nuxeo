@@ -135,7 +135,7 @@ public class ITVocabularyTest extends AbstractTest {
 
         // Let's recreate the entry to leave state as it was
         VocabulariesPage newVocabulariesPage = documentBasePage.getAdminCenter().getVocabulariesPage();
-        newVocabulariesPage = newVocabulariesPage.select(L10N_SUBJECTS);
+        //newVocabulariesPage = newVocabulariesPage.select(L10N_SUBJECTS);
         newVocabulariesPage = newVocabulariesPage.addEntry(
                 SAMPLE_SUBJECT_ENTRY_ID, "Art", SAMPLE_SUBJECT_ENTRY_LABEL,
                 "Bande dessinée", false, 10000000);
