@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -74,12 +73,13 @@ public class MockChangeFinder implements FileSystemChangeFinder {
 
             NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
             RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-            for (Repository repo : repositoryManager.getRepositories()) {
+            for (String repositoryName : repositoryManager.getRepositoryNames()) {
                 CoreSession repoSession = null;
                 try {
                     Map<String, Serializable> context = new HashMap<String, Serializable>();
                     context.put("principal", principal);
-                    repoSession = repo.open(context);
+                    repoSession = CoreInstance.getInstance().open(
+                            repositoryName, context);
                     docChanges.addAll(getDocumentChanges(repoSession, query,
                             limit));
                 } catch (TooManyChangesException e) {

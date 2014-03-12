@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
-import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
@@ -350,8 +349,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
         FileSystemItemManager fsManager = Framework.getLocalService(FileSystemItemManager.class);
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        for (Repository repo : repositoryManager.getRepositories()) {
-            CoreSession session = fsManager.getSession(repo.getName(),
+        for (String repositoryName : repositoryManager.getRepositoryNames()) {
+            CoreSession session = fsManager.getSession(repositoryName,
                     principal);
             syncRoots.putAll(queryAndFecthSynchronizationRoots(session, query));
         }

@@ -13,7 +13,6 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 
 /**
@@ -31,10 +30,8 @@ public class GetRepositoriesOperation {
 
     @OperationMethod
     public List<String> run() throws ClientException {
-        List<String> repositoryNames = new ArrayList<String>();
-        for (Repository rep : repositoryManager.getRepositories()) {
-            repositoryNames.add(rep.getName());
-        }
+        List<String> repositoryNames = new ArrayList<String>(
+                repositoryManager.getRepositoryNames());
         // Make order deterministic to make it simpler to write tests.
         Collections.sort(repositoryNames);
         return repositoryNames;
