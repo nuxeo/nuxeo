@@ -1,10 +1,16 @@
-<html>
-<body>
+<@extends src="./base.ftl">
+
+<@block name="title">
+ ${Context.getMessage('label.registerForm.title')}
+</@block>
+
+<@block name="content">
   
 <div class="registrationForm">
 <form action="${This.path}/validate" method="post" enctype="application/x-www-form-urlencoded" name="submitNewPassword">
 	<input type="hidden" id="RequestId" value="${key}" name="RequestId"/>
 	<table>
+		<tr><td colspan="2">${Context.getMessage('label.registerForm.title')}</td></tr>
 	 	<tr>
 	    	<td class="login_label">
 				<span class="required">${Context.getMessage('label.registerForm.password')}</span>
@@ -54,3 +60,6 @@
 </form>
 
 </div>
+
+</@block>
+</@extends>
