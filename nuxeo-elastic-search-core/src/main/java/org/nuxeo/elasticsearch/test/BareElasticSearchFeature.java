@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo
+ */
+
 package org.nuxeo.elasticsearch.test;
 
 import java.io.File;
@@ -17,10 +34,16 @@ import com.google.inject.Binder;
 import com.google.inject.Provider;
 import com.google.inject.Scopes;
 
+/**
+ *
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ *
+ */
 @Features(RuntimeFeature.class)
 public class BareElasticSearchFeature extends SimpleFeature {
 
     protected Client client;
+
     protected Node node;
 
     @Override
@@ -29,14 +52,12 @@ public class BareElasticSearchFeature extends SimpleFeature {
         File home = Framework.getRuntime().getHome();
         File esDirectory = new File(home, "elasticsearch");
         esDirectory.mkdir();
-        Settings settings = ImmutableSettings.settingsBuilder()
-                .put("node.http.enabled", true)
-                .put("path.logs", esDirectory.getPath() + "/logs")
-                .put("path.data", esDirectory.getPath() + "/data")
-                .put("gateway.type", "none")
-                .put("index.store.type", "memory")
-                .put("index.number_of_shards", 1)
-                .put("index.number_of_replicas", 1).build();
+        Settings settings = ImmutableSettings.settingsBuilder().put(
+                "node.http.enabled", true).put("path.logs",
+                esDirectory.getPath() + "/logs").put("path.data",
+                esDirectory.getPath() + "/data").put("gateway.type", "none").put(
+                "index.store.type", "memory").put("index.number_of_shards", 1).put(
+                "index.number_of_replicas", 1).build();
 
         node = NodeBuilder.nodeBuilder().local(true).settings(settings).node();
         client = node.client();
@@ -46,13 +67,12 @@ public class BareElasticSearchFeature extends SimpleFeature {
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
         super.configure(runner, binder);
-        binder.bind(Node.class).toProvider(
-                new Provider<Node>() {
-                    @Override
-                    public Node get() {
-                        return node;
-                    }
-                }).in(Scopes.SINGLETON);
+        binder.bind(Node.class).toProvider(new Provider<Node>() {
+            @Override
+            public Node get() {
+                return node;
+            }
+        }).in(Scopes.SINGLETON);
         binder.bind(Client.class).toProvider(new Provider<Client>() {
             @Override
             public Client get() {
@@ -60,7 +80,6 @@ public class BareElasticSearchFeature extends SimpleFeature {
             }
         }).in(Scopes.SINGLETON);
     }
-
 
     @Override
     public void afterRun(FeaturesRunner runner) throws Exception {

@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo
+ */
+
 package org.nuxeo.elasticsearch;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -41,6 +58,12 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+/**
+ * Component used to configure and manage ElasticSearch integration
+ *
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ *
+ */
 public class ElasticSearchComponent extends DefaultComponent implements
         ElasticSearchService, ElasticSearchAdmin {
 
@@ -52,6 +75,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected Client client;
 
+    // temporary hack until we are able to list pending indexing jobs cluster
+    // wide
     protected final CopyOnWriteArrayList<String> pendingWork = new CopyOnWriteArrayList<String>();
 
     public static final String EP_Config = "elasticSearchConfig";
@@ -90,9 +115,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
         NuxeoElasticSearchConfig config = getConfig();
         Settings settings = null;
         if (config.isInProcess()) {
-            String cname =config.getClusterName();
-            if (cname==null) {
-                cname ="NuxeoESCluster";
+            String cname = config.getClusterName();
+            if (cname == null) {
+                cname = "NuxeoESCluster";
             }
             settings = ImmutableSettings.settingsBuilder().put(
                     "node.http.enabled", config.enableHttp()).put("path.logs",
@@ -100,8 +125,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     "gateway.type", "none").put("index.store.type",
                     config.getIndexStorageType()).put("index.number_of_shards",
                     1).put("index.number_of_replicas", 1).put("cluster.name",
-                    cname).put("node.name",
-                    config.getNodeName()).build();
+                    cname).put("node.name", config.getNodeName()).build();
         } else {
             settings = ImmutableSettings.settingsBuilder().put(
                     "node.http.enabled", config.enableHttp()).put(
@@ -224,7 +248,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         super.applicationStarted(context);
         if (getConfig() != null && !getConfig().isInProcess()
                 && getConfig().autostartLocalNode()) {
-            ElasticSearchControler controler = new ElasticSearchControler(
+            ElasticSearchController controler = new ElasticSearchController(
                     config);
             if (controler.start()) {
                 log.info("Started Elastic Search");

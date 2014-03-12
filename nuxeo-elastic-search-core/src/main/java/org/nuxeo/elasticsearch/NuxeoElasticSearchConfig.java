@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo
+ */
+
 package org.nuxeo.elasticsearch;
 
 import java.io.File;
@@ -10,7 +27,12 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
 
-
+/**
+ * XMap descriptor used to configure Elastic Search integration
+ *
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ *
+ */
 @XObject(value = "elasticSearchConfig")
 public class NuxeoElasticSearchConfig implements Serializable {
 
@@ -105,7 +127,7 @@ public class NuxeoElasticSearchConfig implements Serializable {
     }
 
     public List<String> getRemoteNodes() {
-        if (remoteNodes.size()==0 && autostartLocalNode) {
+        if (remoteNodes.size() == 0 && autostartLocalNode) {
             remoteNodes.add(getHostIp() + ":" + getHostPort());
         }
         return remoteNodes;
@@ -128,29 +150,29 @@ public class NuxeoElasticSearchConfig implements Serializable {
 
         sb.append(getStartupScript());
 
-        if (indexStorageType!=null) {
+        if (indexStorageType != null) {
             sb.append(" -Des.index.store.type=" + indexStorageType);
         }
-        if (getHostIp()!=null) {
+        if (getHostIp() != null) {
             sb.append(" -Des.network.host=" + getHostIp());
         }
 
-        if (getHostPort()!=null) {
+        if (getHostPort() != null) {
             sb.append(" -Des.http.port=" + getHostPort());
         }
 
-        if (getDataPath()!=null) {
+        if (getDataPath() != null) {
             sb.append(" -Des.path.data=" + getDataPath());
         }
 
-        if (getLogPath()!=null) {
+        if (getLogPath() != null) {
             sb.append(" -Des.path.logs=" + getLogPath());
         }
-        if (clusterName!=null) {
-            sb.append(" -Des.cluster.name="  + clusterName);
+        if (clusterName != null) {
+            sb.append(" -Des.cluster.name=" + clusterName);
         }
-        if (nodeName!=null) {
-            sb.append(" -Des.node.name="  + nodeName);
+        if (nodeName != null) {
+            sb.append(" -Des.node.name=" + nodeName);
         }
 
         return sb.toString();
@@ -161,19 +183,17 @@ public class NuxeoElasticSearchConfig implements Serializable {
     }
 
     public String getHostIp() {
-        if (hostIp== null && autostartLocalNode) {
+        if (hostIp == null && autostartLocalNode) {
             hostIp = "127.0.0.1";
         }
         return hostIp;
     }
 
     public String getHostPort() {
-        if (hostPort== null && autostartLocalNode) {
+        if (hostPort == null && autostartLocalNode) {
             hostPort = "9200";
         }
         return hostPort;
     }
-
-
 
 }

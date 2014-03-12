@@ -1,26 +1,50 @@
+/*
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo
+ */
+
 package org.nuxeo.elasticsearch;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.elasticsearch.client.Client;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
-import org.nuxeo.runtime.api.Framework;
 
-public class ElasticSearchControler {
+/**
+ * Controller to start an ElasticSearch process outside of Nuxeo JVM.
+ *
+ * There is only a start method, since the stop is handled via the
+ * {@link Client}
+ *
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ *
+ */
+public class ElasticSearchController {
 
-    protected static final Log log = LogFactory.getLog(ElasticSearchControler.class);
+    protected static final Log log = LogFactory.getLog(ElasticSearchController.class);
 
     protected final NuxeoElasticSearchConfig config;
 
-    public ElasticSearchControler(NuxeoElasticSearchConfig config) {
+    public ElasticSearchController(NuxeoElasticSearchConfig config) {
         this.config = config;
     }
 
