@@ -4,8 +4,7 @@
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
     point="elasticSearchConfig">
 
-    <elasticSearchConfig autostartLocalNode="true">
-     <startupScript>/home/tiry/devs/elasticsearch-0.90.2/bin/elasticsearch</startupScript>
+    <elasticSearchConfig inProcess="true">
      <nodeName>nuxeoTestNode</nodeName>
      <clusterName>nuxeoTestCluster</clusterName>
     </elasticSearchConfig>

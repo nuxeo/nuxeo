@@ -90,12 +90,18 @@ public class ElasticSearchComponent extends DefaultComponent implements
         NuxeoElasticSearchConfig config = getConfig();
         Settings settings = null;
         if (config.isInProcess()) {
+            String cname =config.getClusterName();
+            if (cname==null) {
+                cname ="NuxeoESCluster";
+            }
             settings = ImmutableSettings.settingsBuilder().put(
                     "node.http.enabled", config.enableHttp()).put("path.logs",
                     config.getLogPath()).put("path.data", config.getDataPath()).put(
                     "gateway.type", "none").put("index.store.type",
                     config.getIndexStorageType()).put("index.number_of_shards",
-                    1).put("index.number_of_replicas", 1).build();
+                    1).put("index.number_of_replicas", 1).put("cluster.name",
+                    cname).put("node.name",
+                    config.getNodeName()).build();
         } else {
             settings = ImmutableSettings.settingsBuilder().put(
                     "node.http.enabled", config.enableHttp()).put(
@@ -182,28 +188,25 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
-    public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder,
-            int pageSize, int pageIdx) throws ClientException {
+    public DocumentModelList query(CoreSession session,
+            QueryBuilder queryBuilder, int pageSize, int pageIdx)
+            throws ClientException {
 
         DocumentModelList result = new DocumentModelListImpl();
         boolean completed = false;
         int fetch = 0;
 
-        while (result.size()<pageSize && ! completed) {
-            int start = (pageIdx+fetch)*pageSize;
-            int end = (pageIdx+fetch+1)*pageSize;
-            SearchResponse searchResponse = getClient().prepareSearch(MAIN_IDX)
-                    .setTypes("doc")
-                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                    .setQuery(queryBuilder)
-                    .setFrom(start).setSize(end)
-                    .execute()
-                    .actionGet();
+        while (result.size() < pageSize && !completed) {
+            int start = (pageIdx + fetch) * pageSize;
+            int end = (pageIdx + fetch + 1) * pageSize;
+            SearchResponse searchResponse = getClient().prepareSearch(MAIN_IDX).setTypes(
+                    "doc").setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(
+                    queryBuilder).setFrom(start).setSize(end).execute().actionGet();
 
             if (searchResponse.getHits().getTotalHits() < pageSize) {
                 completed = true;
             }
-            Iterator<SearchHit> hits =  searchResponse.getHits().iterator();
+            Iterator<SearchHit> hits = searchResponse.getHits().iterator();
             while (hits.hasNext()) {
                 SearchHit hit = hits.next();
                 IdRef ref = new IdRef(hit.getId());
@@ -211,7 +214,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     result.add(session.getDocument(ref));
                 }
             }
-            fetch+=1;
+            fetch += 1;
         }
         return result;
     }
