@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import java.io.Serializable;
-import java.util.Collection;
 
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
@@ -28,7 +27,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.CharacterSet;
@@ -54,24 +52,20 @@ public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements
 
         if (repo == null || repo.equals("*")) {
             try {
-                RepositoryManager repmanager = Framework
-                        .getService(RepositoryManager.class);
-                Collection<Repository> repos = repmanager.getRepositories();
-
                 Element serversNode = result.createElement("avalaibleServers");
                 result.setRootElement((org.dom4j.Element) serversNode);
 
-                for (Repository availableRepo : repos) {
+                RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+                for (String repositoryName : repositoryManager.getRepositoryNames()) {
                     Element server = result.createElement("server");
-                    server.setAttribute("title", availableRepo.getName());
-                    server.setAttribute("url", getRelURL(availableRepo
-                            .getName(), "*"));
+                    server.setAttribute("title", repositoryName);
+                    server.setAttribute("url", getRelURL(repositoryName, "*"));
                     serversNode.appendChild(server);
                 }
                 res.setEntity(result.asXML(), MediaType.TEXT_XML);
                 res.getEntity().setCharacterSet(CharacterSet.UTF_8);
                 return;
-            } catch (Exception e) {
+            } catch (DOMException e) {
                 handleError(result, res, e);
                 return;
             }
