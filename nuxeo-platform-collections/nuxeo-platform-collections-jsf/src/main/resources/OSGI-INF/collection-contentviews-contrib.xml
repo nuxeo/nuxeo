@@ -16,8 +16,10 @@
         <property name="coreSession">#{documentManager}</property>
         <whereClause docType="Document">
           <fixedPart>
-            ecm:mixinType = 'Collection' AND ecm:mixinType != 'HiddenInNavigation'
-            AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+            ecm:mixinType = 'Collection' AND ecm:mixinType !=
+            'HiddenInNavigation'
+            AND ecm:isCheckedInVersion = 0 AND
+            ecm:currentLifeCycleState != 'deleted'
           </fixedPart>
         </whereClause>
         <sort column="dc:title" ascending="true" />
@@ -58,8 +60,9 @@
         <property name="coreSession">#{documentManager}</property>
         <whereClause docType="Document">
           <fixedPart>
-            ecm:mixinType = 'CollectionMember' AND ecm:mixinType != 'HiddenInNavigation'
-            AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' AND
+            ecm:mixinType != 'HiddenInNavigation' AND
+            ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+            'deleted' AND
             collectionMember:collectionIds/* = ?
           </fixedPart>
         </whereClause>
