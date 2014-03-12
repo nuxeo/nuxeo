@@ -64,6 +64,7 @@
     <nuxeo.webengine.sites.version>5.9.3-SNAPSHOT</nuxeo.webengine.sites.version>
     <nuxeo.style.guide.version>5.9.3-SNAPSHOT</nuxeo.style.guide.version>
     <nuxeo.imaging.recompute.version>5.9.3-SNAPSHOT</nuxeo.imaging.recompute.version>
+    <nuxeo.box.version>5.9.3-SNAPSHOT</nuxeo.box.version>
 
     <!-- optional addons -->
     <nuxeo.jbpm.version>5.9.3-SNAPSHOT</nuxeo.jbpm.version>
@@ -131,6 +132,7 @@
     <module>nuxeo-imaging-recompute</module>
     <module>nuxeo-javaagent</module>
     <module>nuxeo-session-inspector</module>
+    <module>nuxeo-box-api</module>
   </modules>
 
   <dependencyManagement>
@@ -1138,19 +1140,26 @@
 
       <!-- JSF perfs debugging helpers -->
       <dependency>
-	<groupId>org.nuxeo.runtime</groupId>
+        <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-javaagent-main</artifactId>
         <version>${nuxeo.javaagent.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.nuxeo.runtime</groupId>
+        <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-javaagent-bridge</artifactId>
         <version>${nuxeo.javaagent.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.nuxeo.runtime</groupId>
+        <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-session-inspector</artifactId>
         <version>${nuxeo.javaagent.version}</version>
+      </dependency>
+
+      <!-- Nuxeo Box addon -->
+      <dependency>
+        <groupId>com.nuxeo.box.api</groupId>
+        <artifactId>nuxeo-box-api</artifactId>
+        <version>${nuxeo.box.version}</version>
       </dependency>
 
     </dependencies>
