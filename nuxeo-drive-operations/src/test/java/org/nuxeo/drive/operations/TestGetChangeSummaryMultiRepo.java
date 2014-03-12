@@ -40,14 +40,11 @@ import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -79,15 +76,10 @@ public class TestGetChangeSummaryMultiRepo {
     protected CoreSession session;
 
     @Inject
-    protected RepositoryManager repositoryManager;
-
-    @Inject
     protected NuxeoDriveManager nuxeoDriveManager;
 
     @Inject
     protected HttpAutomationClient automationClient;
-
-    protected Repository otherRepo;
 
     protected CoreSession otherSession;
 
@@ -116,8 +108,7 @@ public class TestGetChangeSummaryMultiRepo {
 
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("username", "Administrator");
-        otherRepo = repositoryManager.getRepository("other");
-        otherSession = otherRepo.open(context);
+        otherSession = CoreInstance.getInstance().open("other", context);
 
         nuxeoDriveManager.setChangeFinder(new MockChangeFinder());
         lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
@@ -149,13 +140,8 @@ public class TestGetChangeSummaryMultiRepo {
         otherSession.save();
 
         // Close session bound to the 'other' repository
-        assert otherSession != null;
         CoreInstance.getInstance().close(otherSession);
         otherSession = null;
-
-        // Shutdown 'other' repository
-        NXCore.getRepositoryService().getRepositoryManager().getRepository(
-                "other").shutdown();
     }
 
     @Test
