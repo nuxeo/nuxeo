@@ -12,7 +12,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-@Deploy({"org.nuxeo.runtime.jtajca" , "org.nuxeo.elasticsearch.core"})
+@Deploy({"org.nuxeo.runtime.jtajca" ,"org.nuxeo.ecm.automation.io",  "org.nuxeo.elasticsearch.core"})
 //@Features({CoreFeature.class})
 @Features({TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup=Granularity.METHOD, repositoryFactoryClass=PoolingRepositoryFactory.class)
