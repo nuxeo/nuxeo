@@ -16,18 +16,18 @@ package org.nuxeo.ecm.core.io.impl;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
@@ -51,27 +51,19 @@ public class IODocumentManagerImpl implements IODocumentManager {
 
     private static final long serialVersionUID = -3131999198524020179L;
 
-    private static final Log log = LogFactory.getLog(IODocumentManagerImpl.class);
-
-    private static CoreSession getCoreSession(String repo)
+    private static CoreSession getCoreSession(String repositoryName)
             throws ClientException {
-        CoreSession systemSession;
         try {
             Framework.login();
-            RepositoryManager manager = Framework.getService(RepositoryManager.class);
-            Repository repository = manager.getRepository(repo);
-            if (repository == null) {
-                log.error("repository " + repo + " not in available repos: " + manager.getRepositories());
-                throw new ClientException("cannot get repository: " + repo);
-            }
-            systemSession = repository.open();
+            Map<String, Serializable> context = new HashMap<String, Serializable>();
+            return CoreInstance.getInstance().open(repositoryName, context);
         } catch (ClientException e) {
             throw e;
         } catch (Exception e) {
             throw new ClientException(
-                    "Failed to open core session to repository " + repo, e);
+                    "Failed to open core session to repository "
+                            + repositoryName, e);
         }
-        return systemSession;
     }
 
     @Override

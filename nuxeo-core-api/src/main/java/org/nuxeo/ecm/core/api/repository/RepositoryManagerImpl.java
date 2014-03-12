@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -55,6 +56,11 @@ public class RepositoryManagerImpl extends DefaultComponent implements
     @Override
     public Collection<Repository> getRepositories() {
         return new ArrayList<Repository>(repositories.values());
+    }
+
+    @Override
+    public List<String> getRepositoryNames() {
+        return new ArrayList<String>(repositories.keySet());
     }
 
     @Override

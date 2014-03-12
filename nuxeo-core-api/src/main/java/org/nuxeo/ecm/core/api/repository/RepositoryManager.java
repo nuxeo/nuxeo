@@ -15,6 +15,7 @@
 package org.nuxeo.ecm.core.api.repository;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Manage repositories.
@@ -30,6 +31,14 @@ public interface RepositoryManager {
      *         repositories was defined
      */
     Collection<Repository> getRepositories();
+
+    /**
+     * Gets the names of registered repositories.
+     *
+     * @since 5.9.3
+     * @return a list of repository names
+     */
+    List<String> getRepositoryNames();
 
     /**
      * Gets a repository by its name.
