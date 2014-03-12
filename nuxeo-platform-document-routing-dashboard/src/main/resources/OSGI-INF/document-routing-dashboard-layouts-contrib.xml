@@ -553,7 +553,6 @@
         </row>
         <row>
           <properties mode="any">
-            <property name="gridRowStyleClass">simpleBox</property>
             <property name="nxl_gridStyleClass_0">gridStyle5</property>
             <property name="nxl_gridStyleClass_1">gridStyle7</property>
           </properties>
