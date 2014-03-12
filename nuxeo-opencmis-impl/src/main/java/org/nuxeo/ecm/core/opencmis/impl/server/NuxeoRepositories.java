@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -63,8 +63,7 @@ public class NuxeoRepositories extends DefaultComponent {
         repositories = Collections.synchronizedMap(new HashMap<String, NuxeoRepository>());
         try {
             RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-            for (Repository repo : repositoryManager.getRepositories()) {
-                String repositoryId = repo.getName();
+            for (String repositoryId : repositoryManager.getRepositoryNames()) {
                 String rootFolderId;
                 CoreSession coreSession = null;
                 try {
