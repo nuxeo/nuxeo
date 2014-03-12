@@ -254,8 +254,8 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
         try {
             started = TransactionHelper.startTransaction();
             RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-            for (Repository repository : repositoryManager.getRepositories()) {
-                new UnrestrictedSessionRunner(repository.getName()) {
+            for (String repositoryName : repositoryManager.getRepositoryNames()) {
+                new UnrestrictedSessionRunner(repositoryName) {
                     @Override
                     public void run() throws ClientException {
                         if (isTenantIsolationEnabledByDefault()
