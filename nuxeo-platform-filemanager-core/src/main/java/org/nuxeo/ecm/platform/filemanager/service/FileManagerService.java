@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
-import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -581,12 +580,13 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     public DocumentModelList getCreationContainers(Principal principal,
             String docType) throws Exception {
         DocumentModelList containers = new DocumentModelListImpl();
-        for (Repository repo : getRepositoryManager().getRepositories()) {
+        for (String repositoryName : getRepositoryManager().getRepositoryNames()) {
             CoreSession session = null;
             try {
                 Map<String, Serializable> context = new HashMap<String, Serializable>();
                 context.put("principal", (Serializable) principal);
-                session = repo.open(context);
+                session = CoreInstance.getInstance().open(repositoryName,
+                        context);
                 containers.addAll(getCreationContainers(session, docType));
             } finally {
                 if (session != null) {
