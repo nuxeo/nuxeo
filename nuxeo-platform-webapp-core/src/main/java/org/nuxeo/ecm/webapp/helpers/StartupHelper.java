@@ -106,7 +106,7 @@ public class StartupHelper implements Serializable {
      * Initializes the context with the principal id, and try to connect to the
      * default server if any. If several servers are available, let the user
      * choose.
-     * 
+     *
      * @return the view_id of the contextually computed startup page
      */
     public String initServerAndFindStartupPage() throws ClientException {
@@ -142,7 +142,7 @@ public class StartupHelper implements Serializable {
 
         webActions.setCurrentTabIds(DOCUMENT_MANAGEMENT_TAB);
         // if more than one repo : display the server selection screen
-        if (repositoryManager.getRepositories().size() > 1) {
+        if (repositoryManager.getRepositoryNames().size() > 1) {
             return SERVERS_VIEW;
         }
 
@@ -158,7 +158,7 @@ public class StartupHelper implements Serializable {
      * domain with title 'domainTitle' and redirect to it on viewId.
      * <p>
      * If several servers are available, let the user choose.
-     * 
+     *
      * @return the view id of the contextually computed startup page
      */
     @Begin(id = "#{conversationIdGenerator.nextMainConversationId}", join = true)

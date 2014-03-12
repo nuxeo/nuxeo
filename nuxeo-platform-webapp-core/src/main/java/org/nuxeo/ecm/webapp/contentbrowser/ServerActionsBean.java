@@ -22,7 +22,6 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -58,30 +57,14 @@ public class ServerActionsBean implements ServerActions, Serializable {
     @In(required = true, create = true)
     protected transient NavigationContext navigationContext;
 
-    private transient RepositoryManager repositoryManager;
-
-    private transient Collection<Repository> availableRepositories;
-
-    private RepositoryManager getRepositoryManager() throws Exception {
-        if (repositoryManager == null) {
-            repositoryManager = Framework.getService(RepositoryManager.class);
-        }
-        return repositoryManager;
-    }
-
     /**
      * Retrieves the available locations.
      */
     @Factory("availableCoreRepositories")
     public List<Repository> getAvailableRepositories() throws ClientException {
         try {
-            if (availableRepositories == null) {
-                availableRepositories = getRepositoryManager().getRepositories();
-            }
-            List<Repository> result = new ArrayList<Repository>();
-            result.addAll(availableRepositories);
-            return result;
-
+            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+            return new ArrayList<Repository>(repositoryManager.getRepositories());
         } catch (Throwable t) {
             throw ClientException.wrap(t);
         }
@@ -89,18 +72,18 @@ public class ServerActionsBean implements ServerActions, Serializable {
 
     public String selectRepository(String repositoryName) throws ClientException {
         try {
-            Repository selectedRepository = null;
-
-            for (Repository repo : getRepositoryManager().getRepositories()) {
-                if (repo.getName().equals(repositoryName)) {
-                    selectedRepository = repo;
+            boolean found = false;
+            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+            for (String name : repositoryManager.getRepositoryNames()) {
+                if (name.equals(repositoryName)) {
+                    found = true;
                     break;
                 }
             }
-            log.debug("Selected core name: " + repositoryName);
-            if (selectedRepository != null) {
+            if (found) {
+                log.debug("Selected core name: " + repositoryName);
                 RepositoryLocation selectedLocation = new RepositoryLocation(
-                        selectedRepository.getName());
+                        repositoryName);
                 navigationContext.setCurrentServerLocation(selectedLocation);
                 return DEFAULT_VIEW;
             } else {
