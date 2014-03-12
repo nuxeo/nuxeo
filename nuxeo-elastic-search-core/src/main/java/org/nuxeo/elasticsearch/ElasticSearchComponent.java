@@ -161,6 +161,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         try {
             JsonFactory factory = new JsonFactory();
             XContentBuilder builder = jsonBuilder();
+            
             JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
             JsonDocumentWriter.writeDocument(jsonGen, doc, doc.getSchemas(),
                     null);
