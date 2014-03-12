@@ -69,8 +69,8 @@
       <properties>
         <property name="include">/incl/add_selection_to_collection.xhtml</property>
         <property name="autoDimensions">false</property>
-        <property name="height">300</property>
-        <property name="width">500</property>
+        <property name="height">400</property>
+        <property name="width">600</property>
       </properties>
     </action>
 

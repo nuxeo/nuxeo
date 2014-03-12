@@ -19,6 +19,10 @@ package org.nuxeo.ecm.collections.jsf.actions;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,6 +41,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -59,6 +64,14 @@ public class CollectionActionsBean implements Serializable {
     private static final Log log = LogFactory.getLog(CollectionActionsBean.class);
 
     private static final long serialVersionUID = 6091077088147407371L;
+
+    protected static void addFacesMessage(StatusMessage.Severity severity,
+            String message, String arguments) {
+        final FacesMessages facesMessages = (FacesMessages) Component.getInstance(
+                "facesMessages", true);
+        facesMessages.add(severity, Messages.instance().get(message),
+                Messages.instance().get(arguments));
+    }
 
     private String newDescription;
 
@@ -93,14 +106,6 @@ public class CollectionActionsBean implements Serializable {
         }
     }
 
-    protected static void addFacesMessage(StatusMessage.Severity severity,
-            String message, String arguments) {
-        final FacesMessages facesMessages = (FacesMessages) Component.getInstance(
-                "facesMessages", true);
-        facesMessages.add(severity, Messages.instance().get(message),
-                Messages.instance().get(arguments));
-    }
-
     public void addCurrentSelectionToSelectedCollection()
             throws ClientException {
         final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
@@ -131,10 +136,19 @@ public class CollectionActionsBean implements Serializable {
         }
     }
 
-    public boolean canAddToSelectedCollection() throws ClientException {
-        final boolean result = canAddToCollection(getSelectedCollection())
-                || isCreateNewCollection();
-        return result;
+    public boolean canAddSelectedDocumentBeCollected() {
+        final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
+        List<DocumentModel> documents = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        if (documents == null || documents.isEmpty()) {
+            return false;
+        }
+        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        for (DocumentModel doc : documents) {
+            if (!collectionManager.isCollectable(doc)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean canAddToCollection(DocumentModel collection)
@@ -145,6 +159,12 @@ public class CollectionActionsBean implements Serializable {
         final boolean result = collection != null
                 && collectionManager.isCollection(collection)
                 && collectionManager.canAddToCollection(collection, session);
+        return result;
+    }
+
+    public boolean canAddToSelectedCollection() throws ClientException {
+        final boolean result = canAddToCollection(getSelectedCollection())
+                || isCreateNewCollection();
         return result;
     }
 
@@ -160,21 +180,6 @@ public class CollectionActionsBean implements Serializable {
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         return collectionManager.isCollectable(currentDocument);
-    }
-
-    public boolean canAddSelectedDocumentBeCollected() {
-        final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
-        List<DocumentModel> documents = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
-        if (documents == null || documents.isEmpty()) {
-            return false;
-        }
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
-        for (DocumentModel doc : documents) {
-            if (!collectionManager.isCollectable(doc)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public boolean canRemoveFromCollection() throws ClientException {
@@ -195,6 +200,16 @@ public class CollectionActionsBean implements Serializable {
         return canAddToCollection(collection);
     }
 
+    protected DocumentsListsManager getDocumentsListsManager() {
+        return (DocumentsListsManager) Component.getInstance(
+                "documentsListsManager", true);
+    }
+
+    public List<DocumentModel> getMultipleDocumentToBeAdded() {
+        final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
+        return documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+    }
+
     public String getNewDescription() {
         return newDescription;
     }
@@ -203,7 +218,7 @@ public class CollectionActionsBean implements Serializable {
         return newTitle;
     }
 
-    protected DocumentModel getSelectedCollection() {
+    public DocumentModel getSelectedCollection() {
         if (selectedCollection == null
                 && StringUtils.isNotBlank(selectedCollectionUid)
                 && !isCreateNewCollection()) {
@@ -217,6 +232,15 @@ public class CollectionActionsBean implements Serializable {
             }
         }
         return selectedCollection;
+    }
+
+    public String getSelectedCollectionDescription() throws PropertyException,
+            ClientException {
+        if (isCreateNewCollection()) {
+            return null;
+        } else {
+            return getSelectedCollection().getProperty("dc:description").getValue().toString();
+        }
     }
 
     public String getSelectedCollectionUid() {
@@ -253,6 +277,20 @@ public class CollectionActionsBean implements Serializable {
                 collection.getTitle());
     }
 
+    public void removeFromMultipleDocumentToBeAdded(ActionEvent event) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        ExternalContext eContext = context.getExternalContext();
+        String index = eContext.getRequestParameterMap().get("index");
+
+        final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
+        final DocumentModel toBeRemovedFromWorkingList = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION).get(
+                Integer.valueOf(index).intValue());
+        documentsListsManager.removeFromWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION,
+                toBeRemovedFromWorkingList);
+    }
+
     public void setNewDescription(String newDescription) {
         this.newDescription = newDescription;
     }
@@ -262,15 +300,11 @@ public class CollectionActionsBean implements Serializable {
     }
 
     public void setSelectedCollectionUid(final String selectedCollectionUid) {
+        this.selectedCollection = null;
         this.selectedCollectionUid = selectedCollectionUid;
         if (isCreateNewCollection()) {
             setNewTitle(selectedCollectionUid.substring(CollectionConstants.MAGIC_PREFIX_ID.length()));
         }
-    }
-
-    protected DocumentsListsManager getDocumentsListsManager() {
-        return (DocumentsListsManager) Component.getInstance(
-                "documentsListsManager", true);
     }
 
 }

@@ -39,22 +39,64 @@
 
       <a4j:outputPanel
         id="#{fancyboxFormId}_collectionDescriptionsPanel">
-        <c:if test="#{collectionActions.isCreateNewCollection()}">
+        <c:if
+          test="#{collectionActions.getSelectedCollectionUid() != null}">
           <table class="dataInput fullWidth">
             <tbody>
               <tr>
                 <td class="labelColumn">
                   #{messages['label.addToCollection.collection.description']}</td>
-                <td class="fieldColumn"><h:inputTextarea
-                    class="dataInputText" id="description"
-                    value="#{collectionActions.newDescription}" rows="3"
-                    cols="40" /></td>
+                <td class="fieldColumn"><c:choose>
+                    <c:when
+                      test="#{collectionActions.isCreateNewCollection()}">
+                      <h:inputTextarea class="dataInputText"
+                        id="description"
+                        value="#{collectionActions.newDescription}"
+                        rows="3" cols="40" />
+                    </c:when>
+                    <c:otherwise>
+                      <h:outputText
+                        value="#{collectionActions.getSelectedCollectionDescription()}" />
+                    </c:otherwise>
+                  </c:choose></td>
               </tr>
             </tbody>
           </table>
         </c:if>
       </a4j:outputPanel>
 
+      <a4j:outputPanel id="tbas">
+        <c:if test="#{selection}">
+          <table class="dataInput fullWidth">
+            <tbody>
+              <tr>
+                <td class="labelColumn">
+                  #{messages['label.addToCollection.multiple.summary']}</td>
+                <td class="fieldColumn"><c:forEach
+                    items="#{collectionActions.getMultipleDocumentToBeAdded()}"
+                    id="dtba" var="doc" varStatus="status">
+
+                    <div class="simpleBox" style="width:210px;">
+                      <a4j:commandLink immediate="true"
+                        actionListener="#{collectionActions.removeFromMultipleDocumentToBeAdded}"
+                        reRender="tbas" bypassUpdates="true"
+                        ajaxSingle="true">
+                        <h:graphicImage value="/icons/delete.png"
+                          alt="#{messages['label.addToCollection.multiple.remove']}"
+                          title="#{messages['label.addToCollection.multiple.remove']}" />
+                        <f:param name="index" value="#{status.index}" />
+                      </a4j:commandLink>
+
+                      <h:graphicImage value="#{doc.getProperty('common:icon').getValue()}" />
+
+                      <nxh:outputText value="#{doc.getTitle()}" />
+                    </div>
+                  </c:forEach></td>
+              </tr>
+            </tbody>
+          </table>
+        </c:if>
+      </a4j:outputPanel>
     </div>
 
     <a4j:outputPanel id="#{fancyboxFormId}_buttons" layout="block">
@@ -62,13 +104,15 @@
         value="#{!collectionActions.canAddToSelectedCollection()}">
         <div class="buttonsGadget">
           <c:if test="#{selection}">
-            <nxh:commandButton value="#{messages['label.addToCollection']}"
+            <nxh:commandButton
+              value="#{messages['label.addToCollection']}"
               action="#{collectionActions.addCurrentSelectionToSelectedCollection()}"
               disabled="#{canNotAddToSelectedCollection}"
               styleClass="button" />
           </c:if>
           <c:if test="#{!selection}">
-            <nxh:commandButton value="#{messages['label.addToCollection']}"
+            <nxh:commandButton
+              value="#{messages['label.addToCollection']}"
               action="#{collectionActions.addCurrentDocumentToSelectedCollection()}"
               disabled="#{canNotAddToSelectedCollection}"
               styleClass="button" />
