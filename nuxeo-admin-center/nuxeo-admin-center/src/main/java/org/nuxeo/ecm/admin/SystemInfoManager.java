@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
@@ -183,13 +182,11 @@ public class SystemInfoManager implements Serializable {
         return listAvailableRepositories().size() > 1;
     }
 
-    public List<Repository> listAvailableRepositories() throws Exception {
+    public List<Repository> listAvailableRepositories() {
         if (repositories == null) {
-            repositories = new ArrayList<Repository>();
-            RepositoryManager rm = Framework.getService(RepositoryManager.class);
-            Collection<Repository> repos = rm.getRepositories();
-            repositories.addAll(repos);
-            currentRepositoryName = rm.getDefaultRepository().getName();
+            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+            repositories = new ArrayList<Repository>(repositoryManager.getRepositories());
+            currentRepositoryName = repositoryManager.getDefaultRepository().getName();
         }
         return repositories;
     }

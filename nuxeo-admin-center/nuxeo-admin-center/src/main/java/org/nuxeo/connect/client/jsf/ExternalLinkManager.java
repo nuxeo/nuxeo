@@ -108,7 +108,7 @@ public class ExternalLinkManager implements Serializable {
         if (navigationContext.getCurrentServerLocation() == null) {
             // update location
             RepositoryLocation repLoc = new RepositoryLocation(
-                    repositoryManager.getRepositories().iterator().next().getName());
+                    repositoryManager.getRepositoryNames().get(0));
             navigationContext.setCurrentServerLocation(repLoc);
         }
         CoreSession documentManager = navigationContext.getOrCreateDocumentManager();
