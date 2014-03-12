@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -47,11 +46,10 @@ public class DocumentRoutingEscalationListener implements EventListener {
         if (!EXECUTE_ESCALATION_RULE_EVENT.equals(event.getName())) {
             return;
         }
-        RepositoryManager repositoryManager = ((RepositoryManager) Framework.getLocalService(RepositoryManager.class));
-        for (Repository repo : repositoryManager.getRepositories()) {
-            triggerEsclationRulesExecution(repo.getName());
+        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        for (String repositoryName : repositoryManager.getRepositoryNames()) {
+            triggerEsclationRulesExecution(repositoryName);
         }
-
     }
 
     protected void triggerEsclationRulesExecution(String repositoryName)

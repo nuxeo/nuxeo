@@ -17,10 +17,9 @@
 package org.nuxeo.ecm.platform.routing.core.listener;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
-import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
-import org.nuxeo.ecm.core.storage.sql.RepositoryResolver;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -44,9 +43,11 @@ public class DocumentRoutingWorkflowInstancesCleanup implements EventListener {
 
         int batchSize = Integer.parseInt(Framework.getProperty(
                 CLEANUP_WORKFLOW_INSTANCES_BATCH_SIZE_PROPERTY, "100"));
-        for (RepositoryManagement repoMgmt : RepositoryResolver.getRepositories()) {
-            Framework.getLocalService(DocumentRoutingService.class).cleanupDoneAndCanceledRouteInstances(
-                    repoMgmt.getName(), batchSize);
+        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        for (String repositoryName : repositoryManager.getRepositoryNames()) {
+            routing.cleanupDoneAndCanceledRouteInstances(repositoryName,
+                    batchSize);
         }
     }
 }
