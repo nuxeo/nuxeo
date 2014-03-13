@@ -18,6 +18,7 @@
         <neverPerDocumentFacets>
           <facet>Asset</facet>
           <facet>DamSearch</facet>
+          <facet>NotCollectionMember</facet>
         </neverPerDocumentFacets>
 <#if "${nuxeo.db.type}" == "postgresql">
         <fulltext disabled="${nuxeo.vcs.fulltext.disabled}" analyzer="english">
