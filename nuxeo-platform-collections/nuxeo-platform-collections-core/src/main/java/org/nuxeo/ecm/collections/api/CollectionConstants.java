@@ -23,6 +23,8 @@ public class CollectionConstants {
 
     public static final String COLLECTABLE_FACET = "CollectionMember";
 
+    public static final String NOT_COLLECTABLE_FACET = "NotCollectionMember";
+
     public static final String COLLECTION_FACET = "Collection";
 
     public static final String COLLECTION_TYPE = "Collection";

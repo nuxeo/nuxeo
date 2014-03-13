@@ -16,8 +16,8 @@
  */
 package org.nuxeo.ecm.collections.core.adapter;
 
-
 import org.nuxeo.ecm.collections.api.CollectionConstants;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
@@ -28,12 +28,13 @@ public class CollectionMemberAdapterFactory implements DocumentAdapterFactory {
 
     @Override
     public Object getAdapter(DocumentModel doc, Class<?> itf) {
-        if (doc.getDocumentType().hasSchema(CollectionConstants.COLLECTION_MEMBER_SCHEMA_NAME)) {
+        if (doc.hasSchema(CollectionConstants.COLLECTION_MEMBER_SCHEMA_NAME)) {
             return new CollectionMember(doc);
         }
-
-        return null;
+        throw new ClientRuntimeException(String.format(
+                "The document %s does not have the %s facet",
+                doc.getPath().toString(),
+                CollectionConstants.COLLECTION_MEMBER_SCHEMA_NAME));
     }
-
 
 }

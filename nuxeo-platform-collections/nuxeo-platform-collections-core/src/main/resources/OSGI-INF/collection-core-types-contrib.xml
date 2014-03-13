@@ -19,50 +19,37 @@
       <schema name="collection" />
     </facet>
 
+    <facet name="NotCollectionMember" />
+
     <facet name="CollectionMember">
       <schema name="collectionMember" />
     </facet>
 
     <doctype name="Collection" extends="Document">
       <facet name="Collection" />
+      <facet name="NotCollectionMember" />
       <schema name="dublincore" />
       <schema name="common" />
     </doctype>
 
     <doctype name="Collections" extends="Folder">
-      <facet name="Folderish" />
-      <schema name="dublincore" />
-      <schema name="common" />
+      <facet name="NotCollectionMember" />
     </doctype>
 
-    <doctype name="File" append="true">
-      <facet name="CollectionMember" />
-      <schema name="collectionMember" />
+    <doctype name="WorkspaceRoot" append="true">
+      <facet name="NotCollectionMember" />
     </doctype>
 
-    <doctype name="Note" append="true">
-      <facet name="CollectionMember" />
-      <schema name="collectionMember" />
+    <doctype name="TemplateRoot" append="true">
+      <facet name="NotCollectionMember" />
     </doctype>
 
-    <doctype name="Folder" append="true">
-      <facet name="CollectionMember" />
-      <schema name="collectionMember" />
+    <doctype name="SectionRoot" append="true">
+      <facet name="NotCollectionMember" />
     </doctype>
 
-    <doctype name="Picture" append="true">
-      <facet name="CollectionMember" />
-      <schema name="collectionMember" />
-    </doctype>
-
-    <doctype name="Audio" append="true">
-      <facet name="CollectionMember" />
-      <schema name="collectionMember" />
-    </doctype>
-
-    <doctype name="Vid" append="true">
-      <facet name="CollectionMember" />
-      <schema name="collectionMember" />
+    <doctype name="Domain" append="true">
+      <facet name="NotCollectionMember" />
     </doctype>
 
   </extension>

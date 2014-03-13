@@ -72,19 +72,25 @@ public class CollectionManagerImpl extends DefaultComponent implements
             @Override
             public void run() throws ClientException {
 
+                DocumentModel temp = documentToBeAdded;
+
+                temp.addFacet(CollectionConstants.COLLECTABLE_FACET);
+
+                temp = session.saveDocument(temp);
+
                 // We want to disable the following listener on a
                 // collection member when it is added to a collection
-                documentToBeAdded.putContextData(
+                temp.putContextData(
                         DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
-                documentToBeAdded.putContextData(
+                temp.putContextData(
                         NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
                         true);
-                documentToBeAdded.putContextData(
+                temp.putContextData(
                         NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
-                documentToBeAdded.putContextData(
+                temp.putContextData(
                         VersioningService.DISABLE_AUTO_CHECKOUT, true);
 
-                CollectionMember docAdapter = documentToBeAdded.getAdapter(CollectionMember.class);
+                CollectionMember docAdapter = temp.getAdapter(CollectionMember.class);
                 docAdapter.addToCollection(collection.getId());
                 session.saveDocument(docAdapter.getDocument());
             }
@@ -225,7 +231,7 @@ public class CollectionManagerImpl extends DefaultComponent implements
 
     @Override
     public boolean isCollectable(final DocumentModel doc) {
-        return doc.hasFacet(CollectionConstants.COLLECTABLE_FACET);
+        return !doc.hasFacet(CollectionConstants.NOT_COLLECTABLE_FACET);
     }
 
     @Override

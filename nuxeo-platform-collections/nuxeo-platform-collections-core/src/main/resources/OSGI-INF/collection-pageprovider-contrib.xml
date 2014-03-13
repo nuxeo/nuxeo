@@ -8,9 +8,25 @@
       <property name="maxResults">PAGE_SIZE</property>
       <pattern>
         SELECT * FROM Collection WHERE dc:title ILIKE ? AND
-        ecm:isProxy = 0 AND
+        ecm:isProxy =
+        0 AND
         ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0 AND
+        ecm:isCheckedInVersion = 0
+        AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="default_collection_candidate">
+      <property name="maxResults">PAGE_SIZE</property>
+      <pattern>
+        SELECT * FROM Document where dc:title ILIKE ? AND ecm:isProxy = 0
+        AND ecm:mixinType !=
+        'SystemDocument' AND ecm:mixinType !=
+        'NotCollectionMember' AND ecm:mixinType !=
+        'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
         ecm:currentLifeCycleState != 'deleted'
       </pattern>
       <sort column="dc:title" ascending="true" />
