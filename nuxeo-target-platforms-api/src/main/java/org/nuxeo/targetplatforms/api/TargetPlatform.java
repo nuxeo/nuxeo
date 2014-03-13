@@ -1,0 +1,48 @@
+/*
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/).
+ * This is unpublished proprietary source code of Nuxeo SA. All rights reserved.
+ * Notice of copyright on this source code does not indicate publication.
+ *
+ * Contributors:
+ *     Anahide Tchertchian
+ */
+package org.nuxeo.targetplatforms.api;
+
+import java.util.List;
+
+/**
+ * Main interface for target platform definition of resources that need to be
+ * available both on core and client sides.
+ *
+ * @author Anahide Tchertchian
+ * @since 2.18
+ */
+public interface TargetPlatform extends Target, Comparable<TargetPlatform> {
+
+    /**
+     * Returns true if given target platform is a fast track
+     */
+    boolean isFastTrack();
+
+    /**
+     * Return the list of ids of packages available on this target platform.
+     */
+    List<String> getAvailablePackagesIds();
+
+    /**
+     * Return the list of packages available on this target platform.
+     */
+    List<TargetPackage> getAvailablePackages();
+
+    /**
+     * Returns this target platform parent or null if there is no inheritance.
+     */
+    TargetPlatform getParent();
+
+    /**
+     * Returns the list of test versions, useful for testing of multiple
+     * branches (main target platform branch or release, maintenance branch,
+     * etc...).
+     */
+    List<String> getTestVersions();
+}

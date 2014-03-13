@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.targetplatforms.core.framework">
+
+  <implementation
+    class="org.nuxeo.targetplatforms.core.service.TargetPlatformServiceImpl" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.targetplatforms.api.service.TargetPlatformService" />
+  </service>
+
+  <extension-point name="platforms">
+    <documentation>
+      Example of a target platform registration:
+
+
+    </documentation>
+    <object
+      class="org.nuxeo.targetplatforms.core.descriptors.TargetPlatformDescriptor" />
+  </extension-point>
+
+  <extension-point name="packages">
+    <documentation>
+      Example of a target package registration:
+
+
+    </documentation>
+    <object
+      class="org.nuxeo.targetplatforms.core.descriptors.TargetPackageDescriptor" />
+  </extension-point>
+
+  <extension-point name="configuration">
+    <documentation>
+      Example of a target platform service configuration:
+
+    </documentation>
+    <object
+      class="org.nuxeo.targetplatforms.core.descriptors.ServiceConfigurationDescriptor" />
+  </extension-point>
+
+</component>
