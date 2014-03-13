@@ -56,8 +56,7 @@
       </subtypes>
     </doctype>
 
-    <doctype name="Domain" extends="Folder">
-      <facet name="SuperSpace" />
+    <doctype name="Domain" append="true">
       <subtypes>
         <type>DocumentRouteInstancesRoot</type>
       </subtypes>
