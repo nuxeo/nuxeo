@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
-import org.nuxeo.ecm.core.api.repository.cache.DirtyUpdateChecker;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Property;
@@ -188,8 +187,6 @@ public class DocumentModelFactory {
             log.debug("Cannot prefetch lifecycle for doc: " + doc.getName()
                     + ". Error: " + e.getMessage());
         }
-
-        DirtyUpdateChecker.check(docModel);
 
         return docModel;
     }

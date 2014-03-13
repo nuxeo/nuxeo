@@ -21,8 +21,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.operation.Operation;
-import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -1679,27 +1677,6 @@ public interface CoreSession {
      */
     void orderBefore(DocumentRef parent, String src, String dest)
             throws ClientException;
-
-    /**
-     * Run a command
-     *
-     * @param <T> command result type
-     * @param cmd the command to run
-     * @return the command result
-     * @throws ClientException if any error occurs
-     */
-    <T> T run(Operation<T> cmd) throws ClientException;
-
-    /**
-     * Run a command and notify the given monitor about the execution progress
-     *
-     * @param <T>
-     * @param op
-     * @param monitor
-     * @return
-     * @throws ClientException
-     */
-    <T> T run(Operation<T> op, ProgressMonitor monitor) throws ClientException;
 
     /**
      * Internal method - it is used internally by
