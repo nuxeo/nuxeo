@@ -59,6 +59,8 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase  {
 
         for (DocumentModel file : files) {
 
+            file = session.getDocument(file.getRef());
+
             assertTrue(collectionAdapter.getCollectedDocumentIds().contains(file.getId()));
 
             CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);

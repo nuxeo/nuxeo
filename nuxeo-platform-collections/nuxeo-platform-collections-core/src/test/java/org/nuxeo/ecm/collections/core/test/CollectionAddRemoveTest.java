@@ -67,6 +67,8 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
 
         assertTrue(collectionAdapter.getCollectedDocumentIds().contains(testFile.getId()));
 
+        testFile = session.getDocument(testFile.getRef());
+
         CollectionMember collectionMemberAdapter = testFile.getAdapter(CollectionMember.class);
 
         assertTrue(collectionMemberAdapter.getCollectionIds().contains(
@@ -109,6 +111,8 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
                 newlyCreatedCollection.getProperty("dc:description").getValue());
 
         for (DocumentModel file : files) {
+            file = session.getDocument(file.getRef());
+
             Collection collectionAdapter = newlyCreatedCollection.getAdapter(Collection.class);
 
             assertTrue(collectionAdapter.getCollectedDocumentIds().contains(file.getId()));

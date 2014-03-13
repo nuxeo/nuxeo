@@ -61,6 +61,8 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
 
         for (DocumentModel file : files) {
 
+            file = session.getDocument(file.getRef());
+
             assertTrue(collectionAdapter.getCollectedDocumentIds().contains(file.getId()));
 
             CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);
@@ -102,6 +104,8 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
             collectionManager.addToNewCollection(COLLECTION_NAME + i,
                     COLLECTION_DESCRIPTION, testFile, session);
         }
+
+        testFile = session.getDocument(testFile.getRef());
 
         CollectionMember collectionMember = testFile.getAdapter(CollectionMember.class);
 
