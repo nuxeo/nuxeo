@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,26 +47,34 @@ public class FulltextUpdaterWork extends AbstractWork {
 
     protected static final String TITLE = "Fulltext Updater";
 
-    /** The index to be updated. */
-    protected final String indexName;
-
     /** Is this a simple text index or a binary text one. */
     protected final boolean isSimpleText;
-
-    /** The text to set in the index. */
-    protected final String text;
 
     /** If true, then all the documents with the id as their jobId are updated. */
     protected final boolean isJob;
 
+    /** The indexes and text to be updated. */
+    protected final List<IndexAndText> indexesAndText;
+
+    public static class IndexAndText {
+        public String indexName;
+
+        public String text;
+
+        public IndexAndText(String indexName, String text) {
+            this.indexName = indexName;
+            this.text = text;
+        }
+    }
+
     public FulltextUpdaterWork(String repositoryName, String docId,
-            String indexName, boolean isSimpleText, String text, boolean isJob) {
+            boolean isSimpleText, boolean isJob,
+            List<IndexAndText> indexesAndText) {
         super(); // random id, for unique job
         setDocument(repositoryName, docId);
-        this.indexName = indexName;
         this.isSimpleText = isSimpleText;
-        this.text = text;
         this.isJob = isJob;
+        this.indexesAndText = indexesAndText;
     }
 
     @Override
@@ -121,24 +130,33 @@ public class FulltextUpdaterWork extends AbstractWork {
             }
             docs = Collections.singleton(doc);
         }
-        String fulltextPropertyName = getFulltextPropertyName();
         for (DocumentModel doc : docs) {
-            try {
-                DocumentRef ref = doc.getRef();
-                if (isJob) {
-                    // reset job id
-                    session.setDocumentSystemProp(ref,
-                            SQLDocument.FULLTEXT_JOBID_SYS_PROP, null);
+            for (IndexAndText indexAndText : indexesAndText) {
+                try {
+                    session.setDocumentSystemProp(doc.getRef(),
+                            getFulltextPropertyName(indexAndText.indexName),
+                            indexAndText.text);
+                } catch (DocumentException e) {
+                    log.error("Could not set fulltext on: " + doc.getId(), e);
+                    continue;
                 }
-                session.setDocumentSystemProp(ref, fulltextPropertyName, text);
-            } catch (DocumentException e) {
-                log.error("Could not set fulltext on: " + doc.getId(), e);
-                continue;
+            }
+        }
+        if (isJob) {
+            // reset job id
+            for (DocumentModel doc : docs) {
+                try {
+                    session.setDocumentSystemProp(doc.getRef(),
+                            SQLDocument.FULLTEXT_JOBID_SYS_PROP, null);
+                } catch (DocumentException e) {
+                    log.error("Could not set fulltext on: " + doc.getId(), e);
+                    continue;
+                }
             }
         }
     }
 
-    protected String getFulltextPropertyName() {
+    protected String getFulltextPropertyName(String indexName) {
         String name = isSimpleText ? SQLDocument.SIMPLE_TEXT_SYS_PROP
                 : SQLDocument.BINARY_TEXT_SYS_PROP;
         if (!Model.FULLTEXT_DEFAULT_INDEX.equals(indexName)) {
