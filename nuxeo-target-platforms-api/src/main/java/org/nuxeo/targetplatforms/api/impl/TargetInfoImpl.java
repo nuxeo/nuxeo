@@ -16,10 +16,12 @@
  */
 package org.nuxeo.targetplatforms.api.impl;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 
 import org.nuxeo.targetplatforms.api.TargetInfo;
-
 
 /**
  * @since 5.7.1
@@ -53,6 +55,8 @@ public class TargetInfoImpl implements TargetInfo {
     protected String downloadLink;
 
     protected boolean deprecated = false;
+
+    protected List<String> types;
 
     // needed by GWT serialization
     protected TargetInfoImpl() {
@@ -182,6 +186,30 @@ public class TargetInfoImpl implements TargetInfo {
 
     public void setDeprecated(boolean deprecated) {
         this.deprecated = deprecated;
+    }
+
+    @Override
+    public List<String> getTypes() {
+        if (types == null) {
+            return Collections.emptyList();
+        }
+        return types;
+    }
+
+    public void setTypes(List<String> types) {
+        if (types == null) {
+            this.types = null;
+        } else {
+            this.types = new ArrayList<>(types);
+        }
+    }
+
+    @Override
+    public boolean matchesType(String type) {
+        if (types == null) {
+            return false;
+        }
+        return types.contains(type);
     }
 
     @Override

@@ -22,6 +22,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,9 +32,20 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
+import org.hsqldb.jdbcDriver;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.sql.SimpleDataSource;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -45,14 +58,16 @@ import org.nuxeo.targetplatforms.api.TargetPlatformInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
 import org.nuxeo.targetplatforms.api.impl.TargetImpl;
 import org.nuxeo.targetplatforms.api.service.TargetPlatformService;
-
+import org.nuxeo.targetplatforms.core.service.DirectoryUpdater;
 
 /**
  * @since 5.7.1
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.targetplatforms.core" })
+@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core",
+        "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.targetplatforms.core" })
 @LocalDeploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml")
 public class TestTargetPlatformService {
 
@@ -62,13 +77,44 @@ public class TestTargetPlatformService {
     @Inject
     protected TargetPlatformService service;
 
+    @Before
+    public void setUpContextFactory() throws NamingException {
+        DataSource datasourceAutocommit = new SimpleDataSource(
+                "jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(), "SA", "") {
+            @Override
+            public Connection getConnection() throws SQLException {
+                Connection con = super.getConnection();
+                con.setAutoCommit(true);
+                return con;
+            }
+        };
+        NuxeoContainer.installNaming();
+        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxsqldirectory",
+                datasourceAutocommit);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        // remove all entries from directory
+        new DirectoryUpdater(DirectoryUpdater.DEFAULT_DIR) {
+            @Override
+            public void run(DirectoryService service, Session session)
+                    throws ClientException {
+                for (DocumentModel doc : session.getEntries()) {
+                    session.deleteEntry(doc.getId());
+                }
+            }
+        }.run();
+        NuxeoContainer.uninstallNaming();
+    }
+
     @Test
     public void testService() {
         assertNotNull(service);
     }
 
     @Test
-    public void testGetDefaultTargetPlatform() {
+    public void testGetDefaultTargetPlatform() throws ClientException {
         TargetPlatform tp;
         tp = service.getDefaultTargetPlatform();
         assertNotNull(tp);
@@ -76,7 +122,13 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetTargetPlatform() {
+    public void testGetOverrideDirectory() {
+        assertEquals(DirectoryUpdater.DEFAULT_DIR,
+                service.getOverrideDirectory());
+    }
+
+    @Test
+    public void testGetTargetPlatform() throws Exception {
         TargetPlatform tp;
         List<TargetPackage> tps;
         List<String> tpIds;
@@ -212,7 +264,52 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetTargetPlatformInfo() {
+    public void testGetTargetPlatformDirOverride() throws ClientException {
+        String id = "cap-5.8";
+        TargetPlatform tp = service.getTargetPlatform(id);
+        assertNotNull(tp);
+        assertTrue(tp.isEnabled());
+        assertFalse(tp.isRestricted());
+
+        // disable
+        service.disableTargetPlatform(id);
+        tp = service.getTargetPlatform(id);
+        assertFalse(tp.isEnabled());
+        assertFalse(tp.isRestricted());
+
+        // enable again
+        service.enableTargetPlatform(id);
+        tp = service.getTargetPlatform(id);
+        assertTrue(tp.isEnabled());
+        assertFalse(tp.isRestricted());
+
+        // restrict
+        service.restrictTargetPlatform(id);
+        tp = service.getTargetPlatform(id);
+        assertTrue(tp.isEnabled());
+        assertTrue(tp.isRestricted());
+
+        // unrestrict
+        service.unrestrictTargetPlatform(id);
+        tp = service.getTargetPlatform(id);
+        assertTrue(tp.isEnabled());
+        assertFalse(tp.isRestricted());
+
+        // disable again
+        service.disableTargetPlatform(id);
+        tp = service.getTargetPlatform(id);
+        assertFalse(tp.isEnabled());
+        assertFalse(tp.isRestricted());
+
+        // restore
+        service.restoreTargetPlatform(id);
+        tp = service.getTargetPlatform(id);
+        assertTrue(tp.isEnabled());
+        assertFalse(tp.isRestricted());
+    }
+
+    @Test
+    public void testGetTargetPlatformInfo() throws ClientException {
         TargetPlatformInfo tp = service.getTargetPlatformInfo("cap-5.8");
         assertNotNull(tp);
         List<String> pkgids = tp.getAvailablePackagesIds();
@@ -305,7 +402,7 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetTargetPlatformInstance() {
+    public void testGetTargetPlatformInstance() throws ClientException {
         TargetPlatformInstance tpi;
 
         tpi = service.getTargetPlatformInstance("cap-5.8", null);
@@ -367,7 +464,7 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetAvailableTargetPlatforms() {
+    public void testGetAvailableTargetPlatforms() throws ClientException {
         // filter all
         List<TargetPlatform> tps = service.getAvailableTargetPlatforms(true,
                 true, null);
@@ -407,13 +504,34 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetAvailableTargetPlatformsInfo() {
+    public void testGetAvailableTargetPlatformsOverride()
+            throws ClientException {
+        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(true,
+                true, null);
+        Collections.sort(tps);
+        assertEquals(4, tps.size());
+        assertEquals("cap-5.8", tps.get(0).getId());
+        assertEquals("cap-5.9.1", tps.get(1).getId());
+        assertEquals("cap-5.9.2", tps.get(2).getId());
+        assertEquals("cmf-1.8", tps.get(3).getId());
+
+        service.restrictTargetPlatform("cap-5.9.2");
+
+        tps = service.getAvailableTargetPlatforms(true, true, null);
+        Collections.sort(tps);
+        assertEquals(3, tps.size());
+        assertEquals("cap-5.8", tps.get(0).getId());
+        assertEquals("cap-5.9.1", tps.get(1).getId());
+        assertEquals("cmf-1.8", tps.get(2).getId());
+    }
+
+    @Test
+    public void testGetAvailableTargetPlatformsInfo() throws ClientException {
         // filter all
         List<TargetPlatformInfo> tps = service.getAvailableTargetPlatformsInfo(
                 true, true, null);
         Collections.sort(tps);
         assertEquals(4, tps.size());
-        // order is registration order
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
         assertEquals("cap-5.9.2", tps.get(2).getId());
@@ -444,5 +562,11 @@ public class TestTargetPlatformService {
         Collections.sort(tps);
         assertEquals(1, tps.size());
         assertEquals("cmf-1.8", tps.get(0).getId());
+
+        // disable target platform
+        service.disableTargetPlatform("cmf-1.8");
+        tps = service.getAvailableTargetPlatformsInfo(false, false, "CMF");
+        assertEquals(0, tps.size());
     }
+
 }

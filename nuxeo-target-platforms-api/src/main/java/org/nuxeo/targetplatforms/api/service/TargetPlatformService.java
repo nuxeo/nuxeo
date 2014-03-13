@@ -18,12 +18,12 @@ package org.nuxeo.targetplatforms.api.service;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPackageInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatform;
 import org.nuxeo.targetplatforms.api.TargetPlatformInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
-
 
 /**
  * Service for target platforms and packages management.
@@ -35,17 +35,22 @@ public interface TargetPlatformService {
     /**
      * Returns the default target platform.
      */
-    TargetPlatform getDefaultTargetPlatform();
+    TargetPlatform getDefaultTargetPlatform() throws ClientException;
+
+    /**
+     * Returns the override directory name.
+     */
+    String getOverrideDirectory();
 
     /**
      * Returns the target platform with given id, or null if not found.
      */
-    TargetPlatform getTargetPlatform(String id);
+    TargetPlatform getTargetPlatform(String id) throws ClientException;
 
     /**
      * Returns the target platform info for given id, or null if not found.
      */
-    TargetPlatformInfo getTargetPlatformInfo(String id);
+    TargetPlatformInfo getTargetPlatformInfo(String id) throws ClientException;
 
     /**
      * Returns the target package with given id, or null if not found.
@@ -64,7 +69,7 @@ public interface TargetPlatformService {
      * Ignore target packages that would not be found.
      */
     TargetPlatformInstance getTargetPlatformInstance(String id,
-            List<String> packages);
+            List<String> packages) throws ClientException;
 
     /**
      * Returns all target platforms matching given criteria.
@@ -77,12 +82,42 @@ public interface TargetPlatformService {
      *            target platforms that would not hold this type.
      */
     List<TargetPlatform> getAvailableTargetPlatforms(boolean filterDeprecated,
-            boolean filterRestricted, String type);
+            boolean filterRestricted, String type) throws ClientException;
 
     /**
      * Returns all target platforms info matching given criteria.
      */
     List<TargetPlatformInfo> getAvailableTargetPlatformsInfo(
-            boolean filterDeprecated, boolean filterRestricted, String type);
+            boolean filterDeprecated, boolean filterRestricted, String type)
+            throws ClientException;
+
+    /**
+     * Enables the target platform, overriding the default value from extension
+     * points and adding an entry in the override directory.
+     */
+    void enableTargetPlatform(String id) throws ClientException;
+
+    /**
+     * Disables the target platform, overriding the default value from
+     * extension points and adding an entry in the override directory.
+     */
+    void disableTargetPlatform(String id) throws ClientException;
+
+    /**
+     * Restricts the target platform, overriding the default value from
+     * extension points and adding an entry in the override directory.
+     */
+    void restrictTargetPlatform(String id) throws ClientException;
+
+    /**
+     * Unrestricts the target platform, overriding the default value from
+     * extension points and adding an entry in the override directory.
+     */
+    void unrestrictTargetPlatform(String id) throws ClientException;
+
+    /**
+     * Removes overrides for this target platform.
+     */
+    void restoreTargetPlatform(String id) throws ClientException;
 
 }

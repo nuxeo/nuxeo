@@ -30,8 +30,15 @@ public class ServiceConfigurationDescriptor {
     @XNode("defaultTargetPlatform")
     String defaultTargetPlatform;
 
+    @XNode("overrideDirectory")
+    String overrideDirectory;
+
     public String getDefaultTargetPlatform() {
         return defaultTargetPlatform;
+    }
+
+    public String getOverrideDirectory() {
+        return overrideDirectory;
     }
 
 }

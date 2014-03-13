@@ -18,6 +18,7 @@ package org.nuxeo.targetplatforms.api;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Represents a target info (platform or package).
@@ -102,5 +103,15 @@ public interface TargetInfo extends Serializable {
      * Can contain HTML code.
      */
     String getDescription();
+
+    /**
+     * String markers for feature/behaviour checks on this instance.
+     */
+    List<String> getTypes();
+
+    /**
+     * Returns true if given type is in the list of this target types.
+     */
+    boolean matchesType(String type);
 
 }

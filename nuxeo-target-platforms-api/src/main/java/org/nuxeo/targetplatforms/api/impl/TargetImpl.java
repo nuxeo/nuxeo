@@ -17,10 +17,6 @@
  */
 package org.nuxeo.targetplatforms.api.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.nuxeo.targetplatforms.api.Target;
 
 
@@ -32,8 +28,6 @@ import org.nuxeo.targetplatforms.api.Target;
 public class TargetImpl extends TargetInfoImpl implements Target {
 
     private static final long serialVersionUID = 1L;
-
-    protected List<String> types;
 
     // needed by GWT serialization
     protected TargetImpl() {
@@ -86,30 +80,6 @@ public class TargetImpl extends TargetInfoImpl implements Target {
     @Override
     public boolean isVersion(Target version) {
         return isVersion(getRefVersion());
-    }
-
-    @Override
-    public List<String> getTypes() {
-        if (types == null) {
-            return Collections.emptyList();
-        }
-        return types;
-    }
-
-    public void setTypes(List<String> types) {
-        if (types == null) {
-            this.types = null;
-        } else {
-            this.types = new ArrayList<>(types);
-        }
-    }
-
-    @Override
-    public boolean matchesType(String type) {
-        if (types == null) {
-            return false;
-        }
-        return types.contains(type);
     }
 
 }

@@ -2,8 +2,7 @@
 
 <component name="org.nuxeo.targetplatforms.core.test.contrib.override">
 
-  <extension target="org.nuxeo.targetplatforms.core.framework"
-    point="platforms">
+  <extension target="org.nuxeo.targetplatforms.core.framework" point="platforms">
 
     <platform id="dm-5.3.0" enabled="true" />
 
@@ -11,8 +10,7 @@
 
   </extension>
 
-  <extension target="org.nuxeo.targetplatforms.core.framework"
-    point="packages">
+  <extension target="org.nuxeo.targetplatforms.core.framework" point="packages">
 
     <package id="nuxeo-dm-5.8" enabled="false" />
 
