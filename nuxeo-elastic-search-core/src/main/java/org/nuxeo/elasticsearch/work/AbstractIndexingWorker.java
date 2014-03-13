@@ -21,8 +21,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.work.AbstractWork;
-import org.nuxeo.elasticsearch.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.ElasticSearchService;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -58,12 +58,12 @@ public abstract class AbstractIndexingWorker extends AbstractWork {
     @Override
     public void work() throws Exception {
         CoreSession session = initSession(repositoryName);
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
         DocumentModel doc = session.getDocument(docRef);
-        doIndexingWork(session, ess, doc);
+        doIndexingWork(session, esi, doc);
     }
 
     protected abstract void doIndexingWork(CoreSession session,
-            ElasticSearchService ess, DocumentModel doc) throws Exception;
+            ElasticSearchIndexing esi, DocumentModel doc) throws Exception;
 
 }

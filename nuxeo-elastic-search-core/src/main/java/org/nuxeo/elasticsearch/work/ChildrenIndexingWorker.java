@@ -22,7 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.elasticsearch.ElasticSearchService;
+import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -50,12 +50,12 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
 
     @Override
     protected void doIndexingWork(CoreSession session,
-            ElasticSearchService ess, DocumentModel doc) throws Exception {
+            ElasticSearchIndexing esi, DocumentModel doc) throws Exception {
         DocumentModelIterator iter = session.getChildrenIterator(doc.getRef());
         while (iter.hasNext()) {
             DocumentModel child = iter.next();
             if (!isAlreadyScheduledForIndexing(child)) {
-                ess.indexNow(child);
+                esi.indexNow(child);
             }
             if (child.isFolder()) {
                 ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(

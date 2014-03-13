@@ -52,6 +52,9 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
+import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -65,7 +68,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  */
 public class ElasticSearchComponent extends DefaultComponent implements
-        ElasticSearchService, ElasticSearchAdmin {
+        ElasticSearchService, ElasticSearchIndexing, ElasticSearchAdmin {
 
     protected static final Log log = LogFactory.getLog(ElasticSearchComponent.class);
 
@@ -161,7 +164,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         try {
             JsonFactory factory = new JsonFactory();
             XContentBuilder builder = jsonBuilder();
-            
+
             JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
             JsonDocumentWriter.writeDocument(jsonGen, doc, doc.getSchemas(),
                     null);

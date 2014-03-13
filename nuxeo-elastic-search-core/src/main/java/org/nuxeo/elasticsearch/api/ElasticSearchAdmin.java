@@ -15,9 +15,10 @@
  *     Nuxeo
  */
 
-package org.nuxeo.elasticsearch;
+package org.nuxeo.elasticsearch.api;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.elasticsearch.NuxeoElasticSearchConfig;
 
 /**
  * Administration interface for Elastic Search service

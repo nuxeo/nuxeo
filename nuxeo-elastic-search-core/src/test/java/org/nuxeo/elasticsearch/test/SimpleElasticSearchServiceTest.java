@@ -28,7 +28,9 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.elasticsearch.ElasticSearchComponent;
-import org.nuxeo.elasticsearch.ElasticSearchService;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
+import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.listener.ElasticsearchIndexingListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -44,7 +46,7 @@ public class SimpleElasticSearchServiceTest {
     protected CoreSession session;
 
     @Test
-    public void shouldHaveDeclaredService() throws Exception {
+    public void shouldHaveDeclaredServices() throws Exception {
 
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
@@ -52,14 +54,21 @@ public class SimpleElasticSearchServiceTest {
         Client client = ess.getClient();
         Assert.assertNotNull(client);
 
-        Assert.assertNotNull(session);
+        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+        Assert.assertNotNull(esi);
+
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+        Assert.assertNotNull(esa);
+
     }
 
     @Test
     public void shouldIndexDocuments() throws Exception {
 
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
         Assert.assertNotNull(ess);
+        Assert.assertNotNull(esi);
 
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:title", "TestMe");
@@ -68,7 +77,7 @@ public class SimpleElasticSearchServiceTest {
         doc = session.createDocument(doc);
         session.save();
 
-        String res = ess.indexNow(doc);
+        String res = esi.indexNow(doc);
         Assert.assertNotNull(res);
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(ElasticSearchComponent.MAIN_IDX)
@@ -103,10 +112,5 @@ public class SimpleElasticSearchServiceTest {
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
     }
-
-
-
-
-
 
 }

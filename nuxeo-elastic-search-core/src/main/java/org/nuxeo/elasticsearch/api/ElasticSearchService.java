@@ -15,7 +15,7 @@
  *     Nuxeo
  */
 
-package org.nuxeo.elasticsearch;
+package org.nuxeo.elasticsearch.api;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -38,23 +38,6 @@ public interface ElasticSearchService {
      * @return
      */
     Client getClient();
-
-    /**
-     * Starts an async indexing task
-     *
-     * @param doc
-     * @param recurse
-     */
-    void index(DocumentModel doc, boolean recurse);
-
-    /**
-     * Index synchronously a single {@link DocumentModel}
-     *
-     * @param doc
-     * @return
-     * @throws ClientException
-     */
-    String indexNow(DocumentModel doc) throws ClientException;
 
     DocumentModelList query(CoreSession session, QueryBuilder queryBuilder,
             int pageSize, int pageIdx) throws ClientException;

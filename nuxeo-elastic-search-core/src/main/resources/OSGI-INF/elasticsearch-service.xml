@@ -4,8 +4,9 @@
   <implementation class="org.nuxeo.elasticsearch.ElasticSearchComponent" />
 
   <service>
-      <provide interface="org.nuxeo.elasticsearch.ElasticSearchService" />
-      <provide interface="org.nuxeo.elasticsearch.ElasticSearchAdmin" />
+      <provide interface="org.nuxeo.elasticsearch.api.ElasticSearchService" />
+      <provide interface="org.nuxeo.elasticsearch.api.ElasticSearchIndexing" />
+      <provide interface="org.nuxeo.elasticsearch.api.ElasticSearchAdmin" />
   </service>
 
   <extension-point name="elasticSearchConfig">
@@ -45,6 +46,6 @@
     </documentation>
 
     <object class="org.nuxeo.elasticsearch.NuxeoElasticSearchConfig" />
-  </extension-point>	
+  </extension-point>
 
 </component>

@@ -28,7 +28,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.elasticsearch.ElasticSearchService;
+import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
+import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -67,8 +68,8 @@ public class ElasticsearchIndexingListener implements EventListener {
             return;
         }
 
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        ess.index(docCtx.getSourceDocument(), false);
+        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+        esi.index(docCtx.getSourceDocument(), false);
     }
 
 }

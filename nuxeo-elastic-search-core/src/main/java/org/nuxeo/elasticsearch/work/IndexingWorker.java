@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.elasticsearch.ElasticSearchService;
+import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -51,8 +51,8 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
 
     @Override
     protected void doIndexingWork(CoreSession session,
-            ElasticSearchService ess, DocumentModel doc) throws Exception {
-        ess.indexNow(doc);
+            ElasticSearchIndexing esi, DocumentModel doc) throws Exception {
+        esi.indexNow(doc);
         if (recurse) {
             ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(doc);
             WorkManager wm = Framework.getLocalService(WorkManager.class);
