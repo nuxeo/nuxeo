@@ -34,7 +34,7 @@ public class TestEventContext extends NXRuntimeTestCase {
     @Test
     public void testEventContext() {
         EventContextImpl ctx = new EventContextImpl("arg1", "arg2");
-        CoreSession cs = new LocalSession();
+        CoreSession cs = LocalSession.createInstance();
         ctx.setCoreSession(cs);
         assertEquals(cs, ctx.getCoreSession());
         assertEquals("arg1", ctx.getArguments()[0]);

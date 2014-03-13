@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,11 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
@@ -28,20 +26,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * The CoreInstance is the main access point to a repository server.
- * <p>
- * A server instance is a singleton object that exists on each client JVM but
- * also on the server JVM. The instance on the server JVM is used to access the
- * server locally while those on client JVMs are used to access the server
- * remotely.
- * <p>
- * A server instance uses a CoreSessionFactory to create CoreSession instances.
- * CoreSessionFactory objects are implementation-dependent and may be
- * registered using extension points. See {@link CoreSessionFactory} for more
- * details.
- * <p>
- * Thus you can use a different implementation for the local ServerConnector
- * than the one for the remote ServerConnector.
+ * The CoreInstance is the main access point to a CoreSession.
  * <p>
  * When clients need to perform a connection to a repository, they simply open
  * a new session using the {@link CoreInstance#open(String, Map)} method.
@@ -53,29 +38,18 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * So a client session looks something like this:
  * <p>
- *
  * <pre>
- * &lt;code&gt;
- * CoreInstance server = CoreInstance.getInstance();
- * CoreSession client = server.open(&quot;demo&quot;, null);
+ * CoreSession coreSession = CoreInstance.getInstance().open(&quot;demo&quot;, null);
  * DocumentModel root = client.getRootDocument();
  * // ... do something in that session ...
- * // close the client -&gt; this is closing the core session
- * server.close(client);
- * &lt;/code&gt;
+ * CoreInstance.getInstance().close(client);
  * </pre>
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class CoreInstance implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class CoreInstance {
 
     private static final Log log = LogFactory.getLog(CoreInstance.class);
 
     private static final CoreInstance instance = new CoreInstance();
-
-    private CoreSessionFactory factory;
 
     public static class RegistrationInfo extends Throwable {
         private static final long serialVersionUID = 1L;
@@ -109,46 +83,16 @@ public class CoreInstance implements Serializable {
 
     public CoreSession open(String repositoryName,
             Map<String, Serializable> context) throws ClientException {
-        // instantiate a new client
+        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        Repository repository = repositoryManager.getRepository(repositoryName);
+        if (repository == null) {
+            throw new ClientException("No such repository: " + repositoryName);
+        }
         try {
-            RepositoryManager rm = Framework.getService(RepositoryManager.class);
-            CoreSession session = null;
-            if (rm != null) {
-                Repository repo = rm.getRepository(repositoryName);
-                if (repo == null) {
-                    throw new ClientException("No such repository: "
-                            + repositoryName);
-                }
-                // connect to the server
-                session = repo.open(context);
-            }
-            // ------ FIXME only for compat with tests ---
-            if (session == null) {
-                session = compatOpen(repositoryName, context);
-            }
-            // --------------------------------------------------------
-            return session;
+            return repository.open(context);
         } catch (Exception e) {
             throw new ClientException(e.getMessage(), e);
         }
-    }
-
-    /**
-     * Obsolete method only for compatibility with existing tests. Should be
-     * removed.
-     *
-     * @deprecated remove it
-     */
-    @Deprecated
-    private CoreSession compatOpen(String repositoryName,
-            Map<String, Serializable> context) throws ClientException {
-        // instantiate a new client
-        CoreSession client = factory.getSession();
-        // connect to the server
-        client.connect(repositoryName, context);
-        // register the client locally
-        registerSession(client.getSessionId(), client);
-        return client;
     }
 
     public void registerSession(String sid, CoreSession session) {
@@ -221,18 +165,6 @@ public class CoreInstance implements Serializable {
 
     public RegistrationInfo getSessionRegistrationInfo(String sid) {
         return sessions.get(sid);
-    }
-
-    public void initialize(CoreSessionFactory factory) {
-        // TODO: to be able to test more easily with a variety of client
-        // factories
-        // if (instance.factory == null) {
-        instance.factory = factory;
-        // }
-    }
-
-    public CoreSessionFactory getFactory() {
-        return factory;
     }
 
 }

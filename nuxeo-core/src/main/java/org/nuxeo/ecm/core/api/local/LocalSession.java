@@ -23,7 +23,6 @@ import java.util.HashMap;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -33,6 +32,7 @@ import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
@@ -46,8 +46,7 @@ public class LocalSession extends AbstractSession {
     private Session session;
 
     public static CoreSession createInstance() {
-        CoreSession session = new LocalSession();
-        return TransactionalCoreSessionWrapper.wrap(session);
+        return TransactionalCoreSessionWrapper.wrap(new LocalSession());
     }
 
     // Locally we don't yet support NXCore.getRepository()
@@ -116,8 +115,8 @@ public class LocalSession extends AbstractSession {
                 repo = (Repository) new InitialContext().lookup("java:NXRepository/"
                         + name);
             } catch (NamingException ee) {
-                repo = NXCore.getRepositoryService().getRepositoryManager().getRepository(
-                        name);
+                RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+                repo = repositoryManager.getRepository(name);
             }
         }
         if (repo == null) {

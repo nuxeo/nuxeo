@@ -19,6 +19,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
@@ -184,7 +185,8 @@ public class CoreFeature extends SimpleFeature {
         CoreScope.INSTANCE.enter();
         if (cleaned) {
             // re-trigger application started
-            NXCore.getRepositoryService().applicationStarted(null);
+            RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
+            repositoryService.applicationStarted(null);
             cleaned = false;
         }
         CoreSession session = repository.createSession();

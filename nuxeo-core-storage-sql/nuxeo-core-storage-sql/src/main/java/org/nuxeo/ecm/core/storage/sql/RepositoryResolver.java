@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ *     Stephane Lacoin
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.storage.sql;
 
@@ -20,18 +21,16 @@ import java.util.Map;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
-import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
+import org.nuxeo.ecm.core.repository.RepositoryManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
+import org.nuxeo.runtime.api.Framework;
 
 /**
- * Locate a repository given its name. Try access through NXCore first (JNDI)
- * and then fall-back by using the repository manager.
- *
- * @author "Stephane Lacoin [aka matic] <slacoin at nuxeo.com>"
+ * Locates a repository given its name, and other low-level repository operations.
  */
 public class RepositoryResolver {
 
-    public static final Map<String,RepositoryImpl> repositories = new HashMap<String,RepositoryImpl>();
+    public static final Map<String, RepositoryImpl> repositories = new HashMap<String, RepositoryImpl>();
 
     private RepositoryResolver() {
     }
@@ -41,8 +40,9 @@ public class RepositoryResolver {
     }
 
     public static List<Repository> getRepositories() {
+        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         List<Repository> repositories = new ArrayList<Repository>();
-        for (String name : NXCore.getRepositoryService().getRepositoryManager().getRepositoryNames()) {
+        for (String name : repositoryManager.getRepositoryNames()) {
             repositories.add(getRepository(name));
         }
         return repositories;
@@ -55,7 +55,8 @@ public class RepositoryResolver {
         } catch (NoSuchRepositoryException e) {
             // No JNDI binding (embedded or unit tests)
             try {
-                repo = NXCore.getRepositoryService().getRepositoryManager().getRepository(repositoryName);
+                RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+                repo = repositoryManager.getRepository(repositoryName);
             } catch (Exception e1) {
                 ;
             }

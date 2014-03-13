@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,21 +9,19 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.ra;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
-import javax.resource.spi.ManagedConnectionFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
@@ -36,16 +34,23 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
  */
 public class PoolingRepositoryFactory implements RepositoryFactory {
 
-    private static final Log log = LogFactory.getLog(PoolingRepositoryFactory.class);
+    private String repositoryName;
 
     @Override
-    public Repository createRepository(RepositoryDescriptor descriptor) {
-        String repositoryName = descriptor.getName();
-        log.info("Creating pooling repository: " + repositoryName);
+    public void init(String repositoryName) {
+        this.repositoryName = repositoryName;
+    }
+
+    @Override
+    public Object call() {
+        SQLRepositoryService sqlRepositoryService = Framework.getLocalService(SQLRepositoryService.class);
+        RepositoryDescriptor descriptor = sqlRepositoryService.getRepositoryDescriptor(repositoryName);
+        NuxeoConnectionManagerConfiguration pool = descriptor.pool;
+        ManagedConnectionFactoryImpl managedConnectionFactory = new ManagedConnectionFactoryImpl();
+        managedConnectionFactory.setName(repositoryName);
         try {
-            ManagedConnectionFactory managedConnectionFactory = new ManagedConnectionFactoryImpl(
-                    SQLRepository.getDescriptor(descriptor));
-            ConnectionManager connectionManager = lookupConnectionManager(descriptor);
+            ConnectionManager connectionManager = lookupConnectionManager(
+                    repositoryName, pool);
             return (Repository) managedConnectionFactory.createConnectionFactory(connectionManager);
         } catch (NamingException | ResourceException e) {
             throw new RuntimeException(e);
@@ -62,8 +67,8 @@ public class PoolingRepositoryFactory implements RepositoryFactory {
             "java:NuxeoConnectionManager/" };
 
     protected static ConnectionManager lookupConnectionManager(
-            RepositoryDescriptor descriptor) throws NamingException {
-        String repositoryName = descriptor.getName();
+            String repositoryName, NuxeoConnectionManagerConfiguration pool)
+            throws NamingException {
         // Check in container
         ConnectionManager cm = NuxeoContainer.getConnectionManager(repositoryName);
         if (cm != null) {
@@ -82,11 +87,11 @@ public class PoolingRepositoryFactory implements RepositoryFactory {
             }
         }
         // Creation from descriptor pool config
-        cm = NuxeoContainer.installConnectionManager(repositoryName,
-                descriptor.getPool());
+        cm = NuxeoContainer.installConnectionManager(repositoryName, pool);
         if (cm != null) {
             return cm;
         }
         throw new NamingException("NuxeoConnectionManager not found in JNDI");
     }
+
 }

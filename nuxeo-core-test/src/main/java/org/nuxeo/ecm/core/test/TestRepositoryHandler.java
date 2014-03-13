@@ -15,12 +15,13 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.repository.RepositoryManager;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestRepositoryHandler {
 
@@ -33,8 +34,8 @@ public class TestRepositoryHandler {
     }
 
     public void openRepository() throws Exception {
-        repository = NXCore.getRepositoryService().getRepositoryManager().getRepository(
-                repositoryName);
+        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        repository = repositoryManager.getRepository(repositoryName);
     }
 
     public CoreSession openSessionAs(String userName) throws ClientException {

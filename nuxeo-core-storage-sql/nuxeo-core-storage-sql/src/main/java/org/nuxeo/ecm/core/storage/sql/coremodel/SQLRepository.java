@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,24 +9,19 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.runtime.api.Framework;
 
@@ -55,35 +50,11 @@ public class SQLRepository implements Repository {
     public SQLRepository(RepositoryDescriptor descriptor) {
         schemaManager = Framework.getLocalService(SchemaManager.class);
         try {
-            repository = new RepositoryImpl(getDescriptor(descriptor));
-            name = descriptor.getName();
+            repository = new RepositoryImpl(descriptor);
+            name = descriptor.name;
         } catch (StorageException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Fetch SQL-level descriptor from Nuxeo repository descriptor.
-     */
-    public static org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor getDescriptor(
-            RepositoryDescriptor descriptor) {
-        String filename = descriptor.getConfigurationFile();
-        XMap xmap = new XMap();
-        xmap.register(org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.class);
-        FileInputStream in;
-        try {
-            in = new FileInputStream(filename);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor sqldescr;
-        try {
-            sqldescr = (org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor) xmap.load(in);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        sqldescr.name = descriptor.getName();
-        return sqldescr;
     }
 
     /*

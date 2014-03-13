@@ -8,14 +8,6 @@
     @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
   </documentation>
 
-  <extension target="org.nuxeo.ecm.core.CoreService"
-      point="sessionFactory">
-    <documentation>
-      The default session factory contribution (a local session factory).
-    </documentation>
-    <factory class="org.nuxeo.ecm.core.api.local.LocalSessionFactory"/>
-  </extension>
-
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
       point="schema">
     <documentation>The core schemas</documentation>
@@ -186,24 +178,24 @@
     </doctype>
 
   </extension>
-  
+
    <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
 
-    <listener name="emptyNameFixer" 
+    <listener name="emptyNameFixer"
         class="org.nuxeo.ecm.core.model.EmptyNameFixer" order="1000">
       <event>aboutToImport</event>
       <event>aboutToCreate</event>
       <event>aboutToMove</event>
     </listener>
-    
-    <listener name="duplicatedNameFixer" 
+
+    <listener name="duplicatedNameFixer"
         class="org.nuxeo.ecm.core.model.DuplicatedNameFixer" order="2000">
       <event>aboutToImport</event>
       <event>aboutToCreate</event>
       <event>aboutToMove</event>
     </listener>
-    
+
   </extension>
 
 </component>

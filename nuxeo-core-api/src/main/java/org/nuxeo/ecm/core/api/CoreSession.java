@@ -29,16 +29,6 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 
 /**
  * A session to the Nuxeo Core.
- * <p>
- * The session is opened and closed by a client and gives the client the
- * possibility to interact with the core.
- * <p>
- * The core a session connects to can be located in a separate (remote) JVM or
- * in the current one.
- * <p>
- * To create remote or local sessions, you need to use a specific
- * {@link CoreSessionFactory} object. These objects are usually specified using
- * extension points but you can also use them programatically.
  *
  * @see DocumentModel
  * @see DocumentRef

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,34 +7,27 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.repository;
 
-import org.nuxeo.ecm.core.model.Repository;
+import java.util.concurrent.Callable;
 
 /**
- * Repository Factory.
- * <p>
- * Creates a repository and optionally an JNDI bindable object
- * to bind the repository to a JNDI name.
+ * Low-level Repository factory.
  * <p>
  * The repository factory to use is usually specified in the MBean configuration file.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public interface RepositoryFactory {
+public interface RepositoryFactory extends Callable<Object> {
+
+    void init(String repositoryName);
 
     /**
-     * Creates a repository implementation given a repository descriptor object.
+     * Constructs the low-level repository with the name previously passed to {@link #init}.
      *
-     * @param descriptor the repository descriptor
-     * @return the repository instance
-     * @throws Exception if an error occurs
+     * @return a low-level Repository
      */
-    Repository createRepository(RepositoryDescriptor descriptor);
+    @Override
+    public Object call();
 
 }

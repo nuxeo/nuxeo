@@ -21,8 +21,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * Interface to manage a low-level repository.
  */
 public interface Repository {
 

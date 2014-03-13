@@ -50,6 +50,12 @@ public final class NXCore {
                 LifeCycleServiceImpl.NAME);
     }
 
+    /**
+     * Not a public API.
+     * @deprecated not public
+     * @since 5.9.3
+     */
+    @Deprecated
     public static RepositoryService getRepositoryService() {
         return Framework.getLocalService(RepositoryService.class);
     }

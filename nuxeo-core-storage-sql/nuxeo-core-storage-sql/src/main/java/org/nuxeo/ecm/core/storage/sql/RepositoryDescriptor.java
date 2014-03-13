@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,11 +26,11 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.repository.RepositoryFactory;
+import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 
 /**
- * Repository descriptor.
- *
- * @author Florent Guillaume
+ * Low-level VCS Repository Descriptor.
  */
 @XObject(value = "repository")
 public class RepositoryDescriptor {
@@ -72,8 +72,8 @@ public class RepositoryDescriptor {
             analyzer = other.analyzer;
             catalog = other.catalog;
             fieldType = other.fieldType;
-            fields = new HashSet<String>(fields);
-            excludeFields = new HashSet<String>(excludeFields);
+            fields = new HashSet<String>(other.fields);
+            excludeFields = new HashSet<String>(other.excludeFields);
         }
 
         public static List<FulltextIndexDescriptor> copyList(
@@ -114,6 +114,8 @@ public class RepositoryDescriptor {
         public FieldDescriptor(FieldDescriptor other) {
             type = other.type;
             field = other.field;
+            table = other.table;
+            column = other.column;
         }
 
         public static List<FieldDescriptor> copyList(
@@ -131,6 +133,12 @@ public class RepositoryDescriptor {
             }
             if (other.type != null) {
                 type = other.type;
+            }
+            if (other.table != null) {
+                table = other.table;
+            }
+            if (other.column != null) {
+                column = other.column;
             }
         }
 
@@ -177,6 +185,35 @@ public class RepositoryDescriptor {
 
     @XNode("@name")
     public String name;
+
+    @XNode("@label")
+    public String label;
+
+    @XNode("@isDefault")
+    private Boolean isDefault;
+
+    public Boolean isDefault() {
+        return isDefault;
+    }
+
+    @XNode("@factory")
+    private Class<? extends RepositoryFactory> repositoryFactoryClass;
+
+    public Class<? extends RepositoryFactory> getRepositoryFactoryClass() {
+        return repositoryFactoryClass;
+    }
+
+    public void setRepositoryFactoryClass(Class<? extends RepositoryFactory> klass) {
+        repositoryFactoryClass = klass;
+    }
+
+    // compat, when used with old-style extension point syntax
+    // and nested repository
+    @XNode("repository")
+    public RepositoryDescriptor repositoryDescriptor;
+
+    @XNode("pool")
+    public NuxeoConnectionManagerConfiguration pool;
 
     @XNode("backendClass")
     public Class<? extends RepositoryBackend> backendClass;
@@ -300,7 +337,7 @@ public class RepositoryDescriptor {
     public Set<String> fulltextIncludedTypes = new HashSet<String>(0);
 
     @XNodeList(value = "indexing/neverPerDocumentFacets/facet", type = HashSet.class, componentType = String.class)
-    public Set<String> neverPerInstanceMixins;
+    public Set<String> neverPerInstanceMixins = new HashSet<String>(0);
 
     @XNode("pathOptimizations@enabled")
     private Boolean pathOptimizationsEnabled;
@@ -380,6 +417,11 @@ public class RepositoryDescriptor {
     /** Copy constructor. */
     public RepositoryDescriptor(RepositoryDescriptor other) {
         name = other.name;
+        label = other.label;
+        isDefault = other.isDefault;
+        repositoryFactoryClass = other.repositoryFactoryClass;
+        pool = other.pool == null ? null
+                : new NuxeoConnectionManagerConfiguration(other.pool);
         backendClass = other.backendClass;
         cachingMapperClass = other.cachingMapperClass;
         cachingMapperEnabled = other.cachingMapperEnabled;
@@ -418,6 +460,18 @@ public class RepositoryDescriptor {
     public void merge(RepositoryDescriptor other) {
         if (other.name != null) {
             name = other.name;
+        }
+        if (other.label != null) {
+            label = other.label;
+        }
+        if (other.isDefault != null) {
+            isDefault = other.isDefault;
+        }
+        if (other.repositoryFactoryClass != null) {
+            repositoryFactoryClass = other.repositoryFactoryClass;
+        }
+        if (other.pool != null) {
+            pool = new NuxeoConnectionManagerConfiguration(other.pool);
         }
         if (other.backendClass != null) {
             backendClass = other.backendClass;

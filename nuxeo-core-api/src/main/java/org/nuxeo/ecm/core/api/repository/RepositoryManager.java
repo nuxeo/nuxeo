@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,20 +7,18 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api.repository;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
- * Manage repositories.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * High-level service to get to a
+ * {@link org.nuxeo.ecm.core.api.repository.Repository Repository} and from
+ * there to {@link org.nuxeo.ecm.core.api.CoreSession CoreSession} objects.
  */
 public interface RepositoryManager {
 
@@ -63,11 +61,6 @@ public interface RepositoryManager {
      * @param name the repository name to unregister
      */
     void removeRepository(String name);
-
-    /**
-     * Unregisters all repositories.
-     */
-    void clear();
 
     /**
      * Gets the default repository.

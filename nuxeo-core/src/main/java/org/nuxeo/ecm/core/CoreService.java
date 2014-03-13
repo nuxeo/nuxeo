@@ -9,8 +9,8 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Thierry Delprat
  */
-
 package org.nuxeo.ecm.core;
 
 import java.util.ArrayList;
@@ -18,8 +18,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSessionFactory;
 import org.nuxeo.ecm.core.versioning.DefaultVersionRemovalPolicy;
 import org.nuxeo.ecm.core.versioning.OrphanVersionRemovalFilter;
 import org.nuxeo.ecm.core.versioning.VersionRemovalPolicy;
@@ -28,11 +26,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
 /**
- * Service used to register session factories and version removal policies.
- * 
- * @author Bogdan Stefanescu
- * @author Florent Guillaume
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ * Service used to register version removal policies.
  */
 public class CoreService extends DefaultComponent {
 
@@ -68,16 +62,7 @@ public class CoreService extends DefaultComponent {
     @Override
     public void registerExtension(Extension extension) {
         String point = extension.getExtensionPoint();
-        if ("sessionFactory".equals(point)) {
-            for (Object contrib : extension.getContributions()) {
-                if (contrib instanceof CoreServiceFactoryDescriptor) {
-                    registerSessionFactory((CoreServiceFactoryDescriptor) contrib);
-                } else {
-                    log.error("Invalid contribution to extension point 'sessionFactory': "
-                            + contrib.getClass().getName());
-                }
-            }
-        } else if ("versionRemovalPolicy".equals(point)) {
+        if ("versionRemovalPolicy".equals(point)) {
             for (Object contrib : extension.getContributions()) {
                 if (contrib instanceof CoreServicePolicyDescriptor) {
                     registerVersionRemovalPolicy((CoreServicePolicyDescriptor) contrib);
@@ -102,17 +87,6 @@ public class CoreService extends DefaultComponent {
 
     @Override
     public void unregisterExtension(Extension extension) {
-    }
-
-    protected void registerSessionFactory(CoreServiceFactoryDescriptor desc) {
-        String klass = desc.getKlass();
-        try {
-            CoreSessionFactory factory = (CoreSessionFactory) context.getRuntimeContext().loadClass(
-                    klass).newInstance();
-            CoreInstance.getInstance().initialize(factory);
-        } catch (Exception e) {
-            log.error("Failed to instantiate sessionFactory: " + klass, e);
-        }
     }
 
     private void registerVersionRemovalPolicy(CoreServicePolicyDescriptor desc) {

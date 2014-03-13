@@ -12,6 +12,8 @@
  */
 package org.nuxeo.ecm.core.repository;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.model.Repository;
 
 /**
@@ -26,25 +28,17 @@ public interface RepositoryManager {
      * <p>
      * Null is returned if no repository with that name was registered.
      *
-     * @param name the repository name
+     * @param repositoryName the repository name
      * @return the repository instance or null if no repository with that name
      *         was registered
      */
-    Repository getRepository(String name);
+    Repository getRepository(String repositoryName);
 
     /**
      * Gets the repository names.
      *
-     * @return an array of repository names
+     * @return a list of repository names
      */
-    String[] getRepositoryNames();
-
-    /**
-     * Gets the descriptor for the repository of a given name.
-     *
-     * @param name the repository name
-     * @return the repository descriptor, or {@code null} if unknown
-     */
-    RepositoryDescriptor getDescriptor(String name);
+    List<String> getRepositoryNames();
 
 }

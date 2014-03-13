@@ -12,7 +12,6 @@
 
 package org.nuxeo.ecm.core.storage.sql.ra;
 
-import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -33,8 +32,6 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.xmap.XMap;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
@@ -42,6 +39,8 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * The managed connection factory receives requests from the application server
@@ -315,16 +314,8 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      */
     protected static RepositoryDescriptor getRepositoryDescriptor(String name)
             throws StorageException {
-        org.nuxeo.ecm.core.repository.RepositoryDescriptor d = NXCore.getRepositoryService().getRepositoryManager().getDescriptor(
-                name);
-        try {
-            XMap xmap = new XMap();
-            xmap.register(RepositoryDescriptor.class);
-            return (RepositoryDescriptor) xmap.load(new FileInputStream(
-                    d.getConfigurationFile()));
-        } catch (Exception e) {
-            throw new StorageException(e);
-        }
+        SQLRepositoryService sqlRepositoryService = Framework.getLocalService(SQLRepositoryService.class);
+        return sqlRepositoryService.getRepositoryDescriptor(name);
     }
 
     /**

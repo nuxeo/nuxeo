@@ -11,6 +11,12 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,8 +24,6 @@ import java.util.HashSet;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
@@ -48,6 +52,12 @@ public class TestRepositoryDescriptor {
         assertEquals("foo", desc.name);
         assertTrue(desc.getClusteringEnabled());
         assertEquals(1234, desc.getClusteringDelay());
+    }
+
+    @Test
+    public void testBasicCopy() throws Exception {
+        desc = new RepositoryDescriptor(desc);
+        testBasic();
     }
 
     @SuppressWarnings("unchecked")
@@ -96,6 +106,12 @@ public class TestRepositoryDescriptor {
     }
 
     @Test
+    public void testFulltextCopy() throws Exception {
+        desc = new RepositoryDescriptor(desc);
+        testFulltext();
+    }
+
+    @Test
     public void testSchemaFields() throws Exception {
         assertNotNull(desc.schemaFields);
         assertEquals(3, desc.schemaFields.size());
@@ -118,8 +134,20 @@ public class TestRepositoryDescriptor {
     }
 
     @Test
+    public void testSchemaFieldsCopy() throws Exception {
+        desc = new RepositoryDescriptor(desc);
+        testSchemaFields();
+    }
+
+    @Test
     public void testBinaryStorePath() throws Exception {
         assertEquals("/foo/bar", desc.binaryStorePath);
+    }
+
+    @Test
+    public void testBinaryStorePathCopy() throws Exception {
+        desc = new RepositoryDescriptor(desc);
+        testBinaryStorePath();
     }
 
     @Test
@@ -146,7 +174,9 @@ public class TestRepositoryDescriptor {
         assertEquals("xyz", fd.type);
         fd = desc.schemaFields.get(2);
         assertEquals("bar", fd.field);
-        assertEquals("bartype", fd.type);
+        assertEquals("bartype2", fd.type);
+        assertEquals("bartable2", fd.table);
+        assertEquals("barcol2", fd.column);
         fd = desc.schemaFields.get(3);
         assertEquals("def", fd.field);
         assertEquals("abc", fd.type);
