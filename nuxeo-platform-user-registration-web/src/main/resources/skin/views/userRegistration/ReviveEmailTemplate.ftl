@@ -5,22 +5,21 @@ Hello ${registrationDoc.userinfo.firstName} ${registrationDoc.userinfo.lastName}
 
 <p>It appears that you did not validate your invitation to ${registrationDoc.docinfo.documentTitle}<p>
 <p>Click on the following link to validate your invitation:</p>
-<A href="${info['validationBaseURL']}${registrationDoc.id}"> Validate my invitation </A> .
+<A href="${info['enterPasswordUrl']}${registrationDoc.id}"> Validate my invitation </A> .
 <br />
 
 <br /><br />
-<p>Here are your login credentials:</p>
-<p>Login:  ${registrationDoc.userinfo.login}</p>
-<p>Password:
+<#if !userAlreadyExists>
+<p>After you defined your password, you'll be able to log in to the application.</p>
+<p>Your username is: ${registrationDoc.userinfo.login}</p>
+</#if>
+
 <#if userAlreadyExists>
-Your usual account password.
-<#else>
-${registrationDoc.userinfo.password}
+<p>Here are your login credentials:</p>
+<p>Username:  ${registrationDoc.userinfo.login}</p>
+<p>Password: Your usual account password.</p>
 </#if>
 </p>
-<#if !userAlreadyExists>
-<p>Please, update your password after your first login.</p>
-</#if>
 
 <#if registrationDoc.registration.comment != "">
 <p>Comment:</p>

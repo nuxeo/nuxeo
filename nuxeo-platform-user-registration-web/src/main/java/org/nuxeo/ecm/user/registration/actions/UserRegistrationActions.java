@@ -32,7 +32,6 @@ import javax.faces.validator.ValidatorException;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,9 +45,12 @@ import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
@@ -178,8 +180,16 @@ public class UserRegistrationActions implements Serializable {
         try {
             Map<String, Serializable> additionalInfo = new HashMap<String, Serializable>();
             additionalInfo.put("enterPasswordUrl", getEnterPasswordUrl());
+            // Determine the document url to add it into the email
+            String docId = (String) request.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD);
+            DocumentRef docRef = new IdRef(docId);
+            DocumentModel doc = documentManager.getDocument(docRef);
+            String docUrl =  DocumentModelFunctions.documentUrl(doc);
+            additionalInfo.put("docUrl", docUrl);
+
             userRegistrationService.acceptRegistrationRequest(request.getId(),
                     additionalInfo);
+
             // EventManager.raiseEventsOnDocumentChange(request);
             Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
         } catch (ClientException e) {
