@@ -9,84 +9,25 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.management;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.Binding;
-import javax.naming.InitialContext;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-
 import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.sql.BinaryManagerStatus;
-import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.RepositoryResolver;
 
 /**
  * An MBean to manage SQL storage repositories.
- *
- * @author Florent Guillaume
  */
 public class RepositoryStatus implements RepositoryStatusMBean {
 
-    protected List<RepositoryManagement> getRepositories() throws NamingException {
-        List<RepositoryManagement> list = new LinkedList<RepositoryManagement>();
-        InitialContext context;
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(RepositoryStatus.class.getClassLoader());
-        try {
-            context = new InitialContext();
-        } finally {
-            Thread.currentThread().setContextClassLoader(cl);
-        }
-        // we search both JBoss-like and Glassfish-like prefixes
-        // @see NXCore#getRepository
-        for (String prefix : new String[] { "java:NXRepository", "NXRepository" }) {
-            NamingEnumeration<Binding> bindings;
-            try {
-                bindings = context.listBindings(prefix);
-            } catch (NamingException e) {
-                continue;
-            }
-            NamingEnumeration<Binding> e = null;
-            try {
-                for (e = bindings; e.hasMore();) {
-                    Binding binding = e.nextElement();
-                    String name = binding.getName();
-                    if (binding.isRelative()) {
-                        name = prefix + '/' + name;
-                    }
-                    Object object = context.lookup(name);
-                    if (!(object instanceof RepositoryManagement)) {
-                        continue;
-                    }
-                    list.add((RepositoryManagement) object);
-                }
-            }
-            finally {
-                if (e != null) {
-                    e.close();
-                }
-            }
-        }
-        if (list.size() == 0) {
-            List<Repository> repos = RepositoryResolver.getRepositories();
-            for (Repository repo : repos) {
-                list.add(repo);
-            }
-        }
-        return list;
-    }
-
     @Override
     public String listActiveSessions() {
-        List<RepositoryManagement> repositories = repositories();
+        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
         StringBuilder buf = new StringBuilder();
         buf.append("Actives sessions for SQL repositories:<br />");
         for (RepositoryManagement repository : repositories) {
@@ -99,7 +40,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     @Override
     public int getActiveSessionsCount() {
-        List<RepositoryManagement> repositories = repositories();
+        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
         int count = 0;
         for (RepositoryManagement repository : repositories) {
             count += repository.getActiveSessionsCount();
@@ -109,7 +50,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     @Override
     public String clearCaches() {
-        List<RepositoryManagement> repositories = repositories();
+        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
         StringBuilder buf = new StringBuilder();
         buf.append("Cleared cached objects for SQL repositories:<br />");
         for (RepositoryManagement repository : repositories) {
@@ -120,18 +61,9 @@ public class RepositoryStatus implements RepositoryStatusMBean {
         return buf.toString();
     }
 
-    protected List<RepositoryManagement> repositories() {
-        try {
-            return getRepositories();
-        } catch (NamingException e) {
-            throw new UnsupportedOperationException("Cannot fetch repositories", e);
-        }
-    }
-
-
     @Override
     public long getCachesSize() {
-        List<RepositoryManagement> repositories = repositories();
+        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
         long size = 0;
         for (RepositoryManagement repository : repositories) {
             size += repository.getCacheSize();
@@ -141,7 +73,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     @Override
     public String listRemoteSessions() {
-        List<RepositoryManagement> repositories = repositories();
+        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
         StringBuilder buf = new StringBuilder();
         buf.append("Actives remote session for SQL repositories:<br />");
         for (RepositoryManagement repository : repositories) {
@@ -154,7 +86,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
     @Override
     public BinaryManagerStatus gcBinaries(boolean delete) {
         BinaryManagerStatus status = new BinaryManagerStatus();
-        List<RepositoryManagement> repositories = repositories();
+        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
         long start = System.currentTimeMillis();
         Map<String, BinaryGarbageCollector> repogcs = new LinkedHashMap<String, BinaryGarbageCollector>();
         Map<String, BinaryGarbageCollector> gcs = new LinkedHashMap<String, BinaryGarbageCollector>();
@@ -191,7 +123,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     @Override
     public boolean isBinariesGCInProgress() {
-        List<RepositoryManagement> repositories = repositories();
+        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
         for (RepositoryManagement repo : repositories) {
             BinaryGarbageCollector gc = repo.getBinaryGarbageCollector();
             if (gc != null & gc.isInProgress()) {

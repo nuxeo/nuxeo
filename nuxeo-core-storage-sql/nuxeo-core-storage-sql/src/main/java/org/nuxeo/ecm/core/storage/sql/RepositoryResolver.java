@@ -18,9 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
-import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 import org.nuxeo.runtime.api.Framework;
@@ -30,42 +28,36 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RepositoryResolver {
 
-    public static final Map<String, RepositoryImpl> repositories = new HashMap<String, RepositoryImpl>();
+    public static final Map<String, RepositoryImpl> testRepositories = new HashMap<String, RepositoryImpl>();
 
     private RepositoryResolver() {
     }
 
     public static void registerTestRepository(RepositoryImpl repo) {
-        repositories.put(repo.getName(), repo);
+        testRepositories.put(repo.getName(), repo);
     }
 
-    public static List<Repository> getRepositories() {
-        RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
-        List<Repository> repositories = new ArrayList<Repository>();
-        for (String name : repositoryManager.getRepositoryNames()) {
-            repositories.add(getRepository(name));
+    public static List<RepositoryManagement> getRepositories() {
+        RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
+        List<String> repositoryNames = repositoryService.getRepositoryNames();
+        List<RepositoryManagement> repositories = new ArrayList<RepositoryManagement>(
+                repositoryNames.size());
+        for (String repositoryName : repositoryNames) {
+            repositories.add(getRepository(repositoryName));
         }
         return repositories;
     }
 
     public static Repository getRepository(String repositoryName) {
-        Object repo = null;
-        try {
-            repo = NXCore.getRepository(repositoryName);
-        } catch (NoSuchRepositoryException e) {
-            // No JNDI binding (embedded or unit tests)
-            try {
-                RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
-                repo = repositoryManager.getRepository(repositoryName);
-            } catch (Exception e1) {
-                ;
-            }
-            if (repo == null) {
-                repo = repositories.get(repositoryName);
-            }
-            if (repo == null) {
-                throw new ClientRuntimeException("Cannot find repository " + repositoryName);
-            }
+        RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
+        Object repo = repositoryService.getRepository(repositoryName);
+        if (repo == null) {
+            // check test repository
+            repo = testRepositories.get(repositoryName);
+        }
+        if (repo == null) {
+            throw new ClientRuntimeException("Cannot find repository "
+                    + repositoryName);
         }
         if (repo instanceof Repository) {
             // (JCA) ConnectionFactoryImpl already implements Repository

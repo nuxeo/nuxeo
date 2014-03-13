@@ -104,21 +104,8 @@ public class LocalSession extends AbstractSession {
     }
 
     protected Repository lookupRepository(String name) throws Exception {
-        Repository repo;
-        try {
-            // needed by glassfish
-            repo = (Repository) new InitialContext().lookup("NXRepository/"
-                    + name);
-        } catch (NamingException e) {
-            try {
-                // needed by jboss
-                repo = (Repository) new InitialContext().lookup("java:NXRepository/"
-                        + name);
-            } catch (NamingException ee) {
-                RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
-                repo = repositoryManager.getRepository(name);
-            }
-        }
+        RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
+        Repository repo = repositoryService.getRepository(name);
         if (repo == null) {
             throw new IllegalArgumentException("Repository not found: " + name);
         }

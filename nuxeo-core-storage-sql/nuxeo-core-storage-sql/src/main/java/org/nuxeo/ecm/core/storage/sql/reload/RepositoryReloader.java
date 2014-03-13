@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,24 +7,13 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.storage.sql.reload;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
-import javax.management.ObjectName;
-import javax.naming.Binding;
-import javax.naming.InitialContext;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -32,9 +21,6 @@ import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- */
 public class RepositoryReloader implements EventListener {
 
     private static Log log = LogFactory.getLog(RepositoryReloader.class);
@@ -57,84 +43,24 @@ public class RepositoryReloader implements EventListener {
         }
     }
 
-    public static List<Repository> getRepositories() throws NamingException {
-        List<Repository> list = new LinkedList<Repository>();
-        InitialContext context = new InitialContext();
-        // we search both JBoss-like and Glassfish-like prefixes
-        // @see NXCore#getRepository
-        for (String prefix : new String[] { "java:NXRepository", "NXRepository" }) {
-            NamingEnumeration<Binding> bindings;
-            try {
-                bindings = context.listBindings(prefix);
-            } catch (NamingException e) {
-                continue;
-            }
-            NamingEnumeration<Binding> e = null;
-            try {
-                for (e = bindings; e.hasMore();) {
-                    Binding binding = e.nextElement();
-                    String name = binding.getName();
-                    if (binding.isRelative()) {
-                        name = prefix + '/' + name;
-                    }
-                    Object object = context.lookup(name);
-                    if (!(object instanceof Repository)) {
-                        continue;
-                    }
-                    list.add((Repository) object);
-                }
-            } finally {
-                if (e != null) {
-                    e.close();
-                }
-            }
-        }
-        return list;
-    }
-
     public static void closeRepositories() throws Exception {
-        List<Repository> repos = getRepositories(); // this is working only on
-                                                    // jboss
-        if (!repos.isEmpty()) {
-            for (Repository repository : repos) {
-                repository.shutdown();
-            }
-        } else { // TODO remove the first method that is using JNDI lookups?
-            RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
-            for (String name : repositoryManager.getRepositoryNames()) {
-                Repository repo = repositoryManager.getRepository(name);
-                repo.shutdown();
-            }
+        RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
+        for (String name : repositoryService.getRepositoryNames()) {
+            Repository repo = repositoryService.getRepository(name);
+            repo.shutdown();
         }
-    }
-
-    public static MBeanServer locateJBoss() {
-        for (MBeanServer server : MBeanServerFactory.findMBeanServer(null)) {
-            if (server.getDefaultDomain().equals("jboss")) {
-                return server;
-            }
-        }
-        return null;
     }
 
     public static void flushJCAPool() throws Exception {
-        MBeanServer jboss = locateJBoss();
-        if (jboss != null) {
-            jboss.invoke(
-                    new ObjectName(
-                            "jboss.jca:name=NXRepository/default,service=ManagedConnectionPool"),
-                    "flush", new Object[0], new String[0]);
-        } else { // try tomcat (jtajca nuxeo plugin)
-            Class<?> cl = null;
-            try {
-                cl = Class.forName("org.nuxeo.runtime.jtajca.NuxeoContainer");
-            } catch (ClassNotFoundException e) { // not tomcat or not jtajca
-                                                 // enabled
-                // do nothing
+        try {
+            Class<?> nuxeoContainerClass = Class.forName("org.nuxeo.runtime.jtajca.NuxeoContainer");
+            if (nuxeoContainerClass != null) {
+                nuxeoContainerClass.getMethod("resetConnectionManager").invoke(
+                        null);
             }
-            if (cl != null) {
-                cl.getMethod("resetConnectionManager").invoke(null);
-            }
+        } catch (ClassNotFoundException e) {
+            // no container
+            log.debug(e, e);
         }
     }
 

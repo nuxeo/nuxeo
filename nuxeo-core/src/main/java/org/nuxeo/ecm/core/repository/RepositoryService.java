@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.local.LocalSession;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -74,7 +75,7 @@ public class RepositoryService extends DefaultComponent {
         try {
             started = !TransactionHelper.isTransactionActive()
                     && TransactionHelper.startTransaction();
-            org.nuxeo.ecm.core.api.repository.RepositoryManager repositoryManager = Framework.getLocalService(org.nuxeo.ecm.core.api.repository.RepositoryManager.class);
+            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
             for (String name : repositoryManager.getRepositoryNames()) {
                 initializeRepository(handler, name);
             }
@@ -132,8 +133,11 @@ public class RepositoryService extends DefaultComponent {
         synchronized (repositories) {
             Repository repository = repositories.get(repositoryName);
             if (repository == null) {
-                org.nuxeo.ecm.core.api.repository.RepositoryManager repositoryManager = Framework.getLocalService(org.nuxeo.ecm.core.api.repository.RepositoryManager.class);
+                RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
                 org.nuxeo.ecm.core.api.repository.Repository repo = repositoryManager.getRepository(repositoryName);
+                if (repo == null) {
+                    return null;
+                }
                 RepositoryFactory repositoryFactory = (RepositoryFactory) repo.getRepositoryFactory();
                 if (repositoryFactory == null) {
                     throw new NullPointerException(
@@ -148,7 +152,7 @@ public class RepositoryService extends DefaultComponent {
     }
 
     public List<String> getRepositoryNames() {
-        org.nuxeo.ecm.core.api.repository.RepositoryManager repositoryManager = Framework.getLocalService(org.nuxeo.ecm.core.api.repository.RepositoryManager.class);
+        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         return repositoryManager.getRepositoryNames();
     }
 
