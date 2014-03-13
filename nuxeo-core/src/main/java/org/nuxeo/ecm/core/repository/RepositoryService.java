@@ -32,7 +32,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * Component and service managing low-level repository instances.
  */
-public class RepositoryService extends DefaultComponent implements RepositoryManager {
+public class RepositoryService extends DefaultComponent {
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.repository.RepositoryService");
 
@@ -119,10 +119,6 @@ public class RepositoryService extends DefaultComponent implements RepositoryMan
         }
     }
 
-    public RepositoryManager getRepositoryManager() {
-        return this;
-    }
-
     /**
      * Gets a repository given its name.
      * <p>
@@ -132,7 +128,6 @@ public class RepositoryService extends DefaultComponent implements RepositoryMan
      * @return the repository instance or null if no repository with that name
      *         was registered
      */
-    @Override
     public Repository getRepository(String repositoryName) {
         synchronized (repositories) {
             Repository repository = repositories.get(repositoryName);
@@ -152,7 +147,6 @@ public class RepositoryService extends DefaultComponent implements RepositoryMan
         }
     }
 
-    @Override
     public List<String> getRepositoryNames() {
         org.nuxeo.ecm.core.api.repository.RepositoryManager repositoryManager = Framework.getLocalService(org.nuxeo.ecm.core.api.repository.RepositoryManager.class);
         return repositoryManager.getRepositoryNames();

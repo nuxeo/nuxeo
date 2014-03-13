@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventTransactionListener;
 import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.repository.RepositoryManager;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyAsyncRetryListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -52,7 +52,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         if (!hasPoolingConfig()) {
             return;
         }
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
         Repository repo = repositoryManager.getRepository(REPOSITORY_NAME);
         assertEquals(1, repo.getActiveSessionsCount());
 

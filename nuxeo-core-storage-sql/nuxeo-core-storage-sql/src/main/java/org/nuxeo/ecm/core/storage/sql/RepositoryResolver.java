@@ -21,7 +21,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
-import org.nuxeo.ecm.core.repository.RepositoryManager;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 import org.nuxeo.runtime.api.Framework;
 
@@ -40,7 +40,7 @@ public class RepositoryResolver {
     }
 
     public static List<Repository> getRepositories() {
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
         List<Repository> repositories = new ArrayList<Repository>();
         for (String name : repositoryManager.getRepositoryNames()) {
             repositories.add(getRepository(name));
@@ -55,7 +55,7 @@ public class RepositoryResolver {
         } catch (NoSuchRepositoryException e) {
             // No JNDI binding (embedded or unit tests)
             try {
-                RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+                RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
                 repo = repositoryManager.getRepository(repositoryName);
             } catch (Exception e1) {
                 ;

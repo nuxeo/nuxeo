@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.repository.RepositoryManager;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.services.event.Event;
@@ -100,7 +100,7 @@ public class RepositoryReloader implements EventListener {
                 repository.shutdown();
             }
         } else { // TODO remove the first method that is using JNDI lookups?
-            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+            RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
             for (String name : repositoryManager.getRepositoryNames()) {
                 Repository repo = repositoryManager.getRepository(name);
                 repo.shutdown();

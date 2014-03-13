@@ -9,7 +9,6 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.core.repository.RepositoryService" />
-    <provide interface="org.nuxeo.ecm.core.repository.RepositoryManager" />
     <provide interface="org.nuxeo.ecm.core.api.CoreSession" />
   </service>
 

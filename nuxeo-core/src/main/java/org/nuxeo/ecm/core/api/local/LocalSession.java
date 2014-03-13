@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.ecm.core.repository.RepositoryManager;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
@@ -115,7 +115,7 @@ public class LocalSession extends AbstractSession {
                 repo = (Repository) new InitialContext().lookup("java:NXRepository/"
                         + name);
             } catch (NamingException ee) {
-                RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+                RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
                 repo = repositoryManager.getRepository(name);
             }
         }

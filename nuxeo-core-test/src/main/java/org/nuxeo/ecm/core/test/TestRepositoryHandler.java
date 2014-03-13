@@ -20,7 +20,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.repository.RepositoryManager;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestRepositoryHandler {
@@ -34,7 +34,7 @@ public class TestRepositoryHandler {
     }
 
     public void openRepository() throws Exception {
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
         repository = repositoryManager.getRepository(repositoryName);
     }
 
