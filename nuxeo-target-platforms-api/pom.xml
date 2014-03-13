@@ -13,6 +13,13 @@
   <artifactId>nuxeo-target-platforms-api</artifactId>
   <name>Nuxeo Target Platforms - API module</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+  </dependencies>
+
   <!-- no dependencies to be easily used by GWT code -->
   <build>
     <!-- gwt compiler needs the java sources to correctly work -->
