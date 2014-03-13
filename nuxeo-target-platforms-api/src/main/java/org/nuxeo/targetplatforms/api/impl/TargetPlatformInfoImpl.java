@@ -31,7 +31,7 @@ import org.nuxeo.targetplatforms.api.TargetPlatformInfo;
  * Describe a target platform: name, version
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @since 2.18
+ * @since 5.7.1
  */
 public class TargetPlatformInfoImpl extends TargetInfoImpl implements
         TargetPlatformInfo {

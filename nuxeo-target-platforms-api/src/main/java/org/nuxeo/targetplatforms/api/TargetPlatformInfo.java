@@ -23,7 +23,7 @@ import java.util.Map;
  * Represents a target platform info, useful for listing of available target
  * platforms.
  *
- * @since 2.18
+ * @since 5.7.1
  */
 public interface TargetPlatformInfo extends TargetInfo,
         Comparable<TargetPlatformInfo> {

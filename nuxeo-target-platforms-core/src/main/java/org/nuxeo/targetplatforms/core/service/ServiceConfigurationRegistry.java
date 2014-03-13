@@ -23,7 +23,7 @@ import org.nuxeo.targetplatforms.core.descriptors.ServiceConfigurationDescriptor
 /**
  * Registry for service configuration, not handling merge.
  *
- * @since 2.18
+ * @since 5.7.1
  */
 public class ServiceConfigurationRegistry extends
         SimpleContributionRegistry<ServiceConfigurationDescriptor> {

@@ -48,7 +48,7 @@ import org.nuxeo.targetplatforms.api.service.TargetPlatformService;
 
 
 /**
- * @since 2.18
+ * @since 5.7.1
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)

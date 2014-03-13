@@ -25,7 +25,7 @@ import java.util.Calendar;
  * This is a lighter version of the target platform or package, useful for
  * listing targets in select inputs for instance.
  *
- * @since 2.18
+ * @since 5.7.1
  */
 public interface TargetInfo extends Serializable {
 

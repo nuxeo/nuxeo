@@ -27,7 +27,7 @@ import org.nuxeo.targetplatforms.api.Target;
 /**
  * Common class to describe a target platform or package.
  *
- * @since 2.18
+ * @since 5.7.1
  */
 public class TargetImpl extends TargetInfoImpl implements Target {
 

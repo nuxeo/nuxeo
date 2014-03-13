@@ -23,7 +23,7 @@ import org.nuxeo.targetplatforms.api.TargetPackage;
 
 
 /**
- * @since 2.18
+ * @since 5.7.1
  */
 public class TargetPackageImpl extends TargetImpl implements TargetPackage,
         Comparable<TargetPackage> {

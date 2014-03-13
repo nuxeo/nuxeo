@@ -22,7 +22,7 @@ import org.nuxeo.targetplatforms.api.TargetInfo;
 
 
 /**
- * @since 2.18
+ * @since 5.7.1
  */
 public class TargetInfoImpl implements TargetInfo {
 

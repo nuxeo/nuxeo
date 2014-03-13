@@ -23,7 +23,7 @@ import java.util.List;
  * available both on core and client sides.
  *
  * @author Anahide Tchertchian
- * @since 2.18
+ * @since 5.7.1
  */
 public interface TargetPlatform extends Target, Comparable<TargetPlatform> {
 

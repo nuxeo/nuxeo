@@ -28,7 +28,7 @@ import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
 /**
  * Service for target platforms and packages management.
  *
- * @since 2.18
+ * @since 5.7.1
  */
 public interface TargetPlatformService {
 

@@ -32,7 +32,7 @@ import org.w3c.dom.DocumentFragment;
 /**
  * Common descriptor for target packages/platforms.
  *
- * @since 2.18
+ * @since 5.7.1
  */
 @SuppressWarnings("deprecation")
 public class TargetDescriptor {

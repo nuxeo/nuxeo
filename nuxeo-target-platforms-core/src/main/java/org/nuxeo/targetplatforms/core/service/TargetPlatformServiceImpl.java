@@ -52,7 +52,7 @@ import org.nuxeo.targetplatforms.core.descriptors.TargetPlatformDescriptor;
  * {@link TargetPlatformService} implementation relying on runtime extension
  * points.
  *
- * @since 2.18
+ * @since 5.7.1
  */
 public class TargetPlatformServiceImpl extends DefaultComponent implements
         TargetPlatformService {

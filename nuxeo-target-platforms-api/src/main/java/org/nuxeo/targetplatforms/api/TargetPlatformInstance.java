@@ -24,7 +24,7 @@ import java.util.Map;
  * be available on client sides.
  *
  * @author Anahide Tchertchian
- * @since 2.18
+ * @since 5.7.1
  */
 public interface TargetPlatformInstance extends Target {
 

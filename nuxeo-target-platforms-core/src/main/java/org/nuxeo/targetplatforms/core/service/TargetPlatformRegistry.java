@@ -27,7 +27,7 @@ import org.nuxeo.targetplatforms.core.descriptors.TargetPlatformDescriptor;
  * Registry for target platform contributions, handling merge on "enabled"
  * attribute only.
  *
- * @since 2.18
+ * @since 5.7.1
  */
 public class TargetPlatformRegistry extends
         SimpleContributionRegistry<TargetPlatformDescriptor> {

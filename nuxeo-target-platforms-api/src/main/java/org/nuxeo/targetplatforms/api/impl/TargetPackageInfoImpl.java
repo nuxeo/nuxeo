@@ -24,7 +24,7 @@ import org.nuxeo.targetplatforms.api.TargetPackageInfo;
 /**
  * Describes a target package
  *
- * @since 2.18
+ * @since 5.7.1
  */
 public class TargetPackageInfoImpl extends TargetInfoImpl implements
         TargetPackageInfo {

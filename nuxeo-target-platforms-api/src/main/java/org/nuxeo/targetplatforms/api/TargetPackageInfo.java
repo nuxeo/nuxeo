@@ -22,7 +22,7 @@ import java.util.List;
  * Represents a target package info, useful for listing of available target
  * packages.
  *
- * @since 2.18
+ * @since 5.7.1
  */
 public interface TargetPackageInfo extends TargetInfo {
 

@@ -25,7 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * Descriptor for target package contributions.
  *
- * @since 2.18
+ * @since 5.7.1
  */
 @XObject("package")
 public class TargetPackageDescriptor extends TargetDescriptor {

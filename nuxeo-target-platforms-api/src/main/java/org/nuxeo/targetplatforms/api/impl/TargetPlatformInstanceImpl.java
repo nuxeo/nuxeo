@@ -28,7 +28,7 @@ import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
 
 
 /**
- * @since 2.18
+ * @since 5.7.1
  */
 public class TargetPlatformInstanceImpl extends TargetImpl implements
         TargetPlatformInstance {

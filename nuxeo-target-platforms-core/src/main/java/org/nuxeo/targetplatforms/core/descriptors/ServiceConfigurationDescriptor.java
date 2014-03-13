@@ -22,7 +22,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * Service configuration descriptor
  *
- * @since 2.18
+ * @since 5.7.1
  */
 @XObject("configuration")
 public class ServiceConfigurationDescriptor {

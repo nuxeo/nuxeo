@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Represents a target package.
  *
- * @since 2.18
+ * @since 5.7.1
  */
 public interface TargetPackage extends Target {
 
