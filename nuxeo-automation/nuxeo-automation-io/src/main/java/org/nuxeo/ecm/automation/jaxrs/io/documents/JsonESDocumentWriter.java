@@ -89,7 +89,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
             schemas = doc.getSchemas();
         }
         for (String schema : schemas) {
-            writeProperties(jg, doc, schema);
+            writeProperties(jg, doc, schema, null);
         }
         if (contextParameters != null && !contextParameters.isEmpty()) {
             for (Map.Entry<String, String> parameter : contextParameters.entrySet()) {
