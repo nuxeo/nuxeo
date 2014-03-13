@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
@@ -445,6 +446,7 @@ public class SessionImpl implements Session, XAResource {
                     model.idToString(document.getId()));
             fulltextParser.setDocument(document, this);
             try {
+                List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
                 for (String indexName : model.getFulltextInfo().indexNames) {
                     Set<String> paths;
                     if (model.getFulltextInfo().indexesAllSimple.contains(indexName)) {
@@ -457,9 +459,12 @@ public class SessionImpl implements Session, XAResource {
                         paths = model.getFulltextInfo().propPathsByIndexSimple.get(indexName);
                     }
                     String text = fulltextParser.findFulltext(indexName, paths);
+                    indexesAndText.add(new IndexAndText(indexName, text));
+                }
+                if (!indexesAndText.isEmpty()) {
                     Work work = new FulltextUpdaterWork(repository.getName(),
-                            model.idToString(docId), indexName, true, text,
-                            false);
+                            model.idToString(docId), true, false,
+                            indexesAndText);
                     works.add(work);
                 }
             } finally {

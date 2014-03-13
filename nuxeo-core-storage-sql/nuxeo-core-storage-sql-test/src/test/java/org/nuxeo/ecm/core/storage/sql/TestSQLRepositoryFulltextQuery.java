@@ -906,9 +906,8 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         DummyTestListener.clear();
         session.save();
         waitForFulltextIndexing();
-        // 3 = 1 main save + 2 indexes (except SQL Server)
-        int nsave = database.supportsMultipleFulltextIndexes() ? 3 : 2;
-        assertEventSet(IGNORE_VCS, "sessionSaved=" + nsave);
+        // 2 = 1 main save + 1 index
+        assertEventSet(IGNORE_VCS, "sessionSaved=2");
 
         // modify binary
         StringBlob blob = new StringBlob("hello world");
@@ -918,9 +917,8 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         DummyTestListener.clear();
         session.save();
         waitForFulltextIndexing();
-        // 4 = 1 main save + 2 simple indexes + 1 binary index
-        nsave = database.supportsMultipleFulltextIndexes() ? 4 : 3;
-        assertEventSet(IGNORE_VCS, "sessionSaved=" + nsave);
+        // 3 = 1 main save + 1 simple index + 1 binary index
+        assertEventSet(IGNORE_VCS, "sessionSaved=3");
 
         // delete
         session.removeDocument(doc.getRef());

@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.storage.sql.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -117,7 +118,7 @@ public class FulltextExtractorWork extends AbstractWork {
 
         // Iterate on each index to set the binaryText column
         BlobsExtractor extractor = new BlobsExtractor();
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
         for (String indexName : fulltextInfo.indexNames) {
             if (!fulltextInfo.indexesAllBinary.contains(indexName)
                     && fulltextInfo.propPathsByIndexBinary.get(indexName) == null) {
@@ -133,8 +134,12 @@ public class FulltextExtractorWork extends AbstractWork {
             fulltextParser.setStrings(new ArrayList<String>());
             fulltextParser.parse(text, null);
             text = StringUtils.join(fulltextParser.getStrings(), " ");
-            Work work = new FulltextUpdaterWork(repositoryName, doc.getId(),
-                    indexName, false, text, true);
+            indexesAndText.add(new IndexAndText(indexName, text));
+        }
+        if (!indexesAndText.isEmpty()) {
+            Work work = new FulltextUpdaterWork(repositoryName, docId, false,
+                    true, indexesAndText);
+            WorkManager workManager = Framework.getLocalService(WorkManager.class);
             workManager.schedule(work, true);
         }
     }

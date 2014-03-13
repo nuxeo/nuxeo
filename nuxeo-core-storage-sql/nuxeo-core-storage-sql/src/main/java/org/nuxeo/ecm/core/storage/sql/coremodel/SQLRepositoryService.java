@@ -116,23 +116,30 @@ public class SQLRepositoryService extends DefaultComponent {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         RepositoryDescriptor descriptor = registry.getRepositoryDescriptor(repositoryName);
         if (descriptor == null) {
+            // last contribution removed
             repositoryManager.removeRepository(repositoryName);
-        } else {
-            // extract label, isDefault and factory
-            // and pass it to high-level registry
-            Class<? extends RepositoryFactory> repositoryFactoryClass = descriptor.getRepositoryFactoryClass();
-            RepositoryFactory repositoryFactory;
-            try {
-                repositoryFactory = repositoryFactoryClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException("Cannot instantiate repository: "
-                        + repositoryName, e);
-            }
-            repositoryFactory.init(repositoryName);
-            Repository repository = new Repository(repositoryName,
-                    descriptor.label, descriptor.isDefault(), repositoryFactory);
-            repositoryManager.addRepository(repository);
+            return;
         }
+        // extract label, isDefault and factory
+        // and pass it to high-level registry
+        Class<? extends RepositoryFactory> repositoryFactoryClass = descriptor.getRepositoryFactoryClass();
+        if (repositoryFactoryClass == null) {
+            // not the main contribution, just an override with
+            // much less info
+            repositoryManager.removeRepository(repositoryName);
+            return;
+        }
+        RepositoryFactory repositoryFactory;
+        try {
+            repositoryFactory = repositoryFactoryClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("Cannot instantiate repository: "
+                    + repositoryName, e);
+        }
+        repositoryFactory.init(repositoryName);
+        Repository repository = new Repository(repositoryName,
+                descriptor.label, descriptor.isDefault(), repositoryFactory);
+        repositoryManager.addRepository(repository);
     }
 
     public RepositoryDescriptor getRepositoryDescriptor(String name) {
