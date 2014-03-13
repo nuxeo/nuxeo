@@ -14,7 +14,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-collections-core</artifactId>
-      <version>${nuxeo.features.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
