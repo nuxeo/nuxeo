@@ -136,6 +136,14 @@ public class CollectionManagerImpl extends DefaultComponent implements
                         SecurityConstants.WRITE_PROPERTIES);
     }
 
+    @Override
+    public boolean canManage(final DocumentModel collection,
+            final CoreSession session) throws ClientException {
+        return isCollection(collection)
+                && session.hasPermission(collection.getRef(),
+                        SecurityConstants.EVERYTHING);
+    }
+
     public void checkCanAddToCollection(final DocumentModel collection,
             final DocumentModel documentToBeAdded, final CoreSession session)
             throws ClientException {

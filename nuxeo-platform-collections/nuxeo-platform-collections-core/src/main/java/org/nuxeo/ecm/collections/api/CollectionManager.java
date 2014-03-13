@@ -46,6 +46,9 @@ public interface CollectionManager {
     boolean canAddToCollection(final DocumentModel collection,
             final CoreSession session) throws ClientException;
 
+    boolean canManage(final DocumentModel collection, final CoreSession session)
+            throws ClientException;
+
     boolean isCollectable(final DocumentModel doc);
 
     boolean isCollection(final DocumentModel doc);

@@ -1,0 +1,10 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+  <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+    <h:graphicImage value="/icons/manage_collection.png"
+      alt="#{messages['label.collection.canmanage']}"
+      title="#{messages['label.collection.canmanage']}"
+      rendered="#{collectionActions.canManage(field)}" />
+  </c:if>
+</f:subview>

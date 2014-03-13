@@ -27,7 +27,7 @@
                 required="true" width="100%" translated="true"
                 placeholder="label.addDocToCollection.docs.placeHolder"
                 ajaxReRender="#{fancyboxFormId}_buttons"
-                query="SELECT * FROM Document where dc:title ILIKE ? and ecm:mixinType = 'CollectionMember' AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'"
+                pageProviderName="default_collection_candidate"
                 documentSchemas="dublincore,common">
               </nxl:widgetType></td>
           </tr>

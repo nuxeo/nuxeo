@@ -220,6 +220,13 @@ public class CollectionActionsBean implements Serializable {
         return collectionManager.isCollectable(currentDocument);
     }
 
+    public boolean canManage(final DocumentModel collection) throws ClientException {
+        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        final CoreSession session = (CoreSession) Component.getInstance(
+                "documentManager", true);
+        return collectionManager.canManage(collection, session);
+    }
+
     public boolean canRemoveFromCollection() throws ClientException {
         final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
         final List<DocumentModel> doccumentListToBeRemoved = documentsListsManager.getWorkingList(COLLECTION_CURRENT_SELECTION);
@@ -365,5 +372,4 @@ public class CollectionActionsBean implements Serializable {
             setNewTitle(selectedCollectionUid.substring(CollectionConstants.MAGIC_PREFIX_ID.length()));
         }
     }
-
 }
