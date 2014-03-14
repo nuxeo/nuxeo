@@ -15,30 +15,34 @@ import org.nuxeo.elasticsearch.commands.IndexingCommandsStacker;
 
 /**
  *
- * Test that the logic for transforming CoreEvents on ElasticSearch commands
+ * Test that the logic for transforming CoreEvents in ElasticSearch commands
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  *
  */
 public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
-    Map<String, IndexingCommands> commands  = new HashMap<String, IndexingCommands>();
+    Map<String, IndexingCommands> commands = new HashMap<String, IndexingCommands>();
 
     @Override
     protected Map<String, IndexingCommands> getAllCommands() {
         return commands;
     }
 
-
     public final class MockDocumentModel extends DocumentModelImpl {
 
         protected String uid;
+
         protected boolean folder = false;
 
-        public MockDocumentModel( String uid) {
+        public MockDocumentModel(String uid) {
+            this(uid, false);
+        }
+
+        public MockDocumentModel(String uid, boolean folder) {
             super();
             this.uid = uid;
-
+            this.folder = folder;
         }
 
         @Override
@@ -54,15 +58,14 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
     }
 
     @Test
-    public void shouldStoreRemoveDuplicatedEvents() {
+    public void shouldRemoveDuplicatedEvents() {
 
-        DocumentModel doc1 = new MockDocumentModel( "1");
-        DocumentModel doc2 = new MockDocumentModel( "2");
-        DocumentModel doc3 = new MockDocumentModel( "3");
-        DocumentModel doc4 = new MockDocumentModel( "4");
+        DocumentModel doc1 = new MockDocumentModel("1");
+        DocumentModel doc2 = new MockDocumentModel("2");
+        DocumentModel doc3 = new MockDocumentModel("3");
 
         stackCommand(doc1, DocumentEventTypes.DOCUMENT_CREATED, false);
-        stackCommand(doc1, DocumentEventTypes.DOCUMENT_UPDATED, false);
+        stackCommand(doc1, DocumentEventTypes.BEFORE_DOC_UPDATE, false);
 
         stackCommand(doc2, DocumentEventTypes.BEFORE_DOC_UPDATE, false);
         stackCommand(doc2, DocumentEventTypes.BEFORE_DOC_UPDATE, false);
@@ -77,13 +80,72 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
         IndexingCommands ic1 = getCommands(doc1);
         Assert.assertEquals(1, ic1.getMergedCommands().size());
         ic1.contains(IndexingCommand.INDEX);
+        Assert.assertEquals(IndexingCommand.INDEX,
+                ic1.getMergedCommands().get(0).getName());
 
         IndexingCommands ic2 = getCommands(doc2);
         Assert.assertEquals(1, ic2.getMergedCommands().size());
         ic2.contains(IndexingCommand.UPDATE);
+        Assert.assertEquals(IndexingCommand.UPDATE,
+                ic2.getMergedCommands().get(0).getName());
 
         IndexingCommands ic3 = getCommands(doc3);
         Assert.assertEquals(0, ic3.getMergedCommands().size());
+    }
+
+    @Test
+    public void shouldMergeDuplicatedEventsAndSwitchToSync() {
+
+        DocumentModel doc1 = new MockDocumentModel("1");
+        DocumentModel doc2 = new MockDocumentModel("2");
+
+        stackCommand(doc1, DocumentEventTypes.BEFORE_DOC_UPDATE, false);
+        stackCommand(doc1, DocumentEventTypes.BEFORE_DOC_UPDATE, true);
+
+        stackCommand(doc2, DocumentEventTypes.DOCUMENT_CREATED, false);
+        stackCommand(doc2, DocumentEventTypes.BEFORE_DOC_UPDATE, false);
+        stackCommand(doc2, DocumentEventTypes.BEFORE_DOC_UPDATE, true);
+
+        Assert.assertEquals(2, commands.size());
+
+        IndexingCommands ic1 = getCommands(doc1);
+        Assert.assertEquals(1, ic1.getMergedCommands().size());
+        ic1.contains(IndexingCommand.UPDATE);
+        Assert.assertEquals(IndexingCommand.UPDATE,
+                ic1.getMergedCommands().get(0).getName());
+        Assert.assertTrue(ic1.getMergedCommands().get(0).isSync());
+
+        IndexingCommands ic2 = getCommands(doc2);
+        Assert.assertEquals(1, ic2.getMergedCommands().size());
+        ic2.contains(IndexingCommand.INDEX);
+        Assert.assertEquals(IndexingCommand.INDEX,
+                ic2.getMergedCommands().get(0).getName());
+        Assert.assertTrue(ic2.getMergedCommands().get(0).isSync());
+    }
+
+    @Test
+    public void shouldRecurseReindex() {
+
+        DocumentModel doc1 = new MockDocumentModel("1", true);
+        DocumentModel doc2 = new MockDocumentModel("2", true);
+
+        stackCommand(doc1, DocumentEventTypes.DOCUMENT_MOVED, false);
+
+        stackCommand(doc2, DocumentEventTypes.DOCUMENT_SECURITY_UPDATED, false);
+
+        IndexingCommands ic1 = getCommands(doc1);
+        Assert.assertEquals(1, ic1.getMergedCommands().size());
+        ic1.contains(IndexingCommand.UPDATE);
+        Assert.assertEquals(IndexingCommand.UPDATE,
+                ic1.getMergedCommands().get(0).getName());
+        Assert.assertTrue(ic1.getMergedCommands().get(0).isRecurse());
+
+        IndexingCommands ic2 = getCommands(doc2);
+        Assert.assertEquals(1, ic2.getMergedCommands().size());
+        ic2.contains(IndexingCommand.UPDATE_SECURITY);
+        Assert.assertEquals(IndexingCommand.UPDATE_SECURITY,
+                ic2.getMergedCommands().get(0).getName());
+        Assert.assertTrue(ic2.getMergedCommands().get(0).isRecurse());
 
     }
 

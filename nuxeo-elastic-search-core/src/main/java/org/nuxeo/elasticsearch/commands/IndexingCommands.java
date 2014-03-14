@@ -67,6 +67,8 @@ public class IndexingCommands {
         if (commandNames.contains(IndexingCommand.INDEX)) {
             if (command.name.equals(IndexingCommand.DELETE)) {
                 clear();
+            } else if (command.isSync()){
+                find(IndexingCommand.INDEX).sync=true;
             }
             return;
         }
