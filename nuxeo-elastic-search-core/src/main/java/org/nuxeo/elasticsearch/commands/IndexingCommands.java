@@ -43,7 +43,7 @@ public class IndexingCommands {
     }
 
     public void add(String command, boolean sync, boolean recurse) {
-        add(new IndexingCommand(command, sync, recurse));
+        add(new IndexingCommand(targetDocument,command, sync, recurse));
     }
 
     protected IndexingCommand find(String command) {

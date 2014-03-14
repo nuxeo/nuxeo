@@ -24,6 +24,10 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -81,30 +85,43 @@ public abstract class IndexingCommandsStacker {
 
     protected void flushCommands(CoreSession session) throws ClientException {
         Map<String, IndexingCommands> allCmds = getAllCommands();
-        EventProducer evtProducer = Framework.getLocalService(EventProducer.class);
+
+        List<IndexingCommand> syncCommands = new ArrayList<>();
+        List<IndexingCommand> asyncCommands = new ArrayList<>();
 
         for (IndexingCommands cmds : allCmds.values()) {
-
-            DocumentModel target = cmds.getTargetDocument();
-            DocumentEventContext docCtx = new DocumentEventContext(session,
-                    session.getPrincipal(), target);
             for (IndexingCommand cmd : cmds.getMergedCommands()) {
 
                 Event evt = null;
                 if (cmd.isSync()) {
-                    evt = docCtx.newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
+                    syncCommands.add(cmd);
                 } else {
-                    evt = docCtx.newEvent(EventConstants.ES_INDEX_EVENT);
+                    asyncCommands.add(cmd);
                 }
 
-                evt.getContext().getProperties().put(
-                        EventConstants.ES_RECURSE_FLAG, cmd.isRecurse());
-
-                evtProducer.fireEvent(evt);
             }
         }
         getAllCommands().clear();
+
+        if (syncCommands.size()>0) {
+            fireSyncIndexing(session,syncCommands);
+        }
+        if (asyncCommands.size()>0) {
+            fireAsyncIndexing(session,asyncCommands);
+        }
     }
 
+
+    protected Map<String, Serializable> encodeAsMap(List<IndexingCommand> syncCommands) {
+        Map<String, Serializable> map = new HashMap<>();
+        for (IndexingCommand cmd : syncCommands) {
+            map.put("doc:" + cmd.getTargetDocument().getId(), cmd.getName());
+        }
+        return map;
+    }
+
+    protected abstract void fireSyncIndexing(CoreSession session, List<IndexingCommand> syncCommands) throws ClientException;
+
+    protected abstract void fireAsyncIndexing(CoreSession session, List<IndexingCommand> asyncCommands) throws ClientException;
 
 }

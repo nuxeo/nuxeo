@@ -1,11 +1,16 @@
 package org.nuxeo.elasticsearch.test.commands;
 
+import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -22,11 +27,32 @@ import org.nuxeo.elasticsearch.commands.IndexingCommandsStacker;
  */
 public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
-    Map<String, IndexingCommands> commands = new HashMap<String, IndexingCommands>();
+    protected Map<String, IndexingCommands> commands = new HashMap<String, IndexingCommands>();
+
+    protected Map<String, Serializable> flushedSyncCommands;
+    protected Map<String, Serializable> flushedAsyncCommands;
 
     @Override
     protected Map<String, IndexingCommands> getAllCommands() {
         return commands;
+    }
+
+    @Before
+    public void reset() {
+        flushedSyncCommands = new HashMap<>();
+        flushedAsyncCommands = new HashMap<>();
+    }
+
+    @Override
+    protected void fireSyncIndexing(CoreSession session,
+            List<IndexingCommand> syncCommands) throws ClientException {
+        flushedSyncCommands = encodeAsMap(syncCommands);
+    }
+
+    @Override
+    protected void fireAsyncIndexing(CoreSession session,
+            List<IndexingCommand> asyncCommands) throws ClientException {
+        flushedAsyncCommands = encodeAsMap(asyncCommands);
     }
 
     public final class MockDocumentModel extends DocumentModelImpl {
@@ -58,7 +84,7 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
     }
 
     @Test
-    public void shouldRemoveDuplicatedEvents() {
+    public void shouldRemoveDuplicatedEvents() throws Exception {
 
         DocumentModel doc1 = new MockDocumentModel("1");
         DocumentModel doc2 = new MockDocumentModel("2");
@@ -91,10 +117,15 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
         IndexingCommands ic3 = getCommands(doc3);
         Assert.assertEquals(0, ic3.getMergedCommands().size());
+
+        flushCommands(null);
+        Assert.assertEquals(0, flushedSyncCommands.size());
+        Assert.assertEquals(2, flushedAsyncCommands.size());
+
     }
 
     @Test
-    public void shouldMergeDuplicatedEventsAndSwitchToSync() {
+    public void shouldMergeDuplicatedEventsAndSwitchToSync() throws Exception {
 
         DocumentModel doc1 = new MockDocumentModel("1");
         DocumentModel doc2 = new MockDocumentModel("2");
@@ -121,10 +152,15 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
         Assert.assertEquals(IndexingCommand.INDEX,
                 ic2.getMergedCommands().get(0).getName());
         Assert.assertTrue(ic2.getMergedCommands().get(0).isSync());
+
+        flushCommands(null);
+        Assert.assertEquals(2, flushedSyncCommands.size());
+        Assert.assertEquals(0, flushedAsyncCommands.size());
+
     }
 
     @Test
-    public void shouldRecurseReindex() {
+    public void shouldRecurseReindex() throws Exception {
 
         DocumentModel doc1 = new MockDocumentModel("1", true);
         DocumentModel doc2 = new MockDocumentModel("2", true);
@@ -146,6 +182,10 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
         Assert.assertEquals(IndexingCommand.UPDATE_SECURITY,
                 ic2.getMergedCommands().get(0).getName());
         Assert.assertTrue(ic2.getMergedCommands().get(0).isRecurse());
+
+        flushCommands(null);
+        Assert.assertEquals(0, flushedSyncCommands.size());
+        Assert.assertEquals(2, flushedAsyncCommands.size());
 
     }
 

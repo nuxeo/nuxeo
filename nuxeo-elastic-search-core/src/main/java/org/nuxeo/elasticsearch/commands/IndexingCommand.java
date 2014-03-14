@@ -16,6 +16,8 @@
  */
 package org.nuxeo.elasticsearch.commands;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
+
 
 /**
  *
@@ -38,10 +40,13 @@ public class IndexingCommand {
 
     protected boolean recurse;
 
-    public IndexingCommand(String command, boolean sync, boolean recurse) {
+    protected final DocumentModel targetDocument;
+
+    protected IndexingCommand(DocumentModel targetDocument,String command, boolean sync, boolean recurse) {
         this.name=command;
         this.sync=sync;
         this.recurse=recurse;
+        this.targetDocument=targetDocument;
     }
 
     public void update(IndexingCommand other) {
@@ -63,5 +68,10 @@ public class IndexingCommand {
     public String getName() {
         return name;
     }
+
+    public DocumentModel getTargetDocument() {
+        return targetDocument;
+    }
+
 
 }

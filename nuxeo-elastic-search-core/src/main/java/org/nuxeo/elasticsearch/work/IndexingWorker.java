@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
+import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -37,6 +38,12 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
     public IndexingWorker(DocumentModel doc, boolean recurse) {
         super(doc);
         this.recurse = recurse;
+    }
+
+    public IndexingWorker(IndexingCommand cmd) {
+        super(cmd.getTargetDocument());
+        this.recurse = cmd.isRecurse();
+        // XXX handle indexing command itself
     }
 
     @Override

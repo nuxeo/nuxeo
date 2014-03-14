@@ -20,17 +20,25 @@ package org.nuxeo.elasticsearch.listener;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.SESSION_SAVED;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommands;
 import org.nuxeo.elasticsearch.commands.IndexingCommandsStacker;
+import org.nuxeo.elasticsearch.work.IndexingWorker;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Synchronous Event listener used to schedule a reindexing
@@ -38,8 +46,8 @@ import org.nuxeo.elasticsearch.commands.IndexingCommandsStacker;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  *
  */
-public class ElasticsearchInlineListener extends IndexingCommandsStacker implements
-        EventListener {
+public class ElasticsearchInlineListener extends IndexingCommandsStacker
+        implements EventListener {
 
     private static final Log log = LogFactory.getLog(ElasticsearchInlineListener.class);
 
@@ -93,6 +101,28 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker impleme
         }
 
         stackCommand(doc, eventId, sync);
+    }
+
+    protected void fireSyncIndexing(CoreSession session,
+            List<IndexingCommand> syncCommands) throws ClientException {
+
+        EventProducer evtProducer = Framework.getLocalService(EventProducer.class);
+
+        EventContextImpl context = new EventContextImpl(session,
+                session.getPrincipal());
+        context.getProperties().putAll(encodeAsMap(syncCommands));
+
+        Event indexingEvent = context.newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
+        evtProducer.fireEvent(indexingEvent);
 
     }
+
+    protected void fireAsyncIndexing(CoreSession session,
+            List<IndexingCommand> asyncCommands) throws ClientException {
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        for (IndexingCommand cmd : asyncCommands) {
+            wm.schedule(new IndexingWorker(cmd));
+        }
+    }
+
 }
