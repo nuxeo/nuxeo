@@ -97,7 +97,7 @@ public class SimpleElasticSearchServiceTest {
         searchResponse = ess.getClient().prepareSearch(ElasticSearchComponent.MAIN_IDX)
                 .setTypes("doc")
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(QueryBuilders.matchQuery("title", "TestMe"))
+                .setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe"))
                 .setFrom(0).setSize(60)
                 .execute()
                 .actionGet();
@@ -106,7 +106,7 @@ public class SimpleElasticSearchServiceTest {
         searchResponse = ess.getClient().prepareSearch(ElasticSearchComponent.MAIN_IDX)
                 .setTypes("doc")
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(QueryBuilders.matchQuery("properties.dc:title", "TestMe"))
+                .setQuery(QueryBuilders.matchQuery("dc:title", "TestMe"))
                 .setFrom(0).setSize(60)
                 .execute()
                 .actionGet();
