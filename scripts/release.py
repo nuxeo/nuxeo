@@ -780,7 +780,6 @@ Default tag message:\n
             raise ExitException(1,
                         "'command' must be a single argument: '%s'." % (args)
                         + " See usage with '-h'.")
-
         if ("command" in locals() and command == "perform"
             and os.path.isfile(Release.get_release_log(os.getcwd()))
             and options == parser.get_default_values()):
@@ -792,6 +791,9 @@ Default tag message:\n
         repo = Repository(os.getcwd(), options.remote_alias)
         system("git fetch %s" % (options.remote_alias))
         if "command" in locals():
+            if command == "onestep" and options.deploy:
+                parser.error("command 'onestep' and option 'deploy' are"
+                             " mutually exclusive")
             if command == "maintenance":
                 if options.tag == "auto":
                     options.tag = repo.get_current_version()[8:]
