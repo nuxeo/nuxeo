@@ -185,7 +185,7 @@ public class Locator {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 timeout, TimeUnit.MILLISECONDS).pollingEvery(
                 AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
-                TimeUnit.MILLISECONDS);
+                TimeUnit.MILLISECONDS).ignoring(StaleElementReferenceException.class);
         try {
             return wait.until(new Function<WebDriver, WebElement>() {
                 public WebElement apply(WebDriver driver) {

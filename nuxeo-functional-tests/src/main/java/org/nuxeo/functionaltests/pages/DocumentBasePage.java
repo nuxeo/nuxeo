@@ -22,7 +22,10 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.forms.AddToCollectionForm;
 import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
@@ -34,9 +37,13 @@ import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+
+import com.google.common.base.Function;
 
 /**
  * The nuxeo main document base page
@@ -105,6 +112,14 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(linkText = "Workflow")
     public WebElement workflowLink;
+
+    @Required
+    @FindBy(id = "nxw_userMenuActions_panel")
+    public WebElement userMenuActions;
+
+    @Required
+    @FindBy (linkText = "HOME")
+    public WebElement homePageLink;
 
     public DocumentBasePage(WebDriver driver) {
         super(driver);
@@ -246,4 +261,94 @@ public class DocumentBasePage extends AbstractPage {
         breadcrumbForm.findElement(By.linkText(documentTitle)).click();
         return asPage(DocumentBasePage.class);
     }
+
+
+    private static final String ADD_TO_COLLECTION_UPPER_ACTION_ID = "nxw_addToCollectioAction_form:nxw_documentActionsUpperButtons_addToCollectioAction_subview:nxw_documentActionsUpperButtons_addToCollectioAction_link";
+
+    private static final String ADD_ALL_TO_COLLECTION_ACTION_ID = "document_content_buttons:nxw_addSelectedToCollectionAction_form:nxw_cvButton_addSelectedToCollectionAction_subview:nxw_cvButton_addSelectedToCollectionAction_link";
+
+    @FindBy(id=ADD_TO_COLLECTION_UPPER_ACTION_ID)
+    private WebElement addToCollectionUpperAction;
+
+    @FindBy(id=ADD_ALL_TO_COLLECTION_ACTION_ID)
+    private WebElement addAllToCollectionAction;
+
+    /**
+     * @since 5.9.3
+     */
+    public AddToCollectionForm getAddToCollectionPopup() {
+        addToCollectionUpperAction.click();
+        Locator.waitUntilElementPresent(By.id("fancybox-content"));
+        return getWebFragment(
+                By.id("fancybox-content"),
+                AddToCollectionForm.class);
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public AddToCollectionForm getAddAllToCollectionPopup() {
+        Locator.waitUntilGivenFunctionIgnoring(
+                new Function<WebDriver, Boolean>() {
+                    public Boolean apply(WebDriver driver) {
+                        return StringUtils.isBlank(driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute(
+                                "disabled"));
+                    }
+                }, StaleElementReferenceException.class);
+        Locator.findElementWaitUntilEnabledAndClick(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID));
+        Locator.waitUntilElementPresent(By.id("fancybox-content"));
+        return getWebFragment(
+                By.id("fancybox-content"),
+                AddToCollectionForm.class);
+    }
+
+    public boolean isAddToCollectionUpperActionAvailable() {
+        try {
+            driver.findElement(By.id(ADD_TO_COLLECTION_UPPER_ACTION_ID));
+            return true;
+        } catch (final NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public void popupUserMenuActions() {
+        userMenuActions.findElement(By.id("nxw_userMenuActions_dropDownMenu")).click();
+        Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                return !userMenuActions.findElement(
+                        By.xpath("//ul[@class='actionSubList']")).getAttribute(
+                        "style").equals("display: none;");
+            }
+        }, StaleElementReferenceException.class);
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public DocumentBasePage swithToPersonalWorkspace() {
+        popupUserMenuActions();
+        driver.findElement(By.linkText("Personal Workspace")).click();
+        return asPage(DocumentBasePage.class);
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public DocumentBasePage swithToDocumentBase() {
+        popupUserMenuActions();
+        driver.findElement(By.linkText("Back to document base")).click();
+        return asPage(DocumentBasePage.class);
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public HomePage goToHomePage() {
+        homePageLink.click();
+        return asPage(HomePage.class);
+    }
+
 }

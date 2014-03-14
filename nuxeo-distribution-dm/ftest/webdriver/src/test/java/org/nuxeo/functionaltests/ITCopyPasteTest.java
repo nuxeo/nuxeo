@@ -118,7 +118,7 @@ public class ITCopyPasteTest extends AbstractTest {
 
         contentTabSubPage = documentBasePage.getContentTab();
 
-        contentTabSubPage.paste();
+        contentTabSubPage = contentTabSubPage.paste();
 
         List<WebElement> docs = contentTabSubPage.getChildDocumentRows();
 

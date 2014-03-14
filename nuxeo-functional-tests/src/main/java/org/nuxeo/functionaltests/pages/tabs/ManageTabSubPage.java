@@ -32,6 +32,9 @@ public class ManageTabSubPage extends DocumentBasePage {
             @FindBy(linkText = "Access rights") })
     WebElement accessRightsLink;
 
+    @FindBy(linkText = "Trash")
+    WebElement trashLink;
+
     public ManageTabSubPage(WebDriver driver) {
         super(driver);
     }
@@ -39,6 +42,11 @@ public class ManageTabSubPage extends DocumentBasePage {
     public AccessRightsSubPage getAccessRightsSubTab() {
         clickOnLinkIfNotSelected(accessRightsLink);
         return asPage(AccessRightsSubPage.class);
+    }
+
+    public TrashSubPage getTrashSubTab() {
+        clickOnLinkIfNotSelected(trashLink);
+        return asPage(TrashSubPage.class);
     }
 
 }

@@ -57,7 +57,7 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     private static final String CHECK_BOX_XPATH = "td/input[@type=\"checkbox\"]";
 
-    private static final String DOCUEMNT_TITLE_XPATH = "//span[@id[starts-with(.,'title_')]]";
+    private static final String DOCUEMNT_TITLE_XPATH = "td//span[@id[starts-with(.,'title_')]]";
 
     @Required
     @FindBy(id = "document_content")
@@ -141,8 +141,8 @@ public class ContentTabSubPage extends DocumentBasePage {
         alert.accept();
     }
 
-    public DocumentBasePage removeAllDocuments() {
-        DocumentBasePage page = asPage(DocumentBasePage.class);
+    public ContentTabSubPage removeAllDocuments() {
+        ContentTabSubPage page = asPage(ContentTabSubPage.class);
         By locator = By.xpath(SELECT_ALL_BUTTON_XPATH);
         if (!hasElement(locator)) {
             // no document to remove
@@ -279,7 +279,16 @@ public class ContentTabSubPage extends DocumentBasePage {
      *
      * @since 5.7.8
      */
-    public void paste() {
+    public ContentTabSubPage paste() {
         findElementWaitUntilEnabledAndClick(By.xpath(PAST_BUTTON_XPATH));
+        return asPage(ContentTabSubPage.class);
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public DocumentBasePage goToDocument(final int index) {
+        getChildDocumentRows().get(index).findElement(By.id("td[3]/div/a[1]")).click();
+        return asPage(DocumentBasePage.class);
     }
 }
