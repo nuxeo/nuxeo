@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/vocabulary"
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/target_platform_override"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
   <xs:element name="id" type="xs:string" />

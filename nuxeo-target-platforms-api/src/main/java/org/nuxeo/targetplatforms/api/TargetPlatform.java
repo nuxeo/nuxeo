@@ -33,6 +33,11 @@ public interface TargetPlatform extends Target, Comparable<TargetPlatform> {
     boolean isFastTrack();
 
     /**
+     * Returns true if given target information is available for trials.
+     */
+    boolean isTrial();
+
+    /**
      * Return the list of ids of packages available on this target platform.
      */
     List<String> getAvailablePackagesIds();

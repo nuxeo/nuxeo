@@ -169,6 +169,7 @@ public class TestTargetPlatformService {
         assertFalse(tp.isDeprecated());
         assertTrue(tp.isEnabled());
         assertFalse(tp.isFastTrack());
+        assertTrue(tp.isTrial());
         assertFalse(tp.isRestricted());
 
         assertTrue(tp.isAfterVersion(""));
@@ -218,6 +219,7 @@ public class TestTargetPlatformService {
         assertFalse(tp.isDeprecated());
         assertTrue(tp.isEnabled());
         assertFalse(tp.isFastTrack());
+        assertFalse(tp.isTrial());
         assertFalse(tp.isRestricted());
 
         // check fast track
@@ -254,6 +256,7 @@ public class TestTargetPlatformService {
         assertFalse(tp.isDeprecated());
         assertTrue(tp.isEnabled());
         assertTrue(tp.isFastTrack());
+        assertTrue(tp.isTrial());
         assertFalse(tp.isRestricted());
 
         // other use cases
@@ -386,6 +389,7 @@ public class TestTargetPlatformService {
         assertFalse(tp.isDeprecated());
         assertTrue(tp.isEnabled());
         assertFalse(tp.isRestricted());
+        assertTrue(tp.isTrial());
     }
 
     @Test

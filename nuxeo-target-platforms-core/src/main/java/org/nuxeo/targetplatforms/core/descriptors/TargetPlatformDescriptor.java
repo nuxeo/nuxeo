@@ -34,6 +34,9 @@ public class TargetPlatformDescriptor extends TargetDescriptor {
     @XNode("fastTrack")
     Boolean fastTrack;
 
+    @XNode("trial")
+    Boolean trial;
+
     @XNodeList(value = "testVersions/version", type = ArrayList.class, componentType = String.class)
     List<String> testVersions;
 
@@ -43,6 +46,14 @@ public class TargetPlatformDescriptor extends TargetDescriptor {
 
     public boolean isFastTrack() {
         return Boolean.TRUE.equals(fastTrack);
+    }
+
+    public boolean isTrialSet() {
+        return trial != null;
+    }
+
+    public boolean isTrial() {
+        return Boolean.TRUE.equals(trial);
     }
 
     public List<String> getTestVersions() {
@@ -59,6 +70,7 @@ public class TargetPlatformDescriptor extends TargetDescriptor {
     protected void doClone(TargetPlatformDescriptor clone) {
         super.doClone(clone);
         clone.fastTrack = fastTrack;
+        clone.trial = trial;
         if (testVersions != null) {
             clone.testVersions = new ArrayList<>(testVersions);
         }

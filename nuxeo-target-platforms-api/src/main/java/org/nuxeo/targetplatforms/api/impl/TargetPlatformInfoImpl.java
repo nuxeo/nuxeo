@@ -26,7 +26,6 @@ import java.util.Map;
 import org.nuxeo.targetplatforms.api.TargetPackageInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatformInfo;
 
-
 /**
  * Describe a target platform: name, version
  *
@@ -39,6 +38,8 @@ public class TargetPlatformInfoImpl extends TargetInfoImpl implements
     private static final long serialVersionUID = 1L;
 
     protected boolean fastTrack = false;
+
+    protected boolean trial = false;
 
     protected Map<String, TargetPackageInfo> availablePackagesInfo;
 
@@ -96,6 +97,14 @@ public class TargetPlatformInfoImpl extends TargetInfoImpl implements
 
     public void setFastTrack(boolean fastTrack) {
         this.fastTrack = fastTrack;
+    }
+
+    public boolean isTrial() {
+        return trial;
+    }
+
+    public void setTrial(boolean trial) {
+        this.trial = trial;
     }
 
     @Override

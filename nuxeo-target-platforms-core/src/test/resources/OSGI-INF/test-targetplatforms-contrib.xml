@@ -51,6 +51,7 @@
       <version>5.8</version>
       <label>Nuxeo Platform</label>
       <status>supported</status>
+      <trial>true</trial>
       <description>
         This target platform is the last LTS.
       </description>
@@ -77,6 +78,7 @@
       <version>5.9.2</version>
       <status>new</status>
       <fastTrack>true</fastTrack>
+      <trial>true</trial>
       <downloadLink>
         http://community.nuxeo.com/static/releases/nuxeo-5.9.2/nuxeo-cap-5.9.2-tomcat.zip
       </downloadLink>

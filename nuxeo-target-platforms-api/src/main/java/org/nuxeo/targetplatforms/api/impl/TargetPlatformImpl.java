@@ -25,7 +25,6 @@ import java.util.Map;
 import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPlatform;
 
-
 /**
  * @since 5.7.1
  */
@@ -35,7 +34,9 @@ public class TargetPlatformImpl extends TargetImpl implements TargetPlatform {
 
     protected TargetPlatform parent;
 
-    protected boolean isFastTrack;
+    protected boolean fastTrack = false;
+
+    protected boolean trial = false;
 
     protected Map<String, TargetPackage> availablePackages;
 
@@ -56,11 +57,11 @@ public class TargetPlatformImpl extends TargetImpl implements TargetPlatform {
 
     @Override
     public boolean isFastTrack() {
-        return isFastTrack;
+        return fastTrack;
     }
 
-    public void setFastTrack(boolean isFastTrack) {
-        this.isFastTrack = isFastTrack;
+    public void setFastTrack(boolean fastTrack) {
+        this.fastTrack = fastTrack;
     }
 
     @Override
@@ -119,6 +120,14 @@ public class TargetPlatformImpl extends TargetImpl implements TargetPlatform {
             // dereference
             this.testVersions = new ArrayList<>(testVersions);
         }
+    }
+
+    public boolean isTrial() {
+        return trial;
+    }
+
+    public void setTrial(boolean trial) {
+        this.trial = trial;
     }
 
     @Override

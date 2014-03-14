@@ -186,6 +186,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         tp.setEnabled(desc.isEnabled());
         tp.setEndOfAvailability(toCalendar(desc.getEndOfAvailability()));
         tp.setFastTrack(desc.isFastTrack());
+        tp.setTrial(desc.isTrial());
         tp.setParent(getTargetPlatform(desc.getParent()));
         tp.setRefVersion(desc.getRefVersion());
         tp.setReleaseDate(toCalendar(desc.getReleaseDate()));
@@ -285,6 +286,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         tpi.setDescription(desc.getDescription());
         tpi.setStatus(desc.getStatus());
         tpi.setEnabled(desc.isEnabled());
+        tpi.setFastTrack(desc.isFastTrack());
         tpi.setReleaseDate(toCalendar(desc.getReleaseDate()));
         tpi.setRestricted(desc.isRestricted());
         tpi.setEndOfAvailability(toCalendar(desc.getEndOfAvailability()));
@@ -292,6 +294,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         tpi.setDeprecated(desc.isDeprecated());
         tpi.setAvailablePackagesInfo(getTargetPackagesInfo(id));
         tpi.setTypes(desc.getTypes());
+        tpi.setTrial(desc.isTrial());
 
         DocumentModel entry = getDirectoryEntry(id);
         if (entry != null) {
