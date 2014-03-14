@@ -22,14 +22,18 @@ import optparse
 import os
 import sys
 
-from scripts.nxutils import ExitException, Repository, log
+from scripts.nxutils import ExitException, Repository, log, DEFAULT_MP_CONF_URL
+from scripts.IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
+from scripts.terminalsize import get_terminal_size
 
 
 def main():
     try:
         usage = "usage: %prog [options] [version|branch|tag]"
+        help_formatter = IndentedHelpFormatterWithNL(
+                                                width=get_terminal_size()[0])
         parser = optparse.OptionParser(usage=usage, description="""Clone or
-update Nuxeo source code.""")
+update Nuxeo source code.""", formatter=help_formatter)
         parser.add_option('-r', action="store", type="string",
                           dest='remote_alias', default='origin', help="""the
 Git alias of remote URL (default: %default)""")
@@ -47,7 +51,8 @@ virtual drive on Windows""")
         parser.add_option('-m', "--marketplace-conf", action="store",
                           type="string", dest='marketplace_conf', default=None,
                           help="""The Marketplace configuration URL
-(default: %default)""")
+(default: None)\n
+If set to '' (empty string), it defaults to '%s'""" % (DEFAULT_MP_CONF_URL))
 
         (options, args) = parser.parse_args()
         repo = Repository(os.getcwd(), options.remote_alias,

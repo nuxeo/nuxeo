@@ -32,6 +32,8 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 
 SUPPORTED_GIT_ONLINE_URLS = "http://", "https://", "git://", "git@"
+DEFAULT_MP_CONF_URL = ("https://raw.github.com/nuxeo/"
+                       "integration-scripts/master/marketplace.ini")
 
 
 class ExitException(Exception):
@@ -286,6 +288,7 @@ class Repository(object):
             # Main modules
             self.eval_modules()
             for module in self.modules:
+                break
                 # Ignore modules which are not Git sub-repositories
                 if (not os.path.isdir(module) or
                 os.path.isdir(os.path.join(module, ".git"))):
@@ -298,11 +301,14 @@ class Repository(object):
                                                             "addons/module")
             for addon in self.addons + (self.optional_addons
                                         if with_optionals else []):
+                break
                 self.git_pull(addon, version, fallback_branch)
             if not self.is_online:
                 self.url_pattern = self.url_pattern.replace("addons/module",
                                                             "module")
             # Marketplace packages
+            if marketplace_conf == '':
+                marketplace_conf = DEFAULT_MP_CONF_URL
             if marketplace_conf:
                 self.clone_mp(marketplace_conf)
             os.chdir(cwd)
