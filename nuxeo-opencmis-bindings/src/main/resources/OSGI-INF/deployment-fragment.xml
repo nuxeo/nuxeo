@@ -15,7 +15,7 @@
     <servlet>
       <servlet-name>atomcmis</servlet-name>
       <servlet-class>
-        org.apache.chemistry.opencmis.server.impl.atompub.CmisAtomPubServlet
+        org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisAtomPubServlet
       </servlet-class>
       <init-param>
         <param-name>callContextHandler</param-name>
@@ -50,7 +50,7 @@
     <servlet>
       <servlet-name>jsoncmis</servlet-name>
       <servlet-class>
-        org.apache.chemistry.opencmis.server.impl.browser.CmisBrowserBindingServlet
+        org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisBrowserBindingServlet
       </servlet-class>
       <init-param>
         <param-name>callContextHandler</param-name>
