@@ -42,7 +42,7 @@ public class ElasticsearchIndexingListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(ElasticsearchIndexingListener.class);
 
-    public static final String DISABLE_AUTO_INDEXING = "disableAutoIndexing";
+    
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -61,7 +61,7 @@ public class ElasticsearchIndexingListener implements EventListener {
             return;
         }
         Boolean block = (Boolean) event.getContext().getProperty(
-                DISABLE_AUTO_INDEXING);
+                EventConstants.DISABLE_AUTO_INDEXING);
         if (block != null && block) {
             // ignore the event - we are blocked by the caller
             log.debug("Skip indexing for doc " + docCtx.getSourceDocument());

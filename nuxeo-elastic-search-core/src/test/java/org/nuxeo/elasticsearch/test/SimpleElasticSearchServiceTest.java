@@ -32,6 +32,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.listener.ElasticsearchIndexingListener;
+import org.nuxeo.elasticsearch.listener.EventConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -72,7 +73,7 @@ public class SimpleElasticSearchServiceTest {
 
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:title", "TestMe");
-        doc.putContextData(ElasticsearchIndexingListener.DISABLE_AUTO_INDEXING,
+        doc.putContextData(EventConstants.DISABLE_AUTO_INDEXING,
                 Boolean.TRUE);
         doc = session.createDocument(doc);
         session.save();
