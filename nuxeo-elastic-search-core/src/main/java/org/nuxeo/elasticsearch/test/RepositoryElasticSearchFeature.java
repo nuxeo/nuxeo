@@ -35,13 +35,14 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  *
  */
 @Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.automation.io",
-        "org.nuxeo.elasticsearch.core" })
+        "org.nuxeo.elasticsearch.core", "org.nuxeo.ecm.platform.query.api" })
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 public class RepositoryElasticSearchFeature extends SimpleFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
+        // Use derby because H2 comes with an old lucene dep which conflict with ES
         DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
     }
 

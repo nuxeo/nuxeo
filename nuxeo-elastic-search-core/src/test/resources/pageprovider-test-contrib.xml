@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.elasticsearch.provider.testContrib">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <genericPageProvider name="NATIVE_ES_PP_1"
+      class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
+      <!--  pattern>
+        ecm\:path.children:"/default-domain/workspaces" AND
+        ecm\:acl:(nuxeo administrators everyone members) AND
+        ecm\:isversion:F AND
+        NOT ecm\:lifecyclestate:deleted AND
+        ecm\:primarytype:(Picture File Folder Note Workspace, JenkinsReport BlogPost WebPage Video PictureBook) AND
+        ecm\:primarytype:("SectionRoot" "Workspace" "RelationSearch" "BlogSite" "ManagementRoot" "Tag" "AdministrativeStatusContainer" "search_results" "Thread" "Space" "TemplateRoot" "Domain" "UserSettings" "WorkspaceRoot" "Comment" "QueryNav" "TaskList" "WebPage" "Vcard" "WCOpenSocial" "TaskLists" "MailMessage" "Forum" "ContextualLink" "PictureBook" "DefaultSettings" "NavigationSettings" "Unit" "WCHtml" "Post" "AdministrativeStatus" "Picture" "UserWorkspacesRoot" "Document" "Folder" "FacetedSearch" "WCPicture" "File" "WebSite" "FacetedSearchDefault" "AdvancedSearch" "Gadget" "Note" "HiddenFolder" "Section" "Edito" "MailFolder" "OrderedFolder" "Adeolink" "CommentRoot" "BasicAuditSearch" "BlogPost")
+     </pattern -->
+     <pattern>ecm\:primarytype:("File" "Workspace")</pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </genericPageProvider>
+
+  </extension>
+
+</component>
