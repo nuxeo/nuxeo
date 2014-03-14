@@ -1,5 +1,4 @@
 
-
 ## About nuxeo-platform-login-openid
 
 This module contribute a new Login Plugin that can use OpenId to authenticate the user.
@@ -12,7 +11,7 @@ You must first declare your Nuxeo Web Application to Google so that you can get 
 
 For that, go to https://code.google.com/apis/console > API Access > Create > Web Application
 
-Once you have the clientId/clientSecret, create `nxserver/config/openid-config.xml`
+Once you have the clientId/clientSecret, and the accepted redirect url (like http://demo.nuxeo.com/nuxeo/nxstartup.faces?provider=GoogleOpenIDConnect&forceAnonymousLogin=true) create `nxserver/config/openid-config.xml`
 
     <?xml version="1.0"?>
     <component name="org.nuxeo.ecm.platform.oauth2.openid.google.testing" version="1.0">
