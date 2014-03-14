@@ -44,7 +44,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
+import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -166,7 +166,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             XContentBuilder builder = jsonBuilder();
 
             JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
-            JsonDocumentWriter.writeDocument(jsonGen, doc, doc.getSchemas(),
+            JsonESDocumentWriter.writeESDocument(jsonGen, doc, doc.getSchemas(),
                     null);
             IndexResponse response = getClient().prepareIndex(MAIN_IDX,
                     NX_DOCUMENT, doc.getId()).setSource(builder).execute().actionGet();
