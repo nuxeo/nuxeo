@@ -73,7 +73,7 @@ public abstract class IndexingCommandsStacker {
         } else if (DOCUMENT_MOVED.equals(eventId)) {
             cmds.add(IndexingCommand.UPDATE, sync, doc.isFolder());
         } else if (DOCUMENT_SECURITY_UPDATED.equals(eventId)) {
-            cmds.add(IndexingCommand.UPDATE, sync, doc.isFolder());
+            cmds.add(IndexingCommand.UPDATE_SECURITY, sync, doc.isFolder());
         } else if (DOCUMENT_REMOVED.equals(eventId)) {
             cmds.add(IndexingCommand.DELETE, sync, doc.isFolder());
         }

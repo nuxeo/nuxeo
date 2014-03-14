@@ -60,6 +60,8 @@ public class IndexingCommand {
         return recurse;
     }
 
-
+    public String getName() {
+        return name;
+    }
 
 }
