@@ -4,6 +4,7 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
   <xs:element name="id" type="xs:string" />
+  <xs:element name="deprecated" type="xs:integer" default="-1" />
   <xs:element name="enabled" type="xs:integer" default="-1" />
   <xs:element name="restricted" type="xs:integer" default="-1" />
 

@@ -209,6 +209,12 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
             if (restricted != null && restricted.intValue() >= 0) {
                 tp.setRestricted(restricted.intValue() == 0 ? false : true);
             }
+            Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
+                    DirectoryUpdater.DEPRECATED_PROP);
+            if (deprecated != null && deprecated.intValue() >= 0) {
+                tp.setDeprecated(deprecated.intValue() == 0 ? false : true);
+            }
+            tp.setOverridden(true);
         }
 
         return tp;
@@ -299,6 +305,12 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
             if (restricted != null && restricted.intValue() >= 0) {
                 tpi.setRestricted(restricted.intValue() == 0 ? false : true);
             }
+            Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
+                    DirectoryUpdater.DEPRECATED_PROP);
+            if (deprecated != null && deprecated.intValue() >= 0) {
+                tpi.setDeprecated(deprecated.intValue() == 0 ? false : true);
+            }
+            tpi.setOverridden(true);
         }
 
         return tpi;
@@ -385,14 +397,20 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         if (entry != null) {
             Long enabled = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
                     DirectoryUpdater.ENABLED_PROP);
-            if (enabled != null && enabled.intValue() > 0) {
+            if (enabled != null && enabled.intValue() >= 0) {
                 tpi.setEnabled(enabled.intValue() == 0 ? false : true);
             }
             Long restricted = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
                     DirectoryUpdater.RESTRICTED_PROP);
-            if (restricted != null && restricted.intValue() > 0) {
+            if (restricted != null && restricted.intValue() >= 0) {
                 tpi.setRestricted(restricted.intValue() == 0 ? false : true);
             }
+            Long deprecated = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
+                    DirectoryUpdater.DEPRECATED_PROP);
+            if (deprecated != null && deprecated.intValue() >= 0) {
+                tpi.setDeprecated(deprecated.intValue() == 0 ? false : true);
+            }
+            tpi.setOverridden(true);
         }
 
         if (packages != null) {
@@ -412,17 +430,18 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
 
     @Override
     public List<TargetPlatform> getAvailableTargetPlatforms(
-            boolean filterDeprecated, boolean filterRestricted, String type)
-            throws ClientException {
+            boolean filterDisabled, boolean filterRestricted,
+            boolean filterDeprecated, String type) throws ClientException {
         List<TargetPlatform> tps = new ArrayList<>();
         for (TargetPlatformDescriptor desc : platforms.getTargetPlatforms()) {
             TargetPlatform tp = getTargetPlatform(desc);
             if (tp == null) {
                 continue;
             }
-            if (!tp.isEnabled() || (filterDeprecated && tp.isDeprecated())
+            if ((filterDisabled && !tp.isEnabled())
+                    || (filterDeprecated && tp.isDeprecated())
                     || (filterRestricted && tp.isRestricted())
-                    || (type != null && !tp.matchesType(type))) {
+                    || (!StringUtils.isBlank(type) && !tp.matchesType(type))) {
                 continue;
             }
             if (tp != null) {
@@ -434,17 +453,18 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
 
     @Override
     public List<TargetPlatformInfo> getAvailableTargetPlatformsInfo(
-            boolean filterDeprecated, boolean filterRestricted, String type)
-            throws ClientException {
+            boolean filterDisabled, boolean filterRestricted,
+            boolean filterDeprecated, String type) throws ClientException {
         List<TargetPlatformInfo> tps = new ArrayList<>();
         for (TargetPlatformDescriptor desc : platforms.getTargetPlatforms()) {
             TargetPlatformInfo tp = getTargetPlatformInfo(desc);
             if (tp == null) {
                 continue;
             }
-            if (!tp.isEnabled() || (filterDeprecated && tp.isDeprecated())
+            if ((filterDisabled && !tp.isEnabled())
+                    || (filterDeprecated && tp.isDeprecated())
                     || (filterRestricted && tp.isRestricted())
-                    || (type != null && !tp.matchesType(type))) {
+                    || (!StringUtils.isBlank(type) && !tp.matchesType(type))) {
                 continue;
             }
             if (tp != null) {
@@ -455,100 +475,41 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     }
 
     @Override
+    public void deprecateTargetPlatform(final String id) throws ClientException {
+        updateOrCreateEntry(id, DirectoryUpdater.DEPRECATED_PROP,
+                Integer.valueOf(1));
+    }
+
+    @Override
+    public void undeprecateTargetPlatform(final String id)
+            throws ClientException {
+        updateOrCreateEntry(id, DirectoryUpdater.DEPRECATED_PROP,
+                Integer.valueOf(0));
+    }
+
+    @Override
     public void enableTargetPlatform(final String id) throws ClientException {
-        new DirectoryUpdater(getOverrideDirectory()) {
-            @Override
-            public void run(DirectoryService service, Session session)
-                    throws ClientException {
-                DocumentModel doc = session.getEntry(id);
-                if (doc != null) {
-                    doc.setProperty(DirectoryUpdater.SCHEMA,
-                            DirectoryUpdater.ENABLED_PROP, Integer.valueOf(1));
-                    session.updateEntry(doc);
-                } else {
-                    DocumentModel entry = BaseSession.createEntryModel(null,
-                            DirectoryUpdater.SCHEMA, null, null);
-                    entry.setProperty(DirectoryUpdater.SCHEMA,
-                            DirectoryUpdater.ENABLED_PROP, Integer.valueOf(1));
-                    entry.setProperty(DirectoryUpdater.SCHEMA, "id", id);
-                    session.createEntry(entry);
-                }
-            }
-        }.run();
+        updateOrCreateEntry(id, DirectoryUpdater.ENABLED_PROP,
+                Integer.valueOf(1));
     }
 
     @Override
     public void disableTargetPlatform(final String id) throws ClientException {
-        new DirectoryUpdater(getOverrideDirectory()) {
-            @Override
-            public void run(DirectoryService service, Session session)
-                    throws ClientException {
-                DocumentModel doc = session.getEntry(id);
-                if (doc != null) {
-                    doc.setProperty(DirectoryUpdater.SCHEMA,
-                            DirectoryUpdater.ENABLED_PROP, Integer.valueOf(0));
-                    session.updateEntry(doc);
-                } else {
-                    DocumentModel entry = BaseSession.createEntryModel(null,
-                            DirectoryUpdater.SCHEMA, null, null);
-                    entry.setProperty(DirectoryUpdater.SCHEMA,
-                            DirectoryUpdater.ENABLED_PROP, Integer.valueOf(0));
-                    entry.setProperty(DirectoryUpdater.SCHEMA, "id", id);
-                    session.createEntry(entry);
-                }
-            }
-        }.run();
+        updateOrCreateEntry(id, DirectoryUpdater.ENABLED_PROP,
+                Integer.valueOf(0));
     }
 
     @Override
     public void restrictTargetPlatform(final String id) throws ClientException {
-        new DirectoryUpdater(getOverrideDirectory()) {
-            @Override
-            public void run(DirectoryService service, Session session)
-                    throws ClientException {
-                DocumentModel doc = session.getEntry(id);
-                if (doc != null) {
-                    doc.setProperty(DirectoryUpdater.SCHEMA,
-                            DirectoryUpdater.RESTRICTED_PROP,
-                            Integer.valueOf(1));
-                    session.updateEntry(doc);
-                } else {
-                    DocumentModel entry = BaseSession.createEntryModel(null,
-                            DirectoryUpdater.SCHEMA, null, null);
-                    entry.setProperty(DirectoryUpdater.SCHEMA,
-                            DirectoryUpdater.RESTRICTED_PROP,
-                            Integer.valueOf(1));
-                    entry.setProperty(DirectoryUpdater.SCHEMA, "id", id);
-                    session.createEntry(entry);
-                }
-            }
-        }.run();
+        updateOrCreateEntry(id, DirectoryUpdater.RESTRICTED_PROP,
+                Integer.valueOf(1));
     }
 
     @Override
     public void unrestrictTargetPlatform(final String id)
             throws ClientException {
-        new DirectoryUpdater(getOverrideDirectory()) {
-            @Override
-            public void run(DirectoryService service, Session session)
-                    throws ClientException {
-                DocumentModel doc = session.getEntry(id);
-                if (doc != null) {
-                    doc.setProperty(DirectoryUpdater.SCHEMA,
-                            DirectoryUpdater.RESTRICTED_PROP,
-                            Integer.valueOf(0));
-                    session.updateEntry(doc);
-                } else {
-                    DocumentModel entry = BaseSession.createEntryModel(null,
-                            DirectoryUpdater.SCHEMA, null, null);
-                    entry.setProperty(DirectoryUpdater.SCHEMA,
-                            DirectoryUpdater.RESTRICTED_PROP,
-                            Integer.valueOf(0));
-                    entry.setProperty(DirectoryUpdater.SCHEMA, "id", id);
-                    session.createEntry(entry);
-                }
-            }
-        }.run();
+        updateOrCreateEntry(id, DirectoryUpdater.RESTRICTED_PROP,
+                Integer.valueOf(0));
     }
 
     @Override
@@ -558,6 +519,40 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
             public void run(DirectoryService service, Session session)
                     throws ClientException {
                 session.deleteEntry(id);
+            }
+        }.run();
+    }
+
+    @Override
+    public void restoreAllTargetPlatforms() throws ClientException {
+        new DirectoryUpdater(getOverrideDirectory()) {
+            @Override
+            public void run(DirectoryService service, Session session)
+                    throws ClientException {
+                for (DocumentModel entry : session.getEntries()) {
+                    session.deleteEntry(entry.getId());
+                }
+            }
+        }.run();
+    }
+
+    protected void updateOrCreateEntry(final String id, final String prop,
+            final Integer value) throws ClientException {
+        new DirectoryUpdater(getOverrideDirectory()) {
+            @Override
+            public void run(DirectoryService service, Session session)
+                    throws ClientException {
+                DocumentModel doc = session.getEntry(id);
+                if (doc != null) {
+                    doc.setProperty(DirectoryUpdater.SCHEMA, prop, value);
+                    session.updateEntry(doc);
+                } else {
+                    DocumentModel entry = BaseSession.createEntryModel(null,
+                            DirectoryUpdater.SCHEMA, null, null);
+                    entry.setProperty(DirectoryUpdater.SCHEMA, prop, value);
+                    entry.setProperty(DirectoryUpdater.SCHEMA, "id", id);
+                    session.createEntry(entry);
+                }
             }
         }.run();
     }

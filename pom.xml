@@ -17,6 +17,8 @@
   <modules>
     <module>nuxeo-target-platforms-api</module>
     <module>nuxeo-target-platforms-core</module>
+    <module>nuxeo-target-platforms-jsf</module>
+    <module>nuxeo-target-platforms-sample</module>
   </modules>
 
   <dependencyManagement>

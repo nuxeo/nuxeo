@@ -83,6 +83,12 @@ public interface TargetInfo extends Serializable {
     boolean isDeprecated();
 
     /**
+     * Returns true if given target information is overridden by directory
+     * information.
+     */
+    boolean isOverridden();
+
+    /**
      * Returns this target release date.
      */
     Calendar getReleaseDate();

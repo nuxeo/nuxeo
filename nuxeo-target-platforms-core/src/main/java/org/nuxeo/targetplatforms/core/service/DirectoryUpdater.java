@@ -33,6 +33,8 @@ public abstract class DirectoryUpdater {
 
     public static final String SCHEMA = "target_platform_override";
 
+    public static final String DEPRECATED_PROP = "deprecated";
+
     public static final String ENABLED_PROP = "enabled";
 
     public static final String RESTRICTED_PROP = "restricted";

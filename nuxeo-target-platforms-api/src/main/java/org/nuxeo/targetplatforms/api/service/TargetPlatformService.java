@@ -74,22 +74,35 @@ public interface TargetPlatformService {
     /**
      * Returns all target platforms matching given criteria.
      *
-     * @param filterDeprecated true if deprecated target platforms should be
-     *            filtered from the resulting list.
      * @param filterRestricted true if restricted target platforms should be
+     *            filtered from the resulting list.
+     * @param filterDeprecated true if deprecated target platforms should be
      *            filtered from the resulting list.
      * @param type null if no filtering should be done, otherwise filters all
      *            target platforms that would not hold this type.
      */
-    List<TargetPlatform> getAvailableTargetPlatforms(boolean filterDeprecated,
-            boolean filterRestricted, String type) throws ClientException;
+    List<TargetPlatform> getAvailableTargetPlatforms(boolean filterDisabled,
+            boolean filterRestricted, boolean filterDeprecated, String type)
+            throws ClientException;
 
     /**
      * Returns all target platforms info matching given criteria.
      */
     List<TargetPlatformInfo> getAvailableTargetPlatformsInfo(
-            boolean filterDeprecated, boolean filterRestricted, String type)
-            throws ClientException;
+            boolean filterDisabled, boolean filterRestricted,
+            boolean filterDeprecated, String type) throws ClientException;
+
+    /**
+     * Deprecates the target platform, overriding the default value from
+     * extension points and adding an entry in the override directory.
+     */
+    void deprecateTargetPlatform(String id) throws ClientException;
+
+    /**
+     * Undeprecates the target platform, overriding the default value from
+     * extension points and adding an entry in the override directory.
+     */
+    void undeprecateTargetPlatform(String id) throws ClientException;
 
     /**
      * Enables the target platform, overriding the default value from extension
@@ -119,5 +132,10 @@ public interface TargetPlatformService {
      * Removes overrides for this target platform.
      */
     void restoreTargetPlatform(String id) throws ClientException;
+
+    /**
+     * Removes overrides for all target platform.
+     */
+    void restoreAllTargetPlatforms() throws ClientException;
 
 }

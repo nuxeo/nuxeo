@@ -56,6 +56,8 @@ public class TargetInfoImpl implements TargetInfo {
 
     protected boolean deprecated = false;
 
+    protected boolean overridden = false;
+
     protected List<String> types;
 
     // needed by GWT serialization
@@ -186,6 +188,14 @@ public class TargetInfoImpl implements TargetInfo {
 
     public void setDeprecated(boolean deprecated) {
         this.deprecated = deprecated;
+    }
+
+    public boolean isOverridden() {
+        return overridden;
+    }
+
+    public void setOverridden(boolean overridden) {
+        this.overridden = overridden;
     }
 
     @Override

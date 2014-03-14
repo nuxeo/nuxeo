@@ -270,42 +270,96 @@ public class TestTargetPlatformService {
         assertNotNull(tp);
         assertTrue(tp.isEnabled());
         assertFalse(tp.isRestricted());
+        assertFalse(tp.isDeprecated());
+        assertFalse(tp.isOverridden());
 
         // disable
         service.disableTargetPlatform(id);
         tp = service.getTargetPlatform(id);
+        assertTrue(tp.isOverridden());
         assertFalse(tp.isEnabled());
         assertFalse(tp.isRestricted());
+        assertFalse(tp.isDeprecated());
 
         // enable again
         service.enableTargetPlatform(id);
         tp = service.getTargetPlatform(id);
+        assertTrue(tp.isOverridden());
         assertTrue(tp.isEnabled());
         assertFalse(tp.isRestricted());
+        assertFalse(tp.isDeprecated());
 
         // restrict
         service.restrictTargetPlatform(id);
         tp = service.getTargetPlatform(id);
+        assertTrue(tp.isOverridden());
         assertTrue(tp.isEnabled());
         assertTrue(tp.isRestricted());
+        assertFalse(tp.isDeprecated());
 
         // unrestrict
         service.unrestrictTargetPlatform(id);
         tp = service.getTargetPlatform(id);
+        assertTrue(tp.isOverridden());
         assertTrue(tp.isEnabled());
         assertFalse(tp.isRestricted());
+        assertFalse(tp.isDeprecated());
+
+        // deprecated
+        service.deprecateTargetPlatform(id);
+        tp = service.getTargetPlatform(id);
+        assertTrue(tp.isOverridden());
+        assertTrue(tp.isEnabled());
+        assertFalse(tp.isRestricted());
+        assertTrue(tp.isDeprecated());
+
+        // undeprecate
+        service.undeprecateTargetPlatform(id);
+        tp = service.getTargetPlatform(id);
+        assertTrue(tp.isOverridden());
+        assertTrue(tp.isEnabled());
+        assertFalse(tp.isRestricted());
+        assertFalse(tp.isDeprecated());
 
         // disable again
         service.disableTargetPlatform(id);
         tp = service.getTargetPlatform(id);
+        assertTrue(tp.isOverridden());
         assertFalse(tp.isEnabled());
         assertFalse(tp.isRestricted());
+        assertFalse(tp.isDeprecated());
 
         // restore
         service.restoreTargetPlatform(id);
         tp = service.getTargetPlatform(id);
+        assertFalse(tp.isOverridden());
         assertTrue(tp.isEnabled());
         assertFalse(tp.isRestricted());
+        assertFalse(tp.isDeprecated());
+
+        // test restore all
+        tp = service.getTargetPlatform("cap-5.8");
+        assertTrue(tp.isEnabled());
+        assertFalse(tp.isOverridden());
+        tp = service.getTargetPlatform("cap-5.9.2");
+        assertTrue(tp.isEnabled());
+        assertFalse(tp.isOverridden());
+        service.disableTargetPlatform("cap-5.8");
+        service.disableTargetPlatform("cap-5.9.2");
+        tp = service.getTargetPlatform("cap-5.8");
+        assertFalse(tp.isEnabled());
+        assertTrue(tp.isOverridden());
+        tp = service.getTargetPlatform("cap-5.9.2");
+        assertFalse(tp.isEnabled());
+        assertTrue(tp.isOverridden());
+
+        service.restoreAllTargetPlatforms();
+        tp = service.getTargetPlatform("cap-5.8");
+        assertFalse(tp.isOverridden());
+        assertTrue(tp.isEnabled());
+        tp = service.getTargetPlatform("cap-5.9.2");
+        assertTrue(tp.isEnabled());
+        assertFalse(tp.isOverridden());
     }
 
     @Test
@@ -467,7 +521,7 @@ public class TestTargetPlatformService {
     public void testGetAvailableTargetPlatforms() throws ClientException {
         // filter all
         List<TargetPlatform> tps = service.getAvailableTargetPlatforms(true,
-                true, null);
+                true, true, null);
         Collections.sort(tps);
         assertEquals(4, tps.size());
         // order is registration order
@@ -477,7 +531,7 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(3).getId());
 
         // filter deprecated
-        tps = service.getAvailableTargetPlatforms(true, true, null);
+        tps = service.getAvailableTargetPlatforms(true, true, true, null);
         Collections.sort(tps);
         assertEquals(4, tps.size());
         // order is registration order
@@ -487,7 +541,7 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(3).getId());
 
         // filter restricted
-        tps = service.getAvailableTargetPlatforms(true, false, null);
+        tps = service.getAvailableTargetPlatforms(true, false, true, null);
         Collections.sort(tps);
         assertEquals(5, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -497,7 +551,7 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(4).getId());
 
         // filter on type
-        tps = service.getAvailableTargetPlatforms(false, false, "CMF");
+        tps = service.getAvailableTargetPlatforms(true, false, false, "CMF");
         Collections.sort(tps);
         assertEquals(1, tps.size());
         assertEquals("cmf-1.8", tps.get(0).getId());
@@ -507,7 +561,7 @@ public class TestTargetPlatformService {
     public void testGetAvailableTargetPlatformsOverride()
             throws ClientException {
         List<TargetPlatform> tps = service.getAvailableTargetPlatforms(true,
-                true, null);
+                true, true, null);
         Collections.sort(tps);
         assertEquals(4, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -517,7 +571,7 @@ public class TestTargetPlatformService {
 
         service.restrictTargetPlatform("cap-5.9.2");
 
-        tps = service.getAvailableTargetPlatforms(true, true, null);
+        tps = service.getAvailableTargetPlatforms(true, true, true, null);
         Collections.sort(tps);
         assertEquals(3, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -529,7 +583,7 @@ public class TestTargetPlatformService {
     public void testGetAvailableTargetPlatformsInfo() throws ClientException {
         // filter all
         List<TargetPlatformInfo> tps = service.getAvailableTargetPlatformsInfo(
-                true, true, null);
+                true, true, true, null);
         Collections.sort(tps);
         assertEquals(4, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -538,7 +592,7 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(3).getId());
 
         // filter deprecated
-        tps = service.getAvailableTargetPlatformsInfo(true, false, null);
+        tps = service.getAvailableTargetPlatformsInfo(true, false, true, null);
         Collections.sort(tps);
         assertEquals(5, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -548,7 +602,7 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(4).getId());
 
         // filter restricted
-        tps = service.getAvailableTargetPlatformsInfo(true, false, null);
+        tps = service.getAvailableTargetPlatformsInfo(true, false, true, null);
         Collections.sort(tps);
         assertEquals(5, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -558,14 +612,14 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(4).getId());
 
         // filter on type
-        tps = service.getAvailableTargetPlatformsInfo(false, false, "CMF");
+        tps = service.getAvailableTargetPlatformsInfo(true, false, false, "CMF");
         Collections.sort(tps);
         assertEquals(1, tps.size());
         assertEquals("cmf-1.8", tps.get(0).getId());
 
         // disable target platform
         service.disableTargetPlatform("cmf-1.8");
-        tps = service.getAvailableTargetPlatformsInfo(false, false, "CMF");
+        tps = service.getAvailableTargetPlatformsInfo(true, false, false, "CMF");
         assertEquals(0, tps.size());
     }
 
