@@ -55,8 +55,6 @@ public class ScriptingComponent extends DefaultComponent implements ScriptingSer
     private ScriptEngineManager scriptMgr;
     private Map<String, ScriptDescriptor> scripts;
     private File scriptDir;
-    private ScriptingServer server;
-
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -71,26 +69,10 @@ public class ScriptingComponent extends DefaultComponent implements ScriptingSer
         }
         scripts = new Hashtable<String, ScriptDescriptor>();
         scriptMgr = new ScriptEngineManager();
-
-        // start remote scripting service
-        Boolean isServer = (Boolean) context.getPropertyValue("isServer", Boolean.TRUE);
-//TODO: server functionality should be removed
-//        if (isServer) {
-//            server = new ScriptingServerImpl(this);
-//            RemotingService remoting = (RemotingService) Framework.getRuntime().getComponent(RemotingService.NAME);
-//            TransporterServer transporterServer = remoting.getTransporterServer();
-//            transporterServer.addHandler(server, ScriptingServer.class.getName());
-//        }
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-//        if (server != null) {
-//            RemotingService remoting = (RemotingService)Framework.getRuntime().getComponent(RemotingService.NAME);
-//            TransporterServer transporterServer = remoting.getTransporterServer();
-//            transporterServer.removeHandler();
-//        }
-        server = null;
         scriptMgr = null;
         scripts = null;
     }

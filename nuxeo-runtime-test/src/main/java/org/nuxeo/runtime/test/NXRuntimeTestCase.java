@@ -62,7 +62,6 @@ import org.nuxeo.osgi.application.StandaloneBundleLoader;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.ServiceManager;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
@@ -190,7 +189,6 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         }
         readUris = null;
         bundles = null;
-        ServiceManager.getInstance().reset();
         // super.tearDown();
         if (NuxeoContainer.isInstalled()) {
             throw new RuntimeException("Nuxeo container is still installed",
@@ -255,13 +253,10 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         runtime = Framework.getRuntime();
         assertNotNull(runtime);
 
-        // avoid Streaming and Remoting services: useless and can't work
         deployContrib(bundleFile, "OSGI-INF/DeploymentService.xml");
         deployContrib(bundleFile, "OSGI-INF/LoginComponent.xml");
-        deployContrib(bundleFile, "OSGI-INF/ServiceManagement.xml");
         deployContrib(bundleFile, "OSGI-INF/EventService.xml");
         deployContrib(bundleFile, "OSGI-INF/ResourceService.xml");
-        deployContrib(bundleFile, "OSGI-INF/DefaultJBossBindings.xml");
         deployContrib(bundleFile, "OSGI-INF/ContributionPersistence.xml");
     }
 

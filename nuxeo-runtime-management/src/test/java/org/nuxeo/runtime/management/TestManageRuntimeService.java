@@ -35,7 +35,6 @@ public class TestManageRuntimeService extends NXRuntimeTestCase {
         Set<String> resolvedComponents = adapterUnderTest.getResolvedComponents();
         assertNotNull(resolvedComponents);
         assertTrue(resolvedComponents.size() > 0);
-        assertTrue(resolvedComponents.contains("service:org.nuxeo.runtime.api.ServiceManagement"));
     }
 
 }

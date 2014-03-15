@@ -32,7 +32,6 @@ import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
-import org.nuxeo.runtime.ServiceManager;
 import org.nuxeo.runtime.api.login.LoginAs;
 import org.nuxeo.runtime.api.login.LoginService;
 
@@ -87,8 +86,6 @@ public final class Framework {
      */
     private static RuntimeService runtime;
 
-    private static ServiceManager serviceMgr;
-
     private static final ListenerList listeners = new ListenerList();
 
     private static final FileCleaningTracker fileCleaningTracker = new FileCleaningTracker();
@@ -122,7 +119,6 @@ public final class Framework {
         }
         runtime = runtimeService;
         reloadResourceLoader();
-        initServiceManager();
         runtime.start();
     }
 
@@ -192,10 +188,6 @@ public final class Framework {
         return resourceLoader;
     }
 
-    private static void initServiceManager() {
-        serviceMgr = org.nuxeo.runtime.api.ServiceManager.getInstance();
-    }
-
     /**
      * Gets the runtime service instance.
      *
@@ -209,7 +201,7 @@ public final class Framework {
      * Gets a service given its class.
      */
     public static <T> T getService(Class<T> serviceClass) throws Exception {
-        return serviceMgr.getService(serviceClass);
+        return getLocalService(serviceClass);
     }
 
     /**
@@ -217,7 +209,7 @@ public final class Framework {
      */
     public static <T> T getService(Class<T> serviceClass, String name)
             throws Exception {
-        return serviceMgr.getService(serviceClass, name);
+        return getLocalService(serviceClass);
     }
 
     /**

@@ -17,7 +17,6 @@
   <modules>
     <module>nuxeo-jboss-deployer</module>
     <module>nuxeo-runtime</module>
-    <module>nuxeo-runtime-remoting</module>
     <module>nuxeo-runtime-deploy</module>
     <module>nuxeo-runtime-reload</module>
     <module>nuxeo-runtime-osgi</module>
