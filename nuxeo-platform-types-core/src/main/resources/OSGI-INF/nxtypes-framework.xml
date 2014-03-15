@@ -121,10 +121,5 @@
     <object class="org.nuxeo.ecm.platform.types.Type" />
   </extension-point>
 
-  <extension target="org.nuxeo.runtime.api.ServiceManagement"
-    point="services">
-
-  </extension>
-
 </component>
 
