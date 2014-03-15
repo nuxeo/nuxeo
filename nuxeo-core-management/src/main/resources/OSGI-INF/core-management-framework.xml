@@ -4,7 +4,7 @@
   <implementation class="org.nuxeo.ecm.core.management.CoreManagementComponent" />
 
   <require>org.nuxeo.ecm.core.repository.RepositoryService</require>
-  <!-- TODO: Cannot use this ince content template is not in the core .. find another solution. 
+  <!-- TODO: Cannot use this ince content template is not in the core .. find another solution.
   <require>org.nuxeo.ecm.platform.content.template.service.ContentTemplateService</require>
   -->
 
@@ -37,8 +37,4 @@
       class="org.nuxeo.ecm.core.management.storage.DocumentStoreHandlerDescriptor" />
   </extension-point>
 
-  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <listener name="mgmt-guards" class="org.nuxeo.ecm.core.management.guards.GuardsCacheUpdater"/>
-  </extension>
-  
 </component>

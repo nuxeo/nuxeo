@@ -894,23 +894,6 @@ public interface CoreSession {
      */
     SerializableInputStream getContentData(String key) throws ClientException;
 
-    /**
-     * Returns an URI identifying the stream given the blob property id. This
-     * method should be used by a client to download the data of a blob
-     * property.
-     * <p>
-     * The blob is fetched from the repository and the blob stream is registered
-     * against the streaming service so the stream will be available remotely
-     * through stream service API.
-     * <p>
-     * After the client has called this method, it will be able to download the
-     * stream using streaming server API.
-     *
-     * @return an URI identifying the remote stream
-     * @throws ClientException
-     */
-    String getStreamURI(String blobPropertyId) throws ClientException;
-
     // -------- Versioning API ---------------
 
     /**

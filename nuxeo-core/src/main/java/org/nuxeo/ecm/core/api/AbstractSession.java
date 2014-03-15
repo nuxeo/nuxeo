@@ -99,8 +99,6 @@ import org.nuxeo.ecm.core.utils.SIDGenerator;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
-import org.nuxeo.runtime.services.streaming.InputStreamSource;
-import org.nuxeo.runtime.services.streaming.StreamManager;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
@@ -2588,25 +2586,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         } catch (Exception e) {
             throw new ClientException("Failed to get data stream for " + key, e);
         }
-    }
-
-    @Override
-    public String getStreamURI(String blobPropertyId) throws ClientException {
-        String uri;
-        try {
-            InputStream in = getContentData(blobPropertyId);
-            StreamManager sm = Framework.getLocalService(StreamManager.class);
-            if (sm == null) {
-                throw new ClientException("No Streaming Service was registered");
-            }
-            uri = sm.addStream(new InputStreamSource(in));
-        } catch (ClientException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ClientException("Failed to register blob stream: "
-                    + blobPropertyId, e);
-        }
-        return uri;
     }
 
     @Override

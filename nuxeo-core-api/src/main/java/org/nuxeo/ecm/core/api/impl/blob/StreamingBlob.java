@@ -19,8 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Serializable;
@@ -32,7 +30,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.ByteArraySource;
 import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
-import org.nuxeo.runtime.services.streaming.StreamManager;
 import org.nuxeo.runtime.services.streaming.StreamSource;
 import org.nuxeo.runtime.services.streaming.StringSource;
 import org.nuxeo.runtime.services.streaming.URLSource;
@@ -202,44 +199,6 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
 
     public boolean isTemporary() {
         return persistedTmpFile != null;
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
-        long len = src.getLength();
-        StreamManager sm = Framework.getLocalService(StreamManager.class);
-        if (sm == null || (len > -1 && len <= MEM_MAX_LIMIT)) {
-            // use in memory buffers for less than 1MB of data or if no
-            // streaming service is available
-            byte[] bytes = src.getBytes();
-            out.writeInt(bytes.length);
-            out.write(bytes);
-        } else {
-            out.writeInt(-1); // marker how many bytes follows - if -1 => an
-            // URI follow
-            String uri = sm.addStream(src);
-            out.writeUTF(uri);
-            sm.removeStream(uri);
-        }
-    }
-
-    private void readObject(ObjectInputStream in)
-            throws ClassNotFoundException, IOException {
-        in.defaultReadObject();
-        int len = in.readInt();
-        if (len == -1) {
-            StreamManager sm = Framework.getLocalService(StreamManager.class);
-            if (sm == null) {
-                throw new IOException(
-                        "There is no streaming service registered");
-            }
-            String uri = in.readUTF();
-            src = sm.getStream(uri);
-        } else {
-            byte[] bytes = new byte[len];
-            in.readFully(bytes);
-            src = new ByteArraySource(bytes);
-        }
     }
 
 }
