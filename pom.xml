@@ -191,11 +191,6 @@
       <!-- Nuxeo Runtime -->
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-jboss-deployer</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-launcher-commons</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
@@ -212,11 +207,6 @@
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-deploy</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-gf3-adapter</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
       <dependency>
