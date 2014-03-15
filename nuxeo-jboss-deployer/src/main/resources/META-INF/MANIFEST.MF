@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo JBoss5 Deployer
-Bundle-SymbolicName: org.nuxeo.runtime.jboss.deployer;singleton:=true
-Bundle-Vendor: Nuxeo
-Bundle-Localization: bundle
-Eclipse-LazyStart: true

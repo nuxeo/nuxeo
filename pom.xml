@@ -15,14 +15,12 @@
   <description>Nuxeo Runtime: Parent.</description>
 
   <modules>
-    <module>nuxeo-jboss-deployer</module>
     <module>nuxeo-runtime</module>
     <module>nuxeo-runtime-deploy</module>
     <module>nuxeo-runtime-reload</module>
     <module>nuxeo-runtime-osgi</module>
     <module>nuxeo-runtime-launcher</module>
     <module>nuxeo-runtime-jetty-adapter</module>
-    <module>nuxeo-runtime-gf3-adapter</module>
     <module>nuxeo-runtime-tomcat-adapter</module>
     <module>nuxeo-runtime-scripting</module>
     <module>nuxeo-runtime-management</module>
