@@ -391,7 +391,7 @@ DropZoneUIHandler.prototype.selectOperation = function (batchId, dropId, url) {
 
   panel.css("z-index", "5000");
   panel.css("display", "block");
-  this.updateForm(null, this.operationsDef[0].id);
+  this.updateForm(null, this.operationsDef[0].chainOrOperationId);
 
   buttonForm.unbind();
   buttonForm.bind("click", function (event) {
