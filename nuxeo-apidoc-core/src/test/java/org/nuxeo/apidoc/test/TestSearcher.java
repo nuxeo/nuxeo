@@ -29,7 +29,6 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
@@ -62,9 +61,7 @@ public class TestSearcher extends SQLRepositoryTestCase {
 
     @After
     public void tearDown() throws Exception {
-        if (session!=null) {
-            CoreInstance.getInstance().close(session);
-        }
+        closeSession();
         super.tearDown();
     }
 

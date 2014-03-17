@@ -34,7 +34,6 @@ import org.nuxeo.apidoc.introspection.BundleGroupImpl;
 import org.nuxeo.apidoc.introspection.BundleInfoImpl;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -70,6 +69,12 @@ public class TestSnapshotWithDocPersist extends SQLRepositoryTestCase {
         }
         session.save();
 
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
     }
 
     protected SnapshotManager getSnapshotManager() {
@@ -151,14 +156,6 @@ public class TestSnapshotWithDocPersist extends SQLRepositoryTestCase {
 
         session.save();
 
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        if (session != null) {
-            CoreInstance.getInstance().close(session);
-        }
-        super.tearDown();
     }
 
 }
