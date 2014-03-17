@@ -35,7 +35,6 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -406,18 +405,17 @@ public class TestLocalConfiguration {
 
         addReadForEveryone(CHILD_WORKSPACE_REF);
 
-        CoreSession newSession = openSessionAs("user1");
-        DocumentModel childWorkspace = newSession.getDocument(CHILD_WORKSPACE_REF);
-        assertTrue(typeManager.isAllowedSubType(FOLDER_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertTrue(typeManager.isAllowedSubType(NOTE_TYPE,
-                childWorkspace.getType(), childWorkspace));
-        assertFalse(typeManager.isAllowedSubType(FILE_TYPE,
-                childWorkspace.getType(), childWorkspace));
-
-        CoreInstance.getInstance().close(newSession);
+        try (CoreSession newSession = openSessionAs("user1")) {
+            DocumentModel childWorkspace = newSession.getDocument(CHILD_WORKSPACE_REF);
+            assertTrue(typeManager.isAllowedSubType(FOLDER_TYPE,
+                    childWorkspace.getType(), childWorkspace));
+            assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE,
+                    childWorkspace.getType(), childWorkspace));
+            assertTrue(typeManager.isAllowedSubType(NOTE_TYPE,
+                    childWorkspace.getType(), childWorkspace));
+            assertFalse(typeManager.isAllowedSubType(FILE_TYPE,
+                    childWorkspace.getType(), childWorkspace));
+        }
     }
 
     protected void addReadForEveryone(DocumentRef ref) throws ClientException {

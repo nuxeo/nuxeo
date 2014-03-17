@@ -27,7 +27,6 @@ import javax.security.auth.login.LoginContext;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.api.login.UserSession;
 import org.nuxeo.ecm.platform.api.ws.BaseNuxeoWebService;
@@ -80,9 +79,9 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
         try {
             // :FIXME: won't work all the time...
             LoginContext loginContext = Framework.login();
-            RepositoryManager mgr = Framework.getService(RepositoryManager.class);
             if (repositoryName == null) {
-                repositoryName = mgr.getDefaultRepository().getName();
+                RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+                repositoryName = repositoryManager.getDefaultRepository().getName();
             }
             sid = _connect(username, password, repositoryName);
             loginContext.logout();
@@ -138,7 +137,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
     @WebMethod
     public void disconnect(@WebParam(name = "sessionId") String sid) throws ClientException {
         WSRemotingSession rs = initSession(sid);
-        CoreInstance.getInstance().close(rs.getDocumentManager());
+        rs.getDocumentManager().close();
     }
 
     /**
