@@ -81,17 +81,11 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
             // :FIXME: won't work all the time...
             LoginContext loginContext = Framework.login();
             RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-            Repository repository=null;
-            if (repositoryName==null)
-            {
-                repository = mgr.getDefaultRepository();
+            if (repositoryName == null) {
+                repositoryName = mgr.getDefaultRepository().getName();
             }
-            else
-            {
-                repository = mgr.getRepository(repositoryName);
-            }
+            sid = _connect(username, password, repositoryName);
             loginContext.logout();
-            sid = _connect(username, password, repository);
         } catch (Exception e) {
             throw new ClientException(e.getMessage(), e);
         }
@@ -121,17 +115,17 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
      * @return a Nuxeo core session identifier.
      * @throws ClientException
      */
-    private String _connect(String username, String password, Repository repository)
-            throws ClientException {
+    private String _connect(String username, String password,
+            String repositoryName) throws ClientException {
         String sid = null;
         try {
             // Login before doing anything.
             login(username, password);
-            CoreSession session = repository.open();
+            CoreSession session = CoreInstance.openCoreSession(repositoryName);
             sid = session.getSessionId();
             UserManager userMgr = getUserManager();
             WSRemotingSession rs = new WSRemotingSessionImpl(session, userMgr,
-                    repository.getName(), username, password);
+                    repositoryName, username, password);
             getSessionsManager().addSession(sid, rs);
         } catch (ClientException e) {
             throw e;

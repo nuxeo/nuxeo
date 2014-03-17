@@ -44,14 +44,11 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -75,16 +72,6 @@ public class DownloadServlet extends HttpServlet {
     private static final long serialVersionUID = 986876871L;
 
     private static final Log log = LogFactory.getLog(DownloadServlet.class);
-
-    private static CoreSession getCoreSession(String repoName) throws Exception {
-        RepositoryManager rm = Framework.getService(RepositoryManager.class);
-        Repository repo = rm.getRepository(repoName);
-        if (repo == null) {
-            throw new ClientException("Unable to get " + repoName
-                    + " repository");
-        }
-        return repo.open();
-    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -140,7 +127,6 @@ public class DownloadServlet extends HttpServlet {
             }
         }
 
-        CoreSession session = null;
         boolean tx = false;
         try {
             if (!TransactionHelper.isTransactionActive()) {
@@ -151,52 +137,48 @@ public class DownloadServlet extends HttpServlet {
                 // connection is slow.
                 tx = TransactionHelper.startTransaction();
             }
-            session = getCoreSession(repoName);
-
-            DocumentModel doc = session.getDocument(new IdRef(docId));
-            Blob blob = null;
-            if (fieldPath != null) {
-                // Hack for Flash Url wich doesn't support ':' char
-                fieldPath = fieldPath.replace(';', ':');
-                // BlobHolder urls
-                if (fieldPath.startsWith("blobholder")) {
-                    BlobHolder bh = doc.getAdapter(BlobHolder.class);
-                    if (bh == null) {
-                        return null;
-                    }
-                    String bhPath = fieldPath.replace("blobholder:", "");
-                    if ("".equals(bhPath) || "0".equals(bhPath)) {
-                        blob = bh.getBlob();
+            try (CoreSession session = CoreInstance.openCoreSession(repoName)) {
+                DocumentModel doc = session.getDocument(new IdRef(docId));
+                Blob blob = null;
+                if (fieldPath != null) {
+                    // Hack for Flash Url wich doesn't support ':' char
+                    fieldPath = fieldPath.replace(';', ':');
+                    // BlobHolder urls
+                    if (fieldPath.startsWith("blobholder")) {
+                        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+                        if (bh == null) {
+                            return null;
+                        }
+                        String bhPath = fieldPath.replace("blobholder:", "");
+                        if ("".equals(bhPath) || "0".equals(bhPath)) {
+                            blob = bh.getBlob();
+                        } else {
+                            int idxbh = Integer.parseInt(bhPath);
+                            blob = bh.getBlobs().get(idxbh);
+                        }
                     } else {
-                        int idxbh = Integer.parseInt(bhPath);
-                        blob = bh.getBlobs().get(idxbh);
-                    }
-                } else {
-                    try {
-                        blob = (Blob) doc.getPropertyValue(fieldPath);
-                    } catch (PropertyNotFoundException e) {
-                        log.debug(e.getMessage());
-                        return BLOB_NOT_FOUND;
-                    } catch (ClientException e) {
-                        log.debug(e.getMessage());
-                        return null;
+                        try {
+                            blob = (Blob) doc.getPropertyValue(fieldPath);
+                        } catch (PropertyNotFoundException e) {
+                            log.debug(e.getMessage());
+                            return BLOB_NOT_FOUND;
+                        } catch (ClientException e) {
+                            log.debug(e.getMessage());
+                            return null;
+                        }
                     }
                 }
+                if (fileName != null && !fileName.isEmpty()) {
+                    blob.setFilename(fileName);
+                }
+                return blob;
             }
-
-            if (fileName != null && !fileName.isEmpty()) {
-                blob.setFilename(fileName);
-            }
-            return blob;
         } catch (Exception e) {
             if (tx) {
                 TransactionHelper.setTransactionRollbackOnly();
             }
             throw new ServletException(e);
         } finally {
-            if (session != null) {
-                CoreInstance.getInstance().close(session);
-            }
             if (tx) {
                 TransactionHelper.commitOrRollbackTransaction();
             }

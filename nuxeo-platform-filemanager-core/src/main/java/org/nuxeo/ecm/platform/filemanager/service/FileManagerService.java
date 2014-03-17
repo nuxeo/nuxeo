@@ -16,7 +16,6 @@
 package org.nuxeo.ecm.platform.filemanager.service;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -121,8 +120,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
     private TypeManager typeService;
 
-    private RepositoryManager repositoryManager;
-
     public FileManagerService() {
         fileImporters = new HashMap<String, FileImporter>();
         folderImporters = new LinkedList<FolderImporter>();
@@ -149,17 +146,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             }
         }
         return typeService;
-    }
-
-    private RepositoryManager getRepositoryManager() throws ClientException {
-        if (repositoryManager == null) {
-            try {
-                repositoryManager = Framework.getService(RepositoryManager.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
-        }
-        return repositoryManager;
     }
 
     private Blob checkMimeType(Blob blob, String fullname)
@@ -580,18 +566,10 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     public DocumentModelList getCreationContainers(Principal principal,
             String docType) throws Exception {
         DocumentModelList containers = new DocumentModelListImpl();
-        for (String repositoryName : getRepositoryManager().getRepositoryNames()) {
-            CoreSession session = null;
-            try {
-                Map<String, Serializable> context = new HashMap<String, Serializable>();
-                context.put("principal", (Serializable) principal);
-                session = CoreInstance.getInstance().open(repositoryName,
-                        context);
+        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        for (String repositoryName : repositoryManager.getRepositoryNames()) {
+            try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
                 containers.addAll(getCreationContainers(session, docType));
-            } finally {
-                if (session != null) {
-                    CoreInstance.getInstance().close(session);
-                }
             }
         }
         return containers;
