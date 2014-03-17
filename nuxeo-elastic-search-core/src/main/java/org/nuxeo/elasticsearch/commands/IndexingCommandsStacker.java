@@ -28,9 +28,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Synchronization;
+import javax.transaction.TransactionManager;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Contains logic to stack ElasticSearch commands depending on Document events
@@ -41,6 +46,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  */
 public abstract class IndexingCommandsStacker {
+
+    protected static Log log = LogFactory.getLog(IndexingCommandsStacker.class);
 
     protected abstract Map<String, IndexingCommands> getAllCommands();
 
@@ -74,9 +81,25 @@ public abstract class IndexingCommandsStacker {
         } else if (DOCUMENT_REMOVED.equals(eventId)) {
             cmds.add(IndexingCommand.DELETE, sync, doc.isFolder());
         }
+
     }
 
-    protected void flushCommands(CoreSession session) throws ClientException {
+    protected boolean registerSynchronization(Synchronization sync) {
+        try {
+            TransactionManager tm = TransactionHelper.lookupTransactionManager();
+            if (tm != null) {
+                tm.getTransaction().registerSynchronization(sync);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("Unable to register synchronization");
+            return false;
+        }
+    }
+
+    protected void flushCommands() throws ClientException {
         Map<String, IndexingCommands> allCmds = getAllCommands();
 
         List<IndexingCommand> syncCommands = new ArrayList<>();
@@ -94,17 +117,17 @@ public abstract class IndexingCommandsStacker {
         getAllCommands().clear();
 
         if (syncCommands.size() > 0) {
-            fireSyncIndexing(session, syncCommands);
+            fireSyncIndexing(syncCommands);
         }
         if (asyncCommands.size() > 0) {
-            fireAsyncIndexing(session, asyncCommands);
+            fireAsyncIndexing(asyncCommands);
         }
     }
 
-    protected abstract void fireSyncIndexing(CoreSession session,
-            List<IndexingCommand> syncCommands) throws ClientException;
+    protected abstract void fireSyncIndexing(List<IndexingCommand> syncCommands)
+            throws ClientException;
 
-    protected abstract void fireAsyncIndexing(CoreSession session,
+    protected abstract void fireAsyncIndexing(
             List<IndexingCommand> asyncCommands) throws ClientException;
 
 }

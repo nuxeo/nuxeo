@@ -10,7 +10,6 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -45,14 +44,14 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
     }
 
     @Override
-    protected void fireSyncIndexing(CoreSession session,
-            List<IndexingCommand> syncCommands) throws ClientException {
+    protected void fireSyncIndexing(List<IndexingCommand> syncCommands)
+            throws ClientException {
         flushedSyncCommands.addAll(syncCommands);
     }
 
     @Override
-    protected void fireAsyncIndexing(CoreSession session,
-            List<IndexingCommand> asyncCommands) throws ClientException {
+    protected void fireAsyncIndexing(List<IndexingCommand> asyncCommands)
+            throws ClientException {
         flushedAsyncCommands.addAll(asyncCommands);
     }
 
@@ -119,7 +118,7 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
         IndexingCommands ic3 = getCommands(doc3);
         Assert.assertEquals(0, ic3.getMergedCommands().size());
 
-        flushCommands(null);
+        flushCommands();
         Assert.assertEquals(0, flushedSyncCommands.size());
         Assert.assertEquals(2, flushedAsyncCommands.size());
 
@@ -154,7 +153,7 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
                 ic2.getMergedCommands().get(0).getName());
         Assert.assertTrue(ic2.getMergedCommands().get(0).isSync());
 
-        flushCommands(null);
+        flushCommands();
         Assert.assertEquals(2, flushedSyncCommands.size());
         Assert.assertEquals(0, flushedAsyncCommands.size());
 
@@ -184,7 +183,7 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
                 ic2.getMergedCommands().get(0).getName());
         Assert.assertTrue(ic2.getMergedCommands().get(0).isRecurse());
 
-        flushCommands(null);
+        flushCommands();
         Assert.assertEquals(0, flushedSyncCommands.size());
         Assert.assertEquals(2, flushedAsyncCommands.size());
 

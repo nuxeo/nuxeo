@@ -79,11 +79,13 @@ public class ElasticSearchNativePageProviderTest {
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc = session.createDocument(doc);
         }
-        session.save();
+        //session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+
         ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
         Assert.assertEquals(10, esa.getPendingDocs());
-        TransactionHelper.commitOrRollbackTransaction();
+
         TransactionHelper.startTransaction();
         Assert.assertTrue(esa.getPendingDocs() > 0);
         WorkManager wm = Framework.getLocalService(WorkManager.class);

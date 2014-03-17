@@ -103,11 +103,9 @@ public class ElasticSearchServiceIndexingTest {
         }
 
         // this should not be needed !
-        session.save();
+        //session.save();
         TransactionHelper.commitOrRollbackTransaction();
 
-        // Assert.assertEquals(10, esa.getPendingCommands());
-        // Assert.assertEquals(10, esa.getPendingDocs());
 
         int nbTry = 0;
         while (esa.getPendingCommands() > 0 && nbTry < 20) {
@@ -119,13 +117,6 @@ public class ElasticSearchServiceIndexingTest {
         Assert.assertEquals(0, esa.getPendingDocs());
 
         TransactionHelper.startTransaction();
-
-        // esi.flush();
-
-        // Assert.assertTrue(esa.getPendingIndexingTasksCount()>0);
-
-        // WorkManager wm = Framework.getLocalService(WorkManager.class);
-        // Assert.assertTrue(wm.awaitCompletion( 20, TimeUnit.SECONDS));
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
                 ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
@@ -156,7 +147,7 @@ public class ElasticSearchServiceIndexingTest {
         }
 
         // this should not be needed !
-        session.save();
+        // session.save();
         TransactionHelper.commitOrRollbackTransaction();
 
         Assert.assertEquals(10, esa.getPendingCommands());
@@ -171,8 +162,6 @@ public class ElasticSearchServiceIndexingTest {
         TransactionHelper.startTransaction();
 
         esi.flush();
-
-        // Assert.assertTrue(esa.getPendingIndexingTasksCount()>0);
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
                 ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(

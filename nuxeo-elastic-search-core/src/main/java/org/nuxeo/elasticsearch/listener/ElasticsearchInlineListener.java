@@ -21,10 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Synchronization;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -42,14 +43,24 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class ElasticsearchInlineListener extends IndexingCommandsStacker
-        implements EventListener {
+        implements EventListener, Synchronization {
 
     private static final Log log = LogFactory.getLog(ElasticsearchInlineListener.class);
+
+    // rely on TransactionManager rather than on Save event
+    protected static boolean useTxSync = true;
 
     protected static ThreadLocal<Map<String, IndexingCommands>> transactionCommands = new ThreadLocal<Map<String, IndexingCommands>>() {
         @Override
         protected HashMap<String, IndexingCommands> initialValue() {
             return new HashMap<String, IndexingCommands>();
+        }
+    };
+
+    protected static ThreadLocal<Boolean> synched = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return new Boolean(false);
         }
     };
 
@@ -63,8 +74,11 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
 
         String eventId = event.getName();
 
+        // manual flush on save if TxManager is not hooked
         if (event.isCommitEvent()) {
-            flushCommands(event.getContext().getCoreSession());
+            if (!synched.get()) {
+                flushCommands();
+            }
             return;
         }
 
@@ -76,6 +90,13 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
             return;
         }
         stackCommand(docCtx, eventId);
+
+        // register via Tx Manager
+        if (!synched.get() && useTxSync) {
+            registerSynchronization(this);
+            synched.set(true);
+        }
+
     }
 
     protected void stackCommand(DocumentEventContext docCtx, String eventId) {
@@ -105,20 +126,37 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
         stackCommand(doc, eventId, sync);
     }
 
-    protected void fireSyncIndexing(CoreSession session,
-            List<IndexingCommand> syncCommands) throws ClientException {
+    protected void fireSyncIndexing(List<IndexingCommand> syncCommands)
+            throws ClientException {
         ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
         for (IndexingCommand cmd : syncCommands) {
             esi.scheduleIndexing(cmd);
         }
     }
 
-    protected void fireAsyncIndexing(CoreSession session,
-            List<IndexingCommand> asyncCommands) throws ClientException {
+    protected void fireAsyncIndexing(List<IndexingCommand> asyncCommands)
+            throws ClientException {
         ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
         for (IndexingCommand cmd : asyncCommands) {
             esi.scheduleIndexing(cmd);
         }
+    }
+
+    @Override
+    public void beforeCompletion() {
+        // run flush !
+        try {
+            flushCommands();
+        } catch (ClientException e) {
+            log.error("Error during flush", e);
+        } finally {
+            synched.set(false);
+        }
+    }
+
+    @Override
+    public void afterCompletion(int status) {
+        // NOP
     }
 
 }
