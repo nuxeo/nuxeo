@@ -27,9 +27,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -47,35 +44,14 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
     protected boolean initRepository(Response res, String repoId) {
         DOMDocumentFactory domFactory = new DOMDocumentFactory();
         DOMDocument result = (DOMDocument) domFactory.createDocument();
-
         if (repoId == null || repoId.equals("*")) {
             handleError(result, res, "you must specify a repository");
             return false;
         }
-
-        RepositoryManager rm;
         try {
-            rm = Framework.getService(RepositoryManager.class);
-        } catch (Exception e1) {
-            handleError(result, res, e1);
-            return false;
-        }
-        Repository repo = rm.getRepository(repoId);
-
-        if (repo == null) {
-            handleError(res, "Unable to get " + repoId + " repository");
-            return false;
-        }
-
-        try {
-            session = repo.open();
-        } catch (Exception e1) {
-            handleError(result, res, e1);
-            return false;
-        }
-        if (session == null) {
-            handleError(result, res,
-                    "Unable to open " + repoId + " repository");
+            session = CoreInstance.openCoreSession(repoId);
+        } catch (ClientException e) {
+            handleError(result, res, e);
             return false;
         }
         return true;
@@ -97,30 +73,10 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
             return false;
         }
 
-        RepositoryManager rm;
         try {
-            rm = Framework.getService(RepositoryManager.class);
-        } catch (Exception e1) {
-            handleError(result, res, e1);
-            return false;
-        }
-        Repository repo = rm.getRepository(repoId);
-
-        if (repo == null) {
-            handleError(res, "Unable to get " + repoId + " repository");
-            return false;
-        }
-
-        try {
-            session = repo.open();
-        } catch (Exception e1) {
-            // TODO Auto-generated catch block
-            handleError(result, res, e1);
-            return false;
-        }
-        if (session == null) {
-            handleError(result, res,
-                    "Unable to open " + repoId + " repository");
+            session = CoreInstance.openCoreSession(repoId);
+        } catch (ClientException e) {
+            handleError(result, res, e);
             return false;
         }
 
@@ -139,7 +95,7 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
 
     protected void cleanUp() {
         if (session != null) {
-            CoreInstance.getInstance().close(session);
+            session.close();
             session = null;
             targetDocRef = null;
             targetDocument = null;

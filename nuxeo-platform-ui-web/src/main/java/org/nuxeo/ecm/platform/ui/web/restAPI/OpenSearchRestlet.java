@@ -18,10 +18,7 @@
  */
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
-import java.io.Serializable;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,15 +27,12 @@ import org.dom4j.Namespace;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
-import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -90,22 +84,8 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
 
     @Override
     public void handle(Request req, Response res) {
-
-        CoreSession session;
-        try {
-            Repository repository = Framework.getService(
-                    RepositoryManager.class).getDefaultRepository();
-            if (repository == null) {
-                throw new ClientException("Cannot get default repository");
-            }
-            Map<String, Serializable> context = new HashMap<String, Serializable>();
-            context.put("principal", getSerializablePrincipal(req));
-            session = repository.open(context);
-        } catch (Exception e) {
-            handleError(res, e);
-            return;
-        }
-        try {
+        try (CoreSession session = CoreInstance.openCoreSession(null,
+                getUserPrincipal(req))) {
             // read the search term passed as the 'q' request parameter
             String keywords = getQueryParamValue(req, "q", " ");
 
@@ -176,12 +156,6 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
 
         } catch (Exception e) {
             handleError(res, e);
-        } finally {
-            try {
-                Repository.close(session);
-            } catch (Exception e) {
-                log.error("Repository close failed", e);
-            }
         }
     }
 

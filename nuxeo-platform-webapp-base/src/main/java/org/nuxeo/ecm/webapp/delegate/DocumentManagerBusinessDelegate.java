@@ -40,9 +40,9 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.jboss.seam.contexts.Lifecycle;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 
@@ -108,9 +108,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
             }
             String serverName = serverLocation.getName();
             try {
-                RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-                Repository repository = repositoryManager.getRepository(serverName);
-                session = repository.open();
+                session = CoreInstance.openCoreSession(serverName);
                 log.debug("Opened session for repository " + serverName);
             } catch (Exception e) {
                 throw new ClientException(
@@ -137,7 +135,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
             for (Entry<RepositoryLocation, CoreSession> entry : sessions.entrySet()) {
                 String serverName = entry.getKey().getName();
                 CoreSession session = entry.getValue();
-                Repository.close(session);
+                session.close();
                 log.debug("Closed session for repository " + serverName);
             }
         } finally {
