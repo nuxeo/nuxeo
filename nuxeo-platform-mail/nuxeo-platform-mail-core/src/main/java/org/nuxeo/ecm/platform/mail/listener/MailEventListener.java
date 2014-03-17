@@ -20,8 +20,6 @@
 package org.nuxeo.ecm.platform.mail.listener;
 
 import javax.mail.AuthenticationFailedException;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,12 +28,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.platform.mail.utils.MailCoreHelper;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Listener that listens for MailReceivedEvent.
@@ -62,21 +57,7 @@ public class MailEventListener implements EventListener {
             return;
         }
 
-        LoginContext loginContext = null;
-        CoreSession coreSession = null;
-
-        try {
-            // open a system session
-            loginContext = Framework.login();
-            RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-            Repository repository = mgr.getDefaultRepository();
-            if (repository != null) {
-                coreSession = repository.open();
-            }
-            if (coreSession == null) {
-                return;
-            }
-
+        try (CoreSession coreSession = CoreInstance.openCoreSession(null)) {
             StringBuilder query = new StringBuilder();
             query.append("SELECT * FROM MailFolder ");
             query.append(String.format(
@@ -97,16 +78,6 @@ public class MailEventListener implements EventListener {
             }
         } catch (Exception e) {
             log.error("MailEventListener error...", e);
-        } finally {
-            if (coreSession != null) {
-                CoreInstance.getInstance().close(coreSession);
-            }
-            if (loginContext != null) {
-                try {
-                    loginContext.logout();
-                } catch (LoginException e) {
-                }
-            }
         }
     }
 

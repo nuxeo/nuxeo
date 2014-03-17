@@ -32,12 +32,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
@@ -74,22 +73,6 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
     public void setProperties(Map<String, Serializable> properties) {
     }
 
-    protected static CoreSession getCoreSession(String repo) throws ClientException {
-        CoreSession coreSession;
-        try {
-            Framework.login();
-            RepositoryManager manager = Framework.getService(RepositoryManager.class);
-            Map<String, Serializable> context = new HashMap<String, Serializable>();
-            // FIXME: should use constants?
-            context.put("username", SecurityConstants.SYSTEM_USERNAME);
-            coreSession = manager.getRepository(repo).open(context);
-        } catch (Exception e) {
-            throw new ClientException(
-                    "Failed to open core session to repository " + repo, e);
-        }
-        return coreSession;
-    }
-
     protected static Logs getLogService() throws AuditException {
         Logs logService;
         try {
@@ -120,10 +103,9 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         if (sources == null || sources.isEmpty()) {
             return null;
         }
-        try {
+        try (CoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
             Map<DocumentRef, List<LogEntry>> docLogs = new HashMap<DocumentRef, List<LogEntry>>();
 
-            CoreSession session = getCoreSession(repo);
             Logs logService = getLogService();
 
             for (DocumentRef docRef : sources) {

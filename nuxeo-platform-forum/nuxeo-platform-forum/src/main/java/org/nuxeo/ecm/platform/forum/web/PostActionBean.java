@@ -26,9 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -48,8 +45,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
@@ -63,7 +58,6 @@ import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * This action listener is used to create a Post inside a Thread and also to
@@ -182,31 +176,11 @@ public class PostActionBean implements PostAction {
                 // Here user only granted with read rights should be able to
                 // create a post => open a system session to put it in published
                 // state
-                LoginContext loginContext = null;
-                CoreSession systemSession = null;
-                try {
-                    loginContext = Framework.login();
-                    RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-                    Repository repo = mgr.getRepository(currentServerLocation.getName());
-                    systemSession = repo.open();
-
+                try (CoreSession systemSession = CoreInstance.openCoreSessionSystem(currentServerLocation.getName())) {
                     // follow transition
                     systemSession.followTransition(dm.getRef(),
                             ForumConstants.TRANSITION_TO_PUBLISHED_STATE);
-
                     systemSession.save();
-                } catch (Exception e) {
-                    throw new ClientException(e);
-                } finally {
-                    if (loginContext != null) {
-                        try {
-                            loginContext.logout();
-                        } catch (LoginException e) {
-                        }
-                    }
-                    if (systemSession != null) {
-                        CoreInstance.getInstance().close(systemSession);
-                    }
                 }
             }
             fetchInvalidationsIfNeeded();

@@ -41,8 +41,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.platform.io.api.AbstractIOResourceAdapter;
 import org.nuxeo.ecm.platform.io.api.IOResources;
@@ -117,25 +115,6 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             log.warn("No graph name given for relations adapter, "
                     + "no IO will be performed with this adapter");
         }
-    }
-
-    /**
-     * Opens a system session
-     */
-    protected CoreSession getCoreSession(String repo) throws Exception {
-        CoreSession coreSession;
-        try {
-            Framework.login();
-            RepositoryManager manager = Framework.getService(RepositoryManager.class);
-            Map<String, Serializable> context = new HashMap<String, Serializable>();
-            // FIXME: should use constants?
-            context.put("username", SecurityConstants.SYSTEM_USERNAME);
-            coreSession = manager.getRepository(repo).open(context);
-        } catch (Exception e) {
-            throw new ClientException(
-                    "Failed to open core session to repository " + repo, e);
-        }
-        return coreSession;
     }
 
     protected RelationManager getRelationManager() throws Exception {
@@ -286,9 +265,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             log.error("Cannot extract resources, no graph supplied");
             return null;
         }
-        CoreSession session = null;
-        try {
-            session = getCoreSession(repo);
+        try (CoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
             RelationManager relManager = getRelationManager();
             Graph graph = relManager.getGraphByName(graphName);
             if (graph == null) {
@@ -347,10 +324,6 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         } catch (Exception e) {
             log.error(e, e);
             return null;
-        } finally {
-            if (session != null) {
-                CoreInstance.getInstance().close(session);
-            }
         }
     }
 
@@ -472,14 +445,13 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         if (!(resources instanceof IORelationResources)) {
             return resources;
         }
-        try {
+        try (CoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
             IORelationResources relResources = (IORelationResources) resources;
             Map<String, String> namespaces = relResources.getNamespaces();
             IORelationGraphHelper graphHelper = new IORelationGraphHelper(
                     namespaces, relResources.getStatements());
             Graph graph = graphHelper.getGraph();
             RelationManager relManager = getRelationManager();
-            CoreSession session = getCoreSession(repo);
             // variables for date update
             Literal newDate = RelationDate.getLiteralDate(new Date());
             String[] dateUris = getStringArrayProperty(IORelationAdapterProperties.UPDATE_DATE_METADATA);

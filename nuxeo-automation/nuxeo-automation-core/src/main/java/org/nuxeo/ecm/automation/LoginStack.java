@@ -16,10 +16,8 @@ import java.util.List;
 
 import javax.security.auth.login.LoginContext;
 
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -54,15 +52,14 @@ public class LoginStack {
     public void push(LoginContext lc) throws OperationException {
         Entry entry = new Entry(lc);
         try {
+            String repositoryName;
             if (originalSession != null) {
-                entry.session = Framework.getService(RepositoryManager.class).getRepository(
-                        originalSession.getRepositoryName()).open();
-                currentSession = entry.session;
+                repositoryName = originalSession.getRepositoryName();
             } else {
-                entry.session = Framework.getService(RepositoryManager.class).getRepository(
-                        Framework.getService(RepositoryManager.class).getDefaultRepository().getName()).open();
-                currentSession = entry.session;
+                repositoryName = null; // default repository
             }
+            entry.session = CoreInstance.openCoreSession(repositoryName);
+            currentSession = entry.session;
             stack.add(entry);
         } catch (Exception e) {
             throw new OperationException(
@@ -153,8 +150,11 @@ public class LoginStack {
         public final void dispose() throws OperationException {
             try {
                 if (session != null) {
-                    session.save();
-                    Repository.close(session);
+                    try {
+                        session.save();
+                    } finally {
+                        session.close();
+                    }
                 }
             } catch (Exception e) {
                 throw new OperationException(e);

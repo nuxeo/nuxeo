@@ -29,8 +29,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.runtime.api.Framework;
 
 public class PictureBookBlobHolder extends DocumentBlobHolder {
 
@@ -46,7 +44,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
         boolean sessionOpened = false;
         if (session == null) {
             sessionOpened = true;
-            session = openNewSession();
+            session = CoreInstance.openCoreSession(doc.getRepositoryName());
         }
         try {
             DocumentModelList docs = session.getChildren(doc.getRef(),
@@ -61,8 +59,8 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
             PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
             return picture.getPictureFromTitle("Original");
         } finally {
-            if (sessionOpened && session != null) {
-                CoreInstance.getInstance().close(session);
+            if (sessionOpened) {
+                session.close();
             }
         }
 
@@ -78,7 +76,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
         boolean sessionOpened = false;
         if (session == null) {
             sessionOpened = true;
-            session = openNewSession();
+            session = CoreInstance.openCoreSession(doc.getRepositoryName());
         }
         try {
             DocumentModelList docList = session.getChildren(doc.getRef(),
@@ -90,8 +88,8 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
             }
             return blobList;
         } finally {
-            if (sessionOpened && session != null) {
-                CoreInstance.getInstance().close(session);
+            if (sessionOpened) {
+                session.close();
             }
         }
     }
@@ -113,23 +111,6 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
             session = doc.getCoreSession();
         }
         return session;
-    }
-
-    protected CoreSession openNewSession() throws ClientException {
-        try {
-            RepositoryManager rm = Framework.getService(RepositoryManager.class);
-            String repoName = null;
-            if (doc != null) {
-                repoName = doc.getRepositoryName();
-            }
-            if (repoName != null) {
-                return rm.getRepository(repoName).open();
-            } else {
-                return rm.getDefaultRepository().open();
-            }
-        } catch (Exception e) {
-            throw new ClientException("Cannot get default repository ", e);
-        }
     }
 
 }

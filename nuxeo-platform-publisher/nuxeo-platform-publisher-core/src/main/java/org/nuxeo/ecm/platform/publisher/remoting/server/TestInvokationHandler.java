@@ -18,14 +18,11 @@
 package org.nuxeo.ecm.platform.publisher.remoting.server;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.DefaultMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
 import org.nuxeo.runtime.api.Framework;
 
@@ -42,31 +39,12 @@ public class TestInvokationHandler implements PublicationInvokationHandler {
 
     protected RemotePublisherMarshaler marshaler;
 
-    public TestInvokationHandler() {
-        this.marshaler = new DefaultMarshaler();
-        this.marshaler.setAssociatedCoreSession(getCoreSession());
-    }
-
     public TestInvokationHandler(RemotePublisherMarshaler marshaler) {
         this.marshaler = marshaler;
     }
 
     public void init(RemotePublisherMarshaler marshaler) {
         this.marshaler = marshaler;
-    }
-
-    protected CoreSession getCoreSession() {
-        // XXX !!!
-        try {
-            RepositoryManager rm = Framework.getService(RepositoryManager.class);
-            CoreSession coreSession = null;
-            if (rm != null) {
-                coreSession = rm.getDefaultRepository().open();
-            }
-            return coreSession;
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     public String invoke(String methodName, String data) throws ClientException {
