@@ -19,24 +19,20 @@ package org.nuxeo.opensocial.container.dev;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.dev.NuxeoApp;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.webengine.gwt.dev.NuxeoLauncher;
-import org.nuxeo.runtime.api.Framework;
 
 public class OpenSocialNuxeoLauncher extends NuxeoLauncher {
 
@@ -71,14 +67,7 @@ public class OpenSocialNuxeoLauncher extends NuxeoLauncher {
     protected void frameworkStarted(NuxeoApp app) {
 
         // In order to avoid security problems we allow everything to "Invite"
-        try {
-
-            Map<String, Serializable> user = new HashMap<String, Serializable>();
-            user.put("username", "Administrator");
-            user.put("password", "Administrator");
-
-            RepositoryManager m = Framework.getService(RepositoryManager.class);
-            CoreSession session = m.getRepository("default").open(user);
+        try (CoreSession session = CoreInstance.openCoreSessionSystem(null)) {
             DocumentModel doc = session.getDocument(new PathRef("/"));
             ACPImpl acp = new ACPImpl();
             ACLImpl acl = new ACLImpl(ACL.LOCAL_ACL);

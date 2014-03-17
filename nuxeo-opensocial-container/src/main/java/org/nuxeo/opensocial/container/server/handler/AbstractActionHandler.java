@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.spaces.api.Space;
 import org.nuxeo.ecm.spaces.api.SpaceManager;
 import org.nuxeo.ecm.webengine.WebException;
@@ -56,23 +55,12 @@ public abstract class AbstractActionHandler<T extends AbstractAction<R>, R exten
 
     public final R execute(T action, ExecutionContext context)
             throws ActionException {
-        CoreSession session = openSession(action.getRepositoryName());
-
-        if (session != null) {
-            try {
-                R result = doExecute(action, context, session);
-                session.save();
-                return result;
-            } catch (Exception e) {
-                String message = "Error occured during action... rollbacking : "
-                        + e.getMessage();
-                log.error(message, e);
-                throw new ActionException(message, e);
-            } finally {
-                CoreInstance.getInstance().close(session);
-            }
-        } else {
-            throw new ActionException("Unable to open session");
+        try (CoreSession session = CoreInstance.openCoreSession(action.getRepositoryName())) {
+            R result = doExecute(action, context, session);
+            session.save();
+            return result;
+        } catch (Exception e) {
+            throw new ActionException("Unable to get session", e);
         }
     }
 
@@ -100,16 +88,6 @@ public abstract class AbstractActionHandler<T extends AbstractAction<R>, R exten
             return Framework.getService(SpaceManager.class);
         } catch (Exception e) {
             throw new ClientException("Unable to get Space Manager", e);
-        }
-    }
-
-    protected CoreSession openSession(String repositoryName)
-            throws ActionException {
-        try {
-            RepositoryManager m = Framework.getService(RepositoryManager.class);
-            return m.getRepository(repositoryName).open();
-        } catch (Exception e) {
-            throw new ActionException("Unable to get session", e);
         }
     }
 
