@@ -404,17 +404,6 @@ public class GenericThreadedImportTask implements Runnable {
         }
     }
 
-    public void dispose() {
-        try {
-            if (session != null) {
-                CoreInstance.getInstance().close(session);
-                session = null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();// TODO
-        }
-    }
-
     // This should be done with log4j but I did not find a way to configure it
     // the way I wanted ...
     protected void fslog(String msg, boolean debug) {
