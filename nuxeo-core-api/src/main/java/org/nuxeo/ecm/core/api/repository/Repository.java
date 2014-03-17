@@ -19,7 +19,6 @@ import java.util.concurrent.Callable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.Framework;
 
@@ -90,6 +89,10 @@ public class Repository {
         return repositoryFactory;
     }
 
+    /**
+     * @deprecated since 5.9.3, use {@link CoreInstance#openCoreSession} instead.
+     */
+    @Deprecated
     public CoreSession open() throws Exception {
         return open(new HashMap<String, Serializable>());
     }
@@ -100,8 +103,12 @@ public class Repository {
         return session;
     }
 
+    /**
+     * @deprecated since 5.9.3, use {@link CoreSession#close} instead.
+     */
+    @Deprecated
     public static void close(CoreSession session) {
-        CoreInstance.getInstance().close(session);
+        session.close();
     }
 
     @Override

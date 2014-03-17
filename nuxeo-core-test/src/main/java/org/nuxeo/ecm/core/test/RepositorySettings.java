@@ -254,7 +254,7 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
      */
     public void releaseSession() {
         assert session != null;
-        repo.releaseSession(session);
+        session.close();
         session = null;
     }
 

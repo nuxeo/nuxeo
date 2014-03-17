@@ -52,10 +52,10 @@ public class QueryResultsAreAutomaticallyClosedTest {
 
     @Test
     public void testAutoCommit() throws Exception {
-        CoreSession session = settings.openSessionAsSystemUser();
-        IterableQueryResult results = session.queryAndFetch(
-                "SELECT * from Document", "NXQL");
-        settings.getRepositoryHandler().releaseSession(session);
+        IterableQueryResult results;
+        try (CoreSession session = settings.openSessionAsSystemUser()) {
+            results = session.queryAndFetch("SELECT * from Document", "NXQL");
+        }
         Assert.assertFalse(results.isLife());
         logCaptureResults.assertHasEvent();
     }
@@ -63,15 +63,12 @@ public class QueryResultsAreAutomaticallyClosedTest {
     @Test
     public void testTransactional() throws Exception {
         TransactionHelper.startTransaction();
-        CoreSession session = settings.openSessionAsSystemUser();
-        IterableQueryResult results = session.queryAndFetch(
-                "SELECT * from Document", "NXQL");
-        TransactionHelper.commitOrRollbackTransaction();
-        try {
+        try (CoreSession session = settings.openSessionAsSystemUser()) {
+            IterableQueryResult results = session.queryAndFetch(
+                    "SELECT * from Document", "NXQL");
+            TransactionHelper.commitOrRollbackTransaction();
             logCaptureResults.assertHasEvent();
             Assert.assertFalse(results.isLife());
-        } finally {
-            settings.getRepositoryHandler().releaseSession(session);
         }
     }
 
@@ -93,19 +90,18 @@ public class QueryResultsAreAutomaticallyClosedTest {
     @Test
     public void testNested() throws Exception {
         TransactionHelper.startTransaction();
-        CoreSession main = settings.openSessionAsSystemUser();
-        IterableQueryResult mainResults = main.queryAndFetch(
-                "SELECT * from Document", "NXQL");
-        NestedQueryRunner runner = new NestedQueryRunner(
-                settings.repositoryName);
-        runner.runUnrestricted();
-        try {
+        IterableQueryResult mainResults;
+        try (CoreSession main = settings.openSessionAsSystemUser()) {
+            mainResults = main.queryAndFetch(
+                    "SELECT * from Document", "NXQL");
+            NestedQueryRunner runner = new NestedQueryRunner(
+                    settings.repositoryName);
+            runner.runUnrestricted();
             Assert.assertFalse(runner.result.isLife());
             Assert.assertTrue(mainResults.isLife());
             logCaptureResults.assertHasEvent();
             logCaptureResults.clear();
         } finally {
-            settings.getRepositoryHandler().releaseSession(main);
             TransactionHelper.commitOrRollbackTransaction();
         }
         Assert.assertFalse(mainResults.isLife());

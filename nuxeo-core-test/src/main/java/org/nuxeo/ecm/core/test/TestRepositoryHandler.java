@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.model.Repository;
@@ -63,7 +62,12 @@ public class TestRepositoryHandler {
         }
     }
 
+    /**
+     * @deprecated since 5.9.3, use {@link CoreSession#close} instead
+     */
+    @Deprecated
     public void releaseSession(CoreSession session) {
-        CoreInstance.getInstance().close(session);
+        session.close();
     }
+
 }
