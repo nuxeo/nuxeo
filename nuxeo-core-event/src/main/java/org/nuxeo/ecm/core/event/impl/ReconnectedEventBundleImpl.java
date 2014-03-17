@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -35,6 +38,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation for an {@link EventBundle} that need to be
@@ -52,6 +56,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
     protected String listenerName;
 
     protected List<Event> reconnectedEvents;
+
+    protected LoginContext loginCtx;
 
     protected CoreSession reconnectedCoreSession;
 
@@ -72,6 +78,12 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     protected CoreSession getReconnectedCoreSession(String repoName) {
         if (reconnectedCoreSession == null) {
+            try {
+                loginCtx = Framework.login();
+            } catch (LoginException e) {
+                log.error("Cannot log in", e);
+                return null;
+            }
             try {
                 reconnectedCoreSession = CoreInstance.openCoreSessionSystem(repoName);
             } catch (Exception e) {
@@ -227,6 +239,15 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
         }
         reconnectedCoreSession=null;
         reconnectedEvents=null;
+        if (loginCtx != null) {
+            try {
+                loginCtx.logout();
+            } catch (LoginException e) {
+                log.error("Cannot log out", e);
+            } finally {
+                loginCtx = null;
+            }
+        }
     }
 
     @Override
