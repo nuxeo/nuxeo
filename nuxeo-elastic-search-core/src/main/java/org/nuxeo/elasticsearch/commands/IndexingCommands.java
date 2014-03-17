@@ -16,9 +16,19 @@
  */
 package org.nuxeo.elasticsearch.commands;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /*
@@ -30,7 +40,13 @@ public class IndexingCommands {
 
     protected List<String> commandNames = new ArrayList<>();
 
-    protected final DocumentModel targetDocument;
+    protected DocumentModel targetDocument;
+
+    protected static final Log log = LogFactory.getLog(IndexingCommands.class);
+
+    protected IndexingCommands() {
+        //
+    }
 
     public IndexingCommands(String command, DocumentModel targetDocument,
             boolean sync, boolean recurse) {
@@ -42,8 +58,9 @@ public class IndexingCommands {
         this.targetDocument = targetDocument;
     }
 
-    public void add(String command, boolean sync, boolean recurse) {
-        add(new IndexingCommand(targetDocument,command, sync, recurse));
+    public IndexingCommand add(String command, boolean sync, boolean recurse) {
+        IndexingCommand cmd = new IndexingCommand(targetDocument,command, sync, recurse);
+        return add(cmd);
     }
 
     protected IndexingCommand find(String command) {
@@ -55,12 +72,16 @@ public class IndexingCommands {
         return null;
     }
 
-    public void add(IndexingCommand command) {
+    public IndexingCommand add(IndexingCommand command) {
+
+        if (command==null) {
+            return null;
+        }
 
         // skip duplicates
         if (commandNames.contains(command.name)) {
             find(command.name).update(command);
-            return;
+            return null;
         }
 
         // index creation supersedes
@@ -70,7 +91,7 @@ public class IndexingCommands {
             } else if (command.isSync()){
                 find(IndexingCommand.INDEX).sync=true;
             }
-            return;
+            return null;
         }
 
         if (command.name.equals(IndexingCommand.DELETE)) {
@@ -80,6 +101,7 @@ public class IndexingCommands {
 
         commands.add(command);
         commandNames.add(command.name);
+        return command;
     }
 
     protected void clear() {
@@ -97,6 +119,51 @@ public class IndexingCommands {
 
     public boolean contains(String command) {
         return commandNames.contains(command);
+    }
+
+    public String toJSON() throws IOException {
+        StringWriter out = new StringWriter();
+        JsonFactory factory = new JsonFactory();
+        JsonGenerator jsonGen = factory.createJsonGenerator(out);
+        jsonGen.writeStartArray();
+        for (IndexingCommand cmd : commands) {
+            cmd.toJSON(jsonGen);
+        }
+        jsonGen.writeEndArray();
+        out.flush();
+        jsonGen.close();
+        return out.toString();
+    }
+
+    public static IndexingCommands fromJSON(CoreSession session, String json) throws ClientException {
+        try {
+            JsonFactory jsonFactory = new JsonFactory();
+            JsonParser jp = jsonFactory.createJsonParser(json);
+            try {
+                return fromJSON(session, jp);
+            } finally {
+                jp.close();
+            }
+        } catch (Exception e) {
+            throw ClientException.wrap(e);
+        }
+    }
+
+    public static IndexingCommands fromJSON(CoreSession session, JsonParser jp) throws Exception {
+        IndexingCommands cmds =  new IndexingCommands();
+        JsonToken token = jp.nextToken();
+        if (token!=JsonToken.START_ARRAY) {
+            return  null;
+        }
+        while (token != JsonToken.END_ARRAY ) {
+          IndexingCommand cmd = IndexingCommand.fromJSON(session, jp);
+          if (cmd==null) {
+              break;
+          } else {
+              cmds.add(cmd);
+          }
+        }
+       return cmds;
     }
 
 }

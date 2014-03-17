@@ -1,6 +1,6 @@
 package org.nuxeo.elasticsearch.test.commands;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +29,8 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
     protected Map<String, IndexingCommands> commands = new HashMap<String, IndexingCommands>();
 
-    protected Map<String, Serializable> flushedSyncCommands;
-    protected Map<String, Serializable> flushedAsyncCommands;
+    protected List<IndexingCommand> flushedSyncCommands;
+    protected List<IndexingCommand> flushedAsyncCommands;
 
     @Override
     protected Map<String, IndexingCommands> getAllCommands() {
@@ -39,20 +39,20 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
     @Before
     public void reset() {
-        flushedSyncCommands = new HashMap<>();
-        flushedAsyncCommands = new HashMap<>();
+        flushedSyncCommands = new ArrayList<>();
+        flushedAsyncCommands = new ArrayList<>();
     }
 
     @Override
     protected void fireSyncIndexing(CoreSession session,
             List<IndexingCommand> syncCommands) throws ClientException {
-        flushedSyncCommands = encodeAsMap(syncCommands);
+        flushedSyncCommands.addAll(syncCommands);
     }
 
     @Override
     protected void fireAsyncIndexing(CoreSession session,
             List<IndexingCommand> asyncCommands) throws ClientException {
-        flushedAsyncCommands = encodeAsMap(asyncCommands);
+        flushedAsyncCommands.addAll(asyncCommands);
     }
 
     public final class MockDocumentModel extends DocumentModelImpl {

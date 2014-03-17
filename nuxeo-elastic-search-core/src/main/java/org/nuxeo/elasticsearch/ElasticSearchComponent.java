@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
@@ -51,10 +52,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.listener.EventConstants;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -81,6 +87,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     // temporary hack until we are able to list pending indexing jobs cluster
     // wide
     protected final CopyOnWriteArrayList<String> pendingWork = new CopyOnWriteArrayList<String>();
+    protected final CopyOnWriteArrayList<String> pendingCommands = new CopyOnWriteArrayList<String>();
 
     public static final String EP_Config = "elasticSearchConfig";
 
@@ -137,30 +144,26 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return settings;
     }
 
-    @Override
-    public void index(DocumentModel doc, boolean recurse) {
+    protected void schedulePostCommitIndexing(IndexingCommand cmd) throws ClientException {
 
-        boolean added = pendingWork.addIfAbsent(getWorkKey(doc));
-        if (!added) {
-            log.debug("Skip indexing for " + doc
-                    + " since it is already scheduled");
-            return;
-        }
+        try {
+            CoreSession session = cmd.getTargetDocument().getCoreSession();
+            EventProducer evtProducer = Framework.getLocalService(EventProducer.class);
 
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        IndexingWorker idxWork = new IndexingWorker(doc, recurse);
-        wm.schedule(idxWork, true);
-    }
+            EventContextImpl context = new EventContextImpl(session,
+                    session.getPrincipal());
+            context.getProperties().put(cmd.getId(),cmd.toJSON());
 
-    protected void flushIfLocal() {
-        if (getConfig().isInProcess()) {
-            // do the refresh
-            getClient().admin().indices().prepareRefresh().execute().actionGet();
+            Event indexingEvent = context.newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
+            evtProducer.fireEvent(indexingEvent);
+        } catch (Exception e) {
+            throw ClientException.wrap(e);
         }
     }
 
     @Override
-    public String indexNow(DocumentModel doc) throws ClientException {
+    public String indexNow(IndexingCommand cmd) throws ClientException {
+        DocumentModel doc = cmd.getTargetDocument();
         try {
             JsonFactory factory = new JsonFactory();
             XContentBuilder builder = jsonBuilder();
@@ -170,15 +173,51 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     null);
             IndexResponse response = getClient().prepareIndex(MAIN_IDX,
                     NX_DOCUMENT, doc.getId()).setSource(builder).execute().actionGet();
-            flushIfLocal();
+
             pendingWork.remove(getWorkKey(doc));
+            pendingCommands.remove(cmd.getId());
+
             return response.getId();
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new ClientException("Unable to index Document " + doc.getId(), e);
         }
-        return null;
+    }
+
+
+    @Override
+    public void scheduleIndexing(IndexingCommand cmd) throws ClientException {
+        DocumentModel doc = cmd.getTargetDocument();
+        boolean added = pendingCommands.addIfAbsent(cmd.getId());
+        if (!added) {
+            log.debug("Skip indexing for " + doc
+                    + " since it is already scheduled");
+            return;
+        }
+
+        added = pendingWork.addIfAbsent(getWorkKey(doc));
+        if (!added) {
+            log.debug("Skip indexing for " + doc
+                    + " since it is already scheduled");
+            return;
+        }
+        if (cmd.isSync()) {
+            schedulePostCommitIndexing(cmd);
+        } else {
+            WorkManager wm = Framework.getLocalService(WorkManager.class);
+            IndexingWorker idxWork = new IndexingWorker(cmd);
+            wm.schedule(idxWork, true);
+        }
+    }
+
+    protected void flushIfLocal() {
+        if (getConfig().isInProcess()) {
+            // do the refresh
+            flush();
+        }
+    }
+
+    public void flush() {
+        getClient().admin().indices().prepareRefresh().execute().actionGet();
     }
 
     protected Node getLocalNode() {
@@ -295,7 +334,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return false;
     }
 
-    public int getPendingIndexingTasksCount() {
+    public int getPendingDocs() {
         return pendingWork.size();
     }
+
+    public int getPendingCommands() {
+        return pendingCommands.size();
+    }
+
 }

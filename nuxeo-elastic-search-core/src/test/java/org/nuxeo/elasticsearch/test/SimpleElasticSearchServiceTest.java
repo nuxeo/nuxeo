@@ -15,39 +15,65 @@
  *     Nuxeo
  */
 
-
 package org.nuxeo.elasticsearch.test;
 
+import java.util.concurrent.TimeUnit;
+
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.ElasticSearchComponent;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
-import org.nuxeo.elasticsearch.listener.ElasticsearchIndexingListener;
+import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.listener.EventConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
+/**
+ * Test servcie declaration as well as basic indexing API
+ *
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ *
+ */
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
+@Features({ RepositoryElasticSearchFeature.class })
+@LocalDeploy("org.nuxeo.elasticsearch.core:disable-listener-contrib.xml")
 public class SimpleElasticSearchServiceTest {
 
     @Inject
     protected CoreSession session;
 
+    @After
+    public void cleanupIndexed() {
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+        IndicesExistsResponse exists = esa.getClient().admin().indices().exists(
+                new IndicesExistsRequest(ElasticSearchComponent.MAIN_IDX)).actionGet();
+        if (exists.isExists()) {
+            esa.getClient().admin().indices().delete(
+                    new DeleteIndexRequest(ElasticSearchComponent.MAIN_IDX)).actionGet();
+        }
+    }
+
     @Test
-    public void shouldHaveDeclaredServices() throws Exception {
+    public void checkDeclaredServices() throws Exception {
 
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
@@ -64,7 +90,7 @@ public class SimpleElasticSearchServiceTest {
     }
 
     @Test
-    public void shouldIndexDocuments() throws Exception {
+    public void checkManualSyncIndexing() throws Exception {
 
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
@@ -73,45 +99,181 @@ public class SimpleElasticSearchServiceTest {
 
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:title", "TestMe");
-        doc.putContextData(EventConstants.DISABLE_AUTO_INDEXING,
-                Boolean.TRUE);
+        doc.putContextData(EventConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
         doc = session.createDocument(doc);
         session.save();
 
-        String res = esi.indexNow(doc);
+        IndexingCommand cmd = new IndexingCommand(doc, true, false);
+        String res = esi.indexNow(cmd);
         Assert.assertNotNull(res);
 
-        SearchResponse searchResponse = ess.getClient().prepareSearch(ElasticSearchComponent.MAIN_IDX)
-                //.setTypes("doc")
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                //.setQuery(QueryBuilders.termQuery("type", "File"))             // Query
-                //.setQuery(QueryBuilders.termQuery("title", "Test Me"))             // Query
-                //.setQuery(QueryBuilders.termQuery("dc:title", "Test"))             // Query
-                //.setQuery(QueryBuilders.termQuery("uid", doc.getId()))             // Query
-                .setFrom(0).setSize(60)
-                .execute()
-                .actionGet();
+        esi.flush();
+
+        SearchResponse searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        searchResponse = ess.getClient().prepareSearch(ElasticSearchComponent.MAIN_IDX)
-                .setTypes("doc")
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(QueryBuilders.matchQuery("ecm:title", "TestMe"))
-                .setFrom(0).setSize(60)
-                .execute()
-                .actionGet();
+        searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
+                QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
+                60).execute().actionGet();
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+    }
+
+    @Test
+    public void checkManualPostCommitIndexing() throws Exception {
+
+        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+
+        Assert.assertNotNull(ess);
+        Assert.assertNotNull(esi);
+        Assert.assertNotNull(esa);
+
+        DocumentModel doc0 = session.createDocumentModel("/", "testNote",
+                "Note");
+        doc0.setPropertyValue("dc:title", "TesNote");
+        doc0 = session.createDocument(doc0);
+        session.save();
+
+        // init index
+        IndexingCommand cmd0 = new IndexingCommand(doc0, true, false);
+        esi.indexNow(cmd0);
+
+        DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
+        doc.setPropertyValue("dc:title", "TestMe");
+        doc.putContextData(EventConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
+        doc = session.createDocument(doc);
+        session.save();
+
+        // ask for postcommit indexing
+        IndexingCommand cmd = new IndexingCommand(doc, true, false);
+        esi.scheduleIndexing(cmd);
+
+        esi.flush();
+
+        // only one doc should be indexed for now
+        SearchResponse searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        searchResponse = ess.getClient().prepareSearch(ElasticSearchComponent.MAIN_IDX)
-                .setTypes("doc")
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(QueryBuilders.matchQuery("dc:title", "TestMe"))
-                .setFrom(0).setSize(60)
-                .execute()
-                .actionGet();
+        searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
+                QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
+                60).execute().actionGet();
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+
+        Assert.assertEquals(1, esa.getPendingCommands());
+        Assert.assertEquals(1, esa.getPendingDocs());
+
+        // now commit and wait for post commit indexing
+        TransactionHelper.commitOrRollbackTransaction();
+        int nbTry = 0;
+        while (esa.getPendingCommands() > 0 && nbTry < 20) {
+            Thread.sleep(200);
+            nbTry++;
+        }
+
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+
+        TransactionHelper.startTransaction();
+
+        searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
+        Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
+
+        searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
+                QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
+                60).execute().actionGet();
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+    }
+
+    @Test
+    public void checkManualAsyncIndexing() throws Exception {
+
+        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+
+        Assert.assertNotNull(ess);
+        Assert.assertNotNull(esi);
+        Assert.assertNotNull(esa);
+
+        DocumentModel doc0 = session.createDocumentModel("/", "testNote",
+                "Note");
+        doc0.setPropertyValue("dc:title", "TesNote");
+        doc0 = session.createDocument(doc0);
+        session.save();
+
+        // init index
+        IndexingCommand cmd0 = new IndexingCommand(doc0, true, false);
+        esi.indexNow(cmd0);
+
+        DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
+        doc.setPropertyValue("dc:title", "TestMe");
+        doc.putContextData(EventConstants.DISABLE_AUTO_INDEXING, Boolean.TRUE);
+        doc = session.createDocument(doc);
+        session.save();
+
+        // ask for postcommit indexing
+        IndexingCommand cmd = new IndexingCommand(doc, false, false);
+        esi.scheduleIndexing(cmd);
+
+        esi.flush();
+
+        // only one doc should be indexed for now
+        SearchResponse searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
+        searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
+                QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
+                60).execute().actionGet();
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+
+        Assert.assertEquals(1, esa.getPendingCommands());
+        Assert.assertEquals(1, esa.getPendingDocs());
+
+        // now commit and wait for post commit indexing
+        TransactionHelper.commitOrRollbackTransaction();
+
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+
+        wm.awaitCompletion(5, TimeUnit.SECONDS);
+
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+
+        esi.flush();
+
+        TransactionHelper.startTransaction();
+
+        searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
+        Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
+
+        searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
+                QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
+                60).execute().actionGet();
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
     }
 
 }

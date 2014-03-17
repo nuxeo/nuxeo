@@ -33,11 +33,6 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.elasticsearch.listener.EventConstants;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Contains logic to stack ElasticSearch commands depending on Document events
@@ -91,37 +86,27 @@ public abstract class IndexingCommandsStacker {
 
         for (IndexingCommands cmds : allCmds.values()) {
             for (IndexingCommand cmd : cmds.getMergedCommands()) {
-
-                Event evt = null;
                 if (cmd.isSync()) {
                     syncCommands.add(cmd);
                 } else {
                     asyncCommands.add(cmd);
                 }
-
             }
         }
         getAllCommands().clear();
 
-        if (syncCommands.size()>0) {
-            fireSyncIndexing(session,syncCommands);
+        if (syncCommands.size() > 0) {
+            fireSyncIndexing(session, syncCommands);
         }
-        if (asyncCommands.size()>0) {
-            fireAsyncIndexing(session,asyncCommands);
+        if (asyncCommands.size() > 0) {
+            fireAsyncIndexing(session, asyncCommands);
         }
     }
 
+    protected abstract void fireSyncIndexing(CoreSession session,
+            List<IndexingCommand> syncCommands) throws ClientException;
 
-    protected Map<String, Serializable> encodeAsMap(List<IndexingCommand> syncCommands) {
-        Map<String, Serializable> map = new HashMap<>();
-        for (IndexingCommand cmd : syncCommands) {
-            map.put("doc:" + cmd.getTargetDocument().getId(), cmd.getName());
-        }
-        return map;
-    }
-
-    protected abstract void fireSyncIndexing(CoreSession session, List<IndexingCommand> syncCommands) throws ClientException;
-
-    protected abstract void fireAsyncIndexing(CoreSession session, List<IndexingCommand> asyncCommands) throws ClientException;
+    protected abstract void fireAsyncIndexing(CoreSession session,
+            List<IndexingCommand> asyncCommands) throws ClientException;
 
 }

@@ -32,6 +32,7 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
 import org.nuxeo.runtime.api.Framework;
@@ -49,6 +50,9 @@ public class ElasticSearchNativePageProviderTest {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    ElasticSearchIndexing esi;
 
     @Test
     public void ICanUseThePageProvider() throws Exception {
@@ -77,12 +81,15 @@ public class ElasticSearchNativePageProviderTest {
         session.save();
         ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
-        Assert.assertEquals(10, esa.getPendingIndexingTasksCount());
+        Assert.assertEquals(10, esa.getPendingDocs());
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        Assert.assertTrue(esa.getPendingIndexingTasksCount() > 0);
+        Assert.assertTrue(esa.getPendingDocs() > 0);
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+
+        esi.flush();
+
 
         // get current page
         List<?> p = pp.getCurrentPage();

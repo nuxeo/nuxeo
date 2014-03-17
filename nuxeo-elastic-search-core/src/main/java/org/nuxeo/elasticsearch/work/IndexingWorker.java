@@ -17,8 +17,6 @@
 
 package org.nuxeo.elasticsearch.work;
 
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -33,23 +31,17 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class IndexingWorker extends AbstractIndexingWorker implements Work {
 
-    protected final boolean recurse;
-
-    public IndexingWorker(DocumentModel doc, boolean recurse) {
-        super(doc);
-        this.recurse = recurse;
-    }
+    private static final long serialVersionUID = 1L;
 
     public IndexingWorker(IndexingCommand cmd) {
-        super(cmd.getTargetDocument());
-        this.recurse = cmd.isRecurse();
-        // XXX handle indexing command itself
+        super(cmd);
     }
 
     @Override
     public String getTitle() {
-        String title = " Elasticsearch indexing for doc " + docRef
-                + " in repository " + repositoryName;
+        String title = " Elasticsearch indexing for doc "
+                + cmd.getTargetDocument().getId() + " in repository "
+                + cmd.getTargetDocument().getRepositoryName();
         if (path != null) {
             title = title + " (" + path + ")";
         }
@@ -57,19 +49,15 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
     }
 
     @Override
-    protected void doIndexingWork(CoreSession session,
-            ElasticSearchIndexing esi, DocumentModel doc) throws Exception {
-        esi.indexNow(doc);
-        if (recurse) {
-            ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(doc);
+    protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd)
+            throws Exception {
+
+        esi.indexNow(cmd);
+        if (cmd.isRecurse()) {
+            ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(cmd);
             WorkManager wm = Framework.getLocalService(WorkManager.class);
             wm.schedule(subWorker);
         }
     }
-
-    /*
-     * @Override protected Work clone(DocumentModel doc) { return new
-     * IndexingWorker(doc, recurse); }
-     */
 
 }

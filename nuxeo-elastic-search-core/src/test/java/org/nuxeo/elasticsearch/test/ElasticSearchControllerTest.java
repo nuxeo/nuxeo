@@ -37,10 +37,16 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
+/**
+ * Check controller for Elastic Search
+ *
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ *
+ */
 @RunWith(FeaturesRunner.class)
 @Features(BareElasticSearchFeature.class)
 @Deploy({})
-public class SimpleElasticSearchTest {
+public class ElasticSearchControllerTest {
 
     @Inject
     protected Node elasticSearchNode;

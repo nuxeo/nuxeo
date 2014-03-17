@@ -17,6 +17,7 @@
 
 package org.nuxeo.elasticsearch.api;
 
+import org.elasticsearch.client.Client;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.elasticsearch.NuxeoElasticSearchConfig;
 
@@ -28,10 +29,19 @@ import org.nuxeo.elasticsearch.NuxeoElasticSearchConfig;
  */
 public interface ElasticSearchAdmin {
 
+    /**
+     * Retrieves the {@link Client} that can be used to acces ElasticSearch API
+     *
+     * @return
+     */
+    Client getClient();
+
     NuxeoElasticSearchConfig getConfig();
 
     boolean isAlreadyScheduledForIndexing(DocumentModel doc);
 
-    int getPendingIndexingTasksCount();
+    int getPendingDocs();
+
+    int getPendingCommands();
 
 }

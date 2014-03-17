@@ -17,12 +17,12 @@
 
 package org.nuxeo.elasticsearch.work;
 
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
+import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -34,14 +34,17 @@ import org.nuxeo.runtime.api.Framework;
 public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
         Work {
 
-    public ChildrenIndexingWorker(DocumentModel doc) {
-        super(doc);
+    private static final long serialVersionUID = 1L;
+
+    public ChildrenIndexingWorker(IndexingCommand cmd) {
+        super(cmd);
     }
 
     @Override
     public String getTitle() {
-        String title = " Elasticsearch indexing children for doc " + docRef
-                + " in repository " + repositoryName;
+        String title = " Elasticsearch indexing children for doc "
+                + cmd.getTargetDocument().getId() + " in repository "
+                + cmd.getTargetDocument().getId();
         if (path != null) {
             title = title + " (" + path + ")";
         }
@@ -49,27 +52,26 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
     }
 
     @Override
-    protected void doIndexingWork(CoreSession session,
-            ElasticSearchIndexing esi, DocumentModel doc) throws Exception {
+    protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd)
+            throws Exception {
+        DocumentModel doc = cmd.getTargetDocument();
         DocumentModelIterator iter = session.getChildrenIterator(doc.getRef());
         while (iter.hasNext()) {
             DocumentModel child = iter.next();
+
+            IndexingCommand childCommand = cmd.clone(child);
+
             if (!isAlreadyScheduledForIndexing(child)) {
-                esi.indexNow(child);
+                esi.indexNow(childCommand);
             }
             if (child.isFolder()) {
                 ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(
-                        child);
+                        childCommand);
                 WorkManager wm = Framework.getLocalService(WorkManager.class);
                 wm.schedule(subWorker);
             }
         }
 
     }
-
-    /*
-     * @Override protected Work clone(DocumentModel doc) { return new
-     * ChildrenIndexingWorker(doc); }
-     */
 
 }

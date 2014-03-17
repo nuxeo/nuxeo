@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -34,6 +35,7 @@ import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommands;
 import org.nuxeo.elasticsearch.commands.IndexingCommandsStacker;
@@ -68,8 +70,9 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
 
         String eventId = event.getName();
 
-        if (SESSION_SAVED.equals(eventId)) {
+        if (event.isCommitEvent()) {
             flushCommands(event.getContext().getCoreSession());
+            return;
         }
 
         DocumentEventContext docCtx;
@@ -85,6 +88,10 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
     protected void stackCommand(DocumentEventContext docCtx, String eventId) {
         DocumentModel doc = docCtx.getSourceDocument();
 
+        if (doc==null) {
+            return;
+        }
+
         Boolean block = (Boolean) docCtx.getProperty(EventConstants.DISABLE_AUTO_INDEXING);
         if (block != null && block) {
             // ignore the event - we are blocked by the caller
@@ -94,8 +101,9 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
 
         Boolean sync = (Boolean) docCtx.getProperty(EventConstants.ES_SYNC_INDEXING_FLAG);
         if (sync == null) {
-            sync = (Boolean) doc.getContextData(EventConstants.ES_SYNC_INDEXING_FLAG);
+            sync = (Boolean) doc.getContextData().get(EventConstants.ES_SYNC_INDEXING_FLAG);
         }
+
         if (sync == null) {
             sync = false;
         }
@@ -105,23 +113,17 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
 
     protected void fireSyncIndexing(CoreSession session,
             List<IndexingCommand> syncCommands) throws ClientException {
-
-        EventProducer evtProducer = Framework.getLocalService(EventProducer.class);
-
-        EventContextImpl context = new EventContextImpl(session,
-                session.getPrincipal());
-        context.getProperties().putAll(encodeAsMap(syncCommands));
-
-        Event indexingEvent = context.newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
-        evtProducer.fireEvent(indexingEvent);
-
+        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+        for (IndexingCommand cmd : syncCommands) {
+            esi.scheduleIndexing(cmd);
+        }
     }
 
     protected void fireAsyncIndexing(CoreSession session,
             List<IndexingCommand> asyncCommands) throws ClientException {
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
         for (IndexingCommand cmd : asyncCommands) {
-            wm.schedule(new IndexingWorker(cmd));
+            esi.scheduleIndexing(cmd);
         }
     }
 

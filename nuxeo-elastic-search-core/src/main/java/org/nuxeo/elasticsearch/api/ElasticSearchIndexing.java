@@ -1,25 +1,13 @@
 package org.nuxeo.elasticsearch.api;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.elasticsearch.commands.IndexingCommand;
 
 public interface ElasticSearchIndexing {
 
-    /**
-     * Starts an async indexing task
-     *
-     * @param doc
-     * @param recurse
-     */
-    void index(DocumentModel doc, boolean recurse);
+    String indexNow(IndexingCommand cmd) throws ClientException;
 
-    /**
-     * Index synchronously a single {@link DocumentModel}
-     *
-     * @param doc
-     * @return
-     * @throws ClientException
-     */
-    String indexNow(DocumentModel doc) throws ClientException;
+    void scheduleIndexing(IndexingCommand cmd) throws ClientException;
 
+    void flush();
 }
