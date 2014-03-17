@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Destroy;
@@ -42,7 +40,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
@@ -52,7 +49,6 @@ import org.nuxeo.ecm.platform.forms.layout.demo.service.LayoutDemoManager;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.query.api.PageSelection;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component providing information contextual to a session on the
@@ -69,8 +65,6 @@ public class LayoutDemoContext implements Serializable {
     public static final String TEST_REPO_NAME = "layoutDemo";
 
     public static final String DEMO_DOCUMENT_TYPE = "LayoutDemoDocument";
-
-    protected LoginContext demoLoginContext;
 
     protected CoreSession demoCoreSession;
 
@@ -93,19 +87,14 @@ public class LayoutDemoContext implements Serializable {
 
     @Create
     public void openCoreSession() throws Exception {
-        demoLoginContext = Framework.login();
-        RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-        demoCoreSession = mgr.getRepository("layoutDemo").open();
+        demoCoreSession = CoreInstance.openCoreSessionSystem("layoutDemo");
     }
 
     @Destroy
     @BypassInterceptors
-    public void closeCoreSession() throws LoginException {
+    public void closeCoreSession() {
         if (demoCoreSession != null) {
-            CoreInstance.getInstance().close(demoCoreSession);
-        }
-        if (demoLoginContext != null) {
-            demoLoginContext.logout();
+            demoCoreSession.close();
         }
     }
 
