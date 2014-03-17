@@ -20,14 +20,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -78,16 +74,14 @@ public class TestQuotaService {
 
     @Test
     public void testSetQuotaOnUserWorkspaces() throws Exception {
-        CoreSession userSession;
         DocumentRef uwRef1;
         DocumentRef uwRef2;
 
         assertNotNull(workManager);
         TransactionHelper.startTransaction();
-        try {
-            userSession = openSessionAs("jdoe");
+        try (CoreSession userSession = CoreInstance.openCoreSession(
+                session.getRepositoryName(), "jdoe")) {
             assertNotNull(uwm);
-
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession,
                     null);
             assertNotNull(uw);
@@ -96,13 +90,12 @@ public class TestQuotaService {
             // check creator
             String creator = (String) uw.getProperty("dublincore", "creator");
             assertEquals(creator, "jdoe");
-            CoreInstance.getInstance().close(userSession);
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
         TransactionHelper.startTransaction();
-        try {
-            userSession = openSessionAs("jack");
+        try (CoreSession userSession = CoreInstance.openCoreSession(
+                session.getRepositoryName(), "jack")) {
             uwm = Framework.getLocalService(UserWorkspaceService.class);
             assertNotNull(uwm);
 
@@ -114,7 +107,6 @@ public class TestQuotaService {
             // check creator
             String creator = (String) uw.getProperty("dublincore", "creator");
             assertEquals(creator, "jack");
-            CoreInstance.getInstance().close(userSession);
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
@@ -133,13 +125,6 @@ public class TestQuotaService {
         assertEquals(0, workManager.getQueueSize("quota", null));
         assertTrue((Long) uw1.getPropertyValue("dss:maxSize") == 100L);
         assertTrue((Long) uw2.getPropertyValue("dss:maxSize") == 100L);
-    }
-
-    public CoreSession openSessionAs(String username) throws ClientException {
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("username", username);
-        return CoreInstance.getInstance().open(session.getRepositoryName(),
-                context);
     }
 
 }
