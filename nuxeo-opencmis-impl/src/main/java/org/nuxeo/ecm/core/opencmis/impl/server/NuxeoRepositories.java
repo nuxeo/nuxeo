@@ -19,8 +19,8 @@ import java.util.Map;
 
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -63,21 +63,14 @@ public class NuxeoRepositories extends DefaultComponent {
         repositories = Collections.synchronizedMap(new HashMap<String, NuxeoRepository>());
         try {
             RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-            for (String repositoryId : repositoryManager.getRepositoryNames()) {
-                String rootFolderId;
-                CoreSession coreSession = null;
-                try {
-                    coreSession = repositoryManager.getRepository(repositoryId).open();
-                    rootFolderId = coreSession.getRootDocument().getId();
+            for (String repositoryName : repositoryManager.getRepositoryNames()) {
+                try (CoreSession coreSession = CoreInstance.openCoreSession(repositoryName)) {
+                    String rootFolderId = coreSession.getRootDocument().getId();
+                    repositories.put(repositoryName, new NuxeoRepository(
+                            repositoryName, rootFolderId));
                 } catch (ClientException e) {
                     throw new CmisRuntimeException(e.toString(), e);
-                } finally {
-                    if (coreSession != null) {
-                        Repository.close(coreSession);
-                    }
                 }
-                repositories.put(repositoryId, new NuxeoRepository(
-                        repositoryId, rootFolderId));
             }
         } catch (CmisRuntimeException e) {
             throw e;

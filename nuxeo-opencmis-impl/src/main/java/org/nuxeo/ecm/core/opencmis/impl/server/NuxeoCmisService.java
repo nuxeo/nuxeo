@@ -102,6 +102,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -118,8 +119,6 @@ import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
@@ -201,28 +200,16 @@ public class NuxeoCmisService extends AbstractCmisService {
         clearObjectInfos();
     }
 
-    protected CoreSession openCoreSession(String repositoryId) {
+    protected CoreSession openCoreSession(String repositoryName) {
         try {
-            Repository repository = Framework.getService(
-                    RepositoryManager.class).getRepository(repositoryId);
-            if (repository == null) {
-                throw new CmisRuntimeException("Cannot get repository: "
-                        + repositoryId);
-            }
-            return repository.open();
-        } catch (CmisRuntimeException e) {
-            throw e;
-        } catch (Exception e) {
+            return CoreInstance.openCoreSession(repositoryName);
+        } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
     }
 
     protected void closeCoreSession() {
-        try {
-            Repository.close(coreSession);
-        } catch (Exception e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        coreSession.close();
     }
 
     public NuxeoRepository getNuxeoRepository() {
