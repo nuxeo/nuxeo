@@ -53,8 +53,11 @@ class Repository(object):
         (self.basedir, self.driveletter,
          self.oldbasedir) = long_path_workaround_init(basedir, dirmapping)
         self.mp_dir = os.path.join(self.basedir, "marketplace")
+        if not os.path.isdir(self.mp_dir):
+            os.mkdir(self.mp_dir)
         self.alias = alias
         # find the remote URL
+        os.chdir(self.basedir)
         remote_lines = check_output("git remote -v").split("\n")
         for remote_line in remote_lines:
             remote_alias, remote_url, _ = remote_line.split()
@@ -258,8 +261,6 @@ class Repository(object):
         """Clone or update Nuxeo Marketplace package repositories.
 
         Returns the Marketplace packages configuration."""
-        if not os.path.isdir(self.mp_dir):
-            os.mkdir(self.mp_dir)
         os.chdir(self.mp_dir)
         mp_config = self.get_mp_config(marketplace_conf)
         for marketplace in mp_config.sections():

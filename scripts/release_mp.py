@@ -21,6 +21,7 @@ import fnmatch
 import optparse
 import os
 import sys
+import inspect
 from release import Release
 import traceback
 
@@ -46,7 +47,18 @@ class ReleaseMP(object):
         if marketplace_conf == '':
             marketplace_conf = DEFAULT_MP_CONF_URL
         self.marketplace_conf = marketplace_conf
-        self.repo = Repository(os.getcwd(), self.alias)
+        cwd = os.getcwd()
+        if os.path.isdir(os.path.join(cwd, "marketplace")):
+            pass
+        elif os.path.split(cwd)[1] == "marketplace":
+            cwd = os.path.abspath(os.path.join(cwd, os.pardir))
+        else:
+            if '__file__' not in locals():
+                __file__ = inspect.getframeinfo(inspect.currentframe())[0]
+            cwd = os.path.dirname(os.path.abspath(__file__))
+            cwd = os.path.abspath(os.path.join(cwd, os.pardir))
+        log("Nuxeo source location: %s" % cwd)
+        self.repo = Repository(cwd, self.alias)
         self.mp_config = self.repo.get_mp_config(self.marketplace_conf)
 
     def clone(self):
@@ -66,12 +78,13 @@ class ReleaseMP(object):
             idx = marketplaces.index(self.restart_from)
             marketplaces = marketplaces[idx:]
         for marketplace in marketplaces:
-            log("[%s]" % marketplace)
             if self.mp_config.has_option(marketplace, "skip"):
+                log("[%s]" % marketplace)
                 log("[WARN] Skipped '%s' (%s)" % (marketplace,
                                     self.mp_config.get(marketplace, "skip")))
                 continue
             if self.mp_config.getboolean(marketplace, "prepared"):
+                log("[%s]" % marketplace)
                 log("Skipped '%s' (%s)" % (marketplace, "Already prepared"))
                 continue
             try:
@@ -80,6 +93,8 @@ class ReleaseMP(object):
                     os.chdir(self.repo.mp_dir)
                     self.repo.git_pull(marketplace,
                                     self.mp_config.get(marketplace, "branch"))
+                else:
+                    log("[%s]" % marketplace)
                 os.chdir(mp_dir)
                 mp_repo = Repository(os.getcwd(), self.alias)
                 log("Prepare release of %s..." % marketplace)
