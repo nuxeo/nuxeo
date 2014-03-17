@@ -14,10 +14,6 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.After;
 import static org.junit.Assert.*;
@@ -133,16 +129,12 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     }
 
     public CoreSession openSessionAs(String username) throws ClientException {
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("username", username);
-        return CoreInstance.getInstance().open(database.repositoryName, context);
+        return CoreInstance.openCoreSession(database.repositoryName, username);
     }
 
     public CoreSession openSessionAs(NuxeoPrincipal principal)
             throws ClientException {
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("principal", principal);
-        return CoreInstance.getInstance().open(database.repositoryName, context);
+        return CoreInstance.openCoreSession(database.repositoryName, principal);
     }
 
     public void closeSession() {
@@ -152,7 +144,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
 
     public void closeSession(CoreSession session) {
         if (session != null) {
-            CoreInstance.getInstance().close(session);
+            session.close();
         }
     }
 

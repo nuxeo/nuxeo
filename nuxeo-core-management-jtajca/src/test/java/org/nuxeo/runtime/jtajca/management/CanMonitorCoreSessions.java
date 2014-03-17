@@ -80,14 +80,11 @@ public class CanMonitorCoreSessions {
         assertThat(count, is(1));
         String firstInfo = monitor.getInfos()[0];
         assertThat(firstInfo.length(), greaterThan(0));
-        CoreSession adminSession = runner.getFeature(CoreFeature.class).getRepository().openSessionAsSystemUser();
         count = monitor.getCount();
-        try {
+        try (CoreSession adminSession = runner.getFeature(CoreFeature.class).getRepository().openSessionAsSystemUser()) {
             assertThat(count, is(2));
             String secondInfo = monitor.getInfos()[1];
             assertThat(secondInfo, not(is(firstInfo)));
-        } finally {
-            Repository.close(adminSession);
         }
         return;
     }

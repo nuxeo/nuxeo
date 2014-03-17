@@ -214,6 +214,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     private String sessionId;
 
+    @Override
+    public void close() {
+        CoreInstance.getInstance().close(this);
+    }
+
     /**
      * Internal method: Gets the current session based on the client session id.
      *

@@ -18,10 +18,6 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -173,14 +169,9 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.core.storage.sql.test",
                 "OSGI-INF/test-pooling-h2-repo2-contrib.xml");
         // open a second repository
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("username", SecurityConstants.ADMINISTRATOR);
-        CoreSession session2 = CoreInstance.getInstance().open(
-                database.repositoryName + "2", context);
-        try {
+        try (CoreSession session2 = CoreInstance.openCoreSession(
+                database.repositoryName + "2", SecurityConstants.ADMINISTRATOR)) {
             doTestMultipleRepositoriesPerTransaction(session2);
-        } finally {
-            CoreInstance.getInstance().close(session2);
         }
     }
 

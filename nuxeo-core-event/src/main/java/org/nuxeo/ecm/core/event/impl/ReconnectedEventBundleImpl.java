@@ -23,9 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -33,14 +30,11 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation for an {@link EventBundle} that need to be
@@ -58,8 +52,6 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
     protected String listenerName;
 
     protected List<Event> reconnectedEvents;
-
-    protected LoginContext loginCtx;
 
     protected CoreSession reconnectedCoreSession;
 
@@ -81,23 +73,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
     protected CoreSession getReconnectedCoreSession(String repoName) {
         if (reconnectedCoreSession == null) {
             try {
-                loginCtx = Framework.login();
-            } catch (LoginException e) {
-                log.error("Can not connect", e);
-                return null;
-            }
-
-            try {
-                RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-                Repository repo;
-                if (repoName != null) {
-                    repo = mgr.getRepository(repoName);
-                } else {
-                    repo = mgr.getDefaultRepository();
-                    repoName = repo.getName();
-                }
-
-                reconnectedCoreSession = repo.open();
+                reconnectedCoreSession = CoreInstance.openCoreSessionSystem(repoName);
             } catch (Exception e) {
                 log.error("Error while openning core session on repo "
                         + repoName, e);
@@ -247,17 +223,10 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
     @Override
     public void disconnect() {
         if (reconnectedCoreSession != null) {
-            CoreInstance.getInstance().close(reconnectedCoreSession);
+            reconnectedCoreSession.close();
         }
         reconnectedCoreSession=null;
         reconnectedEvents=null;
-        if (loginCtx != null) {
-            try {
-                loginCtx.logout();
-            } catch (LoginException e) {
-                log.error("Error while logging out", e);
-            }
-        }
     }
 
     @Override

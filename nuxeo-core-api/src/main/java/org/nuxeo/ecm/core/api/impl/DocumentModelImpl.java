@@ -60,7 +60,6 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -390,14 +389,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                                 + " is bound to a closed CoreSession, can not reconnect");
             }
         }
-        try {
-            RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-            return mgr.getRepository(repositoryName).open();
-        } catch (ClientException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        return CoreInstance.openCoreSession(repositoryName);
     }
 
     protected abstract class RunWithCoreSession<T> {
@@ -414,13 +406,10 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 try {
                     return run();
                 } finally {
-                    if (session != null) {
-                        try {
-                            session.save();
-                        } finally {
-                            CoreInstance.getInstance().close(session);
-                            session = null;
-                        }
+                    try {
+                        session.save();
+                    } finally {
+                        session.close();
                     }
                 }
             }

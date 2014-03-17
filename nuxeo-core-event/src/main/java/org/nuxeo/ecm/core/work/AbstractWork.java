@@ -23,9 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -34,11 +31,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -109,8 +103,6 @@ public abstract class AbstractWork implements Work {
     protected long startTime;
 
     protected long completionTime;
-
-    protected transient LoginContext loginContext;
 
     protected transient CoreSession session;
 
@@ -253,27 +245,7 @@ public abstract class AbstractWork implements Work {
      * @return the session (also available in {@code session} field)
      */
     public CoreSession initSession(String repositoryName) throws Exception {
-        if (loginContext == null) {
-            try {
-                loginContext = Framework.login();
-            } catch (LoginException e) {
-                log.error("Cannot log in", e);
-            }
-        }
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        if (repositoryManager == null) {
-            // would happen if only low-level repo is initialized
-            throw new RuntimeException(
-                    "RepositoryManager service not available");
-        }
-        Repository repository;
-        if (repositoryName != null) {
-            repository = repositoryManager.getRepository(repositoryName);
-        } else {
-            repository = repositoryManager.getDefaultRepository();
-            repositoryName = repository.getName();
-        }
-        session = repository.open();
+        session = CoreInstance.openCoreSessionSystem(repositoryName);
         return session;
     }
 
@@ -284,7 +256,7 @@ public abstract class AbstractWork implements Work {
      */
     public void closeSession() {
         if (session != null) {
-            CoreInstance.getInstance().close(session);
+            session.close();
             session = null;
         }
     }
@@ -356,18 +328,7 @@ public abstract class AbstractWork implements Work {
                 }
             }
         }
-        try {
-            closeSession();
-        } finally {
-            if (loginContext != null) {
-                try {
-                    loginContext.logout();
-                    loginContext = null;
-                } catch (LoginException le) {
-                    log.error("Error while logging out", le);
-                }
-            }
-        }
+        closeSession();
     }
 
     @Override

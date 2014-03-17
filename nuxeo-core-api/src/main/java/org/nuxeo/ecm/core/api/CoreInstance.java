@@ -13,8 +13,10 @@
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -81,10 +84,85 @@ public class CoreInstance {
         return instance;
     }
 
+    /**
+     * Opens a {@link CoreSession} for the currently logged-in user.
+     * <p>
+     * The session must be closed using {@link CoreSession#close}.
+     *
+     * @param repositoryName the repository name, or {@code null} for the
+     *            default repository
+     * @return the session
+     * @since 5.9.3
+     */
+    public static CoreSession openCoreSession(String repositoryName)
+            throws ClientException {
+        return getInstance().open(repositoryName, null);
+    }
+
+    /**
+     * Opens a {@link CoreSession} for the given user.
+     * <p>
+     * The session must be closed using {@link CoreSession#close}.
+     *
+     * @param repositoryName the repository name, or {@code null} for the
+     *            default repository
+     * @param username the user name
+     * @return the session
+     * @since 5.9.3
+     */
+    public static CoreSession openCoreSession(String repositoryName,
+            String username) throws ClientException {
+        Map<String, Serializable> context = new HashMap<String, Serializable>();
+        context.put("username", username);
+        return getInstance().open(repositoryName, context);
+    }
+
+    /**
+     * Opens a {@link CoreSession} for the given principal.
+     * <p>
+     * The session must be closed using {@link CoreSession#close}.
+     *
+     * @param repositoryName the repository name, or {@code null} for the
+     *            default repository
+     * @param principal the principal
+     * @return the session
+     * @since 5.9.3
+     */
+    public static CoreSession openCoreSession(String repositoryName,
+            Principal principal) throws ClientException {
+        Map<String, Serializable> context = new HashMap<String, Serializable>();
+        if (principal instanceof NuxeoPrincipal) {
+            context.put("principal", (NuxeoPrincipal) principal);
+        } else {
+            context.put("username", principal.getName());
+        }
+        return getInstance().open(repositoryName, context);
+    }
+
+    /**
+     * Opens a {@link CoreSession} for a system user.
+     * <p>
+     * The session must be closed using {@link CoreSession#close}.
+     *
+     * @param repositoryName the repository name
+     * @return the session
+     * @since 5.9.3
+     */
+    public static CoreSession openCoreSessionSystem(String repositoryName)
+            throws ClientException {
+        return openCoreSession(repositoryName,
+                SecurityConstants.SYSTEM_USERNAME);
+    }
+
     public CoreSession open(String repositoryName,
             Map<String, Serializable> context) throws ClientException {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        Repository repository = repositoryManager.getRepository(repositoryName);
+        Repository repository;
+        if (repositoryName == null) {
+            repository = repositoryManager.getDefaultRepository();
+        } else {
+            repository = repositoryManager.getRepository(repositoryName);
+        }
         if (repository == null) {
             throw new ClientException("No such repository: " + repositoryName);
         }

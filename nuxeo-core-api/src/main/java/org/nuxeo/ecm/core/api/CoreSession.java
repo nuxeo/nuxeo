@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
-public interface CoreSession {
+public interface CoreSession extends AutoCloseable {
 
     // used to pass properties to importDocument
     String IMPORT_VERSION_VERSIONABLE_ID = "ecm:versionableId";
@@ -94,6 +94,14 @@ public interface CoreSession {
      * @since 5.9.2
      */
     String ALLOW_VERSION_WRITE = "allowVersionWrite";
+
+    /**
+     * Closes this session.
+     *
+     * @since 5.9.3
+     */
+    @Override
+    void close();
 
     /**
      * The container calls this when this session sees a transaction begin.

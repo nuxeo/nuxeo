@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.core.management.jtajca.internal;
 
-import java.io.Serializable;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +38,6 @@ import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.DatabaseConnectionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.Defaults;
@@ -176,11 +174,9 @@ public class DefaultMonitorComponent extends DefaultComponent {
      */
     protected void activateRepository(String repositoryName)
             throws ClientException {
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("username", SecurityConstants.SYSTEM_USERNAME);
-        CoreSession session = CoreInstance.getInstance().open(repositoryName,
-                context);
-        CoreInstance.getInstance().close(session);
+        try (CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
+            // do nothing, just open and close
+        }
     }
 
     protected void uninstall() throws JMException {

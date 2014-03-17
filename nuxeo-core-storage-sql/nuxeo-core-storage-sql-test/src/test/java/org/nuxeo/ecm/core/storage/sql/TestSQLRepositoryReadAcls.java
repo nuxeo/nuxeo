@@ -13,9 +13,6 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
@@ -127,24 +124,11 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
             this.barrier = barrier;
         }
 
-        protected CoreSession openSession(String userName)
-                throws ClientException {
-            TransactionHelper.startTransaction();
-            Map<String, Serializable> context = new HashMap<String, Serializable>();
-            context.put("username", userName);
-            return CoreInstance.getInstance().open(repositoryName, context);
-        }
-
-        protected void closeSession(CoreSession session) {
-            CoreInstance.getInstance().close(session);
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-
         @Override
         public void run() {
-            CoreSession session = null;
-            try {
-                session = openSession("bob");
+            TransactionHelper.startTransaction();
+            try (CoreSession session = CoreInstance.openCoreSession(
+                    repositoryName, "bob")) {
                 if (ready != null) {
                     ready.countDown();
                     ready = null;
@@ -156,9 +140,7 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
                 t.printStackTrace();
                 throwable = t;
             } finally {
-                if (session != null) {
-                    closeSession(session);
-                }
+                TransactionHelper.commitOrRollbackTransaction();
                 // error recovery
                 // still count down as main thread is awaiting us
                 if (ready != null) {

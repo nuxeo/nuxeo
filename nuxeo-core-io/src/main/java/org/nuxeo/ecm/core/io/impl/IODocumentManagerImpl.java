@@ -16,12 +16,9 @@ package org.nuxeo.ecm.core.io.impl;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -40,7 +37,6 @@ import org.nuxeo.ecm.core.io.impl.plugins.DocumentTreeReader;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentsListReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * IODocumentManager basic implementation.
@@ -51,43 +47,24 @@ public class IODocumentManagerImpl implements IODocumentManager {
 
     private static final long serialVersionUID = -3131999198524020179L;
 
-    private static CoreSession getCoreSession(String repositoryName)
-            throws ClientException {
-        try {
-            Framework.login();
-            Map<String, Serializable> context = new HashMap<String, Serializable>();
-            return CoreInstance.getInstance().open(repositoryName, context);
-        } catch (ClientException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ClientException(
-                    "Failed to open core session to repository "
-                            + repositoryName, e);
-        }
-    }
-
     @Override
     public DocumentTranslationMap importDocuments(InputStream in, String repo,
             DocumentRef root) throws ImportDocumentException, ClientException {
-        CoreSession coreSession = getCoreSession(repo);
-        final DocumentModel dst = coreSession.getDocument(root);
-
         DocumentReader reader = null;
         DocumentModelWriter writer = null;
-
-        try {
+        try (CoreSession coreSession = CoreInstance.openCoreSessionSystem(repo)) {
+            final DocumentModel dst = coreSession.getDocument(root);
             reader = new NuxeoArchiveReader(in);
             writer = new DocumentModelWriter(coreSession, dst.getPathAsString());
             DocumentPipe pipe = new DocumentPipeImpl(10);
             pipe.setReader(reader);
             pipe.setWriter(writer);
-            return pipe.run();
+            DocumentTranslationMap map = pipe.run();
+            coreSession.save();
+            return map;
         } catch (Exception e) {
             throw new ImportDocumentException(e);
         } finally {
-            // make docs available to all
-            coreSession.save();
-
             if (reader != null) {
                 reader.close();
             }
@@ -128,12 +105,9 @@ public class IODocumentManagerImpl implements IODocumentManager {
     public DocumentTranslationMap exportDocuments(OutputStream out,
             String repo, Collection<DocumentRef> sources, boolean recurse,
             String format) throws ExportDocumentException, ClientException {
-        CoreSession coreSession = getCoreSession(repo);
-
         DocumentReader reader = null;
         DocumentWriter writer = null;
-
-        try {
+        try (CoreSession coreSession = CoreInstance.openCoreSessionSystem(repo)) {
             DocumentPipe pipe = new DocumentPipeImpl(10);
             // XXX check format before creating writer
             writer = new NuxeoArchiveWriter(out);
