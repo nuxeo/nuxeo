@@ -52,7 +52,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -227,9 +226,8 @@ public class TestUserWorkspaceHierarchy {
 
     @After
     public void tearDown() throws ClientException {
-
         // Close test user core session
-        CoreInstance.getInstance().close(session1);
+        session1.close();
 
         // Delete test user
         deleteUser("user1");

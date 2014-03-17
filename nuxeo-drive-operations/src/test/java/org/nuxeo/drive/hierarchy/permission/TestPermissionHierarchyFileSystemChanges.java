@@ -44,7 +44,6 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -167,10 +166,9 @@ public class TestPermissionHierarchyFileSystemChanges {
 
     @After
     public void tearDown() throws ClientException {
-
         // Close core sessions
-        CoreInstance.getInstance().close(session1);
-        CoreInstance.getInstance().close(session2);
+        session1.close();
+        session2.close();
 
         // Delete test users
         deleteUser("user1");

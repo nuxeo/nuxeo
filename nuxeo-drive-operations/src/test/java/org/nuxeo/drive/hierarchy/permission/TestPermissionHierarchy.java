@@ -55,7 +55,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -265,10 +264,9 @@ public class TestPermissionHierarchy {
 
     @After
     public void tearDown() throws ClientException {
-
         // Close core sessions
-        CoreInstance.getInstance().close(session1);
-        CoreInstance.getInstance().close(session2);
+        session1.close();
+        session2.close();
 
         // Delete test users
         deleteUser("user1");

@@ -43,7 +43,6 @@ import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -351,30 +350,31 @@ public class TestDefaultFileSystemItemFactory {
         // As a user with READ permission
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
-        CoreSession joeSession = repository.openSessionAs("joe");
+        try (CoreSession joeSession = repository.openSessionAs("joe")) {
 
-        nuxeoDriveManager.registerSynchronizationRoot(
-                joeSession.getPrincipal(), syncRootFolder, session);
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    joeSession.getPrincipal(), syncRootFolder, session);
 
-        // Under Oracle, the READ ACL optims are not visible from the joe
-        // session while the transaction has not been committed.
-        CoreInstance.getInstance().close(joeSession);
+            // Under Oracle, the READ ACL optims are not visible from the joe
+            // session while the transaction has not been committed.
+        }
+
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        joeSession = repository.openSessionAs("joe");
 
-        note = joeSession.getDocument(note.getRef());
-        fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
-        assertFalse(fsItem.getCanRename());
-        assertFalse(fsItem.getCanDelete());
+        try (CoreSession joeSession = repository.openSessionAs("joe")) {
 
-        // As a user with WRITE permission
-        setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
-        fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
-        assertTrue(fsItem.getCanRename());
-        assertTrue(fsItem.getCanDelete());
+            note = joeSession.getDocument(note.getRef());
+            fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
+            assertFalse(fsItem.getCanRename());
+            assertFalse(fsItem.getCanDelete());
 
-        CoreInstance.getInstance().close(joeSession);
+            // As a user with WRITE permission
+            setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
+            fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
+            assertTrue(fsItem.getCanRename());
+            assertTrue(fsItem.getCanDelete());
+        }
         resetPermissions(rootDoc, "joe");
     }
 
@@ -503,146 +503,145 @@ public class TestDefaultFileSystemItemFactory {
             // As a user with READ permission
             DocumentModel rootDoc = session.getRootDocument();
             setPermission(rootDoc, "joe", SecurityConstants.READ, true);
-            CoreSession joeSession = repository.openSessionAs("joe");
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    joeSession.getPrincipal(), syncRootFolder, session);
 
-            // Under Oracle, the READ ACL optims are not visible from the joe
-            // session while the transaction has not been committed.
-            CoreInstance.getInstance().close(joeSession);
+            try (CoreSession joeSession = repository.openSessionAs("joe")) {
+                nuxeoDriveManager.registerSynchronizationRoot(
+                        joeSession.getPrincipal(), syncRootFolder, session);
+                // Under Oracle, the READ ACL optims are not visible from the
+                // joe session while the transaction has not been committed.
+            }
+
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
-            joeSession = repository.openSessionAs("joe");
 
-            file = joeSession.getDocument(file.getRef());
-            fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-            assertFalse(fileItem.getCanUpdate());
+            try (CoreSession joeSession = repository.openSessionAs("joe")) {
+                file = joeSession.getDocument(file.getRef());
+                fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+                assertFalse(fileItem.getCanUpdate());
 
-            // As a user with WRITE permission
-            setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
-            fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-            assertTrue(fileItem.getCanUpdate());
+                // As a user with WRITE permission
+                setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
+                fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+                assertTrue(fileItem.getCanUpdate());
 
-            // Re-fetch file with Administrator session
-            file = session.getDocument(file.getRef());
-            fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+                // Re-fetch file with Administrator session
+                file = session.getDocument(file.getRef());
+                fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
 
-            // ------------------------------------------------------
-            // FileItem#getBlob
-            // ------------------------------------------------------
-            Blob fileItemBlob = fileItem.getBlob();
-            assertEquals("Joe.odt", fileItemBlob.getFilename());
-            assertEquals("Content of Joe's file.", fileItemBlob.getString());
-            // Check versioning
-            assertVersion("0.0", file);
+                // ------------------------------------------------------
+                // FileItem#getBlob
+                // ------------------------------------------------------
+                Blob fileItemBlob = fileItem.getBlob();
+                assertEquals("Joe.odt", fileItemBlob.getFilename());
+                assertEquals("Content of Joe's file.", fileItemBlob.getString());
+                // Check versioning
+                assertVersion("0.0", file);
 
-            // ------------------------------------------------------
-            // FileItem#setBlob and versioning
-            // ------------------------------------------------------
-            Blob newBlob = new StringBlob("This is a new file.");
-            newBlob.setFilename("New blob.txt");
-            fileItem.setBlob(newBlob);
-            file = session.getDocument(file.getRef());
-            Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
-            assertEquals("New blob.txt", updatedBlob.getFilename());
-            assertEquals("This is a new file.", updatedBlob.getString());
-            // Check versioning => should not be versioned since same
-            // contributor
-            // and last modification was done before the versioning delay
-            assertVersion("0.0", file);
+                // ------------------------------------------------------
+                // FileItem#setBlob and versioning
+                // ------------------------------------------------------
+                Blob newBlob = new StringBlob("This is a new file.");
+                newBlob.setFilename("New blob.txt");
+                fileItem.setBlob(newBlob);
+                file = session.getDocument(file.getRef());
+                Blob updatedBlob = (Blob) file.getPropertyValue("file:content");
+                assertEquals("New blob.txt", updatedBlob.getFilename());
+                assertEquals("This is a new file.", updatedBlob.getString());
+                // Check versioning => should not be versioned since same
+                // contributor
+                // and last modification was done before the versioning delay
+                assertVersion("0.0", file);
 
-            // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY);
+                // Wait for versioning delay
+                Thread.sleep(VERSIONING_DELAY);
 
-            newBlob.setFilename("File name modified.txt");
-            fileItem.setBlob(newBlob);
-            file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
-            assertEquals("File name modified.txt", updatedBlob.getFilename());
-            // Check versioning => should be versioned since last modification
-            // was
-            // done after the versioning delay
-            assertVersion("0.1", file);
-            List<DocumentModel> fileVersions = session.getVersions(file.getRef());
-            assertEquals(1, fileVersions.size());
-            DocumentModel lastFileVersion = fileVersions.get(0);
-            Blob versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
-            assertEquals("New blob.txt", versionedBlob.getFilename());
+                newBlob.setFilename("File name modified.txt");
+                fileItem.setBlob(newBlob);
+                file = session.getDocument(file.getRef());
+                updatedBlob = (Blob) file.getPropertyValue("file:content");
+                assertEquals("File name modified.txt",
+                        updatedBlob.getFilename());
+                // Check versioning => should be versioned since last
+                // modification was done after the versioning delay
+                assertVersion("0.1", file);
+                List<DocumentModel> fileVersions = session.getVersions(file.getRef());
+                assertEquals(1, fileVersions.size());
+                DocumentModel lastFileVersion = fileVersions.get(0);
+                Blob versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+                assertEquals("New blob.txt", versionedBlob.getFilename());
 
-            // Update file with another contributor
-            maybeSleepToNextSecond();
-            file = joeSession.getDocument(file.getRef());
-            fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-            newBlob.setFilename("File name modified by Joe.txt");
-            fileItem.setBlob(newBlob);
-            // Re-fetch file with Administrator session
-            file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
-            assertEquals("File name modified by Joe.txt",
-                    updatedBlob.getFilename());
-            // Check versioning => should be versioned since updated by a
-            // different
-            // contributor
-            assertVersion("0.2", file);
-            fileVersions = session.getVersions(file.getRef());
-            assertEquals(2, fileVersions.size());
-            lastFileVersion = fileVersions.get(1);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
-            assertEquals("File name modified.txt", versionedBlob.getFilename());
+                // Update file with another contributor
+                maybeSleepToNextSecond();
+                file = joeSession.getDocument(file.getRef());
+                fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+                newBlob.setFilename("File name modified by Joe.txt");
+                fileItem.setBlob(newBlob);
+                // Re-fetch file with Administrator session
+                file = session.getDocument(file.getRef());
+                updatedBlob = (Blob) file.getPropertyValue("file:content");
+                assertEquals("File name modified by Joe.txt",
+                        updatedBlob.getFilename());
+                // Check versioning => should be versioned since updated by a
+                // different contributor
+                assertVersion("0.2", file);
+                fileVersions = session.getVersions(file.getRef());
+                assertEquals(2, fileVersions.size());
+                lastFileVersion = fileVersions.get(1);
+                versionedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+                assertEquals("File name modified.txt",
+                        versionedBlob.getFilename());
 
-            // ------------------------------------------------------
-            // DocumentBackedFileItem#rename and versioning
-            // ------------------------------------------------------
-            // Save document to trigger the DublinCoreListener and update
-            // dc:lastContributor to "Administrator"
-            session.saveDocument(file);
-            fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-            fileItem.rename("Renamed file.txt");
-            file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
-            assertEquals("Renamed file.txt", updatedBlob.getFilename());
-            // Check versioning => should not be versioned since same
-            // contributor
-            // and last modification was done before the versioning delay
-            assertVersion("0.2", file);
+                // ------------------------------------------------------
+                // DocumentBackedFileItem#rename and versioning
+                // ------------------------------------------------------
+                // Save document to trigger the DublinCoreListener and update
+                // dc:lastContributor to "Administrator"
+                session.saveDocument(file);
+                fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+                fileItem.rename("Renamed file.txt");
+                file = session.getDocument(file.getRef());
+                updatedBlob = (Blob) file.getPropertyValue("file:content");
+                assertEquals("Renamed file.txt", updatedBlob.getFilename());
+                // Check versioning => should not be versioned since same
+                // contributor and last modification was done before the
+                // versioning delay
+                assertVersion("0.2", file);
 
-            // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY);
+                // Wait for versioning delay
+                Thread.sleep(VERSIONING_DELAY);
 
-            fileItem.rename("Renamed again.txt");
-            file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
-            assertEquals("Renamed again.txt", updatedBlob.getFilename());
-            // Check versioning => should be versioned since last modification
-            // was
-            // done after the versioning delay
-            assertVersion("0.3", file);
-            fileVersions = session.getVersions(file.getRef());
-            assertEquals(3, fileVersions.size());
-            lastFileVersion = fileVersions.get(2);
-            updatedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
-            assertEquals("Renamed file.txt", updatedBlob.getFilename());
+                fileItem.rename("Renamed again.txt");
+                file = session.getDocument(file.getRef());
+                updatedBlob = (Blob) file.getPropertyValue("file:content");
+                assertEquals("Renamed again.txt", updatedBlob.getFilename());
+                // Check versioning => should be versioned since last
+                // modification was done after the versioning delay
+                assertVersion("0.3", file);
+                fileVersions = session.getVersions(file.getRef());
+                assertEquals(3, fileVersions.size());
+                lastFileVersion = fileVersions.get(2);
+                updatedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+                assertEquals("Renamed file.txt", updatedBlob.getFilename());
 
-            // Update file with another contributor
-            maybeSleepToNextSecond();
-            file = joeSession.getDocument(file.getRef());
-            fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-            fileItem.rename("File renamed by Joe.txt");
-            // Re-fetch file with Administrator session
-            file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue("file:content");
-            assertEquals("File renamed by Joe.txt", updatedBlob.getFilename());
-            // Check versioning => should be versioned since updated by a
-            // different
-            // contributor
-            assertVersion("0.4", file);
-            fileVersions = session.getVersions(file.getRef());
-            assertEquals(4, fileVersions.size());
-            lastFileVersion = fileVersions.get(3);
-            updatedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
-            assertEquals("Renamed again.txt", updatedBlob.getFilename());
-
-            CoreInstance.getInstance().close(joeSession);
+                // Update file with another contributor
+                maybeSleepToNextSecond();
+                file = joeSession.getDocument(file.getRef());
+                fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+                fileItem.rename("File renamed by Joe.txt");
+                // Re-fetch file with Administrator session
+                file = session.getDocument(file.getRef());
+                updatedBlob = (Blob) file.getPropertyValue("file:content");
+                assertEquals("File renamed by Joe.txt",
+                        updatedBlob.getFilename());
+                // Check versioning => should be versioned since updated by a
+                // different contributor
+                assertVersion("0.4", file);
+                fileVersions = session.getVersions(file.getRef());
+                assertEquals(4, fileVersions.size());
+                lastFileVersion = fileVersions.get(3);
+                updatedBlob = (Blob) lastFileVersion.getPropertyValue("file:content");
+                assertEquals("Renamed again.txt", updatedBlob.getFilename());
+            }
             resetPermissions(rootDoc, "joe");
         }
     }
@@ -669,32 +668,30 @@ public class TestDefaultFileSystemItemFactory {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
 
-            CoreSession joeSession = repository.openSessionAs("joe");
-            folder = joeSession.getDocument(folder.getRef());
+            try (CoreSession joeSession = repository.openSessionAs("joe")) {
+                folder = joeSession.getDocument(folder.getRef());
 
-            // By default folder is not under any sync root for Joe, hence
-            // should
-            // not be mappable as an fs item.
-            try {
-                defaultFileSystemItemFactory.getFileSystemItem(folder);
-                fail("Should have raised RootlessItemException as ");
-            } catch (RootlessItemException e) {
-                // expected
+                // By default folder is not under any sync root for Joe, hence
+                // should not be mappable as an fs item.
+                try {
+                    defaultFileSystemItemFactory.getFileSystemItem(folder);
+                    fail("Should have raised RootlessItemException as ");
+                } catch (RootlessItemException e) {
+                    // expected
+                }
+
+                // Register the sync root for Joe's account
+                nuxeoDriveManager.registerSynchronizationRoot(
+                        joeSession.getPrincipal(), syncRootFolder, session);
+
+                folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+                assertFalse(folderItem.getCanCreateChild());
+
+                // As a user with WRITE permission
+                setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
+                folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+                assertTrue(folderItem.getCanCreateChild());
             }
-
-            // Register the sync root for Joe's account
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    joeSession.getPrincipal(), syncRootFolder, session);
-
-            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            assertFalse(folderItem.getCanCreateChild());
-
-            // As a user with WRITE permission
-            setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
-            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            assertTrue(folderItem.getCanCreateChild());
-
-            CoreInstance.getInstance().close(joeSession);
             resetPermissions(rootDoc, "joe");
 
             // ------------------------------------------------------

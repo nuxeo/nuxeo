@@ -38,7 +38,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.drive.service.impl.RootDefinitionsHelper;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -151,7 +150,7 @@ public class TestAuditFileSystemChangeFinder {
     @After
     public void tearDown() throws ClientException {
         if (user1Session != null) {
-            CoreInstance.getInstance().close(user1Session);
+            user1Session.close();
         }
         Session usersDir = directoryService.getDirectory("userDirectory").getSession();
         try {
