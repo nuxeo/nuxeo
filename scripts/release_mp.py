@@ -77,6 +77,7 @@ class ReleaseMP(object):
             try:
                 mp_dir = os.path.join(self.repo.mp_dir, marketplace)
                 if not os.path.isdir(mp_dir):
+                    os.chdir(self.repo.mp_dir)
                     self.repo.git_pull(marketplace,
                                     self.mp_config.get(marketplace, "branch"))
                 os.chdir(mp_dir)
@@ -99,7 +100,7 @@ class ReleaseMP(object):
                 log("[ERROR] %s" % stack)
                 prepared = False
                 self.mp_config.set(marketplace, "skip", "Failed! %s" % stack)
-            self.mp_config.set(marketplace, "prepared", prepared)
+            self.mp_config.set(marketplace, "prepared", str(prepared))
             self.repo.save_mp_config(self.mp_config)
             if (prepared):
                 # Upload on Connect test
@@ -109,14 +110,14 @@ class ReleaseMP(object):
                         if (os.path.isfile(path) and
                             fnmatch.fnmatch(path[len(mp_repo.basedir) + 1:],
                             self.mp_config.get(marketplace, "mp_to_upload"))):
-                            self.upload(CONNECT_TEST_URL, path)
+                            self.upload(CONNECT_TEST_URL, path, dryrun=dryrun)
                             self.mp_config.set(marketplace, "uploaded",
                                                CONNECT_TEST_URL + ": " + path)
                             self.repo.save_mp_config(self.mp_config)
         os.chdir(cwd)
 
     #pylint: disable=R0914,C0103
-    def perform(self):
+    def perform(self, dryrun=False):
         """ Perform the release: push source, deploy artifacts and upload
         packages."""
         cwd = os.getcwd()
@@ -147,14 +148,14 @@ class ReleaseMP(object):
                                      maintenance_version, is_final=is_final,
                                      skipTests=skipTests,
                                      other_versions=other_versions)
-                mp_release.perform()
+                mp_release.perform(dryrun=dryrun)
                 performed = True
             except:
                 stack = traceback.format_exc()
                 log("[ERROR] %s" % stack)
                 performed = False
                 self.mp_config.set(marketplace, "skip", "Failed! %s" % stack)
-            self.mp_config.set(marketplace, "performed", performed)
+            self.mp_config.set(marketplace, "performed", str(performed))
             self.repo.save_mp_config(self.mp_config)
             if performed:
                 # Upload on Connect
@@ -164,17 +165,17 @@ class ReleaseMP(object):
                         if (os.path.isfile(path) and
                             fnmatch.fnmatch(path[len(mp_repo.basedir) + 1:],
                             self.mp_config.get(marketplace, "mp_to_upload"))):
-                            self.upload(CONNECT_PROD_URL, path)
+                            self.upload(CONNECT_PROD_URL, path, dryrun=dryrun)
                             self.mp_config.set(marketplace, "uploaded",
                                                CONNECT_PROD_URL + ": " + path)
                             self.repo.save_mp_config(self.mp_config)
         os.chdir(cwd)
 
-    def upload(self, url, mp_file):
+    def upload(self, url, mp_file, dryrun=False):
         """ Upload the given mp_file on the given Connect URL."""
         cmd = ("curl -i -n -F package=@%s %s%s"
                % (mp_file, url, "/site/marketplace/upload?batch=true"))
-        system(cmd)
+        system(cmd, dryrun=dryrun)
 
     def test(self):
         """For current script development purpose."""
@@ -200,8 +201,8 @@ def main():
     try:
         usage = ("""usage: %prog <command> [options]
        %prog clone [-r alias] [-m URL]
-       %prog prepare [-r alias] [-m URL] [--rf package]
-       %prog perform [-r alias] [-m URL] [--rf package]""")
+       %prog prepare [-r alias] [-m URL] [--rf package] [--dryrun]
+       %prog perform [-r alias] [-m URL] [--rf package] [--dryrun]""")
         description = """Release Nuxeo Marketplace packages.\n
 The first call must provide an URL for the configuration. If set to '' (empty
 string), it defaults to '%s'. You can use a local file URL ('file://').\n
@@ -239,6 +240,9 @@ mode. Default: '%default'""")
                           dest='restart_from', default=None,
                           help="""Restart from a package.
  Default: '%default'""")
+        parser.add_option('--dryrun', action="store_true",
+                          dest='dryrun', default=False,
+                          help="""Dry run mode. Default: '%default'""")
         (options, args) = parser.parse_args()
         if len(args) == 1:
             command = args[0]
@@ -252,9 +256,9 @@ mode. Default: '%default'""")
         elif command == "clone":
             full_release.clone()
         elif command == "prepare":
-            full_release.prepare()
+            full_release.prepare(dryrun=options.dryrun)
         elif command == "perform":
-            full_release.perform()
+            full_release.perform(dryrun=options.dryrun)
         elif command == "test":
             full_release.test()
         else:
