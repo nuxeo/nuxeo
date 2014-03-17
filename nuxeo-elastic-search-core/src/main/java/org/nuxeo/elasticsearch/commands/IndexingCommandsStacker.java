@@ -91,10 +91,11 @@ public abstract class IndexingCommandsStacker {
                 tm.getTransaction().registerSynchronization(sync);
                 return true;
             } else {
+                log.error("Unable to register synchronization : no TransactionManager");
                 return false;
             }
         } catch (Exception e) {
-            log.error("Unable to register synchronization");
+            log.error("Unable to register synchronization", e);
             return false;
         }
     }

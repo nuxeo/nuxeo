@@ -19,6 +19,7 @@ package org.nuxeo.elasticsearch.test;
 
 import java.util.concurrent.TimeUnit;
 
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
@@ -26,6 +27,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -61,6 +63,18 @@ public class ElasticSearchServiceIndexingTest {
     @Inject
     ElasticSearchIndexing esi;
 
+    @Before
+    public void initIndex() {
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+        IndicesExistsResponse exists = esa.getClient().admin().indices().exists(
+                new IndicesExistsRequest(ElasticSearchComponent.MAIN_IDX)).actionGet();
+        if (!exists.isExists()) {
+            esa.getClient().admin().indices().create(
+                    new CreateIndexRequest(ElasticSearchComponent.MAIN_IDX)).actionGet();
+        }
+    }
+
+
     @After
     public void cleanupIndexed() {
         ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
@@ -93,8 +107,6 @@ public class ElasticSearchServiceIndexingTest {
             doc = session.createDocument(doc);
 
         }
-        // session.save();
-
         // update 5
         for (int i = 0; i < 5; i++) {
             DocumentModel doc = session.getDocument(new PathRef("/testDoc" + i));
@@ -103,9 +115,8 @@ public class ElasticSearchServiceIndexingTest {
         }
 
         // this should not be needed !
-        //session.save();
+        // session.save();
         TransactionHelper.commitOrRollbackTransaction();
-
 
         int nbTry = 0;
         while (esa.getPendingCommands() > 0 && nbTry < 20) {
@@ -122,6 +133,50 @@ public class ElasticSearchServiceIndexingTest {
                 ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
+
+    }
+
+    @Test
+    public void shouldNotIndexDocumentSynchronouslyBecauseOfRollback()
+            throws Exception {
+
+        Assert.assertTrue(TransactionHelper.isTransactionActive());
+
+        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        Assert.assertNotNull(ess);
+
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+        Assert.assertNotNull(esa);
+        Assert.assertEquals(0, esa.getPendingDocs());
+
+        // create 10 docs
+        for (int i = 0; i < 10; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
+                    "File");
+            doc.setPropertyValue("dc:title", "TestMe" + i);
+            doc.getContextData().put(EventConstants.ES_SYNC_INDEXING_FLAG, true);
+            doc = session.createDocument(doc);
+
+        }
+
+        TransactionHelper.setTransactionRollbackOnly();
+        TransactionHelper.commitOrRollbackTransaction();
+
+        int nbTry = 0;
+        while (esa.getPendingCommands() > 0 && nbTry < 20) {
+            Thread.sleep(1000);
+            nbTry++;
+        }
+
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+
+        TransactionHelper.startTransaction();
+
+        SearchResponse searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
 
     }
 
@@ -167,6 +222,51 @@ public class ElasticSearchServiceIndexingTest {
                 ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
+
+    }
+
+
+    @Test
+    public void shouldNotIndexDocumentAsynchronouslyBecauseOfRollback() throws Exception {
+
+        Assert.assertTrue(TransactionHelper.isTransactionActive());
+
+        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        Assert.assertNotNull(ess);
+
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+        Assert.assertNotNull(esa);
+        Assert.assertEquals(0, esa.getPendingDocs());
+
+        // create 10 docs
+        for (int i = 0; i < 10; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
+                    "File");
+            doc.setPropertyValue("dc:title", "TestMe" + i);
+            doc = session.createDocument(doc);
+
+        }
+
+        TransactionHelper.setTransactionRollbackOnly();
+        TransactionHelper.commitOrRollbackTransaction();
+
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+
+        TransactionHelper.startTransaction();
+
+        esi.flush();
+
+        SearchResponse searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
 
     }
 

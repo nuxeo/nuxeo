@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Status;
 import javax.transaction.Synchronization;
 
 import org.apache.commons.logging.Log;
@@ -93,8 +94,7 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
 
         // register via Tx Manager
         if (!synched.get() && useTxSync) {
-            registerSynchronization(this);
-            synched.set(true);
+            synched.set(registerSynchronization(this));
         }
 
     }
@@ -147,7 +147,7 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
         // run flush !
         try {
             flushCommands();
-        } catch (ClientException e) {
+        } catch (Exception e) {
             log.error("Error during flush", e);
         } finally {
             synched.set(false);
@@ -156,6 +156,13 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
 
     @Override
     public void afterCompletion(int status) {
+        if (Status.STATUS_COMMITTED == status) {
+            // NOP
+        } else if (Status.STATUS_MARKED_ROLLBACK == status
+                || Status.STATUS_ROLLEDBACK == status) {
+            synched.set(false);
+            getAllCommands().clear();
+        }
         // NOP
     }
 
