@@ -25,9 +25,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.javasimon.SimonManager;
@@ -38,15 +35,12 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.ImportingDocumentFilter;
 import org.nuxeo.ecm.platform.importer.listener.ImporterListener;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -143,11 +137,6 @@ public class GenericThreadedImportTask implements Runnable {
     }
 
     protected CoreSession getCoreSession() throws Exception {
-        if (this.session == null) {
-            RepositoryManager rm = Framework.getService(RepositoryManager.class);
-            Repository repo = rm.getDefaultRepository();
-            session = repo.open();
-        }
         return session;
     }
 
@@ -166,7 +155,7 @@ public class GenericThreadedImportTask implements Runnable {
             Split split = stopwatch.start();
             fslog("Comiting Core Session after " + uploadedFiles + " files",
                     true);
-            getCoreSession().save();
+            session.save();
             txHelper.commitOrRollbackTransaction();
             txHelper.beginNewTransaction(TX_TIMEOUT);
             split.stop();
@@ -182,7 +171,7 @@ public class GenericThreadedImportTask implements Runnable {
         Split split = stopwatch.start();
         DocumentModel folder = null;
         try {
-            folder = getFactory().createFolderishNode(getCoreSession(), parent,
+            folder = getFactory().createFolderishNode(session, parent,
                     node);
         } catch (Exception e) {
             String errorMsg = "Unable to create folderish document for "
@@ -193,7 +182,7 @@ public class GenericThreadedImportTask implements Runnable {
             // Process folderish node creation error and check if the global
             // import task should continue
             boolean shouldImportTaskContinue = getFactory().processFolderishNodeCreationError(
-                    getCoreSession(), parent, node);
+                    session, parent, node);
             if (!shouldImportTaskContinue) {
                 throw new Exception(e);
             }
@@ -222,7 +211,7 @@ public class GenericThreadedImportTask implements Runnable {
         Split split = stopwatch.start();
         DocumentModel leaf = null;
         try {
-            leaf = getFactory().createLeafNode(getCoreSession(), parent, node);
+            leaf = getFactory().createLeafNode(session, parent, node);
         } catch (Exception e) {
             String errMsg = "Unable to create leaf document for "
                     + node.getSourcePath() + ":" + e
@@ -232,7 +221,7 @@ public class GenericThreadedImportTask implements Runnable {
             // Process leaf node creation error and check if the global
             // import task should continue
             boolean shouldImportTaskContinue = getFactory().processLeafNodeCreationError(
-                    getCoreSession(), parent, node);
+                    session, parent, node);
             if (!shouldImportTaskContinue) {
                 throw new Exception(e);
             }
@@ -385,16 +374,15 @@ public class GenericThreadedImportTask implements Runnable {
                         "source node must be specified");
             }
         }
-        LoginContext lc = null;
         try {
+            session = CoreInstance.openCoreSessionSystem(null);
             log.info("Starting new import task");
-            lc = Framework.login();
             if (rootDoc != null) {
                 // reopen the root to be sure the session is valid
-                rootDoc = getCoreSession().getDocument(rootDoc.getRef());
+                rootDoc = session.getDocument(rootDoc.getRef());
             }
             recursiveCreateDocumentFromNode(rootDoc, rootSource);
-            getCoreSession().save();
+            session.save();
             GenericMultiThreadedImporter.addCreatedDoc(taskId, uploadedFiles);
             txHelper.commitOrRollbackTransaction();
         } catch (Exception e) {
@@ -407,15 +395,8 @@ public class GenericThreadedImportTask implements Runnable {
         } finally {
             log.info("End of task");
             if (session != null) {
-                CoreInstance.getInstance().close(session);
+                session.close();
                 session = null;
-            }
-            if (lc != null) {
-                try {
-                    lc.logout();
-                } catch (LoginException e) {
-                    log.error("Error while loging out!", e);
-                }
             }
             synchronized (this) {
                 isRunning = false;

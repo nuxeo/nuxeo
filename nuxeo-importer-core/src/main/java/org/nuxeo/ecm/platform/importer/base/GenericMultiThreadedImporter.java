@@ -31,17 +31,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.javasimon.SimonManager;
 import org.javasimon.Stopwatch;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
@@ -53,7 +48,6 @@ import org.nuxeo.ecm.platform.importer.log.PerfLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.ecm.platform.importer.threading.DefaultMultiThreadingPolicy;
 import org.nuxeo.ecm.platform.importer.threading.ImporterThreadingPolicy;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -209,20 +203,10 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         this.importingDocumentFilters.addAll(importingDocumentFilters);
     }
 
-    protected CoreSession getCoreSession() throws Exception {
-        if (this.session == null) {
-            RepositoryManager rm = Framework.getService(RepositoryManager.class);
-            Repository repo = rm.getDefaultRepository();
-            session = repo.open();
-        }
-        return session;
-    }
-
     public void run() {
-        LoginContext lc = null;
         Exception finalException = null;
         try {
-            lc = Framework.login();
+            session = CoreInstance.openCoreSessionSystem(null);
             for (ImporterFilter filter : filters) {
                 log.debug(String.format(
                         "Running filter with %s, on the importer with the hash code %s. The source node name is %s",
@@ -244,15 +228,8 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
                 filter.handleAfterImport(finalException);
             }
             if (session != null) {
-                CoreInstance.getInstance().close(session);
+                session.close();
                 session = null;
-            }
-            if (lc != null) {
-                try {
-                    lc.logout();
-                } catch (LoginException e) {
-                    log.error("Error during logout", e);
-                }
             }
         }
     }
@@ -417,7 +394,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
      */
     protected DocumentModel createTargetContainer() throws Exception {
         try {
-            return getCoreSession().getDocument(new PathRef(importWritePath));
+            return session.getDocument(new PathRef(importWritePath));
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new Exception(e);
