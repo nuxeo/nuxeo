@@ -1190,24 +1190,15 @@ public class TestDocumentsSizeUpdater {
             @Override
             public void run() throws Exception {
                 TestRepositoryHandler handler = settings.getRepositoryHandler();
-                CoreSession userSession = handler.openSessionAs("toto");
-                try {
+                try (CoreSession userSession = handler.openSessionAs("toto")) {
                     DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(
                             userSession, null);
                     assertNotNull(uw);
-
-                } finally {
-                    handler.releaseSession(userSession);
                 }
-
-                userSession = handler.openSessionAs("titi");
-                try {
+                try (CoreSession userSession = handler.openSessionAs("titi")) {
                     DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(
                             userSession, null);
                     assertNotNull(uw);
-
-                } finally {
-                    handler.releaseSession(userSession);
                 }
                 quotaStatsService.activateQuotaOnUserWorkspaces(300L, session);
                 quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(300L,
