@@ -18,6 +18,8 @@ package org.nuxeo.elasticsearch.commands;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -30,7 +32,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-
 
 /**
  *
@@ -61,28 +62,34 @@ public class IndexingCommand {
 
     public static final String PREFIX = "IndexingCommand-";
 
+    protected List<String> schemas;
+
     protected IndexingCommand() {
         //
     }
 
-    public IndexingCommand(DocumentModel targetDocument,String command, boolean sync, boolean recurse) {
+    public IndexingCommand(DocumentModel targetDocument, String command,
+            boolean sync, boolean recurse) {
         this.id = PREFIX + UUID.randomUUID().toString();
-        this.name=command;
-        this.sync=sync;
-        this.recurse=recurse;
-        this.targetDocument=targetDocument;
+        this.name = command;
+        this.sync = sync;
+        this.recurse = recurse;
+        this.targetDocument = targetDocument;
     }
 
-    public IndexingCommand(DocumentModel targetDocument, boolean sync, boolean recurse) {
+    public IndexingCommand(DocumentModel targetDocument, boolean sync,
+            boolean recurse) {
         this(targetDocument, INDEX, sync, recurse);
     }
 
     public void refresh(CoreSession session) throws ClientException {
         targetDocument = session.getDocument(targetDocument.getRef());
     }
+
     public void update(IndexingCommand other) {
         update(other.sync, other.recurse);
     }
+
     public void update(boolean sync, boolean recurse) {
         this.sync = this.sync || sync;
         this.recurse = this.recurse || recurse;
@@ -125,7 +132,8 @@ public class IndexingCommand {
         jsonGen.writeEndObject();
     }
 
-    public static IndexingCommand fromJSON(CoreSession session, String json) throws ClientException {
+    public static IndexingCommand fromJSON(CoreSession session, String json)
+            throws ClientException {
         JsonFactory jsonFactory = new JsonFactory();
         try {
             JsonParser jp = jsonFactory.createJsonParser(json);
@@ -139,47 +147,52 @@ public class IndexingCommand {
         }
     }
 
-    public static IndexingCommand fromJSON(CoreSession session, JsonParser jp) throws Exception {
+    public static IndexingCommand fromJSON(CoreSession session, JsonParser jp)
+            throws Exception {
 
         IndexingCommand cmd = new IndexingCommand();
-        String docId=null;
-        String repo=null;
+        String docId = null;
+        String repo = null;
 
-        JsonToken token = jp.nextToken(); // will return JsonToken.START_OBJECT (verify?)
+        JsonToken token = jp.nextToken(); // will return JsonToken.START_OBJECT
+                                          // (verify?)
         if (token != JsonToken.START_OBJECT) {
-            return  null;
+            return null;
         }
         while (jp.nextToken() != JsonToken.END_OBJECT) {
-          String fieldname = jp.getCurrentName();
-          jp.nextToken(); // move to value, or START_OBJECT/START_ARRAY
-          if ("name".equals(fieldname)) { // contains an object
-              cmd.name=jp.getText();
-          } else if ("docId".equals(fieldname)) {
-            docId = jp.getText();
-          } else if ("repo".equals(fieldname)) {
-              repo = jp.getText();
-          } else if ("id".equals(fieldname)) {
-              cmd.id = jp.getText();
-          } else if ("recurse".equals(fieldname)) {
-              cmd.recurse = jp.getBooleanValue();
-          } else if ("sync".equals(fieldname)) {
-              cmd.recurse = jp.getBooleanValue();
-          }
+            String fieldname = jp.getCurrentName();
+            jp.nextToken(); // move to value, or START_OBJECT/START_ARRAY
+            if ("name".equals(fieldname)) { // contains an object
+                cmd.name = jp.getText();
+            } else if ("docId".equals(fieldname)) {
+                docId = jp.getText();
+            } else if ("repo".equals(fieldname)) {
+                repo = jp.getText();
+            } else if ("id".equals(fieldname)) {
+                cmd.id = jp.getText();
+            } else if ("recurse".equals(fieldname)) {
+                cmd.recurse = jp.getBooleanValue();
+            } else if ("sync".equals(fieldname)) {
+                cmd.recurse = jp.getBooleanValue();
+            }
         }
-        if (docId!=null) {
+        if (docId != null) {
             if (!session.getRepositoryName().equals(repo)) {
-                log.error("Unable to restore doc from repository " + repo + " with a session on repository " + session.getRepositoryName());
+                log.error("Unable to restore doc from repository " + repo
+                        + " with a session on repository "
+                        + session.getRepositoryName());
             } else {
                 IdRef ref = new IdRef(docId);
-                if (! session.exists(ref)) {
-                    log.error("Unable to restore doc from repository with uid " + docId);
+                if (!session.exists(ref)) {
+                    log.error("Unable to restore doc from repository with uid "
+                            + docId);
                 } else {
-                    cmd.targetDocument= session.getDocument(ref);
+                    cmd.targetDocument = session.getDocument(ref);
                 }
             }
         }
 
-       return cmd;
+        return cmd;
     }
 
     public String getId() {
@@ -190,4 +203,19 @@ public class IndexingCommand {
         return new IndexingCommand(newDoc, name, sync, recurse);
     }
 
+    public String[] getSchemas() {
+        if (schemas == null || schemas.size() == 0) {
+            return targetDocument.getSchemas();
+        }
+        return schemas.toArray(new String[schemas.size()]);
+    }
+
+    public void addSchemas(String schema) {
+        if (schemas == null) {
+            schemas = new ArrayList<>();
+        }
+        if (!schemas.contains(schema)) {
+            schemas.add(schema);
+        }
+    }
 }

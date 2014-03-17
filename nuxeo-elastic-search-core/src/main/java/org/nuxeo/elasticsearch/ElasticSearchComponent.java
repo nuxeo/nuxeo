@@ -20,7 +20,6 @@ package org.nuxeo.elasticsearch;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Iterator;
@@ -32,6 +31,8 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.elasticsearch.action.admin.cluster.node.shutdown.NodesShutdownRequest;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -87,6 +88,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     // temporary hack until we are able to list pending indexing jobs cluster
     // wide
     protected final CopyOnWriteArrayList<String> pendingWork = new CopyOnWriteArrayList<String>();
+
     protected final CopyOnWriteArrayList<String> pendingCommands = new CopyOnWriteArrayList<String>();
 
     public static final String EP_Config = "elasticSearchConfig";
@@ -144,7 +146,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return settings;
     }
 
-    protected void schedulePostCommitIndexing(IndexingCommand cmd) throws ClientException {
+    protected void schedulePostCommitIndexing(IndexingCommand cmd)
+            throws ClientException {
 
         try {
             CoreSession session = cmd.getTargetDocument().getCoreSession();
@@ -152,7 +155,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
             EventContextImpl context = new EventContextImpl(session,
                     session.getPrincipal());
-            context.getProperties().put(cmd.getId(),cmd.toJSON());
+            context.getProperties().put(cmd.getId(), cmd.toJSON());
 
             Event indexingEvent = context.newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
             evtProducer.fireEvent(indexingEvent);
@@ -162,27 +165,50 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
+    public void indexNow(List<IndexingCommand> cmds) throws ClientException {
+        BulkRequestBuilder bulkRequest = getClient().prepareBulk();
+        for (IndexingCommand cmd : cmds) {
+            IndexRequestBuilder idxRequest = buildESIndexingRequest(cmd);
+            bulkRequest.add(idxRequest);
+        }
+        bulkRequest.execute().actionGet();
+        for (IndexingCommand cmd : cmds) {
+            markCommandExecuted(cmd);
+        }
+    }
+
+    @Override
     public String indexNow(IndexingCommand cmd) throws ClientException {
+
+        IndexResponse response = buildESIndexingRequest(cmd).execute().actionGet();
+        markCommandExecuted(cmd);
+        return response.getId();
+    }
+
+    protected IndexRequestBuilder buildESIndexingRequest(IndexingCommand cmd)
+            throws ClientException {
         DocumentModel doc = cmd.getTargetDocument();
         try {
             JsonFactory factory = new JsonFactory();
             XContentBuilder builder = jsonBuilder();
 
             JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
-            JsonESDocumentWriter.writeESDocument(jsonGen, doc, doc.getSchemas(),
-                    null);
-            IndexResponse response = getClient().prepareIndex(MAIN_IDX,
-                    NX_DOCUMENT, doc.getId()).setSource(builder).execute().actionGet();
-
-            pendingWork.remove(getWorkKey(doc));
-            pendingCommands.remove(cmd.getId());
-
-            return response.getId();
+            JsonESDocumentWriter.writeESDocument(jsonGen, doc,
+                    cmd.getSchemas(), null);
+            return getClient().prepareIndex(MAIN_IDX, NX_DOCUMENT, doc.getId()).setSource(
+                    builder);
         } catch (Exception e) {
-            throw new ClientException("Unable to index Document " + doc.getId(), e);
+
+            throw new ClientException(
+                    "Unable to create index request for Document "
+                            + doc.getId(), e);
         }
     }
 
+    protected void markCommandExecuted(IndexingCommand cmd) {
+        pendingWork.remove(getWorkKey(cmd.getTargetDocument()));
+        pendingCommands.remove(cmd.getId());
+    }
 
     @Override
     public void scheduleIndexing(IndexingCommand cmd) throws ClientException {
@@ -217,7 +243,15 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     public void flush() {
-        getClient().admin().indices().prepareRefresh().execute().actionGet();
+        flush(false);
+    }
+
+    public void flush(boolean commit) {
+        // refresh indexes
+        getClient().admin().indices().prepareRefresh(MAIN_IDX).execute().actionGet();
+        if (commit) {
+            getClient().admin().indices().prepareFlush(MAIN_IDX).execute().actionGet();
+        }
     }
 
     protected Node getLocalNode() {

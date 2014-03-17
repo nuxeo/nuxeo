@@ -1,6 +1,8 @@
 package org.nuxeo.elasticsearch.listener;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -17,8 +19,7 @@ public class ElasticsearchPostCommitSyncListener implements
     @Override
     public void handleEvent(EventBundle bundle) throws ClientException {
 
-        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
-        boolean needFlush = false;
+        List<IndexingCommand> cmds = new ArrayList<>();
         for (Event event : bundle) {
             if (event.getName().equals(EventConstants.ES_INDEX_EVENT_SYNC)) {
                 Map<String, Serializable> props = event.getContext().getProperties();
@@ -27,13 +28,14 @@ public class ElasticsearchPostCommitSyncListener implements
                         IndexingCommand cmd = IndexingCommand.fromJSON(
                                 event.getContext().getCoreSession(),
                                 (String) props.get(key));
-                        esi.indexNow(cmd);
-                        needFlush = true;
+                        cmds.add(cmd);
                     }
                 }
             }
         }
-        if (needFlush) {
+        if (cmds.size() > 0) {
+            ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+            esi.indexNow(cmds);
             // flush ES index
             esi.flush();
         }

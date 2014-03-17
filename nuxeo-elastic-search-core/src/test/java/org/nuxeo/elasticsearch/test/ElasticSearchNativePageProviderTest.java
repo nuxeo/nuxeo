@@ -66,15 +66,16 @@ public class ElasticSearchNativePageProviderTest {
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
-        PageProvider<?> pp = pps.getPageProvider("NATIVE_ES_PP_1", ppdef, null, null,
-                Long.valueOf(1), Long.valueOf(0), props);
+        PageProvider<?> pp = pps.getPageProvider("NATIVE_ES_PP_1", ppdef, null,
+                null, Long.valueOf(1), Long.valueOf(0), props);
         Assert.assertNotNull(pp);
 
         // create 10 docs
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
         for (int i = 0; i < 10; i++) {
-            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i, "File");
+            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
+                    "File");
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc = session.createDocument(doc);
         }
@@ -89,7 +90,6 @@ public class ElasticSearchNativePageProviderTest {
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
 
         esi.flush();
-
 
         // get current page
         List<?> p = pp.getCurrentPage();

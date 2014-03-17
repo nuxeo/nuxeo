@@ -17,29 +17,22 @@
 
 package org.nuxeo.elasticsearch.listener;
 
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.SESSION_SAVED;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
-import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.event.impl.EventContextImpl;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommands;
 import org.nuxeo.elasticsearch.commands.IndexingCommandsStacker;
-import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -88,7 +81,7 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
     protected void stackCommand(DocumentEventContext docCtx, String eventId) {
         DocumentModel doc = docCtx.getSourceDocument();
 
-        if (doc==null) {
+        if (doc == null) {
             return;
         }
 
@@ -101,7 +94,8 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
 
         Boolean sync = (Boolean) docCtx.getProperty(EventConstants.ES_SYNC_INDEXING_FLAG);
         if (sync == null) {
-            sync = (Boolean) doc.getContextData().get(EventConstants.ES_SYNC_INDEXING_FLAG);
+            sync = (Boolean) doc.getContextData().get(
+                    EventConstants.ES_SYNC_INDEXING_FLAG);
         }
 
         if (sync == null) {

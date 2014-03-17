@@ -173,10 +173,12 @@ public class SimpleElasticSearchServiceTest {
         Assert.assertEquals(1, esa.getPendingDocs());
 
         // now commit and wait for post commit indexing
+        session.save();
         TransactionHelper.commitOrRollbackTransaction();
+
         int nbTry = 0;
         while (esa.getPendingCommands() > 0 && nbTry < 20) {
-            Thread.sleep(200);
+            Thread.sleep(400);
             nbTry++;
         }
 

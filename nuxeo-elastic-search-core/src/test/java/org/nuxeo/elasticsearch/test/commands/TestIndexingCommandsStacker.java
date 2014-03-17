@@ -30,6 +30,7 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
     protected Map<String, IndexingCommands> commands = new HashMap<String, IndexingCommands>();
 
     protected List<IndexingCommand> flushedSyncCommands;
+
     protected List<IndexingCommand> flushedAsyncCommands;
 
     @Override

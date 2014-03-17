@@ -30,10 +30,9 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-
 @RunWith(FeaturesRunner.class)
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-config-test-contrib.xml")
-@Features({RepositoryElasticSearchFeature.class})
+@Features({ RepositoryElasticSearchFeature.class })
 public class ElasticSearchAdminTest {
 
     @Test
@@ -49,11 +48,14 @@ public class ElasticSearchAdminTest {
         Assert.assertEquals("nuxeoTestNode", config.getNodeName());
         Assert.assertEquals("nuxeoTestCluster", config.getClusterName());
 
-        NodesInfoResponse nodeInfoResponse = ess.getClient().admin().cluster().nodesInfo(new NodesInfoRequest()).actionGet();
+        NodesInfoResponse nodeInfoResponse = ess.getClient().admin().cluster().nodesInfo(
+                new NodesInfoRequest()).actionGet();
 
-        Assert.assertEquals("nuxeoTestCluster", nodeInfoResponse.getClusterNameAsString());
+        Assert.assertEquals("nuxeoTestCluster",
+                nodeInfoResponse.getClusterNameAsString());
         Assert.assertEquals(1, nodeInfoResponse.getNodes().length);
-        Assert.assertEquals("nuxeoTestNode",nodeInfoResponse.getNodes()[0].getNode().getName());
+        Assert.assertEquals("nuxeoTestNode",
+                nodeInfoResponse.getNodes()[0].getNode().getName());
 
-   }
+    }
 }

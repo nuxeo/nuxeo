@@ -59,7 +59,8 @@ public class IndexingCommands {
     }
 
     public IndexingCommand add(String command, boolean sync, boolean recurse) {
-        IndexingCommand cmd = new IndexingCommand(targetDocument,command, sync, recurse);
+        IndexingCommand cmd = new IndexingCommand(targetDocument, command,
+                sync, recurse);
         return add(cmd);
     }
 
@@ -74,7 +75,7 @@ public class IndexingCommands {
 
     public IndexingCommand add(IndexingCommand command) {
 
-        if (command==null) {
+        if (command == null) {
             return null;
         }
 
@@ -88,8 +89,8 @@ public class IndexingCommands {
         if (commandNames.contains(IndexingCommand.INDEX)) {
             if (command.name.equals(IndexingCommand.DELETE)) {
                 clear();
-            } else if (command.isSync()){
-                find(IndexingCommand.INDEX).sync=true;
+            } else if (command.isSync()) {
+                find(IndexingCommand.INDEX).sync = true;
             }
             return null;
         }
@@ -135,7 +136,8 @@ public class IndexingCommands {
         return out.toString();
     }
 
-    public static IndexingCommands fromJSON(CoreSession session, String json) throws ClientException {
+    public static IndexingCommands fromJSON(CoreSession session, String json)
+            throws ClientException {
         try {
             JsonFactory jsonFactory = new JsonFactory();
             JsonParser jp = jsonFactory.createJsonParser(json);
@@ -149,21 +151,22 @@ public class IndexingCommands {
         }
     }
 
-    public static IndexingCommands fromJSON(CoreSession session, JsonParser jp) throws Exception {
-        IndexingCommands cmds =  new IndexingCommands();
+    public static IndexingCommands fromJSON(CoreSession session, JsonParser jp)
+            throws Exception {
+        IndexingCommands cmds = new IndexingCommands();
         JsonToken token = jp.nextToken();
-        if (token!=JsonToken.START_ARRAY) {
-            return  null;
+        if (token != JsonToken.START_ARRAY) {
+            return null;
         }
-        while (token != JsonToken.END_ARRAY ) {
-          IndexingCommand cmd = IndexingCommand.fromJSON(session, jp);
-          if (cmd==null) {
-              break;
-          } else {
-              cmds.add(cmd);
-          }
+        while (token != JsonToken.END_ARRAY) {
+            IndexingCommand cmd = IndexingCommand.fromJSON(session, jp);
+            if (cmd == null) {
+                break;
+            } else {
+                cmds.add(cmd);
+            }
         }
-       return cmds;
+        return cmds;
     }
 
 }

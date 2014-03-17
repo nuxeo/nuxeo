@@ -42,7 +42,8 @@ public class RepositoryElasticSearchFeature extends SimpleFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        // Use derby because H2 comes with an old lucene dep which conflict with ES
+        // Use derby because H2 comes with an old lucene dep which conflict with
+        // ES
         DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
     }
 

@@ -15,7 +15,6 @@
  *     Nuxeo
  */
 
-
 package org.nuxeo.elasticsearch.test;
 
 import java.util.concurrent.TimeUnit;
@@ -45,10 +44,15 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
-
+/**
+ * Test "on the fly" indexing via the listener system
+ *
+ * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ *
+ */
 
 @RunWith(FeaturesRunner.class)
-@Features({RepositoryElasticSearchFeature.class})
+@Features({ RepositoryElasticSearchFeature.class })
 public class ElasticSearchServiceIndexingTest {
 
     @Inject
@@ -81,18 +85,19 @@ public class ElasticSearchServiceIndexingTest {
         Assert.assertEquals(0, esa.getPendingDocs());
 
         // create 10 docs
-        for(int i = 0; i < 10; i++) {
-            DocumentModel doc = session.createDocumentModel("/", "testDoc"+ i, "File");
+        for (int i = 0; i < 10; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
+                    "File");
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc.getContextData().put(EventConstants.ES_SYNC_INDEXING_FLAG, true);
             doc = session.createDocument(doc);
 
         }
-        //session.save();
+        // session.save();
 
         // update 5
-        for(int i = 0; i < 5; i++) {
-            DocumentModel doc = session.getDocument(new PathRef("/testDoc" +i));
+        for (int i = 0; i < 5; i++) {
+            DocumentModel doc = session.getDocument(new PathRef("/testDoc" + i));
             doc.setPropertyValue("dc:description", "Description TestMe" + i);
             doc = session.saveDocument(doc);
         }
@@ -101,9 +106,8 @@ public class ElasticSearchServiceIndexingTest {
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
 
-//        Assert.assertEquals(10, esa.getPendingCommands());
-//        Assert.assertEquals(10, esa.getPendingDocs());
-
+        // Assert.assertEquals(10, esa.getPendingCommands());
+        // Assert.assertEquals(10, esa.getPendingDocs());
 
         int nbTry = 0;
         while (esa.getPendingCommands() > 0 && nbTry < 20) {
@@ -116,25 +120,19 @@ public class ElasticSearchServiceIndexingTest {
 
         TransactionHelper.startTransaction();
 
+        // esi.flush();
 
-        //esi.flush();
+        // Assert.assertTrue(esa.getPendingIndexingTasksCount()>0);
 
+        // WorkManager wm = Framework.getLocalService(WorkManager.class);
+        // Assert.assertTrue(wm.awaitCompletion( 20, TimeUnit.SECONDS));
 
-        //Assert.assertTrue(esa.getPendingIndexingTasksCount()>0);
-
-        //WorkManager wm = Framework.getLocalService(WorkManager.class);
-        //Assert.assertTrue(wm.awaitCompletion( 20, TimeUnit.SECONDS));
-
-        SearchResponse searchResponse = ess.getClient().prepareSearch(ElasticSearchComponent.MAIN_IDX)
-                .setTypes("doc")
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setFrom(0).setSize(60)
-                .execute()
-                .actionGet();
+        SearchResponse searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
     }
-
 
     @Test
     public void shouldIndexDocumentAsynchronously() throws Exception {
@@ -149,8 +147,9 @@ public class ElasticSearchServiceIndexingTest {
         Assert.assertEquals(0, esa.getPendingDocs());
 
         // create 10 docs
-        for(int i = 0; i < 10; i++) {
-            DocumentModel doc = session.createDocumentModel("/", "testDoc"+ i, "File");
+        for (int i = 0; i < 10; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
+                    "File");
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc = session.createDocument(doc);
 
@@ -163,9 +162,8 @@ public class ElasticSearchServiceIndexingTest {
         Assert.assertEquals(10, esa.getPendingCommands());
         Assert.assertEquals(10, esa.getPendingDocs());
 
-
         WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion( 20, TimeUnit.SECONDS));
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
 
         Assert.assertEquals(0, esa.getPendingCommands());
         Assert.assertEquals(0, esa.getPendingDocs());
@@ -174,21 +172,13 @@ public class ElasticSearchServiceIndexingTest {
 
         esi.flush();
 
-        //Assert.assertTrue(esa.getPendingIndexingTasksCount()>0);
+        // Assert.assertTrue(esa.getPendingIndexingTasksCount()>0);
 
-
-        SearchResponse searchResponse = ess.getClient().prepareSearch(ElasticSearchComponent.MAIN_IDX)
-                .setTypes("doc")
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setFrom(0).setSize(60)
-                .execute()
-                .actionGet();
+        SearchResponse searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
     }
-
-
-
-
 
 }
