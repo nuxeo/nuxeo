@@ -66,8 +66,8 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         if (session == null) {
             Map<String, Serializable> context = new HashMap<String, Serializable>();
             context.put("principal", (Serializable) principal);
-            final CoreSession newSession = CoreInstance.getInstance().open(
-                    repositoryName, context);
+            final CoreSession newSession = CoreInstance.openCoreSession(
+                    repositoryName, principal);
             openedSessions.get().put(sessionKey, newSession);
             try {
                 Transaction t = TransactionHelper.lookupTransactionManager().getTransaction();
@@ -103,14 +103,14 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
         @Override
         public void beforeCompletion() {
-            CoreInstance.getInstance().close(session);
+            session.close();
         }
 
         @Override
         public void afterCompletion(int status) {
             openedSessions.get().remove(sessionKey);
             if (status != Status.STATUS_COMMITTED) {
-                CoreInstance.getInstance().close(session);
+                session.close();
             }
         }
     }

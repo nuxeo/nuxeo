@@ -16,15 +16,12 @@
  */
 package org.nuxeo.drive.service;
 
-import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -74,22 +71,14 @@ public class MockChangeFinder implements FileSystemChangeFinder {
             NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
             RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
             for (String repositoryName : repositoryManager.getRepositoryNames()) {
-                CoreSession repoSession = null;
-                try {
-                    Map<String, Serializable> context = new HashMap<String, Serializable>();
-                    context.put("principal", principal);
-                    repoSession = CoreInstance.getInstance().open(
-                            repositoryName, context);
+                try (CoreSession repoSession = CoreInstance.openCoreSession(
+                        repositoryName, principal)) {
                     docChanges.addAll(getDocumentChanges(repoSession, query,
                             limit));
                 } catch (TooManyChangesException e) {
                     throw e;
                 } catch (Exception e) {
                     throw new ClientRuntimeException(e);
-                } finally {
-                    if (repoSession != null) {
-                        CoreInstance.getInstance().close(repoSession);
-                    }
                 }
             }
         }

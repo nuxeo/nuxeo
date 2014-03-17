@@ -106,9 +106,7 @@ public class TestGetChangeSummaryMultiRepo {
             return;
         }
 
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("username", "Administrator");
-        otherSession = CoreInstance.getInstance().open("other", context);
+        otherSession = CoreInstance.openCoreSession("other", "Administrator");
 
         nuxeoDriveManager.setChangeFinder(new MockChangeFinder());
         lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
@@ -140,7 +138,7 @@ public class TestGetChangeSummaryMultiRepo {
         otherSession.save();
 
         // Close session bound to the 'other' repository
-        CoreInstance.getInstance().close(otherSession);
+        otherSession.close();
         otherSession = null;
     }
 
