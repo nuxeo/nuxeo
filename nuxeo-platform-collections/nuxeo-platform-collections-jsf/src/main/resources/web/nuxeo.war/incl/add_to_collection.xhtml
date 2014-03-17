@@ -55,7 +55,7 @@
                         rows="3" cols="40" />
                     </c:when>
                     <c:otherwise>
-                      <h:outputText
+                      <h:outputText id="scd"
                         value="#{collectionActions.getSelectedCollectionDescription()}" />
                     </c:otherwise>
                   </c:choose></td>
@@ -104,20 +104,20 @@
         value="#{!collectionActions.canAddToSelectedCollection()}">
         <div class="buttonsGadget">
           <c:if test="#{selection}">
-            <nxh:commandButton
+            <nxh:commandButton id="addAll"
               value="#{messages['label.addToCollection']}"
               action="#{collectionActions.addCurrentSelectionToSelectedCollection()}"
               disabled="#{canNotAddToSelectedCollection}"
               styleClass="button" />
           </c:if>
           <c:if test="#{!selection}">
-            <nxh:commandButton
+            <nxh:commandButton id="add"
               value="#{messages['label.addToCollection']}"
               action="#{collectionActions.addCurrentDocumentToSelectedCollection()}"
               disabled="#{canNotAddToSelectedCollection}"
               styleClass="button" />
           </c:if>
-          <nxh:commandButton value="#{messages['command.cancel']}"
+          <nxh:commandButton id="cancel" value="#{messages['command.cancel']}"
             immediate="true" action="#{collectionActions.cancel()}"
             styleClass="button" />
         </div>
