@@ -28,6 +28,7 @@ import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.AddToCollectionForm;
 import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
+import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
@@ -166,8 +167,16 @@ public class DocumentBasePage extends AbstractPage {
      *
      */
     public ContentTabSubPage getContentTab() {
+        return getContentTab(ContentTabSubPage.class);
+    }
+
+    public <T extends ContentTabSubPage> T getContentTab(Class<T> tabClass) {
         clickOnLinkIfNotSelected(contentTabLink);
-        return asPage(ContentTabSubPage.class);
+        return asPage(tabClass);
+    }
+
+    public CollectionContentTabSubPage getCollectionContentTab() {
+        return getContentTab(CollectionContentTabSubPage.class);
     }
 
     public ContextualActions getContextualActions() {

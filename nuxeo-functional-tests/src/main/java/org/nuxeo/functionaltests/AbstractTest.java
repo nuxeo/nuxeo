@@ -53,8 +53,11 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
+import org.nuxeo.functionaltests.pages.forms.CollectionCreationFormPage;
+import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
 import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
+import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -831,6 +834,45 @@ public abstract class AbstractTest {
                 fileTitle, fileDescription, uploadBlob, filePrefix, fileSuffix,
                 fileDescription);
         return filePage;
+    }
+
+    /**
+     * Creates a Collections container form the {@code currentPage}.
+     *
+     * @param currentPage the current page
+     * @param collectionsTitle the Collections container title
+     * @param collectionsDescription the collections description
+     * @return the created Collections page
+     * @throws IOException if temporary file creation fails
+     */
+    protected DocumentBasePage createCollections(DocumentBasePage currentPage,
+            String collectionsTitle, String fileDescription) {
+        DublinCoreCreationDocumentFormPage dublinCoreDocumentFormPage = currentPage.getContentTab().getDocumentCreatePage(
+                "Collections", DublinCoreCreationDocumentFormPage.class);
+
+        // Create File
+        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle, fileDescription);
+        return documentBasePage;
+    }
+
+    /**
+     * Creates a Collection form the {@code currentPage}.
+     *
+     * @param currentPage the current page
+     * @param collectionTitle the Collections container title
+     * @param collectionDescription the collection description
+     * @return the created Collections page
+     * @throws IOException if temporary file creation fails
+     */
+    protected CollectionContentTabSubPage createCollection(DocumentBasePage currentPage,
+            String collectionsTitle, String fileDescription){
+
+        CollectionCreationFormPage collectionCreationFormPage = currentPage.getContentTab().getDocumentCreatePage(
+                "Collection", CollectionCreationFormPage.class);
+
+        // Create File
+        CollectionContentTabSubPage documentBasePage = collectionCreationFormPage.createDocument(collectionsTitle, fileDescription);
+        return documentBasePage;
     }
 
     /**

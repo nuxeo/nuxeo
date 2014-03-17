@@ -18,6 +18,7 @@
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.openqa.selenium.By;
@@ -83,11 +84,13 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
         emailInput.sendKeys(email);
         firstPasswordInput.sendKeys(password);
         secondPasswordInput.sendKeys(password);
-        Select2WidgetElement groups = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath("//div[@id='s2id_createUserView:createUser:nxl_user:nxw_groups_select2']")),
-                true);
-        groups.selectValue(group);
+        if (StringUtils.isNotBlank(group)) {
+            Select2WidgetElement groups = new Select2WidgetElement(
+                    driver,
+                    driver.findElement(By.xpath("//div[@id='s2id_createUserView:createUser:nxl_user:nxw_groups_select2']")),
+                    true);
+            groups.selectValue(group);
+        }
         createButton.click();
         return asPage(UsersGroupsBasePage.class);
     }

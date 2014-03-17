@@ -288,7 +288,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.9.3
      */
     public DocumentBasePage goToDocument(final int index) {
-        getChildDocumentRows().get(index).findElement(By.id("td[3]/div/a[1]")).click();
+        getChildDocumentRows().get(index).findElement(By.xpath("td[3]/div/a[1]")).click();
         return asPage(DocumentBasePage.class);
     }
 }

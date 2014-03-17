@@ -19,31 +19,15 @@ package org.nuxeo.functionaltests.pages.forms;
 
 import java.io.IOException;
 
-import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.FileWidgetElement;
 import org.nuxeo.functionaltests.forms.LayoutElement;
-import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
  */
-public class FileCreationFormPage extends AbstractPage {
-
-    @Required
-    @FindBy(id = "document_create:nxl_heading:nxw_title")
-    public WebElement titleTextInput;
-
-    @Required
-    @FindBy(id = "document_create:nxl_heading:nxw_description")
-    public WebElement descriptionTextInput;
-
-    @Required
-    @FindBy(id = "document_create:nxw_documentCreateButtons_CREATE_DOCUMENT")
-    public WebElement createButton;
+public class FileCreationFormPage extends DublinCoreCreationDocumentFormPage {
 
     /**
      * @param driver
@@ -67,7 +51,7 @@ public class FileCreationFormPage extends AbstractPage {
             fileWidget.uploadTestFile(filePrefix, fileSuffix, fileContent);
         }
 
-        createButton.click();
+        create();
         return asPage(FileDocumentBasePage.class);
     }
 }
