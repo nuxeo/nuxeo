@@ -48,6 +48,7 @@
     <module>nuxeo-platform-ui-select2</module>
     <module>nuxeo-thumbnail</module>
     <module>nuxeo-platform-oauth</module>
+    <module>nuxeo-platform-collections</module>
   </modules>
 
   <dependencies>
