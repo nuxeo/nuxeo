@@ -34,14 +34,11 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.runtime.api.Framework;
@@ -85,7 +82,7 @@ public class BulkRestartWorkflow {
         boolean transactionStarted = false;
         Split split = SimonManager.getStopwatch(ID).start();
         try {
-            session = openSession();
+            session = CoreInstance.openCoreSession(null);
 
             // Fetching all routes
             // If the nodeId parameter is null, fetch all the workflow routes
@@ -150,10 +147,10 @@ public class BulkRestartWorkflow {
 
                     routesRestartedCount++;
                     if (routesRestartedCount % batchSize == 0) {
-                        CoreInstance.getInstance().close(session);
+                        session.close();
                         TransactionHelper.commitOrRollbackTransaction();
                         TransactionHelper.startTransaction();
-                        session = openSession();
+                        session = CoreInstance.openCoreSession(null);
                     }
                 } catch (Exception e) {
                     Throwable t = unwrapException(e);
@@ -166,7 +163,7 @@ public class BulkRestartWorkflow {
             }
         } finally {
             if (session != null) {
-                CoreInstance.getInstance().close(session);
+                session.close();
             }
             TransactionHelper.commitOrRollbackTransaction();
             if (!transactionStarted) {
@@ -198,13 +195,4 @@ public class BulkRestartWorkflow {
         }
     }
 
-    protected CoreSession openSession() {
-        RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
-        Repository repo = rm.getDefaultRepository();
-        try {
-            return repo.open();
-        } catch (Exception e) {
-            throw new ClientRuntimeException(e);
-        }
-    }
 }
