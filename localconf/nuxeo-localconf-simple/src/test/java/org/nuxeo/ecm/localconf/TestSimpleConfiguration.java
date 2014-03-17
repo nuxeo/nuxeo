@@ -32,7 +32,6 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
@@ -289,26 +288,21 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
 
         addReadForEveryone(CHILD_WORKSPACE_REF);
 
-        CoreSession newSession = openSessionAs("user1");
-        DocumentModel childWorkspace = newSession.getDocument(CHILD_WORKSPACE_REF);
-        SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
-                SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
-                childWorkspace);
+        try (CoreSession newSession = openSessionAs("user1")) {
+            DocumentModel childWorkspace = newSession.getDocument(CHILD_WORKSPACE_REF);
+            SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(
+                    SimpleConfiguration.class, SIMPLE_CONFIGURATION_FACET,
+                    childWorkspace);
 
-        SimpleConfigurationAdapter adapter = (SimpleConfigurationAdapter) simpleConfiguration;
-        assertEquals(0, adapter.parameters.size());
+            SimpleConfigurationAdapter adapter = (SimpleConfigurationAdapter) simpleConfiguration;
+            assertEquals(0, adapter.parameters.size());
 
-        Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put("key1", "value1");
-        parameters.put("key2", "value2");
+            Map<String, String> parameters = new HashMap<String, String>();
+            parameters.put("key1", "value1");
+            parameters.put("key2", "value2");
 
-        simpleConfiguration.putAll(parameters);
-        assertEquals(2, adapter.parameters.size());
-
-        try {
-            simpleConfiguration.save(newSession);
-        } finally {
-            CoreInstance.getInstance().close(newSession);
+            simpleConfiguration.putAll(parameters);
+            assertEquals(2, adapter.parameters.size());
         }
     }
 

@@ -32,7 +32,6 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.util.Properties;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -165,20 +164,17 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
             throws Exception {
         addReadForEveryone(CHILD_WORKSPACE_REF);
 
-        CoreSession newSession = openSessionAs("user1");
-        OperationContext ctx = new OperationContext(newSession);
-        assertNotNull(ctx);
+        try (CoreSession newSession = openSessionAs("user1")) {
+            OperationContext ctx = new OperationContext(newSession);
+            assertNotNull(ctx);
 
-        // PutSimpleConfigurationParameter
-        OperationChain chain = new OperationChain(
-                "testPutSimpleConfigurationParametersChain");
-        chain.add(FetchDocument.ID).set("value", CHILD_WORKSPACE_REF);
-        chain.add(PutSimpleConfParam.ID).set("key", "key1").set(
-                "value", "value1");
-        try {
+            // PutSimpleConfigurationParameter
+            OperationChain chain = new OperationChain(
+                    "testPutSimpleConfigurationParametersChain");
+            chain.add(FetchDocument.ID).set("value", CHILD_WORKSPACE_REF);
+            chain.add(PutSimpleConfParam.ID).set("key", "key1").set("value",
+                    "value1");
             service.run(ctx, chain);
-        } finally {
-            CoreInstance.getInstance().close(newSession);
         }
     }
 
