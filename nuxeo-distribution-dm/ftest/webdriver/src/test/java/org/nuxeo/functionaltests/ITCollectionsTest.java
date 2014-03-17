@@ -206,6 +206,8 @@ public class ITCollectionsTest extends AbstractTest {
                     TEST_USERNAME, "lastname1", "company1", "email1",
                     TEST_PASSWORD, "members");
             usersTab = page.getUsersTab(true);
+        } else {
+            throw new IllegalStateException(String.format("user %s already exists", TEST_USERNAME));
         }
         usersTab.searchUser(TEST_USERNAME);
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
