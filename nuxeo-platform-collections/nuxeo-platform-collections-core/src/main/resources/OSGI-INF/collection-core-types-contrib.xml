@@ -52,6 +52,10 @@
       <facet name="NotCollectionMember" />
     </doctype>
 
+    <doctype name="Root" append="true">
+      <facet name="NotCollectionMember" />
+    </doctype>
+
   </extension>
 
 </component>
