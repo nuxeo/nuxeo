@@ -51,7 +51,6 @@ class ReleaseMP(object):
 
     def clone(self):
         cwd = os.getcwd()
-        self.repo = Repository(os.getcwd(), self.alias)
         self.repo.clone_mp(self.marketplace_conf)
         os.chdir(cwd)
 
@@ -59,11 +58,15 @@ class ReleaseMP(object):
     def prepare(self, dryrun=False):
         """ Prepare the release."""
         cwd = os.getcwd()
+        if not os.path.isdir(self.repo.mp_dir):
+            self.clone()
+        os.chdir(self.repo.mp_dir)
         marketplaces = self.mp_config.sections()
         if self.restart_from:
             idx = marketplaces.index(self.restart_from)
             marketplaces = marketplaces[idx:]
         for marketplace in marketplaces:
+            log("[%s]" % marketplace)
             if self.mp_config.has_option(marketplace, "skip"):
                 log("[WARN] Skipped '%s' (%s)" % (marketplace,
                                     self.mp_config.get(marketplace, "skip")))
@@ -72,10 +75,13 @@ class ReleaseMP(object):
                 log("Skipped '%s' (%s)" % (marketplace, "Already prepared"))
                 continue
             try:
-                log("Prepare %s" % marketplace)
-                os.chdir(os.path.join(self.repo.mp_dir, marketplace))
+                mp_dir = os.path.join(self.repo.mp_dir, marketplace)
+                if not os.path.isdir(mp_dir):
+                    self.repo.git_pull(marketplace,
+                                    self.mp_config.get(marketplace, "branch"))
+                os.chdir(mp_dir)
                 mp_repo = Repository(os.getcwd(), self.alias)
-                # Prepare release
+                log("Prepare release of %s..." % marketplace)
                 mp_release = Release(mp_repo,
                         self.mp_config.get(marketplace, "branch"),
                         self.mp_config.get(marketplace, "tag"),
