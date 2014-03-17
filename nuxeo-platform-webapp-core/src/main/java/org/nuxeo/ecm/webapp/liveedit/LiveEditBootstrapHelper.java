@@ -53,8 +53,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
@@ -179,28 +177,6 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     // Event-long cache for document field lookups - no invalidation required
     protected final Map<String, Boolean> cachedEditableBlobs = new HashMap<String, Boolean>();
 
-    protected CoreSession getSession(String repositoryName)
-            throws ClientException {
-        RepositoryManager rm;
-        try {
-            rm = Framework.getService(RepositoryManager.class);
-        } catch (Exception e1) {
-            throw new ClientException("Unable to get repository Manager:", e1);
-        }
-
-        Repository repo = rm.getRepository(repositoryName);
-        if (repo == null) {
-            throw new ClientException("Unable to get repository "
-                    + repositoryName);
-        }
-        try {
-            return repo.open();
-        } catch (Exception e1) {
-            throw new ClientException("Unable to open session on repository",
-                    e1);
-        }
-    }
-
     /**
      * Creates the bootstrap file. It is called from the browser's addon. The
      * URL composition tells the case and what to create. The structure is
@@ -217,11 +193,11 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         CoreSession templateSession = documentManager;
         try {
             if (repoID != null && !currentRepoID.equals(repoID)) {
-                session = getSession(repoID);
+                session = CoreInstance.openCoreSession(repoID);
             }
 
             if (templateRepoID != null && !currentRepoID.equals(templateRepoID)) {
-                templateSession = getSession(templateRepoID);
+                templateSession = CoreInstance.openCoreSession(templateRepoID);
             }
 
             DocumentModel doc = null;
@@ -449,10 +425,10 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             context.responseComplete();
         } finally {
             if (session != null && session != documentManager) {
-                CoreInstance.getInstance().close(session);
+                session.close();
             }
             if (templateSession != null && templateSession != documentManager) {
-                CoreInstance.getInstance().close(templateSession);
+                templateSession.close();
             }
         }
     }
