@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -65,7 +65,7 @@ public class PerSessionCoreProvider extends CoreSessionProvider<Ref> implements 
         @Override
         public void destroy() {
             try {
-                session.destroy();
+                session.close();
             } finally {
                 session = null;
                 lock = null;

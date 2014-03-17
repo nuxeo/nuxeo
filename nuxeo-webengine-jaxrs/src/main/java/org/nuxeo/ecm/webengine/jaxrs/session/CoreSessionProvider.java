@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -19,10 +19,8 @@ import javax.ws.rs.WebApplicationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -76,19 +74,7 @@ public abstract class CoreSessionProvider<REF extends SessionRef> {
         if (request.getUserPrincipal() == null) {
             throw new java.lang.IllegalStateException("Not authenticated user is trying to get a core session");
         }
-        RepositoryManager rm = Framework.getService(RepositoryManager.class);
-        Repository repo = null;
-        if (repoName == null) {
-            repo = rm.getDefaultRepository();
-        } else {
-            repo = rm.getRepository(repoName);
-        }
-        if (repo == null) {
-            //TODO use custom exception
-            throw new java.lang.IllegalStateException("Unable to get " + repoName
-                    + " repository");
-        }
-        return repo.open();
+        return CoreInstance.openCoreSession(repoName);
     }
 
     public boolean hasSessions() {

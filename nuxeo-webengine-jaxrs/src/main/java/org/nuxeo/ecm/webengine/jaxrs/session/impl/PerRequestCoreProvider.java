@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -39,7 +39,7 @@ public class PerRequestCoreProvider extends CoreSessionProvider<Ref> {
         }
         public void destroy() {
             try {
-                session.destroy();
+                session.close();
             } finally {
                 session = null;
             }
