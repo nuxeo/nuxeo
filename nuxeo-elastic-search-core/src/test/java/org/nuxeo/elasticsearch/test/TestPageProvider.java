@@ -46,7 +46,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml")
-public class ElasticSearchNativePageProviderTest {
+public class TestPageProvider {
 
     @Inject
     protected CoreSession session;

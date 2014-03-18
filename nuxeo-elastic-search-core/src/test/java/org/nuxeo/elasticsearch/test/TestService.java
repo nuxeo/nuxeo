@@ -19,10 +19,12 @@ package org.nuxeo.elasticsearch.test;
 
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoRequest;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
+import org.elasticsearch.client.Client;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.config.NuxeoElasticSearchConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -33,7 +35,25 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-config-test-contrib.xml")
 @Features({ RepositoryElasticSearchFeature.class })
-public class ElasticSearchAdminTest {
+public class TestService {
+
+
+    @Test
+    public void checkDeclaredServices() throws Exception {
+
+        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        Assert.assertNotNull(ess);
+
+        Client client = ess.getClient();
+        Assert.assertNotNull(client);
+
+        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+        Assert.assertNotNull(esi);
+
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+        Assert.assertNotNull(esa);
+
+    }
 
     @Test
     public void verifyNodeStartedWithConfig() throws Exception {

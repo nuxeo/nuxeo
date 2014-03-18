@@ -51,7 +51,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-public class ElasticSearchServiceIndexingTest {
+public class TestAutomaticIndexing {
 
     @Inject
     protected CoreSession session;
@@ -249,6 +249,67 @@ public class ElasticSearchServiceIndexingTest {
         esi.flush();
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+
+    }
+
+    @Test
+    public void shouldUnIndexDocumentAsynchronously() throws Exception {
+
+        Assert.assertTrue(TransactionHelper.isTransactionActive());
+
+        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        Assert.assertNotNull(ess);
+
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+        Assert.assertNotNull(esa);
+        Assert.assertEquals(0, esa.getPendingDocs());
+
+        DocumentModel doc = session.createDocumentModel("/", "testDoc",
+                "File");
+        doc.setPropertyValue("dc:title", "TestMe");
+        doc = session.createDocument(doc);
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        Assert.assertEquals(1, esa.getPendingCommands());
+        Assert.assertEquals(1, esa.getPendingDocs());
+
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+
+        TransactionHelper.startTransaction();
+
+        esi.flush();
+
+        SearchResponse searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+
+        // now delete the document
+        session.removeDocument(doc.getRef());
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        Assert.assertEquals(1, esa.getPendingCommands());
+        Assert.assertEquals(1, esa.getPendingDocs());
+
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+
+        TransactionHelper.startTransaction();
+
+        esi.flush();
+
+        searchResponse = ess.getClient().prepareSearch(
                 ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());

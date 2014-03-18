@@ -53,7 +53,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:disable-listener-contrib.xml")
-public class SimpleElasticSearchServiceTest {
+public class TestManualIndexing {
 
     @Inject
     protected CoreSession session;
@@ -64,22 +64,6 @@ public class SimpleElasticSearchServiceTest {
         esa.initIndexes(true);
     }
 
-    @Test
-    public void checkDeclaredServices() throws Exception {
-
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        Assert.assertNotNull(ess);
-
-        Client client = ess.getClient();
-        Assert.assertNotNull(client);
-
-        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
-        Assert.assertNotNull(esi);
-
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
-        Assert.assertNotNull(esa);
-
-    }
 
     @Test
     public void checkManualSyncIndexing() throws Exception {
