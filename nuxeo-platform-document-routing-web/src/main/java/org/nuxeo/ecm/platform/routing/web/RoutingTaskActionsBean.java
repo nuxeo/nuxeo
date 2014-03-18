@@ -27,9 +27,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
@@ -698,6 +700,28 @@ public class RoutingTaskActionsBean implements Serializable {
      */
     public void setCurrentTask(Task currentTask) {
         this.currentTask = currentTask;
+    }
+
+    /**
+     * Added to avoid an error when opening a task created @before 5.8 see
+     * NXP-14047
+     *
+     * @since 5.9.3, 5.8.0-HF10
+     * @return
+     * @throws ClientException
+     */
+    @SuppressWarnings("deprecation")
+    public List<String> getCurrentTaskTargetDocumentsIds()
+            throws ClientException {
+        Set<String> uniqueTargetDocIds = new HashSet<String>();
+        List<String> docIds = new ArrayList<String>();
+        if (currentTask == null) {
+            return docIds;
+        }
+        uniqueTargetDocIds.addAll(currentTask.getTargetDocumentsIds());
+        uniqueTargetDocIds.add(currentTask.getTargetDocumentId());
+        docIds.addAll(uniqueTargetDocIds);
+        return docIds;
     }
 
     /**

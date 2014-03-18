@@ -85,7 +85,7 @@
       <showTitle>true</showTitle>
       <coreQueryPageProvider>
         <property name="coreSession">#{documentManager}</property>
-        <parameter>#{routingTaskActions.getCurrentTask().getTargetDocumentsIds()}
+        <parameter>#{routingTaskActions.getCurrentTaskTargetDocumentsIds()}
         </parameter>
         <whereClause docType="Document">
           <fixedPart>
