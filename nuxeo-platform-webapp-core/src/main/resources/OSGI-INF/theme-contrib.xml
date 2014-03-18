@@ -66,6 +66,8 @@
       <resource>jquery.nuxeo.dropdown.js</resource>
       <resource>jquery.tipsy.js</resource>
       <resource>tipsy.css</resource>
+      <resource>jquery.magnific-popup.js</resource>
+      <resource>magnific-popup.css</resource>
     </view>
 
     <view name="Nuxeo header" template-engine="jsf-facelets">
@@ -238,6 +240,13 @@
     <resource name="jquery.nuxeo.tipsy.js">
       <path>scripts/jquery.nuxeo.tipsy.js</path>
       <require>jquery.tipsy.js</require>
+    </resource>
+    <resource name="jquery.magnific-popup.js">
+      <path>scripts/jquery/jquery.magnific-popup.js</path>
+      <require>jquery.js</require>
+    </resource>
+     <resource name="magnific-popup.css">
+      <path>css/magnific-popup.css</path>
     </resource>
   </extension>
 
