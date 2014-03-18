@@ -1,27 +1,13 @@
-<c:if test="true"
-  xmlns:c="http://java.sun.com/jstl/core"
+<c:if test="true" xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
-<c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{blobHolderGenerator.getBlobHolder(field).blob.filename)}</c:if>
-<c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+  <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{blobHolderGenerator.getBlobHolder(field).blob.filename)}</c:if>
+  <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
-  <div class="thumbnailContainer">
-    <nxu:set var="thumbnailUrl"
-      value="#{nxd:fileUrl('downloadThumbnail', field, 'blobholder:0', blobHolderGenerator.getBlobHolder(field).blob.filename)}"
-      cache="true">
-      <nxh:graphicImage value="#{thumbnailUrl}"
-        rendered="#{not empty thumbnailUrl}" />
-    </nxu:set>
-  </div>
-
-</c:if>
-<c:if test="#{widget.mode == 'pdf'}">
-
-  <nxp:html>
     <div class="thumbnailContainer">
       <nxu:set var="thumbnailUrl"
         value="#{nxd:fileUrl('downloadThumbnail', field, 'blobholder:0', blobHolderGenerator.getBlobHolder(field).blob.filename)}"
@@ -30,7 +16,20 @@
           rendered="#{not empty thumbnailUrl}" />
       </nxu:set>
     </div>
-  </nxp:html>
 
-</c:if>
+  </c:if>
+  <c:if test="#{widget.mode == 'pdf'}">
+
+    <nxp:html>
+    <div class="thumbnailContainer">
+      <nxu:set var="thumbnailUrl"
+        value="#{nxd:fileUrl('downloadThumbnail', field, 'blobholder:0', blobHolderGenerator.getBlobHolder(field).blob.filename)}"
+        cache="true">
+        <nxh:graphicImage value="#{thumbnailUrl}"
+          rendered="#{not empty thumbnailUrl}" />
+      </nxu:set>
+    </div>
+    </nxp:html>
+
+  </c:if>
 </c:if>
