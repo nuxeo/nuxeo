@@ -303,6 +303,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
 
             simpleConfiguration.putAll(parameters);
             assertEquals(2, adapter.parameters.size());
+            simpleConfiguration.save(newSession);
         }
     }
 
