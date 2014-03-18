@@ -221,18 +221,19 @@ given the path parameter.
                 raise ExitException(1,
                             "Could not parse other_versions parameter '%s'."
                                     % other_versions)
-            # Parse version replacements
             other_versions_split = []
-            for other_version in other_versions.split(","):
-                other_version_split = other_version.split("/")
-                if (len(other_version_split) < 2 or
-                    len(other_version_split) > 3 or
-                    other_version_split.count(None) > 0 or
-                    other_version_split.count("") > 0):
-                    raise ExitException(1,
-                        "Could not parse other_versions parameter '%s'."
-                        % other_versions)
-                other_versions_split.append(other_version_split)
+            if other_versions:
+                # Parse version replacements
+                for other_version in other_versions.split(","):
+                    other_version_split = other_version.split("/")
+                    if (len(other_version_split) < 2 or
+                        len(other_version_split) > 3 or
+                        other_version_split.count(None) > 0 or
+                        other_version_split.count("") > 0):
+                        raise ExitException(1,
+                            "Could not parse other_versions parameter '%s'."
+                            % other_versions)
+                    other_versions_split.append(other_version_split)
         self.other_versions = other_versions_split
         self.custom_patterns = Patterns(custom_files_pattern,
                                         custom_props_pattern)
