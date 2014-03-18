@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.elasticsearch.client.Client;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.elasticsearch.config.NuxeoElasticSearchConfig;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 
 /**

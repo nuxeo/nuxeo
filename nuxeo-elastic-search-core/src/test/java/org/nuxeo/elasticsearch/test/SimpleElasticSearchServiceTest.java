@@ -19,9 +19,6 @@ package org.nuxeo.elasticsearch.test;
 
 import java.util.concurrent.TimeUnit;
 
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -62,14 +59,9 @@ public class SimpleElasticSearchServiceTest {
     protected CoreSession session;
 
     @After
-    public void cleanupIndexed() {
+    public void cleanupIndexed() throws Exception {
         ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
-        IndicesExistsResponse exists = esa.getClient().admin().indices().exists(
-                new IndicesExistsRequest(ElasticSearchComponent.MAIN_IDX)).actionGet();
-        if (exists.isExists()) {
-            esa.getClient().admin().indices().delete(
-                    new DeleteIndexRequest(ElasticSearchComponent.MAIN_IDX)).actionGet();
-        }
+        esa.initIndexes(true);
     }
 
     @Test

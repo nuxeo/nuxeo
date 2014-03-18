@@ -45,7 +45,14 @@
 
     </documentation>
 
-    <object class="org.nuxeo.elasticsearch.NuxeoElasticSearchConfig" />
+    <object class="org.nuxeo.elasticsearch.config.NuxeoElasticSearchConfig" />
+  </extension-point>
+
+  <extension-point name="elasticSearchIndex">
+    <documentation>
+    </documentation>
+
+    <object class="org.nuxeo.elasticsearch.config.ElasticSearchIndex" />
   </extension-point>
 
 </component>

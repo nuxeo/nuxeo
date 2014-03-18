@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.ElasticSearchComponent.defaultConfig" version="1.0">
+
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
+    point="elasticSearchIndex">
+
+   <elasticSearchIndex name="nxmain">
+
+<settings>
+  {
+   "index.number_of_shards":"1",
+   "index.number_of_replicas":"0",
+   "analysis":{
+      "analyzer":{
+         "default":{
+            "type":"custom",
+            "tokenizer":"keyword",
+            "filter":[
+               "lowercase",
+               "asciifolding"
+            ]
+         },
+         "fr_analyzer":{
+            "type":"custom",
+            "tokenizer":"standard",
+            "filter":[
+               "lowercase",
+               "fr_stop_filter",
+               "fr_stem_filter",
+               "asciifolding",
+               "fr_elision_filter"
+            ]
+         },
+         "en_analyzer":{
+            "type":"custom",
+            "tokenizer":"standard",
+            "filter":[
+               "lowercase",
+               "en_stop_filter",
+               "en_stem_filter",
+               "asciifolding"
+            ]
+         },
+         "path_analyzer":{
+            "type":"custom",
+            "tokenizer":"path_tokenizer"
+         }
+      },
+      "filter":{
+         "fr_stop_filter":{
+            "type":"stop",
+            "stopwords":[
+               "_french_"
+            ]
+         },
+         "fr_stem_filter":{
+            "type":"stemmer",
+            "name":"minimal_french"
+         },
+         "fr_elision_filter":{
+            "type":"elision",
+            "articles":[
+               "c",
+               "l",
+               "m",
+               "t",
+               "qu",
+               "n",
+               "s",
+               "j"
+            ]
+         },
+         "en_stop_filter":{
+            "type":"stop",
+            "stopwords":[
+               "_english_"
+            ]
+         },
+         "en_stem_filter":{
+            "type":"stemmer",
+            "name":"minimal_english"
+         }
+      },
+      "tokenizer":{
+         "path_tokenizer":{
+            "type":"path_hierarchy",
+            "delimiter":"/"
+         }
+      }
+   }
+}
+</settings>
+<mapping>
+{
+        "doc" : {
+            "_all" : {
+              "analyzer" : "fr_analyzer"
+            },
+            "_size" : {
+              "enabled" : true
+            },
+            "_timestamp" : {
+              "enabled" : true,
+              "path" : "dc:modified"
+            },
+            "properties" : {
+                "ecm:path" : {
+                    "type" : "multi_field",
+                    "fields" : {
+                        "ecm:path" : {
+                           "type" : "string",
+                           "index" : "not_analyzed"
+                         },
+                         "children" : {
+                            "type" : "string",
+                            "index_analyzer": "path_analyzer",
+                            "search_analyzer": "keyword"
+                         }
+                      }
+                },
+                "dc:title" : {
+                    "type" : "string",
+                    "analyzer" : "en_analyzer",
+                    "boost": 2.0
+                },
+                "dc:description" : {
+                    "type" : "string",
+                    "analyzer" : "en_analyzer",
+                    "boost": 1.5
+                }
+            }
+        }
+  }
+</mapping>
+
+   </elasticSearchIndex>
+
+  </extension>
+
+</component>

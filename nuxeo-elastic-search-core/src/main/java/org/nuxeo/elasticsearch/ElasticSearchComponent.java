@@ -22,8 +22,10 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.logging.Log;
@@ -31,6 +33,9 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.elasticsearch.action.admin.cluster.node.shutdown.NodesShutdownRequest;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
@@ -61,6 +66,8 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.config.ElasticSearchIndex;
+import org.nuxeo.elasticsearch.config.NuxeoElasticSearchConfig;
 import org.nuxeo.elasticsearch.listener.EventConstants;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
@@ -93,7 +100,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     public static final String EP_Config = "elasticSearchConfig";
 
+    public static final String EP_Index = "elasticSearchIndex";
+
     public static final String MAIN_IDX = "nxmain";
+
+    protected Map<String, ElasticSearchIndex> indexes = new HashMap<String, ElasticSearchIndex>();
 
     public static final String NX_DOCUMENT = "doc";
 
@@ -104,6 +115,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (EP_Config.equals(extensionPoint)) {
             release();
             config = (NuxeoElasticSearchConfig) contribution;
+        } else if (EP_Index.equals(extensionPoint)) {
+            ElasticSearchIndex idx = (ElasticSearchIndex) contribution;
+            indexes.put(idx.getIndexName(), idx);
         }
     }
 
@@ -322,16 +336,74 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
+
         super.applicationStarted(context);
+
+        // start Server if needed
         if (getConfig() != null && !getConfig().isInProcess()
                 && getConfig().autostartLocalNode()) {
-            ElasticSearchController controler = new ElasticSearchController(
-                    config);
-            if (controler.start()) {
-                log.info("Started Elastic Search");
-            } else {
-                log.error("Failed to start ElasticSearch");
-            }
+            startESServer(getConfig());
+        }
+
+        // init indexes if needed
+        initIndexes(false);
+
+    }
+
+    protected void startESServer(NuxeoElasticSearchConfig config)
+            throws Exception {
+        ElasticSearchController controler = new ElasticSearchController(config);
+        if (controler.start()) {
+            log.info("Started Elastic Search");
+        } else {
+            log.error("Failed to start ElasticSearch");
+        }
+    }
+
+    public void initIndexes(boolean recreate) throws Exception {
+        for (ElasticSearchIndex idx : indexes.values()) {
+            initIndex(idx, recreate);
+        }
+    }
+
+    protected void initIndex(ElasticSearchIndex idxConfig, boolean recreate)
+            throws Exception {
+
+        log.info("Initialize index " + idxConfig.getIndexName());
+
+        IndicesExistsResponse exists = getClient().admin().indices().exists(
+                new IndicesExistsRequest(idxConfig.getIndexName())).actionGet();
+
+        boolean indexExists = exists.isExists();
+        boolean createIndex = idxConfig.mustCreate();
+
+        if (indexExists && recreate) {
+            getClient().admin().indices().delete(
+                    new DeleteIndexRequest(idxConfig.getIndexName())).actionGet();
+            indexExists = true;
+            createIndex = true;
+        }
+
+        if (!indexExists && createIndex) {
+            log.info("Create index " + idxConfig.getIndexName());
+            // create index
+            getClient().admin().indices().prepareCreate(
+                    idxConfig.getIndexName()).
+                    setSettings(idxConfig.getSettings()).
+                    setSource(idxConfig.getMapping()).
+                    execute().actionGet();
+        }
+
+        if (idxConfig.forceUpdate()) {
+            log.info("Update index config" + idxConfig.getIndexName());
+            // update settings
+            getClient().admin().indices().prepareUpdateSettings(
+                    idxConfig.getIndexName()).setSettings(
+                    idxConfig.getSettings()).execute().actionGet();
+
+            // update mapping
+            getClient().admin().indices().preparePutMapping(
+                    idxConfig.getIndexName()).setSource(idxConfig.getMapping());
         }
     }
 

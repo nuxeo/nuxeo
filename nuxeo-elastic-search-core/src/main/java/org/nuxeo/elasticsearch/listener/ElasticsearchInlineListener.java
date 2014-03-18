@@ -144,8 +144,8 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
 
     @Override
     public void beforeCompletion() {
-        // run flush !
         try {
+            // run flush !
             flushCommands();
         } catch (Exception e) {
             log.error("Error during flush", e);
@@ -156,14 +156,11 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
 
     @Override
     public void afterCompletion(int status) {
-        if (Status.STATUS_COMMITTED == status) {
-            // NOP
-        } else if (Status.STATUS_MARKED_ROLLBACK == status
+        if (Status.STATUS_MARKED_ROLLBACK == status
                 || Status.STATUS_ROLLEDBACK == status) {
             synched.set(false);
             getAllCommands().clear();
         }
-        // NOP
     }
 
 }

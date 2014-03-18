@@ -19,7 +19,7 @@ package org.nuxeo.elasticsearch.api;
 
 import org.elasticsearch.client.Client;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.elasticsearch.NuxeoElasticSearchConfig;
+import org.nuxeo.elasticsearch.config.NuxeoElasticSearchConfig;
 
 /**
  * Administration interface for Elastic Search service
@@ -37,6 +37,8 @@ public interface ElasticSearchAdmin {
     Client getClient();
 
     NuxeoElasticSearchConfig getConfig();
+
+    void initIndexes(boolean recreate) throws Exception;
 
     boolean isAlreadyScheduledForIndexing(DocumentModel doc);
 

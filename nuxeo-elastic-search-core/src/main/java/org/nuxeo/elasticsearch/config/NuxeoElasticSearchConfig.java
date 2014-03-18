@@ -15,7 +15,7 @@
  *     Nuxeo
  */
 
-package org.nuxeo.elasticsearch;
+package org.nuxeo.elasticsearch.config;
 
 import java.io.File;
 import java.io.Serializable;
