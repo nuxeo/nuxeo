@@ -31,6 +31,7 @@ import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 
 /**
@@ -55,6 +56,12 @@ public class IndexingCommand {
     protected boolean recurse;
 
     protected DocumentModel targetDocument;
+
+    protected String uid;
+
+    protected String path;
+
+    protected String repository;
 
     protected String id;
 
@@ -83,7 +90,13 @@ public class IndexingCommand {
     }
 
     public void refresh(CoreSession session) throws ClientException {
-        targetDocument = session.getDocument(targetDocument.getRef());
+        if (session.exists(targetDocument.getRef())) {
+            targetDocument = session.getDocument(targetDocument.getRef());
+        } else {
+            // Doc was deleted : no way we can fetch it
+            // re-attach ???
+        }
+
     }
 
     public void update(IndexingCommand other) {
@@ -126,6 +139,7 @@ public class IndexingCommand {
         jsonGen.writeStringField("id", id);
         jsonGen.writeStringField("name", name);
         jsonGen.writeStringField("docId", targetDocument.getId());
+        jsonGen.writeStringField("path", targetDocument.getPathAsString());
         jsonGen.writeStringField("repo", targetDocument.getRepositoryName());
         jsonGen.writeBooleanField("recurse", recurse);
         jsonGen.writeBooleanField("sync", sync);
@@ -151,8 +165,6 @@ public class IndexingCommand {
             throws Exception {
 
         IndexingCommand cmd = new IndexingCommand();
-        String docId = null;
-        String repo = null;
 
         JsonToken token = jp.nextToken(); // will return JsonToken.START_OBJECT
                                           // (verify?)
@@ -165,9 +177,11 @@ public class IndexingCommand {
             if ("name".equals(fieldname)) { // contains an object
                 cmd.name = jp.getText();
             } else if ("docId".equals(fieldname)) {
-                docId = jp.getText();
+                cmd.uid = jp.getText();
+            } else if ("path".equals(fieldname)) {
+                cmd.path = jp.getText();
             } else if ("repo".equals(fieldname)) {
-                repo = jp.getText();
+                cmd.repository= jp.getText();
             } else if ("id".equals(fieldname)) {
                 cmd.id = jp.getText();
             } else if ("recurse".equals(fieldname)) {
@@ -176,16 +190,19 @@ public class IndexingCommand {
                 cmd.recurse = jp.getBooleanValue();
             }
         }
-        if (docId != null) {
-            if (!session.getRepositoryName().equals(repo)) {
-                log.error("Unable to restore doc from repository " + repo
+        // resolve DocumentModel if possible
+        if (cmd.uid != null) {
+            if (!session.getRepositoryName().equals(cmd.repository)) {
+                log.error("Unable to restore doc from repository " + cmd.repository
                         + " with a session on repository "
                         + session.getRepositoryName());
             } else {
-                IdRef ref = new IdRef(docId);
+                IdRef ref = new IdRef(cmd.uid);
                 if (!session.exists(ref)) {
-                    log.error("Unable to restore doc from repository with uid "
-                            + docId);
+                    if(!IndexingCommand.DELETE.equals(cmd.getName())) {
+                        log.warn("Unable to restieve document "
+                                + cmd.uid + " form indexing command " + cmd.name);
+                    }
                 } else {
                     cmd.targetDocument = session.getDocument(ref);
                 }

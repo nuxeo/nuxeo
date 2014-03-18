@@ -7,7 +7,7 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand;
 
 public interface ElasticSearchIndexing {
 
-    String indexNow(IndexingCommand cmd) throws ClientException;
+    void indexNow(IndexingCommand cmd) throws ClientException;
 
     void indexNow(List<IndexingCommand> cmds) throws ClientException;
 

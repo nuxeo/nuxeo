@@ -17,7 +17,8 @@
   </modules>
 
   <properties>
-     <elasticsearch.version>1.0.1</elasticsearch.version>
+     <elasticsearch.version>1.0.0</elasticsearch.version>
+     <elasticsearch.updatebyquery.version>1.6.0</elasticsearch.updatebyquery.version>
   </properties>
 
   <dependencyManagement>
@@ -27,6 +28,12 @@
         <artifactId>elasticsearch</artifactId>
         <version>${elasticsearch.version}</version>
       </dependency>
+      <dependency>
+       <groupId>com.yakaz.elasticsearch.plugins</groupId>
+       <artifactId>elasticsearch-action-updatebyquery</artifactId>
+        <version>${elasticsearch.updatebyquery.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 

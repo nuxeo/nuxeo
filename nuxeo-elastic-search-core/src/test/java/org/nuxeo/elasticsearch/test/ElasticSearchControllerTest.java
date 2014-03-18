@@ -79,7 +79,7 @@ public class ElasticSearchControllerTest {
         .setFrom(0).setSize(60).execute().actionGet();
 
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
-        System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
+        //System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
 
         searchResponse = elasticSearchClient.prepareSearch("nxmain").setTypes(
                 "doc").setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(

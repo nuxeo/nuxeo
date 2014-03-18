@@ -96,8 +96,7 @@ public class SimpleElasticSearchServiceTest {
         session.save();
 
         IndexingCommand cmd = new IndexingCommand(doc, true, false);
-        String res = esi.indexNow(cmd);
-        Assert.assertNotNull(res);
+        esi.indexNow(cmd);
 
         esi.flush();
 

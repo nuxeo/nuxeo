@@ -17,6 +17,10 @@
 
 package org.nuxeo.elasticsearch.work;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -48,12 +52,20 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
         return title;
     }
 
+    protected final List<String> recursableCommands = Arrays.asList(
+            IndexingCommand.UPDATE, IndexingCommand.INDEX,
+            IndexingCommand.UPDATE_SECURITY);
+
+    protected boolean needRecurse(IndexingCommand cmd) {
+        return cmd.isRecurse() && recursableCommands.contains(cmd.getName());
+    }
+
     @Override
     protected void doIndexingWork(ElasticSearchIndexing esi, IndexingCommand cmd)
             throws Exception {
 
         esi.indexNow(cmd);
-        if (cmd.isRecurse()) {
+        if (needRecurse(cmd)) {
             ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(cmd);
             WorkManager wm = Framework.getLocalService(WorkManager.class);
             wm.schedule(subWorker);

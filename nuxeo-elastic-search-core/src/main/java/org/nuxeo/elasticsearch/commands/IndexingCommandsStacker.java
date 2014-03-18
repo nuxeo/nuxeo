@@ -68,6 +68,7 @@ public abstract class IndexingCommandsStacker {
 
         IndexingCommands cmds = getOrCreateCommands(doc);
 
+
         if (DOCUMENT_CREATED.equals(eventId)) {
             cmds.add(IndexingCommand.INDEX, sync, false);
         } else if (BEFORE_DOC_UPDATE.equals(eventId)) {
@@ -79,7 +80,11 @@ public abstract class IndexingCommandsStacker {
         } else if (DOCUMENT_SECURITY_UPDATED.equals(eventId)) {
             cmds.add(IndexingCommand.UPDATE_SECURITY, sync, doc.isFolder());
         } else if (DOCUMENT_REMOVED.equals(eventId)) {
-            cmds.add(IndexingCommand.DELETE, sync, doc.isFolder());
+            cmds.add(IndexingCommand.DELETE, sync, false);
+            if (doc.isFolder()) {
+                // subtree delete is always async
+                cmds.add(IndexingCommand.DELETE, false, true);
+            }
         }
 
     }
@@ -88,8 +93,12 @@ public abstract class IndexingCommandsStacker {
         try {
             TransactionManager tm = TransactionHelper.lookupTransactionManager();
             if (tm != null) {
-                tm.getTransaction().registerSynchronization(sync);
-                return true;
+                if (tm.getTransaction()!=null) {
+                    tm.getTransaction().registerSynchronization(sync);
+                    return true;
+                }
+                log.error("Unable to register synchronization : no active transaction");
+                return false;
             } else {
                 log.error("Unable to register synchronization : no TransactionManager");
                 return false;

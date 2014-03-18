@@ -37,6 +37,7 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -50,6 +51,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -189,21 +191,36 @@ public class ElasticSearchComponent extends DefaultComponent implements
     public void indexNow(List<IndexingCommand> cmds) throws ClientException {
         BulkRequestBuilder bulkRequest = getClient().prepareBulk();
         for (IndexingCommand cmd : cmds) {
-            IndexRequestBuilder idxRequest = buildESIndexingRequest(cmd);
-            bulkRequest.add(idxRequest);
+            if (IndexingCommand.DELETE.equals(cmd.getName())) {
+                indexNow(cmd);
+            } else {
+                IndexRequestBuilder idxRequest = buildESIndexingRequest(cmd);
+                bulkRequest.add(idxRequest);
+            }
         }
-        bulkRequest.execute().actionGet();
+        // execute bulk index if any
+        if (bulkRequest.numberOfActions()>0) {
+            bulkRequest.execute().actionGet();
+        }
+
         for (IndexingCommand cmd : cmds) {
             markCommandExecuted(cmd);
         }
     }
 
     @Override
-    public String indexNow(IndexingCommand cmd) throws ClientException {
+    public void indexNow(IndexingCommand cmd) throws ClientException {
 
-        IndexResponse response = buildESIndexingRequest(cmd).execute().actionGet();
+        DocumentModel doc = cmd.getTargetDocument();
+        if (IndexingCommand.DELETE.equals(cmd.getName())) {
+            getClient().prepareDelete(MAIN_IDX,NX_DOCUMENT, doc.getId()).execute().actionGet();
+            if (cmd.isRecurse()) {
+                getClient().prepareDeleteByQuery(MAIN_IDX).setQuery(QueryBuilders.prefixQuery("ecm:path", doc.getPathAsString() + "/")).execute().actionGet();
+            }
+        } else {
+            buildESIndexingRequest(cmd).execute().actionGet();
+        }
         markCommandExecuted(cmd);
-        return response.getId();
     }
 
     protected IndexRequestBuilder buildESIndexingRequest(IndexingCommand cmd)
@@ -218,7 +235,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
             return getClient().prepareIndex(MAIN_IDX, NX_DOCUMENT, doc.getId())
                     .setSource(builder);
         } catch (Exception e) {
-
             throw new ClientException("Unable to create index request for Document "
                     + doc.getId(), e);
         }
@@ -390,7 +406,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (indexExists && recreate) {
             getClient().admin().indices()
                     .delete(new DeleteIndexRequest(idxConfig.getIndexName())).actionGet();
-            indexExists = true;
+            indexExists = false;
             createIndex = true;
         }
 
