@@ -5,10 +5,15 @@
     point="elasticSearchConfig">
 
     <elasticSearchConfig inProcess="true">
-     <nodeName>nuxeoTestNode</nodeName>
-     <clusterName>nuxeoTestCluster</clusterName>
+      <nodeName>nuxeoTestNode</nodeName>
+      <clusterName>nuxeoTestCluster</clusterName>
     </elasticSearchConfig>
-
+    <!--
+    <elasticSearchConfig inProcess="false" autostartLocalNode="false">
+      <hostIp>localhost</hostIp>
+      <hostPort>9300</hostPort>
+    </elasticSearchConfig>
+    -->
   </extension>
 
 </component>

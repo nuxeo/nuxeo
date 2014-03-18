@@ -42,8 +42,10 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.ImmutableSettings.Builder;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -108,10 +110,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     public static final String NX_DOCUMENT = "doc";
 
+    public static final String ID_FIELD = "_id";
+
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            throws Exception {
+    public void registerContribution(Object contribution, String extensionPoint,
+            ComponentInstance contributor) throws Exception {
         if (EP_Config.equals(extensionPoint)) {
             release();
             config = (NuxeoElasticSearchConfig) contribution;
@@ -121,6 +124,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
+    @Override
     public NuxeoElasticSearchConfig getConfig() {
         if (Framework.isTestModeSet() && config == null) {
             // automatically generate test config
@@ -140,28 +144,31 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected Settings getSettings() {
         NuxeoElasticSearchConfig config = getConfig();
         Settings settings = null;
+        String cname = config.getClusterName();
         if (config.isInProcess()) {
-            String cname = config.getClusterName();
             if (cname == null) {
                 cname = "NuxeoESCluster";
             }
-            settings = ImmutableSettings.settingsBuilder().put(
-                    "node.http.enabled", config.enableHttp()).put("path.logs",
-                    config.getLogPath()).put("path.data", config.getDataPath()).put(
-                    "gateway.type", "none").put("index.store.type",
-                    config.getIndexStorageType()).put("index.number_of_shards",
-                    1).put("index.number_of_replicas", 1).put("cluster.name",
-                    cname).put("node.name", config.getNodeName()).build();
+            settings = ImmutableSettings.settingsBuilder()
+                    .put("node.http.enabled", config.enableHttp())
+                    .put("path.logs", config.getLogPath())
+                    .put("path.data", config.getDataPath()).put("gateway.type", "none")
+                    .put("index.store.type", config.getIndexStorageType())
+                    .put("index.number_of_shards", 1).put("index.number_of_replicas", 1)
+                    .put("cluster.name", cname).put("node.name", config.getNodeName())
+                    .build();
         } else {
-            settings = ImmutableSettings.settingsBuilder().put(
-                    "node.http.enabled", config.enableHttp()).put(
-                    "cluster.name", config.getClusterName()).build();
+            Builder builder = ImmutableSettings.settingsBuilder().put(
+                    "node.http.enabled", config.enableHttp());
+            if (cname != null) {
+                builder.put("cluster.name", cname);
+            }
+            settings = builder.build();
         }
         return settings;
     }
 
-    protected void schedulePostCommitIndexing(IndexingCommand cmd)
-            throws ClientException {
+    protected void schedulePostCommitIndexing(IndexingCommand cmd) throws ClientException {
 
         try {
             CoreSession session = cmd.getTargetDocument().getCoreSession();
@@ -207,15 +214,13 @@ public class ElasticSearchComponent extends DefaultComponent implements
             XContentBuilder builder = jsonBuilder();
 
             JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
-            JsonESDocumentWriter.writeESDocument(jsonGen, doc,
-                    cmd.getSchemas(), null);
-            return getClient().prepareIndex(MAIN_IDX, NX_DOCUMENT, doc.getId()).setSource(
-                    builder);
+            JsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
+            return getClient().prepareIndex(MAIN_IDX, NX_DOCUMENT, doc.getId())
+                    .setSource(builder);
         } catch (Exception e) {
 
-            throw new ClientException(
-                    "Unable to create index request for Document "
-                            + doc.getId(), e);
+            throw new ClientException("Unable to create index request for Document "
+                    + doc.getId(), e);
         }
     }
 
@@ -229,15 +234,13 @@ public class ElasticSearchComponent extends DefaultComponent implements
         DocumentModel doc = cmd.getTargetDocument();
         boolean added = pendingCommands.addIfAbsent(cmd.getId());
         if (!added) {
-            log.debug("Skip indexing for " + doc
-                    + " since it is already scheduled");
+            log.debug("Skip indexing for " + doc + " since it is already scheduled");
             return;
         }
 
         added = pendingWork.addIfAbsent(getWorkKey(doc));
         if (!added) {
-            log.debug("Skip indexing for " + doc
-                    + " since it is already scheduled");
+            log.debug("Skip indexing for " + doc + " since it is already scheduled");
             return;
         }
         if (cmd.isSync()) {
@@ -256,10 +259,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
+    @Override
     public void flush() {
         flush(false);
     }
 
+    @Override
     public void flush(boolean commit) {
         // refresh indexes
         getClient().admin().indices().prepareRefresh(MAIN_IDX).execute().actionGet();
@@ -270,10 +275,13 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected Node getLocalNode() {
         if (localNode == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("Create a local ES node inside the Nuxeo JVM");
+            }
             NuxeoElasticSearchConfig config = getConfig();
             Settings settings = getSettings();
-            localNode = NodeBuilder.nodeBuilder().local(config.isInProcess()).settings(
-                    settings).node();
+            localNode = NodeBuilder.nodeBuilder().local(config.isInProcess())
+                    .settings(settings).node();
         }
         return localNode;
     }
@@ -289,9 +297,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     String[] address = remoteNode.split(":");
                     try {
                         InetAddress inet = InetAddress.getByName(address[0]);
-                        address[1] = "9300"; // Hard coded for now !
-                        tClient.addTransportAddress(new InetSocketTransportAddress(
-                                inet, Integer.parseInt(address[1])));
+                        if (log.isDebugEnabled()) {
+                            log.debug("Use a remote ES node: " + remoteNode);
+                        }
+                        tClient.addTransportAddress(new InetSocketTransportAddress(inet,
+                                Integer.parseInt(address[1])));
                     } catch (UnknownHostException e) {
                         log.error("Unable to resolve host " + address[0], e);
                     }
@@ -303,9 +313,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
-    public DocumentModelList query(CoreSession session,
-            QueryBuilder queryBuilder, int pageSize, int pageIdx)
-            throws ClientException {
+    public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder,
+            int pageSize, int pageIdx) throws ClientException {
 
         DocumentModelList result = new DocumentModelListImpl();
         boolean completed = false;
@@ -314,9 +323,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
         while (result.size() < pageSize && !completed) {
             int start = (pageIdx + fetch) * pageSize;
             int end = (pageIdx + fetch + 1) * pageSize;
-            SearchResponse searchResponse = getClient().prepareSearch(MAIN_IDX).setTypes(
-                    "doc").setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                    queryBuilder).setFrom(start).setSize(end).execute().actionGet();
+            SearchResponse searchResponse = getClient().prepareSearch(MAIN_IDX)
+                    .setTypes("doc").setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .setQuery(queryBuilder).setFrom(start).setSize(end).execute()
+                    .actionGet();
 
             if (searchResponse.getHits().getTotalHits() < pageSize) {
                 completed = true;
@@ -350,8 +360,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     }
 
-    protected void startESServer(NuxeoElasticSearchConfig config)
-            throws Exception {
+    protected void startESServer(NuxeoElasticSearchConfig config) throws Exception {
         ElasticSearchController controler = new ElasticSearchController(config);
         if (controler.start()) {
             log.info("Started Elastic Search");
@@ -360,6 +369,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
+    @Override
     public void initIndexes(boolean recreate) throws Exception {
         for (ElasticSearchIndex idx : indexes.values()) {
             initIndex(idx, recreate);
@@ -370,16 +380,16 @@ public class ElasticSearchComponent extends DefaultComponent implements
             throws Exception {
 
         log.info("Initialize index " + idxConfig.getIndexName());
-
-        IndicesExistsResponse exists = getClient().admin().indices().exists(
+        IndicesAdminClient cl = getClient().admin().indices();
+        IndicesExistsResponse exists = cl.exists(
                 new IndicesExistsRequest(idxConfig.getIndexName())).actionGet();
 
         boolean indexExists = exists.isExists();
         boolean createIndex = idxConfig.mustCreate();
 
         if (indexExists && recreate) {
-            getClient().admin().indices().delete(
-                    new DeleteIndexRequest(idxConfig.getIndexName())).actionGet();
+            getClient().admin().indices()
+                    .delete(new DeleteIndexRequest(idxConfig.getIndexName())).actionGet();
             indexExists = true;
             createIndex = true;
         }
@@ -387,23 +397,21 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (!indexExists && createIndex) {
             log.info("Create index " + idxConfig.getIndexName());
             // create index
-            getClient().admin().indices().prepareCreate(
-                    idxConfig.getIndexName()).
-                    setSettings(idxConfig.getSettings()).
-                    setSource(idxConfig.getMapping()).
-                    execute().actionGet();
+            getClient().admin().indices().prepareCreate(idxConfig.getIndexName())
+                    .setSettings(idxConfig.getSettings()).execute().actionGet();
+            getClient().admin().indices().preparePutMapping(idxConfig.getIndexName())
+                    .setType(NX_DOCUMENT).setSource(idxConfig.getMapping()).execute().actionGet();
         }
 
         if (idxConfig.forceUpdate()) {
             log.info("Update index config" + idxConfig.getIndexName());
             // update settings
-            getClient().admin().indices().prepareUpdateSettings(
-                    idxConfig.getIndexName()).setSettings(
-                    idxConfig.getSettings()).execute().actionGet();
+            getClient().admin().indices().prepareUpdateSettings(idxConfig.getIndexName())
+                    .setSettings(idxConfig.getSettings()).execute().actionGet();
 
             // update mapping
-            getClient().admin().indices().preparePutMapping(
-                    idxConfig.getIndexName()).setSource(idxConfig.getMapping());
+            getClient().admin().indices().preparePutMapping(idxConfig.getIndexName())
+                    .setSource(idxConfig.getMapping());
         }
     }
 
@@ -417,8 +425,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (client != null) {
             if (getConfig() != null && !getConfig().isInProcess()
                     && getConfig().autostartLocalNode()) {
-                client.admin().cluster().nodesShutdown(
-                        new NodesShutdownRequest(getConfig().getNodeName())).actionGet();
+                client.admin()
+                        .cluster()
+                        .nodesShutdown(
+                                new NodesShutdownRequest(getConfig().getNodeName()))
+                        .actionGet();
             }
             client.close();
         }
@@ -433,6 +444,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return doc.getRepositoryName() + ":" + doc.getId();
     }
 
+    @Override
     public boolean isAlreadyScheduledForIndexing(DocumentModel doc) {
         if (pendingWork.contains(getWorkKey(doc))) {
             return true;
@@ -440,10 +452,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return false;
     }
 
+    @Override
     public int getPendingDocs() {
         return pendingWork.size();
     }
 
+    @Override
     public int getPendingCommands() {
         return pendingCommands.size();
     }

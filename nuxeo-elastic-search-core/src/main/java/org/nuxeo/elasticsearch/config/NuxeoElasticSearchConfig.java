@@ -62,8 +62,9 @@ public class NuxeoElasticSearchConfig implements Serializable {
     @XNode("hostIp")
     protected String hostIp;
 
+    // Watch out the default tcp transport port is 9300 not 9200
     @XNode("hostPort")
-    protected String hostPort;
+    protected String hostPort = "9300";
 
     @XNode("nodeName")
     protected String nodeName = "Nuxeo";
@@ -127,7 +128,7 @@ public class NuxeoElasticSearchConfig implements Serializable {
     }
 
     public List<String> getRemoteNodes() {
-        if (remoteNodes.size() == 0 && autostartLocalNode) {
+        if (remoteNodes.size() == 0 && ! autostartLocalNode) {
             remoteNodes.add(getHostIp() + ":" + getHostPort());
         }
         return remoteNodes;

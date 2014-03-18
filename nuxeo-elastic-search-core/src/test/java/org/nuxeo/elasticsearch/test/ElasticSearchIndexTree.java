@@ -6,6 +6,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Assert;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -21,9 +22,12 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
+@LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-config-test-contrib.xml")
+
 public class ElasticSearchIndexTree {
 
     @Inject
@@ -50,7 +54,7 @@ public class ElasticSearchIndexTree {
         }
     }
 
-    // @Test
+    @Test
     public void verifyIndexingOnTree() throws Exception {
 
         // build the tree
@@ -77,8 +81,7 @@ public class ElasticSearchIndexTree {
         searchResponse = ess.getClient().prepareSearch(
                 ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.prefixQuery("ecm:path",
-                        "/folder0/folder1/folder2/")).execute().actionGet();
+                QueryBuilders.queryString("ecm\\:path.children: \"/folder0/folder1/folder2\"")).execute().actionGet();
         Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
 
     }
