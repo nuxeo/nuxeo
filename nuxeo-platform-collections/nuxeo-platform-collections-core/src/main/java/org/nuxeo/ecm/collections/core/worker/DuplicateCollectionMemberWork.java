@@ -18,6 +18,8 @@ package org.nuxeo.ecm.collections.core.worker;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -33,6 +35,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.9.3
  */
 public class DuplicateCollectionMemberWork extends AbstractWork {
+
+    private static final Log log = LogFactory.getLog(DuplicateCollectionMemberWork.class);
 
     public DuplicateCollectionMemberWork(final String repoName,
             final String newCollectionId, final List<String> collectionMemberIds, final int offset) {
@@ -75,6 +79,8 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
             setProgress(new Progress(0, docIds.size()));
             initSession();
             for (int i = 0; i < docIds.size(); i++) {
+                log.trace(String.format("Worker %s, populating Collection %s, processing CollectionMember %s", getId(),
+                        newCollectionId, docIds.get(i)));
                 if (docIds.get(i) != null) {
                     DocumentModel collectionMember = session.getDocument(new IdRef(
                             docIds.get(i)));

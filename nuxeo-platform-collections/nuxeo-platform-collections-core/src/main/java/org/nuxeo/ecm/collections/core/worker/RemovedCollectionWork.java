@@ -66,7 +66,7 @@ public class RemovedCollectionWork extends RemovedAbstractWork {
     @Override
     protected void updateDocument(final DocumentModel collectionMember)
             throws ClientException {
-        log.trace(String.format("Updating CollectionMember %s",
+        log.trace(String.format("Worker %s, updating CollectionMember %s", getId(),
                 collectionMember.getTitle()));
 
         // We want to disable the following listener on a

@@ -61,7 +61,7 @@ public class RemovedCollectionMemberWork extends RemovedAbstractWork {
 
     @Override
     protected void updateDocument(final DocumentModel collection) throws ClientException {
-        log.trace(String.format("Updating Collection %s",
+        log.trace(String.format("Worker %s, updating Collection %s", getId(),
                 collection.getTitle()));
 
         Collection collectionAdapter = collection.getAdapter(Collection.class);
