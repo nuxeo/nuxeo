@@ -12,8 +12,13 @@
       <nxu:set var="thumbnailUrl"
         value="#{nxd:fileUrl('downloadThumbnail', field, 'blobholder:0', blobHolderGenerator.getBlobHolder(field).blob.filename)}"
         cache="true">
-        <nxh:graphicImage value="#{thumbnailUrl}"
-          rendered="#{not empty thumbnailUrl}" />
+        <c:if test="#{not empty thumbnailUrl}">
+          <a
+            href="#{nxd:fileUrl('downloadPicture', field, 'OriginalJpeg:content', fieldOrValue.dublincore.modified)}"
+            class="image-popup"> <nxh:graphicImage
+              value="#{thumbnailUrl}" />
+          </a>
+        </c:if>
       </nxu:set>
     </div>
 
