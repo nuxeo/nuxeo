@@ -7,9 +7,10 @@ This module builds, packages and tests the Nuxeo products.
 ## Requirements
 
 Building Nuxeo products requires the following tools:
-  * JDK 6 (Java Sun recommended)
-  * Apache Maven 2.2.1
-  * Apache Ant 1.7.1+
+
+  * JDK 7 (Oracle's JDK or OpenJDK recommended)
+  * Apache Maven 3.1.1+
+  * Apache Ant 1.7.1+ (optional)
   * Open Source tools that will be downloaded by Maven when needed.
 
 ## Usage
@@ -29,15 +30,11 @@ Maven usage: `mvn clean package [-P<comma separated profiles>]`
         mvn clean package
         mvn clean package -Pall-distributions
 
- * All JBoss packages:
-
-        mvn clean package -Pjboss
-
- * All Tomcat packages:
+ * Only Tomcat packages:
 
         mvn clean package -Ptomcat
 
-### Build with Ant
+### Build with Ant (deprecated)
 
 Ant is available at the top level: Ant targets have been defined to provide
 user-friendly commands for most used build cases.
@@ -53,22 +50,22 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
 
 ### Available Maven profiles
 
+ * all-distributions (default): full build
  * nuxeo-coreserver, nuxeo-cap, nuxeo-dm, nuxeo-dam, ...: build the corresponding application/module
  * tomcat: build the corresponding server
- * all-distributions: full build
  * itest: run integration tests
  * ftest-dm, ftest-dam, ftest-sc, ...: run functional tests against the corresponding application/module
- * fltest-dm: run functional Funkload tests against DM
+ * fltest-dm: run functional FunkLoad tests against DM
  * sdk: build SDK distributions for use in Nuxeo IDE
+ * qa, nightly: for internal use at Nuxeo
 
 ## Modules listing
 
  * nuxeo-distribution-cap: Content Application Platform NXR
- * nuxeo-distribution-tomcat-wizard-tests: WebDriver tests for Tomcat wizard
  * nuxeo-distribution-coreserver: CoreServer NXR
  * nuxeo-distribution-dm: Document Management NXR
     * ftest/cmis: CMIS tests for DM
-    * ftest/funkload: Funkload tests for DM
+    * ftest/funkload: FunkLoad tests for DM
     * ftest/selenium: Selenium tests for DM
     * ftest/webdriver: WebDriver tests for DM
  * nuxeo-distribution-resources: Resources archives used in other packagings (doc, binaries, templates).
@@ -77,30 +74,39 @@ Ant usage: `ant distrib [-Ddistrib=profile]`
  * nuxeo-distribution-tests: Helper POM with Nuxeo test dependencies
  * nuxeo-distribution-tomcat: Tomcat distributions
  * nuxeo-functional-tests: Framework for testing nuxeo distributions
+ * nuxeo-dam-functional-tests: DAM specific additions to nuxeo-functional-tests
  * nuxeo-launcher: Control Panel and launcher
  * nuxeo-marketplace-dam: Marketplace package of DAM
     * ftest/webdriver: WebDriver tests for DAM
  * nuxeo-marketplace-dm: Marketplace package of DM
+ * nuxeo-marketplace-rest-api: Marketplace package of REST API
  * nuxeo-marketplace-social-collaboration: Marketplace package of Social Collaboration
  * nuxeo-startup-wizard: Startup Wizard WebApp
+ * nuxeo-distribution-tomcat-wizard-tests: WebDriver tests for Tomcat wizard
 
 ## Produced packages
 
  * NXR packages
+     * Core Server
      * Content Application Platform (CAP)
      * Advanced Document Management (DM)
      * Digital Assets Management (DAM)
-     * Social Collaboration
+     * Social Collaboration (SC)
  * Marketplace packages
+     * Advanced Document Management (DM)
+     * Digital Assets Management (DAM)
+     * Social Collaboration (SC)
+     * REST API
  * Tomcat packages
-
+     * Core Server
+     * Content Application Platform (CAP)
 
 ## Understanding Maven profiles and classifiers
 
 Profiles are mainly used to manage the list of classifiers being generated.
 Maven plugins rely by default on a such mechanism for creating tests, sources and
-javadoc jars. It is usable also for any other specific builds (OS, JDK, env, packaging, ...).
-It's widely used by a lot of third-parties (google gwt, json, shindings, ...).
+Javadoc JARs. It is usable also for any other specific builds (OS, JDK, env, packaging, ...).
+It's widely used by a lot of third-parties (Google GWT, JSON, shindings, ...).
 Think about "classifiers" as "qualifiers" (sources, javadoc, tests, linux, windows,
 mac, jta, all, ...). For example, the following are two alternatives ("classifiers")
 for the package ("artifact") named "nuxeo-distribution-tomcat":
@@ -111,31 +117,26 @@ Some profiles are used to choose the product to build. Other profiles are used t
 choose which alternatives (classifiers) of the product will be built. Multiple
 profiles can be used simultaneously.
 Here are some common profiles and their impact on build result:
-  * all-distributions: build everything except the Windows installer
+  * all-distributions: build everything
   * all: build all classifiers for the called module(s)
-  * nuxeo-cap: build only Nuxeo CAP classifier (if JBoss module, so build only
-    JBoss with Nuxeo CAP)
+  * nuxeo-cap: build only Nuxeo CAP related modules stack
   * nuxeo-dm: same as nuxeo-cap but with Nuxeo DM
-  * shell: package a Nuxeo Shell
-  * jboss: package a Nuxeo within JBoss
+  * all-tests: run all tests
 
 Here are some usage examples (ran from nuxeo-distribution):
-  * (default) Building Nuxeo CAP, nuxeo DM with VCS, JBoss with Nuxeo DM on VCS
+  * (default) Building all Nuxeo products and their alternatives
     o mvn clean install
-    o mvn clean install -Pjboss,nuxeo-dm,vcs
-  * Building all Nuxeo DM alternatives
-    o mvn clean install -Pnuxeo-dm,all
-  * Building all JBoss packagings
-    o mvn clean install -Pjboss,all
-  * Building all Nuxeo products and their alternatives
     o mvn clean install -Pall-distributions
+  * Run all tests
+    o mvn clean install -Pall-tests
+  * Run Nuxeo DM functional tests
+    o mvn clean install -Pftest-dm
 
-Note: because of a Maven bug making things crazy when two classifiers of an
-artifact are not deployed at the same time (i.e. if you deploy only nuxeo-cap
-classifier of nuxeo-distribution-jboss, then nuxeo-dm classifier becomes
-unreachable from local and remote Maven repositories).
+Note: Maven expects multiple classifiers of an artifact to be deployed at the 
+same time, else other classifiers previously built become unreachable from 
+local and remote Maven repositories).
 That means when you want to "deploy" (Maven remote deployment) or "install" (Maven
-local deployment) a module, you must use "all" profile.
+local deployment) a module, you must use "all-distributions" profile.
 
 When you need only one classifier, for any other purpose than
 install/deploy to m2 repository, then you can use the dedicated profiles.
@@ -194,7 +195,7 @@ It is installable in the default available application in `nuxeo-distribution-to
 
 ### Other applications
 
-There are a lot of other useful addons (see <https://github.com/nuxeo/>) and applications available from the [Nuxeo Marketplace](http://marketplace.nuxeo.com/).
+There are a lot of other useful addons (see <http://nuxeo.github.io>) and applications packages available from the [Nuxeo Marketplace](http://marketplace.nuxeo.com/).
 
 Addons are manually built and deployed on the target server.
 
@@ -204,25 +205,23 @@ Marketplace applications are installable from the Admin Center within the Nuxeo 
 
 It is of course possible to create custom builds/assemblies.
 
-For historical reasons, there are multiple technologies used for packaging in
-nuxeo-distribution project ([maven-assembly-plugin](http://maven.apache.org/plugins/maven-assembly-plugin/), [maven-nuxeo-plugin](http://hg.nuxeo.org/tools/maven-nuxeo-plugin/), [maven-antrun-extended-plugin](http://java.net/projects/maven-antrun-extended-plugin), [nuxeo-distribution-tools](http://hg.nuxeo.org/tools/nuxeo-distribution-tools/)).
+Multiple technologies have been used for packaging in the nuxeo-distribution project:
+[maven-assembly-plugin](http://maven.apache.org/plugins/maven-assembly-plugin/), [maven-nuxeo-plugin](http://hg.nuxeo.org/tools/maven-nuxeo-plugin/), [maven-antrun-extended-plugin](http://java.net/projects/maven-antrun-extended-plugin), [nuxeo-distribution-tools](https://github.com/nuxeo/nuxeo-distribution-tools),
+[ant-assembly-maven-plugin](https://github.com/nuxeo/ant-assembly-maven-plugin).
 
 They are all based on Maven principles with the objectives to avoid duplication,
 ease maintenance and upgrade, rely on Maven artifacts, be OS independent.
 
-We recommend to use our newest tool [nuxeo-distribution-tools](http://doc.nuxeo.com/x/BIAO).
+We recommend to use our newest tool [ant-assembly-maven-plugin](http://doc.nuxeo.com/x/BIAO).
 
-Execution of the assembly may be done from Maven execution as a Maven plugin,
-from command line or from Ant.
+Execution of the assembly is done from Maven execution as a Maven plugin.
 
 Based on Ant syntax, it provides access to major Maven concepts and Ant flexibility.
 
 Principles of an assembly are generally to:
 
-  * inherit a Maven dependency tree (list of artifacts to retrieve)
+  * inherit a Maven dependency tree/graph (list of artifacts to work with)
   * use this dependency tree to dispatch artifacts into directories
   * download complementary artifacts (default packaging, resources, drivers, ...)
   * download an empty server (JBoss, Jetty, Tomcat, ...)
-  * assemble all those parts into a runnable product.
-
-See the chosen tool [documentation](http://doc.nuxeo.com) for more details.
+  * assemble all those parts as a ZIP build product.
