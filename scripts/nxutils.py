@@ -289,7 +289,6 @@ class Repository(object):
             # Main modules
             self.eval_modules()
             for module in self.modules:
-                break
                 # Ignore modules which are not Git sub-repositories
                 if (not os.path.isdir(module) or
                 os.path.isdir(os.path.join(module, ".git"))):
@@ -302,7 +301,6 @@ class Repository(object):
                                                             "addons/module")
             for addon in self.addons + (self.optional_addons
                                         if with_optionals else []):
-                break
                 self.git_pull(addon, version, fallback_branch)
             if not self.is_online:
                 self.url_pattern = self.url_pattern.replace("addons/module",
