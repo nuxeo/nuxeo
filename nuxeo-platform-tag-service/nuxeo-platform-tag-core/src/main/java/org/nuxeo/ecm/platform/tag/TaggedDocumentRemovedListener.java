@@ -17,8 +17,6 @@
  */
 package org.nuxeo.ecm.platform.tag;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,8 +38,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TaggedDocumentRemovedListener implements PostCommitEventListener {
 
-    private static final Log log = LogFactory.getLog(TaggedDocumentRemovedListener.class);
-
     @Override
     public void handleEvent(EventBundle events) throws ClientException {
         if (events.containsEventName(DocumentEventTypes.DOCUMENT_REMOVED)
@@ -59,7 +55,7 @@ public class TaggedDocumentRemovedListener implements PostCommitEventListener {
         }
     }
 
-    public void handleEvent(Event event) {
+    public void handleEvent(Event event) throws ClientException {
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
@@ -69,13 +65,8 @@ public class TaggedDocumentRemovedListener implements PostCommitEventListener {
             }
             String docId = doc.getId();
             CoreSession coreSession = docCtx.getCoreSession();
-            try {
-
-                TagService tagService = Framework.getLocalService(TagService.class);
-                tagService.removeTags(coreSession, docId);
-            } catch (ClientException e) {
-                log.error(e, e);
-            }
+            TagService tagService = Framework.getLocalService(TagService.class);
+            tagService.removeTags(coreSession, docId);
         }
     }
 
