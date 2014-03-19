@@ -85,12 +85,6 @@ public class TestTreeIndexing {
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
-        // check indexing
-        searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
-        Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
-
         TransactionHelper.startTransaction();
     }
 
@@ -138,5 +132,60 @@ public class TestTreeIndexing {
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
     }
+
+    @Test
+    public void shouldIndexMovedSubTree() throws Exception {
+
+        buildAndIndexTree();
+
+        DocumentRef ref = new PathRef("/folder0/folder1/folder2");
+        Assert.assertTrue(session.exists(ref));
+        DocumentModel doc = session.getDocument(ref);
+
+        // move in the same folder : rename
+        session.move(ref, doc.getParentRef(), "folderA");
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        Assert.assertEquals(1, esa.getPendingDocs());
+        Assert.assertEquals(1, esa.getPendingCommands());
+
+        // wait for async jobs
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+
+        esi.flush();
+
+        SearchResponse searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
+
+        // check sub tree search
+        searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
+                QueryBuilders.prefixQuery("ecm:path",
+                        "/folder0/folder1/folder2")).execute().actionGet();
+        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
+
+        searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
+                QueryBuilders.prefixQuery("ecm:path",
+                        "/folder0/folder1/folderA")).execute().actionGet();
+        Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
+
+        searchResponse = ess.getClient().prepareSearch(
+                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
+                QueryBuilders.prefixQuery("ecm:path",
+                        "/folder0/folder1")).execute().actionGet();
+        Assert.assertEquals(9, searchResponse.getHits().getTotalHits());
+
+    }
+
 
 }

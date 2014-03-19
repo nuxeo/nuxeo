@@ -57,6 +57,8 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
     public final class MockDocumentModel extends DocumentModelImpl {
 
+        private static final long serialVersionUID = 1L;
+
         protected String uid;
 
         protected boolean folder = false;
