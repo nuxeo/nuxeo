@@ -71,7 +71,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
                 Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
         ACP acp = doc.getACP();
         ACL acl = acp.getACL(ACL.INHERITED_ACL);
-        jg.writeArrayFieldStart("acl");
+        jg.writeArrayFieldStart("ecm:acl");
         for (ACE ace : acl.getACEs()) {
             if (ace.isGranted() && browsePermissions.contains(ace.getPermission())) {
                 jg.writeString(ace.getUsername());
