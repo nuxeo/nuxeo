@@ -907,6 +907,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
         } catch (Exception e) {
             checkConnectionReset(e);
+            checkConcurrentUpdate(e);
             throw new StorageException("Could not delete: " + tableName, e);
         }
     }

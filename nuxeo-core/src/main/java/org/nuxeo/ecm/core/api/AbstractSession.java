@@ -1806,6 +1806,9 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             }
             removeNotifyOneDoc(doc);
 
+        } catch (ConcurrentUpdateDocumentException e) {
+            throw new ConcurrentUpdateException("Failed to remove document "
+                    + doc.getUUID(), e);
         } catch (DocumentException e) {
             throw new ClientException("Failed to remove document "
                     + doc.getUUID(), e);
