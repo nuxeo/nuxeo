@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.elasticsearch.action.admin.cluster.node.shutdown.NodesShutdownRequest;
+import org.elasticsearch.action.admin.cluster.tasks.PendingClusterTasksResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
@@ -45,6 +46,7 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.cluster.service.PendingClusterTask;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.ImmutableSettings.Builder;
 import org.elasticsearch.common.settings.Settings;
@@ -476,6 +478,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public int getPendingCommands() {
         return pendingCommands.size();
+    }
+
+    public List<PendingClusterTask> getPendingTasks() {
+        PendingClusterTasksResponse response = getClient().admin().cluster().preparePendingClusterTasks().execute().actionGet();
+        return response.getPendingTasks();
     }
 
 }

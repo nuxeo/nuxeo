@@ -69,11 +69,10 @@ public class TestTreeIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
 
-        Thread.sleep(200);
+        Assert.assertTrue(esa.getPendingCommands()>1);
+        Assert.assertTrue(esa.getPendingDocs()>1);
 
         // wait for indexing
-        Assert.assertEquals(10, esa.getPendingCommands());
-        Assert.assertEquals(10, esa.getPendingDocs());
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
         Assert.assertEquals(0, esa.getPendingCommands());
