@@ -57,21 +57,25 @@ public class TestPageProvider {
     @Test
     public void ICanUseThePageProvider() throws Exception {
 
-        PageProviderService pps = Framework.getService(PageProviderService.class);
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
         Assert.assertNotNull(pps);
 
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("NATIVE_ES_PP_1");
+        PageProviderDefinition ppdef = pps
+                .getPageProviderDefinition("NATIVE_ES_PP_1");
         Assert.assertNotNull(ppdef);
 
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
+        long pageSize = 5;
         PageProvider<?> pp = pps.getPageProvider("NATIVE_ES_PP_1", ppdef, null,
-                null, Long.valueOf(1), Long.valueOf(0), props);
+                null, pageSize, Long.valueOf(0), props);
         Assert.assertNotNull(pp);
 
         // create 10 docs
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchService ess = Framework
+                .getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
@@ -79,10 +83,11 @@ public class TestPageProvider {
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc = session.createDocument(doc);
         }
-        //session.save();
+
         TransactionHelper.commitOrRollbackTransaction();
 
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+        ElasticSearchAdmin esa = Framework
+                .getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
         Assert.assertEquals(10, esa.getPendingDocs());
 
@@ -94,9 +99,19 @@ public class TestPageProvider {
         esi.flush();
 
         // get current page
-        List<?> p = pp.getCurrentPage();
+        List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
+        Assert.assertEquals(10, pp.getResultsCount());
         Assert.assertNotNull(p);
-        Assert.assertEquals(10, p.size());
+        Assert.assertEquals(pageSize, p.size());
+        Assert.assertEquals(2, pp.getNumberOfPages());
+        DocumentModel doc = p.get(0);
+        Assert.assertEquals("TestMe9", doc.getTitle());
+
+        pp.nextPage();
+        p = (List<DocumentModel>) pp.getCurrentPage();
+        Assert.assertEquals(pageSize, p.size());
+        doc = p.get((int) pageSize - 1);
+        Assert.assertEquals("TestMe0", doc.getTitle());
 
     }
 

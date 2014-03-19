@@ -15,9 +15,8 @@
         ecm\:primarytype:(Picture File Folder Note Workspace, JenkinsReport BlogPost WebPage Video PictureBook) AND
         ecm\:primarytype:("SectionRoot" "Workspace" "RelationSearch" "BlogSite" "ManagementRoot" "Tag" "AdministrativeStatusContainer" "search_results" "Thread" "Space" "TemplateRoot" "Domain" "UserSettings" "WorkspaceRoot" "Comment" "QueryNav" "TaskList" "WebPage" "Vcard" "WCOpenSocial" "TaskLists" "MailMessage" "Forum" "ContextualLink" "PictureBook" "DefaultSettings" "NavigationSettings" "Unit" "WCHtml" "Post" "AdministrativeStatus" "Picture" "UserWorkspacesRoot" "Document" "Folder" "FacetedSearch" "WCPicture" "File" "WebSite" "FacetedSearchDefault" "AdvancedSearch" "Gadget" "Note" "HiddenFolder" "Section" "Edito" "MailFolder" "OrderedFolder" "Adeolink" "CommentRoot" "BasicAuditSearch" "BlogPost")
      </pattern -->
-     <pattern>ecm\:primarytype:("File" "Workspace")</pattern>
-      <sort column="dc:title" ascending="true" />
-      <pageSize>2</pageSize>
+      <pattern>ecm\:primarytype:("File" "Workspace")</pattern>
+      <sort column="dc:title" ascending="false" />
     </genericPageProvider>
 
   </extension>
