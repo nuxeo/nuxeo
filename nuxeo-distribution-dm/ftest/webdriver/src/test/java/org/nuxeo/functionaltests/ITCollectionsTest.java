@@ -264,8 +264,6 @@ public class ITCollectionsTest extends AbstractTest {
 
         // Create a file in test user workspace and add it to the collection
         documentBasePage = collectionContentTabSubPage.swithToPersonalWorkspace();
-        workspacePage = documentBasePage.getNavigationSubPage().goToDocument(
-                "jdoe lastname1");
         fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME,
                 "Test File description", false, null, null, null);
         addToCollectionForm = fileDocumentBasePage.getAddToCollectionPopup();
