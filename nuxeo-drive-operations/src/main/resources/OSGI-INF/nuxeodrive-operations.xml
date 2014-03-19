@@ -24,6 +24,7 @@
     <operation class="org.nuxeo.drive.operations.NuxeoDriveMove" />
     <operation
       class="org.nuxeo.drive.operations.NuxeoDriveGenerateConflictedItemName" />
+    <operation class="org.nuxeo.drive.operations.NuxeoDriveGetClientUpdateInfo" />
     <!-- For test purpose -->
     <operation
       class="org.nuxeo.drive.operations.test.NuxeoDriveSetupIntegrationTests" />
