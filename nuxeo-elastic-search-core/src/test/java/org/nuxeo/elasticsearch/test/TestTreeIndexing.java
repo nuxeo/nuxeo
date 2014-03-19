@@ -69,6 +69,8 @@ public class TestTreeIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
 
+        Thread.sleep(200);
+
         // wait for indexing
         Assert.assertEquals(10, esa.getPendingCommands());
         Assert.assertEquals(10, esa.getPendingDocs());
@@ -186,6 +188,5 @@ public class TestTreeIndexing {
         Assert.assertEquals(9, searchResponse.getHits().getTotalHits());
 
     }
-
 
 }
