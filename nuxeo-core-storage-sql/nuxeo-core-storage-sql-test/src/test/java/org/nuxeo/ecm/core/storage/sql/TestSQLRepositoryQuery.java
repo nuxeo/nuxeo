@@ -1397,12 +1397,16 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         DocumentModel file1 = session.getDocument(new PathRef(
                 "/testfolder1/testfile1"));
         file1.addFacet("NotPerDocFacet");
+        file1.addFacet("NotPerDocFacet2");
         file1 = session.saveDocument(file1);
         session.save();
 
         // doc has facet but not found by search
         // because of repository config
         DocumentModelList dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'NotPerDocFacet'");
+        assertEquals(0, dml.size());
+        // same thing with type service
+        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'NotPerDocFacet2'");
         assertEquals(0, dml.size());
     }
 

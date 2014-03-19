@@ -269,6 +269,8 @@ public class NXQLQueryMaker implements QueryMaker {
         this.model = model;
         this.pathResolver = pathResolver;
         neverPerInstanceMixins = new HashSet<String>(MIXINS_NOT_PER_INSTANCE);
+        neverPerInstanceMixins.addAll(model.getNoPerInstanceQueryFacets());
+        // compat
         Set<String> npim = model.getRepositoryDescriptor().neverPerInstanceMixins;
         if (npim != null) {
             neverPerInstanceMixins.addAll(npim);

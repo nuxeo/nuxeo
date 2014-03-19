@@ -35,7 +35,7 @@
   <extension-point name="doctype">
 
     <documentation>
-      Extension Point to register new document types.
+      Extension Point to register new document types and facets.
       <p/>
       Document types may implement several schemas and extends other
       document types. You can compare document types with java
@@ -59,6 +59,22 @@
           <prefetch>dc:title, dc:modified, uid.uid</prefetch>
         </doctype>
       </code>
+
+      Facets are also defined by this extension point.
+      They can have zero or more schemas:
+
+      <code>
+        <facet name="MyFacet" perInstanceQuery="false"/>
+        <facet name="MyFacetWithData">
+          <schema name="myschema" />
+          <schema name="otherschema" />
+        </facet>
+      </code>
+
+      Queries using ecm:mixinType on facets marked with
+      perInstanceQuery="false" will not match any document where
+      this facet has been added using DocumentModel.addFacet() and does
+      not belong to the document type (this is done for performance reasons).
 
       It's also possible to associate one or more schemas to all proxies:
       <code>

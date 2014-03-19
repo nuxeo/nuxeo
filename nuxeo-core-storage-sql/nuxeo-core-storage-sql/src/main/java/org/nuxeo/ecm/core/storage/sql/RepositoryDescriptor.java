@@ -336,6 +336,7 @@ public class RepositoryDescriptor {
     @XNodeList(value = "indexing/includedTypes/type", type =  HashSet.class, componentType = String.class)
     public Set<String> fulltextIncludedTypes = new HashSet<String>(0);
 
+    // compat
     @XNodeList(value = "indexing/neverPerDocumentFacets/facet", type = HashSet.class, componentType = String.class)
     public Set<String> neverPerInstanceMixins = new HashSet<String>(0);
 

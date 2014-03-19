@@ -279,6 +279,14 @@ public class TestSchemaManager extends NXRuntimeTestCase {
                 Arrays.asList(f.getSchemaNames()));
     }
 
+    @Test
+    public void testFacetNoPerInstanceQuery() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.schema.tests",
+                "OSGI-INF/test-facet-per-instance.xml");
+        assertTrue(schemaManager.getNoPerInstanceQueryFacets().contains(
+                "someFacet"));
+    }
+
     protected static List<String> schemaNames(List<Schema> schemas) {
         List<String> list = new ArrayList<String>(schemas.size());
         for (Schema s : schemas) {

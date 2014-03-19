@@ -24,6 +24,9 @@ public class FacetDescriptor {
     @XNode("@name")
     public String name;
 
+    @XNode("@perInstanceQuery")
+    public Boolean perInstanceQuery;
+
     @XNodeList(value = "schema", type = SchemaDescriptor[].class, componentType = SchemaDescriptor.class)
     public SchemaDescriptor[] schemas;
 

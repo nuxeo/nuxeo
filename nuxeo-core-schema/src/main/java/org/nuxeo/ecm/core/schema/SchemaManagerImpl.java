@@ -91,6 +91,8 @@ public class SchemaManagerImpl implements SchemaManager {
     /** Effective facets. */
     protected Map<String, CompositeType> facets = new HashMap<String, CompositeType>();
 
+    protected Set<String> noPerInstanceQueryFacets = new HashSet<String>();
+
     /** Effective document types. */
     protected Map<String, DocumentTypeImpl> documentTypes = new HashMap<String, DocumentTypeImpl>();
 
@@ -370,6 +372,7 @@ public class SchemaManagerImpl implements SchemaManager {
 
     protected void recomputeFacets() {
         facets.clear();
+        noPerInstanceQueryFacets.clear();
         for (FacetDescriptor fd : allFacets) {
             recomputeFacet(fd);
         }
@@ -378,6 +381,9 @@ public class SchemaManagerImpl implements SchemaManager {
     protected void recomputeFacet(FacetDescriptor fd) {
         Set<String> schemas = SchemaDescriptor.getSchemaNames(fd.schemas);
         registerFacet(fd.name, schemas);
+        if (Boolean.FALSE.equals(fd.perInstanceQuery)) {
+            noPerInstanceQueryFacets.add(fd.name);
+        }
     }
 
     // also called when a document type references an unknown facet (WARN)
@@ -408,6 +414,12 @@ public class SchemaManagerImpl implements SchemaManager {
     public CompositeType getFacet(String name) {
         checkDirty();
         return facets.get(name);
+    }
+
+    @Override
+    public Set<String> getNoPerInstanceQueryFacets() {
+        checkDirty();
+        return Collections.unmodifiableSet(noPerInstanceQueryFacets);
     }
 
     /*
