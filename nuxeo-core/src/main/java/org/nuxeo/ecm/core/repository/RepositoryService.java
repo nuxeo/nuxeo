@@ -134,6 +134,10 @@ public class RepositoryService extends DefaultComponent {
             Repository repository = repositories.get(repositoryName);
             if (repository == null) {
                 RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+                if (repositoryManager == null) {
+                    // tests with no high-level repository manager
+                    return null;
+                }
                 org.nuxeo.ecm.core.api.repository.Repository repo = repositoryManager.getRepository(repositoryName);
                 if (repo == null) {
                     return null;
