@@ -20,7 +20,11 @@
 package org.nuxeo.ecm.platform.ui.web.directory;
 
 import java.io.Serializable;
+import java.text.Collator;
 import java.util.Comparator;
+import java.util.Locale;
+
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -35,10 +39,25 @@ public class DirectorySelectItemComparator implements
 
     private final String[] ordering;
     private Boolean caseSentitive;
+    private Collator collator;
+    private Locale locale;
 
-    public DirectorySelectItemComparator(String ordering, Boolean caseSentitive) {
+    public DirectorySelectItemComparator(String ordering,
+            Boolean caseSentitive, Locale locale) {
         this.caseSentitive = caseSentitive;
         this.ordering = StringUtils.split(ordering, ",");
+        if (locale == null) {
+            FacesContext context = FacesContext.getCurrentInstance();
+            this.locale = context.getViewRoot().getLocale();
+        } else {
+            this.locale = locale;
+        }
+        collator = Collator.getInstance(this.locale);
+        collator.setStrength(Collator.SECONDARY);
+    }
+
+    public DirectorySelectItemComparator(String ordering, Boolean caseSentitive) {
+        this(ordering, caseSentitive, null);
     }
 
     public DirectorySelectItemComparator(String ordering) {
@@ -63,9 +82,9 @@ public class DirectorySelectItemComparator implements
                     item2.getLabel() : item2.getLocalizedLabel();
 
             if (caseSentitive) {
-                return str1.compareTo(str2);
+                return collator.compare(str1, str2);
             } else {
-                return str1.toLowerCase().compareTo(str2.toLowerCase());
+                return collator.compare(str1.toLowerCase(locale), str2.toLowerCase(locale));
             }
         } else if (field.equals("id")) {
             return ((String) item1.getValue()).compareTo((String) item2.getValue());
