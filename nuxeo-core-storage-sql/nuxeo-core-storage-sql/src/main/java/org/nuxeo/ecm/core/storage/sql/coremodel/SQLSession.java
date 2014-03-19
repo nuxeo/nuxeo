@@ -872,6 +872,8 @@ public class SQLSession implements Session {
     protected void remove(Node node) throws DocumentException {
         try {
             session.removeNode(node);
+        } catch (ConcurrentUpdateStorageException e) {
+            throw new ConcurrentUpdateDocumentException(e);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
