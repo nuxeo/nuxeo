@@ -75,15 +75,6 @@ public class SuggestCollectionEntry {
     @OperationMethod
     public Blob run() throws ClientException {
         JSONArray result = new JSONArray();
-       /* String query = "SELECT * FROM Collection WHERE dc:title ILIKE ? AND ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'";
-        DocumentModelList docs = session.query(query, filter);
-        for (DocumentModel doc : docs) {
-            JSONObject obj = new JSONObject();
-            if (collectionManager.canAddToCollection(doc, session)) {
-                obj.element(Select2Common.ID, doc.getId());
-            }
-            obj.element(Select2Common.LABEL, doc.getTitle());
-        }*/
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
