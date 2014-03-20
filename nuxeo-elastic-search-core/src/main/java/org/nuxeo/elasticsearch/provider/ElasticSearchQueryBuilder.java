@@ -7,11 +7,13 @@ import java.util.Collection;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.index.query.RangeQueryBuilder;
+import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -27,21 +29,28 @@ import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 public class ElasticSearchQueryBuilder {
 
     public static void makeQuery(SearchRequestBuilder builder,
-            Principal principal, final String pattern, final Object[] params,
-            final boolean quoteParameters, final boolean escape,
-            final SortInfo... sortInfos) throws ClientException {
+            final Principal principal, final String pattern,
+            final Object[] params, final boolean quoteParameters,
+            final boolean escape, final SortInfo... sortInfos)
+            throws ClientException {
         String query = pattern;
         for (int i = 0; i < params.length; i++) {
             query = query.replaceFirst("\\?", convertParam(params[i]));
         }
-        builder.setQuery(QueryBuilders.queryString(query));
+        TermsFilterBuilder securityFilter = addSecurityFilter(principal);
+        if (securityFilter != null) {
+            builder.setQuery(QueryBuilders.filteredQuery(
+                    QueryBuilders.queryString(query), securityFilter));
+        } else {
+            builder.setQuery(QueryBuilders.queryString(query));
+        }
         addSortInfo(builder, sortInfos);
-        addSecurityFilter(builder, principal);
     }
 
     public static void makeQuery(SearchRequestBuilder builder,
-            Principal principal, DocumentModel model, WhereClauseDefinition whereClause,
-            Object[] params, SortInfo... sortInfos) throws ClientException {
+            Principal principal, DocumentModel model,
+            WhereClauseDefinition whereClause, Object[] params,
+            SortInfo... sortInfos) throws ClientException {
         assert (model != null);
         assert (whereClause != null);
 
@@ -159,21 +168,24 @@ public class ElasticSearchQueryBuilder {
                 // TODO: handle STARTSWITH FULLTEXT
             }
         }
-        builder.setQuery(query);
-        builder.setPostFilter(filter);
+        TermsFilterBuilder securityFilter = addSecurityFilter(principal);
+        if (securityFilter != null) {
+            filter.must(securityFilter);
+        }
+        builder.setQuery(QueryBuilders.filteredQuery(query, filter));
         addSortInfo(builder, sortInfos);
-        addSecurityFilter(builder, principal);
     }
 
-    private static void addSecurityFilter(SearchRequestBuilder builder, Principal principal) {
+    protected static TermsFilterBuilder addSecurityFilter(Principal principal) {
         if (principal != null) {
-            return;
+            SecurityService securityService = NXCore.getSecurityService();
+            String[] principals = SecurityService
+                    .getPrincipalsToCheck(principal);
+            if (principals.length > 0) {
+                return FilterBuilders.inFilter("ecm:acl", principals);
+            }
         }
-        SecurityService securityService = NXCore.getSecurityService();
-        String[] principals = SecurityService.getPrincipalsToCheck(principal);
-        if (principals.length > 0) {
-            builder.setPostFilter(FilterBuilders.inFilter("ecm:acl", principals));
-        }
+        return null;
     }
 
     protected static void addSortInfo(SearchRequestBuilder builder,

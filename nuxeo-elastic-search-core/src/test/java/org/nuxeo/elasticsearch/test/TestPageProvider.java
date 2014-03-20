@@ -140,13 +140,17 @@ public class TestPageProvider {
         ElasticSearchQueryBuilder.makeQuery(qb, principal, model, whereClause, null);
         Assert.assertEquals("{\n" +
                 "  \"query\" : {\n" +
-                "    \"bool\" : { }\n" +
-                "  },\n" +
-                "  \"post_filter\" : {\n" +
-                "    \"bool\" : {\n" +
-                "      \"must\" : {\n" +
-                "        \"terms\" : {\n" +
-                "          \"dc\\\\:title\" : [ \"\\\"foo\\\"\", \"\\\"bar\\\"\" ]\n" +
+                "    \"filtered\" : {\n" +
+                "      \"query\" : {\n" +
+                "        \"bool\" : { }\n" +
+                "      },\n" +
+                "      \"filter\" : {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must\" : {\n" +
+                "            \"terms\" : {\n" +
+                "              \"dc\\\\:title\" : [ \"\\\"foo\\\"\", \"\\\"bar\\\"\" ]\n" +
+                "            }\n" +
+                "          }\n" +
                 "        }\n" +
                 "      }\n" +
                 "    }\n" +
@@ -158,13 +162,17 @@ public class TestPageProvider {
         ElasticSearchQueryBuilder.makeQuery(qb, principal, model, whereClause, null);
         Assert.assertEquals("{\n" +
                 "  \"query\" : {\n" +
-                "    \"bool\" : { }\n" +
-                "  },\n" +
-                "  \"post_filter\" : {\n" +
-                "    \"bool\" : {\n" +
-                "      \"must\" : {\n" +
-                "        \"terms\" : {\n" +
-                "          \"dc\\\\:title\" : [ \"\\\"foo\\\"\" ]\n" +
+                "    \"filtered\" : {\n" +
+                "      \"query\" : {\n" +
+                "        \"bool\" : { }\n" +
+                "      },\n" +
+                "      \"filter\" : {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must\" : {\n" +
+                "            \"terms\" : {\n" +
+                "              \"dc\\\\:title\" : [ \"\\\"foo\\\"\" ]\n" +
+                "            }\n" +
+                "          }\n" +
                 "        }\n" +
                 "      }\n" +
                 "    }\n" +
@@ -178,10 +186,14 @@ public class TestPageProvider {
 
         Assert.assertEquals("{\n" +
                 "  \"query\" : {\n" +
-                "    \"bool\" : { }\n" +
-                "  },\n" +
-                "  \"post_filter\" : {\n" +
-                "    \"bool\" : { }\n" +
+                "    \"filtered\" : {\n" +
+                "      \"query\" : {\n" +
+                "        \"bool\" : { }\n" +
+                "      },\n" +
+                "      \"filter\" : {\n" +
+                "        \"bool\" : { }\n" +
+                "      }\n" +
+                "    }\n" +
                 "  }\n" +
                 "}", qb.toString());
     }
@@ -208,22 +220,26 @@ public class TestPageProvider {
                 sortInfos);
         Assert.assertEquals("{\n" +
                 "  \"query\" : {\n" +
-                "    \"bool\" : {\n" +
-                "      \"must\" : [ {\n" +
-                "        \"query_string\" : {\n" +
-                "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
+                "    \"filtered\" : {\n" +
+                "      \"query\" : {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must\" : [ {\n" +
+                "            \"query_string\" : {\n" +
+                "              \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
+                "            }\n" +
+                "          }, {\n" +
+                "            \"regexp\" : {\n" +
+                "              \"dc\\\\:title\" : {\n" +
+                "                \"value\" : \"\\\"bar\\\"\"\n" +
+                "              }\n" +
+                "            }\n" +
+                "          } ]\n" +
                 "        }\n" +
-                "      }, {\n" +
-                "        \"regexp\" : {\n" +
-                "          \"dc\\\\:title\" : {\n" +
-                "            \"value\" : \"\\\"bar\\\"\"\n" +
-                "          }\n" +
-                "        }\n" +
-                "      } ]\n" +
+                "      },\n" +
+                "      \"filter\" : {\n" +
+                "        \"bool\" : { }\n" +
+                "      }\n" +
                 "    }\n" +
-                "  },\n" +
-                "  \"post_filter\" : {\n" +
-                "    \"bool\" : { }\n" +
                 "  },\n" +
                 "  \"sort\" : [ {\n" +
                 "    \"dc:title\" : {\n" +
@@ -239,25 +255,29 @@ public class TestPageProvider {
                 sortInfos);
         Assert.assertEquals("{\n" +
                 "  \"query\" : {\n" +
-                "    \"bool\" : {\n" +
-                "      \"must\" : [ {\n" +
-                "        \"query_string\" : {\n" +
-                "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
+                "    \"filtered\" : {\n" +
+                "      \"query\" : {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must\" : [ {\n" +
+                "            \"query_string\" : {\n" +
+                "              \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
+                "            }\n" +
+                "          }, {\n" +
+                "            \"regexp\" : {\n" +
+                "              \"dc\\\\:title\" : {\n" +
+                "                \"value\" : \"\\\"bar\\\"\"\n" +
+                "              }\n" +
+                "            }\n" +
+                "          } ]\n" +
                 "        }\n" +
-                "      }, {\n" +
-                "        \"regexp\" : {\n" +
-                "          \"dc\\\\:title\" : {\n" +
-                "            \"value\" : \"\\\"bar\\\"\"\n" +
+                "      },\n" +
+                "      \"filter\" : {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must_not\" : {\n" +
+                "            \"exists\" : {\n" +
+                "              \"field\" : \"dc\\\\:modified\"\n" +
+                "            }\n" +
                 "          }\n" +
-                "        }\n" +
-                "      } ]\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"post_filter\" : {\n" +
-                "    \"bool\" : {\n" +
-                "      \"must_not\" : {\n" +
-                "        \"exists\" : {\n" +
-                "          \"field\" : \"dc\\\\:modified\"\n" +
                 "        }\n" +
                 "      }\n" +
                 "    }\n" +
@@ -275,28 +295,31 @@ public class TestPageProvider {
         qb = new SearchRequestBuilder(ess.getClient());
         ElasticSearchQueryBuilder.makeQuery(qb, principal, model, whereClause, params,
                 sortInfos);
-        Assert.assertEquals(
-                "{\n" +
+        Assert.assertEquals("{\n" +
                 "  \"query\" : {\n" +
-                "    \"bool\" : {\n" +
-                "      \"must\" : [ {\n" +
-                "        \"query_string\" : {\n" +
-                "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
+                "    \"filtered\" : {\n" +
+                "      \"query\" : {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must\" : [ {\n" +
+                "            \"query_string\" : {\n" +
+                "              \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
+                "            }\n" +
+                "          }, {\n" +
+                "            \"regexp\" : {\n" +
+                "              \"dc\\\\:title\" : {\n" +
+                "                \"value\" : \"\\\"bar\\\"\"\n" +
+                "              }\n" +
+                "            }\n" +
+                "          } ]\n" +
                 "        }\n" +
-                "      }, {\n" +
-                "        \"regexp\" : {\n" +
-                "          \"dc\\\\:title\" : {\n" +
-                "            \"value\" : \"\\\"bar\\\"\"\n" +
+                "      },\n" +
+                "      \"filter\" : {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must_not\" : {\n" +
+                "            \"exists\" : {\n" +
+                "              \"field\" : \"dc\\\\:modified\"\n" +
+                "            }\n" +
                 "          }\n" +
-                "        }\n" +
-                "      } ]\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"post_filter\" : {\n" +
-                "    \"bool\" : {\n" +
-                "      \"must_not\" : {\n" +
-                "        \"exists\" : {\n" +
-                "          \"field\" : \"dc\\\\:modified\"\n" +
                 "        }\n" +
                 "      }\n" +
                 "    }\n" +
