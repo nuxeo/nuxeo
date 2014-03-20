@@ -80,7 +80,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
             throws ClientException {
         if (defaultRepositoryName == null) {
             RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
-            defaultRepositoryName = mgr.getDefaultRepository().getName();
+            defaultRepositoryName = mgr.getDefaultRepositoryName();
             if (DocumentStoreSessionRunner.repositoryName == null) {
                 DocumentStoreSessionRunner.repositoryName = defaultRepositoryName;
             }

@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -47,7 +48,7 @@ import com.google.inject.Inject;
 public class TestPermissionFilter {
 
     @Inject
-    protected FeaturesRunner featuresRunner;
+    protected RepositorySettings settings;
 
     @Inject
     CoreSession session;
@@ -141,9 +142,7 @@ public class TestPermissionFilter {
     }
 
     protected CoreSession openSessionAs(String username) throws ClientException {
-        CoreFeature coreFeature = featuresRunner.getFeature(CoreFeature.class);
-        return coreFeature.getRepository().getRepositoryHandler().openSessionAs(
-                username);
+        return settings.openSessionAs(username);
     }
 
 }

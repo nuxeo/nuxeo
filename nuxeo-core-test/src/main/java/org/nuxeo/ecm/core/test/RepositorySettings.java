@@ -13,16 +13,15 @@ package org.nuxeo.ecm.core.test;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.io.Serializable;
 import java.net.URL;
+import java.security.Principal;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -74,14 +73,7 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
 
     protected Class<? extends RepositoryFactory> repositoryFactoryClass;
 
-    protected TestRepositoryHandler repo;
-
     protected CoreSession session;
-
-    /**
-     * workaround to switch users at runtime i a test method
-     */
-    private Map<String, Serializable> sessionContext;
 
     /**
      * Do not use this ctor - it will be used by {@link MultiNuxeoCoreRunner}.
@@ -210,12 +202,8 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
 
     public void shutdown() {
         try {
-            if (repo != null) {
-                if (session != null) {
-                    releaseSession();
-                }
-                repo.releaseRepository();
-                repo = null;
+            if (session != null) {
+                releaseSession();
             }
         } finally {
             try {
@@ -224,19 +212,6 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
                 throw new RuntimeException("Cannot release database", e);
             }
         }
-    }
-
-    public TestRepositoryHandler getRepositoryHandler() {
-        if (repo == null) {
-            try {
-                repo = new TestRepositoryHandler(repositoryName);
-                repo.openRepository();
-            } catch (Exception e) {
-                log.error(e.toString(), e);
-                return null;
-            }
-        }
-        return repo;
     }
 
     public CoreSession createSession() {
@@ -262,10 +237,42 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
         return session;
     }
 
-    public CoreSession openSessionAs(String userName) throws ClientException {
-        sessionContext = new Hashtable<String, Serializable>();
-        sessionContext.put("username", userName);
-        return getRepositoryHandler().openSession(sessionContext);
+    /**
+     * Opens a {@link CoreSession} for the currently logged-in user.
+     * <p>
+     * The session must be closed using {@link CoreSession#close}.
+     *
+     * @return the session
+     * @since 5.9.3
+     */
+    public CoreSession openSession() throws ClientException {
+        return CoreInstance.openCoreSession(repositoryName);
+    }
+
+    /**
+     * Opens a {@link CoreSession} for the given user.
+     * <p>
+     * The session must be closed using {@link CoreSession#close}.
+     *
+     * @param username the user name
+     * @return the session
+     */
+    public CoreSession openSessionAs(String username) throws ClientException {
+        return CoreInstance.openCoreSession(repositoryName, username);
+    }
+
+    /**
+     * Opens a {@link CoreSession} for the given principal.
+     * <p>
+     * The session must be closed using {@link CoreSession#close}.
+     *
+     * @param principal the principal
+     * @return the session
+     * @since 5.9.3
+     */
+    public CoreSession openSessionAs(Principal principal)
+            throws ClientException {
+        return CoreInstance.openCoreSession(repositoryName, principal);
     }
 
     public CoreSession openSessionAsAdminUser(String username)
@@ -285,15 +292,9 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
     public CoreSession openSessionAs(String username, boolean isAdmin,
             boolean isAnonymous) throws ClientException {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        if (sessionContext == null) {
-            throw new java.lang.IllegalStateException(
-                    "session was not yet opened!");
-        }
         UserPrincipal principal = new UserPrincipal(username,
                 new ArrayList<String>(), isAnonymous, isAdmin);
-        sessionContext.put("username", username);
-        sessionContext.put("principal", principal);
-        return getRepositoryHandler().openSession(sessionContext);
+        return CoreInstance.openCoreSession(repositoryName, principal);
     }
 
     @Override

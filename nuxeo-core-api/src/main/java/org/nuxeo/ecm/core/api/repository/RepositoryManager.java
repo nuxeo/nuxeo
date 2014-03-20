@@ -75,4 +75,14 @@ public interface RepositoryManager {
      */
     Repository getDefaultRepository();
 
+    /**
+     * Gets the name of the default repository.
+     * <p>
+     * If there is not a default repository, returns the name of the first
+     * registered repository.
+     *
+     * @return the default repository name
+     */
+    String getDefaultRepositoryName();
+
 }

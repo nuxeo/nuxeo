@@ -130,7 +130,12 @@ public class RepositoryManagerImpl extends DefaultComponent implements
             return repositories.values().iterator().next();
         }
         // no repository at all
-        return null;
+        throw new RuntimeException("No repository defined");
+    }
+
+    @Override
+    public String getDefaultRepositoryName() {
+        return getDefaultRepository().getName();
     }
 
     @Override

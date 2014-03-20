@@ -96,7 +96,7 @@ public class CoreInstance {
      */
     public static CoreSession openCoreSession(String repositoryName)
             throws ClientException {
-        return getInstance().open(repositoryName, null);
+        return openCoreSession(repositoryName, (Map<String, Serializable>) null);
     }
 
     /**
@@ -114,7 +114,7 @@ public class CoreInstance {
             String username) throws ClientException {
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("username", username);
-        return getInstance().open(repositoryName, context);
+        return openCoreSession(repositoryName, context);
     }
 
     /**
@@ -136,7 +136,7 @@ public class CoreInstance {
         } else {
             context.put("username", principal.getName());
         }
-        return getInstance().open(repositoryName, context);
+        return openCoreSession(repositoryName, context);
     }
 
     /**
@@ -144,7 +144,8 @@ public class CoreInstance {
      * <p>
      * The session must be closed using {@link CoreSession#close}.
      *
-     * @param repositoryName the repository name
+     * @param repositoryName the repository name, or {@code null} for the
+     *            default repository
      * @return the session
      * @since 5.9.3
      */
@@ -154,7 +155,26 @@ public class CoreInstance {
                 SecurityConstants.SYSTEM_USERNAME);
     }
 
+    /**
+     * @deprecated since 5.9.3, use {@link #openCoreSession} instead.
+     */
+    @Deprecated
     public CoreSession open(String repositoryName,
+            Map<String, Serializable> context) throws ClientException {
+        return openCoreSession(repositoryName, context);
+    }
+
+    /**
+     * NOT PUBLIC, DO NOT CALL. Kept public for compatibility with old code.
+     * <p>
+     * Opens a {@link CoreSession} for the given context.
+     *
+     * @param repositoryName the repository name, or {@code null} for the
+     *            default repository
+     * @param context the session open context
+     * @return the session
+     */
+    public static CoreSession openCoreSession(String repositoryName,
             Map<String, Serializable> context) throws ClientException {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         Repository repository;
