@@ -22,19 +22,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
+import org.nuxeo.elasticsearch.provider.ElasticSearchQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -45,7 +50,8 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy("org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml")
+@LocalDeploy({ "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml" })
 public class TestPageProvider {
 
     @Inject
@@ -112,7 +118,202 @@ public class TestPageProvider {
         Assert.assertEquals(pageSize, p.size());
         doc = p.get((int) pageSize - 1);
         Assert.assertEquals("TestMe0", doc.getTitle());
+    }
 
+    @Test
+    public void testBuildInQuery() throws Exception {
+        ElasticSearchService ess = Framework
+                .getLocalService(ElasticSearchService.class);
+        SearchRequestBuilder qb = new SearchRequestBuilder(ess.getClient());
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
+        WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
+                "TEST_IN").getWhereClause();
+        DocumentModel model = new DocumentModelImpl("/", "doc", "File");
+        model.setPropertyValue("dc:subjects", new String[] { "foo", "bar" });
+        qb = new SearchRequestBuilder(ess.getClient());
+        ElasticSearchQueryBuilder.makeQuery(qb, model, whereClause, null);
+        Assert.assertEquals("{\n" +
+                "  \"query\" : {\n" +
+                "    \"bool\" : { }\n" +
+                "  },\n" +
+                "  \"post_filter\" : {\n" +
+                "    \"bool\" : {\n" +
+                "      \"must\" : {\n" +
+                "        \"terms\" : {\n" +
+                "          \"dc\\\\:title\" : [ \"\\\"foo\\\"\", \"\\\"bar\\\"\" ]\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", qb.toString());
+
+        model.setPropertyValue("dc:subjects", new String[] { "foo" });
+        qb = new SearchRequestBuilder(ess.getClient());
+        ElasticSearchQueryBuilder.makeQuery(qb, model, whereClause, null);
+        Assert.assertEquals("{\n" +
+                "  \"query\" : {\n" +
+                "    \"bool\" : { }\n" +
+                "  },\n" +
+                "  \"post_filter\" : {\n" +
+                "    \"bool\" : {\n" +
+                "      \"must\" : {\n" +
+                "        \"terms\" : {\n" +
+                "          \"dc\\\\:title\" : [ \"\\\"foo\\\"\" ]\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", qb.toString());
+
+        // criteria with no values are removed
+        model.setPropertyValue("dc:subjects", new String[] {});
+        qb = new SearchRequestBuilder(ess.getClient());
+        ElasticSearchQueryBuilder.makeQuery(qb, model, whereClause, null);
+
+        Assert.assertEquals("{\n" +
+                "  \"query\" : {\n" +
+                "    \"bool\" : { }\n" +
+                "  },\n" +
+                "  \"post_filter\" : {\n" +
+                "    \"bool\" : { }\n" +
+                "  }\n" +
+                "}", qb.toString());
+    }
+
+    @Test
+    public void testBuildIsNullQuery() throws Exception {
+        ElasticSearchService ess = Framework
+                .getLocalService(ElasticSearchService.class);
+        SearchRequestBuilder qb = new SearchRequestBuilder(ess.getClient());
+
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
+        Assert.assertNotNull(pps);
+        WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
+                "ADVANCED_SEARCH").getWhereClause();
+        SortInfo sortInfos = new SortInfo("dc:title", true);
+        String[] params = { "foo" };
+        DocumentModel model = new DocumentModelImpl("/", "doc",
+                "AdvancedSearch");
+        model.setPropertyValue("search:title", "bar");
+
+        ElasticSearchQueryBuilder.makeQuery(qb, model, whereClause, params,
+                sortInfos);
+        Assert.assertEquals("{\n" +
+                "  \"query\" : {\n" +
+                "    \"bool\" : {\n" +
+                "      \"must\" : [ {\n" +
+                "        \"query_string\" : {\n" +
+                "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
+                "        }\n" +
+                "      }, {\n" +
+                "        \"regexp\" : {\n" +
+                "          \"dc\\\\:title\" : {\n" +
+                "            \"value\" : \"\\\"bar\\\"\"\n" +
+                "          }\n" +
+                "        }\n" +
+                "      } ]\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"post_filter\" : {\n" +
+                "    \"bool\" : { }\n" +
+                "  },\n" +
+                "  \"sort\" : [ {\n" +
+                "    \"dc:title\" : {\n" +
+                "      \"order\" : \"asc\"\n" +
+                "    }\n" +
+                "  } ]\n" +
+                "}", qb.toString());
+
+        model.setPropertyValue("search:isPresent", Boolean.TRUE);
+
+        qb = new SearchRequestBuilder(ess.getClient());
+        ElasticSearchQueryBuilder.makeQuery(qb, model, whereClause, params,
+                sortInfos);
+        Assert.assertEquals("{\n" +
+                "  \"query\" : {\n" +
+                "    \"bool\" : {\n" +
+                "      \"must\" : [ {\n" +
+                "        \"query_string\" : {\n" +
+                "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
+                "        }\n" +
+                "      }, {\n" +
+                "        \"regexp\" : {\n" +
+                "          \"dc\\\\:title\" : {\n" +
+                "            \"value\" : \"\\\"bar\\\"\"\n" +
+                "          }\n" +
+                "        }\n" +
+                "      } ]\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"post_filter\" : {\n" +
+                "    \"bool\" : {\n" +
+                "      \"must_not\" : {\n" +
+                "        \"exists\" : {\n" +
+                "          \"field\" : \"dc\\\\:modified\"\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"sort\" : [ {\n" +
+                "    \"dc:title\" : {\n" +
+                "      \"order\" : \"asc\"\n" +
+                "    }\n" +
+                "  } ]\n" +
+                "}",
+                qb.toString());
+
+        // only boolean available in schema without default value
+        model.setPropertyValue("search:isPresent", Boolean.FALSE);
+        qb = new SearchRequestBuilder(ess.getClient());
+        ElasticSearchQueryBuilder.makeQuery(qb, model, whereClause, params,
+                sortInfos);
+        Assert.assertEquals(
+                "{\n" +
+                "  \"query\" : {\n" +
+                "    \"bool\" : {\n" +
+                "      \"must\" : [ {\n" +
+                "        \"query_string\" : {\n" +
+                "          \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
+                "        }\n" +
+                "      }, {\n" +
+                "        \"regexp\" : {\n" +
+                "          \"dc\\\\:title\" : {\n" +
+                "            \"value\" : \"\\\"bar\\\"\"\n" +
+                "          }\n" +
+                "        }\n" +
+                "      } ]\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"post_filter\" : {\n" +
+                "    \"bool\" : {\n" +
+                "      \"must_not\" : {\n" +
+                "        \"exists\" : {\n" +
+                "          \"field\" : \"dc\\\\:modified\"\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"sort\" : [ {\n" +
+                "    \"dc:title\" : {\n" +
+                "      \"order\" : \"asc\"\n" +
+                "    }\n" +
+                "  } ]\n" +
+                "}",
+                qb.toString());
+
+        qb = new SearchRequestBuilder(ess.getClient());
+        ElasticSearchQueryBuilder.makeQuery(qb, "SELECT * FROM ? WHERE ? = '?'",
+                new Object[] { "Document", "dc:title", null }, false, true);
+        Assert.assertEquals("{\n" +
+                "  \"query\" : {\n" +
+                "    \"query_string\" : {\n" +
+                "      \"query\" : \"SELECT * FROM \\\"Document\\\" WHERE \\\"dc:title\\\" = ''\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "}",
+                qb.toString());
     }
 
 }

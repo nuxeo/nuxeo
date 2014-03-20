@@ -29,9 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -40,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.elasticsearch.ElasticSearchComponent;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.runtime.api.Framework;
@@ -69,23 +68,7 @@ public class ElasticSearchNativePageProvider extends
                             getCurrentPageOffset()));
         }
         // Build the ES query
-        ElasticSearchService ess = Framework
-                .getLocalService(ElasticSearchService.class);
-        String query = buildQuery();
-        SearchRequestBuilder builder = ess
-                .getClient()
-                .prepareSearch(ElasticSearchComponent.MAIN_IDX)
-                .setTypes(ElasticSearchComponent.NX_DOCUMENT)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(QueryBuilders.queryString(query))
-                // only fetch id, not the _source field
-                .setFetchSource(ElasticSearchComponent.ID_FIELD, null)
-                .setFrom((int) getCurrentPageOffset())
-                .setSize((int) getMinMaxPageSize());
-        for (SortInfo sortInfo : getSortInfos()) {
-            builder.addSort(sortInfo.getSortColumn(), sortInfo
-                    .getSortAscending() ? SortOrder.ASC : SortOrder.DESC);
-        }
+        SearchRequestBuilder builder = makeQueryBuilder();
         // Execute the ES query
         if (log.isDebugEnabled()) {
             log.debug("Search query: " + builder.toString());
@@ -113,6 +96,45 @@ public class ElasticSearchNativePageProvider extends
         return currentPageDocuments;
     }
 
+    private SearchRequestBuilder makeQueryBuilder() {
+        ElasticSearchService ess = Framework
+                .getLocalService(ElasticSearchService.class);
+        SearchRequestBuilder ret = ess.getClient()
+                .prepareSearch(ElasticSearchComponent.MAIN_IDX)
+                .setTypes(ElasticSearchComponent.NX_DOCUMENT)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setFetchSource(ElasticSearchComponent.ID_FIELD, null)
+                .setFrom((int) getCurrentPageOffset())
+                .setSize((int) getMinMaxPageSize());
+        try {
+            SortInfo[] sortArray = null;
+            if (sortInfos != null) {
+                sortArray = sortInfos.toArray(new SortInfo[] {});
+            }
+            PageProviderDefinition def = getDefinition();
+            if (def.getWhereClause() == null) {
+                ElasticSearchQueryBuilder.makeQuery(ret, def.getPattern(),
+                        getParameters(), def.getQuotePatternParameters(),
+                        def.getEscapePatternParameters(), sortArray);
+            } else {
+                DocumentModel searchDocumentModel = getSearchDocumentModel();
+                if (searchDocumentModel == null) {
+                    throw new ClientException(String.format(
+                            "Cannot build query of provider '%s': "
+                                    + "no search document model is set",
+                            getName()));
+                }
+                ElasticSearchQueryBuilder.makeQuery(ret, searchDocumentModel,
+                        def.getWhereClause(), getParameters(), sortArray);
+            }
+        } catch (ClientException e) {
+            throw new ClientRuntimeException(e);
+        }
+        // TODO: Add primarytype filter
+        // TODO: Add acl filtering
+        return ret;
+    }
+
     @Override
     protected void pageChanged() {
         currentPageDocuments = null;
@@ -123,13 +145,6 @@ public class ElasticSearchNativePageProvider extends
     public void refresh() {
         currentPageDocuments = null;
         super.refresh();
-    }
-
-    /**
-     * Build the ES native query string according pp definition and params
-     */
-    protected String buildQuery() {
-        return getDefinition().getPattern();
     }
 
     /**
