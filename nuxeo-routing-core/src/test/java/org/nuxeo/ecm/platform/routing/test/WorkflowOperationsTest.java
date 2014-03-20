@@ -14,17 +14,20 @@ package org.nuxeo.ecm.platform.routing.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.scripting.Scripting;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -33,7 +36,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
@@ -48,16 +50,15 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
+import com.ibm.icu.util.Calendar;
 
 /**
  * @since 5.7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class,
-        AutomationFeature.class })
+@Features({ CoreFeature.class, AutomationFeature.class })
 @Deploy({
         "org.nuxeo.ecm.platform.content.template", //
         "org.nuxeo.ecm.automation.core", //
@@ -98,7 +99,6 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
     }
 
     @Test
-    @Ignore
     public void testStartWorkflowOperation() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
@@ -112,18 +112,37 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         OperationContext ctx = new OperationContext();
         ctx.setCoreSession(session);
         ctx.setInput(doc);
-        // test start workflow
+        // test start workflow with
+        // variables in json format
+
+        Properties jsonProperties = new Properties();
+        jsonProperties.put("stringfield", "test");
+        jsonProperties.put("myassignees", "[\"x\", \"y\"]");
+        jsonProperties.put(
+                "datefield",
+                (String) Scripting.newExpression(
+                        "org.nuxeo.ecm.core.schema.utils.DateParser.formatW3CDateTime(CurrentDate.date)").eval(
+                        ctx));
         OperationChain startWorkflowChain = new OperationChain("startWorkflow");
         startWorkflowChain.add(StartWorkflowOperation.ID).set("id", "myroute").set(
-                "variables", "stringfield=test");
+                "variables", jsonProperties);
         automationService.run(ctx, startWorkflowChain);
         session.save();
-        TransactionHelper.commitOrRollbackTransaction();
 
         DocumentModel routeInstance = session.getDocument(new IdRef(
                 (String) ctx.get("WorkflowId")));
         GraphRoute graph = routeInstance.getAdapter(GraphRoute.class);
-        assertEquals(graph.getVariables().get("stringfield"), "test");
+        Map<String, Serializable> vars = graph.getVariables();
+        assertEquals(vars.get("stringfield"), "test");
+        String[] assignesVar = (String[]) vars.get("myassignees");
+        assertEquals(2, assignesVar.length);
+        assertEquals("x", assignesVar[0]);
+        assertEquals("y", assignesVar[1]);
+
+        Calendar varDate = Calendar.getInstance();
+        varDate.setTime((Date) graph.getVariables().get("datefield"));
+        assertEquals(Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+                varDate.get(Calendar.DAY_OF_MONTH));
 
         // test SetWorkflowVar on the same context with StartWorkflow
         OperationChain setWorkflowVar = new OperationChain("setVar");
@@ -131,7 +150,6 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
                 "value", "test1");
         automationService.run(ctx, setWorkflowVar);
         session.save();
-        TransactionHelper.commitOrRollbackTransaction();
 
         routeInstance = session.getDocument(routeInstance.getRef());
         graph = routeInstance.getAdapter(GraphRoute.class);
@@ -148,7 +166,6 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
                 "test2");
         automationService.run(ctx, setWorkflowVar);
         session.save();
-        TransactionHelper.commitOrRollbackTransaction();
 
         routeInstance = session.getDocument(routeInstance.getRef());
         graph = routeInstance.getAdapter(GraphRoute.class);
@@ -185,8 +202,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         ctx.setCoreSession(session);
         ctx.setInput(doc);
         List<DocumentModel> tasks = (List<DocumentModel>) automationService.run(
-                ctx, GetOpenTasksOperation.ID,
-                new HashMap<String, Object>());
+                ctx, GetOpenTasksOperation.ID, new HashMap<String, Object>());
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
 
@@ -220,9 +236,9 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         ctx.setCoreSession(session);
         ctx.setInput(doc);
         tasks = (List<DocumentModel>) automationService.run(ctx,
-                GetOpenTasksOperation.ID,
-                new HashMap<String, Object>());
+                GetOpenTasksOperation.ID, new HashMap<String, Object>());
         assertNotNull(tasks);
         assertEquals(0, tasks.size());
     }
+
 }

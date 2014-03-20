@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
@@ -141,6 +140,11 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
     @Override
     public void setVariables(Map<String, Serializable> map) {
         GraphVariablesUtil.setVariables(document, PROP_VARIABLES_FACET, map);
+    }
+
+    @Override
+    public void setJSONVariables(Map<String, String> map) {
+        GraphVariablesUtil.setJSONVariables(document, PROP_VARIABLES_FACET, map);
     }
 
     @Override
