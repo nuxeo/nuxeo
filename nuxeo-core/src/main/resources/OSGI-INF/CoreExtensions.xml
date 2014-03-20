@@ -44,7 +44,7 @@
     <documentation>The core document types</documentation>
 
     <!-- standard facets with no schema -->
-    <facet name="Folderish" /> <!-- used by system -->
+    <facet name="Folderish" perDocumentQuery="false"/> <!-- used by system -->
     <facet name="Orderable" /> <!-- used by system -->
     <facet name="Versionable" /> <!-- used by system -->
     <facet name="Downloadable" />
@@ -54,7 +54,7 @@
     <facet name="Commentable" />
     <facet name="WebView" />
     <facet name="SuperSpace" />
-    <facet name="HiddenInNavigation" />
+    <facet name="HiddenInNavigation" perDocumentQuery="false"/>
     <facet name="SystemDocument" />
     <facet name="NotFulltextIndexable" />
 

@@ -177,14 +177,6 @@ public class NXQLQueryMaker implements QueryMaker {
     protected static final List<String> AGGREGATE_FUNCTIONS = Arrays.asList(
             COUNT_FUNCTION, AVG_FUNCTION, "SUM", "MIN", "MAX");
 
-    /**
-     * These mixins never match an instance mixin when used in a clause
-     * ecm:mixinType = 'foo'. This is in addition to those configured in the
-     * repository descriptor.
-     */
-    protected static final Set<String> MIXINS_NOT_PER_INSTANCE = new HashSet<String>(
-            Arrays.asList(FacetNames.FOLDERISH, FacetNames.HIDDEN_IN_NAVIGATION));
-
     /*
      * Fields used by the search service.
      */
@@ -268,8 +260,8 @@ public class NXQLQueryMaker implements QueryMaker {
         dialect = sqlInfo.dialect;
         this.model = model;
         this.pathResolver = pathResolver;
-        neverPerInstanceMixins = new HashSet<String>(MIXINS_NOT_PER_INSTANCE);
-        neverPerInstanceMixins.addAll(model.getNoPerDocumentQueryFacets());
+        neverPerInstanceMixins = new HashSet<String>(
+                model.getNoPerDocumentQueryFacets());
         // compat
         Set<String> npim = model.getRepositoryDescriptor().neverPerInstanceMixins;
         if (npim != null) {
