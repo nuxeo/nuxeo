@@ -134,7 +134,7 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         // TODO: handle multiple repositories
         CoreSession session = getSession(
-                repositoryManager.getDefaultRepository().getName(), principal);
+                repositoryManager.getDefaultRepositoryName(), principal);
         DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
                 session, null);
         if (userWorkspace == null) {
