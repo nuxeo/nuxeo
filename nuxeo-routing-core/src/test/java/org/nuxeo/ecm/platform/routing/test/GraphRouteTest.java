@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -101,7 +102,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     protected static final String TYPE_ROUTE_NODE = "RouteNode";
 
     @Inject
-    protected FeaturesRunner featuresRunner;
+    protected RepositorySettings settings;
 
     @Inject
     protected RuntimeHarness harness;
@@ -140,11 +141,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     protected CoreSession openSession(NuxeoPrincipal principal)
             throws ClientException {
-        CoreFeature coreFeature = featuresRunner.getFeature(CoreFeature.class);
-        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
-        ctx.put("principal", principal);
-        return coreFeature.getRepository().getRepositoryHandler().openSession(
-                ctx);
+        return settings.openSessionAs(principal);
     }
 
     protected Map<String, Serializable> keyvalue(String key, String value) {

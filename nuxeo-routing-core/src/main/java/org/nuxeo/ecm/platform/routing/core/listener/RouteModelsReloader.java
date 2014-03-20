@@ -33,7 +33,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Event listener that reloads the contributed route models.
- * 
+ *
  * @since 5.6
  */
 public class RouteModelsReloader implements EventListener {
@@ -64,8 +64,7 @@ public class RouteModelsReloader implements EventListener {
                     && TransactionHelper.startTransaction();
             boolean txSucceed = false;
             try {
-                new UnrestrictedSessionRunner(
-                        rm.getDefaultRepository().getName()) {
+                new UnrestrictedSessionRunner(rm.getDefaultRepositoryName()) {
                     @Override
                     public void run() throws ClientException {
                         DocumentRoutingService service = Framework.getLocalService(DocumentRoutingService.class);
