@@ -78,7 +78,7 @@ public class UserRegistrationObject extends ModuleRoot {
         protected String documentUrl;
 
         public DocumentUrlFinder(String docId) throws Exception {
-            super(Framework.getService(RepositoryManager.class).getDefaultRepository().getName());
+            super(Framework.getService(RepositoryManager.class).getDefaultRepositoryName());
             this.docId = docId;
         }
 

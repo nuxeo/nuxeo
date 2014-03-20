@@ -94,7 +94,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         if (repoName == null) {
             try {
                 RepositoryManager rm = Framework.getService(RepositoryManager.class);
-                repoName = rm.getDefaultRepository().getName();
+                repoName = rm.getDefaultRepositoryName();
             } catch (Exception e) {
                 log.error("Error while getting default repository name", e);
                 repoName = "default";
