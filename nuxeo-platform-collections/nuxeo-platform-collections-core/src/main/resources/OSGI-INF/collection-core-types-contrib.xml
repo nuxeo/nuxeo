@@ -19,7 +19,7 @@
       <schema name="collection" />
     </facet>
 
-    <facet name="NotCollectionMember" />
+    <facet name="NotCollectionMember" perDocumentQuery="false"/>
 
     <facet name="CollectionMember">
       <schema name="collectionMember" />
