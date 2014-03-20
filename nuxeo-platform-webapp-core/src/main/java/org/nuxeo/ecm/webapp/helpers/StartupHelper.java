@@ -117,7 +117,7 @@ public class StartupHelper implements Serializable {
         if (navigationContext.getCurrentServerLocation() == null) {
             // update location
             RepositoryLocation repLoc = new RepositoryLocation(
-                    repositoryManager.getDefaultRepository().getName());
+                    repositoryManager.getDefaultRepositoryName());
             navigationContext.setCurrentServerLocation(repLoc);
         }
 
