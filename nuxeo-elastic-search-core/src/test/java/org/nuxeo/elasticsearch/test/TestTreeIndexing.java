@@ -186,6 +186,10 @@ public class TestTreeIndexing {
                         "/folder0/folder1")).execute().actionGet();
         Assert.assertEquals(9, searchResponse.getHits().getTotalHits());
 
+        
+        
     }
+    
+    
 
 }

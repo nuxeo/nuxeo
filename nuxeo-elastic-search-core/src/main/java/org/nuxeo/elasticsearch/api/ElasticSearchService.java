@@ -42,4 +42,6 @@ public interface ElasticSearchService {
     DocumentModelList query(CoreSession session, QueryBuilder queryBuilder,
             int pageSize, int pageIdx) throws ClientException;
 
+    DocumentModelList queryAsNXQL(CoreSession session, String nxql,
+            int pageSize, int pageIdx) throws ClientException;
 }
