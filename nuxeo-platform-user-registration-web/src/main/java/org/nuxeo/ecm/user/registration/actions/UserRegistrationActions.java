@@ -184,7 +184,7 @@ public class UserRegistrationActions implements Serializable {
             String docId = (String) request.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD);
             DocumentRef docRef = new IdRef(docId);
             DocumentModel doc = documentManager.getDocument(docRef);
-            String docUrl =  DocumentModelFunctions.documentUrl(doc);
+            String docUrl = DocumentModelFunctions.documentUrl(doc);
             additionalInfo.put("docUrl", docUrl);
 
             userRegistrationService.acceptRegistrationRequest(request.getId(),
@@ -222,7 +222,8 @@ public class UserRegistrationActions implements Serializable {
         }
     }
 
-    public void submitMultipleUserRegistration(String configurationName) throws AddressException {
+    public void submitMultipleUserRegistration(String configurationName)
+            throws AddressException {
         if (StringUtils.isBlank(multipleEmails)) {
             facesMessages.add(
                     ERROR,
@@ -244,13 +245,15 @@ public class UserRegistrationActions implements Serializable {
         Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
     }
 
-    protected InternetAddress[] splitAddresses(String emails) throws AddressException {
+    protected InternetAddress[] splitAddresses(String emails)
+            throws AddressException {
         return StringUtils.isNotBlank(emails) ? InternetAddress.parse(
-                emails.replace(MULTIPLE_EMAILS_SEPARATOR, ","), false) : new InternetAddress[]{};
+                emails.replace(MULTIPLE_EMAILS_SEPARATOR, ","), false)
+                : new InternetAddress[] {};
     }
 
-    public void validateMultipleUser(FacesContext context, UIComponent component,
-                                 Object value) {
+    public void validateMultipleUser(FacesContext context,
+            UIComponent component, Object value) {
         if (value instanceof String) {
             try {
                 splitAddresses((String) value);
@@ -260,9 +263,9 @@ public class UserRegistrationActions implements Serializable {
             }
         }
 
-        FacesMessage message = new FacesMessage(
-                FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                context, "label.request.error.multiple.emails"), null);
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                ComponentUtils.translate(context,
+                        "label.request.error.multiple.emails"), null);
 
         // also add global message
         context.addMessage(null, message);

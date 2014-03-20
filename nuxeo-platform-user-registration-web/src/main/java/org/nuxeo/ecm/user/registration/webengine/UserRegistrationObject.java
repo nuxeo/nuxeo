@@ -87,13 +87,17 @@ public class UserRegistrationObject extends ModuleRoot {
             // Add the entered password to the document model
             additionalInfo.put(UserRegistrationInfo.PASSWORD_FIELD, password);
             // Validate the creation of the user
-            registrationData = usr.validateRegistration(requestId, additionalInfo);
+            registrationData = usr.validateRegistration(requestId,
+                    additionalInfo);
 
-            /*DocumentModel regDoc = (DocumentModel) registrationData.get(REGISTRATION_DATA_DOC);
-            String docId = (String) regDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD);
-            if (!StringUtils.isEmpty(docId)) {
-                redirectUrl = new DocumentUrlFinder(docId).getDocumentUrl();
-            }*/
+            /*
+             * DocumentModel regDoc = (DocumentModel)
+             * registrationData.get(REGISTRATION_DATA_DOC); String docId =
+             * (String)
+             * regDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD
+             * ); if (!StringUtils.isEmpty(docId)) { redirectUrl = new
+             * DocumentUrlFinder(docId).getDocumentUrl(); }
+             */
         } catch (AlreadyProcessedRegistrationException ape) {
             log.info("Try to validate an already processed registration");
             return getView("ValidationErrorTemplate").arg("exceptionMsg",
@@ -108,7 +112,8 @@ public class UserRegistrationObject extends ModuleRoot {
         }
         // User redirected to the logout page after validating the password
         String logoutUrl = "/" + BaseURL.getWebAppName() + "/logout";
-        return getView("UserCreated").arg("data", registrationData).arg("logout", logoutUrl);
+        return getView("UserCreated").arg("data", registrationData).arg(
+                "logout", logoutUrl);
     }
 
     @GET
@@ -164,6 +169,7 @@ public class UserRegistrationObject extends ModuleRoot {
         protected String documentUrl;
 
         public DocumentUrlFinder(String docId) throws Exception {
+
             super(Framework.getService(RepositoryManager.class).getDefaultRepositoryName());
             this.docId = docId;
         }

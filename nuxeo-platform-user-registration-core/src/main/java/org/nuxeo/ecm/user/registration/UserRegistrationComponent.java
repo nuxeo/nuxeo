@@ -395,8 +395,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
             // Check if the request has not been already validated
             DocumentModel registrationDoc = session.getDocument(idRef);
-            if (registrationDoc.getCurrentLifeCycleState().equals(
-                    "validated")) {
+            if (registrationDoc.getCurrentLifeCycleState().equals("validated")) {
                 throw new AlreadyProcessedRegistrationException(
                         "Registration request has already been processed.");
             }
@@ -539,7 +538,8 @@ public class UserRegistrationComponent extends DefaultComponent implements
                 if (enterPasswordUrl.startsWith("/")) {
                     enterPasswordUrl = enterPasswordUrl.substring(1);
                 }
-                additionnalInfo.put("enterPasswordUrl", baseUrl.concat(enterPasswordUrl));
+                additionnalInfo.put("enterPasswordUrl",
+                        baseUrl.concat(enterPasswordUrl));
             }
             acceptRegistrationRequest(registrationUuid, additionnalInfo);
         }
@@ -808,9 +808,9 @@ public class UserRegistrationComponent extends DefaultComponent implements
         new UnrestrictedSessionRunner(getTargetRepositoryName()) {
             @Override
             public void run() throws ClientException {
-                String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated' AND" +
-                        " ecm:mixinType = 'UserRegistration' AND docinfo:documentId = '%s' AND" +
-                        " userinfo:login = '%s' AND ecm:isCheckedInVersion = 0";
+                String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated' AND"
+                        + " ecm:mixinType = 'UserRegistration' AND docinfo:documentId = '%s' AND"
+                        + " userinfo:login = '%s' AND ecm:isCheckedInVersion = 0";
                 query = String.format(query, docId, username);
                 registrationDocs.addAll(session.query(query));
             }

@@ -182,9 +182,11 @@ public interface UserRegistrationService {
 
     /**
      * The method checks if the request id is a valid one.
+     *
      * @param requestId The value of the request id.
      *
      * @since 5.9.3
      */
-    void checkRequestId(String requestId) throws ClientException,UserRegistrationException;
+    void checkRequestId(String requestId) throws ClientException,
+            UserRegistrationException;
 }
