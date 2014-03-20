@@ -1,10 +1,12 @@
-<html>
-<head>
+<@extends src="./base.ftl">
 
-</head>
-<body>
-<h1>Oups</h1>
+<@block name="title">
+ ${Context.getMessage('label.registerForm.title')}
+</@block>
 
+<@block name="content">
+  
+<div class="info">
 <p>
 <#if exceptionMsg??>
   Your invitation cannot be validated : "${exceptionMsg}".
@@ -13,5 +15,7 @@
   An error occured during your invitation processs.
 </#if>
 </p>
-</body>
-</html>
+</div>
+
+</@block>
+</@extends>

@@ -27,7 +27,6 @@ You have been invited to access <a href="${info['docUrl']}">${registrationDoc.do
 </#if>
 </p>
 
-</#if>
 <br />
 
 Your administrator.
