@@ -31,9 +31,7 @@ import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ID_PROPERTY;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -52,7 +50,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -83,7 +81,7 @@ import com.google.inject.Inject;
 public class TestMultiTenantService {
 
     @Inject
-    protected FeaturesRunner featuresRunner;
+    protected RepositorySettings settings;
 
     @Inject
     protected CoreSession session;
@@ -242,7 +240,7 @@ public class TestMultiTenantService {
 
         NuxeoPrincipal bender = createUser("bender", domain.getName());
         LoginContext loginContext = Framework.loginAsUser("bender");
-        try (CoreSession benderSession = openSession(bender)) {
+        try (CoreSession benderSession = openSession()) {
             assertTrue(benderSession.hasPermission(domain.getRef(),
                     SecurityConstants.READ));
             assertFalse(benderSession.hasPermission(domain.getRef(),
@@ -257,7 +255,7 @@ public class TestMultiTenantService {
 
         bender = userManager.getPrincipal(bender.getName());
         loginContext = Framework.loginAsUser("bender");
-        try (CoreSession benderSession = openSession(bender)) {
+        try (CoreSession benderSession = openSession()) {
             benderSession.save();
             assertTrue(benderSession.hasPermission(domain.getRef(),
                     SecurityConstants.READ));
@@ -319,7 +317,7 @@ public class TestMultiTenantService {
         assertEquals("tenant_" + domain.getName() + "_supermembers",
                 nuxeoGroup.getName());
 
-        try (CoreSession frySession = openSession(fry)) {
+        try (CoreSession frySession = openSession()) {
             // add the Read ACL
             DocumentModel doc = frySession.getDocument(domain.getRef());
             ACP acp = doc.getACP();
@@ -337,7 +335,7 @@ public class TestMultiTenantService {
         userManager.updateUser(bender.getModel());
         bender = createUser("bender", domain.getName());
         loginContext = Framework.loginAsUser("bender");
-        try (CoreSession benderSession = openSession(bender)) {
+        try (CoreSession benderSession = openSession()) {
             assertTrue(benderSession.hasPermission(domain.getRef(), "Write"));
         }
         loginContext.logout();
@@ -345,7 +343,7 @@ public class TestMultiTenantService {
         // leela does not have Write permission
         NuxeoPrincipal leela = createUser("leela", domain.getName());
         loginContext = Framework.loginAsUser("leela");
-        try (CoreSession leelaSession = openSession(leela)) {
+        try (CoreSession leelaSession = openSession()) {
             assertTrue(leelaSession.hasPermission(domain.getRef(), "Read"));
             assertFalse(leelaSession.hasPermission(domain.getRef(), "Write"));
         }
@@ -406,12 +404,8 @@ public class TestMultiTenantService {
         loginContext.logout();
     }
 
-    protected CoreSession openSession(NuxeoPrincipal principal)
-            throws ClientException {
-        CoreFeature coreFeature = featuresRunner.getFeature(CoreFeature.class);
-        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
-        return coreFeature.getRepository().getRepositoryHandler().openSession(
-                ctx);
+    protected CoreSession openSession() throws ClientException {
+        return settings.openSession();
     }
 
     protected NuxeoPrincipal createUser(String username, String tenant)

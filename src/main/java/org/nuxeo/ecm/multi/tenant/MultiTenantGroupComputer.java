@@ -49,7 +49,7 @@ public class MultiTenantGroupComputer extends AbstractGroupComputer {
                 "user:tenantId");
         if (!StringUtils.isBlank(tenantId)) {
             String defaultRepositoryName = Framework.getLocalService(
-                    RepositoryManager.class).getDefaultRepository().getName();
+                    RepositoryManager.class).getDefaultRepositoryName();
 
             boolean transactionStarted = false;
             if (!TransactionHelper.isTransactionActive()) {
