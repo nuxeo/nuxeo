@@ -91,7 +91,7 @@ public class SchemaManagerImpl implements SchemaManager {
     /** Effective facets. */
     protected Map<String, CompositeType> facets = new HashMap<String, CompositeType>();
 
-    protected Set<String> noPerInstanceQueryFacets = new HashSet<String>();
+    protected Set<String> noPerDocumentQueryFacets = new HashSet<String>();
 
     /** Effective document types. */
     protected Map<String, DocumentTypeImpl> documentTypes = new HashMap<String, DocumentTypeImpl>();
@@ -372,7 +372,7 @@ public class SchemaManagerImpl implements SchemaManager {
 
     protected void recomputeFacets() {
         facets.clear();
-        noPerInstanceQueryFacets.clear();
+        noPerDocumentQueryFacets.clear();
         for (FacetDescriptor fd : allFacets) {
             recomputeFacet(fd);
         }
@@ -381,8 +381,8 @@ public class SchemaManagerImpl implements SchemaManager {
     protected void recomputeFacet(FacetDescriptor fd) {
         Set<String> schemas = SchemaDescriptor.getSchemaNames(fd.schemas);
         registerFacet(fd.name, schemas);
-        if (Boolean.FALSE.equals(fd.perInstanceQuery)) {
-            noPerInstanceQueryFacets.add(fd.name);
+        if (Boolean.FALSE.equals(fd.perDocumentQuery)) {
+            noPerDocumentQueryFacets.add(fd.name);
         }
     }
 
@@ -417,9 +417,9 @@ public class SchemaManagerImpl implements SchemaManager {
     }
 
     @Override
-    public Set<String> getNoPerInstanceQueryFacets() {
+    public Set<String> getNoPerDocumentQueryFacets() {
         checkDirty();
-        return Collections.unmodifiableSet(noPerInstanceQueryFacets);
+        return Collections.unmodifiableSet(noPerDocumentQueryFacets);
     }
 
     /*

@@ -402,7 +402,7 @@ public class Model {
 
     public final ModelFulltext fulltextInfo;
 
-    protected final Set<String> noPerInstanceQueryFacets;
+    protected final Set<String> noPerDocumentQueryFacets;
 
     /**
      * Map of fragment -> info about whether there's a fulltext text field
@@ -475,7 +475,7 @@ public class Model {
         documentSubTypes = new HashMap<String, Set<String>>();
 
         specialPropertyTypes = new HashMap<String, Type>();
-        noPerInstanceQueryFacets = new HashSet<String>();
+        noPerDocumentQueryFacets = new HashSet<String>();
 
         miscInHierarchy = false;
 
@@ -1218,8 +1218,8 @@ public class Model {
         return fragmentNames;
     }
 
-    public Set<String> getNoPerInstanceQueryFacets() {
-        return noPerInstanceQueryFacets;
+    public Set<String> getNoPerDocumentQueryFacets() {
+        return noPerDocumentQueryFacets;
     }
 
     /**
@@ -1253,7 +1253,7 @@ public class Model {
             inferSubTypes(documentType);
         }
         // init no per instance query facets
-        initNoPerInstanceQueryFacets(schemaManager);
+        initNoPerDocumentQueryFacets(schemaManager);
     }
 
     private void initProxySchemas(List<Schema> proxySchemas)
@@ -1403,8 +1403,8 @@ public class Model {
         } while (superType != null);
     }
 
-    private void initNoPerInstanceQueryFacets(SchemaManager schemaManager) {
-        noPerInstanceQueryFacets.addAll(schemaManager.getNoPerInstanceQueryFacets());
+    private void initNoPerDocumentQueryFacets(SchemaManager schemaManager) {
+        noPerDocumentQueryFacets.addAll(schemaManager.getNoPerDocumentQueryFacets());
     }
 
     /**

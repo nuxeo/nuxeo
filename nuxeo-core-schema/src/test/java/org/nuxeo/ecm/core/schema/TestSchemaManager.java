@@ -280,10 +280,10 @@ public class TestSchemaManager extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testFacetNoPerInstanceQuery() throws Exception {
+    public void testFacetNoPerDocumentQuery() throws Exception {
         deployContrib("org.nuxeo.ecm.core.schema.tests",
-                "OSGI-INF/test-facet-per-instance.xml");
-        assertTrue(schemaManager.getNoPerInstanceQueryFacets().contains(
+                "OSGI-INF/test-facet-per-document.xml");
+        assertTrue(schemaManager.getNoPerDocumentQueryFacets().contains(
                 "someFacet"));
     }
 

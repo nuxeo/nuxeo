@@ -64,7 +64,7 @@
       They can have zero or more schemas:
 
       <code>
-        <facet name="MyFacet" perInstanceQuery="false"/>
+        <facet name="MyFacet" perDocumentQuery="false"/>
         <facet name="MyFacetWithData">
           <schema name="myschema" />
           <schema name="otherschema" />
@@ -72,7 +72,7 @@
       </code>
 
       Queries using ecm:mixinType on facets marked with
-      perInstanceQuery="false" will not match any document where
+      perDocumentQuery="false" will not match any document where
       this facet has been added using DocumentModel.addFacet() and does
       not belong to the document type (this is done for performance reasons).
 

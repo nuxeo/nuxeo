@@ -43,7 +43,7 @@ public interface TypeProvider {
     CompositeType[] getFacets();
 
     /** Finds which facets are configured as no-per-instance-query. */
-    Set<String> getNoPerInstanceQueryFacets();
+    Set<String> getNoPerDocumentQueryFacets();
 
     /** Gets the schemas on a proxy for a document of the given type. */
     List<Schema> getProxySchemas(String docType);
