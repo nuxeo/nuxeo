@@ -15,12 +15,12 @@
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
 
-    <facet name="Asset">
+    <facet name="Asset" perDocumentQuery="false">
       <schema name="dam_common"/>
       <schema name="ip_rights"/>
     </facet>
 
-    <facet name="DamSearch">
+    <facet name="DamSearch" perDocumentQuery="false">
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="uid" />
