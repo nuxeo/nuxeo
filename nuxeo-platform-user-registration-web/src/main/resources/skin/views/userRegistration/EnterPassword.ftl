@@ -18,7 +18,7 @@
 	    ${info}
 	  </div>
 	</#if>
-	<div class="info">${Context.getMessage('label.registerForm.title')}</div> 
+	<div class="info">${Context.getMessage('label.registerForm.title')}</div>
 	<div>
 	  <input placeholder="${Context.getMessage('label.registerForm.password')}" type="password" id="Password" value="${data['Password']}" name="Password" class="login_input" isRequired="true" autofocus required/>
 	  <i class="icon-key"></i>
