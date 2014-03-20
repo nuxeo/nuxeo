@@ -396,7 +396,7 @@ public class Select2ActionsBean implements Serializable {
 
         if (repoName == null || repoName.isEmpty()) {
             RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
-            repoName = rm.getDefaultRepository().getName();
+            repoName = rm.getDefaultRepositoryName();
         }
 
         if (documentManager != null

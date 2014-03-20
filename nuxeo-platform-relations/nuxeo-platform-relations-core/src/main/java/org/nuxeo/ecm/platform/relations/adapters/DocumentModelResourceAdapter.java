@@ -65,7 +65,7 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
                     // BBB for when repository name was not included in the
                     // local name
                     RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
-                    repoName = mgr.getDefaultRepository().getName();
+                    repoName = mgr.getDefaultRepositoryName();
                     uid = localName;
                 } else {
                     repoName = localName.substring(0, index);

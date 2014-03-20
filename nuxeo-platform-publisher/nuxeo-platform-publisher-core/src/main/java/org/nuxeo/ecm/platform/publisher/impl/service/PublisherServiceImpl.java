@@ -709,7 +709,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
     protected void registerPendingDescriptors() throws Exception {
         // TODO what to do with multiple repositories?
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-        String repositoryName = repositoryManager.getDefaultRepository().getName();
+        String repositoryName = repositoryManager.getDefaultRepositoryName();
         List<DocumentModel> domains = new DomainsFinder(repositoryName).getDomains();
         for (DocumentModel domain : domains) {
             registerTreeConfigFor(domain);

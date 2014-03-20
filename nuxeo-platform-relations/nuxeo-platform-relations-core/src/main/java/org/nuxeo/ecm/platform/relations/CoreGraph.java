@@ -702,7 +702,7 @@ public class CoreGraph implements Graph {
 
     protected static String getDefaultRepositoryName() {
         try {
-            return Framework.getService(RepositoryManager.class).getDefaultRepository().getName();
+            return Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
