@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -90,7 +91,7 @@ public class TestLocalConfiguration {
     public static final String COLLABORATIVE_CATEGORY = "Collaborative";
 
     @Inject
-    protected FeaturesRunner featuresRunner;
+    protected RepositorySettings settings;
 
     @Inject
     protected CoreSession session;
@@ -431,9 +432,7 @@ public class TestLocalConfiguration {
     }
 
     protected CoreSession openSessionAs(String username) throws ClientException {
-        CoreFeature coreFeature = featuresRunner.getFeature(CoreFeature.class);
-        return coreFeature.getRepository().getRepositoryHandler().openSessionAs(
-                username);
+        return settings.openSessionAs(username);
     }
 
 }

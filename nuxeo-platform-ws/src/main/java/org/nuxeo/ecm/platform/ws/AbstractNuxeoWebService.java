@@ -81,7 +81,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
             LoginContext loginContext = Framework.login();
             if (repositoryName == null) {
                 RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-                repositoryName = repositoryManager.getDefaultRepository().getName();
+                repositoryName = repositoryManager.getDefaultRepositoryName();
             }
             sid = _connect(username, password, repositoryName);
             loginContext.logout();
