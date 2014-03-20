@@ -3,9 +3,15 @@
 Hello ${registrationDoc.userinfo.firstName} ${registrationDoc.userinfo.lastName}, <br />
 <br />
 
-<p>It appears that you did not validate your invitation to ${registrationDoc.docinfo.documentTitle}<p>
+<p>It appears that you did not validate your invitation to ${registrationDoc.docinfo.documentTitle}.<p>
+<#if registrationDoc.registration.comment != "">
+<br/>
+<p>From the sender: </p>
+<p>${registrationDoc.registration.comment}</p>
+</#if>
+
 <p>Click on the following link to validate your invitation:</p>
-<A href="${info['enterPasswordUrl']}${registrationDoc.id}"> Validate my invitation </A> .
+<a href="${info['enterPasswordUrl']}${registrationDoc.id}"> Validate my invitation </a> .
 <br />
 
 <br /><br />
@@ -20,11 +26,6 @@ Hello ${registrationDoc.userinfo.firstName} ${registrationDoc.userinfo.lastName}
 <p>Password: Your usual account password.</p>
 </#if>
 </p>
-
-<#if registrationDoc.registration.comment != "">
-<p>Comment:</p>
-<p>${registrationDoc.registration.comment}</p>
-</#if>
 
 </body>
 </html>

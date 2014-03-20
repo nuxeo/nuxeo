@@ -4,6 +4,11 @@ Hello ${registrationDoc.userinfo.firstName} ${registrationDoc.userinfo.lastName}
 <br />
 You have been invited to access <a href="${info['docUrl']}">${registrationDoc.docinfo.documentTitle}</a>.
 <br />
+<#if registrationDoc.registration.comment != "">
+<br/>
+<p>From the sender: </p>
+<p>${registrationDoc.registration.comment}</p>
+</#if>
 
 <p>Click on the following link to validate your invitation:</p>
 <br/>
@@ -22,13 +27,9 @@ You have been invited to access <a href="${info['docUrl']}">${registrationDoc.do
 </#if>
 </p>
 
-<br />
-<#if registrationDoc.registration.comment != "">
-<p>Comment:</p>
-<p>${registrationDoc.registration.comment}</p>
 </#if>
 <br />
 
-Your administrator
+Your administrator.
 </body>
 </html>

@@ -10,8 +10,8 @@
 </script>
   
 <div class="info">
-Welcome! You account has been created.
-You are now going to be redirected automatically to the logout page...
+Welcome! You account is now created.
+You are going to be redirected to access the platform.
 </div>
 
 </@block>
