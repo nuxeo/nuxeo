@@ -100,7 +100,7 @@ public class UserCodec extends AbstractDocumentViewCodec {
 
     private String getDefaultRepositoryName() {
         try {
-            return Framework.getService(RepositoryManager.class).getDefaultRepository().getName();
+            return Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
         } catch (Exception e) {
             return null;
         }

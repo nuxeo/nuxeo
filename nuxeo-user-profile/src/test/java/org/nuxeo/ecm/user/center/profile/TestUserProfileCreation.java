@@ -61,14 +61,14 @@ public class TestUserProfileCreation {
             userDir.close();
         }
 
-        CoreSession session = repositorySettings.openSessionAs(user.getId());
-        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                session, null);
-        Assert.assertEquals(user.getId(), userWorkspace.getName());
+        try (CoreSession session = repositorySettings.openSessionAs(user.getId())) {
+            DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
+                    session, null);
+            Assert.assertEquals(user.getId(), userWorkspace.getName());
 
-        DocumentModel up = ups.getUserProfileDocument(session);
-        Assert.assertNotNull(up);
-
-        repositorySettings.getRepositoryHandler().releaseSession(session);
+            DocumentModel up = ups.getUserProfileDocument(session);
+            Assert.assertNotNull(up);
+        }
     }
+
 }
