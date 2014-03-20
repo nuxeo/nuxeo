@@ -79,6 +79,20 @@ public interface GraphRoute {
     void setVariables(Map<String, Serializable> map);
 
     /**
+     * Sets the variables of the workflow based on their JSON representation
+     * (especially for scalar lists).
+     *
+     * Eg. Map<String, String> map = new
+     * HashMap<String, String>();
+     * map.put("contributors","[\"John Doe\", \"John Smith\"]");
+     * map.put("title","Test Title");
+     *
+     * @param map the map of variables
+     * @since 5.9.3, 5.8.0-HF10
+     */
+    void setJSONVariables(Map<String, String> map);
+
+    /**
      * Gets the node with the given id.
      *
      * @param id

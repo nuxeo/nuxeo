@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +31,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 
 /**
  * Starts the workflow with the given model id on the input documents. Returns
@@ -42,9 +45,11 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
  */
 @Operation(id = StartWorkflowOperation.ID, category = Constants.CAT_WORKFLOW, label = "Start workflow", requires = Constants.WORKFLOW_CONTEXT, description = "Starts the workflow with the given model id on the input documents. Returns back the input documents."
         + "The id of the created workflow instance is available under the \"workflowInstanceId\" context variable."
-        + "@Since 5.7.2 you can set multiple variables on the workflow. The variables are specified as <i>key=value</i> pairs separated by a new line."
+        + "@Since 5.7.2 you can set multiple variables on the workflow (before 5.8 only scalar types are supported). The variables are specified as <i>key=value</i> pairs separated by a new line."
         + "To specify multi-line values you can use a \\ character followed by a new line. <p>Example:<pre>description=foo bar</pre>For updating a date, you will need to expose the value as ISO 8601 format, "
-        + "for instance : <p>Example:<pre>title=The Document Title<br>issued=@{org.nuxeo.ecm.core.schema.utils.DateParser.formatW3CDateTime(CurrentDate.date)}</pre><p>")
+        + "for instance : <p>Example:<pre>title=The Document Title<br>issued=@{org.nuxeo.ecm.core.schema.utils.DateParser.formatW3CDateTime(CurrentDate.date)}</pre><p>"
+        + " @since 5.9.3 and 5.8.0-HF10 you can also set variables of complex types, by submiting a JSON representation: "
+        + "<p><pre>assignees = [\"John Doe\", \"John Test\"]</pre></p>")
 public class StartWorkflowOperation {
 
     public static final String ID = "Context.StartWorkflow";
@@ -89,19 +94,24 @@ public class StartWorkflowOperation {
     }
 
     protected void startNewInstance(List<String> ids) throws ClientException {
-        Map<String, Serializable> vars = new HashMap<String, Serializable>();
+        Map<String, String> vars = new HashMap<String, String>();
         if (variables != null) {
-            for (Map.Entry<String, String> entry : variables.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                vars.put(key, value);
+            for (Entry<String, String> entry : variables.entrySet()) {
+                vars.put(entry.getKey(), entry.getValue());
             }
         }
         String workflowId = documentRoutingService.createNewInstance(id, ids,
-                vars, session, Boolean.TRUE.equals(start));
+                new HashMap<String, Serializable>(), session,
+                Boolean.TRUE.equals(start));
         ctx.put("WorkflowId", workflowId);
-        //to be consistent with all the other workflow variablesin the context
-        //@since 5.7.2
+        // to be consistent with all the other workflow variablesin the context
+        // @since 5.7.2
         ctx.put("workflowInstanceId", workflowId);
+
+        // set variables
+        DocumentModel routeInstanceDoc = session.getDocument(new IdRef(
+                workflowId));
+        GraphRoute graph = routeInstanceDoc.getAdapter(GraphRoute.class);
+        graph.setJSONVariables(vars);
     }
 }
