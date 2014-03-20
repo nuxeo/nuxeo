@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.RepositorySettings;
-import org.nuxeo.ecm.core.test.TestRepositoryHandler;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
@@ -1189,13 +1188,12 @@ public class TestDocumentsSizeUpdater {
 
             @Override
             public void run() throws Exception {
-                TestRepositoryHandler handler = settings.getRepositoryHandler();
-                try (CoreSession userSession = handler.openSessionAs("toto")) {
+                try (CoreSession userSession = settings.openSessionAs("toto")) {
                     DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(
                             userSession, null);
                     assertNotNull(uw);
                 }
-                try (CoreSession userSession = handler.openSessionAs("titi")) {
+                try (CoreSession userSession = settings.openSessionAs("titi")) {
                     DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(
                             userSession, null);
                     assertNotNull(uw);
