@@ -47,6 +47,19 @@ public class UserRegistrationObject extends ModuleRoot {
         String requestId = formData.getString("RequestId");
         String password = formData.getString("Password");
         String passwordConfirmation = formData.getString("PasswordConfirmation");
+
+        // Check if the requestId is an existing one
+        try {
+            usr.checkRequestId(requestId);
+        } catch (AlreadyProcessedRegistrationException ape) {
+            return getView("ValidationErrorTemplate").arg("exceptionMsg",
+                    ctx.getMessage("label.error.requestAlreadyProcessed"));
+        } catch (UserRegistrationException ue) {
+            return getView("ValidationErrorTemplate").arg("exceptionMsg",
+                    ctx.getMessage("label.error.requestNotExisting", requestId));
+        }
+
+        // Check if both entered passwords are correct
         if (password == null || "".equals(password.trim())) {
             return redisplayFormWithErrorMessage("EnterPassword",
                     ctx.getMessage("label.registerForm.validation.password"),
@@ -83,10 +96,12 @@ public class UserRegistrationObject extends ModuleRoot {
             }*/
         } catch (AlreadyProcessedRegistrationException ape) {
             log.info("Try to validate an already processed registration");
+            return getView("ValidationErrorTemplate").arg("exceptionMsg",
+                    ctx.getMessage("label.error.requestAlreadyProcessed"));
         } catch (UserRegistrationException ue) {
             log.warn("Unable to validate registration request", ue);
             return getView("ValidationErrorTemplate").arg("exceptionMsg",
-                    ue.getMessage());
+                    ctx.getMessage("label.errror.requestNotAccepted"));
         } catch (ClientException e) {
             log.error("Error while validating registration request", e);
             return getView("ValidationErrorTemplate").arg("error", e);
@@ -105,13 +120,17 @@ public class UserRegistrationObject extends ModuleRoot {
         UserRegistrationService usr = Framework.getLocalService(UserRegistrationService.class);
         try {
             usr.checkRequestId(requestId);
+        } catch (AlreadyProcessedRegistrationException ape) {
+            return getView("ValidationErrorTemplate").arg("exceptionMsg",
+                    ctx.getMessage("label.error.requestAlreadyProcessed"));
         } catch (UserRegistrationException ue) {
             return getView("ValidationErrorTemplate").arg("exceptionMsg",
-                    ue.getMessage());
+                    ctx.getMessage("label.error.requestNotExisting", requestId));
         }
 
         Map<String, String> data = new HashMap<String, String>();
-        return getView("EnterPassword").arg("key", requestId).arg("data", data);
+        data.put("RequestId", requestId);
+        return getView("EnterPassword").arg("data", data);
     }
 
     protected Map<String, Serializable> buildAdditionalInfos() {

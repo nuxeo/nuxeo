@@ -61,7 +61,6 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
-import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -83,8 +82,6 @@ public class UserRegistrationComponent extends DefaultComponent implements
     protected RenderingHelper rh = new RenderingHelper();
 
     protected Map<String, UserRegistrationConfiguration> configurations = new HashMap<String, UserRegistrationConfiguration>();
-
-    // protected UserRegistrationConfiguration configuration;
 
     public String getTestedRendering() {
         return testRendering;
@@ -335,8 +332,6 @@ public class UserRegistrationComponent extends DefaultComponent implements
         public void run() throws ClientException {
             DocumentRef idRef = new IdRef(uuid);
 
-            new RequestIdValidator(uuid).runUnrestricted();
-
             DocumentModel registrationDoc = session.getDocument(idRef);
 
             // additionnal infos
@@ -396,6 +391,14 @@ public class UserRegistrationComponent extends DefaultComponent implements
                 throw new UserRegistrationException(
                         "There is no existing registration request with id "
                                 + uuid);
+            }
+
+            // Check if the request has not been already validated
+            DocumentModel registrationDoc = session.getDocument(idRef);
+            if (registrationDoc.getCurrentLifeCycleState().equals(
+                    "validated")) {
+                throw new AlreadyProcessedRegistrationException(
+                        "Registration request has already been processed.");
             }
         }
     }
