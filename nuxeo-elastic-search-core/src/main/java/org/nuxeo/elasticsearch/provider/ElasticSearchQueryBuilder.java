@@ -1,21 +1,25 @@
 package org.nuxeo.elasticsearch.provider;
 
+import java.security.Principal;
 import java.util.Calendar;
 import java.util.Collection;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
+import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
@@ -23,7 +27,7 @@ import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 public class ElasticSearchQueryBuilder {
 
     public static void makeQuery(SearchRequestBuilder builder,
-            final String pattern, final Object[] params,
+            Principal principal, final String pattern, final Object[] params,
             final boolean quoteParameters, final boolean escape,
             final SortInfo... sortInfos) throws ClientException {
         String query = pattern;
@@ -32,10 +36,11 @@ public class ElasticSearchQueryBuilder {
         }
         builder.setQuery(QueryBuilders.queryString(query));
         addSortInfo(builder, sortInfos);
+        addSecurityFilter(builder, principal);
     }
 
     public static void makeQuery(SearchRequestBuilder builder,
-            DocumentModel model, WhereClauseDefinition whereClause,
+            Principal principal, DocumentModel model, WhereClauseDefinition whereClause,
             Object[] params, SortInfo... sortInfos) throws ClientException {
         assert (model != null);
         assert (whereClause != null);
@@ -157,6 +162,18 @@ public class ElasticSearchQueryBuilder {
         builder.setQuery(query);
         builder.setPostFilter(filter);
         addSortInfo(builder, sortInfos);
+        addSecurityFilter(builder, principal);
+    }
+
+    private static void addSecurityFilter(SearchRequestBuilder builder, Principal principal) {
+        if (principal != null) {
+            return;
+        }
+        SecurityService securityService = NXCore.getSecurityService();
+        String[] principals = SecurityService.getPrincipalsToCheck(principal);
+        if (principals.length > 0) {
+            builder.setPostFilter(FilterBuilders.inFilter("ecm:acl", principals));
+        }
     }
 
     protected static void addSortInfo(SearchRequestBuilder builder,

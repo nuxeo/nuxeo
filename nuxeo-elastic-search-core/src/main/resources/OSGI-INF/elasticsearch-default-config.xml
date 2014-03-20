@@ -80,10 +80,6 @@
             "tokenizer" : "path_tokenizer"
          },
          "default" : {
-            "filter" : [
-               "lowercase",
-               "asciifolding"
-            ],
             "type" : "custom",
             "tokenizer" : "keyword"
          }

@@ -18,6 +18,7 @@
 package org.nuxeo.elasticsearch.provider;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -97,6 +98,7 @@ public class ElasticSearchNativePageProvider extends
     }
 
     private SearchRequestBuilder makeQueryBuilder() {
+        Principal principal = getCoreSession().getPrincipal();
         ElasticSearchService ess = Framework
                 .getLocalService(ElasticSearchService.class);
         SearchRequestBuilder ret = ess.getClient()
@@ -113,7 +115,7 @@ public class ElasticSearchNativePageProvider extends
             }
             PageProviderDefinition def = getDefinition();
             if (def.getWhereClause() == null) {
-                ElasticSearchQueryBuilder.makeQuery(ret, def.getPattern(),
+                ElasticSearchQueryBuilder.makeQuery(ret, principal, def.getPattern(),
                         getParameters(), def.getQuotePatternParameters(),
                         def.getEscapePatternParameters(), sortArray);
             } else {
@@ -124,7 +126,7 @@ public class ElasticSearchNativePageProvider extends
                                     + "no search document model is set",
                             getName()));
                 }
-                ElasticSearchQueryBuilder.makeQuery(ret, searchDocumentModel,
+                ElasticSearchQueryBuilder.makeQuery(ret, principal, searchDocumentModel,
                         def.getWhereClause(), getParameters(), sortArray);
             }
         } catch (ClientException e) {
