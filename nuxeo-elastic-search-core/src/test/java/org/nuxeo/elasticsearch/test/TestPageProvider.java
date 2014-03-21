@@ -146,7 +146,7 @@ public class TestPageProvider {
                 "        \"bool\" : {\n" +
                 "          \"must\" : {\n" +
                 "            \"terms\" : {\n" +
-                "              \"dc\\\\:title\" : [ \"foo\", \"bar\" ]\n" +
+                "              \"dc:title\" : [ \"foo\", \"bar\" ]\n" +
                 "            }\n" +
                 "          }\n" +
                 "        }\n" +
@@ -168,7 +168,7 @@ public class TestPageProvider {
                 "        \"bool\" : {\n" +
                 "          \"must\" : {\n" +
                 "            \"terms\" : {\n" +
-                "              \"dc\\\\:title\" : [ \"foo\" ]\n" +
+                "              \"dc:title\" : [ \"foo\" ]\n" +
                 "            }\n" +
                 "          }\n" +
                 "        }\n" +
@@ -292,8 +292,8 @@ public class TestPageProvider {
                 "            }\n" +
                 "          }, {\n" +
                 "            \"regexp\" : {\n" +
-                "              \"dc\\\\:title\" : {\n" +
-                "                \"value\" : \"\\\"bar\\\"\"\n" +
+                "              \"dc:title\" : {\n" +
+                "                \"value\" : \"bar\"\n" +
                 "              }\n" +
                 "            }\n" +
                 "          } ]\n" +
@@ -327,8 +327,8 @@ public class TestPageProvider {
                 "            }\n" +
                 "          }, {\n" +
                 "            \"regexp\" : {\n" +
-                "              \"dc\\\\:title\" : {\n" +
-                "                \"value\" : \"\\\"bar\\\"\"\n" +
+                "              \"dc:title\" : {\n" +
+                "                \"value\" : \"bar\"\n" +
                 "              }\n" +
                 "            }\n" +
                 "          } ]\n" +
@@ -338,7 +338,7 @@ public class TestPageProvider {
                 "        \"bool\" : {\n" +
                 "          \"must_not\" : {\n" +
                 "            \"exists\" : {\n" +
-                "              \"field\" : \"dc\\\\:modified\"\n" +
+                "              \"field\" : \"dc:modified\"\n" +
                 "            }\n" +
                 "          }\n" +
                 "        }\n" +
@@ -369,8 +369,8 @@ public class TestPageProvider {
                 "            }\n" +
                 "          }, {\n" +
                 "            \"regexp\" : {\n" +
-                "              \"dc\\\\:title\" : {\n" +
-                "                \"value\" : \"\\\"bar\\\"\"\n" +
+                "              \"dc:title\" : {\n" +
+                "                \"value\" : \"bar\"\n" +
                 "              }\n" +
                 "            }\n" +
                 "          } ]\n" +
@@ -380,7 +380,7 @@ public class TestPageProvider {
                 "        \"bool\" : {\n" +
                 "          \"must_not\" : {\n" +
                 "            \"exists\" : {\n" +
-                "              \"field\" : \"dc\\\\:modified\"\n" +
+                "              \"field\" : \"dc:modified\"\n" +
                 "            }\n" +
                 "          }\n" +
                 "        }\n" +

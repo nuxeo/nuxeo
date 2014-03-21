@@ -10,7 +10,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeFilterBuilder;
-import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -25,7 +24,10 @@ import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 
 public class ElasticSearchQueryBuilder {
 
-    public static void makeQuery(SearchRequestBuilder builder,
+    /**
+     * Create a ES request from a PP pattern
+     */
+    public static void makeQuery(final SearchRequestBuilder builder,
             final Principal principal, final String pattern,
             final Object[] params, final boolean quoteParameters,
             final boolean escape, final SortInfo... sortInfos)
@@ -34,7 +36,7 @@ public class ElasticSearchQueryBuilder {
         for (int i = 0; i < params.length; i++) {
             query = query.replaceFirst("\\?", convertParam(params[i]));
         }
-        TermsFilterBuilder securityFilter = addSecurityFilter(principal);
+        TermsFilterBuilder securityFilter = getSecurityFilter(principal);
         if (securityFilter != null) {
             builder.setQuery(QueryBuilders.filteredQuery(
                     QueryBuilders.queryString(query), securityFilter));
@@ -44,10 +46,13 @@ public class ElasticSearchQueryBuilder {
         addSortInfo(builder, sortInfos);
     }
 
-    public static void makeQuery(SearchRequestBuilder builder,
-            Principal principal, DocumentModel model,
-            WhereClauseDefinition whereClause, Object[] params,
-            SortInfo... sortInfos) throws ClientException {
+    /**
+     * Create a ES request from a PP whereClause
+     */
+    public static void makeQuery(final SearchRequestBuilder builder,
+            final Principal principal, final DocumentModel model,
+            final WhereClauseDefinition whereClause, final Object[] params,
+            final SortInfo... sortInfos) throws ClientException {
         assert (model != null);
         assert (whereClause != null);
 
@@ -86,14 +91,13 @@ public class ElasticSearchQueryBuilder {
                 // skip predicate where all values are null
                 continue;
             }
-            String field = convertFieldName(predicate.getParameter());
+            String field = predicate.getParameter();
             String operator = predicate.getOperator().toUpperCase();
-            String firstValue = convertParam(val[0]);
+            Object firstValue = val[0];
             if (operator.equals("=")) {
-                query.must(QueryBuilders.matchQuery(field, firstValue));
+                filter.must(FilterBuilders.termFilter(field, firstValue));
             } else if (operator.equals("!=") || operator.equals("<>")) {
-                filter.mustNot(FilterBuilders.queryFilter(QueryBuilders
-                        .matchQuery(field, firstValue)));
+                filter.mustNot(FilterBuilders.termFilter(field, firstValue));
             } else if (operator.equals("<")) {
                 filter.must(FilterBuilders.rangeFilter(field).lt(firstValue));
             } else if (operator.equals(">")) {
@@ -104,31 +108,27 @@ public class ElasticSearchQueryBuilder {
                 filter.must(FilterBuilders.rangeFilter(field).gte(firstValue));
             } else if (operator.equals("LIKE")) {
                 // TODO convert like pattern
-                query.must(QueryBuilders.regexpQuery(field, firstValue));
+                query.must(QueryBuilders
+                        .regexpQuery(field, (String) firstValue));
             } else if (operator.equals("ILIKE")) {
                 // TODO convert ilike pattern
-                query.must(QueryBuilders.regexpQuery(field, firstValue));
+                query.must(QueryBuilders
+                        .regexpQuery(field, (String) firstValue));
             } else if (operator.equals("IN")) {
                 if (val[0] instanceof Collection<?>) {
                     // TODO check if all iterable are collection
                     Collection<?> vals = (Collection<?>) val[0];
-                    int len = ((Collection<?>) val[0]).size();
-                    String[] valArray = new String[len];
-                    int i = 0;
-                    for (Object v : vals) {
-                        valArray[i] = convertParam(v);
-                        i++;
-                    }
+                    Object[] valArray = vals.toArray(new Object[vals.size()]);
                     filter.must(FilterBuilders.inFilter(field, valArray));
                 } else if (val[0] instanceof Object[]) {
                     Object[] vals = (Object[]) val[0];
                     filter.must(FilterBuilders.inFilter(field, vals));
                 }
             } else if (operator.equals("BETWEEN")) {
-                Object startValue = convertParam(val[0]);
+                Object startValue = firstValue;
                 Object endValue = null;
                 if (val.length > 1) {
-                    endValue = convertParam(val[1]);
+                    endValue = val[1];
                 }
                 RangeFilterBuilder range = FilterBuilders.rangeFilter(field);
                 if (startValue != null) {
@@ -138,41 +138,28 @@ public class ElasticSearchQueryBuilder {
                     range.to(endValue);
                 }
                 filter.must(range);
-            } else if (operator.equals("LIKE")) {
-                Object startValue = convertParam(val[0]);
-                Object endValue = null;
-                if (val.length > 1) {
-                    endValue = convertParam(val[1]);
-                }
-                RangeQueryBuilder pred = QueryBuilders.rangeQuery(field);
-                if (startValue != null) {
-                    pred.from(startValue);
-                }
-                if (endValue != null) {
-                    pred.to(endValue);
-                }
-                query.must(pred);
             } else if (operator.equals("IS NOT NULL")) {
                 filter.must(FilterBuilders.existsFilter(field));
             } else if (operator.equals("IS NULL")) {
                 filter.mustNot(FilterBuilders.existsFilter(field));
             } else if (operator.equals("FULLTEXT")) {
                 // convention on the name of the fulltext analyzer to use
-                query.must(QueryBuilders.simpleQueryString(firstValue)
+                query.must(QueryBuilders.simpleQueryString((String) firstValue)
                         .field("_all").analyzer("fulltext"));
             } else if (operator.equals("STARTSWITH")) {
                 if (field.equals("ecm:path")) {
                     query.must(QueryBuilders.matchQuery(field + ".children",
                             firstValue));
                 } else {
-                    query.must(QueryBuilders.prefixQuery(field, firstValue));
+                    query.must(QueryBuilders.prefixQuery(field,
+                            (String) firstValue));
                 }
             } else {
                 throw new ClientException("Not implemented operator: "
                         + operator);
             }
         }
-        TermsFilterBuilder securityFilter = addSecurityFilter(principal);
+        TermsFilterBuilder securityFilter = getSecurityFilter(principal);
         if (securityFilter != null) {
             filter.must(securityFilter);
         }
@@ -180,7 +167,8 @@ public class ElasticSearchQueryBuilder {
         addSortInfo(builder, sortInfos);
     }
 
-    protected static TermsFilterBuilder addSecurityFilter(Principal principal) {
+    protected static TermsFilterBuilder getSecurityFilter(
+            final Principal principal) {
         if (principal != null) {
             String[] principals = SecurityService
                     .getPrincipalsToCheck(principal);
@@ -191,8 +179,11 @@ public class ElasticSearchQueryBuilder {
         return null;
     }
 
-    protected static void addSortInfo(SearchRequestBuilder builder,
-            SortInfo[] sortInfos) {
+    /**
+     * Append the sort option to the ES builder
+     */
+    protected static void addSortInfo(final SearchRequestBuilder builder,
+            final SortInfo[] sortInfos) {
         for (SortInfo sortInfo : sortInfos) {
             builder.addSort(sortInfo.getSortColumn(), sortInfo
                     .getSortAscending() ? SortOrder.ASC : SortOrder.DESC);
@@ -200,11 +191,14 @@ public class ElasticSearchQueryBuilder {
 
     }
 
-    protected static String convertFieldName(String parameter) {
+    protected static String convertFieldName(final String parameter) {
         return parameter.replace(":", "\\:");
     }
 
-    protected static String convertParam(Object param) {
+    /**
+     * Convert a param for a query_string style
+     */
+    protected static String convertParam(final Object param) {
         String ret;
         if (param == null) {
             ret = "";
@@ -222,7 +216,7 @@ public class ElasticSearchQueryBuilder {
         return ret;
     }
 
-    protected static boolean isNonNullParam(Object[] val) {
+    protected static boolean isNonNullParam(final Object[] val) {
         if (val == null) {
             return false;
         }
