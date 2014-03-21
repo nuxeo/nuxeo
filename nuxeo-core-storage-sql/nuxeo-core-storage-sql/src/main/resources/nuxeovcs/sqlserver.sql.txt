@@ -646,14 +646,19 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'aclr_user' AND TABLE
 CREATE TABLE aclr_user (
   user_id CHAR(32) NOT NULL,
   principals NVARCHAR(4000),
+  CONSTRAINT user_id_unique UNIQUE(user_id)
 )
 
+# -- add unique constraint if missing (upgrade from < 5.9.3)
+IF OBJECT_ID('dbo.user_id_unique', 'UQ') IS NULL
+  ALTER TABLE aclr_user ADD CONSTRAINT user_id_unique UNIQUE(user_id);
 
+# -- drop index not needed anymore due to above constraint's implicit index
 #TEST:
 SELECT 1 FROM sys.indexes WHERE name = 'aclr_user_user_id_idx'
 
-#IF: emptyResult
-CREATE CLUSTERED INDEX [aclr_user_user_id_idx] ON [dbo].[aclr_user] ([user_id])
+#IF: ! emptyResult
+DROP INDEX [aclr_user_user_id_idx] ON [dbo].[aclr_user]
 
 
 # -- Jonction between aclr and aclr_user
@@ -1007,8 +1012,24 @@ BEGIN
   DECLARE @user_md5 CHAR(32);
   SET @user_md5 = dbo.nx_md5(@users);
   IF NOT EXISTS (SELECT 1 FROM aclr_user WHERE user_id = @user_md5) BEGIN
-    INSERT INTO aclr_user VALUES (@user_md5, @users);
-    INSERT INTO aclr_user_map SELECT @user_md5, acl_id FROM dbo.nx_list_read_acls_for(@users) AS acl_id;
+    BEGIN TRY
+      INSERT INTO aclr_user VALUES (@user_md5, @users);
+      INSERT INTO aclr_user_map SELECT @user_md5, acl_id FROM dbo.nx_list_read_acls_for(@users) AS acl_id;
+    END TRY
+    BEGIN CATCH
+      -- ignore Msg 2627 Violation of UNIQUE KEY constraint 'user_id_unique'
+      IF ERROR_NUMBER() <> 2627 BEGIN
+        -- reraise other errors
+        DECLARE @ErrorMessage NVARCHAR(4000);
+        DECLARE @ErrorSeverity INT;
+        DECLARE @ErrorState INT;
+        SELECT @ErrorMessage = 'Msg ' + CAST(ERROR_NUMBER() AS NVARCHAR(10))
+                   + ' ' + ERROR_MESSAGE(),
+               @ErrorSeverity = ERROR_SEVERITY(),
+               @ErrorState = ERROR_STATE();
+        RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+      END;
+    END CATCH;
   END;
 END;
 
