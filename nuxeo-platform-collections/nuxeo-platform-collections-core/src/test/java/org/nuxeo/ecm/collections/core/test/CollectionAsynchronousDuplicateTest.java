@@ -28,17 +28,28 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 
-
 /**
  * @since 5.9.3
  */
-public class CollectionAsynchronousDuplicateTest extends CollectionTestCase  {
+public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
 
     @Test
-    public void testUpdateCollectionMemberOnCollectionDuplicated()
+    public void testCopyCollectionWithManyItems()
             throws ClientException, InterruptedException {
+        updateCollectionMemberOnCollectionDuplicated(createTestFiles(session,
+                MAX_CARDINALITY));
+    }
 
-        List<DocumentModel> files = createTestFiles(session, MAX_CARDINALITY);
+    @Test
+    public void testCopyCollectionWithOneItem() throws ClientException,
+            InterruptedException {
+        updateCollectionMemberOnCollectionDuplicated(createTestFiles(session, 1));
+    }
+
+    protected void updateCollectionMemberOnCollectionDuplicated(
+            final List<DocumentModel> docs) throws ClientException,
+            InterruptedException {
+        List<DocumentModel> files = docs;
 
         collectionManager.addToNewCollection(COLLECTION_NAME,
                 COLLECTION_DESCRIPTION, files, session);
@@ -61,7 +72,8 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase  {
 
             file = session.getDocument(file.getRef());
 
-            assertTrue(collectionAdapter.getCollectedDocumentIds().contains(file.getId()));
+            assertTrue(collectionAdapter.getCollectedDocumentIds().contains(
+                    file.getId()));
 
             CollectionMember collectionMemberAdapter = file.getAdapter(CollectionMember.class);
 
