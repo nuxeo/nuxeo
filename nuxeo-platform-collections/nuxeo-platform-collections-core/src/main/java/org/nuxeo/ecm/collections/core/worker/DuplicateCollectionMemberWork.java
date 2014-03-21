@@ -42,7 +42,8 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
             final String newCollectionId, final List<String> collectionMemberIds, final int offset) {
         super(repoName + ":" + newCollectionId + ":" + offset);
         this.newCollectionId = newCollectionId;
-        setDocuments(repoName, collectionMemberIds);
+        this.repositoryName = repoName;
+        this.collectionMemberIds = collectionMemberIds;
     }
 
     public static final String CATEGORY = "duplicateCollectionMember";
@@ -52,6 +53,8 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
     protected static final String TITLE = "Duplicate CollectionMember Work";
 
     protected String newCollectionId;
+
+    protected List<String> collectionMemberIds;
 
     @Override
     public String getCategory() {
@@ -74,16 +77,16 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
     @Override
     public void work() throws Exception {
         setStatus("Duplicating");
-        if (docIds != null) {
+        if (collectionMemberIds != null) {
             CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
-            setProgress(new Progress(0, docIds.size()));
+            setProgress(new Progress(0, collectionMemberIds.size()));
             initSession();
-            for (int i = 0; i < docIds.size(); i++) {
+            for (int i = 0; i < collectionMemberIds.size(); i++) {
                 log.trace(String.format("Worker %s, populating Collection %s, processing CollectionMember %s", getId(),
-                        newCollectionId, docIds.get(i)));
-                if (docIds.get(i) != null) {
+                        newCollectionId, collectionMemberIds.get(i)));
+                if (collectionMemberIds.get(i) != null) {
                     DocumentModel collectionMember = session.getDocument(new IdRef(
-                            docIds.get(i)));
+                            collectionMemberIds.get(i)));
                     if (collectionManager.isCollectable(collectionMember)) {
 
                         // We want to disable the following listener on a
@@ -104,7 +107,7 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
                         session.saveDocument(collectionMember);
                     }
                 }
-                setProgress(new Progress(i, docIds.size()));
+                setProgress(new Progress(i, collectionMemberIds.size()));
             }
         }
         setStatus("Done");
