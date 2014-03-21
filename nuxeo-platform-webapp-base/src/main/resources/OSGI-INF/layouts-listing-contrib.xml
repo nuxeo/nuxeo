@@ -963,6 +963,36 @@
       </property>
     </widgetType>
 
+    <widgetType name="listing_manage_document">
+      <configuration>
+        <sinceVersion>5.9.3</sinceVersion>
+        <title>Manage Document</title>
+        <description>
+          <p>This widget type displays a clickable icon when the document can be
+             managed by the current user. Clicking the icon goes directly to the manage
+             tab.
+          </p>
+        </description>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_manage_document.xhtml
+      </property>
+
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
