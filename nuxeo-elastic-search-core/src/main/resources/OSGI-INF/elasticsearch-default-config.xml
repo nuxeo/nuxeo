@@ -55,6 +55,7 @@
       },
       "analyzer" : {
          "en_analyzer" : {
+            "alias" : "fulltext",
             "filter" : [
                "lowercase",
                "en_stop_filter",

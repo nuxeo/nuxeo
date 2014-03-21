@@ -65,8 +65,6 @@ public class TestPageProvider {
 
     @Test
     public void ICanUseThePageProvider() throws Exception {
-
-        Principal principal = null;
         PageProviderService pps = Framework
                 .getService(PageProviderService.class);
         Assert.assertNotNull(pps);
@@ -99,13 +97,13 @@ public class TestPageProvider {
         ElasticSearchAdmin esa = Framework
                 .getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
-        Assert.assertEquals(10, esa.getPendingDocs());
-
-        TransactionHelper.startTransaction();
         Assert.assertTrue(esa.getPendingDocs() > 0);
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
 
+        TransactionHelper.startTransaction();
         esi.flush();
 
         // get current page
@@ -148,7 +146,7 @@ public class TestPageProvider {
                 "        \"bool\" : {\n" +
                 "          \"must\" : {\n" +
                 "            \"terms\" : {\n" +
-                "              \"dc\\\\:title\" : [ \"\\\"foo\\\"\", \"\\\"bar\\\"\" ]\n" +
+                "              \"dc\\\\:title\" : [ \"foo\", \"bar\" ]\n" +
                 "            }\n" +
                 "          }\n" +
                 "        }\n" +
@@ -170,7 +168,7 @@ public class TestPageProvider {
                 "        \"bool\" : {\n" +
                 "          \"must\" : {\n" +
                 "            \"terms\" : {\n" +
-                "              \"dc\\\\:title\" : [ \"\\\"foo\\\"\" ]\n" +
+                "              \"dc\\\\:title\" : [ \"foo\" ]\n" +
                 "            }\n" +
                 "          }\n" +
                 "        }\n" +
@@ -199,15 +197,80 @@ public class TestPageProvider {
     }
 
     @Test
+    public void testBuildInIntegersQuery() throws Exception {
+        Principal principal = null;
+        ElasticSearchService ess = Framework
+                .getLocalService(ElasticSearchService.class);
+        SearchRequestBuilder qb = new SearchRequestBuilder(ess.getClient());
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
+        WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
+                "TEST_IN_INTEGERS").getWhereClause();
+        DocumentModel model = new DocumentModelImpl("/", "doc",
+                "AdvancedSearch");
+        @SuppressWarnings("boxing")
+        Integer[] array1 = new Integer[] { 1, 2, 3 };
+        model.setPropertyValue("search:integerlist", array1);
+        qb = new SearchRequestBuilder(ess.getClient());
+        ElasticSearchQueryBuilder.makeQuery(qb, principal, model, whereClause, null);
+        Assert.assertEquals("{\n" +
+                "  \"query\" : {\n" +
+                "    \"filtered\" : {\n" +
+                "      \"query\" : {\n" +
+                "        \"bool\" : { }\n" +
+                "      },\n" +
+                "      \"filter\" : {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must\" : {\n" +
+                "            \"terms\" : {\n" +
+                "              \"size\" : [ 1, 2, 3 ]\n" +
+                "            }\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", qb.toString());
+
+        // lists work too
+        @SuppressWarnings("boxing")
+        List<Long> list = Arrays.asList(1L, 2L, 3L);
+        model.setPropertyValue("search:integerlist", (Serializable) list);
+        qb = new SearchRequestBuilder(ess.getClient());
+        ElasticSearchQueryBuilder.makeQuery(qb, principal, model, whereClause, null);
+        Assert.assertEquals("{\n" +
+                "  \"query\" : {\n" +
+                "    \"filtered\" : {\n" +
+                "      \"query\" : {\n" +
+                "        \"bool\" : { }\n" +
+                "      },\n" +
+                "      \"filter\" : {\n" +
+                "        \"bool\" : {\n" +
+                "          \"must\" : {\n" +
+                "            \"terms\" : {\n" +
+                "              \"size\" : [ 1, 2, 3 ]\n" +
+                "            }\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", qb.toString());
+
+
+    }
+
+
+    @Test
     public void testBuildIsNullQuery() throws Exception {
         Principal principal = null;
         ElasticSearchService ess = Framework
                 .getLocalService(ElasticSearchService.class);
         SearchRequestBuilder qb = new SearchRequestBuilder(ess.getClient());
-
         PageProviderService pps = Framework
                 .getService(PageProviderService.class);
         Assert.assertNotNull(pps);
+
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
                 "ADVANCED_SEARCH").getWhereClause();
         SortInfo sortInfos = new SortInfo("dc:title", true);
@@ -345,54 +408,5 @@ public class TestPageProvider {
                 qb.toString());
     }
 
-    @Test
-    public void testBuildInIntegersQuery() throws Exception {
-        Principal principal = null;
-        ElasticSearchService ess = Framework
-                .getLocalService(ElasticSearchService.class);
-        SearchRequestBuilder qb = new SearchRequestBuilder(ess.getClient());
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
-                "TEST_IN_INTEGERS").getWhereClause();
-        DocumentModel model = new DocumentModelImpl("/", "doc",
-                "AdvancedSearch");
-
-        @SuppressWarnings("boxing")
-        Integer[] array1 = new Integer[] { 1, 2, 3 };
-        model.setPropertyValue("search:integerlist", array1);
-        qb = new SearchRequestBuilder(ess.getClient());
-        ElasticSearchQueryBuilder.makeQuery(qb, principal, model, whereClause, null);
-        // Assert.assertEquals("SELECT * FROM Document WHERE size IN (1, 2, 3)", qb.toString());
-
-        @SuppressWarnings("boxing")
-        Integer[] array2 = new Integer[] { 1 };
-        model.setPropertyValue("search:integerlist", array2);
-        qb = new SearchRequestBuilder(ess.getClient());
-        ElasticSearchQueryBuilder.makeQuery(qb, principal, model, whereClause, null);
-        //Assert.assertEquals("SELECT * FROM Document WHERE size = 1", qb.toString());
-
-        // criteria with no values are removed
-        Integer[] array3 = new Integer[0];
-        model.setPropertyValue("search:integerlist", array3);
-        qb = new SearchRequestBuilder(ess.getClient());
-        ElasticSearchQueryBuilder.makeQuery(qb, principal, model, whereClause, null);
-        // Assert.assertEquals("SELECT * FROM Document", qb.toString());
-
-        // arrays of long work too
-        @SuppressWarnings("boxing")
-        Long[] array4 = new Long[] { 1L, 2L, 3L };
-        model.setPropertyValue("search:integerlist", array4);
-        qb = new SearchRequestBuilder(ess.getClient());
-        ElasticSearchQueryBuilder.makeQuery(qb, principal, model, whereClause, null);
-        //Assert.assertEquals("SELECT * FROM Document WHERE size IN (1, 2, 3)", qb.toString());
-
-        // lists work too
-        @SuppressWarnings("boxing")
-        List<Long> list = Arrays.asList(1L, 2L, 3L);
-        model.setPropertyValue("search:integerlist", (Serializable) list);
-        qb = new SearchRequestBuilder(ess.getClient());
-        ElasticSearchQueryBuilder.makeQuery(qb, principal, model, whereClause, null);
-        //Assert.assertEquals("SELECT * FROM Document WHERE size IN (1, 2, 3)", qb.toString());
-    }
 
 }

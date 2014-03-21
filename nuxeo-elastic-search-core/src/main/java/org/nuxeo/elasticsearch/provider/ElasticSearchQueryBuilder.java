@@ -7,15 +7,12 @@ import java.util.Collection;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.ConstantScoreQueryBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.elasticsearch.search.sort.SortOrder;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -125,11 +122,7 @@ public class ElasticSearchQueryBuilder {
                     filter.must(FilterBuilders.inFilter(field, valArray));
                 } else if (val[0] instanceof Object[]) {
                     Object[] vals = (Object[]) val[0];
-                    String[] valArray = new String[vals.length];
-                    for (int i = 0; i < valArray.length; i++) {
-                        valArray[i] = convertParam(vals[i]);
-                    }
-                    filter.must(FilterBuilders.inFilter(field, valArray));
+                    filter.must(FilterBuilders.inFilter(field, vals));
                 }
             } else if (operator.equals("BETWEEN")) {
                 Object startValue = convertParam(val[0]);
@@ -163,9 +156,20 @@ public class ElasticSearchQueryBuilder {
                 filter.must(FilterBuilders.existsFilter(field));
             } else if (operator.equals("IS NULL")) {
                 filter.mustNot(FilterBuilders.existsFilter(field));
+            } else if (operator.equals("FULLTEXT")) {
+                // convention on the name of the fulltext analyzer to use
+                query.must(QueryBuilders.simpleQueryString(firstValue)
+                        .field("_all").analyzer("fulltext"));
+            } else if (operator.equals("STARTSWITH")) {
+                if (field.equals("ecm:path")) {
+                    query.must(QueryBuilders.matchQuery(field + ".children",
+                            firstValue));
+                } else {
+                    query.must(QueryBuilders.prefixQuery(field, firstValue));
+                }
             } else {
-                throw new ClientException(operator + " not impletmented");
-                // TODO: handle STARTSWITH FULLTEXT
+                throw new ClientException("Not implemented operator: "
+                        + operator);
             }
         }
         TermsFilterBuilder securityFilter = addSecurityFilter(principal);
@@ -178,7 +182,6 @@ public class ElasticSearchQueryBuilder {
 
     protected static TermsFilterBuilder addSecurityFilter(Principal principal) {
         if (principal != null) {
-            SecurityService securityService = NXCore.getSecurityService();
             String[] principals = SecurityService
                     .getPrincipalsToCheck(principal);
             if (principals.length > 0) {
@@ -202,15 +205,19 @@ public class ElasticSearchQueryBuilder {
     }
 
     protected static String convertParam(Object param) {
-        String ret = "";
-        if (param != null) {
-            if (param instanceof Calendar) {
-                ret = DateParser
-                        .formatW3CDateTime(((Calendar) param).getTime());
-            } else {
-                ret = param.toString();
-            }
-            ret = "\"" + param + "\"";
+        String ret;
+        if (param == null) {
+            ret = "";
+        } else if (param instanceof Boolean) {
+            ret = ((Boolean) param).toString();
+        } else if (param instanceof Calendar) {
+            ret = DateParser.formatW3CDateTime(((Calendar) param).getTime());
+        } else if (param instanceof Double) {
+            ret = ((Double) param).toString();
+        } else if (param instanceof Integer) {
+            ret = ((Integer) param).toString();
+        } else {
+            ret = "\"" + param.toString() + "\"";
         }
         return ret;
     }
