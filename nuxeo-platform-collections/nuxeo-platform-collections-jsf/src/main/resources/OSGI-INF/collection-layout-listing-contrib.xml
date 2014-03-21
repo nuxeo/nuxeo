@@ -81,7 +81,10 @@
           <widget>listing_last_contributor</widget>
         </column>
         <column>
-          <widget>listing_collection_type</widget>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_manage_collection</widget>
         </column>
       </columns>
     </layout>
@@ -89,47 +92,15 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="widgettypes">
-
-    <widgetType name="listing_collection_type">
-      <configuration>
-        <sinceVersion>5.9.3</sinceVersion>
-        <title>Collection type</title>
-        <description>
-          <p>This widget type displays the collection type</p>
-        </description>
-        <fields>
-          <list>false</list>
-          <complex>false</complex>
-          <defaultConfiguration>
-            <field>data</field>
-          </defaultConfiguration>
-        </fields>
-        <categories>
-          <category>listing</category>
-        </categories>
-      </configuration>
-      <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
-      </handler-class>
-      <property name="template">
-        /widgets/listing/collection_type.xhtml
-      </property>
-
-    </widgetType>
-
-  </extension>
-
-  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="listing_collection_type" type="listing_collection_type">
+    <widget name="listing_manage_collection" type="listing_manage_document">
       <labels>
-        <label mode="any">label.collection.typer</label>
+        <label mode="any">action.view.manage</label>
       </labels>
       <translated>true</translated>
       <fields>
-        <field>data</field>
+        <field>data.ref</field>
       </fields>
     </widget>
   </extension>
