@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -43,17 +44,31 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
 
     @Test
     public void testParallelPrepareUserReadAcls() throws Throwable {
+        doParallelPrepareUserReadAcls(0);
+    }
+
+    // fails on SQL Server sometimes (expected:<1> but was:<0>)
+    @Ignore
+    @Test
+    public void testParallelPrepareUserReadAclsMany() throws Throwable {
+        for (int i = 0; i < 100; i++) {
+            log.debug("try " + i);
+            doParallelPrepareUserReadAcls(i);
+        }
+    }
+
+    protected void doParallelPrepareUserReadAcls(int i) throws Throwable {
         // set ACP on root
         ACPImpl acp = new ACPImpl();
         ACLImpl acl = new ACLImpl();
+        String username = "user" + i;
         acl.add(new ACE("Administrator", "Everything", true));
-        acl.add(new ACE("bob", "Everything", true));
+        acl.add(new ACE(username, "Everything", true));
         acp.addACL(acl);
-        DocumentModel root = session.getRootDocument();
-        root.setACP(acp, true);
-        session.saveDocument(root);
-        DocumentModel doc = session.createDocumentModel("/", "foo", "File");
+        String name = "doc" + i;
+        DocumentModel doc = session.createDocumentModel("/", name, "File");
         doc = session.createDocument(doc);
+        doc.setACP(acp, true);
         session.save();
 
         closeSession();
@@ -61,9 +76,9 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
 
         CyclicBarrier barrier = new CyclicBarrier(2);
         CountDownLatch firstReady = new CountDownLatch(1);
-        PrepareUserReadAclsJob r1 = new PrepareUserReadAclsJob(
+        PrepareUserReadAclsJob r1 = new PrepareUserReadAclsJob(name, username,
                 database.repositoryName, firstReady, barrier);
-        PrepareUserReadAclsJob r2 = new PrepareUserReadAclsJob(
+        PrepareUserReadAclsJob r2 = new PrepareUserReadAclsJob(name, username,
                 database.repositoryName, null, barrier);
         Thread t1 = null;
         Thread t2 = null;
@@ -98,19 +113,29 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
         // after both threads have run, check that we don't see
         // duplicate documents
         TransactionHelper.startTransaction();
-        session = openSessionAs("bob");
-        checkOneDoc(session); // failed for PostgreSQL
+        session = openSessionAs(username);
+        checkOneDoc(session, name); // failed for PostgreSQL
+        closeSession();
+        TransactionHelper.commitOrRollbackTransaction();
+
+        TransactionHelper.startTransaction();
+        openSession();
     }
 
-    protected static void checkOneDoc(CoreSession session)
+    protected static void checkOneDoc(CoreSession session, String name)
             throws ClientException {
-        String query = "SELECT * FROM File WHERE ecm:isProxy = 0";
+        String query = "SELECT * FROM File WHERE ecm:isProxy = 0 AND ecm:name = '"
+                + name + "'";
         DocumentModelList res = session.query(query, NXQL.NXQL, null, 0, 0,
                 false);
         assertEquals(1, res.size());
     }
 
     protected static class PrepareUserReadAclsJob implements Runnable {
+
+        private String name;
+
+        private String username;
 
         private String repositoryName;
 
@@ -120,8 +145,11 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
 
         public Throwable throwable;
 
-        public PrepareUserReadAclsJob(String repositoryName,
-                CountDownLatch ready, CyclicBarrier barrier) {
+        public PrepareUserReadAclsJob(String name, String username,
+                String repositoryName, CountDownLatch ready,
+                CyclicBarrier barrier) {
+            this.name = name;
+            this.username = username;
             this.repositoryName = repositoryName;
             this.ready = ready;
             this.barrier = barrier;
@@ -144,14 +172,14 @@ public class TestSQLRepositoryReadAcls extends TXSQLRepositoryTestCase {
         public void run() {
             CoreSession session = null;
             try {
-                session = openSession("bob");
+                session = openSession(username);
                 if (ready != null) {
                     ready.countDown();
                     ready = null;
                 }
                 barrier.await(30, TimeUnit.SECONDS); // (throws on timeout)
                 barrier = null;
-                checkOneDoc(session); // fails for Oracle
+                checkOneDoc(session, name); // fails for Oracle
             } catch (Throwable t) {
                 t.printStackTrace();
                 throwable = t;
