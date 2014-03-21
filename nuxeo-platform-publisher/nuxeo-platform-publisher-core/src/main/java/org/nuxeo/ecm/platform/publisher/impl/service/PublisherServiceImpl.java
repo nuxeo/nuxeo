@@ -238,13 +238,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
 
     public Map<String, String> initRemoteSession(String treeConfigName,
             Map<String, String> params) throws Exception {
-        RepositoryManager rm = Framework.getService(RepositoryManager.class);
-        CoreSession coreSession = null;
-        if (rm != null) {
-            // this session will be closed in the release method
-            coreSession = rm.getDefaultRepository().open();
-        }
-
+        CoreSession coreSession = CoreInstance.openCoreSession(null);
         PublicationTree tree = getPublicationTree(treeConfigName, coreSession,
                 params);
 
@@ -273,7 +267,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
             String sessionId = remoteLiveTrees.get(sid);
             CoreSession remoteSession = CoreInstance.getInstance().getSession(
                     sessionId);
-            CoreInstance.getInstance().close(remoteSession);
+            remoteSession.close();
             remoteLiveTrees.remove(sid);
         }
     }
@@ -715,7 +709,7 @@ public class PublisherServiceImpl extends DefaultComponent implements
     protected void registerPendingDescriptors() throws Exception {
         // TODO what to do with multiple repositories?
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-        String repositoryName = repositoryManager.getDefaultRepository().getName();
+        String repositoryName = repositoryManager.getDefaultRepositoryName();
         List<DocumentModel> domains = new DomainsFinder(repositoryName).getDomains();
         for (DocumentModel domain : domains) {
             registerTreeConfigFor(domain);

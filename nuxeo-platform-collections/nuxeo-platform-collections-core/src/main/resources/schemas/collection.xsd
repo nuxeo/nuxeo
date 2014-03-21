@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/collection/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/common/"
+  xmlns:ncolxs="http://www.nuxeo.org/ecm/schemas/collection/">
+
+  <xs:complexType name="stringList">
+    <xs:sequence>
+      <xs:element name="documentId" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- references to classified docs -->
+  <xs:element name="documentIds" type="ncolxs:stringList" />
+
+</xs:schema>

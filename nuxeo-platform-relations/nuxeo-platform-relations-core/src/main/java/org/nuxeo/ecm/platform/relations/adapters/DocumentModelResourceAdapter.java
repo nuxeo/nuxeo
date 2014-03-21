@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.Resource;
@@ -58,7 +57,6 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
             CoreSession session = null;
             boolean sessionOpened = false;
             try {
-                RepositoryManager mgr = Framework.getService(RepositoryManager.class);
                 String repoName;
                 String uid;
                 String localName = ((QNameResource) resource).getLocalName();
@@ -66,7 +64,8 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
                 if (index == -1) {
                     // BBB for when repository name was not included in the
                     // local name
-                    repoName = mgr.getDefaultRepository().getName();
+                    RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
+                    repoName = mgr.getDefaultRepositoryName();
                     uid = localName;
                 } else {
                     repoName = localName.substring(0, index);
@@ -83,9 +82,8 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
                 }
                 if (session == null) {
                     // open one
+                    session = CoreInstance.openCoreSession(repoName);
                     sessionOpened = true;
-                    Repository repo = mgr.getRepository(repoName);
-                    session = repo.open();
                     if (log.isDebugEnabled()) {
                         log.debug(String.format(
                                 "Opened a new session '%s' with id %s",
@@ -99,9 +97,8 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
             } catch (Exception e) {
                 log.warn("Cannot get resource: " + resource, e);
             } finally {
-                if (session != null && sessionOpened) {
-                    CoreInstance core = CoreInstance.getInstance();
-                    core.close(session);
+                if (sessionOpened) {
+                    session.close();
                 }
             }
         }

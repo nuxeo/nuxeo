@@ -64,7 +64,6 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -122,7 +121,7 @@ public class Select2ActionsBean implements Serializable {
     @Destroy
     public void destroy() {
         if (dedicatedSession != null) {
-            CoreInstance.getInstance().close(dedicatedSession);
+            dedicatedSession.close();
         }
     }
 
@@ -392,29 +391,21 @@ public class Select2ActionsBean implements Serializable {
         return result;
     }
 
-    protected CoreSession getRepositorySession(final String repoName)
+    protected CoreSession getRepositorySession(String repoName)
             throws ClientException {
 
-        RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
-        Repository repository = null;
         if (repoName == null || repoName.isEmpty()) {
-            repository = rm.getDefaultRepository();
-        } else {
-            repository = rm.getRepository(repoName);
-            if (repository == null) {
-                log.error("Unable to resolve repository " + repoName);
-                return null;
-            }
+            RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
+            repoName = rm.getDefaultRepositoryName();
         }
 
         if (documentManager != null
-                && documentManager.getRepositoryName().equals(
-                        repository.getName())) {
+                && documentManager.getRepositoryName().equals(repoName)) {
             return documentManager;
         }
 
         try {
-            dedicatedSession = repository.open();
+            dedicatedSession = CoreInstance.openCoreSession(repoName);
             return dedicatedSession;
         } catch (Exception e) {
             throw new ClientException(e);

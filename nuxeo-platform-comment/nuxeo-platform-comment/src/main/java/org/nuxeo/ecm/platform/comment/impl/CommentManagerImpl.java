@@ -29,9 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -43,7 +40,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -91,30 +87,6 @@ public class CommentManagerImpl implements CommentManager {
     public CommentManagerImpl(CommentServiceConfig config) {
         this.config = config;
         commentConverter = config.getCommentConverter();
-    }
-
-    protected CoreSession openCoreSession(String repositoryName)
-            throws ClientException {
-        try {
-            RepositoryManager repoMgr = Framework.getService(RepositoryManager.class);
-            return repoMgr.getRepository(repositoryName).open();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
-    }
-
-    protected void closeCoreSession(LoginContext loginContext,
-            CoreSession session) throws ClientException {
-        if (loginContext != null) {
-            try {
-                loginContext.logout();
-            } catch (LoginException e) {
-                throw new ClientException(e);
-            }
-        }
-        if (session != null) {
-            CoreInstance.getInstance().close(session);
-        }
     }
 
     private static RelationManager getRelationManager() throws Exception {
@@ -179,12 +151,7 @@ public class CommentManagerImpl implements CommentManager {
 
     public DocumentModel createComment(DocumentModel docModel, String comment,
             String author) throws ClientException {
-        LoginContext loginContext = null;
-        CoreSession session = null;
-        try {
-            loginContext = Framework.login();
-            session = openCoreSession(docModel.getRepositoryName());
-
+        try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel commentDM = session.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
             commentDM.setPropertyValue(CommentsConstants.COMMENT_TEXT, comment);
             commentDM.setPropertyValue(CommentsConstants.COMMENT_AUTHOR, author);
@@ -195,10 +162,6 @@ public class CommentManagerImpl implements CommentManager {
             session.save();
 
             return commentDM;
-        } catch (Exception e) {
-            throw new ClientException(e);
-        } finally {
-            closeCoreSession(loginContext, session);
         }
     }
 
@@ -230,20 +193,12 @@ public class CommentManagerImpl implements CommentManager {
 
     public DocumentModel createComment(DocumentModel docModel,
             DocumentModel comment) throws ClientException {
-        LoginContext loginContext = null;
-        CoreSession session = null;
-        try {
-            loginContext = Framework.login();
-            session = openCoreSession(docModel.getRepositoryName());
+        try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel doc = internalCreateComment(session, docModel,
                     comment, null);
             session.save();
             doc.detach(true);
             return doc;
-        } catch (Exception e) {
-            throw new ClientException(e);
-        } finally {
-            closeCoreSession(loginContext, session);
         }
     }
 
@@ -478,17 +433,7 @@ public class CommentManagerImpl implements CommentManager {
 
     public void deleteComment(DocumentModel docModel, DocumentModel comment)
             throws ClientException {
-        LoginContext loginContext = null;
-        CoreSession session = null;
-        try {
-            loginContext = Framework.login();
-            session = openCoreSession(docModel.getRepositoryName());
-
-            if (session == null) {
-                throw new ClientException(
-                        "Unable to acess repository for comment: "
-                                + comment.getId());
-            }
+        try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentRef ref = comment.getRef();
             if (!session.exists(ref)) {
                 throw new ClientException("Comment Document does not exist: "
@@ -502,40 +447,24 @@ public class CommentManagerImpl implements CommentManager {
                     comment, author);
 
             session.save();
-
-        } catch (Throwable e) {
-            log.error("failed to delete comment", e);
-            throw new ClientException("failed to delete comment", e);
-        } finally {
-            closeCoreSession(loginContext, session);
         }
     }
 
     public DocumentModel createComment(DocumentModel docModel,
             DocumentModel parent, DocumentModel child) throws ClientException {
-        LoginContext loginContext = null;
-        CoreSession session = null;
-        try {
-            loginContext = Framework.login();
-            session = openCoreSession(docModel.getRepositoryName());
-
+        try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             String author = updateAuthor(docModel, child);
             DocumentModel parentDocModel = session.getDocument(parent.getRef());
             DocumentModel newComment = internalCreateComment(session,
                     parentDocModel, child, null);
 
-            UserManager userManager = Framework.getService(UserManager.class);
+            UserManager userManager = Framework.getLocalService(UserManager.class);
             NuxeoPrincipal principal = userManager.getPrincipal(author);
             notifyEvent(session, docModel, CommentEvents.COMMENT_ADDED, parent,
                     newComment, principal);
 
             session.save();
             return newComment;
-
-        } catch (Exception e) {
-            throw new ClientException(e);
-        } finally {
-            closeCoreSession(loginContext, session);
         }
     }
 
@@ -614,22 +543,12 @@ public class CommentManagerImpl implements CommentManager {
 
     public DocumentModel createLocatedComment(DocumentModel docModel,
             DocumentModel comment, String path) throws ClientException {
-        LoginContext loginContext = null;
-        CoreSession session = null;
-        DocumentModel createdComment;
-        try {
-            loginContext = Framework.login();
-            session = openCoreSession(docModel.getRepositoryName());
-            createdComment = internalCreateComment(session, docModel, comment,
+        try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
+            DocumentModel createdComment = internalCreateComment(session, docModel, comment,
                     path);
             session.save();
-        } catch (Exception e) {
-            throw new ClientException(e);
-        } finally {
-            closeCoreSession(loginContext, session);
+            return createdComment;
         }
-
-        return createdComment;
     }
 
     public DocumentModel getThreadForComment(DocumentModel comment)

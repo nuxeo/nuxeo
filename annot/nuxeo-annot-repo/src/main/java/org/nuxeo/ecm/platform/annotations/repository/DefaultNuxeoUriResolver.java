@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -65,22 +64,15 @@ public class DefaultNuxeoUriResolver implements UriResolver {
     public List<URI> getSearchURI(URI uri) throws AnnotationException {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         URI translatedUri = null;
-        CoreSession session = null;
-        try {
+        try (CoreSession session = CoreInstance.openCoreSession(null)) {
             DocumentRef idRef = view.getDocumentLocation().getIdRef();
             if (idRef == null) {
-                RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-                session = mgr.getDefaultRepository().open();
                 DocumentModel docModel = session.getDocument(view.getDocumentLocation().getDocRef());
                 idRef = docModel.getRef();
             }
             translatedUri = translator.getUriFromDocumentView(view.getDocumentLocation().getServerName(), idRef);
         } catch (Exception e) {
             throw new AnnotationException(e);
-        } finally {
-            if (session != null) {
-                CoreInstance.getInstance().close(session);
-            }
         }
         return Collections.singletonList(translatedUri);
     }
@@ -113,22 +105,15 @@ public class DefaultNuxeoUriResolver implements UriResolver {
             return uri;
         }
         URI result;
-        CoreSession session = null;
-        try {
+        try (CoreSession session = CoreInstance.openCoreSession(null)) {
             DocumentRef idRef = view.getDocumentLocation().getIdRef();
             if (idRef == null) {
-                RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-                session = mgr.getDefaultRepository().open();
                 DocumentModel docModel = session.getDocument(view.getDocumentLocation().getDocRef());
                 idRef = docModel.getRef();
             }
             result = translator.getUriFromDocumentView(view.getDocumentLocation().getServerName(), idRef);
         } catch (Exception e) {
             throw new AnnotationException(e);
-        } finally {
-            if (session != null) {
-                CoreInstance.getInstance().close(session);
-            }
         }
         return result;
     }

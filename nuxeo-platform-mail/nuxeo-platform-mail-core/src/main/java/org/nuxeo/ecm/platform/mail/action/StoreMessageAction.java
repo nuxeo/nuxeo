@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.mail.action;
 import java.util.Map;
 
 import javax.mail.Message;
-import javax.security.auth.login.LoginContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,30 +56,27 @@ public class StoreMessageAction implements MessageAction {
             log.debug("Storing message: " + message.getSubject());
         }
         Thread.currentThread().setContextClassLoader(Framework.class.getClassLoader());
-        LoginContext login = Framework.login();
-        CoreInstance server = CoreInstance.getInstance();
-        CoreSession session = server.open("default", null);
-        DocumentModel doc = session.createDocumentModel(getMailDocumentType());
-        doc.setProperty("dublincore", "title",
-                title + System.currentTimeMillis());
-        doc.setPathInfo(parentPath, pss.generatePathSegment(doc));
-        doc.setProperty("dublincore", "title", title);
-        doc = session.createDocument(doc);
-        Map<String, Map<String, Object>> schemas = (Map<String, Map<String, Object>>) context.get(
-                "transformed");
-        for (Map.Entry<String, Map<String, Object>> entry : schemas.entrySet()) {
-            doc.setProperties(entry.getKey(), entry.getValue());
+        try (CoreSession session = CoreInstance.openCoreSessionSystem(null)) {
+            DocumentModel doc = session.createDocumentModel(getMailDocumentType());
+            doc.setProperty("dublincore", "title",
+                    title + System.currentTimeMillis());
+            doc.setPathInfo(parentPath, pss.generatePathSegment(doc));
+            doc.setProperty("dublincore", "title", title);
+            doc = session.createDocument(doc);
+            Map<String, Map<String, Object>> schemas = (Map<String, Map<String, Object>>) context.get("transformed");
+            for (Map.Entry<String, Map<String, Object>> entry : schemas.entrySet()) {
+                doc.setProperties(entry.getKey(), entry.getValue());
+            }
+            doc = session.saveDocument(doc);
+            ACL acl = (ACL) context.get("acl");
+            if (acl != null) {
+                ACP acp = doc.getACP();
+                acp.addACL(0, acl);
+                doc.setACP(acp, true);
+            }
+            session.save();
+            context.put("document", doc);
         }
-        doc = session.saveDocument(doc);
-        ACL acl = (ACL) context.get("acl");
-        if(acl != null) {
-            ACP acp = doc.getACP();
-            acp.addACL(0, acl);
-            doc.setACP(acp, true);
-        }
-        session.save();
-        context.put("document", doc);
-        login.logout();
         return true;
     }
 

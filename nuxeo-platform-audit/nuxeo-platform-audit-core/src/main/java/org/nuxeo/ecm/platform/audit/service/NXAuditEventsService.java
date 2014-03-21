@@ -49,8 +49,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
@@ -331,34 +329,6 @@ public class NXAuditEventsService extends DefaultComponent implements
         }
     }
 
-    protected RepositoryManager guardedRepositoryManager() {
-        try {
-            return Framework.getService(RepositoryManager.class);
-        } catch (Exception e) {
-            throw new AuditRuntimeException("Unable to get RepositoryManager",
-                    e);
-        }
-    }
-
-    protected Repository guardeRepository(String repoId) {
-        RepositoryManager manager = guardedRepositoryManager();
-        Repository repository = manager.getRepository(repoId);
-        if (repository == null) {
-            throw new AuditRuntimeException("Can not find repository");
-        }
-        return repository;
-    }
-
-    protected CoreSession guardedCoreSession(String repoId) {
-        Repository repository = guardeRepository(repoId);
-        try {
-            return repository.open();
-        } catch (Exception e) {
-            throw new AuditRuntimeException("Cannot open core session for "
-                    + repoId, e);
-        }
-    }
-
     protected LogEntry doCreateAndFillEntryFromDocument(DocumentModel doc,
             Principal principal) {
         LogEntry entry = newLogEntry();
@@ -610,9 +580,7 @@ public class NXAuditEventsService extends DefaultComponent implements
             String path, Boolean recurs) {
         LogEntryProvider provider = LogEntryProvider.createProvider(em);
         provider.removeEntries(DocumentEventTypes.DOCUMENT_CREATED, path);
-        CoreSession session = null;
-        try {
-            session = guardedCoreSession(repoId);
+        try (CoreSession session = CoreInstance.openCoreSession(repoId)) {
             DocumentRef rootRef = new PathRef(path);
             DocumentModel root = guardedDocument(session, rootRef);
             long nbAddedEntries = doSyncNode(provider, session, root, recurs);
@@ -622,10 +590,9 @@ public class NXAuditEventsService extends DefaultComponent implements
             }
 
             return nbAddedEntries;
-        } finally {
-            if (session != null) {
-                CoreInstance.getInstance().close(session);
-            }
+        } catch (ClientException e) {
+            throw new AuditRuntimeException("Cannot open core session for "
+                    + repoId, e);
         }
     }
 

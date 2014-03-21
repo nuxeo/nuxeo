@@ -32,9 +32,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.localconf.SimpleConfiguration;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
@@ -45,7 +44,7 @@ import com.google.inject.Inject;
 public abstract class AbstractSimpleConfigurationTest {
 
     @Inject
-    protected FeaturesRunner featuresRunner;
+    protected RepositorySettings settings;
 
     @Inject
     protected CoreSession session;
@@ -95,9 +94,7 @@ public abstract class AbstractSimpleConfigurationTest {
     }
 
     protected CoreSession openSessionAs(String username) throws ClientException {
-        CoreFeature coreFeature = featuresRunner.getFeature(CoreFeature.class);
-        return coreFeature.getRepository().getRepositoryHandler().openSessionAs(
-                username);
+        return settings.openSessionAs(username);
     }
 
 }

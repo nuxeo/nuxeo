@@ -132,20 +132,12 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
         DocumentView docView = documentViewCodecManager.getDocumentViewFromUrl(
                 url, true, getBaseUrl(url));
         DocumentLocation docLocation = docView.getDocumentLocation();
-
-        CoreSession coreSession = null;
-        try {
-            coreSession = getCoreSession(docLocation);
+        try (CoreSession coreSession = CoreInstance.openCoreSession(docLocation.getServerName())) {
             DocumentModel docModel = coreSession.getDocument(docLocation.getDocRef());
             return webPermission.canAnnotate(docModel);
         } catch (ClientException e) {
             log.error("Unable to get Document: " + docLocation.getDocRef(), e);
-        } finally {
-            if (coreSession != null) {
-                CoreInstance.getInstance().close(coreSession);
-            }
         }
-
         return true; // if any error, default to authorize annotations
     }
 
@@ -163,13 +155,6 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
     protected String getBaseUrl(String url) {
         String nxUrl = VirtualHostHelper.getContextPathProperty() + "/";
         return url.substring(0, url.lastIndexOf(nxUrl) + nxUrl.length());
-    }
-
-    protected CoreSession getCoreSession(DocumentLocation docLocation)
-            throws ClientException {
-        CoreSession session = CoreInstance.getInstance().open(
-                docLocation.getServerName(), null);
-        return session;
     }
 
 }

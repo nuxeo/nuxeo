@@ -119,12 +119,12 @@ public class EventOperationsTest {
 
         // reopen session since the modification occurred in another session in
         // another thread
-        CoreSession session2 = Framework.getService(RepositoryManager.class).getDefaultRepository().open();
+        CoreSession session2 = CoreInstance.openCoreSession(null);
 
         DocumentModel doc = session2.getChild(folder.getRef(), "note_pc");
         assertEquals("MyDocPc", doc.getTitle());
         assertEquals("Note", doc.getType());
-        CoreInstance.getInstance().close(session2);
+        session2.close();
     }
 
     @Test

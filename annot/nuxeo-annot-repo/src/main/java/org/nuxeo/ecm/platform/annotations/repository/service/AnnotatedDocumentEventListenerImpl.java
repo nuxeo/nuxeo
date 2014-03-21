@@ -23,20 +23,14 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -92,16 +86,13 @@ public class AnnotatedDocumentEventListenerImpl implements
 
     protected void notifyEvent(String eventId, Annotation annotation,
             DocumentLocation documentLocation, NuxeoPrincipal principal) {
-        LoginContext loginContext = null;
-        CoreSession session = null;
-        String title = null;
-        DocumentModel doc = null;
-        try {
-            loginContext = Framework.login();
-            session = getSession(documentLocation.getServerName());
+        if (documentLocation == null) {
+            return;
+        }
+        try (CoreSession session = CoreInstance.openCoreSessionSystem(documentLocation.getServerName())) {
+            DocumentModel doc = null;
             if (session.exists(documentLocation.getDocRef())) {
                 doc = session.getDocument(documentLocation.getDocRef());
-                title = doc.getTitle();
             }
 
             Map<String, Serializable> properties = new HashMap<String, Serializable>();
@@ -126,34 +117,10 @@ public class AnnotatedDocumentEventListenerImpl implements
 
             Event event = ctx.newEvent(eventId);
             Framework.getService(EventProducer.class).fireEvent(event);
+            session.save();
         } catch (Exception e) {
             log.error("Unable to send the " + eventId + " event", e);
-        } finally {
-            if (session != null) {
-                try {
-                    session.save();
-                } catch (ClientException e) {
-                    log.error(String.format(
-                            "error saving core session for annotation"
-                                    + " event %d on document '%s'", eventId,
-                            title), e);
-                }
-                CoreInstance.getInstance().close(session);
-            }
-            if (loginContext != null) {
-                try {
-                    loginContext.logout();
-                } catch (LoginException e) {
-                    log.error("Unable to logout: " + e.getMessage());
-                }
-            }
         }
-    }
-
-    protected CoreSession getSession(String repoName) throws Exception {
-        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-        Repository repository = repositoryManager.getRepository(repoName);
-        return repository.open();
     }
 
 }

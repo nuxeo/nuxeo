@@ -186,7 +186,7 @@ public class SystemInfoManager implements Serializable {
         if (repositories == null) {
             RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
             repositories = new ArrayList<Repository>(repositoryManager.getRepositories());
-            currentRepositoryName = repositoryManager.getDefaultRepository().getName();
+            currentRepositoryName = repositoryManager.getDefaultRepositoryName();
         }
         return repositories;
     }
