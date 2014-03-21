@@ -100,7 +100,7 @@
       </labels>
       <translated>true</translated>
       <fields>
-        <field>data.ref</field>
+        <field>data</field>
       </fields>
     </widget>
   </extension>
