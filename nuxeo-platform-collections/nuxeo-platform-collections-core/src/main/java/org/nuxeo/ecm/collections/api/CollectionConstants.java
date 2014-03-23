@@ -49,4 +49,8 @@ public class CollectionConstants {
 
     public static final String COLLECTION_QUEUE_ID = "collections";
 
+    public static final int DEFAULT_COLLECTION_RETURNED = 10;
+
+    public static final int MAX_COLLECTION_RETURNED = 100;
+
 }

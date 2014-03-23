@@ -49,7 +49,20 @@ public interface CollectionManager {
     boolean canManage(final DocumentModel collection, final CoreSession session)
             throws ClientException;
 
+    List<DocumentModel> getVisibleCollection(
+            final DocumentModel collectionMember, final CoreSession session)
+            throws ClientException;
+
+    List<DocumentModel> getVisibleCollection(
+            final DocumentModel collectionMember, final int maxResult,
+            final CoreSession session) throws ClientException;
+
+    boolean hasVisibleCollection(final DocumentModel collectionMember,
+            final CoreSession session) throws ClientException;
+
     boolean isCollectable(final DocumentModel doc);
+
+    boolean isCollected(final DocumentModel doc);
 
     boolean isCollection(final DocumentModel doc);
 

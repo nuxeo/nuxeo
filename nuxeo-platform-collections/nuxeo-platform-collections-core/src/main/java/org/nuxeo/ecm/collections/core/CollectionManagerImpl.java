@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.collections.core;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.collections.api.CollectionConstants;
@@ -32,6 +33,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -85,10 +87,10 @@ public class CollectionManagerImpl extends DefaultComponent implements
                 temp.putContextData(
                         NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
                         true);
-                temp.putContextData(
-                        NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
-                temp.putContextData(
-                        VersioningService.DISABLE_AUTO_CHECKOUT, true);
+                temp.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER,
+                        true);
+                temp.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
+                        true);
 
                 CollectionMember docAdapter = temp.getAdapter(CollectionMember.class);
                 docAdapter.addToCollection(collection.getId());
@@ -238,13 +240,111 @@ public class CollectionManagerImpl extends DefaultComponent implements
     }
 
     @Override
+    public List<DocumentModel> getVisibleCollection(
+            final DocumentModel collectionMember, final CoreSession session)
+            throws ClientException {
+        return getVisibleCollection(collectionMember,
+                CollectionConstants.MAX_COLLECTION_RETURNED, session);
+    }
+
+    @Override
+    public List<DocumentModel> getVisibleCollection(
+            final DocumentModel collectionMember, int maxResult,
+            CoreSession session) throws ClientException {
+        List<DocumentModel> result = new ArrayList<DocumentModel>();
+        CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
+        List<String> collectionIds = collectionMemberAdapter.getCollectionIds();
+        for (int i = 0; i < collectionIds.size() && i < maxResult; i++) {
+            final String collectionId = collectionIds.get(i);
+            DocumentRef documentRef = new IdRef(collectionId);
+            if (session.exists(documentRef)
+                    && session.hasPermission(documentRef,
+                            SecurityConstants.READ)) {
+                result.add(session.getDocument(documentRef));
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean hasVisibleCollection(final DocumentModel collectionMember,
+            CoreSession session) throws ClientException {
+        CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
+        List<String> collectionIds = collectionMemberAdapter.getCollectionIds();
+        for (final String collectionId : collectionIds) {
+            DocumentRef documentRef = new IdRef(collectionId);
+            if (session.exists(documentRef)
+                    && session.hasPermission(documentRef,
+                            SecurityConstants.READ)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean isCollectable(final DocumentModel doc) {
         return !doc.hasFacet(CollectionConstants.NOT_COLLECTABLE_FACET);
     }
 
     @Override
+    public boolean isCollected(final DocumentModel doc) {
+        return doc.hasFacet(CollectionConstants.COLLECTABLE_FACET);
+    }
+
+    @Override
     public boolean isCollection(final DocumentModel doc) {
         return doc.hasFacet(CollectionConstants.COLLECTION_FACET);
+    }
+
+    @Override
+    public void processCopiedCollection(final DocumentModel collection)
+            throws ClientException {
+        Collection collectionAdapter = collection.getAdapter(Collection.class);
+        List<String> documentIds = collectionAdapter.getCollectedDocumentIds();
+
+        int i = 0;
+        while (i < documentIds.size()) {
+            int limit = (int) (((i + CollectionAsynchrnonousQuery.MAX_RESULT) > documentIds.size()) ? documentIds.size()
+                    : (i + CollectionAsynchrnonousQuery.MAX_RESULT));
+            DuplicateCollectionMemberWork work = new DuplicateCollectionMemberWork(
+                    collection.getRepositoryName(), collection.getId(),
+                    documentIds.subList(i, limit), i);
+            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
+                    true);
+
+            i = limit;
+        }
+    }
+
+    @Override
+    public void processRemovedCollection(final DocumentModel collection) {
+        final WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        final RemovedAbstractWork work = new RemovedCollectionWork();
+        work.setDocument(collection.getRepositoryName(), collection.getId());
+        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
+                true);
+    }
+
+    @Override
+    public void processRemovedCollectionMember(
+            final DocumentModel collectionMember) {
+        final WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        final RemovedAbstractWork work = new RemovedCollectionMemberWork();
+        work.setDocument(collectionMember.getRepositoryName(),
+                collectionMember.getId());
+        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
+                true);
+    }
+
+    @Override
+    public void removeAllFromCollection(final DocumentModel collection,
+            final List<DocumentModel> documentListToBeRemoved,
+            final CoreSession session) throws ClientException {
+        for (DocumentModel documentToBeRemoved : documentListToBeRemoved) {
+            removeFromCollection(collection, documentToBeRemoved, session);
+        }
     }
 
     @Override
@@ -279,52 +379,6 @@ public class CollectionManagerImpl extends DefaultComponent implements
             }
 
         }.runUnrestricted();
-    }
-
-    @Override
-    public void removeAllFromCollection(final DocumentModel collection,
-            final List<DocumentModel> documentListToBeRemoved,
-            final CoreSession session) throws ClientException {
-        for (DocumentModel documentToBeRemoved : documentListToBeRemoved) {
-            removeFromCollection(collection, documentToBeRemoved, session);
-        }
-    }
-
-    @Override
-    public void processRemovedCollectionMember(final DocumentModel collectionMember) {
-        final WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        final RemovedAbstractWork work = new RemovedCollectionMemberWork();
-        work.setDocument(collectionMember.getRepositoryName(), collectionMember.getId());
-        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
-                true);
-    }
-
-    @Override
-    public void processRemovedCollection(final DocumentModel collection) {
-        final WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        final RemovedAbstractWork work = new RemovedCollectionWork();
-        work.setDocument(collection.getRepositoryName(), collection.getId());
-        workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED,
-                true);
-    }
-
-    @Override
-    public void processCopiedCollection(final DocumentModel collection) throws ClientException {
-        Collection collectionAdapter = collection.getAdapter(Collection.class);
-        List<String> documentIds = collectionAdapter.getCollectedDocumentIds();
-
-        int i = 0;
-        while (i < documentIds.size()) {
-            int limit = (int) (((i + CollectionAsynchrnonousQuery.MAX_RESULT) > documentIds.size()) ? documentIds.size()
-                    : (i + CollectionAsynchrnonousQuery.MAX_RESULT));
-            DuplicateCollectionMemberWork work = new DuplicateCollectionMemberWork(
-                    collection.getRepositoryName(), collection.getId(), documentIds.subList(
-                            i, limit), i);
-            WorkManager workManager = Framework.getLocalService(WorkManager.class);
-            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
-
-            i = limit;
-        }
     }
 
 }
