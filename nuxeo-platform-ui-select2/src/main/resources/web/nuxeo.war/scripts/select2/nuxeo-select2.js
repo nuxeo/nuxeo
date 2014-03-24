@@ -164,6 +164,12 @@
   }
 
   function initSelect2Widget(el) {
+    // Make sure we don't initialize the element twice
+    if (el.data('s2Done')) {
+      return;
+    }
+    el.data('s2Done', true);
+
     // retrieve parameters from Html
     var elid = el.attr("id");
     var params = {};
