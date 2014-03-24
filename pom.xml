@@ -133,7 +133,7 @@
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.0.1-SNAPSHOT</ant.assembly.version>
-    <nuxeo.ftest.version>1.7.14</nuxeo.ftest.version>
+    <nuxeo.ftest.version>1.7.15-SNAPSHOT</nuxeo.ftest.version>
     <nuxeo.richfaces.version>3.3.1.GA-NX9.03</nuxeo.richfaces.version>
 
     <tomcat.version>7.0.42</tomcat.version>
@@ -2333,6 +2333,16 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>${org.slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>apache-log4j-extras</artifactId>
+	<version>1.2.17</version>
+      </dependency>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+	<version>1.2.17</version>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
@@ -4566,7 +4576,7 @@
                 <onlyWhenRelease>true</onlyWhenRelease>
                 <excludes>
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
-                  <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
+                  <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
                   <!-- <exclude>org.richfaces.framework:richfaces-impl:*</exclude> -->
                   <!-- <exclude>org.richfaces.ui:richfaces-ui:*</exclude> -->
                   <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
