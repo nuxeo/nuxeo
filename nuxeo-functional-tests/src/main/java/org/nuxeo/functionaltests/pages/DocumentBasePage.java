@@ -272,7 +272,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
 
-    private static final String ADD_TO_COLLECTION_UPPER_ACTION_ID = "nxw_addToCollectioAction_form:nxw_documentActionsUpperButtons_addToCollectioAction_subview:nxw_documentActionsUpperButtons_addToCollectioAction_link";
+    private static final String ADD_TO_COLLECTION_UPPER_ACTION_ID = "nxw_addToCollectionAction_form:nxw_documentActionsUpperButtons_addToCollectionAction_subview:nxw_documentActionsUpperButtons_addToCollectionAction_link";
 
     private static final String ADD_ALL_TO_COLLECTION_ACTION_ID = "document_content_buttons:nxw_addSelectedToCollectionAction_form:nxw_cvButton_addSelectedToCollectionAction_subview:nxw_cvButton_addSelectedToCollectionAction_link";
 
