@@ -53,7 +53,13 @@ public class DirectorySelectItemComparator implements
             this.locale = locale;
         }
         collator = Collator.getInstance(this.locale);
-        collator.setStrength(Collator.SECONDARY);
+        if (this.caseSentitive) {
+            collator.setStrength(Collator.TERTIARY); // TERTIARY will make a
+                                                     // difference between 'a'
+                                                     // and 'A'
+        } else {
+            collator.setStrength(Collator.SECONDARY);
+        }
     }
 
     public DirectorySelectItemComparator(String ordering, Boolean caseSentitive) {
@@ -81,11 +87,7 @@ public class DirectorySelectItemComparator implements
             String str2 = StringUtils.isBlank(item1.getLocalizedLabel()) ?
                     item2.getLabel() : item2.getLocalizedLabel();
 
-            if (caseSentitive) {
-                return collator.compare(str1, str2);
-            } else {
-                return collator.compare(str1.toLowerCase(locale), str2.toLowerCase(locale));
-            }
+            return collator.compare(str1, str2);
         } else if (field.equals("id")) {
             return ((String) item1.getValue()).compareTo((String) item2.getValue());
         } else if (field.equals("ordering")) {
