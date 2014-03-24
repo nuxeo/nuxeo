@@ -97,7 +97,7 @@ public class ElasticSearchNativePageProvider extends
         return currentPageDocuments;
     }
 
-    private SearchRequestBuilder makeQueryBuilder() {
+    protected SearchRequestBuilder makeQueryBuilder() {
         Principal principal = getCoreSession().getPrincipal();
         ElasticSearchService ess = Framework
                 .getLocalService(ElasticSearchService.class);
