@@ -33,10 +33,12 @@ import org.nuxeo.elasticsearch.ElasticSearchComponent;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.nxql.NXQLQueryConverter;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -49,6 +51,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
+@LocalDeploy({"org.nuxeo.elasticsearch.core:elasticsearch-config-test-contrib.xml"})
 public class TestNXQLConversion {
 
     @Inject
@@ -128,6 +131,55 @@ public class TestNXQLConversion {
         //System.out.println(NXQLQueryConverter.toESQueryString(nxql));
         DocumentModelList docs = ess.queryAsNXQL(session, nxql, 10, 0);
         Assert.assertEquals(expectedNumberOfHis, docs.size());
+    }
+
+    @Test
+    public void testConverter() throws Exception {
+        String es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1='foo'").toString();
+        //Assert.assertEquals("foo", es);
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1=1").toString();
+        //Assert.assertEquals("foo", es);
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 LIKE 'foo%'").toString();
+        //Assert.assertEquals("foo", es);
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1=1 AND f2=2").toString();
+        //Assert.assertEquals("foo", es);
+
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 LIKE 'foo%' AND f2='bar'").toString();
+        //Assert.assertEquals("foo", es);
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 LIKE 'foo%' OR f2='bar'").toString();
+        //Assert.assertEquals("foo", es);
+
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1=1 AND f2=2 AND f3=3").toString();
+        //Assert.assertEquals("foo", es);
+
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1=1 OR f2=2 OR f3=3").toString();
+        // Assert.assertEquals("foo", es);
+
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1=1 OR f2 LIKE 'foo' OR f3=3").toString();
+        //Assert.assertEquals("foo", es);
+
+        es = NXQLQueryConverter
+                .toESQueryBuilder(
+                        "select * from Document where (f1=1 AND f2=2) OR f3=3")
+                .toString();
+        //Assert.assertEquals("foo", es);
+
+        es = NXQLQueryConverter
+                .toESQueryBuilder(
+                        "select * from Document where (f1 LIKE '1%' OR f2 LIKE '2%') AND f3=3")
+               .toString();
+        Assert.assertEquals("foo", es);
+
+
     }
 
 }
