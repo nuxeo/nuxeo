@@ -133,6 +133,8 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
                 (String) ctx.get("WorkflowId")));
         GraphRoute graph = routeInstance.getAdapter(GraphRoute.class);
         Map<String, Serializable> vars = graph.getVariables();
+        assertEquals(routeInstance.getPropertyValue("fctroute1:stringfield"),
+                "test");
         assertEquals(vars.get("stringfield"), "test");
         String[] assignesVar = (String[]) vars.get("myassignees");
         assertEquals(2, assignesVar.length);
