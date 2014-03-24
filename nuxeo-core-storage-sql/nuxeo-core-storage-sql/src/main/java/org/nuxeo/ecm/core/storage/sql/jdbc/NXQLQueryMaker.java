@@ -1441,7 +1441,12 @@ public class NXQLQueryMaker implements QueryMaker {
                 buf.append(" AND ");
                 l.get(1).accept(this);
             } else {
-                super.visitExpression(node);
+                if (op == Operator.ILIKE || op == Operator.NOTILIKE) {
+                    Column column = getSpecialColumn(name);
+                    visitExpressionIlike(column, op, rvalue);
+                } else {
+                    super.visitExpression(node);
+                }
             }
             buf.append(')');
         }

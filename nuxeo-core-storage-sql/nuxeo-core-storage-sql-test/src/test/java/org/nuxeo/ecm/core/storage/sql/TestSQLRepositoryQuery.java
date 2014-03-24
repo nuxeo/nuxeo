@@ -310,6 +310,16 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
         dml = session.query("SELECT * FROM Document WHERE dc:subjects NOT ILIKE '%oo'");
         assertEquals(6, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:currentLifeCycleState NOT ILIKE 'project'");
+        assertEquals(0, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE ecm:primaryType ILIKE 'file'");
+        assertEquals(3, dml.size());
+
+        session.setLock(dml.get(0).getRef());
+        dml = session.query("SELECT * FROM Document WHERE ecm:lockOwner ILIKE 'administrator'");
+        assertEquals(1, dml.size());
     }
 
     @Test
