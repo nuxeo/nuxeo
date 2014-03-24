@@ -389,6 +389,7 @@
     if ($parentForm.hasClass("safeEditEnabled")) {
         // Register postRestore function for safeEdit
         jQuery(el).closest("form").registerPostRestoreCallBacks(function(data) {
+          el.data('s2Done', false);
           initSelect2Widget(jQuery(el));
         });
       }
