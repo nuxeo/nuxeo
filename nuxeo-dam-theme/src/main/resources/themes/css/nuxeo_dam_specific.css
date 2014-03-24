@@ -140,8 +140,11 @@ author: lkemen@nuxeo.com
 .nxDamSearchResults .selectedItem:hover .documentTitle { color: "black (__FLAVOR__ color)" }
 
 /* Pictures and video thumbnails in bubbleBoxes */
-.thumbnailContainer { text-align: center;
-  height: 124px }
+.thumbnailContainer {
+  height: auto }
+.thumbnailContainer a.image-popup { text-align: center;
+  height: 124px;
+  display: block }
 .thumbnailContainer img {
   max-height: 100%;
   max-width: 100% }
