@@ -1,0 +1,59 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <a4j:jsFunction name="navigateToNextPage" action="#{provider.next}"
+    reRender="#{contentIdToBeReRendered}" oncomplete="afterNextPage();" />
+  <a4j:jsFunction name="navigateToPreviousPage"
+    action="#{provider.previous}" reRender="#{contentIdToBeReRendered}"
+    oncomplete="afterPreviousPage();" />
+
+  <script>
+    var nx_mp_params = {
+      type : 'image',
+      gallery : {
+        enabled : true,
+        navigateByImgClick : true,
+        preload : [ 0, 1 ]
+      // Will preload 0 - before current, and 1 after the current image
+      },
+      closeOnContentClick : true,
+      closeBtnInside : false,
+      fixedContentPos : true,
+      endOfPageCallback : navigateToNextPage,
+      startOfPageCallback : navigateToPreviousPage,
+      nxHasPreviousPage : #{provider.previousPageAvailable},
+      nxHasNextPage : #{provider.nextPageAvailable},
+      image : {
+        verticalFit : true
+      },
+      zoom : {
+        enabled : true,
+        duration : 300
+      // don't foget to change the duration also in CSS
+      }
+    };
+
+    var nx_mp_elt = jQuery("div[id$=#{contentViewPanelId}]");
+
+    function afterNextPage() {
+      jQuery(nx_mp_elt).find('div.thumbnailContainer a.image-popup').magnificPopup('open');
+    }
+
+    function afterPreviousPage() {
+      var nbItems = jQuery(nx_mp_elt).find('div.thumbnailContainer a.image-popup').size();
+      jQuery(nx_mp_elt).find('div.thumbnailContainer a.image-popup').magnificPopup('open', nbItems - 1);
+    }
+
+    jQuery(document).ready(function() {
+      jQuery(nx_mp_elt).find('div.thumbnailContainer a.image-popup').magnificPopup(nx_mp_params);
+    });
+  </script>
+
+</div>

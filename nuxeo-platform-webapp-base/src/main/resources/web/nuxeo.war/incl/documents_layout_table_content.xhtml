@@ -1,5 +1,4 @@
-<c:if test="true"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
+<c:if test="true" xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -7,9 +6,10 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
 
-<c:if test="false">
+  <c:if test="false">
  Template rendering a layout listing with pagination control and selection
  actions.
 
@@ -26,7 +26,8 @@
 
   <ui:insert name="empty_folder_label">
     <h:outputText value="#{messages['label.content.emptyFolder']}"
-      rendered="#{documents.rowCount == 0}" styleClass="emptyResult emptyResultBig" />
+      rendered="#{documents.rowCount == 0}"
+      styleClass="emptyResult emptyResultBig" />
   </ui:insert>
 
   <ui:insert name="error_message" />
@@ -34,6 +35,7 @@
   <c:if test="#{not hideTopPaginationControls}">
     <ui:insert name="pageNavigationControls">
       <c:if test="#{useAjaxPagination}">
+        <ui:include src="/incl/content_view_lightbox.xhtml" />
         <ui:include src="/pagination/a4jPageNavigationControls.xhtml" />
       </c:if>
       <c:if test="#{not useAjaxPagination}">
@@ -47,12 +49,13 @@
     <c:if test="false">
       Resolve layout for first element just to get display
     </c:if>
-    <nxl:layout name="#{layoutName}" value="#{documents.rows[0]}" mode="view"
-      selectedColumns="#{selectedResultLayoutColumns}"
+    <nxl:layout name="#{layoutName}" value="#{documents.rows[0]}"
+      mode="view" selectedColumns="#{selectedResultLayoutColumns}"
       template="#{layoutTemplate}" resolveOnly="true">
 
       <c:set var="display" value="#{layoutProperty_display}" />
-      <c:if test="#{empty display and fn:endsWith(layoutName, '_2_columns')}">
+      <c:if
+        test="#{empty display and fn:endsWith(layoutName, '_2_columns')}">
         <c:set var="display" value="table_2_columns" />
       </c:if>
 
