@@ -162,6 +162,8 @@ public class ITRichfileUploadTest extends AbstractTest {
         clearLinks = driver.findElements(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
         assertEquals(0, clearLinks.size());
 
+        workspacePage.getAdminCenter();
+
         // Logout
         logout();
     }
