@@ -181,7 +181,7 @@ input.tinyButton {
   margin: 0 0 0 .4em;
   position: relative;
   text-decoration: none;
-  z-index:3000 }
+  z-index:1040 }
 
 .actionList li a {
   color: "default (__FLAVOR__ color)";
@@ -257,7 +257,7 @@ input.tinyButton {
   margin: 0 0 0 .4em;
   position: relative;
   text-decoration: none;
-  z-index:3000 }
+  z-index:1040 }
 
 .globalActionBar .actionList li a {
   color: "default (__FLAVOR__ color)";
