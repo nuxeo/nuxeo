@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -29,6 +30,8 @@ import org.openqa.selenium.support.FindBy;
  * @author Sun Seng David TAN <stan@nuxeo.com>
  */
 public class SummaryTabSubPage extends AbstractPage {
+
+    private static final String COLLECTIONS_FORM_ID = "nxl_grid_summary_layout:nxw_summary_current_document_collections_form";
 
     @FindBy(xpath = "//input[contains(@id, 'nxw_start_route_widget_start_route')]")
     public WebElement startWorkflowBtn;
@@ -72,8 +75,9 @@ public class SummaryTabSubPage extends AbstractPage {
     }
 
     public boolean workflowAlreadyStarted() {
-          return findElementWithTimeout(
-                By.xpath("//*[@id='nxl_grid_summary_layout:nxw_summary_document_route_form']")).getText().contains("review has been started");
+        return findElementWithTimeout(
+                By.xpath("//*[@id='nxl_grid_summary_layout:nxw_summary_document_route_form']")).getText().contains(
+                "review has been started");
     }
 
     public boolean openTaskForCurrentUser() {
@@ -138,5 +142,25 @@ public class SummaryTabSubPage extends AbstractPage {
      */
     public String getCurrentLifeCycleState() {
         return lifeCycleState.findElement(By.className("sticker")).getText();
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public boolean isCollectionsFormDisplayed() {
+        try {
+            driver.findElement(By.id(COLLECTIONS_FORM_ID));
+            return true;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public int getCollectionCount() {
+        return driver.findElement(By.id(COLLECTIONS_FORM_ID)).findElements(
+                By.xpath("div/span[@id='nxl_grid_summary_layout:nxw_summary_current_document_collections_form:collections']/span[@class='tag tagLink']")).size();
     }
 }

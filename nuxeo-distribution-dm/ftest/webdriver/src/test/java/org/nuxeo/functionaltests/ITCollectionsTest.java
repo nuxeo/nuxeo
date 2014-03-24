@@ -37,6 +37,7 @@ import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -97,6 +98,10 @@ public class ITCollectionsTest extends AbstractTest {
                 TEST_FILE_NAME, "Test File description", false, null, null,
                 null);
 
+        // Check that collection widget summary is not displayed
+        SummaryTabSubPage summaryTabSubPage = fileDocumentBasePage.getSummaryTab();
+        assertFalse(summaryTabSubPage.isCollectionsFormDisplayed());
+
         // Simple add to collection
         AddToCollectionForm addToCollectionForm = fileDocumentBasePage.getAddToCollectionPopup();
 
@@ -105,6 +110,11 @@ public class ITCollectionsTest extends AbstractTest {
         addToCollectionForm.setNewDescription(COLLECTION_DESSCRIPTION_1);
 
         fileDocumentBasePage = addToCollectionForm.add(FileDocumentBasePage.class);
+
+        // Check that collection widget summary is displayed
+        summaryTabSubPage = fileDocumentBasePage.getSummaryTab();
+        assertTrue(summaryTabSubPage.isCollectionsFormDisplayed());
+        assertEquals(1, summaryTabSubPage.getCollectionCount());
 
         workspacePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(
                 WORKSPACE_TITLE);
