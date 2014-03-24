@@ -21,7 +21,7 @@
       <filter-id>not_readonly</filter-id>
     </action>
 
-    <action id="addToCollectioAction" order="0" label="label.addToCollection"
+    <action id="addToCollectionAction" order="0" label="label.addToCollection"
       type="fancybox" icon="/icons/add_to_collection.png" accessKey="u">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>canAddToCollection</filter-id>
