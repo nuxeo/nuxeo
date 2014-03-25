@@ -60,42 +60,39 @@
           <c:if test="#{not empty exportActions or not empty exportCommandActions}">
             <h2>#{messages['label.exportview.document']}</h2>
             <c:forEach var="action" items="#{exportActions}">
-              <nxh:metaOutputLink value="#{action.getLink()}"
-                target="_blank"
-                styleClass="exportHelpTooltip">
-                <h:graphicImage value="#{action.icon}"
-                  rendered="#{not empty action.icon}" />
-                <h:outputText value=" #{messages[action.label]}" />
-              </nxh:metaOutputLink>
-              <nxu:set var="tooltipMessage" value="#{action.label}.tooltip">
-                <div class="tooltip">
-                  #{messages[tooltipMessage]}
-                </div>
-              </nxu:set>
-              <br />
+                <nxu:set var="tooltipMessage"
+                  value="#{action.label}.tooltip">
+                  <nxh:metaOutputLink value="#{action.getLink()}"
+                    target="_blank" title="#{messages[tooltipMessage]}"
+                    styleClass="tipsyShow">
+                    <h:graphicImage value="#{action.icon}"
+                      rendered="#{not empty action.icon}" />
+                    <h:outputText value=" #{messages[action.label]}" />
+                  </nxh:metaOutputLink>
+                </nxu:set>
+                <br />
             </c:forEach>
             <h:form>
               <c:forEach var="action" items="#{exportCommandActions}">
-                <nxh:commandLink action="#{action.getLink()}"
-                  immediate="#{action.immediate}"
-                  onclick="#{action.confirm}"
-                  styleClass="exportHelpTooltip">
-                  <h:graphicImage value="#{action.icon}"
-                    rendered="#{not empty action.icon}" />
-                  <h:outputText value=" #{messages[action.label]}" />
-                </nxh:commandLink>
-                <nxu:set var="tooltipMessage" value="#{action.label}.tooltip">
-                  <div class="tooltip">
-                    #{messages[tooltipMessage]}
-                  </div>
-                </nxu:set>
-                <br />
+                  <nxu:set var="tooltipMessage"
+                    value="#{action.label}.tooltip">
+                    <nxh:commandLink action="#{action.getLink()}"
+                      immediate="#{action.immediate}"
+                      onclick="#{action.confirm}"
+                      title="#{messages[tooltipMessage]}"
+                      styleClass="tipsyShow">
+                      <h:graphicImage value="#{action.icon}"
+                        rendered="#{not empty action.icon}" />
+                      <h:outputText value=" #{messages[action.label]}" />
+                    </nxh:commandLink>
+                  </nxu:set>
+                  <br />
               </c:forEach>
             </h:form>
           </c:if>
         </nxu:set>
         </nxu:set>
-        
+
         <br />
 
         <nxu:set var="exportContentViews"
@@ -121,7 +118,8 @@
                     <nxd:restDocumentLink document="#{currentDocument}"
                       view="xl" addTabInfo="false"
                       newConversation="true" target="_blank"
-                      styleClass="exportHelpTooltip">
+                      title="#{contentView.currentPageProvider.maxPageSize > 0 ? nxu:translate('label.contentview.export.xl.tooltip.maxSize', contentView.currentPageProvider.maxPageSize) : messages['label.contentview.export.xl.tooltip']}"
+                      styleClass="tipsyShow">
                       <f:param name="contentViewName" value="#{contentView.name}" />
                       <f:param name="currentPage" value="0" />
                       <f:param name="pageSize" value="0" />
@@ -130,16 +128,6 @@
                         title="#{messages['label.contentview.export.xl']}" />
                       <h:outputText value=" #{messages['label.contentview.export.xl']}"/>
                     </nxd:restDocumentLink>
-                    <div class="tooltip">
-                      <c:choose>
-                        <c:when test="#{contentView.currentPageProvider.maxPageSize > 0}">
-                          #{nxu:translate('label.contentview.export.xl.tooltip.maxSize', contentView.currentPageProvider.maxPageSize)}
-                        </c:when>
-                        <c:otherwise>
-                          #{messages['label.contentview.export.xl.tooltip']}
-                        </c:otherwise>
-                      </c:choose>
-                    </div>
                     <br />
                   </c:if>
 
@@ -153,13 +141,6 @@
         </nxu:set>
 
       </div>
-
-
-<script>
-  jQuery(document).ready(function() {
-    jQuery(".exportHelpTooltip").tooltip();
-  });
-</script>
 
     </div>
   </ui:define>

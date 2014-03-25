@@ -59,7 +59,7 @@
           </c:if>
 
           <h:graphicImage value="/icons/lightbulb.png"
-            styleClass="layoutHelpLabel"
+            styleClass="tipsyShow tipsyGravityN"
             title="#{messages[layoutProperty_helpLabel]}" />
 
           <c:if test="#{not empty layoutProperty_localConfigurationFacet}">
@@ -89,12 +89,6 @@
 
       </div>
     </a4j:form>
-
-    <script>
-      jQuery(document).ready(function() {
-        jQuery("img.layoutHelpLabel[title]").tooltip({relative: true, position: 'bottom center'});
-      });
-    </script>
 
   </a4j:outputPanel>
 

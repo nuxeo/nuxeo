@@ -26,13 +26,11 @@ Accepted parameters:
     </c:if>
     <c:if test="#{not empty helpLabel and not hideHelp}">
       <div class="widgetHelpLabel">
-        <h:outputText value="#{translatedLabel}"
-          styleClass="widgetLabel #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
-      </div>
-      <div class="tooltip">
         <nxu:set var="translatedHelpLabel"
-          value="#{nxu:test(translated, messages[helpLabel], helpLabel)}">
-          <h:outputText value="#{translatedHelpLabel}" escape="false" />
+          value="#{nxu:htmlEscape(nxu:test(translated, messages[helpLabel], helpLabel))}">
+          <h:outputText value="#{translatedLabel}"
+            title="#{translatedHelpLabel}"
+            styleClass="widgetLabel tipsyShow tipsyGravityNW #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
         </nxu:set>
       </div>
     </c:if>
