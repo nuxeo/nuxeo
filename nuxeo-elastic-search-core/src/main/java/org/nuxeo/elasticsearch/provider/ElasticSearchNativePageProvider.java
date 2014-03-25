@@ -87,7 +87,7 @@ public class ElasticSearchNativePageProvider extends
             if (def.getWhereClause() == null) {
                 ret = ElasticSearchQueryBuilder.makeQuery(def.getPattern(),
                         getParameters(), def.getQuotePatternParameters(),
-                        def.getEscapePatternParameters());
+                        def.getEscapePatternParameters(), isNativeQuery());
             } else {
                 DocumentModel searchDocumentModel = getSearchDocumentModel();
                 if (searchDocumentModel == null) {
@@ -97,7 +97,7 @@ public class ElasticSearchNativePageProvider extends
                             getName()));
                 }
                 ret = ElasticSearchQueryBuilder.makeQuery(searchDocumentModel,
-                        def.getWhereClause(), getParameters());
+                        def.getWhereClause(), getParameters(), isNativeQuery());
             }
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);
@@ -127,4 +127,7 @@ public class ElasticSearchNativePageProvider extends
         return coreSession;
     }
 
+    public boolean isNativeQuery() {
+        return true;
+    }
 }

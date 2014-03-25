@@ -39,28 +39,35 @@ import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
+import org.nuxeo.elasticsearch.nxql.NXQLQueryConverter;
 
 public class ElasticSearchQueryBuilder {
 
     /**
      * Create a ES request from a PP pattern
+     *
      */
-    public static QueryBuilder makeQuery(String pattern, Object[] params,
-            boolean quotePatternParameters, boolean escapePatternParameters)
-            throws ClientException {
+    public static QueryBuilder makeQuery(final String pattern, final Object[] params,
+            final boolean quotePatternParameters, final boolean escapePatternParameters,
+            final boolean useNativeQuery) throws ClientException {
         String query = pattern;
         for (int i = 0; i < params.length; i++) {
             query = query.replaceFirst("\\?", convertParam(params[i]));
         }
-        return QueryBuilders.queryString(query);
+        if (useNativeQuery) {
+            return QueryBuilders.queryString(query);
+        } else {
+            return NXQLQueryConverter.toESQueryBuilder(query);
+        }
     }
 
     /**
      * Create a ES request from a PP whereClause
+     *
      */
     public static QueryBuilder makeQuery(final DocumentModel model,
-            final WhereClauseDefinition whereClause, final Object[] params)
-            throws ClientException {
+            final WhereClauseDefinition whereClause, final Object[] params,
+            final boolean useNativeQuery) throws ClientException {
         assert (model != null);
         assert (whereClause != null);
 
@@ -75,7 +82,11 @@ public class ElasticSearchQueryBuilder {
                 fixedPart = fixedPart.replaceFirst("\\?",
                         convertParam(params[i]));
             }
-            query.must(QueryBuilders.queryString(fixedPart));
+            if (useNativeQuery) {
+                query.must(QueryBuilders.queryString(fixedPart));
+            } else {
+                query.must(NXQLQueryConverter.toESQueryBuilder(fixedPart));
+            }
         }
         // Process predicates
         for (PredicateDefinition predicate : whereClause.getPredicates()) {

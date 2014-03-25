@@ -65,20 +65,79 @@ public class TestPageProvider {
     ElasticSearchIndexing esi;
 
     @Test
-    public void ICanUseThePageProvider() throws Exception {
+    public void ICanUseANativePageProvider() throws Exception {
         PageProviderService pps = Framework
                 .getService(PageProviderService.class);
         Assert.assertNotNull(pps);
 
         PageProviderDefinition ppdef = pps
-                .getPageProviderDefinition("NATIVE_ES_PP_1");
+                .getPageProviderDefinition("NATIVE_PP_1");
         Assert.assertNotNull(ppdef);
 
         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
         long pageSize = 5;
-        PageProvider<?> pp = pps.getPageProvider("NATIVE_ES_PP_1", ppdef, null,
+        PageProvider<?> pp = pps.getPageProvider("NATIVE_PP_1", ppdef, null,
+                null, pageSize, Long.valueOf(0), props);
+        Assert.assertNotNull(pp);
+
+        // create 10 docs
+        ElasticSearchService ess = Framework
+                .getLocalService(ElasticSearchService.class);
+        Assert.assertNotNull(ess);
+        for (int i = 0; i < 10; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
+                    "File");
+            doc.setPropertyValue("dc:title", "TestMe" + i);
+            doc = session.createDocument(doc);
+        }
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        ElasticSearchAdmin esa = Framework
+                .getLocalService(ElasticSearchAdmin.class);
+        Assert.assertNotNull(esa);
+        Assert.assertTrue(esa.getPendingDocs() > 0);
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+
+        TransactionHelper.startTransaction();
+        esi.flush();
+
+        // get current page
+        List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
+        Assert.assertEquals(10, pp.getResultsCount());
+        Assert.assertNotNull(p);
+        Assert.assertEquals(pageSize, p.size());
+        Assert.assertEquals(2, pp.getNumberOfPages());
+        DocumentModel doc = p.get(0);
+        Assert.assertEquals("TestMe9", doc.getTitle());
+
+        pp.nextPage();
+        p = (List<DocumentModel>) pp.getCurrentPage();
+        Assert.assertEquals(pageSize, p.size());
+        doc = p.get((int) pageSize - 1);
+        Assert.assertEquals("TestMe0", doc.getTitle());
+    }
+
+    @Test
+    public void ICanUseANxqlPageProvider() throws Exception {
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
+        Assert.assertNotNull(pps);
+
+        PageProviderDefinition ppdef = pps
+                .getPageProviderDefinition("NXQL_PP_1");
+        Assert.assertNotNull(ppdef);
+
+        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+        long pageSize = 5;
+        PageProvider<?> pp = pps.getPageProvider("NXQL_PP_1", ppdef, null,
                 null, pageSize, Long.valueOf(0), props);
         Assert.assertNotNull(pp);
 
@@ -133,7 +192,7 @@ public class TestPageProvider {
         DocumentModel model = new DocumentModelImpl("/", "doc", "File");
         model.setPropertyValue("dc:subjects", new String[] { "foo", "bar" });
 
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
                 "    \"filter\" : {\n" +
@@ -149,7 +208,7 @@ public class TestPageProvider {
                 "}", qb.toString());
 
         model.setPropertyValue("dc:subjects", new String[] { "foo" });
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
                 "    \"filter\" : {\n" +
@@ -166,7 +225,7 @@ public class TestPageProvider {
 
         // criteria with no values are removed
         model.setPropertyValue("dc:subjects", new String[] {});
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
 
         Assert.assertEquals("{\n" +
                 "  \"match_all\" : { }\n" +
@@ -185,7 +244,7 @@ public class TestPageProvider {
         @SuppressWarnings("boxing")
         Integer[] array1 = new Integer[] { 1, 2, 3 };
         model.setPropertyValue("search:integerlist", array1);
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
                 "    \"filter\" : {\n" +
@@ -204,7 +263,7 @@ public class TestPageProvider {
         @SuppressWarnings("boxing")
         List<Long> list = Arrays.asList(1L, 2L, 3L);
         model.setPropertyValue("search:integerlist", (Serializable) list);
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
                 "    \"filter\" : {\n" +
@@ -237,7 +296,7 @@ public class TestPageProvider {
                 "AdvancedSearch");
         model.setPropertyValue("search:title", "bar");
 
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true);
         Assert.assertEquals("{\n" +
                 "  \"filtered\" : {\n" +
                 "    \"query\" : {\n" +
@@ -263,7 +322,7 @@ public class TestPageProvider {
 
         model.setPropertyValue("search:isPresent", Boolean.TRUE);
 
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true);
         Assert.assertEquals("{\n" +
                 "  \"filtered\" : {\n" +
                 "    \"query\" : {\n" +
@@ -296,7 +355,7 @@ public class TestPageProvider {
 
         // only boolean available in schema without default value
         model.setPropertyValue("search:isPresent", Boolean.FALSE);
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true);
         Assert.assertEquals("{\n" +
                 "  \"filtered\" : {\n" +
                 "    \"query\" : {\n" +
@@ -328,7 +387,7 @@ public class TestPageProvider {
                 qb.toString());
 
         qb = ElasticSearchQueryBuilder.makeQuery("SELECT * FROM ? WHERE ? = '?'",
-                new Object[] { "Document", "dc:title", null }, false, true);
+                new Object[] { "Document", "dc:title", null }, false, true, true);
         Assert.assertEquals("{\n" +
                 "  \"query_string\" : {\n" +
                 "    \"query\" : \"SELECT * FROM \\\"Document\\\" WHERE \\\"dc:title\\\" = ''\"\n" +

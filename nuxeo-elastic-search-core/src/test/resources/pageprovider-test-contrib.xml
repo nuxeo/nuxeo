@@ -5,9 +5,18 @@
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
     point="providers">
 
-    <genericPageProvider name="NATIVE_ES_PP_1"
+    <genericPageProvider name="NATIVE_PP_1"
       class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
       <pattern>ecm\:primarytype:("File" "Workspace")</pattern>
+      <sort column="dc:title" ascending="false" />
+    </genericPageProvider>
+
+    <genericPageProvider name="NXQL_PP_1"
+      class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <pattern> SELECT * FROM Document WHERE
+        ecm:primarytype IN ('File', 'Workspace') AND
+        ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:currentLifeCycleState !='deleted'</pattern>
       <sort column="dc:title" ascending="false" />
     </genericPageProvider>
 
