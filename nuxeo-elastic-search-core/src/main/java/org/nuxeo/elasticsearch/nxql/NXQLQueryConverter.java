@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -57,6 +58,10 @@ public class NXQLQueryConverter {
         public ExpressionBuilder(Operator op) {
             this.operator = op;
             this.query = null;
+        }
+
+        public ExpressionBuilder(QueryBuilder query, FilterBuilder filter) {
+            add(query, filter);
         }
 
         public void add(QueryBuilder q, FilterBuilder f) {
@@ -141,47 +146,87 @@ public class NXQLQueryConverter {
                 Reference ref = node.lvalue instanceof Reference ? (Reference) node.lvalue
                         : null;
                 String name = ref != null ? ref.name : null;
-                Operand rvalue = node.rvalue;
-
-                FilterBuilder filter = null;
-                QueryBuilder query = null;
-
+                if (name == null) {
+                    name = node.lvalue.toString();
+                }
                 Operator op = node.operator;
-                String colName = node.lvalue.toString();
-                String value = node.rvalue.toString();
+                Operand rvalue = node.rvalue;
+                String value = null;
                 try {
                     value = ((Literal) node.rvalue).asString();
                 } catch (Throwable e) {
-                    // do nothing
+                    if (node.rvalue != null) {
+                        value = node.rvalue.toString();
+                    }
                 }
+                FilterBuilder filter = null;
+                QueryBuilder query = null;
                 if (op == Operator.AND || op == Operator.OR
                         || op == Operator.NOT) {
                     builders.add(new ExpressionBuilder(op));
                     super.visitExpression(node);
-                } else if (op == Operator.EQ) {
-                    if (colName.equals("dc:title")
-                            || colName.startsWith("ecm:fulltext")) {
-                        query = QueryBuilders.matchQuery(colName, value)
-                                .analyzer("fulltext");
+                } else if (op == Operator.EQ || op == Operator.NOTEQ) {
+                    // TODO: Remove hardcoded fields that requires a
+                    // fulltext analyzer
+                    if ("dc:title".equals(name)
+                            || NXQL.ECM_FULLTEXT.equals(name)) {
+                        query = QueryBuilders.matchQuery(name, value).operator(
+                                MatchQueryBuilder.Operator.AND);
                     } else {
-                        filter = FilterBuilders.termFilter(colName, value);
+                        filter = FilterBuilders.termFilter(name, value);
                     }
-                } else if (op == Operator.NOTEQ) {
-                    // TODO NOT
-                } else if (op == Operator.LIKE || op == Operator.ILIKE) {
-                    query = QueryBuilders.regexpQuery(colName, value);
-                    filter = FilterBuilders.termFilter(colName, value);
+                    if (op == Operator.NOTEQ) {
+                        if (filter != null) {
+                            filter = FilterBuilders.notFilter(filter);
+                        } else {
+                            filter = FilterBuilders.notFilter(FilterBuilders
+                                    .queryFilter(query));
+                            query = null;
+                        }
+                    }
+                } else if (op == Operator.LIKE) {
+                    value = value.replace('%', '*');
+                    query = QueryBuilders.regexpQuery(name, value);
+                } else if (op == Operator.ILIKE) {
+                    // TODO: this does not work because case sensitivity is
+                    // defined by the ES mapping
+                    value = value.replace('%', '*');
+                    query = QueryBuilders.regexpQuery(name, value);
+
                 } else if (op == Operator.BETWEEN) {
                     LiteralList l = (LiteralList) rvalue;
-                    filter = FilterBuilders.rangeFilter(colName).from(l.get(0))
-                            .to(l.get(1));
-                } else if (NXQL.ECM_PATH.equals(name)) {
-                    // TODO impl ecm:path
-                } else if (NXQL.ECM_MIXINTYPE.equals(name)) {
-                    // TODO impl ecm_mixintype
-                } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)
-                        && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
-                    // TODO ecm:jobid
+                    filter = FilterBuilders.rangeFilter(name)
+                            .from(l.get(0).asString()).to(l.get(1).asString());
+                } else if (op == Operator.IN) {
+                    LiteralList items = (LiteralList) rvalue;
+                    Object[] vals = new Object[items.size()];
+                    int i = 0;
+                    for (Literal item : items) {
+                        vals[i++] = item.asString();
+                    }
+                    filter = FilterBuilders.inFilter(name, vals);
+                } else if (op == Operator.STARTSWITH) {
+                    if (name != null && name.equals(NXQL.ECM_PATH)) {
+                        filter = FilterBuilders.termFilter(name + ".children",
+                                value);
+                    } else {
+                        filter = FilterBuilders.prefixFilter(name, value);
+                    }
+                } else if (NXQL.ECM_FULLTEXT.equals(name)) {
+                    query = QueryBuilders.matchQuery("_all", value).operator(
+                            MatchQueryBuilder.Operator.AND);
+                } else if (op == Operator.GT) {
+                    filter = FilterBuilders.rangeFilter(name).gt(value);
+                } else if (op == Operator.LT) {
+                    filter = FilterBuilders.rangeFilter(name).lt(value);
+                } else if (op == Operator.GTEQ) {
+                    filter = FilterBuilders.rangeFilter(name).gte(value);
+                } else if (op == Operator.LTEQ) {
+                    filter = FilterBuilders.rangeFilter(name).lte(value);
+                } else if (op == Operator.ISNULL) {
+                    filter = FilterBuilders.missingFilter(name);
+                } else if (op == Operator.ISNOTNULL) {
+                    filter = FilterBuilders.existsFilter(name);
                 }
 
                 builders.get(builders.size() - 1).add(query, filter);

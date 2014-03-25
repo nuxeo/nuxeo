@@ -184,13 +184,13 @@ public class TestNXQLConversion {
                 "        \"should\" : [ {\n" +
                 "          \"regexp\" : {\n" +
                 "            \"f1\" : {\n" +
-                "              \"value\" : \"1%\"\n" +
+                "              \"value\" : \"1*\"\n" +
                 "            }\n" +
                 "          }\n" +
                 "        }, {\n" +
                 "          \"regexp\" : {\n" +
                 "            \"f2\" : {\n" +
-                "              \"value\" : \"2%\"\n" +
+                "              \"value\" : \"2*\"\n" +
                 "            }\n" +
                 "          }\n" +
                 "        } ]\n" +
@@ -206,8 +206,46 @@ public class TestNXQLConversion {
                 "    } ]\n" +
                 "  }\n" +
                 "}", es);
-
-
+        //Assert.assertEquals("foo", es);
+        es = NXQLQueryConverter
+                .toESQueryBuilder(
+                        "select * from Document where ecm:fulltext='foo bar' AND ecm:path STARTSWITH '/foo/bar' OR ecm:path='/foo/'")
+               .toString();
+        //Assert.assertEquals("foo", es);
+        es = NXQLQueryConverter
+                .toESQueryBuilder(
+                        "select * from Document where f1 IN ('foo', 'bar', 'foo') AND NOT f2>=3")
+               .toString();
+        Assert.assertEquals("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [ {\n" +
+                "      \"constant_score\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"terms\" : {\n" +
+                "            \"f1\" : [ \"foo\", \"bar\", \"foo\" ]\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }, {\n" +
+                "      \"bool\" : {\n" +
+                "        \"must_not\" : {\n" +
+                "          \"constant_score\" : {\n" +
+                "            \"filter\" : {\n" +
+                "              \"range\" : {\n" +
+                "                \"f2\" : {\n" +
+                "                  \"from\" : \"3\",\n" +
+                "                  \"to\" : null,\n" +
+                "                  \"include_lower\" : true,\n" +
+                "                  \"include_upper\" : true\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    } ]\n" +
+                "  }\n" +
+                "}", es);
     }
 
 }
