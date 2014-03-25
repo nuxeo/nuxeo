@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:nxs="http://www.nuxeo.org/ecm/schemas/picture"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.nuxeo.org/ecm/schemas/picture">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:element name="blobs" type="nxs:blobs" />
+
+  <xs:complexType name="blobs">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="item"
+        type="nxs:blob" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="blob">
+    <xs:sequence>
+      <xs:element name="filename" type="xs:string" />
+      <xs:element name="content" type="nxs:content" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
