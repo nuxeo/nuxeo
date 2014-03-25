@@ -23,11 +23,8 @@
                       <h:outputText value="#{messages[widget.label]}" />
                     </c:if>
                     <c:if test="#{!empty widget.helpLabel}">
-                      <div class="widgetHelpLabel">
+                      <div class="widgetHelpLabel tipsyShow" title="{messages[widget.helpLabel]}">
                         <h:outputText value="#{messages[widget.label]}" />
-                      </div>
-                      <div class="tooltip">
-                        #{messages[widget.helpLabel]}
                       </div>
                     </c:if>
                   </td>
@@ -38,11 +35,8 @@
                       <h:outputText value="#{widget.label}" />
                     </c:if>
                     <c:if test="#{!empty widget.helpLabel}">
-                      <div class="widgetHelpLabel">
+                      <div class="widgetHelpLabel tipsyShow" title="#{widget.helpLabel}">
                         <h:outputText value="#{widget.label}" />
-                      </div>
-                      <div class="tooltip">
-                        #{widget.helpLabel}
                       </div>
                     </c:if>
                   </td>
