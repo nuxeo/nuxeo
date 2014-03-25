@@ -129,7 +129,7 @@ public class TestNXQLConversion {
     protected void checkNXQL(String nxql, int expectedNumberOfHis)
             throws Exception {
         //System.out.println(NXQLQueryConverter.toESQueryString(nxql));
-        DocumentModelList docs = ess.queryAsNXQL(session, nxql, 10, 0);
+        DocumentModelList docs = ess.query(session, nxql, 10, 0);
         Assert.assertEquals(expectedNumberOfHis, docs.size());
     }
 
@@ -177,7 +177,35 @@ public class TestNXQLConversion {
                 .toESQueryBuilder(
                         "select * from Document where (f1 LIKE '1%' OR f2 LIKE '2%') AND f3=3")
                .toString();
-        Assert.assertEquals("foo", es);
+        Assert.assertEquals("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [ {\n" +
+                "      \"bool\" : {\n" +
+                "        \"should\" : [ {\n" +
+                "          \"regexp\" : {\n" +
+                "            \"f1\" : {\n" +
+                "              \"value\" : \"1%\"\n" +
+                "            }\n" +
+                "          }\n" +
+                "        }, {\n" +
+                "          \"regexp\" : {\n" +
+                "            \"f2\" : {\n" +
+                "              \"value\" : \"2%\"\n" +
+                "            }\n" +
+                "          }\n" +
+                "        } ]\n" +
+                "      }\n" +
+                "    }, {\n" +
+                "      \"constant_score\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"term\" : {\n" +
+                "            \"f3\" : \"3\"\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    } ]\n" +
+                "  }\n" +
+                "}", es);
 
 
     }

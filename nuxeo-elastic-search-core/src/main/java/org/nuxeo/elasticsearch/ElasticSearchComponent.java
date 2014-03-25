@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo
+ *     Tiry
+ *     bdelbosc
  */
 
 package org.nuxeo.elasticsearch;
@@ -22,8 +23,11 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -39,6 +43,7 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsReques
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -50,21 +55,27 @@ import org.elasticsearch.common.settings.ImmutableSettings.Builder;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -350,45 +361,73 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
-    public DocumentModelList queryAsNXQL(CoreSession session, String nxql,
-            int pageSize, int pageIdx) throws ClientException {
-        QueryBuilder q = NXQLQueryConverter.toESQueryBuilder(nxql);
-        System.out.println(q.toString());
-        return query(session, q, pageSize, pageIdx);
+    public DocumentModelList query(CoreSession session, String nxql, int limit,
+            int offset, SortInfo... sortInfos) throws ClientException {
+        QueryBuilder queryBuilder = NXQLQueryConverter.toESQueryBuilder(nxql);
+        return query(session, queryBuilder, limit, offset, sortInfos);
     }
 
     @Override
     public DocumentModelList query(CoreSession session,
-            QueryBuilder queryBuilder, int pageSize, int pageIdx)
-            throws ClientException {
+            QueryBuilder queryBuilder, int limit, int offset,
+            SortInfo... sortInfos) throws ClientException {
 
-        DocumentModelList result = new DocumentModelListImpl();
-        boolean completed = false;
-        int fetch = 0;
+        SearchRequestBuilder request = getClient().prepareSearch(MAIN_IDX)
+                .setTypes(NX_DOCUMENT)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setFetchSource(ID_FIELD, null) // replace with addField(id) ?
+                .setFrom(offset).setSize(limit);
 
-        while (result.size() < pageSize && !completed) {
-            int start = (pageIdx + fetch) * pageSize;
-            int end = (pageIdx + fetch + 1) * pageSize;
-            SearchResponse searchResponse = getClient().prepareSearch(MAIN_IDX)
-                    .setTypes("doc")
-                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                    .setQuery(queryBuilder).setFrom(start).setSize(end)
-                    .execute().actionGet();
-
-            if (searchResponse.getHits().getTotalHits() < pageSize) {
-                completed = true;
-            }
-            Iterator<SearchHit> hits = searchResponse.getHits().iterator();
-            while (hits.hasNext()) {
-                SearchHit hit = hits.next();
-                IdRef ref = new IdRef(hit.getId());
-                if (session.exists(ref)) {
-                    result.add(session.getDocument(ref));
+        // Add security
+        TermsFilterBuilder aclFilter = null;
+        Principal principal = session.getPrincipal();
+        if (principal != null) {
+            if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal)
+                    .isAdministrator())) {
+                String[] principals = SecurityService
+                        .getPrincipalsToCheck(principal);
+                if (principals.length > 0) {
+                    aclFilter = FilterBuilders.inFilter("ecm:acl", principals);
                 }
             }
-            fetch += 1;
         }
-        return result;
+        if (aclFilter == null) {
+            request.setQuery(queryBuilder);
+        } else {
+            request.setQuery(QueryBuilders.filteredQuery(queryBuilder,
+                    aclFilter));
+        }
+
+        // Add sort
+        for (SortInfo sortInfo : sortInfos) {
+            request.addSort(sortInfo.getSortColumn(), sortInfo
+                    .getSortAscending() ? SortOrder.ASC : SortOrder.DESC);
+        }
+        // Execute the ES query
+        if (log.isDebugEnabled()) {
+            log.debug("Search query: " + request.toString());
+        }
+        SearchResponse response = request.execute().actionGet();
+        if (log.isDebugEnabled()) {
+            log.debug("Response: " + response.toString());
+        }
+        // Get the list of ids
+        List<String> ids = new ArrayList<String>();
+        for (SearchHit hit : response.getHits()) {
+            ids.add(hit.getId());
+        }
+        DocumentModelList ret = new DocumentModelListImpl(ids.size());
+        ((DocumentModelListImpl) ret).setTotalSize(response.getHits()
+                .getTotalHits());
+        // Fetch the document model
+        if (!ids.isEmpty()) {
+            try {
+                ret.addAll(fetchDocuments(ids, session));
+            } catch (ClientException e) {
+                log.error(e);
+            }
+        }
+        return ret;
     }
 
     @Override
@@ -521,6 +560,32 @@ public class ElasticSearchComponent extends DefaultComponent implements
         PendingClusterTasksResponse response = getClient().admin().cluster()
                 .preparePendingClusterTasks().execute().actionGet();
         return response.getPendingTasks();
+    }
+
+    /**
+     * Fetch document models from VCS, return results in the same order.
+     *
+     */
+    protected List<DocumentModel> fetchDocuments(final List<String> ids,
+            CoreSession session) throws ClientException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM Document WHERE ecm:uuid IN (");
+        for (int i = 0; i < ids.size(); i++) {
+            sb.append(NXQL.escapeString(ids.get(i)));
+            if (i < ids.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append(")");
+        DocumentModelList ret = session.query(sb.toString());
+        // Order the results
+        Collections.sort(ret, new Comparator<DocumentModel>() {
+            @Override
+            public int compare(DocumentModel a, DocumentModel b) {
+                return ids.indexOf(a.getId()) - ids.indexOf(b.getId());
+            }
+        });
+        return ret;
     }
 
 }

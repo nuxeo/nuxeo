@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
  * Main service interface for using ElasticSearch
@@ -39,9 +40,11 @@ public interface ElasticSearchService {
      */
     Client getClient();
 
-    DocumentModelList query(CoreSession session, QueryBuilder queryBuilder,
-            int pageSize, int pageIdx) throws ClientException;
+    DocumentModelList query(CoreSession session, String nxql,
+            int limit, int offset, SortInfo... sortInfos) throws ClientException;
 
-    DocumentModelList queryAsNXQL(CoreSession session, String nxql,
-            int pageSize, int pageIdx) throws ClientException;
+
+    DocumentModelList query(CoreSession session, QueryBuilder queryBuilder,
+            int limit, int offset, SortInfo... sortInfos)
+            throws ClientException;
 }

@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     bdelbosc
+ */
+
 package org.nuxeo.elasticsearch.provider;
 
 import java.security.Principal;
@@ -8,6 +25,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.index.query.TermsFilterBuilder;
@@ -27,37 +45,28 @@ public class ElasticSearchQueryBuilder {
     /**
      * Create a ES request from a PP pattern
      */
-    public static void makeQuery(final SearchRequestBuilder builder,
-            final Principal principal, final String pattern,
-            final Object[] params, final boolean quoteParameters,
-            final boolean escape, final SortInfo... sortInfos)
+    public static QueryBuilder makeQuery(String pattern, Object[] params,
+            boolean quotePatternParameters, boolean escapePatternParameters)
             throws ClientException {
         String query = pattern;
         for (int i = 0; i < params.length; i++) {
             query = query.replaceFirst("\\?", convertParam(params[i]));
         }
-        TermsFilterBuilder securityFilter = getSecurityFilter(principal);
-        if (securityFilter != null) {
-            builder.setQuery(QueryBuilders.filteredQuery(
-                    QueryBuilders.queryString(query), securityFilter));
-        } else {
-            builder.setQuery(QueryBuilders.queryString(query));
-        }
-        addSortInfo(builder, sortInfos);
+        return QueryBuilders.queryString(query);
     }
 
     /**
      * Create a ES request from a PP whereClause
      */
-    public static void makeQuery(final SearchRequestBuilder builder,
-            final Principal principal, final DocumentModel model,
-            final WhereClauseDefinition whereClause, final Object[] params,
-            final SortInfo... sortInfos) throws ClientException {
+    public static QueryBuilder makeQuery(final DocumentModel model,
+            final WhereClauseDefinition whereClause, final Object[] params)
+            throws ClientException {
         assert (model != null);
         assert (whereClause != null);
 
         BoolQueryBuilder query = QueryBuilders.boolQuery();
         BoolFilterBuilder filter = FilterBuilders.boolFilter();
+        boolean hasFilter = false;
 
         // Fixed part handled as query_string
         String fixedPart = whereClause.getFixedPart();
@@ -96,16 +105,22 @@ public class ElasticSearchQueryBuilder {
             Object firstValue = val[0];
             if (operator.equals("=")) {
                 filter.must(FilterBuilders.termFilter(field, firstValue));
+                hasFilter = true;
             } else if (operator.equals("!=") || operator.equals("<>")) {
                 filter.mustNot(FilterBuilders.termFilter(field, firstValue));
+                hasFilter = true;
             } else if (operator.equals("<")) {
                 filter.must(FilterBuilders.rangeFilter(field).lt(firstValue));
+                hasFilter = true;
             } else if (operator.equals(">")) {
                 filter.must(FilterBuilders.rangeFilter(field).gt(firstValue));
+                hasFilter = true;
             } else if (operator.equals("<=")) {
                 filter.must(FilterBuilders.rangeFilter(field).lte(firstValue));
+                hasFilter = true;
             } else if (operator.equals(">=")) {
                 filter.must(FilterBuilders.rangeFilter(field).gte(firstValue));
+                hasFilter = true;
             } else if (operator.equals("LIKE")) {
                 // TODO convert like pattern
                 query.must(QueryBuilders
@@ -120,9 +135,11 @@ public class ElasticSearchQueryBuilder {
                     Collection<?> vals = (Collection<?>) val[0];
                     Object[] valArray = vals.toArray(new Object[vals.size()]);
                     filter.must(FilterBuilders.inFilter(field, valArray));
+                    hasFilter = true;
                 } else if (val[0] instanceof Object[]) {
                     Object[] vals = (Object[]) val[0];
                     filter.must(FilterBuilders.inFilter(field, vals));
+                    hasFilter = true;
                 }
             } else if (operator.equals("BETWEEN")) {
                 Object startValue = firstValue;
@@ -138,10 +155,13 @@ public class ElasticSearchQueryBuilder {
                     range.to(endValue);
                 }
                 filter.must(range);
+                hasFilter = true;
             } else if (operator.equals("IS NOT NULL")) {
                 filter.must(FilterBuilders.existsFilter(field));
+                hasFilter = true;
             } else if (operator.equals("IS NULL")) {
                 filter.mustNot(FilterBuilders.existsFilter(field));
+                hasFilter = true;
             } else if (operator.equals("FULLTEXT")) {
                 // convention on the name of the fulltext analyzer to use
                 query.must(QueryBuilders.simpleQueryString((String) firstValue)
@@ -159,12 +179,15 @@ public class ElasticSearchQueryBuilder {
                         + operator);
             }
         }
-        TermsFilterBuilder securityFilter = getSecurityFilter(principal);
-        if (securityFilter != null) {
-            filter.must(securityFilter);
+        if (!query.hasClauses()) {
+            if (hasFilter) {
+                return QueryBuilders.constantScoreQuery(filter);
+            } else {
+                // match all
+                return QueryBuilders.matchAllQuery();
+            }
         }
-        builder.setQuery(QueryBuilders.filteredQuery(query, filter));
-        addSortInfo(builder, sortInfos);
+        return QueryBuilders.filteredQuery(query, filter);
     }
 
     protected static TermsFilterBuilder getSecurityFilter(
