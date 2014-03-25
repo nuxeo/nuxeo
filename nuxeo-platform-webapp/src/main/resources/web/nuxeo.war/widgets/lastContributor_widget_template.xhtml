@@ -12,8 +12,7 @@
    <c:set var="username" value="#{field}" />
    <h:outputText value="#{nxu:userFullName(username)}"
                  title="#{username}"
-                 onmouseover="tooltip.show(username, 500);"
-                 onmouseout="tooltip.hide();"/>
+                 styleClass="tipsyShow" />
   </div>
 
   <em>The template 'lastContributor_widget_template.xhtml' is deprecated, use

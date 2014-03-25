@@ -18,10 +18,7 @@
       <h:outputText
         value="#{messages['label.summary.by']} #{nxu:userFullName(currentDocumentLockDetails['document.locker'])}, "
         title="#{currentDocumentLockDetails['document.locker']}"
-        styleClass="documentLockerTooltip" />
-      <script>
-        jQuery(".documentLockerTooltip").tooltip();
-      </script>
+        styleClass="tipsyShow" />
       <h:outputText value="#{messages['label.summary.the']} "/>
         <h:outputText value="#{currentDocumentLockDetails['document.lock.created'].time}">
           <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormatter()}" timeZone="#{timeZone}" />
