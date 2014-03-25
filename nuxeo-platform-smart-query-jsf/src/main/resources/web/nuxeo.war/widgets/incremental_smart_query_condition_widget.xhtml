@@ -7,8 +7,8 @@
   id="#{widget.id}">
 
 <c:if test="false">
-  Needed configuration: mapped to IncrementalSmartQuery instance  
-  Subwidget with following information: 
+  Needed configuration: mapped to IncrementalSmartQuery instance
+  Subwidget with following information:
   - field: bound value (depending on the widget configuration)
 </c:if>
 
@@ -41,19 +41,19 @@
         </f:facet>
       </a4j:status>
     </a4j:region>
-  
+
     <a4j:outputPanel id="#{widget.id}_subwidgets" layout="block">
       <nxl:subWidget>
         <c:if test="#{!empty widget.helpLabel}">
           <c:choose>
             <c:when test="#{widget.translated}">
               <h:graphicImage value="/icons/lightbulb.png"
-                styleClass="layoutHelpLabel"
+                styleClass="tipsyShow layoutHelpLabel"
                 title="#{messages[widget.helpLabel]}" />
             </c:when>
             <c:otherwise>
               <h:graphicImage value="/icons/lightbulb.png"
-                styleClass="layoutHelpLabel"
+                styleClass="tipsyShow layoutHelpLabel"
                 title="#{widget.helpLabel}" />
             </c:otherwise>
           </c:choose>
@@ -61,13 +61,7 @@
         <nxl:widget widget="#{widget}" value="#{value}" />
       </nxl:subWidget>
     </a4j:outputPanel>
-      
-  </c:if>
 
-<script>
-  jQuery(document).ready(function() {
-    jQuery("img.layoutHelpLabel[title]").tooltip();
-  });
-</script>
+  </c:if>
 
 </f:subview>
