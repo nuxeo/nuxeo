@@ -127,6 +127,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     public static final String ID_FIELD = "_id";
 
+    public static final String ACL_FIELD = "ecm:acl";
+
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
@@ -371,14 +373,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
     public DocumentModelList query(CoreSession session,
             QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) throws ClientException {
-
+        // Initialize request
         SearchRequestBuilder request = getClient().prepareSearch(MAIN_IDX)
                 .setTypes(NX_DOCUMENT)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setFetchSource(ID_FIELD, null) // replace with addField(id) ?
-                .setFrom(offset).setSize(limit);
-
-        // Add security
+                .addField(ID_FIELD).setFrom(offset).setSize(limit);
+        // Add security filter
         TermsFilterBuilder aclFilter = null;
         Principal principal = session.getPrincipal();
         if (principal != null) {
@@ -387,7 +387,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 String[] principals = SecurityService
                         .getPrincipalsToCheck(principal);
                 if (principals.length > 0) {
-                    aclFilter = FilterBuilders.inFilter("ecm:acl", principals);
+                    aclFilter = FilterBuilders.inFilter(ACL_FIELD, principals);
                 }
             }
         }
@@ -397,7 +397,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
             request.setQuery(QueryBuilders.filteredQuery(queryBuilder,
                     aclFilter));
         }
-
         // Add sort
         for (SortInfo sortInfo : sortInfos) {
             request.addSort(sortInfo.getSortColumn(), sortInfo
@@ -405,7 +404,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
         // Execute the ES query
         if (log.isDebugEnabled()) {
-            log.debug("Search query: " + request.toString());
+            log.debug(String
+                    .format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
+                            MAIN_IDX, NX_DOCUMENT, request.toString()));
         }
         SearchResponse response = request.execute().actionGet();
         if (log.isDebugEnabled()) {
