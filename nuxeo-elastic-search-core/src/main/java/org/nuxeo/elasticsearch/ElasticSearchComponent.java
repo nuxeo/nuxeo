@@ -91,6 +91,8 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+import com.sun.jersey.server.impl.BuildId;
+
 /**
  * Component used to configure and manage ElasticSearch integration
  *
@@ -366,6 +368,17 @@ public class ElasticSearchComponent extends DefaultComponent implements
     public DocumentModelList query(CoreSession session, String nxql, int limit,
             int offset, SortInfo... sortInfos) throws ClientException {
         QueryBuilder queryBuilder = NXQLQueryConverter.toESQueryBuilder(nxql);
+
+        // handle the built-in order by clause
+        if (nxql.toLowerCase().contains("order by")) {
+            List<SortInfo> builtInSortInfos = NXQLQueryConverter.getSortInfo(nxql);
+            if (sortInfos!=null) {
+                for (SortInfo si : sortInfos) {
+                    builtInSortInfos.add(si);
+                }
+            }
+            sortInfos = builtInSortInfos.toArray(new SortInfo[builtInSortInfos.size()]);
+        }
         return query(session, queryBuilder, limit, offset, sortInfos);
     }
 

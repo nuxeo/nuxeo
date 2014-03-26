@@ -271,6 +271,7 @@ public class TestTreeIndexing {
 
         CoreInstance.getInstance().close(restrictedSession);
 
+        
     }
 
 }

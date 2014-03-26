@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
@@ -29,6 +30,7 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.DefaultQueryVisitor;
@@ -40,6 +42,9 @@ import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
@@ -290,4 +295,23 @@ public class NXQLQueryConverter {
         return new QueryAndFilter(query, filter);
     }
 
+
+    public static List<SortInfo> getSortInfo(String nxql) {
+
+        final List<SortInfo> sortInfos = new ArrayList<>();
+
+        SQLQuery nxqlQuery = SQLQueryParser.parse(new StringReader(nxql));
+        nxqlQuery.accept(new DefaultQueryVisitor() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void visitOrderByExpr(OrderByExpr node) {
+                sortInfos.add(new SortInfo(node.reference.name, !node.isDescending));
+            }
+
+        });
+
+        return sortInfos;
+    }
 }
