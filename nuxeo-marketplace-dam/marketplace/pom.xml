@@ -9,7 +9,7 @@
 
   <artifactId>marketplace-dam</artifactId>
   <packaging>zip</packaging>
-  <name>Marketplace package</name>
+  <name>Nuxeo DAM Marketplace package</name>
 
   <dependencies>
     <dependency>

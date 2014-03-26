@@ -9,7 +9,7 @@
   <groupId>org.nuxeo.marketplace.dam</groupId>
   <artifactId>parent</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo DAM Marketplace package</name>
+  <name>Nuxeo DAM Marketplace parent</name>
 
   <modules>
     <module>marketplace</module>
