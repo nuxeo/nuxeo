@@ -26,8 +26,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * JSon writer that outputs a format ready to eat by elasticsearch.
- * 
- * 
+ *
+ *
  * @since 5.9.3
  */
 @Provider
@@ -71,6 +71,10 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
                 Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
         ACP acp = doc.getACP();
         ACL acl = acp.getACL(ACL.INHERITED_ACL);
+        if (acl==null) {
+            // blocked inheritance at this level
+            acl = acp.getACL(ACL.LOCAL_ACL);
+        }
         jg.writeArrayFieldStart("ecm:acl");
         for (ACE ace : acl.getACEs()) {
             if (ace.isGranted() && browsePermissions.contains(ace.getPermission())) {
