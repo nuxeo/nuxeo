@@ -66,4 +66,21 @@ public class NuxeoConnectionManagerFactory implements ObjectFactory {
         return NuxeoContainer.getConnectionManager(repositoryName);
     }
 
+    public static NuxeoConnectionManagerConfiguration getConfig(Reference ref) {
+        NuxeoConnectionManagerConfiguration config = new NuxeoConnectionManagerConfiguration();
+        IllegalArgumentException errors = new IllegalArgumentException("wrong naming config");
+        for (RefAddr addr : Collections.list(ref.getAll())) {
+            String name = addr.getType();
+            String value = (String) addr.getContent();
+            try {
+                BeanUtils.setProperty(config, name, value);
+            } catch (Exception cause) {
+                errors.addSuppressed(cause);
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
+        return config;
+    }
 }

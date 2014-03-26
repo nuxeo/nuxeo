@@ -18,17 +18,26 @@
 package org.nuxeo.runtime.datasource;
 
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.Name;
+import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
+import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
+import javax.sql.XADataSource;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.datasource.h2.XADatasourceFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -72,8 +81,21 @@ import org.w3c.dom.Node;
 @XObject("datasource")
 public class DataSourceDescriptor {
 
+    protected String xaName;
+
+    protected String name;
+
     @XNode("@name")
-    public String name;
+    public void setName(String value) {
+        name = DataSourceHelper.getDataSourceJNDIName(value);
+        xaName = name + "-xa";
+    }
+
+    @XNode("@xaDataSource")
+    protected String xaDataSource;
+
+    @XNode("@driverClassName")
+    protected String driverClasssName;
 
     @XNode("")
     public Element element;
@@ -81,34 +103,76 @@ public class DataSourceDescriptor {
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties;
 
-    protected Reference reference;
+    protected Reference poolReference;
 
-    public Reference getReference() {
-        if (reference == null) {
-            reference = new Reference(DataSource.class.getName(),
-                    DataSourceFactory.class.getName(), null);
-            NamedNodeMap attrs = element.getAttributes();
-            for (int i = 0; i < attrs.getLength(); i++) {
-                Node attr = attrs.item(i);
-                String name = attr.getNodeName();
-                if ("name".equals(name)) {
-                    continue;
-                }
-                String value = Framework.expandVars(attr.getNodeValue());
-                reference.add(new StringRefAddr(name, value));
-            }
-            // we store together the properties to configure the generic
-            // aspects of the datasource (pooling, timeouts, etc)
-            // and the implementation-specific datasource properties
-            // they will be distinguished from a fixed list in
-            // DataSourceFactory.getObjectInstance
-            for (Entry<String, String> e : properties.entrySet()) {
-                String name = e.getKey();
-                String value = Framework.expandVars(e.getValue());
-                reference.add(new StringRefAddr(name, value));
-            }
+    protected Reference dsReference;
+
+    public static class PoolFactory implements ObjectFactory {
+
+        @Override
+        public Object getObjectInstance(Object obj, Name name, Context nameCtx,
+                Hashtable<?, ?> env) throws Exception {
+            return Framework.getLocalService(PoolRegistry.class).getOrCreatePool(obj, name, nameCtx, env);
         }
-        return reference;
+
+    }
+
+    public void bindSelf(Context initialContext) throws NamingException {
+
+        NamedNodeMap attrs = element.getAttributes();
+
+        if (xaDataSource != null) {
+            poolReference = new Reference(XADataSource.class.getName(),
+                    PoolFactory.class.getName(), null);
+            dsReference = new Reference(
+                    xaDataSource,
+                    XADatasourceFactory.class.getName(),
+                    null);
+            for (Entry<String, String> e : properties.entrySet()) {
+                String key = e.getKey();
+                String value = Framework.expandVars(e.getValue());
+                StringRefAddr addr = new StringRefAddr(key, value);
+                dsReference.add(addr);
+                if ("username".equals(key)) {
+                    poolReference.add(addr);
+                } else if ("password".equals(key)) {
+                    poolReference.add(addr);
+                }
+            }
+            initialContext.bind(DataSourceHelper.getDataSourceJNDIName(xaName), dsReference);
+            poolReference.add(new StringRefAddr("dataSourceJNDI", xaName));
+        } else if (driverClasssName != null) {
+            poolReference = new Reference(DataSource.class.getName(),
+                    PoolFactory.class.getName(), null);
+            for (Entry<String, String> e : properties.entrySet()) {
+                String key = e.getKey();
+                String value = Framework.expandVars(e.getValue());
+                StringRefAddr addr = new StringRefAddr(key, value);
+                poolReference.add(addr);
+            }
+        } else {
+            throw new RuntimeException("Datasource " + name + " should have xaDataSource or driverClassName attribute");
+        }
+
+        for (int i = 0; i < attrs.getLength(); i++) {
+            Node attr = attrs.item(i);
+            String attrName = attr.getNodeName();
+            String value = Framework.expandVars(attr.getNodeValue());
+            if ("name".equals(attrName) || "xaDatasource".equals(attrName)) {
+                continue;
+            }
+            StringRefAddr addr = new StringRefAddr(attrName, value);
+            poolReference.add(addr);
+        }
+        initialContext.bind(name, poolReference);
+    }
+
+
+    public void unbindSelf(InitialContext initialContext) throws NamingException {
+        if (dsReference != null) {
+            initialContext.unbind(xaName);
+        }
+        initialContext.unbind(name);
     }
 
 }

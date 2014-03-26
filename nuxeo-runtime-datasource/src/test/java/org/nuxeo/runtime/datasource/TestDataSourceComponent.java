@@ -20,9 +20,8 @@ package org.nuxeo.runtime.datasource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.File;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,18 +37,21 @@ import org.junit.Test;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class TestDataSourceComponent extends NXRuntimeTestCase {
 
-    private static final String TEST_BUNDLE = "org.nuxeo.runtime.datasource.tests";
+    protected static final ClassLoader LOADER = TestDataSourceComponent.class.getClassLoader();
 
-    private static final String DATASOURCE_CONTRIB = "OSGI-INF/datasource-contrib.xml";
+    private static final String TEST_BUNDLE = "org.nuxeo.runtime.datasource";
 
-    private static final String XADATASOURCE_CONTRIB = "OSGI-INF/xadatasource-contrib.xml";
+    private static final URL DATASOURCE_CONTRIB = LOADER.getResource("datasource-contrib.xml");
 
-    private static final String XADATASOURCE_PG_CONTRIB = "OSGI-INF/xadatasource-pg-contrib.xml";
+    private static final URL XADATASOURCE_CONTRIB = LOADER.getResource("xadatasource-contrib.xml");
+
+    private static final URL XADATASOURCE_PG_CONTRIB = LOADER.getResource("xadatasource-pg-contrib.xml");
 
     /** This directory will be deleted and recreated. */
     private static final String DIRECTORY = "target/test/h2";
@@ -67,12 +69,11 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        NuxeoContainer.installNaming();
+        NuxeoContainer.install();
         File dir = new File(DIRECTORY);
         FileUtils.deleteQuietly(dir);
         dir.mkdirs();
         Framework.getProperties().put(PROP_NAME, dir.getPath());
-
         deployBundle("org.nuxeo.runtime.datasource");
         fireFrameworkStarted();
     }
@@ -81,7 +82,7 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
     @After
     public void tearDown() throws Exception {
         if (NuxeoContainer.isInstalled()) {
-            NuxeoContainer.uninstallNaming();
+            NuxeoContainer.uninstall();
         }
         super.tearDown();
     }
@@ -92,7 +93,8 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
                 DataSourceHelper.getDataSourceJNDIName("foo"));
     }
 
-    protected static void checkDataSourceOk(String name, boolean autocommit) throws Exception {
+    protected static void checkDataSourceOk(String name, boolean autocommit)
+            throws Exception {
         DataSource ds = DataSourceHelper.getDataSource(name);
         Connection conn = ds.getConnection();
         assertEquals(autocommit, conn.getAutoCommit());
@@ -107,49 +109,52 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
 
     @Test
     public void testNonXANoTM() throws Exception {
-        deployContrib(TEST_BUNDLE, DATASOURCE_CONTRIB);
-        checkDataSourceOk("foo", true);
-        checkDataSourceOk("alias", true);
-        undeployContrib(TEST_BUNDLE, DATASOURCE_CONTRIB);
+        RuntimeContext ctx = deployTestContrib(TEST_BUNDLE, DATASOURCE_CONTRIB);
+        try {
+            checkDataSourceOk("foo", true);
+            checkDataSourceOk("alias", true);
+        } finally {
+            ctx.destroy();
+        }
     }
 
     @Test
     public void testNonXA() throws Exception {
-        NuxeoContainer.install(null);
-        deployContrib(TEST_BUNDLE, DATASOURCE_CONTRIB);
-        checkDataSourceOk("foo", true);
-        checkDataSourceOk("alias", true);
-        undeployContrib(TEST_BUNDLE, DATASOURCE_CONTRIB);
-        NuxeoContainer.uninstall();
+        RuntimeContext ctx = deployTestContrib(TEST_BUNDLE, DATASOURCE_CONTRIB);
+        try {
+            checkDataSourceOk("foo", true);
+            checkDataSourceOk("alias", true);
+        } finally {
+            ctx.destroy();
+        }
+
     }
 
     @Test
-    public void testXANoTM() throws Exception {
-        deployContrib(TEST_BUNDLE, XADATASOURCE_CONTRIB);
-        DataSource ds = DataSourceHelper.getDataSource("foo");
+    public void testXANoTx() throws Exception {
+        RuntimeContext ctx = deployTestContrib(TEST_BUNDLE,
+                XADATASOURCE_CONTRIB);
         try {
-            ds.getConnection();
-            fail("Should fail for XA with no TM");
-        } catch (RuntimeException e) {
-            Throwable t = e.getCause();
-            String m = t == null ? e.getMessage() : t.getMessage();
-            assertEquals("TransactionManager not found in JNDI", m);
+            checkDataSourceOk("foo", true);
+        } finally {
+            ctx.destroy();
         }
-        undeployContrib(TEST_BUNDLE, XADATASOURCE_CONTRIB);
     }
 
     @Test
     public void testXA() throws Exception {
-        NuxeoContainer.install(null);
-        deployContrib(TEST_BUNDLE, XADATASOURCE_CONTRIB);
-        TransactionHelper.startTransaction();
+        RuntimeContext ctx = deployTestContrib(TEST_BUNDLE,
+                XADATASOURCE_CONTRIB);
         try {
-            checkDataSourceOk("foo", false);
+            TransactionHelper.startTransaction();
+            try {
+                checkDataSourceOk("foo", false);
+            } finally {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            ctx.destroy();
         }
-        undeployContrib(TEST_BUNDLE, XADATASOURCE_CONTRIB);
-        NuxeoContainer.uninstall();
     }
 
     // disabled for now, see NXP-12086
@@ -171,32 +176,34 @@ public class TestDataSourceComponent extends NXRuntimeTestCase {
 
     // without PatchedDataSourceXAConnectionFactory we leaked
     // connections on close (PoolableConnectionFactory.destroyObject)
-    public void dotestXANoLeak(String contrib) throws Exception {
-        NuxeoContainer.install(null);
-        deployContrib(TEST_BUNDLE, contrib);
-        // in contrib, pool is configured with maxIdle = 1
-        DataSource ds = DataSourceHelper.getDataSource("foo");
-        Connection conn1 = ds.getConnection();
-        int n = countPhysicalConnections(conn1) - 1;
-        Connection conn2 = ds.getConnection();
-        assertEquals(n + 2, countPhysicalConnections(conn1));
-        Connection conn3 = ds.getConnection();
-        assertEquals(n + 3, countPhysicalConnections(conn1));
+    public void dotestXANoLeak(URL contrib) throws Exception {
+        RuntimeContext ctx = deployTestContrib(TEST_BUNDLE, contrib);
+        try {
+            // in contrib, pool is configured with maxIdle = 1
+            DataSource ds = DataSourceHelper.getDataSource("foo");
+            Connection conn1 = ds.getConnection();
+            int n = countPhysicalConnections(conn1) - 1;
+            Connection conn2 = ds.getConnection();
+            assertEquals(n + 2, countPhysicalConnections(conn1));
+            Connection conn3 = ds.getConnection();
+            assertEquals(n + 3, countPhysicalConnections(conn1));
 
-        conn3.close();
-        // conn3 idle in pool, conn1+conn2 active
-        assertEquals(n + 3, countPhysicalConnections(conn1));
-        conn2.close();
-        // conn2 closed, conn3 idle in pool, conn1 active
-        assertEquals(n + 2, countPhysicalConnections(conn1));
-        // conn1 closed, conn3 idle in pool
-        conn1.close();
+            conn3.close();
+            // conn3 idle in pool, conn1+conn2 active
+            assertEquals(n + 3, countPhysicalConnections(conn1));
+            conn2.close();
+            // conn2 closed, conn3 idle in pool, conn1 active
+            assertEquals(n + 2, countPhysicalConnections(conn1));
+            // conn1 closed, conn3 idle in pool
+            conn1.close();
 
-        Connection conn4 = ds.getConnection(); // reuses from pool
-        assertEquals(n + 1, countPhysicalConnections(conn4));
-        conn4.close();
+            Connection conn4 = ds.getConnection(); // reuses from pool
+            assertEquals(n + 1, countPhysicalConnections(conn4));
+            conn4.close();
 
-        undeployContrib(TEST_BUNDLE, contrib);
+        } finally {
+            ctx.destroy();
+        }
     }
 
     public int countPhysicalConnections(Connection conn) throws SQLException {
