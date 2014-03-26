@@ -159,12 +159,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     /**
-     * Private access to protected it again direct access since this field is
-     * lazy loaded. You must use {@link #getEventService()} to get the service
-     */
-    private transient EventService eventService;
-
-    /**
      * Used to check permissions.
      */
     private transient SecurityService securityService;
@@ -304,27 +298,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         return ctx;
     }
 
-    public EventService getEventService() {
-        if (eventService == null) {
-            try {
-                eventService = Framework.getLocalService(EventService.class);
-            } catch (Exception e) {
-                throw new RuntimeException("Core Event Service not found", e);
-            }
-        }
-        return eventService;
-    }
-
     @Override
     public void afterBegin() {
-        if (log.isTraceEnabled()) {
-            log.trace("Transaction started");
-        }
-        try {
-            getEventService().transactionStarted();
-        } catch (Exception e) {
-            log.error("Error while notifying transaction start", e);
-        }
     }
 
     @Override
@@ -333,31 +308,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public void afterCompletion(boolean committed) {
-        if (log.isTraceEnabled()) {
-            log.trace("Transaction "
-                    + (committed ? "committed" : "rolled back"));
-        }
-        try {
-            if (committed) {
-                getEventService().transactionCommitted();
-            } else {
-                getEventService().transactionRolledback();
-            }
-        } catch (Exception e) {
-            log.error("Error while notifying transaction completion", e);
-        } finally {
-            if (isSessionAlive()) {
-                try {
-                    getSession().dispose();
-                } catch (ClientException e) {
-                    log.error("Cannot dispose session", e);
-                }
+        if (isSessionAlive()) {
+            try {
+                getSession().dispose();
+            } catch (ClientException e) {
+                log.error("Cannot dispose session", e);
             }
         }
-    }
-
-    public void fireEvent(Event event) throws ClientException {
-        getEventService().fireEvent(event);
     }
 
     protected void notifyEvent(String eventId, DocumentModel source,
@@ -409,7 +366,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 event.setInline(true);
             }
         }
-        fireEvent(event);
+        Framework.getLocalService(EventService.class).fireEvent(event);
     }
 
     /**

@@ -130,38 +130,6 @@ public interface EventService extends EventProducer {
     EventListenerDescriptor getEventListener(String name);
 
     /**
-     * Notifies that a transaction was started. Used by the framework.
-     * <p>
-     * Any fired events will be recorded until the transaction is terminated
-     * either by calling {@link #transactionRolledback()} either
-     * {@link #transactionCommitted()}.
-     */
-    void transactionStarted();
-
-    /**
-     * Notifies that the transaction was committed. Used by the framework.
-     * <p>
-     * This will fire the events collected during the transaction in the form of
-     * a {@link EventBundle}. After this the recording will stop and recorded
-     * events discarded.
-     */
-    void transactionCommitted() throws ClientException;
-
-    /**
-     * Notifies that transaction was rolled back. Used by the framework.
-     * <p>
-     * This will discard any recorded event.
-     */
-    void transactionRolledback();
-
-    /**
-     * Tests whether or not a transaction was started.
-     *
-     * @return true if a transaction was started, false otherwise
-     */
-    boolean isTransactionStarted();
-
-    /**
      * Waits until all asynchronous tasks are finished.
      */
     void waitForAsyncCompletion();
@@ -173,15 +141,5 @@ public interface EventService extends EventProducer {
      * @param timeout the maximum time to wait for, in milliseconds
      */
     void waitForAsyncCompletion(long timeout);
-
-    /**
-     * Adds an event transaction listener.
-     */
-    void addTransactionListener(EventTransactionListener listener);
-
-    /**
-     * Removes the given event transaction listener.
-     */
-    void removeTransactionListener(EventTransactionListener listener);
 
 }

@@ -22,9 +22,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.naming.NamingException;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.event.Event;
@@ -34,22 +39,23 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.EventStats;
-import org.nuxeo.ecm.core.event.EventTransactionListener;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Implementation of the event service.
  */
-public class EventServiceImpl implements EventService, EventServiceAdmin {
+public class EventServiceImpl implements EventService, EventServiceAdmin,
+        Synchronization {
 
     public static final VMID VMID = new VMID();
 
     private static final Log log = LogFactory.getLog(EventServiceImpl.class);
 
-    protected static final ThreadLocal<CompositeEventBundle> compositeBundle = new ThreadLocal<CompositeEventBundle>() {
+    protected static final ThreadLocal<CompositeEventBundle> threadBundles = new ThreadLocal<CompositeEventBundle>() {
         @Override
         protected CompositeEventBundle initialValue() {
             return new CompositeEventBundle();
@@ -58,7 +64,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
 
     private static class CompositeEventBundle {
 
-        boolean transacted;
+        boolean registeredSynchronization;
 
         final Map<String, EventBundle> byRepository = new HashMap<String, EventBundle>();
 
@@ -71,8 +77,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
         }
 
     }
-
-    protected final ListenerList txListeners;
 
     protected final EventListenerList listenerDescriptors;
 
@@ -89,7 +93,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
     protected boolean bulkModeEnabled = false;
 
     public EventServiceImpl() {
-        txListeners = new ListenerList();
         listenerDescriptors = new EventListenerList();
         postCommitExec = new PostCommitEventExecutor();
         asyncExec = new AsyncEventExecutor();
@@ -272,12 +275,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
                 b.push(shallowEvent);
                 fireEventBundle(b);
             } else {
-                CompositeEventBundle b = compositeBundle.get();
-                b.push(shallowEvent);
-                // check for commit events to flush the event bundle
-                if (!b.transacted && event.isCommitEvent()) {
-                    handleTxCommited();
-                }
+                recordEvent(shallowEvent);
             }
         }
     }
@@ -360,26 +358,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
         result.addAll(listenerDescriptors.getAsyncPostCommitListeners());
 
         return result;
-    }
-
-    @Override
-    public void transactionStarted() {
-        handleTxStarted();
-    }
-
-    @Override
-    public void transactionCommitted() throws ClientException {
-        handleTxCommited();
-    }
-
-    @Override
-    public void transactionRolledback() {
-        handleTxRollbacked();
-    }
-
-    @Override
-    public boolean isTransactionStarted() {
-        return compositeBundle.get().transacted;
     }
 
     public EventListenerList getEventListenerList() {
@@ -476,33 +454,48 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
         this.bulkModeEnabled = bulkModeEnabled;
     }
 
-    @Override
-    public void addTransactionListener(EventTransactionListener listener) {
-        txListeners.add(listener);
+    protected void recordEvent(Event event) {
+        CompositeEventBundle b = threadBundles.get();
+        b.push(event);
+        if (TransactionHelper.isTransactionActive()) {
+            if (!b.registeredSynchronization) {
+                // register as synchronization
+                try {
+                    TransactionHelper.lookupTransactionManager().getTransaction().registerSynchronization(
+                            this);
+                } catch (NamingException | SystemException | RollbackException e) {
+                    throw new RuntimeException(
+                            "Cannot register Synchronization", e);
+                }
+                b.registeredSynchronization = true;
+            }
+        } else if (event.isCommitEvent()) {
+            handleTxCommited();
+        }
     }
 
     @Override
-    public void removeTransactionListener(EventTransactionListener listener) {
-        txListeners.remove(listener);
+    public void beforeCompletion() {
     }
 
-    protected void handleTxStarted() {
-        compositeBundle.get().transacted = true;
-        for (Object listener : txListeners.getListeners()) {
-            ((EventTransactionListener) listener).transactionStarted();
+    @Override
+    public void afterCompletion(int status) {
+        if (status == Status.STATUS_COMMITTED) {
+            handleTxCommited();
+        } else if (status == Status.STATUS_ROLLEDBACK) {
+            handleTxRollbacked();
+        } else {
+            log.error("Unexpected afterCompletion status: " + status);
         }
     }
 
     protected void handleTxRollbacked() {
-        compositeBundle.remove();
-        for (Object listener : txListeners.getListeners()) {
-            ((EventTransactionListener) listener).transactionRollbacked();
-        }
+        threadBundles.remove();
     }
 
     protected void handleTxCommited() {
-        CompositeEventBundle b = compositeBundle.get();
-        compositeBundle.remove();
+        CompositeEventBundle b = threadBundles.get();
+        threadBundles.remove();
 
         // notify post commit event listeners
         for (EventBundle bundle : b.byRepository.values()) {
@@ -511,10 +504,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin {
             } catch (ClientException e) {
                 log.error("Error while processing " + bundle, e);
             }
-        }
-        // notify post commit tx listeners
-        for (Object listener : txListeners.getListeners()) {
-            ((EventTransactionListener) listener).transactionCommitted();
         }
     }
 

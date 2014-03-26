@@ -13,7 +13,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -24,7 +23,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
-import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,8 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.EventTransactionListener;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyAsyncRetryListener;
@@ -147,35 +143,6 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         // tx not active anymore because CoreSession.createDocument is not
         // marked @NoRollbackOnException
         assertTrue(TransactionHelper.isTransactionMarkedRollback());
-    }
-
-    protected static class HelperEventTransactionListener implements
-            EventTransactionListener {
-        public boolean committed;
-
-        @Override
-        public void transactionStarted() {
-        }
-
-        @Override
-        public void transactionCommitted() {
-            committed = true;
-        }
-
-        @Override
-        public void transactionRollbacked() {
-        }
-    }
-
-    @Test
-    public void testAfterCompletion() {
-        EventService eventService = Framework.getLocalService(EventService.class);
-        HelperEventTransactionListener listener = new HelperEventTransactionListener();
-        eventService.addTransactionListener(listener);
-        assertFalse(listener.committed);
-        TransactionHelper.commitOrRollbackTransaction();
-        assertTrue(listener.committed);
-        TransactionHelper.startTransaction();
     }
 
     protected static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
