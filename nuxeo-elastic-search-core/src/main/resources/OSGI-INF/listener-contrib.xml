@@ -15,6 +15,7 @@
       <event>documentSecurityUpdated</event>
       <event>documentRemoved</event>
       <event>sessionSaved</event>
+      <event>documentCheckedOut</event>
     </listener>
 
     <listener name="elasticSearchPostCommitSyncListener" async="false"

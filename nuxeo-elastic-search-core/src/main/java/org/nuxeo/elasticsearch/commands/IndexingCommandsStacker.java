@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_B
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +73,8 @@ public abstract class IndexingCommandsStacker {
         if (DOCUMENT_CREATED.equals(eventId)) {
             cmds.add(IndexingCommand.INDEX, sync, false);
         } else if (BEFORE_DOC_UPDATE.equals(eventId)) {
+            cmds.add(IndexingCommand.UPDATE, sync, false);
+        } else if (DOCUMENT_CHECKEDOUT.equals(eventId)) {
             cmds.add(IndexingCommand.UPDATE, sync, false);
         } else if (DOCUMENT_CREATED_BY_COPY.equals(eventId)) {
             cmds.add(IndexingCommand.INDEX, sync, doc.isFolder());

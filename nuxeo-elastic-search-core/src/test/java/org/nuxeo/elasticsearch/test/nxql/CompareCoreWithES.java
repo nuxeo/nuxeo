@@ -158,8 +158,8 @@ public class CompareCoreWithES {
                 "select * from Document where ecm:isVersion = 1 order by dc:title",
                 "select * from Document where ecm:isCheckedInVersion = 0 order by dc:title",
                 "select * from Document where ecm:isCheckedInVersion = 1 order by dc:title",
-//                               "select * from Document where ecm:isCheckedIn = 0 order by dc:title",
-//                "select * from Document where ecm:isCheckedIn = 1 order by dc:title"
+                "select * from Document where ecm:isCheckedIn = 0 order by dc:title",
+                "select * from Document where ecm:isCheckedIn = 1 order by dc:title"
                 });
     }
 
