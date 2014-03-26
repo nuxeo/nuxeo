@@ -241,6 +241,10 @@ public class NXQLQueryConverter {
             }
 
         });
+
+        if (ret.get()==null) {
+            return QueryBuilders.matchAllQuery();
+        }
         return ret.get();
     }
 

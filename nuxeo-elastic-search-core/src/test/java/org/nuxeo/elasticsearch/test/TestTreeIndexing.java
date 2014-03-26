@@ -1,5 +1,8 @@
 package org.nuxeo.elasticsearch.test;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.action.search.SearchResponse;
@@ -10,10 +13,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.ElasticSearchComponent;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -62,6 +74,14 @@ public class TestTreeIndexing {
         }
     }
 
+    protected void waitForAsyncIndexing() throws Exception {
+        // wait for indexing
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+    }
+
     protected void buildAndIndexTree() throws Exception {
 
         // build the tree
@@ -69,14 +89,10 @@ public class TestTreeIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
 
-        Assert.assertTrue(esa.getPendingCommands()>1);
-        Assert.assertTrue(esa.getPendingDocs()>1);
+        Assert.assertTrue(esa.getPendingCommands() > 1);
+        Assert.assertTrue(esa.getPendingDocs() > 1);
 
-        // wait for indexing
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        waitForAsyncIndexing();
 
         esi.flush();
 
@@ -119,11 +135,7 @@ public class TestTreeIndexing {
         // async command is not yet scheduled
         Assert.assertEquals(1, esa.getPendingCommands());
 
-        // wait for async jobs
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        waitForAsyncIndexing();
 
         esi.flush();
 
@@ -151,11 +163,7 @@ public class TestTreeIndexing {
         Assert.assertEquals(1, esa.getPendingDocs());
         Assert.assertEquals(1, esa.getPendingCommands());
 
-        // wait for async jobs
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        waitForAsyncIndexing();
 
         esi.flush();
 
@@ -182,14 +190,87 @@ public class TestTreeIndexing {
         searchResponse = ess.getClient().prepareSearch(
                 ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.prefixQuery("ecm:path",
-                        "/folder0/folder1")).execute().actionGet();
+                QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1")).execute().actionGet();
         Assert.assertEquals(9, searchResponse.getHits().getTotalHits());
 
-        
-        
     }
-    
-    
+
+    protected CoreSession getRestrictedSession(String userName)
+            throws Exception {
+        RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
+        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
+        ctx.put("principal", new UserPrincipal("toto", null, false, false));
+        return rm.getDefaultRepository().open(ctx);
+    }
+
+    @Test
+    public void shouldFilterTreeOnSecurity() throws Exception {
+
+        buildAndIndexTree();
+
+        DocumentModelList docs = ess.query(session, "select * from Document",
+                10, 0);
+        Assert.assertEquals(10, docs.size());
+
+        // check for user with no rights
+
+        CoreSession restrictedSession = getRestrictedSession("toto");
+        docs = ess.query(restrictedSession, "select * from Document", 10, 0);
+        Assert.assertEquals(0, docs.size());
+
+        // add READ rights and check that user now has access
+
+        DocumentRef ref = new PathRef("/folder0/folder1/folder2");
+        ACP acp = new ACPImpl();
+        ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
+        acl.add(new ACE("toto", SecurityConstants.READ, true));
+        acp.addACL(acl);
+        session.setACP(ref, acp, true);
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        Assert.assertEquals(1, esa.getPendingDocs());
+        Assert.assertEquals(1, esa.getPendingCommands());
+
+        waitForAsyncIndexing();
+
+        esi.flush();
+
+        TransactionHelper.startTransaction();
+
+        docs = ess.query(restrictedSession, "select * from Document", 10, 0);
+        Assert.assertEquals(7, docs.size());
+
+        // block rights and check that blocking is taken into account
+
+        ref = new PathRef("/folder0/folder1/folder2/folder3/folder4/folder5");
+        acp = new ACPImpl();
+        acl = ACPImpl.newACL(ACL.LOCAL_ACL);
+
+        acl.add(new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, false));
+        acl.add(new ACE("Administrator", SecurityConstants.EVERYTHING, true));
+        acp.addACL(acl);
+
+        session.setACP(ref, acp, true);
+
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        TransactionHelper.startTransaction();
+
+        Assert.assertEquals(1, esa.getPendingDocs());
+        Assert.assertEquals(1, esa.getPendingCommands());
+
+        waitForAsyncIndexing();
+        esi.flush();
+
+        docs = ess.query(restrictedSession, "select * from Document", 10, 0);
+        Assert.assertEquals(2, docs.size());
+
+        CoreInstance.getInstance().close(restrictedSession);
+
+    }
 
 }
