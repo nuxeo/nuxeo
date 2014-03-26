@@ -12,6 +12,14 @@
   <packaging>zip</packaging>
   <name>Marketplace package of Nuxeo DM</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-dm</artifactId>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>
