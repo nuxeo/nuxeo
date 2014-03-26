@@ -17,6 +17,7 @@
 
 package org.nuxeo.elasticsearch.test.nxql;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.action.search.SearchResponse;
@@ -176,7 +177,7 @@ public class TestNXQLConversion {
     }
 
     @Test
-    public void testConverterWhereExpression() throws Exception {
+    public void testConverterExpression() throws Exception {
         String es = NXQLQueryConverter.toESQueryBuilder(
                 "select * from Document where f1=1").toString();
         Assert.assertEquals("{\n" +
@@ -205,6 +206,29 @@ public class TestNXQLConversion {
                 "  \"regexp\" : {\n" +
                 "    \"f1\" : {\n" +
                 "      \"value\" : \"foo*\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+        String old = es;
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 ILIKE 'foo%'").toString();
+        Assert.assertEquals(old, es);
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 NOT LIKE 'foo%'").toString();
+        Assert.assertEquals("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"not\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"query\" : {\n" +
+                "            \"regexp\" : {\n" +
+                "              \"f1\" : {\n" +
+                "                \"value\" : \"foo*\"\n" +
+                "              }\n" +
+                "            }\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
                 "    }\n" +
                 "  }\n" +
                 "}", es);
@@ -248,6 +272,26 @@ public class TestNXQLConversion {
                 "  }\n" +
                 "}", es);
         es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 NOT BETWEEN 1 AND 2").toString();
+        Assert.assertEquals("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"not\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"range\" : {\n" +
+                "            \"f1\" : {\n" +
+                "              \"from\" : \"1\",\n" +
+                "              \"to\" : \"2\",\n" +
+                "              \"include_lower\" : true,\n" +
+                "              \"include_upper\" : true\n" +
+                "            }\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+        es = NXQLQueryConverter.toESQueryBuilder(
                 "select * from Document where ecm:path STARTSWITH '/the/path'").toString();
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -258,10 +302,6 @@ public class TestNXQLConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        // not yet impl: not between, not like, not ilike
-        es = NXQLQueryConverter.toESQueryBuilder(
-                "select * from Document where f1 NOT BETWEEN 1 AND 2").toString();
-        // Assert.assertEquals("foo", es);
 
     }
 
@@ -406,24 +446,6 @@ public class TestNXQLConversion {
                         "select * from Document where ecm:fulltext='foo bar' AND ecm:path STARTSWITH '/foo/bar' OR ecm:path='/foo/'")
                .toString();
         //Assert.assertEquals("foo", es);
-        es = NXQLQueryConverter
-                .toESQueryBuilder(
-                        "select * from Document where f1 BETWEEN 1 AND 5")
-               .toString();
-        Assert.assertEquals("{\n" +
-                "  \"constant_score\" : {\n" +
-                "    \"filter\" : {\n" +
-                "      \"range\" : {\n" +
-                "        \"f1\" : {\n" +
-                "          \"from\" : \"1\",\n" +
-                "          \"to\" : \"5\",\n" +
-                "          \"include_lower\" : true,\n" +
-                "          \"include_upper\" : true\n" +
-                "        }\n" +
-                "      }\n" +
-                "    }\n" +
-                "  }\n" +
-                "}", es);
 
         es = NXQLQueryConverter
                 .toESQueryBuilder(
@@ -486,5 +508,22 @@ public class TestNXQLConversion {
         String es2 = NXQLQueryConverter.toESQueryBuilder(
                 "select * from Document where ecm:isCheckedInVersion = 1").toString();
         Assert.assertEquals(es, es2);
+    }
+
+    @Test
+    public void testConverterFulltext() throws Exception {
+        // Given a search on a fulltext field
+        String es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1='foo bar'", Arrays.asList(new String[] { "f1", "f2" })).toString();
+        // then we have a query and not a filter
+        Assert.assertEquals("{\n" +
+                "  \"match\" : {\n" +
+                "    \"f1\" : {\n" +
+                "      \"query\" : \"foo bar\",\n" +
+                "      \"type\" : \"boolean\",\n" +
+                "      \"operator\" : \"AND\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
     }
 }

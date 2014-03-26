@@ -235,7 +235,7 @@ public class NXQLQueryConverter {
         if (!fromList.isEmpty()) {
             return QueryBuilders.filteredQuery(
                     queryBuilder,
-                    makeQueryFromSimpleExpression("IN", "ecm:primarytype",
+                    makeQueryFromSimpleExpression("IN", NXQL.ECM_PRIMARYTYPE,
                             null, fromList.toArray(), null).filter);
         }
         return queryBuilder;
@@ -273,13 +273,22 @@ public class NXQLQueryConverter {
                     query = null;
                 }
             }
-        } else if ("LIKE".equals(op) || "ILIKE".equals(op)) {
+        } else if ("LIKE".equals(op) || "ILIKE".equals(op)
+                || "NOT LIKE".equals(op) || "NOT ILIKE".equals(op)) {
             // Note that ILIKE will work only with a correct mapping
             query = QueryBuilders.regexpQuery(name,
                     ((String) value).replace('%', '*'));
-        } else if ("BETWEEN".equals(op)) {
+            if (op.startsWith("NOT")) {
+                filter = FilterBuilders.notFilter(FilterBuilders
+                        .queryFilter(query));
+                query = null;
+            }
+        } else if ("BETWEEN".equals(op) || "NOT BETWEEN".equals(op)) {
             filter = FilterBuilders.rangeFilter(name).from(values[0])
                     .to(values[1]);
+            if ("NOT BETWEEN".equals(op)) {
+                filter = FilterBuilders.notFilter(filter);
+            }
         } else if ("IN".equals(op)) {
             filter = FilterBuilders.inFilter(name, values);
         } else if ("STARTSWITH".equals(op)) {
