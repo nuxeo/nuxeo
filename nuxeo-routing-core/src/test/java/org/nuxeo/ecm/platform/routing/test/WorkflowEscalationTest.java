@@ -53,12 +53,13 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
+
 /**
  * @since 5.7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class,
-        AutomationFeature.class })
+@Features({TransactionalFeature.class,
+        CoreFeature.class, AutomationFeature.class })
 @Deploy({
         "org.nuxeo.ecm.platform.content.template", //
         "org.nuxeo.ecm.automation.core", //
@@ -113,6 +114,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
     @Before
     public void setUp() throws Exception {
         assertNotNull(routing);
+        routing.invalidateRouteModelsCache();
         doc = session.createDocumentModel("/", "file", "File");
         doc.setPropertyValue("dc:title", "file");
         doc = session.createDocument(doc);
@@ -298,6 +300,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         DocumentRoute routeInstance = session.getDocument(
                 new IdRef(routeInstanceId)).getAdapter(DocumentRoute.class);
         assertTrue(routeInstance.isCanceled());
+
     }
 
     protected void setEscalationRules(DocumentModel node,

@@ -123,6 +123,7 @@ public class AbstractGraphRouteTest {
         if (!route.isValidated()) {
             route = routing.validateRouteModel(route, session);
         }
+        session.save();
         // create instance and start
         String id = routing.createNewInstance(route.getDocument().getName(),
                 Collections.singletonList(doc.getId()), map, session, true);
@@ -133,6 +134,7 @@ public class AbstractGraphRouteTest {
     protected DocumentRoute instantiateAndRun(CoreSession session,
             List<String> docIds, Map<String, Serializable> map)
             throws ClientException {
+        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         DocumentRoute route = validate(routeDoc, session);
         // create instance and start
         String id = Framework.getLocalService(DocumentRoutingService.class).createNewInstance(

@@ -76,8 +76,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class,
-        AutomationFeature.class })
+@Features({TransactionalFeature.class,
+        CoreFeature.class, AutomationFeature.class })
 @Deploy({
         "org.nuxeo.ecm.platform.content.template", //
         "org.nuxeo.ecm.automation.core", //
@@ -126,7 +126,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     @Before
     public void setUp() throws Exception {
         assertNotNull(routing);
-
+        routing.invalidateRouteModelsCache();
         doc = session.createDocumentModel("/", "file", "File");
         doc.setPropertyValue("dc:title", "file");
         doc = session.createDocument(doc);
@@ -1124,7 +1124,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         session.save();
         instantiateAndRun(session);
-
+        session.save();
         List<Task> tasks = taskService.getTaskInstances(doc,
                 (NuxeoPrincipal) session.getPrincipal(), session);
         assertNotNull(tasks);

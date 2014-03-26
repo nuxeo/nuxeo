@@ -632,4 +632,10 @@ public interface DocumentRoutingService {
      */
     void cleanupDoneAndCanceledRouteInstances(String repositoryName, int limit)
             throws ClientException;
+
+    /**
+     *
+     * @since 5.9.3
+     */
+    void invalidateRouteModelsCache();
 }

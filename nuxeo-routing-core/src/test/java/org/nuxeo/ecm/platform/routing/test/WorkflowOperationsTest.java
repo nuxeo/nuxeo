@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
@@ -52,13 +54,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
-import com.ibm.icu.util.Calendar;
-
 /**
  * @since 5.7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, AutomationFeature.class })
+@Features({CoreFeature.class, AutomationFeature.class })
 @Deploy({
         "org.nuxeo.ecm.platform.content.template", //
         "org.nuxeo.ecm.automation.core", //
@@ -81,6 +81,9 @@ import com.ibm.icu.util.Calendar;
 public class WorkflowOperationsTest extends AbstractGraphRouteTest {
 
     @Inject
+    protected RepositorySettings repo;
+
+    @Inject
     protected CoreSession session;
 
     @Inject
@@ -92,6 +95,7 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
     @Before
     public void setUp() throws Exception {
         assertNotNull(routing);
+        routing.invalidateRouteModelsCache();
         doc = session.createDocumentModel("/", "file", "File");
         doc.setPropertyValue("dc:title", "file");
         doc = session.createDocument(doc);
