@@ -3,6 +3,8 @@ package org.nuxeo.ecm.automation.jaxrs.io.documents;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
@@ -36,9 +39,12 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.9.3
  */
 @Provider
-@Produces({ "application/json+esentity" })
+@Produces({ JsonESDocumentListWriter.MIME_TYPE })
 public class JsonESDocumentListWriter extends JsonDocumentListWriter {
+
     private static final Log log = LogFactory.getLog(JsonESDocumentListWriter.class);
+
+    public static final String MIME_TYPE = "application/json+esentity";
 
     public static final String HEADER_ERROR_MESSAGE = "X-NXErrorMessage";
 
@@ -63,6 +69,13 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
 
     @Context
     private HttpServletRequest request;
+
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return super.isWriteable(type, genericType, annotations, mediaType)
+                && MIME_TYPE.equals(mediaType.toString());
+    }
 
     @Override
     public void writeDocuments(OutputStream out, List<DocumentModel> docs,

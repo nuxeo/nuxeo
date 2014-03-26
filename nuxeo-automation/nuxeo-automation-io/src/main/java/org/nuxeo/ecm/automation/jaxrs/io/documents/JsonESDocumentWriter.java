@@ -4,6 +4,8 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
 
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.Map;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonEncoding;
@@ -31,8 +34,17 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.9.3
  */
 @Provider
-@Produces({ "application/json+esentity" })
+@Produces({ JsonESDocumentWriter.MIME_TYPE })
 public class JsonESDocumentWriter extends JsonDocumentWriter {
+
+    public static final String MIME_TYPE = "application/json+esentity";
+
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return super.isWriteable(type, genericType, annotations, mediaType)
+                && MIME_TYPE.equals(mediaType.toString());
+    }
 
     public static void writeDoc(JsonGenerator jg, DocumentModel doc,
             String[] schemas, Map<String, String> contextParameters,
