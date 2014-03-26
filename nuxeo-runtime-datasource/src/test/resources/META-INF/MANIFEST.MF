@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo Runtime DataSource Implementation Tests
-Bundle-SymbolicName: org.nuxeo.runtime.datasource.tests;singleton:=true

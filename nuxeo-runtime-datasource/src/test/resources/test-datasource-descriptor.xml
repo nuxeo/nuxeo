@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<datasource name="foo" maxIdle="123">
-  <property name="bar">gee</property>
-  <property name="baz">moo</property>
-</datasource>

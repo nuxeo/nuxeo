@@ -37,6 +37,8 @@ public class NuxeoConnectionManagerConfiguration {
     private String name = "NuxeoConnectionManager";
 
     // transaction
+    @XNode("@xaMode")
+    private Boolean xaMode;
 
     @XNode("@useTransactionCaching")
     private Boolean useTransactionCaching;
@@ -54,12 +56,6 @@ public class NuxeoConnectionManagerConfiguration {
 
     @XNode("@selectOneNoMatch")
     private Boolean selectOneNoMatch;
-
-    @XNode("@partitionByConnectionRequestInfo")
-    private Boolean partitionByConnectionRequestInfo;
-
-    @XNode("@partitionBySubject")
-    private Boolean partitionBySubject;
 
     @XNode("@maxPoolSize")
     private Integer maxPoolSize;
@@ -85,8 +81,6 @@ public class NuxeoConnectionManagerConfiguration {
         matchOne = other.matchOne;
         matchAll = other.matchAll;
         selectOneNoMatch = other.selectOneNoMatch;
-        partitionByConnectionRequestInfo = other.partitionByConnectionRequestInfo;
-        partitionBySubject = other.partitionBySubject;
         maxPoolSize = other.maxPoolSize;
         minPoolSize = other.minPoolSize;
         blockingTimeoutMillis = other.blockingTimeoutMillis;
@@ -96,6 +90,9 @@ public class NuxeoConnectionManagerConfiguration {
     public void merge(NuxeoConnectionManagerConfiguration other) {
         if (other.name != null) {
             name = other.name;
+        }
+        if (other.xaMode) {
+            xaMode = other.xaMode;
         }
         if (other.useTransactionCaching != null) {
             useTransactionCaching = other.useTransactionCaching;
@@ -111,12 +108,6 @@ public class NuxeoConnectionManagerConfiguration {
         }
         if (other.selectOneNoMatch != null) {
             selectOneNoMatch = other.selectOneNoMatch;
-        }
-        if (other.partitionByConnectionRequestInfo != null) {
-            partitionByConnectionRequestInfo = other.partitionByConnectionRequestInfo;
-        }
-        if (other.partitionBySubject != null) {
-            partitionBySubject = other.partitionBySubject;
         }
         if (other.maxPoolSize != null) {
             maxPoolSize = other.maxPoolSize;
@@ -150,6 +141,10 @@ public class NuxeoConnectionManagerConfiguration {
         return name;
     }
 
+    public boolean getXAMode() {
+        return defaultTrue(xaMode);
+    }
+
     public boolean getUseTransactionCaching() {
         return defaultTrue(useTransactionCaching);
     }
@@ -168,14 +163,6 @@ public class NuxeoConnectionManagerConfiguration {
 
     public boolean getSelectOneNoMatch() {
         return defaultFalse(selectOneNoMatch);
-    }
-
-    public boolean getPartitionByConnectionRequestInfo() {
-        return defaultFalse(partitionByConnectionRequestInfo);
-    }
-
-    public boolean getPartitionBySubject() {
-        return defaultTrue(partitionBySubject);
     }
 
     public int getMaxPoolSize() {
@@ -199,6 +186,10 @@ public class NuxeoConnectionManagerConfiguration {
         this.name = name;
     }
 
+    public void setXAMode(boolean xaMode) {
+        this.xaMode = Boolean.valueOf(xaMode);
+    }
+
     public void setUseTransactionCaching(boolean useTransactionCaching) {
         this.useTransactionCaching = Boolean.valueOf(useTransactionCaching);
     }
@@ -217,15 +208,6 @@ public class NuxeoConnectionManagerConfiguration {
 
     public void setSelectOneNoMatch(boolean selectOneNoMatch) {
         this.selectOneNoMatch = Boolean.valueOf(selectOneNoMatch);
-    }
-
-    public void setPartitionByConnectionRequestInfo(
-            boolean partitionByConnectionRequestInfo) {
-        this.partitionByConnectionRequestInfo = Boolean.valueOf(partitionByConnectionRequestInfo);
-    }
-
-    public void setPartitionBySubject(boolean partitionBySubject) {
-        this.partitionBySubject = Boolean.valueOf(partitionBySubject);
     }
 
     public void setMaxPoolSize(int maxPoolSize) {

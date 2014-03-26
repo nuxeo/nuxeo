@@ -31,7 +31,6 @@ import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.ManagedConnectionFactory;
-import javax.security.auth.Subject;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.InvalidTransactionException;
@@ -46,9 +45,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
 import org.apache.geronimo.connector.outbound.GenericConnectionManager;
-import org.apache.geronimo.connector.outbound.SubjectSource;
-import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PartitionedPool;
+import org.apache.geronimo.connector.outbound.connectionmanagerconfig.LocalTransactions;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PoolingSupport;
+import org.apache.geronimo.connector.outbound.connectionmanagerconfig.SinglePool;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.TransactionSupport;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.XATransactions;
 import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrackingCoordinator;
@@ -648,34 +647,33 @@ public class NuxeoContainer {
      *
      * @throws NamingException
      */
-    protected static GenericConnectionManager createConnectionManager(
+    public static GenericConnectionManager createConnectionManager(
             NuxeoConnectionManagerConfiguration config) {
-        TransactionSupport transactionSupport = new XATransactions(
-                config.getUseTransactionCaching(), config.getUseThreadCaching());
+        TransactionSupport transactionSupport = createTransactionSupport(config);
         // note: XATransactions -> TransactionCachingInterceptor ->
         // ConnectorTransactionContext casts transaction to Geronimo's
         // TransactionImpl (from TransactionManagerImpl)
-        PoolingSupport poolingSupport = new PartitionedPool(
+        PoolingSupport poolingSupport = new SinglePool(
                 config.getMaxPoolSize(), config.getMinPoolSize(),
                 config.getBlockingTimeoutMillis(),
                 config.getIdleTimeoutMinutes(), config.getMatchOne(),
-                config.getMatchAll(), config.getSelectOneNoMatch(),
-                config.getPartitionByConnectionRequestInfo(),
-                config.getPartitionBySubject());
+                config.getMatchAll(), config.getSelectOneNoMatch());
 
-        final Subject subject = new Subject();
-        SubjectSource subjectSource = new SubjectSource() {
-            @Override
-            public Subject getSubject() {
-                return subject;
-            }
-        };
         ConnectionTrackingCoordinator connectionTracker = new ConnectionTrackingCoordinator();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader(); // NuxeoContainer.class.getClassLoader();
 
         return new GenericConnectionManager(transactionSupport, poolingSupport,
-                subjectSource, connectionTracker, transactionManager,
+                null, connectionTracker, transactionManager,
                 config.getName(), classLoader);
+    }
+
+    protected static TransactionSupport createTransactionSupport(
+            NuxeoConnectionManagerConfiguration config) {
+        if (config.getXAMode()) {
+            return new XATransactions(config.getUseTransactionCaching(),
+                    config.getUseThreadCaching());
+        }
+        return LocalTransactions.INSTANCE;
     }
 
     public static class TransactionManagerConfiguration {

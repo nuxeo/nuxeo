@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.datasource.tests">
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+    <datasource name="jdbc/foo" xaDataSource="org.nuxeo.runtime.datasource.h2.JdbcDataSource">
+      <property name="URL">jdbc:h2:${ds.test.home}/db</property>
+    </datasource>
+  </extension>
+</component>
