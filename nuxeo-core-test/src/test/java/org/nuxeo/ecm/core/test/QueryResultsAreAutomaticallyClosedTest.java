@@ -4,13 +4,14 @@ import junit.framework.Assert;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -34,10 +35,10 @@ public class QueryResultsAreAutomaticallyClosedTest {
             if (!Level.WARN.equals(event.getLevel())) {
                 return false;
             }
-            if (!CoreSession.class.getName().equals(event.getLoggerName())) {
+            if (!SessionImpl.class.getName().equals(event.getLoggerName())) {
                 return false;
             }
-            if (!AbstractSession.QueryAndFetchExecuteContextException.class.isAssignableFrom(event.getThrowableInformation().getThrowable().getClass())) {
+            if (!SessionImpl.QueryResultContextException.class.isAssignableFrom(event.getThrowableInformation().getThrowable().getClass())) {
                 return false;
             }
             return true;
@@ -51,7 +52,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
     protected LogCaptureFeature.Result logCaptureResults;
 
     @Test
-    public void testAutoCommit() throws Exception {
+    public void testWithoutTransaction() throws Exception {
         IterableQueryResult results;
         try (CoreSession session = settings.openSessionAsSystemUser()) {
             results = session.queryAndFetch("SELECT * from Document", "NXQL");
@@ -60,6 +61,8 @@ public class QueryResultsAreAutomaticallyClosedTest {
         logCaptureResults.assertHasEvent();
     }
 
+    // needs a JCA connection for this to work
+    @Ignore
     @Test
     public void testTransactional() throws Exception {
         TransactionHelper.startTransaction();

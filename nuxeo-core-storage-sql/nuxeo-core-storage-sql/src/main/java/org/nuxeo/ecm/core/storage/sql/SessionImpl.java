@@ -253,6 +253,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     protected void closeSession() throws StorageException {
+        closeStillOpenQueryResults();
         checkLive();
         live = false;
         context.clearCaches();
@@ -1265,9 +1266,45 @@ public class SessionImpl implements Session, XAResource {
             QueryFilter queryFilter, Object... params) throws StorageException {
         final Timer.Context timerContext = queryTimer.time();
         try {
-            return mapper.queryAndFetch(query, queryType, queryFilter, params);
+            IterableQueryResult result = mapper.queryAndFetch(query, queryType, queryFilter, params);
+            noteQueryResult(result);
+            return result;
         } finally  {
             timerContext.stop();
+        }
+    }
+
+    public static class QueryResultContextException extends Exception {
+        private static final long serialVersionUID = 1L;
+
+        public final IterableQueryResult queryResult;
+
+        public QueryResultContextException(IterableQueryResult queryResult) {
+            super("queryAndFetch call context");
+            this.queryResult = queryResult;
+        }
+    }
+
+    protected final Set<QueryResultContextException> queryResults = new HashSet<QueryResultContextException>();
+
+    protected void noteQueryResult(IterableQueryResult result) {
+        queryResults.add(new QueryResultContextException(result));
+    }
+
+    protected void closeStillOpenQueryResults() {
+        for (QueryResultContextException context : queryResults) {
+            if (!context.queryResult.isLife()) {
+                continue;
+            }
+            try {
+                context.queryResult.close();
+            } catch (RuntimeException e) {
+                log.error("Cannot close query result", e);
+            } finally {
+                log.warn(
+                        "Closing a query results for you, check stack trace for allocating point",
+                        context);
+            }
         }
     }
 
@@ -1416,6 +1453,7 @@ public class SessionImpl implements Session, XAResource {
     public void end(Xid xid, int flags) throws XAException {
         boolean failed = true;
         try {
+            closeStillOpenQueryResults();
             if (flags != TMFAIL) {
                 try {
                     flushAndScheduleWork();
