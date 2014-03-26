@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -98,8 +99,8 @@
     </profile>
     <profile>
       <id>sdk</id>
-      <!-- profile for building SDK distributions (they are always built when release
-        profile is activated) -->
+      <!-- profile for building SDK distributions (they are always built 
+        when release profile is activated) -->
     </profile>
     <profile>
       <id>release</id>
@@ -109,7 +110,8 @@
             <groupId>org.jboss.tattletale</groupId>
             <artifactId>tattletale-maven</artifactId>
             <configuration>
-              <source>${project.build.directory}/nuxeo-cap-${project.version}-tomcat/nxserver/lib</source>
+              <source>${project.build.directory}/nuxeo-cap-${project.version}-tomcat/nxserver/lib
+              </source>
             </configuration>
           </plugin>
         </plugins>
@@ -124,7 +126,8 @@
         <artifactId>ant-assembly-maven-plugin</artifactId>
         <configuration>
           <buildFiles>
-            <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+            <buildFile>${basedir}/src/main/assemble/assembly.xml
+            </buildFile>
           </buildFiles>
         </configuration>
         <executions>
