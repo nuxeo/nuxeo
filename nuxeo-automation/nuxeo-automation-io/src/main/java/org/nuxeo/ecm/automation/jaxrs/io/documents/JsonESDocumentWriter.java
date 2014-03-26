@@ -34,8 +34,9 @@ import org.nuxeo.runtime.api.Framework;
 @Produces({ "application/json+esentity" })
 public class JsonESDocumentWriter extends JsonDocumentWriter {
 
-    public static void writeDoc(JsonGenerator jg, DocumentModel doc, String[] schemas,
-            Map<String, String> contextParameters, HttpHeaders headers) throws Exception {
+    public static void writeDoc(JsonGenerator jg, DocumentModel doc,
+            String[] schemas, Map<String, String> contextParameters,
+            HttpHeaders headers) throws Exception {
 
         jg.writeStartObject();
         jg.writeStringField("ecm:repository", doc.getRepositoryName());
@@ -45,7 +46,8 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         jg.writeStringField("ecm:path", doc.getPathAsString());
         jg.writeStringField("ecm:primarytype", doc.getType());
         jg.writeStringField("ecm:parentId", doc.getParentRef().toString());
-        jg.writeStringField("ecm:currentLifeCycleState", doc.getCurrentLifeCycleState());
+        jg.writeStringField("ecm:currentLifeCycleState",
+                doc.getCurrentLifeCycleState());
         jg.writeStringField("ecm:versionLabel", doc.getVersionLabel());
         jg.writeBooleanField("ecm:isCheckedIn", !doc.isCheckedOut());
         jg.writeBooleanField("ecm:isProxy", doc.isProxy());
@@ -58,8 +60,8 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         TagService tagService = Framework.getService(TagService.class);
         if (tagService != null) {
             jg.writeArrayFieldStart("ecm:tag");
-            for (Tag tag : tagService.getDocumentTags(doc.getCoreSession(), doc.getId(),
-                    null)) {
+            for (Tag tag : tagService.getDocumentTags(doc.getCoreSession(),
+                    doc.getId(), null)) {
                 jg.writeString(tag.getLabel());
             }
             jg.writeEndArray();
@@ -71,13 +73,10 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
                 Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
         ACP acp = doc.getACP();
         ACL acl = acp.getACL(ACL.INHERITED_ACL);
-        if (acl==null) {
-            // blocked inheritance at this level
-            acl = acp.getACL(ACL.LOCAL_ACL);
-        }
         jg.writeArrayFieldStart("ecm:acl");
         for (ACE ace : acl.getACEs()) {
-            if (ace.isGranted() && browsePermissions.contains(ace.getPermission())) {
+            if (ace.isGranted()
+                    && browsePermissions.contains(ace.getPermission())) {
                 jg.writeString(ace.getUsername());
             }
             if (ace.isDenied()) {
@@ -105,14 +104,16 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
     }
 
     @Override
-    public void writeDocument(OutputStream out, DocumentModel doc, String[] schemas,
-            Map<String, String> contextParameters) throws Exception {
-        writeDoc(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc, schemas,
-                contextParameters, headers);
+    public void writeDocument(OutputStream out, DocumentModel doc,
+            String[] schemas, Map<String, String> contextParameters)
+            throws Exception {
+        writeDoc(factory.createJsonGenerator(out, JsonEncoding.UTF8), doc,
+                schemas, contextParameters, headers);
     }
 
     public static void writeESDocument(JsonGenerator jg, DocumentModel doc,
-            String[] schemas, Map<String, String> contextParameters) throws Exception {
+            String[] schemas, Map<String, String> contextParameters)
+            throws Exception {
         writeDoc(jg, doc, schemas, contextParameters, null);
     }
 

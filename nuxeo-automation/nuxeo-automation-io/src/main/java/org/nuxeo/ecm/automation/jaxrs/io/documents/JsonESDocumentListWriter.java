@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
@@ -31,8 +31,8 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * JSon writer that outputs an elasticsearch bulk format, response header
  * contains information about the number of results and pagination.
- * 
- * 
+ *
+ *
  * @since 5.9.3
  */
 @Provider
@@ -58,7 +58,6 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
 
     public static final String DEFAULT_ES_TYPE = "doc";
 
-
     @Context
     private HttpServletResponse response;
 
@@ -68,11 +67,12 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
     @Override
     public void writeDocuments(OutputStream out, List<DocumentModel> docs,
             String[] schemas) throws Exception {
-        writeDocs(factory.createJsonGenerator(out, JsonEncoding.UTF8), docs, schemas);
+        writeDocs(factory.createJsonGenerator(out, JsonEncoding.UTF8), docs,
+                schemas);
     }
 
-    public void writeDocs(JsonGenerator jg, List<DocumentModel> docs, String[] schemas)
-            throws Exception {
+    public void writeDocs(JsonGenerator jg, List<DocumentModel> docs,
+            String[] schemas) throws Exception {
         String esIndex = request.getParameter("esIndex");
         if (esIndex == null) {
             esIndex = DEFAULT_ES_INDEX;
@@ -90,22 +90,22 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
                     Long.valueOf(provider.getNumberOfPages()).toString());
             response.setHeader(HEADER_RESULTS_COUNT,
                     Long.valueOf(provider.getResultsCount()).toString());
-            response.setHeader(HEADER_PAGE_SIZE, Long.valueOf(provider.size()).toString());
+            response.setHeader(HEADER_PAGE_SIZE,
+                    Long.valueOf(provider.size()).toString());
             response.setHeader(HEADER_IS_LAST_PAGE_AVAILABLE,
                     Boolean.valueOf(provider.isLastPageAvailable()).toString());
-            response.setHeader(HEADER_HAS_ERROR, Boolean.valueOf(provider.hasError())
-                    .toString());
+            response.setHeader(HEADER_HAS_ERROR,
+                    Boolean.valueOf(provider.hasError()).toString());
             response.setHeader(HEADER_ERROR_MESSAGE, provider.getErrorMessage());
 
-            DocumentViewCodecManager documentViewCodecManager = Framework
-                    .getLocalService(DocumentViewCodecManager.class);
+            DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
             String codecName = null;
             if (documentViewCodecManager == null) {
                 log.warn("Service 'DocumentViewCodecManager' not available : documentUrl won't be generated");
             } else {
                 String documentLinkBuilder = provider.getDocumentLinkBuilder();
-                codecName = isBlank(documentLinkBuilder) ? documentViewCodecManager
-                        .getDefaultCodecName() : documentLinkBuilder;
+                codecName = isBlank(documentLinkBuilder) ? documentViewCodecManager.getDefaultCodecName()
+                        : documentLinkBuilder;
             }
             for (DocumentModel doc : docs) {
                 // write ES action
@@ -122,24 +122,26 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
                 DocumentLocation docLoc = new DocumentLocationImpl(doc);
                 Map<String, String> contextParameters = new HashMap<String, String>();
                 if (documentViewCodecManager != null) {
-                    DocumentView docView = new DocumentViewImpl(docLoc, doc.getAdapter(
-                            TypeInfo.class).getDefaultView());
+                    DocumentView docView = new DocumentViewImpl(docLoc,
+                            doc.getAdapter(TypeInfo.class).getDefaultView());
                     String documentURL = VirtualHostHelper.getContextPathProperty()
                             + "/"
-                            + documentViewCodecManager.getUrlFromDocumentView(codecName,
-                                    docView, false, null);
+                            + documentViewCodecManager.getUrlFromDocumentView(
+                                    codecName, docView, false, null);
                     contextParameters.put("ecm:documentUrl", documentURL);
                 }
-                JsonESDocumentWriter.writeESDocument(jg, doc, schemas, contextParameters);
+                JsonESDocumentWriter.writeESDocument(jg, doc, schemas,
+                        contextParameters);
                 jg.writeRaw('\n');
             }
         } else {
             response.setHeader(HEADER_CURRENT_PAGE_INDEX, "1");
             response.setHeader(HEADER_NUMBER_OF_PAGES, "1");
             response.setHeader(HEADER_IS_LAST_PAGE_AVAILABLE, "1");
-            response.setHeader(HEADER_RESULTS_COUNT, Integer.valueOf(docs.size())
-                    .toString());
-            response.setHeader(HEADER_PAGE_SIZE, Integer.valueOf(docs.size()).toString());
+            response.setHeader(HEADER_RESULTS_COUNT,
+                    Integer.valueOf(docs.size()).toString());
+            response.setHeader(HEADER_PAGE_SIZE,
+                    Integer.valueOf(docs.size()).toString());
             response.setHeader(HEADER_HAS_ERROR, "false");
             for (DocumentModel doc : docs) {
                 JsonESDocumentWriter.writeESDocument(jg, doc, schemas, null);
