@@ -16,6 +16,7 @@
       <event>documentRemoved</event>
       <event>sessionSaved</event>
       <event>documentCheckedOut</event>
+      <event>documentCheckedIn</event>
     </listener>
 
     <listener name="elasticSearchPostCommitSyncListener" async="false"

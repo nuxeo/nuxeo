@@ -107,6 +107,14 @@
          "type" : "string",
          "analyzer" : "en_analyzer"
       },
+      "dc:created": {
+         "format": "dateOptionalTime",
+        "type": "date"
+      },
+      "dc:modified": {
+         "format": "dateOptionalTime",
+        "type": "date"
+      },
       "ecm:path" : {
          "fields" : {
             "children" : {
