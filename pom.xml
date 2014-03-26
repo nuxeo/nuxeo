@@ -2808,6 +2808,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.tranql</groupId>
+        <artifactId>tranql-connector</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.geronimo.components</groupId>
         <artifactId>geronimo-transaction</artifactId>
         <version>2.2.1</version>
