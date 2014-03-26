@@ -155,7 +155,7 @@ public class TestNXQLConversion {
                 "    },\n" +
                 "    \"filter\" : {\n" +
                 "      \"terms\" : {\n" +
-                "        \"ecm:primarytype\" : [ \"File\" ]\n" +
+                "        \"ecm:primaryType\" : [ \"File\" ]\n" +
                 "      }\n" +
                 "    }\n" +
                 "  }\n" +
@@ -169,7 +169,7 @@ public class TestNXQLConversion {
                 "    },\n" +
                 "    \"filter\" : {\n" +
                 "      \"terms\" : {\n" +
-                "        \"ecm:primarytype\" : [ \"File\", \"Note\" ]\n" +
+                "        \"ecm:primaryType\" : [ \"File\", \"Note\" ]\n" +
                 "      }\n" +
                 "    }\n" +
                 "  }\n" +
@@ -485,7 +485,7 @@ public class TestNXQLConversion {
                 "    },\n" +
                 "    \"filter\" : {\n" +
                 "      \"terms\" : {\n" +
-                "        \"ecm:primarytype\" : [ \"File\", \"Note\", \"Workspace\" ]\n" +
+                "        \"ecm:primaryType\" : [ \"File\", \"Note\", \"Workspace\" ]\n" +
                 "      }\n" +
                 "    }\n" +
                 "  }\n" +
