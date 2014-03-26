@@ -52,7 +52,6 @@
       <resource>jquery.tools.cookie.js</resource>
       <resource>fancybox-popup-utils.js</resource>
       <resource>contextmenu.js</resource>
-      <resource>jquery.tools.tooltip.min.js</resource>
       <resource>jquery.tools.focusfirst.js</resource>
       <resource>jquery.hotkeys.js</resource>
       <resource>sarissa-ie-workaround.js</resource>
@@ -146,9 +145,6 @@
     </resource>
     <resource name="DragAndDrop.js">
       <path>scripts/DragAndDrop.js</path>
-    </resource>
-    <resource name="jquery.tools.tooltip.min.js">
-      <path>scripts/jquery/jquery.tools.tooltip.min.js</path>
     </resource>
     <resource name="hideableAdminMessage.js">
       <path>scripts/hideableAdminMessage.js</path>
