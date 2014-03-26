@@ -11,6 +11,14 @@
   <packaging>zip</packaging>
   <name>Marketplace package of Nuxeo Social Collaboration</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-social-collaboration</artifactId>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>

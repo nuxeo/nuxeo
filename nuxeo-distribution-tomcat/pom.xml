@@ -47,6 +47,27 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
     </dependency>
+    <!-- Marketplace packages embedded in Tomcat distribution -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-marketplace-dm</artifactId>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.marketplace.dam</groupId>
+      <artifactId>marketplace-dam</artifactId>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-marketplace-social-collaboration</artifactId>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-marketplace-rest-api</artifactId>
+      <type>zip</type>
+    </dependency>
   </dependencies>
 
   <profiles>
