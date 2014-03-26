@@ -42,9 +42,7 @@ import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
-import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
-import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
@@ -248,6 +246,9 @@ public class NXQLQueryConverter {
             List<String> fulltextFields) {
         QueryBuilder query = null;
         FilterBuilder filter = null;
+        if (NXQL.ECM_ISVERSION_OLD.equals(name)) {
+            name = NXQL.ECM_ISVERSION;
+        }
         if ("=".equals(op) || "!=".equals(op) || "<>".equals(op)) {
             if (fulltextFields != null && fulltextFields.contains(name)) {
                 if (NXQL.ECM_FULLTEXT.equals(name)) {
@@ -303,7 +304,6 @@ public class NXQLQueryConverter {
         return new QueryAndFilter(query, filter);
     }
 
-
     public static List<SortInfo> getSortInfo(String nxql) {
 
         final List<SortInfo> sortInfos = new ArrayList<>();
@@ -315,7 +315,8 @@ public class NXQLQueryConverter {
 
             @Override
             public void visitOrderByExpr(OrderByExpr node) {
-                sortInfos.add(new SortInfo(node.reference.name, !node.isDescending));
+                sortInfos.add(new SortInfo(node.reference.name,
+                        !node.isDescending));
             }
 
         });

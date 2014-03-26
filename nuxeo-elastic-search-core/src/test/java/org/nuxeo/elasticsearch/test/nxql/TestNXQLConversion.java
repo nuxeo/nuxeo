@@ -470,4 +470,21 @@ public class TestNXQLConversion {
                 "}", es);
     }
 
+    @Test
+    public void testConverterIsVersion() throws Exception {
+        String es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where ecm:isVersion = 1").toString();
+        Assert.assertEquals("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"term\" : {\n" +
+                "        \"ecm:isVersion\" : \"1\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+        String es2 = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where ecm:isCheckedInVersion = 1").toString();
+        Assert.assertEquals(es, es2);
+    }
 }
