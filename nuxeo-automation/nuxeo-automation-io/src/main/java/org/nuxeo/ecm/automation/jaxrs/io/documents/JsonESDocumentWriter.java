@@ -56,7 +56,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         jg.writeStringField("ecm:name", doc.getName());
         jg.writeStringField("ecm:title", doc.getTitle());
         jg.writeStringField("ecm:path", doc.getPathAsString());
-        jg.writeStringField("ecm:primarytype", doc.getType());
+        jg.writeStringField("ecm:primaryType", doc.getType());
         jg.writeStringField("ecm:parentId", doc.getParentRef().toString());
         jg.writeStringField("ecm:currentLifeCycleState",
                 doc.getCurrentLifeCycleState());
