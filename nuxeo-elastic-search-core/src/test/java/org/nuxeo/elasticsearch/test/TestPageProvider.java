@@ -194,10 +194,10 @@ public class TestPageProvider {
 
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         Assert.assertEquals("{\n" +
-                "  \"constant_score\" : {\n" +
-                "    \"filter\" : {\n" +
-                "      \"bool\" : {\n" +
-                "        \"must\" : {\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : {\n" +
+                "      \"constant_score\" : {\n" +
+                "        \"filter\" : {\n" +
                 "          \"terms\" : {\n" +
                 "            \"dc:title\" : [ \"foo\", \"bar\" ]\n" +
                 "          }\n" +
@@ -210,10 +210,10 @@ public class TestPageProvider {
         model.setPropertyValue("dc:subjects", new String[] { "foo" });
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         Assert.assertEquals("{\n" +
-                "  \"constant_score\" : {\n" +
-                "    \"filter\" : {\n" +
-                "      \"bool\" : {\n" +
-                "        \"must\" : {\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : {\n" +
+                "      \"constant_score\" : {\n" +
+                "        \"filter\" : {\n" +
                 "          \"terms\" : {\n" +
                 "            \"dc:title\" : [ \"foo\" ]\n" +
                 "          }\n" +
@@ -226,7 +226,6 @@ public class TestPageProvider {
         // criteria with no values are removed
         model.setPropertyValue("dc:subjects", new String[] {});
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
-
         Assert.assertEquals("{\n" +
                 "  \"match_all\" : { }\n" +
                 "}", qb.toString());
@@ -246,10 +245,10 @@ public class TestPageProvider {
         model.setPropertyValue("search:integerlist", array1);
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         Assert.assertEquals("{\n" +
-                "  \"constant_score\" : {\n" +
-                "    \"filter\" : {\n" +
-                "      \"bool\" : {\n" +
-                "        \"must\" : {\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : {\n" +
+                "      \"constant_score\" : {\n" +
+                "        \"filter\" : {\n" +
                 "          \"terms\" : {\n" +
                 "            \"size\" : [ 1, 2, 3 ]\n" +
                 "          }\n" +
@@ -265,10 +264,10 @@ public class TestPageProvider {
         model.setPropertyValue("search:integerlist", (Serializable) list);
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         Assert.assertEquals("{\n" +
-                "  \"constant_score\" : {\n" +
-                "    \"filter\" : {\n" +
-                "      \"bool\" : {\n" +
-                "        \"must\" : {\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : {\n" +
+                "      \"constant_score\" : {\n" +
+                "        \"filter\" : {\n" +
                 "          \"terms\" : {\n" +
                 "            \"size\" : [ 1, 2, 3 ]\n" +
                 "          }\n" +
@@ -277,7 +276,6 @@ public class TestPageProvider {
                 "    }\n" +
                 "  }\n" +
                 "}", qb.toString());
-
 
     }
 
@@ -298,25 +296,18 @@ public class TestPageProvider {
 
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true);
         Assert.assertEquals("{\n" +
-                "  \"filtered\" : {\n" +
-                "    \"query\" : {\n" +
-                "      \"bool\" : {\n" +
-                "        \"must\" : [ {\n" +
-                "          \"query_string\" : {\n" +
-                "            \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
-                "          }\n" +
-                "        }, {\n" +
-                "          \"regexp\" : {\n" +
-                "            \"dc:title\" : {\n" +
-                "              \"value\" : \"bar\"\n" +
-                "            }\n" +
-                "          }\n" +
-                "        } ]\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [ {\n" +
+                "      \"query_string\" : {\n" +
+                "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
                 "      }\n" +
-                "    },\n" +
-                "    \"filter\" : {\n" +
-                "      \"bool\" : { }\n" +
-                "    }\n" +
+                "    }, {\n" +
+                "      \"regexp\" : {\n" +
+                "        \"dc:title\" : {\n" +
+                "          \"value\" : \"bar\"\n" +
+                "        }\n" +
+                "      }\n" +
+                "    } ]\n" +
                 "  }\n" +
                 "}", qb.toString());
 
@@ -324,31 +315,27 @@ public class TestPageProvider {
 
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true);
         Assert.assertEquals("{\n" +
-                "  \"filtered\" : {\n" +
-                "    \"query\" : {\n" +
-                "      \"bool\" : {\n" +
-                "        \"must\" : [ {\n" +
-                "          \"query_string\" : {\n" +
-                "            \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
-                "          }\n" +
-                "        }, {\n" +
-                "          \"regexp\" : {\n" +
-                "            \"dc:title\" : {\n" +
-                "              \"value\" : \"bar\"\n" +
-                "            }\n" +
-                "          }\n" +
-                "        } ]\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [ {\n" +
+                "      \"query_string\" : {\n" +
+                "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
                 "      }\n" +
-                "    },\n" +
-                "    \"filter\" : {\n" +
-                "      \"bool\" : {\n" +
-                "        \"must_not\" : {\n" +
-                "          \"exists\" : {\n" +
-                "            \"field\" : \"dc:modified\"\n" +
+                "    }, {\n" +
+                "      \"regexp\" : {\n" +
+                "        \"dc:title\" : {\n" +
+                "          \"value\" : \"bar\"\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }, {\n" +
+                "      \"constant_score\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"missing\" : {\n" +
+                "            \"field\" : \"dc:modified\",\n" +
+                "            \"null_value\" : true\n" +
                 "          }\n" +
                 "        }\n" +
                 "      }\n" +
-                "    }\n" +
+                "    } ]\n" +
                 "  }\n" +
                 "}",
                 qb.toString());
@@ -357,31 +344,27 @@ public class TestPageProvider {
         model.setPropertyValue("search:isPresent", Boolean.FALSE);
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true);
         Assert.assertEquals("{\n" +
-                "  \"filtered\" : {\n" +
-                "    \"query\" : {\n" +
-                "      \"bool\" : {\n" +
-                "        \"must\" : [ {\n" +
-                "          \"query_string\" : {\n" +
-                "            \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
-                "          }\n" +
-                "        }, {\n" +
-                "          \"regexp\" : {\n" +
-                "            \"dc:title\" : {\n" +
-                "              \"value\" : \"bar\"\n" +
-                "            }\n" +
-                "          }\n" +
-                "        } ]\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [ {\n" +
+                "      \"query_string\" : {\n" +
+                "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
                 "      }\n" +
-                "    },\n" +
-                "    \"filter\" : {\n" +
-                "      \"bool\" : {\n" +
-                "        \"must_not\" : {\n" +
-                "          \"exists\" : {\n" +
-                "            \"field\" : \"dc:modified\"\n" +
+                "    }, {\n" +
+                "      \"regexp\" : {\n" +
+                "        \"dc:title\" : {\n" +
+                "          \"value\" : \"bar\"\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }, {\n" +
+                "      \"constant_score\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"missing\" : {\n" +
+                "            \"field\" : \"dc:modified\",\n" +
+                "            \"null_value\" : true\n" +
                 "          }\n" +
                 "        }\n" +
                 "      }\n" +
-                "    }\n" +
+                "    } ]\n" +
                 "  }\n" +
                 "}",
                 qb.toString());

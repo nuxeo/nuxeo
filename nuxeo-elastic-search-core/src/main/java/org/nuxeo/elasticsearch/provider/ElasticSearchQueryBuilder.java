@@ -22,12 +22,9 @@ import java.util.Calendar;
 import java.util.Collection;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -47,9 +44,10 @@ public class ElasticSearchQueryBuilder {
      * Create a ES request from a PP pattern
      *
      */
-    public static QueryBuilder makeQuery(final String pattern, final Object[] params,
-            final boolean quotePatternParameters, final boolean escapePatternParameters,
-            final boolean useNativeQuery) throws ClientException {
+    public static QueryBuilder makeQuery(final String pattern,
+            final Object[] params, final boolean quotePatternParameters,
+            final boolean escapePatternParameters, final boolean useNativeQuery)
+            throws ClientException {
         String query = pattern;
         for (int i = 0; i < params.length; i++) {
             query = query.replaceFirst("\\?", convertParam(params[i]));
@@ -70,11 +68,8 @@ public class ElasticSearchQueryBuilder {
             final boolean useNativeQuery) throws ClientException {
         assert (model != null);
         assert (whereClause != null);
-
-        BoolQueryBuilder query = QueryBuilders.boolQuery();
-        BoolFilterBuilder filter = FilterBuilders.boolFilter();
-        boolean hasFilter = false;
-
+        NXQLQueryConverter.ExpressionBuilder eb = new NXQLQueryConverter.ExpressionBuilder(
+                "AND");
         // Fixed part handled as query_string
         String fixedPart = whereClause.getFixedPart();
         if (params != null) {
@@ -83,23 +78,23 @@ public class ElasticSearchQueryBuilder {
                         convertParam(params[i]));
             }
             if (useNativeQuery) {
-                query.must(QueryBuilders.queryString(fixedPart));
+                eb.add(QueryBuilders.queryString(fixedPart));
             } else {
-                query.must(NXQLQueryConverter.toESQueryBuilder(fixedPart));
+                eb.add(NXQLQueryConverter.toESQueryBuilder(fixedPart));
             }
         }
         // Process predicates
         for (PredicateDefinition predicate : whereClause.getPredicates()) {
             PredicateFieldDefinition[] fieldDef = predicate.getValues();
-            Object[] val;
+            Object[] values;
             try {
-                val = new Object[fieldDef.length];
+                values = new Object[fieldDef.length];
                 for (int fidx = 0; fidx < fieldDef.length; fidx++) {
                     if (fieldDef[fidx].getXpath() != null) {
-                        val[fidx] = model.getPropertyValue(fieldDef[fidx]
+                        values[fidx] = model.getPropertyValue(fieldDef[fidx]
                                 .getXpath());
                     } else {
-                        val[fidx] = model.getProperty(
+                        values[fidx] = model.getProperty(
                                 fieldDef[fidx].getSchema(),
                                 fieldDef[fidx].getName());
                     }
@@ -107,98 +102,23 @@ public class ElasticSearchQueryBuilder {
             } catch (Exception e) {
                 throw new ClientRuntimeException(e);
             }
-            if (!isNonNullParam(val)) {
+            if (!isNonNullParam(values)) {
                 // skip predicate where all values are null
                 continue;
             }
-            String field = predicate.getParameter();
+            Object value = values[0];
+            if (values[0] instanceof Collection<?>) {
+                Collection<?> vals = (Collection<?>) values[0];
+                values = vals.toArray(new Object[vals.size()]);
+            } else if (values[0] instanceof Object[]) {
+                values = (Object[]) values[0];
+            }
+            String name = predicate.getParameter();
             String operator = predicate.getOperator().toUpperCase();
-            Object firstValue = val[0];
-            if (operator.equals("=")) {
-                filter.must(FilterBuilders.termFilter(field, firstValue));
-                hasFilter = true;
-            } else if (operator.equals("!=") || operator.equals("<>")) {
-                filter.mustNot(FilterBuilders.termFilter(field, firstValue));
-                hasFilter = true;
-            } else if (operator.equals("<")) {
-                filter.must(FilterBuilders.rangeFilter(field).lt(firstValue));
-                hasFilter = true;
-            } else if (operator.equals(">")) {
-                filter.must(FilterBuilders.rangeFilter(field).gt(firstValue));
-                hasFilter = true;
-            } else if (operator.equals("<=")) {
-                filter.must(FilterBuilders.rangeFilter(field).lte(firstValue));
-                hasFilter = true;
-            } else if (operator.equals(">=")) {
-                filter.must(FilterBuilders.rangeFilter(field).gte(firstValue));
-                hasFilter = true;
-            } else if (operator.equals("LIKE")) {
-                // TODO convert like pattern
-                query.must(QueryBuilders
-                        .regexpQuery(field, (String) firstValue));
-            } else if (operator.equals("ILIKE")) {
-                // TODO convert ilike pattern
-                query.must(QueryBuilders
-                        .regexpQuery(field, (String) firstValue));
-            } else if (operator.equals("IN")) {
-                if (val[0] instanceof Collection<?>) {
-                    // TODO check if all iterable are collection
-                    Collection<?> vals = (Collection<?>) val[0];
-                    Object[] valArray = vals.toArray(new Object[vals.size()]);
-                    filter.must(FilterBuilders.inFilter(field, valArray));
-                    hasFilter = true;
-                } else if (val[0] instanceof Object[]) {
-                    Object[] vals = (Object[]) val[0];
-                    filter.must(FilterBuilders.inFilter(field, vals));
-                    hasFilter = true;
-                }
-            } else if (operator.equals("BETWEEN")) {
-                Object startValue = firstValue;
-                Object endValue = null;
-                if (val.length > 1) {
-                    endValue = val[1];
-                }
-                RangeFilterBuilder range = FilterBuilders.rangeFilter(field);
-                if (startValue != null) {
-                    range.from(startValue);
-                }
-                if (endValue != null) {
-                    range.to(endValue);
-                }
-                filter.must(range);
-                hasFilter = true;
-            } else if (operator.equals("IS NOT NULL")) {
-                filter.must(FilterBuilders.existsFilter(field));
-                hasFilter = true;
-            } else if (operator.equals("IS NULL")) {
-                filter.mustNot(FilterBuilders.existsFilter(field));
-                hasFilter = true;
-            } else if (operator.equals("FULLTEXT")) {
-                // convention on the name of the fulltext analyzer to use
-                query.must(QueryBuilders.simpleQueryString((String) firstValue)
-                        .field("_all").analyzer("fulltext"));
-            } else if (operator.equals("STARTSWITH")) {
-                if (field.equals("ecm:path")) {
-                    query.must(QueryBuilders.matchQuery(field + ".children",
-                            firstValue));
-                } else {
-                    query.must(QueryBuilders.prefixQuery(field,
-                            (String) firstValue));
-                }
-            } else {
-                throw new ClientException("Not implemented operator: "
-                        + operator);
-            }
+            eb.add(NXQLQueryConverter.makeQueryFromSimpleExpression(operator,
+                    name, value, values));
         }
-        if (!query.hasClauses()) {
-            if (hasFilter) {
-                return QueryBuilders.constantScoreQuery(filter);
-            } else {
-                // match all
-                return QueryBuilders.matchAllQuery();
-            }
-        }
-        return QueryBuilders.filteredQuery(query, filter);
+        return eb.get();
     }
 
     protected static TermsFilterBuilder getSecurityFilter(

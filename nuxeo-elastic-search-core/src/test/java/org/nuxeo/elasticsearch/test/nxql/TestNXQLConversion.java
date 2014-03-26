@@ -146,7 +146,50 @@ public class TestNXQLConversion {
         //Assert.assertEquals("foo", es);
         es = NXQLQueryConverter.toESQueryBuilder(
                 "select * from Document where f1=1 AND f2=2").toString();
-        //Assert.assertEquals("foo", es);
+        Assert.assertEquals("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [ {\n" +
+                "      \"constant_score\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"term\" : {\n" +
+                "            \"f1\" : \"1\"\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }, {\n" +
+                "      \"constant_score\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"term\" : {\n" +
+                "            \"f2\" : \"2\"\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    } ]\n" +
+                "  }\n" +
+                "}", es);
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 IS NULL").toString();
+        Assert.assertEquals("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"missing\" : {\n" +
+                "        \"field\" : \"f1\",\n" +
+                "        \"null_value\" : true\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document where f1 IS NOT NULL").toString();
+        Assert.assertEquals("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"exists\" : {\n" +
+                "        \"field\" : \"f1\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
 
         es = NXQLQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 LIKE 'foo%' AND f2='bar'").toString();
@@ -212,6 +255,25 @@ public class TestNXQLConversion {
                         "select * from Document where ecm:fulltext='foo bar' AND ecm:path STARTSWITH '/foo/bar' OR ecm:path='/foo/'")
                .toString();
         //Assert.assertEquals("foo", es);
+        es = NXQLQueryConverter
+                .toESQueryBuilder(
+                        "select * from Document where f1 BETWEEN 1 AND 5")
+               .toString();
+        Assert.assertEquals("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"range\" : {\n" +
+                "        \"f1\" : {\n" +
+                "          \"from\" : \"1\",\n" +
+                "          \"to\" : \"5\",\n" +
+                "          \"include_lower\" : true,\n" +
+                "          \"include_upper\" : true\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+
         es = NXQLQueryConverter
                 .toESQueryBuilder(
                         "select * from Document where f1 IN ('foo', 'bar', 'foo') AND NOT f2>=3")

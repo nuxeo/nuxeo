@@ -50,21 +50,41 @@ import org.nuxeo.ecm.core.query.sql.model.SelectClause;
  */
 public class NXQLQueryConverter {
 
+    /**
+     * Class to hold both a query and a filter
+     *
+     */
+    public static class QueryAndFilter {
+
+        public QueryBuilder query;
+        public FilterBuilder filter;
+
+        public QueryAndFilter(QueryBuilder query, FilterBuilder filter) {
+            this.query = query;
+            this.filter = filter;
+        }
+    }
+
     public static class ExpressionBuilder {
 
-        public Operator operator;
+        public String operator;
         public QueryBuilder query;
 
-        public ExpressionBuilder(Operator op) {
+        public ExpressionBuilder(final String op) {
             this.operator = op;
             this.query = null;
         }
 
-        public ExpressionBuilder(QueryBuilder query, FilterBuilder filter) {
-            add(query, filter);
+        public void add(final QueryAndFilter qf) {
+            if (qf != null)
+                add(qf.query, qf.filter);
         }
 
-        public void add(QueryBuilder q, FilterBuilder f) {
+        public void add(QueryBuilder q) {
+            add(q, null);
+        }
+
+        public void add(final QueryBuilder q, final FilterBuilder f) {
             if (q == null && f == null) {
                 return;
             }
@@ -81,11 +101,11 @@ public class NXQLQueryConverter {
                     query = QueryBuilders.boolQuery();
                 }
                 BoolQueryBuilder boolQuery = (BoolQueryBuilder) query;
-                if (Operator.AND.equals(operator)) {
+                if ("AND".equals(operator)) {
                     boolQuery.must(inputQuery);
-                } else if (Operator.OR.equals(operator)) {
+                } else if ("OR".equals(operator)) {
                     boolQuery.should(inputQuery);
-                } else if (Operator.NOT.equals(operator)) {
+                } else if ("NOT".equals(operator)) {
                     boolQuery.mustNot(inputQuery);
                 }
             }
@@ -95,17 +115,20 @@ public class NXQLQueryConverter {
             if ((expr.operator == operator) && (query == null)) {
                 query = expr.query;
             } else {
-                add(expr.query, null);
+                add(new QueryAndFilter(expr.query, null));
             }
         }
 
         public QueryBuilder get() {
+            if (query == null) {
+                return QueryBuilders.matchAllQuery();
+            }
             return query;
         }
 
         @Override
         public String toString() {
-            return get().toString();
+            return query.toString();
         }
 
     }
@@ -143,109 +166,102 @@ public class NXQLQueryConverter {
 
             @Override
             public void visitExpression(Expression node) {
-                Reference ref = node.lvalue instanceof Reference ? (Reference) node.lvalue
-                        : null;
-                String name = ref != null ? ref.name : null;
-                if (name == null) {
-                    name = node.lvalue.toString();
-                }
                 Operator op = node.operator;
-                Operand rvalue = node.rvalue;
-                String value = null;
-                try {
-                    value = ((Literal) node.rvalue).asString();
-                } catch (Throwable e) {
-                    if (node.rvalue != null) {
-                        value = node.rvalue.toString();
-                    }
-                }
-                FilterBuilder filter = null;
-                QueryBuilder query = null;
                 if (op == Operator.AND || op == Operator.OR
                         || op == Operator.NOT) {
-                    builders.add(new ExpressionBuilder(op));
+                    builders.add(new ExpressionBuilder(op.toString()));
                     super.visitExpression(node);
-                } else if (op == Operator.EQ || op == Operator.NOTEQ) {
-                    // TODO: Remove hardcoded fields that requires a
-                    // fulltext analyzer
-                    if ("dc:title".equals(name)
-                            || NXQL.ECM_FULLTEXT.equals(name)) {
-                        query = QueryBuilders.matchQuery(name, value).operator(
-                                MatchQueryBuilder.Operator.AND);
-                    } else {
-                        filter = FilterBuilders.termFilter(name, value);
-                    }
-                    if (op == Operator.NOTEQ) {
-                        if (filter != null) {
-                            filter = FilterBuilders.notFilter(filter);
-                        } else {
-                            filter = FilterBuilders.notFilter(FilterBuilders
-                                    .queryFilter(query));
-                            query = null;
-                        }
-                    }
-                } else if (op == Operator.LIKE) {
-                    value = value.replace('%', '*');
-                    query = QueryBuilders.regexpQuery(name, value);
-                } else if (op == Operator.ILIKE) {
-                    // TODO: this does not work because case sensitivity is
-                    // defined by the ES mapping
-                    value = value.replace('%', '*');
-                    query = QueryBuilders.regexpQuery(name, value);
-
-                } else if (op == Operator.BETWEEN) {
-                    LiteralList l = (LiteralList) rvalue;
-                    filter = FilterBuilders.rangeFilter(name)
-                            .from(l.get(0).asString()).to(l.get(1).asString());
-                } else if (op == Operator.IN) {
-                    LiteralList items = (LiteralList) rvalue;
-                    Object[] vals = new Object[items.size()];
-                    int i = 0;
-                    for (Literal item : items) {
-                        vals[i++] = item.asString();
-                    }
-                    filter = FilterBuilders.inFilter(name, vals);
-                } else if (op == Operator.STARTSWITH) {
-                    if (name != null && name.equals(NXQL.ECM_PATH)) {
-                        filter = FilterBuilders.termFilter(name + ".children",
-                                value);
-                    } else {
-                        filter = FilterBuilders.prefixFilter(name, value);
-                    }
-                } else if (NXQL.ECM_FULLTEXT.equals(name)) {
-                    query = QueryBuilders.matchQuery("_all", value).operator(
-                            MatchQueryBuilder.Operator.AND);
-                } else if (op == Operator.GT) {
-                    filter = FilterBuilders.rangeFilter(name).gt(value);
-                } else if (op == Operator.LT) {
-                    filter = FilterBuilders.rangeFilter(name).lt(value);
-                } else if (op == Operator.GTEQ) {
-                    filter = FilterBuilders.rangeFilter(name).gte(value);
-                } else if (op == Operator.LTEQ) {
-                    filter = FilterBuilders.rangeFilter(name).lte(value);
-                } else if (op == Operator.ISNULL) {
-                    filter = FilterBuilders.missingFilter(name);
-                } else if (op == Operator.ISNOTNULL) {
-                    filter = FilterBuilders.existsFilter(name);
-                }
-
-                builders.get(builders.size() - 1).add(query, filter);
-
-                if (op == Operator.AND || op == Operator.OR
-                        || op == Operator.NOT) {
                     ExpressionBuilder expr = builders.removeLast();
                     if (!builders.isEmpty()) {
                         builders.getLast().merge(expr);
                     }
+                } else {
+                    Reference ref = node.lvalue instanceof Reference ? (Reference) node.lvalue
+                            : null;
+                    String name = ref != null ? ref.name : node.lvalue
+                            .toString();
+                    String value = null;
+                    try {
+                        value = ((Literal) node.rvalue).asString();
+                    } catch (Throwable e) {
+                        if (node.rvalue != null) {
+                            value = node.rvalue.toString();
+                        }
+                    }
+                    Object[] values = null;
+                    if (node.rvalue instanceof LiteralList) {
+                        LiteralList items = (LiteralList) node.rvalue;
+                        values = new Object[items.size()];
+                        int i = 0;
+                        for (Literal item : items) {
+                            values[i++] = item.asString();
+                        }
+                    }
+                    // add expression to the last builder
+                    builders.getLast().add(
+                            makeQueryFromSimpleExpression(op.toString(), name,
+                                    value, values));
                 }
             }
-
         });
-
-        if (ret.get()==null) {
-            return QueryBuilders.matchAllQuery();
-        }
         return ret.get();
+    }
+
+    public static QueryAndFilter makeQueryFromSimpleExpression(String op,
+            String name, Object value, Object[] values) {
+        QueryBuilder query = null;
+        FilterBuilder filter = null;
+        if ("=".equals(op) || "!=".equals(op) || "<>".equals(op)) {
+            // TODO: Remove hardcoded fields that requires a
+            // fulltext analyzer
+            if ("dc:title".equals(name) || NXQL.ECM_FULLTEXT.equals(name)) {
+                query = QueryBuilders.matchQuery(name, value).operator(
+                        MatchQueryBuilder.Operator.AND);
+            } else {
+                filter = FilterBuilders.termFilter(name, value);
+            }
+            if (!"=".equals(op)) {
+                if (filter != null) {
+                    filter = FilterBuilders.notFilter(filter);
+                } else {
+                    filter = FilterBuilders.notFilter(FilterBuilders
+                            .queryFilter(query));
+                    query = null;
+                }
+            }
+        } else if ("LIKE".equals(op) || "ILIKE".equals(op)) {
+            // Note that ILIKE will work only with a correct mapping
+            value = ((String) value).replace('%', '*');
+            query = QueryBuilders.regexpQuery(name, (String) value);
+        } else if ("BETWEEN".equals(op)) {
+            filter = FilterBuilders.rangeFilter(name).from(values[0])
+                    .to(values[1]);
+        } else if ("IN".equals(op)) {
+            filter = FilterBuilders.inFilter(name, values);
+        } else if ("STARTSWITH".equals(op)) {
+            if (name != null && name.equals(NXQL.ECM_PATH)) {
+                filter = FilterBuilders.termFilter(name + ".children", value);
+            } else {
+                filter = FilterBuilders.prefixFilter(name, (String) value);
+            }
+        } else if (NXQL.ECM_FULLTEXT.equals(name)) {
+            query = QueryBuilders.matchQuery("_all", value)
+                    .operator(MatchQueryBuilder.Operator.AND)
+                    .analyzer("fulltext");
+        } else if (">".equals(op)) {
+            filter = FilterBuilders.rangeFilter(name).gt(value);
+        } else if ("<".equals(op)) {
+            filter = FilterBuilders.rangeFilter(name).lt(value);
+        } else if (">=".equals(op)) {
+            filter = FilterBuilders.rangeFilter(name).gte(value);
+        } else if ("<=".equals(op)) {
+            filter = FilterBuilders.rangeFilter(name).lte(value);
+        } else if ("IS NULL".equals(op)) {
+            filter = FilterBuilders.missingFilter(name).nullValue(true);
+        } else if ("IS NOT NULL".equals(op)) {
+            filter = FilterBuilders.existsFilter(name);
+        }
+        return new QueryAndFilter(query, filter);
     }
 
 }
