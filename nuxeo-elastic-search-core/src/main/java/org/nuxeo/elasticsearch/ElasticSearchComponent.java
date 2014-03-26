@@ -25,6 +25,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -105,6 +106,21 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected static final Log log = LogFactory
             .getLog(ElasticSearchComponent.class);
 
+    public static final String EP_Config = "elasticSearchConfig";
+
+    public static final String EP_Index = "elasticSearchIndex";
+
+    public static final String MAIN_IDX = "nxmain";
+
+    public static final String NX_DOCUMENT = "doc";
+
+    public static final String ID_FIELD = "_id";
+
+    public static final String ACL_FIELD = "ecm:acl";
+
+    public static final String[] DEFAULT_FULLTEXT_FIELDS = { "ecm:fulltext",
+            "dc:title" };;
+
     protected NuxeoElasticSearchConfig config;
 
     protected Node localNode;
@@ -117,19 +133,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected final CopyOnWriteArrayList<String> pendingCommands = new CopyOnWriteArrayList<String>();
 
-    public static final String EP_Config = "elasticSearchConfig";
-
-    public static final String EP_Index = "elasticSearchIndex";
-
-    public static final String MAIN_IDX = "nxmain";
-
     protected Map<String, ElasticSearchIndex> indexes = new HashMap<String, ElasticSearchIndex>();
 
-    public static final String NX_DOCUMENT = "doc";
-
-    public static final String ID_FIELD = "_id";
-
-    public static final String ACL_FIELD = "ecm:acl";
+    protected List<String> fulltextFields;
 
     @Override
     public void registerContribution(Object contribution,
@@ -367,7 +373,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public DocumentModelList query(CoreSession session, String nxql, int limit,
             int offset, SortInfo... sortInfos) throws ClientException {
-        QueryBuilder queryBuilder = NXQLQueryConverter.toESQueryBuilder(nxql);
+        QueryBuilder queryBuilder = NXQLQueryConverter.toESQueryBuilder(nxql, getFulltextFields());
 
         // handle the built-in order by clause
         if (nxql.toLowerCase().contains("order by")) {
@@ -600,6 +606,20 @@ public class ElasticSearchComponent extends DefaultComponent implements
             }
         });
         return ret;
+    }
+
+    @Override
+    public List<String> getFulltextFields() {
+        if (fulltextFields != null) {
+            return fulltextFields;
+        }
+        ElasticSearchIndex idxConfig = indexes.get(MAIN_IDX);
+        if (idxConfig != null && (!idxConfig.getFulltextFields().isEmpty())) {
+            fulltextFields = idxConfig.getFulltextFields();
+        } else {
+            fulltextFields = Arrays.asList(DEFAULT_FULLTEXT_FIELDS);
+        }
+        return fulltextFields;
     }
 
 }

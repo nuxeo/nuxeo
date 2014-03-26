@@ -7,7 +7,7 @@
 
    <elasticSearchIndex name="nxmain">
 
-<settings>
+    <settings>
 {
    "index.number_of_replicas" : "0",
    "index.number_of_shards" : "1",
@@ -87,8 +87,8 @@
       }
    }
 }
-</settings>
-<mapping>
+    </settings>
+    <mapping>
 {
    "_size" : {
       "enabled" : true
@@ -123,7 +123,13 @@
       }
    }
 }
-</mapping>
+    </mapping>
+
+    <fulltext>
+      <field>ecm:fulltext</field>
+      <field>dc:title</field>
+      <field>dc:description</field>
+    </fulltext>
 
    </elasticSearchIndex>
 

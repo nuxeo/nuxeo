@@ -59,15 +59,15 @@ public class ElasticSearchNativePageProvider extends
                             getName(), getMinMaxPageSize(),
                             getCurrentPageOffset()));
         }
+        ElasticSearchService ess = Framework
+                .getLocalService(ElasticSearchService.class);
         // Build the ES query
-        QueryBuilder query = makeQueryBuilder();
+        QueryBuilder query = makeQueryBuilder(ess.getFulltextFields());
         SortInfo[] sortArray = null;
         if (sortInfos != null) {
             sortArray = sortInfos.toArray(new SortInfo[] {});
         }
         // Execute the ES query
-        ElasticSearchService ess = Framework
-                .getLocalService(ElasticSearchService.class);
         try {
             DocumentModelList dmList = ess.query(getCoreSession(), query,
                     (int) getMinMaxPageSize(), (int) getCurrentPageOffset(),
@@ -80,14 +80,14 @@ public class ElasticSearchNativePageProvider extends
         return currentPageDocuments;
     }
 
-    protected QueryBuilder makeQueryBuilder() {
+    protected QueryBuilder makeQueryBuilder(List<String> fulltextFields) {
         QueryBuilder ret = null;
         try {
             PageProviderDefinition def = getDefinition();
             if (def.getWhereClause() == null) {
                 ret = ElasticSearchQueryBuilder.makeQuery(def.getPattern(),
                         getParameters(), def.getQuotePatternParameters(),
-                        def.getEscapePatternParameters(), isNativeQuery());
+                        def.getEscapePatternParameters(), isNativeQuery(), fulltextFields);
             } else {
                 DocumentModel searchDocumentModel = getSearchDocumentModel();
                 if (searchDocumentModel == null) {
@@ -97,7 +97,7 @@ public class ElasticSearchNativePageProvider extends
                             getName()));
                 }
                 ret = ElasticSearchQueryBuilder.makeQuery(searchDocumentModel,
-                        def.getWhereClause(), getParameters(), isNativeQuery());
+                        def.getWhereClause(), getParameters(), isNativeQuery(), fulltextFields);
             }
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);

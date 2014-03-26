@@ -143,6 +143,11 @@ public class NXQLQueryConverter {
     }
 
     public static QueryBuilder toESQueryBuilder(String nxql) {
+        return toESQueryBuilder(nxql, null);
+    }
+
+    public static QueryBuilder toESQueryBuilder(String nxql,
+            final List<String> fulltextFields) {
         final LinkedList<ExpressionBuilder> builders = new LinkedList<ExpressionBuilder>();
         SQLQuery nxqlQuery = SQLQueryParser.parse(new StringReader(nxql));
         final ExpressionBuilder ret = new ExpressionBuilder(null);
@@ -224,7 +229,7 @@ public class NXQLQueryConverter {
                     // add expression to the last builder
                     builders.getLast().add(
                             makeQueryFromSimpleExpression(op.toString(), name,
-                                    value, values));
+                                    value, values, fulltextFields));
                 }
             }
         });
@@ -233,21 +238,28 @@ public class NXQLQueryConverter {
             return QueryBuilders.filteredQuery(
                     queryBuilder,
                     makeQueryFromSimpleExpression("IN", "ecm:primarytype",
-                            null, fromList.toArray()).filter);
+                            null, fromList.toArray(), null).filter);
         }
         return queryBuilder;
     }
 
     public static QueryAndFilter makeQueryFromSimpleExpression(String op,
-            String name, Object value, Object[] values) {
+            String name, Object value, Object[] values,
+            List<String> fulltextFields) {
         QueryBuilder query = null;
         FilterBuilder filter = null;
         if ("=".equals(op) || "!=".equals(op) || "<>".equals(op)) {
-            // TODO: Remove hardcoded fields that requires a
-            // fulltext analyzer
-            if ("dc:title".equals(name) || NXQL.ECM_FULLTEXT.equals(name)) {
-                query = QueryBuilders.matchQuery(name, value).operator(
-                        MatchQueryBuilder.Operator.AND);
+            if (fulltextFields != null && fulltextFields.contains(name)) {
+                if (NXQL.ECM_FULLTEXT.equals(name)) {
+                    // ecm:fulltext match _all field
+                    query = QueryBuilders.matchQuery("_all", value)
+                            .operator(MatchQueryBuilder.Operator.AND)
+                            .analyzer("fulltext");
+                } else {
+                    // use the analyzer defined by the mapping
+                    query = QueryBuilders.matchQuery(name, value).operator(
+                            MatchQueryBuilder.Operator.AND);
+                }
             } else {
                 filter = FilterBuilders.termFilter(name, value);
             }
@@ -275,10 +287,6 @@ public class NXQLQueryConverter {
             } else {
                 filter = FilterBuilders.prefixFilter(name, (String) value);
             }
-        } else if (NXQL.ECM_FULLTEXT.equals(name)) {
-            query = QueryBuilders.matchQuery("_all", value)
-                    .operator(MatchQueryBuilder.Operator.AND)
-                    .analyzer("fulltext");
         } else if (">".equals(op)) {
             filter = FilterBuilders.rangeFilter(name).gt(value);
         } else if ("<".equals(op)) {

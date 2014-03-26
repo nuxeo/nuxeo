@@ -17,9 +17,12 @@
 
 package org.nuxeo.elasticsearch.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-
+import org.nuxeo.common.xmap.annotation.XNodeList;
 /**
  * XMap descriptor for configuring an index
  *
@@ -43,6 +46,13 @@ public class ElasticSearchIndex {
 
     @XNode("mapping")
     protected String mapping;
+
+    @XNodeList(value = "fulltext/field", type = ArrayList.class, componentType = String.class)
+    protected List<String> fulltextFields;
+
+    public List<String> getFulltextFields() {
+        return fulltextFields;
+    }
 
     public String getIndexName() {
         return indexName;

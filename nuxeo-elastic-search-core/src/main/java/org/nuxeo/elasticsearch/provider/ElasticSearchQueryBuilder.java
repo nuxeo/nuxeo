@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch.provider;
 import java.security.Principal;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
@@ -46,7 +47,8 @@ public class ElasticSearchQueryBuilder {
      */
     public static QueryBuilder makeQuery(final String pattern,
             final Object[] params, final boolean quotePatternParameters,
-            final boolean escapePatternParameters, final boolean useNativeQuery)
+            final boolean escapePatternParameters,
+            final boolean useNativeQuery, final List<String> fulltextFields)
             throws ClientException {
         String query = pattern;
         for (int i = 0; i < params.length; i++) {
@@ -55,7 +57,7 @@ public class ElasticSearchQueryBuilder {
         if (useNativeQuery) {
             return QueryBuilders.queryString(query);
         } else {
-            return NXQLQueryConverter.toESQueryBuilder(query);
+            return NXQLQueryConverter.toESQueryBuilder(query, fulltextFields);
         }
     }
 
@@ -65,7 +67,7 @@ public class ElasticSearchQueryBuilder {
      */
     public static QueryBuilder makeQuery(final DocumentModel model,
             final WhereClauseDefinition whereClause, final Object[] params,
-            final boolean useNativeQuery) throws ClientException {
+            final boolean useNativeQuery, final List<String> fulltextFields) throws ClientException {
         assert (model != null);
         assert (whereClause != null);
         NXQLQueryConverter.ExpressionBuilder eb = new NXQLQueryConverter.ExpressionBuilder(
@@ -80,7 +82,7 @@ public class ElasticSearchQueryBuilder {
             if (useNativeQuery) {
                 eb.add(QueryBuilders.queryString(fixedPart));
             } else {
-                eb.add(NXQLQueryConverter.toESQueryBuilder(fixedPart));
+                eb.add(NXQLQueryConverter.toESQueryBuilder(fixedPart, fulltextFields));
             }
         }
         // Process predicates
@@ -116,7 +118,7 @@ public class ElasticSearchQueryBuilder {
             String name = predicate.getParameter();
             String operator = predicate.getOperator().toUpperCase();
             eb.add(NXQLQueryConverter.makeQueryFromSimpleExpression(operator,
-                    name, value, values));
+                    name, value, values, fulltextFields));
         }
         return eb.get();
     }
