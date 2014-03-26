@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.ui.select2.automation;
 
 import java.io.Serializable;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,6 +62,11 @@ import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
  */
 @Operation(id = SuggestDirectoryEntries.ID, category = Constants.CAT_SERVICES, label = "Get directory entries", description = "Get the entries of a directory. This is returning a blob containing a serialized JSON array. The input document, if specified, is used as a context for a potential local configuration of the directory.", addToStudio = false)
 public class SuggestDirectoryEntries {
+
+    /**
+     * @since 5.9.3
+     */
+    Collator collator;
 
     /**
      * Convenient class to build JSON serialization of results.
@@ -121,16 +127,13 @@ public class SuggestDirectoryEntries {
 
         @Override
         public int compareTo(JSONAdapter other) {
-            if (this != null) {
-                if (other != null) {
-                    int i = this.getOrder() - other.getOrder();
-                    if (i != 0) {
-                        return i;
-                    } else {
-                        return this.getLabel().compareTo(other.getLabel());
-                    }
+            if (other != null) {
+                int i = this.getOrder() - other.getOrder();
+                if (i != 0) {
+                    return i;
                 } else {
-                    return 0;
+                    return getCollator().compare(this.getLabel(),
+                            other.getLabel());
                 }
             } else {
                 return -1;
@@ -390,6 +393,14 @@ public class SuggestDirectoryEntries {
     protected boolean contains = false;
 
     /**
+     * Choose if sort is case sensitive
+     *
+     * @since 5.9.3
+     */
+    @Param(name = "caseSensitive", required = false)
+    protected boolean caseSensitive = false;
+
+    /**
      * Separator to display absolute label
      *
      * @since 5.9.2
@@ -415,6 +426,21 @@ public class SuggestDirectoryEntries {
 
     protected Locale getLocale() {
         return new Locale(getLang());
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    protected Collator getCollator() {
+        if (collator == null) {
+            collator = Collator.getInstance(getLocale());
+            if (caseSensitive) {
+                collator.setStrength(Collator.TERTIARY);
+            } else {
+                collator.setStrength(Collator.SECONDARY);
+            }
+        }
+        return collator;
     }
 
     protected String getObsoleteWarningMessage() {
