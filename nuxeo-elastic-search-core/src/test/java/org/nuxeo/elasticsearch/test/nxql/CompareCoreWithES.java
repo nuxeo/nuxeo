@@ -104,17 +104,21 @@ public class CompareCoreWithES {
 
     }
 
-    protected String getDigest(DocumentModelList docs) {
+    protected String getDigest(DocumentModelList docs) throws Exception  {
         StringBuffer sb = new StringBuffer();
         for (DocumentModel doc : docs) {
-            sb.append(doc.getName());
+            String nameOrTitle = doc.getName();
+             if (nameOrTitle==null || nameOrTitle.isEmpty()) {
+                 nameOrTitle = doc.getTitle();
+             }
+            sb.append(nameOrTitle);
             sb.append(",");
         }
         return sb.toString();
     }
 
     protected void assertSameDocumentLists(DocumentModelList expected,
-            DocumentModelList actual) {
+            DocumentModelList actual) throws Exception {
         Assert.assertEquals(getDigest(expected), getDigest(actual));
     }
 
@@ -127,7 +131,7 @@ public class CompareCoreWithES {
 
     protected void testQueries(String[] testQueries) throws Exception {
         for (String nxql : testQueries) {
-            // System.out.println("test " + nxql);
+            System.out.println("test " + nxql);
             compareESAndCore(nxql);
         }
     }
@@ -137,7 +141,6 @@ public class CompareCoreWithES {
         testQueries(new String[] {
                 "select * from Document order by dc:title",
                 "select * from Document where ecm:currentLifeCycleState != 'deleted' order by dc:title",
-                "select * from Document where  ecm:mixinType = 'Folderish' order by dc:title",
                 "select * from File order by dc:title", });
     }
 
@@ -148,17 +151,25 @@ public class CompareCoreWithES {
                 "select * from Document where ecm:isProxy=1 order by dc:title", });
     }
 
-    // @Test
-    public void testSearcOnVersions() throws Exception {
+    @Test
+    public void testSearchOnVersions() throws Exception {
         testQueries(new String[] {
+                "select * from Document where ecm:isVersion = 0 order by dc:title",
+                "select * from Document where ecm:isVersion = 1 order by dc:title",
                 "select * from Document where ecm:isCheckedInVersion = 0 order by dc:title",
-                "select * from Document where ecm:isCheckedInVersion = 1 order by dc:title" });
+                "select * from Document where ecm:isCheckedInVersion = 1 order by dc:title",
+//                               "select * from Document where ecm:isCheckedIn = 0 order by dc:title",
+//                "select * from Document where ecm:isCheckedIn = 1 order by dc:title"
+                });
     }
 
-    // @Test
+    @Test
     public void testSearchOnTypes() throws Exception {
         testQueries(new String[] { "select * from File order by dc:title",
-                "select * from Folder order by dc:title", });
+                "select * from Folder order by dc:title",
+                "select * from Note order by dc:title",
+                "select * from Document where  ecm:mixinType = 'Folderish' order by dc:title",
+                "select * from Document where  ecm:mixinType != 'Folderish' order by dc:title",});
     }
 
 }
