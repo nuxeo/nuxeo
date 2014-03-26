@@ -19,6 +19,7 @@
 package org.nuxeo.elasticsearch.nxql;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -32,6 +33,8 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.DefaultQueryVisitor;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
+import org.nuxeo.ecm.core.query.sql.model.FromClause;
+import org.nuxeo.ecm.core.query.sql.model.FromList;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
@@ -40,6 +43,7 @@ import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
+import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 
 /**
  * Helper class that holds the conversion logic.
@@ -138,6 +142,7 @@ public class NXQLQueryConverter {
         SQLQuery nxqlQuery = SQLQueryParser.parse(new StringReader(nxql));
         final ExpressionBuilder ret = new ExpressionBuilder(null);
         builders.add(ret);
+        final ArrayList<String> fromList = new ArrayList<String>();
         nxqlQuery.accept(new DefaultQueryVisitor() {
 
             private static final long serialVersionUID = 1L;
@@ -146,6 +151,20 @@ public class NXQLQueryConverter {
             public void visitQuery(SQLQuery node) {
                 super.visitQuery(node);
                 // intentionally does not set limit or offset in the query
+            }
+
+            @Override
+            public void visitFromClause(FromClause node) {
+                FromList elements = node.elements;
+                for (int i = 0; i < elements.size(); i++) {
+                    String type = elements.get(i);
+                    fromList.add(type);
+                    if (NXQLQueryMaker.TYPE_DOCUMENT.equalsIgnoreCase(type)) {
+                        // From Document means all doc types
+                        fromList.clear();
+                        return;
+                    }
+                }
             }
 
             @Override
@@ -204,7 +223,14 @@ public class NXQLQueryConverter {
                 }
             }
         });
-        return ret.get();
+        QueryBuilder queryBuilder = ret.get();
+        if (!fromList.isEmpty()) {
+            return QueryBuilders.filteredQuery(
+                    queryBuilder,
+                    makeQueryFromSimpleExpression("IN", "ecm:primarytype",
+                            null, fromList.toArray()).filter);
+        }
+        return queryBuilder;
     }
 
     public static QueryAndFilter makeQueryFromSimpleExpression(String op,
@@ -231,8 +257,8 @@ public class NXQLQueryConverter {
             }
         } else if ("LIKE".equals(op) || "ILIKE".equals(op)) {
             // Note that ILIKE will work only with a correct mapping
-            value = ((String) value).replace('%', '*');
-            query = QueryBuilders.regexpQuery(name, (String) value);
+            query = QueryBuilders.regexpQuery(name,
+                    ((String) value).replace('%', '*'));
         } else if ("BETWEEN".equals(op)) {
             filter = FilterBuilders.rangeFilter(name).from(values[0])
                     .to(values[1]);

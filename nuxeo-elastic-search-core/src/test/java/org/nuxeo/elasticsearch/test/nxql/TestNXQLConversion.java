@@ -136,8 +136,49 @@ public class TestNXQLConversion {
     @Test
     public void testConverter() throws Exception {
         String es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Document").toString();
+        Assert.assertEquals("{\n" +
+                "  \"match_all\" : { }\n" +
+                "}", es);
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from File").toString();
+        Assert.assertEquals("{\n" +
+                "  \"filtered\" : {\n" +
+                "    \"query\" : {\n" +
+                "      \"match_all\" : { }\n" +
+                "    },\n" +
+                "    \"filter\" : {\n" +
+                "      \"terms\" : {\n" +
+                "        \"ecm:primarytype\" : [ \"File\" ]\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+        es = NXQLQueryConverter.toESQueryBuilder(
                 "select * from Document where f1='foo'").toString();
-        //Assert.assertEquals("foo", es);
+        Assert.assertEquals("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"term\" : {\n" +
+                "        \"f1\" : \"foo\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "select * from Note").toString();
+        Assert.assertEquals("{\n" +
+                "  \"filtered\" : {\n" +
+                "    \"query\" : {\n" +
+                "      \"match_all\" : { }\n" +
+                "    },\n" +
+                "    \"filter\" : {\n" +
+                "      \"terms\" : {\n" +
+                "        \"ecm:primarytype\" : [ \"Note\" ]\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
         es = NXQLQueryConverter.toESQueryBuilder(
                 "select * from Document where f1=1").toString();
         //Assert.assertEquals("foo", es);
@@ -276,36 +317,45 @@ public class TestNXQLConversion {
 
         es = NXQLQueryConverter
                 .toESQueryBuilder(
-                        "select * from Document where f1 IN ('foo', 'bar', 'foo') AND NOT f2>=3")
+                        "select * from File, Note, Workspace where f1 IN ('foo', 'bar', 'foo') AND NOT f2>=3")
                .toString();
         Assert.assertEquals("{\n" +
-                "  \"bool\" : {\n" +
-                "    \"must\" : [ {\n" +
-                "      \"constant_score\" : {\n" +
-                "        \"filter\" : {\n" +
-                "          \"terms\" : {\n" +
-                "            \"f1\" : [ \"foo\", \"bar\", \"foo\" ]\n" +
-                "          }\n" +
-                "        }\n" +
-                "      }\n" +
-                "    }, {\n" +
+                "  \"filtered\" : {\n" +
+                "    \"query\" : {\n" +
                 "      \"bool\" : {\n" +
-                "        \"must_not\" : {\n" +
+                "        \"must\" : [ {\n" +
                 "          \"constant_score\" : {\n" +
                 "            \"filter\" : {\n" +
-                "              \"range\" : {\n" +
-                "                \"f2\" : {\n" +
-                "                  \"from\" : \"3\",\n" +
-                "                  \"to\" : null,\n" +
-                "                  \"include_lower\" : true,\n" +
-                "                  \"include_upper\" : true\n" +
+                "              \"terms\" : {\n" +
+                "                \"f1\" : [ \"foo\", \"bar\", \"foo\" ]\n" +
+                "              }\n" +
+                "            }\n" +
+                "          }\n" +
+                "        }, {\n" +
+                "          \"bool\" : {\n" +
+                "            \"must_not\" : {\n" +
+                "              \"constant_score\" : {\n" +
+                "                \"filter\" : {\n" +
+                "                  \"range\" : {\n" +
+                "                    \"f2\" : {\n" +
+                "                      \"from\" : \"3\",\n" +
+                "                      \"to\" : null,\n" +
+                "                      \"include_lower\" : true,\n" +
+                "                      \"include_upper\" : true\n" +
+                "                    }\n" +
+                "                  }\n" +
                 "                }\n" +
                 "              }\n" +
                 "            }\n" +
                 "          }\n" +
-                "        }\n" +
+                "        } ]\n" +
                 "      }\n" +
-                "    } ]\n" +
+                "    },\n" +
+                "    \"filter\" : {\n" +
+                "      \"terms\" : {\n" +
+                "        \"ecm:primarytype\" : [ \"File\", \"Note\", \"Workspace\" ]\n" +
+                "      }\n" +
+                "    }\n" +
                 "  }\n" +
                 "}", es);
     }
