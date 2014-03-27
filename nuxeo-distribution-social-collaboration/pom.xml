@@ -92,7 +92,6 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-agenda</artifactId>
     </dependency>
-
   </dependencies>
 
   <build>

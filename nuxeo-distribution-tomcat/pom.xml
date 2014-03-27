@@ -53,16 +53,19 @@
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-marketplace-dm</artifactId>
       <type>zip</type>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.marketplace.dam</groupId>
       <artifactId>marketplace-dam</artifactId>
       <type>zip</type>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-marketplace-social-collaboration</artifactId>
       <type>zip</type>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
@@ -94,7 +97,7 @@
     </profile>
     <profile>
       <id>sdk</id>
-      <!-- profile for building SDK distributions (they are always built 
+      <!-- profile for building SDK distributions (they are always built
         when release profile is activated) -->
     </profile>
     <profile>
