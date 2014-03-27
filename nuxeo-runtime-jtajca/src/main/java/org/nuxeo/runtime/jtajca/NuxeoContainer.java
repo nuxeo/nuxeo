@@ -84,9 +84,6 @@ public class NuxeoContainer {
 
     private static final UserTransaction userTransaction = new UserTransactionImpl();
 
-    /**
-     * Per-repository connection managers.
-     */
     private static Map<String, ConnectionManagerWrapper> connectionManagers = new ConcurrentHashMap<String, ConnectionManagerWrapper>(
             8, 0.75f, 2);
 
@@ -178,35 +175,32 @@ public class NuxeoContainer {
     /**
      * Creates and installs in the container a new ConnectionManager.
      *
-     * @param repositoryName the repository name
+     * @param name the repository name
      * @param config the pool configuration
      * @return the created connection manager
      */
     public static synchronized ConnectionManagerWrapper installConnectionManager(
-            String repositoryName, NuxeoConnectionManagerConfiguration config) {
-        ConnectionManagerWrapper cm = connectionManagers.get(repositoryName);
+            String name, NuxeoConnectionManagerConfiguration config) {
+        ConnectionManagerWrapper cm = connectionManagers.get(name);
         if (cm != null) {
             return cm;
         }
         if (config == null) {
             config = new NuxeoConnectionManagerConfiguration();
-            config.setName(config.getName() + "/" + repositoryName);
+            config.setName(config.getName() + "/" + name);
         }
-        cm = initConnectionManager(repositoryName, config);
+        cm = initConnectionManager(name, config);
         // also bind it in JNDI
         if (rootContext != null) {
             String jndiName = JNDI_NUXEO_CONNECTION_MANAGER_PREFIX
-                    + repositoryName;
+                    + name;
             try {
                 addDeepBinding(rootContext, new CompositeName(jndiName),
-                        getConnectionManagerReference(repositoryName));
+                        getConnectionManagerReference(name));
             } catch (NamingException e) {
                 log.error("Cannot bind in JNDI connection manager "
                         + config.getName() + " to name " + jndiName);
             }
-        }
-        for (NuxeoContainerListener listener:listeners) {
-            listener.handleNewConnectionManager(repositoryName, cm.cm);
         }
         return cm;
     }
@@ -470,23 +464,26 @@ public class NuxeoContainer {
         return connectionManagers.get(repositoryName);
     }
 
-    protected static void setConnectionManager(String repositoryName,
+    public static void setConnectionManager(String name,
             ConnectionManagerWrapper cm) {
-        if (connectionManagers.containsKey(repositoryName)) {
-            log.error("Repository " + repositoryName + " already set up",
+        if (connectionManagers.containsKey(name)) {
+            log.error("Connection manager " + name + " already set up",
                     new Exception());
         }
-        connectionManagers.put(repositoryName, cm);
+        connectionManagers.put(name, cm);
+        for (NuxeoContainerListener listener:listeners) {
+            listener.handleConnectionManagerReset(name, cm.cm);
+        }
     }
 
     protected static Reference getConnectionManagerReference(
-            final String repositoryName) {
+            final String name) {
         return new SimpleReference() {
             private static final long serialVersionUID = 1L;
 
             @Override
             public Object getContent() throws NamingException {
-                return getConnectionManager(repositoryName);
+                return getConnectionManager(name);
             }
         };
     }

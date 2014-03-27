@@ -33,8 +33,9 @@ public class PoolingDataSourceFactory implements ObjectFactory {
     protected ConnectionManager createManager(Reference ref, Context ctx) throws ResourceException {
         NuxeoConnectionManagerConfiguration config = NuxeoConnectionManagerFactory.getConfig(ref);
         String className = ref.getClassName();
+        String name = refAttribute(ref, "datasourceJNDI", null);
         config.setXAMode(XADataSource.class.getName().equals(className));
-        return NuxeoContainer.createConnectionManager(config);
+        return NuxeoContainer.initConnectionManager(name, config);
     }
 
     protected ManagedConnectionFactory createFactory(Reference ref, Context ctx) throws NamingException, InvalidPropertyException {
