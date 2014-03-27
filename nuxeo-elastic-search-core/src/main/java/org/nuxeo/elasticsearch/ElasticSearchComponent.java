@@ -43,6 +43,8 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.delete.DeleteRequestBuilder;
+import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -235,6 +237,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
         // execute bulk index if any
         if (bulkRequest.numberOfActions() > 0) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Index bulk request: curl -XPOST 'http://localhost:9200/_bulk' -d '%s'",
+                        bulkRequest.request().requests().toString()));
+            }
             bulkRequest.execute().actionGet();
         }
 
@@ -255,14 +262,33 @@ public class ElasticSearchComponent extends DefaultComponent implements
         log.debug("Sending indexing request to ElasticSearch " + cmd.toString());
         DocumentModel doc = cmd.getTargetDocument();
         if (IndexingCommand.DELETE.equals(cmd.getName())) {
-            getClient().prepareDelete(MAIN_IDX, NX_DOCUMENT, doc.getId()).execute().actionGet();
+            DeleteRequestBuilder request = getClient().prepareDelete(MAIN_IDX, NX_DOCUMENT, doc.getId());
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s' -d '%s'",
+                        MAIN_IDX, NX_DOCUMENT,cmd.getTargetDocument().getId(), request.request().toString()));
+            }
+            request.execute().actionGet();
+
             if (cmd.isRecurse()) {
-                getClient().prepareDeleteByQuery(MAIN_IDX).setQuery(
+                DeleteByQueryRequestBuilder deleteRequest=getClient().prepareDeleteByQuery(MAIN_IDX).setQuery(
                         QueryBuilders.prefixQuery("ecm:path",
-                                doc.getPathAsString() + "/")).execute().actionGet();
+                                doc.getPathAsString() + "/"));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
+                            MAIN_IDX, NX_DOCUMENT, request.request().toString()));
+                }
+                deleteRequest.execute().actionGet();
             }
         } else {
-            buildESIndexingRequest(cmd).execute().actionGet();
+            IndexRequestBuilder request = buildESIndexingRequest(cmd);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
+                        MAIN_IDX, NX_DOCUMENT,cmd.getTargetDocument().getId(), request.request().toString()));
+            }
+            request.execute().actionGet();
         }
         markCommandExecuted(cmd);
     }
