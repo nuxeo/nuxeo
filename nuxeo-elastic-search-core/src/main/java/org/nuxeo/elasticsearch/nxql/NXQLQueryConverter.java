@@ -276,7 +276,7 @@ public class NXQLQueryConverter {
         } else if ("LIKE".equals(op) || "ILIKE".equals(op)
                 || "NOT LIKE".equals(op) || "NOT ILIKE".equals(op)) {
             // Note that ILIKE will work only with a correct mapping
-            query = QueryBuilders.regexpQuery(name,
+            query = QueryBuilders.regexpQuery(name.replace("ecm:fulltext.", ""),
                     ((String) value).replace('%', '*'));
             if (op.startsWith("NOT")) {
                 filter = FilterBuilders.notFilter(FilterBuilders
