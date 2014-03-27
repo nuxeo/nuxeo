@@ -56,6 +56,7 @@
     <module>nuxeo-platform-htmlsanitizer</module>
     <module>nuxeo-platform-test</module>
     <module>nuxeo-platform-query-api</module>
+    <module>nuxeo-invite</module>
   </modules>
 
   <dependencies>
