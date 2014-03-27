@@ -60,6 +60,14 @@ public class CollectionManagerImpl extends DefaultComponent implements
 
     private static final String PERMISSION_ERROR_MESSAGE = "Privilege '%s' is not granted to '%s'";
 
+    protected static void disableEvents(final DocumentModel doc) {
+        doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
+        doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
+                true);
+        doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
+        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, true);
+    }
+
     @Override
     public void addToCollection(final DocumentModel collection,
             final DocumentModel documentToBeAdded, final CoreSession session)
@@ -78,19 +86,13 @@ public class CollectionManagerImpl extends DefaultComponent implements
 
                 temp.addFacet(CollectionConstants.COLLECTABLE_FACET);
 
+                disableEvents(temp);
+
                 temp = session.saveDocument(temp);
 
                 // We want to disable the following listener on a
                 // collection member when it is added to a collection
-                temp.putContextData(
-                        DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
-                temp.putContextData(
-                        NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
-                        true);
-                temp.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER,
-                        true);
-                temp.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
-                        true);
+                disableEvents(temp);
 
                 CollectionMember docAdapter = temp.getAdapter(CollectionMember.class);
                 docAdapter.addToCollection(collection.getId());
@@ -364,15 +366,7 @@ public class CollectionManagerImpl extends DefaultComponent implements
 
                 // We want to disable the following listener on a
                 // collection member when it is removed from a collection
-                documentToBeRemoved.putContextData(
-                        DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
-                documentToBeRemoved.putContextData(
-                        NotificationConstants.DISABLE_NOTIFICATION_SERVICE,
-                        true);
-                documentToBeRemoved.putContextData(
-                        NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
-                documentToBeRemoved.putContextData(
-                        VersioningService.DISABLE_AUTO_CHECKOUT, true);
+                disableEvents(documentToBeRemoved);
 
                 CollectionMember docAdapter = documentToBeRemoved.getAdapter(CollectionMember.class);
                 docAdapter.removeFromCollection(collection.getId());
