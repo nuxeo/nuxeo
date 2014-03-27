@@ -43,7 +43,6 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
-        <module>nuxeo-marketplace-rest-api</module>
       </modules>
     </profile>
     <profile>
@@ -52,7 +51,6 @@
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
         <module>nuxeo-distribution-dm</module>
-        <module>nuxeo-marketplace-rest-api</module>
         <module>nuxeo-marketplace-dm</module>
       </modules>
     </profile>
@@ -61,7 +59,6 @@
       <modules>
         <module>nuxeo-distribution-coreserver</module>
         <module>nuxeo-distribution-cap</module>
-        <module>nuxeo-marketplace-rest-api</module>
         <module>nuxeo-marketplace-dam</module>
       </modules>
     </profile>
@@ -74,7 +71,6 @@
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-dm</module>
         <module>nuxeo-marketplace-dam</module>
-        <module>nuxeo-marketplace-rest-api</module>
         <module>nuxeo-distribution-social-collaboration</module>
         <module>nuxeo-marketplace-social-collaboration</module>
         <module>nuxeo-distribution-tomcat</module>
@@ -92,7 +88,6 @@
         <module>nuxeo-distribution-dm</module>
         <module>nuxeo-marketplace-dm</module>
         <module>nuxeo-marketplace-dam</module>
-        <module>nuxeo-marketplace-rest-api</module>
         <module>nuxeo-distribution-social-collaboration</module>
         <module>nuxeo-marketplace-social-collaboration</module>
         <module>nuxeo-distribution-tomcat</module>
@@ -272,12 +267,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-marketplace-dm</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-marketplace-rest-api</artifactId>
         <version>${nuxeo.distribution.version}</version>
         <type>zip</type>
       </dependency>
