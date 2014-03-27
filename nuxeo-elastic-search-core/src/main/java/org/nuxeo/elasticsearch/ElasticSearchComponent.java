@@ -92,8 +92,6 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-import com.sun.jersey.server.impl.BuildId;
-
 /**
  * Component used to configure and manage ElasticSearch integration
  *
@@ -103,8 +101,7 @@ import com.sun.jersey.server.impl.BuildId;
 public class ElasticSearchComponent extends DefaultComponent implements
         ElasticSearchService, ElasticSearchIndexing, ElasticSearchAdmin {
 
-    protected static final Log log = LogFactory
-            .getLog(ElasticSearchComponent.class);
+    protected static final Log log = LogFactory.getLog(ElasticSearchComponent.class);
 
     public static final String EP_Config = "elasticSearchConfig";
 
@@ -126,6 +123,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected Node localNode;
 
     protected Client client;
+
+    protected boolean indexInitDone = false;
+
+    // indexing command that where received before the index initialization
+    protected List<IndexingCommand> stackedCommands = new ArrayList<>();
 
     // temporary hack until we are able to list pending indexing jobs cluster
     // wide
@@ -175,16 +177,13 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (cname == null) {
                 cname = "NuxeoESCluster";
             }
-            settings = ImmutableSettings.settingsBuilder()
-                    .put("node.http.enabled", config.enableHttp())
-                    .put("path.logs", config.getLogPath())
-                    .put("path.data", config.getDataPath())
-                    .put("gateway.type", "none")
-                    .put("index.store.type", config.getIndexStorageType())
-                    .put("index.number_of_shards", 1)
-                    .put("index.number_of_replicas", 1)
-                    .put("cluster.name", cname)
-                    .put("node.name", config.getNodeName()).build();
+            settings = ImmutableSettings.settingsBuilder().put(
+                    "node.http.enabled", config.enableHttp()).put("path.logs",
+                    config.getLogPath()).put("path.data", config.getDataPath()).put(
+                    "gateway.type", "none").put("index.store.type",
+                    config.getIndexStorageType()).put("index.number_of_shards",
+                    1).put("index.number_of_replicas", 1).put("cluster.name",
+                    cname).put("node.name", config.getNodeName()).build();
         } else {
             Builder builder = ImmutableSettings.settingsBuilder().put(
                     "node.http.enabled", config.enableHttp());
@@ -201,15 +200,13 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
         try {
             CoreSession session = cmd.getTargetDocument().getCoreSession();
-            EventProducer evtProducer = Framework
-                    .getLocalService(EventProducer.class);
+            EventProducer evtProducer = Framework.getLocalService(EventProducer.class);
 
             EventContextImpl context = new EventContextImpl(session,
                     session.getPrincipal());
             context.getProperties().put(cmd.getId(), cmd.toJSON());
 
-            Event indexingEvent = context
-                    .newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
+            Event indexingEvent = context.newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
             evtProducer.fireEvent(indexingEvent);
         } catch (Exception e) {
             throw ClientException.wrap(e);
@@ -218,11 +215,20 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public void indexNow(List<IndexingCommand> cmds) throws ClientException {
+
+        if (!indexInitDone) {
+            stackedCommands.addAll(cmds);
+            log.debug("Delaying indexing request : waiting for Index to be initialized");
+            return;
+        }
+
         BulkRequestBuilder bulkRequest = getClient().prepareBulk();
         for (IndexingCommand cmd : cmds) {
             if (IndexingCommand.DELETE.equals(cmd.getName())) {
                 indexNow(cmd);
             } else {
+                log.debug("Sending bulk indexing request to ElasticSearch "
+                        + cmd.toString());
                 IndexRequestBuilder idxRequest = buildESIndexingRequest(cmd);
                 bulkRequest.add(idxRequest);
             }
@@ -240,17 +246,20 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public void indexNow(IndexingCommand cmd) throws ClientException {
 
+        if (!indexInitDone) {
+            stackedCommands.add(cmd);
+            log.debug("Delaying indexing request : waiting for Index to be initialized");
+            return;
+        }
+
+        log.debug("Sending indexing request to ElasticSearch " + cmd.toString());
         DocumentModel doc = cmd.getTargetDocument();
         if (IndexingCommand.DELETE.equals(cmd.getName())) {
-            getClient().prepareDelete(MAIN_IDX, NX_DOCUMENT, doc.getId())
-                    .execute().actionGet();
+            getClient().prepareDelete(MAIN_IDX, NX_DOCUMENT, doc.getId()).execute().actionGet();
             if (cmd.isRecurse()) {
-                getClient()
-                        .prepareDeleteByQuery(MAIN_IDX)
-                        .setQuery(
-                                QueryBuilders.prefixQuery("ecm:path",
-                                        doc.getPathAsString() + "/")).execute()
-                        .actionGet();
+                getClient().prepareDeleteByQuery(MAIN_IDX).setQuery(
+                        QueryBuilders.prefixQuery("ecm:path",
+                                doc.getPathAsString() + "/")).execute().actionGet();
             }
         } else {
             buildESIndexingRequest(cmd).execute().actionGet();
@@ -265,12 +274,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
             JsonFactory factory = new JsonFactory();
             XContentBuilder builder = jsonBuilder();
 
-            JsonGenerator jsonGen = factory.createJsonGenerator(builder
-                    .stream());
+            JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
             JsonESDocumentWriter.writeESDocument(jsonGen, doc,
                     cmd.getSchemas(), null);
-            return getClient().prepareIndex(MAIN_IDX, NX_DOCUMENT, doc.getId())
-                    .setSource(builder);
+            return getClient().prepareIndex(MAIN_IDX, NX_DOCUMENT, doc.getId()).setSource(
+                    builder);
         } catch (Exception e) {
             throw new ClientException(
                     "Unable to create index request for Document "
@@ -299,9 +307,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     + " since it is already scheduled");
             return;
         }
+
         if (cmd.isSync()) {
+            log.debug("Schedule PostCommit indexing request " + cmd.toString());
             schedulePostCommitIndexing(cmd);
         } else {
+            log.debug("Schedule Async indexing request  " + cmd.toString());
             WorkManager wm = Framework.getLocalService(WorkManager.class);
             IndexingWorker idxWork = new IndexingWorker(cmd);
             wm.schedule(idxWork, true);
@@ -323,11 +334,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public void flush(boolean commit) {
         // refresh indexes
-        getClient().admin().indices().prepareRefresh(MAIN_IDX).execute()
-                .actionGet();
+        getClient().admin().indices().prepareRefresh(MAIN_IDX).execute().actionGet();
         if (commit) {
-            getClient().admin().indices().prepareFlush(MAIN_IDX).execute()
-                    .actionGet();
+            getClient().admin().indices().prepareFlush(MAIN_IDX).execute().actionGet();
         }
     }
 
@@ -338,8 +347,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
             }
             NuxeoElasticSearchConfig config = getConfig();
             Settings settings = getSettings();
-            localNode = NodeBuilder.nodeBuilder().local(config.isInProcess())
-                    .settings(settings).node();
+            localNode = NodeBuilder.nodeBuilder().local(config.isInProcess()).settings(
+                    settings).node();
         }
         return localNode;
     }
@@ -373,12 +382,13 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public DocumentModelList query(CoreSession session, String nxql, int limit,
             int offset, SortInfo... sortInfos) throws ClientException {
-        QueryBuilder queryBuilder = NXQLQueryConverter.toESQueryBuilder(nxql, getFulltextFields());
+        QueryBuilder queryBuilder = NXQLQueryConverter.toESQueryBuilder(nxql,
+                getFulltextFields());
 
         // handle the built-in order by clause
         if (nxql.toLowerCase().contains("order by")) {
             List<SortInfo> builtInSortInfos = NXQLQueryConverter.getSortInfo(nxql);
-            if (sortInfos!=null) {
+            if (sortInfos != null) {
                 for (SortInfo si : sortInfos) {
                     builtInSortInfos.add(si);
                 }
@@ -393,18 +403,15 @@ public class ElasticSearchComponent extends DefaultComponent implements
             QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) throws ClientException {
         // Initialize request
-        SearchRequestBuilder request = getClient().prepareSearch(MAIN_IDX)
-                .setTypes(NX_DOCUMENT)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .addField(ID_FIELD).setFrom(offset).setSize(limit);
+        SearchRequestBuilder request = getClient().prepareSearch(MAIN_IDX).setTypes(
+                NX_DOCUMENT).setSearchType(SearchType.DFS_QUERY_THEN_FETCH).addField(
+                ID_FIELD).setFrom(offset).setSize(limit);
         // Add security filter
         TermsFilterBuilder aclFilter = null;
         Principal principal = session.getPrincipal();
         if (principal != null) {
-            if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal)
-                    .isAdministrator())) {
-                String[] principals = SecurityService
-                        .getPrincipalsToCheck(principal);
+            if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator())) {
+                String[] principals = SecurityService.getPrincipalsToCheck(principal);
                 if (principals.length > 0) {
                     aclFilter = FilterBuilders.inFilter(ACL_FIELD, principals);
                 }
@@ -419,15 +426,16 @@ public class ElasticSearchComponent extends DefaultComponent implements
         // Add sort
         if (sortInfos != null) {
             for (SortInfo sortInfo : sortInfos) {
-                request.addSort(sortInfo.getSortColumn(), sortInfo
-                        .getSortAscending() ? SortOrder.ASC : SortOrder.DESC);
+                request.addSort(sortInfo.getSortColumn(),
+                        sortInfo.getSortAscending() ? SortOrder.ASC
+                                : SortOrder.DESC);
             }
         }
         // Execute the ES query
         if (log.isDebugEnabled()) {
-            log.debug(String
-                    .format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
-                            MAIN_IDX, NX_DOCUMENT, request.toString()));
+            log.debug(String.format(
+                    "Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
+                    MAIN_IDX, NX_DOCUMENT, request.toString()));
         }
         SearchResponse response = request.execute().actionGet();
         if (log.isDebugEnabled()) {
@@ -439,8 +447,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             ids.add(hit.getId());
         }
         DocumentModelList ret = new DocumentModelListImpl(ids.size());
-        ((DocumentModelListImpl) ret).setTotalSize(response.getHits()
-                .getTotalHits());
+        ((DocumentModelListImpl) ret).setTotalSize(response.getHits().getTotalHits());
         // Fetch the document model
         if (!ids.isEmpty()) {
             try {
@@ -483,6 +490,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
         for (ElasticSearchIndex idx : indexes.values()) {
             initIndex(idx, recreate);
         }
+        indexInitDone = true;
+        if (stackedCommands.size() > 0) {
+            indexNow(stackedCommands);
+            stackedCommands.clear();
+        }
     }
 
     protected void initIndex(ElasticSearchIndex idxConfig, boolean recreate)
@@ -497,9 +509,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         boolean createIndex = idxConfig.mustCreate();
 
         if (indexExists && recreate) {
-            getClient().admin().indices()
-                    .delete(new DeleteIndexRequest(idxConfig.getIndexName()))
-                    .actionGet();
+            getClient().admin().indices().delete(
+                    new DeleteIndexRequest(idxConfig.getIndexName())).actionGet();
             indexExists = false;
             createIndex = true;
         }
@@ -507,26 +518,24 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (!indexExists && createIndex) {
             log.info("Create index " + idxConfig.getIndexName());
             // create index
-            getClient().admin().indices()
-                    .prepareCreate(idxConfig.getIndexName())
-                    .setSettings(idxConfig.getSettings()).execute().actionGet();
-            getClient().admin().indices()
-                    .preparePutMapping(idxConfig.getIndexName())
-                    .setType(NX_DOCUMENT).setSource(idxConfig.getMapping())
-                    .execute().actionGet();
+            getClient().admin().indices().prepareCreate(
+                    idxConfig.getIndexName()).setSettings(
+                    idxConfig.getSettings()).execute().actionGet();
+            getClient().admin().indices().preparePutMapping(
+                    idxConfig.getIndexName()).setType(NX_DOCUMENT).setSource(
+                    idxConfig.getMapping()).execute().actionGet();
         }
 
         if (idxConfig.forceUpdate()) {
             log.info("Update index config" + idxConfig.getIndexName());
             // update settings
-            getClient().admin().indices()
-                    .prepareUpdateSettings(idxConfig.getIndexName())
-                    .setSettings(idxConfig.getSettings()).execute().actionGet();
+            getClient().admin().indices().prepareUpdateSettings(
+                    idxConfig.getIndexName()).setSettings(
+                    idxConfig.getSettings()).execute().actionGet();
 
             // update mapping
-            getClient().admin().indices()
-                    .preparePutMapping(idxConfig.getIndexName())
-                    .setSource(idxConfig.getMapping());
+            getClient().admin().indices().preparePutMapping(
+                    idxConfig.getIndexName()).setSource(idxConfig.getMapping());
         }
     }
 
@@ -540,11 +549,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (client != null) {
             if (getConfig() != null && !getConfig().isInProcess()
                     && getConfig().autostartLocalNode()) {
-                client.admin()
-                        .cluster()
-                        .nodesShutdown(
-                                new NodesShutdownRequest(getConfig()
-                                        .getNodeName())).actionGet();
+                client.admin().cluster().nodesShutdown(
+                        new NodesShutdownRequest(getConfig().getNodeName())).actionGet();
             }
             client.close();
         }
@@ -579,8 +585,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public List<PendingClusterTask> getPendingTasks() {
-        PendingClusterTasksResponse response = getClient().admin().cluster()
-                .preparePendingClusterTasks().execute().actionGet();
+        PendingClusterTasksResponse response = getClient().admin().cluster().preparePendingClusterTasks().execute().actionGet();
         return response.getPendingTasks();
     }
 

@@ -234,4 +234,13 @@ public class IndexingCommand {
             schemas.add(schema);
         }
     }
+
+    @Override
+    public String toString() {
+        try {
+            return toJSON();
+        } catch (IOException e) {
+            return super.toString();
+        }
+    }
 }
