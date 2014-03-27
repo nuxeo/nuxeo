@@ -295,6 +295,16 @@
       <artifactId>nuxeo-wss</artifactId>
     </dependency>
 
+    <!-- Rest API -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-rest-api-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-rest-api-server</artifactId>
+    </dependency>
+
     <!-- Scope test -->
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
