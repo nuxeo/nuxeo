@@ -297,7 +297,7 @@
           </supportedTypes>
         </fields>
         <properties>
-          <layouts mode="any">
+          <layouts mode="view">
             <layout name="select2Multiple_widget_type_properties_any">
               <rows>
                 <row>
