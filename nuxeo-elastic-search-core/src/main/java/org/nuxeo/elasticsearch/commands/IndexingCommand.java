@@ -95,7 +95,16 @@ public class IndexingCommand {
             // Doc was deleted : no way we can fetch it
             // re-attach ???
         }
+    }
 
+    public String getRepository() {
+        if (repository!=null) {
+            return repository;
+        }
+        if (targetDocument!=null) {
+            return targetDocument.getRepositoryName();
+        }
+        return null;
     }
 
     public void update(IndexingCommand other) {

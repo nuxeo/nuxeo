@@ -73,6 +73,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -93,6 +94,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Component used to configure and manage ElasticSearch integration
@@ -518,8 +520,28 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
         indexInitDone = true;
         if (stackedCommands.size() > 0) {
-            indexNow(stackedCommands);
-            stackedCommands.clear();
+            boolean txCreated=false;
+            if (!TransactionHelper.isTransactionActive()) {
+                txCreated = TransactionHelper.startTransaction();
+            }
+            try {
+                for (final IndexingCommand cmd : stackedCommands) {
+                    new UnrestrictedSessionRunner(cmd.getRepository()) {
+                        @Override
+                        public void run() throws ClientException {
+                            cmd.refresh(session);
+                            indexNow(cmd);
+                        }
+                    };
+                }
+            } catch (Exception e) {
+                log.error("Unable to flush pending indexing commands", e);
+            } finally {
+                if (txCreated) {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+                stackedCommands.clear();
+            }
         }
     }
 
