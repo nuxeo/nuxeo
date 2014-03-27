@@ -417,9 +417,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     aclFilter));
         }
         // Add sort
-        for (SortInfo sortInfo : sortInfos) {
-            request.addSort(sortInfo.getSortColumn(), sortInfo
-                    .getSortAscending() ? SortOrder.ASC : SortOrder.DESC);
+        if (sortInfos != null) {
+            for (SortInfo sortInfo : sortInfos) {
+                request.addSort(sortInfo.getSortColumn(), sortInfo
+                        .getSortAscending() ? SortOrder.ASC : SortOrder.DESC);
+            }
         }
         // Execute the ES query
         if (log.isDebugEnabled()) {
