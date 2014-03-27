@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.contentviews.override">
+
+  <require>org.nuxeo.ecm.webapp.contentview.contrib</require>
+  <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
+  <require>org.nuxeo.ecm.platform.suggestbox.core.pageproviders</require>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+   <contentView name="document_content">
+
+      <title>label.contentview.document_content</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
+
+      <genericPageProvider name="NATIVE_PP_1"
+        class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+
+        <property name="coreSession">#{documentManager}</property>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+        <whereClause docType="AdvancedSearch">
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="advanced_search" name="fulltext_all" />
+          </predicate>
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="advanced_search" name="title" />
+          </predicate>
+          <predicate parameter="dc:modified" operator="BETWEEN">
+            <field schema="advanced_search" name="modified_min" />
+            <field schema="advanced_search" name="modified_max" />
+          </predicate>
+          <fixedPart>SELECT * FROM Document WHERE
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+            ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState
+            != 'deleted'
+          </fixedPart>
+        </whereClause>
+        <parameter>#{currentDocument.id}</parameter>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </genericPageProvider>
+
+      <searchLayout name="document_content_filter"
+        filterDisplayType="quick" />
+      <showFilterForm>true</showFilterForm>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{currentDocument.id}</cacheKey>
+      <cacheSize>10</cacheSize>
+      <resultLayouts>
+        <layout name="document_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_listing_ajax_compact_2_columns" title="document_listing_compact_2_columns"
+          translateTitle="true" iconPath="/icons/document_listing_compact_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_listing_ajax_icon_2_columns" title="document_listing_icon_2_columns"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+
+    </contentView>
+
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+      <genericPageProvider  name="DEFAULT_DOCUMENT_SUGGESTION"
+        class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+        <property name="maxResults">PAGE_SIZE</property>
+        <pattern quoteParameters="false" escapeParameters="false">
+          SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE ? AND ecm:mixinType !=
+          'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
+          ecm:currentLifeCycleState != 'deleted'
+        </pattern>
+        <pageSize>10</pageSize>
+      </genericPageProvider>
+
+  </extension>
+
+
+</component>
