@@ -13,12 +13,7 @@ import javax.ws.rs.Produces;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.user.invite.AlreadyProcessedRegistrationException;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
@@ -111,7 +106,8 @@ public class UserRegistrationObject extends ModuleRoot {
             return getView("ValidationErrorTemplate").arg("error", e);
         }
         // User redirected to the logout page after validating the password
-        String logoutUrl = "/" + BaseURL.getWebAppName() + "/logout";
+        String webappName = VirtualHostHelper.getWebAppName(getContext().getRequest());
+        String logoutUrl = "/" + webappName + "/logout";
         return getView("UserCreated").arg("data", registrationData).arg(
                 "logout", logoutUrl);
     }
@@ -162,28 +158,4 @@ public class UserRegistrationObject extends ModuleRoot {
         return redisplayFormWithMessage("err", formName, message, data);
     }
 
-    protected class DocumentUrlFinder extends UnrestrictedSessionRunner {
-
-        protected String docId;
-
-        protected String documentUrl;
-
-        public DocumentUrlFinder(String docId) throws Exception {
-
-            super(Framework.getService(RepositoryManager.class).getDefaultRepositoryName());
-            this.docId = docId;
-        }
-
-        public String getDocumentUrl() throws ClientException {
-            runUnrestricted();
-            return documentUrl;
-        }
-
-        @Override
-        public void run() throws ClientException {
-            DocumentModel target = session.getDocument(new IdRef(docId));
-            documentUrl = DocumentModelFunctions.documentUrl(null, target,
-                    "view_documents", null, true, ctx.getRequest());
-        }
-    }
 }
