@@ -19,24 +19,30 @@ package org.nuxeo.ecm.webapp.security;
 import static org.jboss.seam.ScopeType.APPLICATION;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
+import static org.jboss.seam.international.StatusMessage.Severity.ERROR;
 import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_CHANGED_EVENT;
 import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_SELECTED_EVENT;
+import static org.nuxeo.ecm.user.invite.UserRegistrationService.ValidationMethod.EMAIL;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -50,6 +56,7 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
+import org.nuxeo.ecm.user.invite.UserRegistrationService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -84,6 +91,11 @@ public class UserManagementActions extends AbstractUserGroupManagement
     protected DocumentModel selectedUser;
 
     protected DocumentModel newUser;
+
+    @In(create = true)
+    protected transient UserRegistrationService userRegistrationService;
+
+    protected boolean immediateCreation = false;
 
     @Override
     protected String computeListingMode() throws ClientException {
@@ -139,7 +151,12 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
     public DocumentModel getNewUser() throws ClientException {
         if (newUser == null) {
-            newUser = userManager.getBareUserModel();
+
+            if (immediateCreation) {
+                newUser = userManager.getBareUserModel();
+            } else {
+                newUser = userRegistrationService.getUserRegistrationModel(null);
+            }
         }
         return newUser;
     }
@@ -457,6 +474,39 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
     }
 
+    /**
+     * Create a new user using the "Invite" action.
+     *
+     * @param inviteAnotherUser Invite another user after executing the action.
+     * @throws ClientException
+     *
+     * @since 5.9.3
+     */
+    public void inviteUser(boolean inviteAnotherUser) throws ClientException {
+        try {
+            Map<String, Serializable> additionnalInfo = new HashMap<String, Serializable>();
+            userRegistrationService.submitRegistrationRequest(newUser, additionnalInfo, EMAIL, true);
+            newUser = null;
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get(
+                            "info.userManager.userInvited"));
+            // Set the flags used for the display
+            if (inviteAnotherUser) {
+                showCreateForm = true;
+            } else {
+                showCreateForm = false;
+                showUserOrGroup = false;
+                detailsMode = null;
+            }
+        } catch (UserAlreadyExistsException e) {
+            facesMessages.add(
+                    StatusMessage.Severity.ERROR,
+                    resourcesAccessor.getMessages().get(
+                            "error.userManager.userAlreadyExists"));
+        }
+    }
+
     @Factory(value = "notReadOnly", scope = APPLICATION)
     public boolean isNotReadOnly() {
         return !Framework.isBooleanPropertyTrue("org.nuxeo.ecm.webapp.readonly.mode");
@@ -471,14 +521,6 @@ public class UserManagementActions extends AbstractUserGroupManagement
         return null;
     }
 
-    public String viewUser() throws ClientException {
-        if (selectedUser != null) {
-            return viewUser(selectedUser.getId());
-        } else {
-            return null;
-        }
-    }
-
     public String viewUser(String userName) throws ClientException {
         webActions.setCurrentTabIds(MAIN_TAB_HOME + "," + USERS_TAB);
         setSelectedUser(userName);
@@ -486,6 +528,14 @@ public class UserManagementActions extends AbstractUserGroupManagement
         // do not reset the state before actually viewing the user
         shouldResetStateOnTabChange = false;
         return VIEW_HOME;
+    }
+
+    public String viewUser() throws ClientException {
+        if (selectedUser != null) {
+            return viewUser(selectedUser.getId());
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -543,4 +593,44 @@ public class UserManagementActions extends AbstractUserGroupManagement
         }
     }
 
+    /**
+     *
+     * @return The type of creation for the user.
+     *
+     * @since 5.9.3
+     */
+    public boolean isImmediateCreation() {
+        return immediateCreation;
+    }
+
+    /**
+     *
+     * @param immediateCreation
+     *
+     * @since 5.9.3
+     */
+    public void setImmediateCreation(boolean immediateCreation) {
+        this.immediateCreation = immediateCreation;
+    }
+
+    /**
+     * Changes the type of newUser depending of the value defined in the
+     * checkbox "Set for immediate creation". Sets also the values previously
+     * entered in the form into the new DocumentModel.
+     *
+     * @param event
+     *
+     * @since 5.9.3
+     */
+    public void changeTypeUserModel(ValueChangeEvent event)
+            throws ClientException {
+        Object newValue = event.getNewValue();
+        if (newValue instanceof Boolean) {
+            if ((Boolean) newValue) {
+                newUser = userManager.getBareUserModel();
+            } else {
+                newUser = userRegistrationService.getUserRegistrationModel(null);
+            }
+        }
+    }
 }
