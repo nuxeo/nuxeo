@@ -326,12 +326,11 @@ class Repository(object):
         'skip_tests': whether to skip or not the tests.
         'profiles': comma-separated additional Maven profiles to use.
         If 'dryrun', then print command without executing them."""
-        profiles_param = []
         if skip_tests:
             skip_tests_param = "-DskipTests=true"
         else:
             skip_tests_param = "-fae"
-            profiles_param += ["ftest"]
+        profiles_param = []
         if self.is_nuxeoecm:
             profiles_param += ["addons", "distrib", "all-distributions"]
         if profiles:
