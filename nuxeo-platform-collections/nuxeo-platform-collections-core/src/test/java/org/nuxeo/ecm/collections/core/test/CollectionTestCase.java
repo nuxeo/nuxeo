@@ -35,7 +35,6 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -49,7 +48,7 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.collections.core",
         "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.query.api" })
-public class CollectionTestCase extends SimpleFeature {
+public class CollectionTestCase {
 
     @Inject
     CollectionManager collectionManager;
