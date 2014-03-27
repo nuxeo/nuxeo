@@ -636,6 +636,11 @@
         <artifactId>nuxeo-platform-ws-sun-jaxws</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-invite</artifactId>
+        <version>${nuxeo.services.version}</version>
+      </dependency>
 
       <!-- Nuxeo Theme -->
       <dependency>
@@ -774,6 +779,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-ui</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-invite</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
 
