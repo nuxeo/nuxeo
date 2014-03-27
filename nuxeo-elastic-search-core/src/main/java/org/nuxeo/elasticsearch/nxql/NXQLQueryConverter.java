@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
@@ -276,8 +277,16 @@ public class NXQLQueryConverter {
         } else if ("LIKE".equals(op) || "ILIKE".equals(op)
                 || "NOT LIKE".equals(op) || "NOT ILIKE".equals(op)) {
             // Note that ILIKE will work only with a correct mapping
-            query = QueryBuilders.regexpQuery(name.replace("ecm:fulltext.", ""),
-                    ((String) value).replace('%', '*'));
+            String likeName = name.replace("ecm:fulltext.", "");
+            String likeValue = ((String) value).replace("%",  "*");
+            if (StringUtils.countMatches(((String) value), "*") == 1
+                    && ((String) value).endsWith("*")) {
+                query = QueryBuilders.matchPhrasePrefixQuery(likeName,
+                        ((String) value).replace("*", ""));
+            } else {
+                query = QueryBuilders.regexpQuery(likeName,
+                        ((String) value).replace("*", ".*"));
+            }
             if (op.startsWith("NOT")) {
                 filter = FilterBuilders.notFilter(FilterBuilders
                         .queryFilter(query));
