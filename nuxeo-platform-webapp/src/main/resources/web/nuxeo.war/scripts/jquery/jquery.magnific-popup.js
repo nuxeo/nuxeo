@@ -1689,7 +1689,7 @@
 
                   if (gSt.navigateByImgClick) {
                     mfp.wrap.on('click' + ns, '.mfp-img', function() {
-                      if (mfp.items.length > 1) {
+                      if (canNext()) {
                         mfp.next();
                         return false;
                       }
