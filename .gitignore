@@ -5,3 +5,5 @@ syntax:glob
 build.properties
 bin
 target
+*~
+*.iml
