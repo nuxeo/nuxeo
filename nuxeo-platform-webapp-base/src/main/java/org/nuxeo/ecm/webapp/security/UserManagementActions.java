@@ -230,6 +230,8 @@ public class UserManagementActions extends AbstractUserGroupManagement
         try {
             setSelectedUser(userManager.createUser(newUser));
             newUser = null;
+            // Set the default value for the creation
+            immediateCreation = false;
             facesMessages.add(
                     StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
@@ -487,6 +489,8 @@ public class UserManagementActions extends AbstractUserGroupManagement
             Map<String, Serializable> additionnalInfo = new HashMap<String, Serializable>();
             userRegistrationService.submitRegistrationRequest(newUser, additionnalInfo, EMAIL, true);
             newUser = null;
+            // Set the default value for the creation
+            immediateCreation = false;
             facesMessages.add(
                     StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
@@ -589,6 +593,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
             selectedUser = null;
             showUserOrGroup = false;
             showCreateForm = false;
+            immediateCreation = false;
             detailsMode = DETAILS_VIEW_MODE;
         }
     }
