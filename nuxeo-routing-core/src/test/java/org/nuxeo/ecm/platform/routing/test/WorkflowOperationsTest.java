@@ -179,8 +179,13 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testTasksOperations() throws Exception {
+        routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET,
+                "FacetRoute1");
+        routeDoc.addFacet("FacetRoute1");
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
+        node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
+        node1.addFacet("FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(
                 node1,
@@ -227,14 +232,41 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
         assertEquals(1, tasks.size());
 
         // invoke CompleteTaskOperation to end the task
+        // send node and workflow vars
         ctx = new OperationContext();
         ctx.setCoreSession(session);
         ctx.setInput(tasks);
-        params = new HashMap<String, Object>();
-        params.put("status", "trans1");
-        automationService.run(ctx, CompleteTaskOperation.ID, params);
+
+        Properties workflowVars = new Properties();
+        workflowVars.put("stringfield", "completeTaskTest");
+        workflowVars.put("myassignees", "[\"xx\", \"yy\"]");
+
+        Properties nodeVars = new Properties();
+        nodeVars.put("stringfield2", "testNodeVar");
+
+        OperationChain completeTask = new OperationChain(
+                CompleteTaskOperation.ID);
+        completeTask.add(CompleteTaskOperation.ID).set("status", "trans1").set(
+                "workflowVariables", workflowVars).set("nodeVariables",
+                nodeVars);
+        automationService.run(ctx, completeTask);
 
         session.save();
+        DocumentModel routeInstance = session.getDocument(new IdRef(
+                instance.getDocument().getId()));
+        GraphRoute graph = routeInstance.getAdapter(GraphRoute.class);
+        Map<String, Serializable> vars = graph.getVariables();
+        assertEquals(routeInstance.getPropertyValue("fctroute1:stringfield"),
+                "completeTaskTest");
+        assertEquals(vars.get("stringfield"), "completeTaskTest");
+        String[] assignesVar = (String[]) vars.get("myassignees");
+        assertEquals(2, assignesVar.length);
+        assertEquals("xx", assignesVar[0]);
+        assertEquals("yy", assignesVar[1]);
+
+        GraphNode n1 = graph.getNode("node1");
+        assertEquals("testNodeVar", n1.getVariables().get("stringfield2"));
+
         // invoke GetTaskOperation to check that there are no more open tasks
         ctx = new OperationContext();
         ctx.setCoreSession(session);
