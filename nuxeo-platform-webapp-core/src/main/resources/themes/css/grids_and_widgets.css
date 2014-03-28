@@ -259,7 +259,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   text-transform: none }
 
 .compactLayout .containerLabel {
-  min-width: 5em;
+  width: 30%;
   padding-right: .2em }
 
 /* Compact Tables */
