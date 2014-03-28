@@ -47,7 +47,7 @@
 
 
     <action id="collectionContent" link="/incl/collection_content_listing.xhtml"
-      order="-1" label="Content">
+      order="-1" label="action.view.content">
       <category>VIEW_ACTION_LIST</category>
       <filter id="collectionContentFilter">
         <rule grant="true">
