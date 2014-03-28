@@ -45,6 +45,8 @@ public class CollectionConstants {
 
     public static final String DEFAULT_COLLECTIONS_NAME = "Collections";
 
+    public static final String DEFAULT_COLLECTIONS_TITLE = "%i18nlabel.myCollections.title";
+
     public static final String COLLECTIONS_TYPE = "Collections";
 
     public static final String COLLECTION_QUEUE_ID = "collections";
