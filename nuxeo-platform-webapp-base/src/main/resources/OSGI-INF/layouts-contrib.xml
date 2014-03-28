@@ -4766,7 +4766,9 @@
           <field schema="user">password</field>
         </fields>
         <widgetModes>
-          <mode value="any">edit</mode>
+          <mode value="create">edit</mode>
+          <mode value="editPassword">edit</mode>
+          <mode value="any">hidden</mode>
         </widgetModes>
         <properties widgetMode="edit">
           <property name="required">true</property>
@@ -4779,7 +4781,9 @@
         </labels>
         <translated>true</translated>
         <widgetModes>
-          <mode value="any">edit</mode>
+          <mode value="create">edit</mode>
+          <mode value="editPassword">edit</mode>
+          <mode value="any">hidden</mode>
         </widgetModes>
         <properties widgetMode="edit">
           <property name="required">true</property>
@@ -4792,7 +4796,9 @@
         </labels>
         <translated>true</translated>
         <widgetModes>
-          <mode value="any">edit</mode>
+          <mode value="create">edit</mode>
+          <mode value="editPassword">edit</mode>
+          <mode value="any">hidden</mode>
         </widgetModes>
         <properties widgetMode="edit">
           <!-- XXX: depends on firstPassword and secondPassword widget names -->
