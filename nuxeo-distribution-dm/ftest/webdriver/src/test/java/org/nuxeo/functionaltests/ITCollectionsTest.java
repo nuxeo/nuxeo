@@ -167,7 +167,7 @@ public class ITCollectionsTest extends AbstractTest {
 
         assertEquals(1, personalWorkspaceRootDocs.size());
         assertEquals(
-                "Collections",
+                "My Collections",
                 personalWorkspaceRootDocs.get(0).findElement(By.xpath("td[3]")).getText());
 
         contentTabSubPage.swithToDocumentBase();
@@ -187,7 +187,7 @@ public class ITCollectionsTest extends AbstractTest {
         // Check copy/paste collection
         contentTabSubPage = collectionContentTabSubPage.swithToPersonalWorkspace().getContentTab();
 
-        contentTabSubPage = contentTabSubPage.goToDocument("Collections").getContentTab();
+        contentTabSubPage = contentTabSubPage.goToDocument("My Collections").getContentTab();
 
         contentTabSubPage.copyByTitle(COLLECTION_NAME_1);
 
@@ -235,18 +235,6 @@ public class ITCollectionsTest extends AbstractTest {
         }
 
         // Create 2 collections in "My Collections" container
-        documentBasePage = createCollections(workspacePage, "My Collections",
-                null);
-        documentBasePage = createCollection(workspacePage, COLLECTION_NAME_1,
-                COLLECTION_DESSCRIPTION_1);
-        documentBasePage = documentBasePage.getCollectionContentTab().getNavigationSubPage().goToDocument(
-                "My Collections");
-        documentBasePage = createCollection(workspacePage, COLLECTION_NAME_2,
-                COLLECTION_DESSCRIPTION_2);
-
-        // Give "Can Collect" to test user to the second one
-        documentBasePage.getManageTab().getAccessRightsSubTab().addPermissionForUser(
-                TEST_USERNAME, CAN_COLLECT_RIGHT, true);
         documentBasePage = documentBasePage.swithToPersonalWorkspace();
         workspacePage = documentBasePage.getNavigationSubPage().goToDocument(
                 "Administrator");
@@ -257,6 +245,16 @@ public class ITCollectionsTest extends AbstractTest {
         AddToCollectionForm addToCollectionForm = fileDocumentBasePage.getAddToCollectionPopup();
         addToCollectionForm.setCollection(COLLECTION_NAME_2);
         fileDocumentBasePage = addToCollectionForm.add(FileDocumentBasePage.class);
+
+        documentBasePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(
+                "My Collections");
+
+        documentBasePage = createCollection(workspacePage, COLLECTION_NAME_2,
+                COLLECTION_DESSCRIPTION_2);
+
+        documentBasePage.getManageTab().getAccessRightsSubTab().addPermissionForUser(
+                TEST_USERNAME, CAN_COLLECT_RIGHT, true);
+
         logout();
 
         // Login as test user
