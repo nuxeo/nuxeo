@@ -3,7 +3,7 @@
 # Configure ES
 ESHOST=${ESHOST:-localhost}
 ESPORT=${ESPORT:-9200}
-ESINDEX=${ESINDEX:-nuxeo}
+ESINDEX=${ESINDEX:-nxmain}
 # Single shard = single lucene index, easier to debug using luke, not for production
 ESSHARDS=${ESSHARDS:-1}
 ESREPLICAS=${ESREPLICAS:-0}
@@ -26,98 +26,123 @@ curl -s -XPUT "$ESHOST:$ESPORT/$ESINDEX" -d '{
     "index.number_of_shards": '"$ESSHARDS"', 
     "index.number_of_replicas": '"$ESREPLICAS"',
         "analysis": {
-            "analyzer": {
-                "default": {
-                    "type": "custom",
-                    "tokenizer": "keyword",
-                    "filter": ["lowercase", "asciifolding"]
-                },
-                "fr_analyzer" : {
-                    "type":"custom",
-                    "tokenizer" : "standard",
-                    "filter": ["lowercase", "fr_stop_filter", "fr_stem_filter", "asciifolding", "fr_elision_filter"]
-                },
-                "en_analyzer": {
-                    "type": "custom",
-                    "tokenizer": "standard",
-                    "filter": ["lowercase", "en_stop_filter", "en_stem_filter", "asciifolding"]
-                },
-                "path_analyzer": {
-                    "type": "custom",
-                    "tokenizer": "path_tokenizer"
-                }
-            },
-            "filter" : {
-                "fr_stop_filter":{
-                    "type":"stop",
-                    "stopwords":["_french_"]
-                },
-                "fr_stem_filter": {
-                    "type": "stemmer",
-                    "name": "minimal_french"
-                },
-                "fr_elision_filter" : {
-                    "type" : "elision",
-                    "articles" : ["c", "l", "m", "t", "qu", "n", "s", "j"]
-                },
-                "en_stop_filter":{
-                    "type":"stop",
-                    "stopwords":["_english_"]
-                },
-                "en_stem_filter": {
-                    "type": "stemmer",
-                    "name": "minimal_english"
-                }
-            },
-            "tokenizer": {
-                "path_tokenizer": {
-                    "type": "path_hierarchy",
-                    "delimiter": "/"
-                }
-            }
-        }
+      "filter" : {
+         "en_stem_filter" : {
+            "name" : "minimal_english",
+            "type" : "stemmer"
+         },
+         "en_stop_filter" : {
+            "stopwords" : [
+               "_english_"
+            ],
+            "type" : "stop"
+         },
+         "fr_elision_filter" : {
+            "articles" : [
+               "c",
+               "l",
+               "m",
+               "t",
+               "qu",
+               "n",
+               "s",
+               "j"
+            ],
+            "type" : "elision"
+         },
+         "fr_stem_filter" : {
+            "name" : "minimal_french",
+            "type" : "stemmer"
+         },
+         "fr_stop_filter" : {
+            "stopwords" : [
+               "_french_"
+            ],
+            "type" : "stop"
+         }
+      },
+      "tokenizer" : {
+         "path_tokenizer" : {
+            "delimiter" : "/",
+            "type" : "path_hierarchy"
+         }
+      },
+      "analyzer" : {
+         "en_analyzer" : {
+            "alias" : "fulltext",
+            "filter" : [
+               "lowercase",
+               "en_stop_filter",
+               "en_stem_filter",
+               "asciifolding"
+            ],
+            "type" : "custom",
+            "tokenizer" : "standard"
+         },
+         "fr_analyzer" : {
+            "filter" : [
+               "lowercase",
+               "fr_stop_filter",
+               "fr_stem_filter",
+               "asciifolding",
+               "fr_elision_filter"
+            ],
+            "type" : "custom",
+            "tokenizer" : "standard"
+         },
+         "path_analyzer" : {
+            "type" : "custom",
+            "tokenizer" : "path_tokenizer"
+         },
+         "default" : {
+            "type" : "custom",
+            "tokenizer" : "keyword"
+         }
+      }
+   }
     }
 }' |  grep error && exit -1
 
 echo "### Creating mapping doc ..."
 curl -s -X PUT "$ESHOST:$ESPORT/$ESINDEX/doc/_mapping" -d '{
         "doc" : {
-            "_all" : {
-              "analyzer" : "fr_analyzer"
+   "_all" : {
+      "analyzer" : "en_analyzer"
+   },
+   "properties" : {
+      "dc:description" : {
+         "boost" : 1.5,
+         "type" : "string",
+         "analyzer" : "en_analyzer"
+      },
+      "dc:title" : {
+         "boost" : 2,
+         "type" : "string",
+         "analyzer" : "en_analyzer"
+      },
+      "dc:created": {
+         "format": "dateOptionalTime",
+        "type": "date"
+      },
+      "dc:modified": {
+         "format": "dateOptionalTime",
+        "type": "date"
+      },
+      "ecm:path" : {
+         "fields" : {
+            "children" : {
+               "search_analyzer" : "keyword",
+               "index_analyzer" : "path_analyzer",
+               "type" : "string"
             },
-            "_size" : {
-              "enabled" : true
-            },
-            "_timestamp" : {
-              "enabled" : true,
-              "path" : "dc:modified"
-            },
-            "properties" : {
-                "ecm:path" : {
-                    "type" : "multi_field",
-                    "fields" : {
-                        "ecm:path" : {
-                           "type" : "string",
-                           "index" : "not_analyzed"
-                         },
-                         "children" : {
-                            "type" : "string",
-                            "index_analyzer": "path_analyzer",
-                            "search_analyzer": "keyword"
-                         }
-                      }
-                },
-                "dc:title" : {
-                    "type" : "string",
-                    "analyzer" : "fr_analyzer",
-                    "boost": 2.0
-                },
-                "dc:description" : {
-                    "type" : "string",
-                    "analyzer" : "fr_analyzer",
-                    "boost": 1.5
-                }
+            "ecm:path" : {
+               "index" : "not_analyzed",
+               "type" : "string"
             }
+         },
+         "type" : "multi_field"
+      }
+   }
         }
   }' | grep "error" && exit -2
 

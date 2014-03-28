@@ -52,7 +52,8 @@ public class ElasticSearchQueryBuilder {
             throws ClientException {
         String query = pattern;
         for (int i = 0; i < params.length; i++) {
-            query = query.replaceFirst("\\?", convertParam(params[i]));
+            query = query.replaceFirst("\\?",
+                    convertParam(params[i], quotePatternParameters));
         }
         if (useNativeQuery) {
             return QueryBuilders.queryString(query);
@@ -67,22 +68,24 @@ public class ElasticSearchQueryBuilder {
      */
     public static QueryBuilder makeQuery(final DocumentModel model,
             final WhereClauseDefinition whereClause, final Object[] params,
-            final boolean useNativeQuery, final List<String> fulltextFields) throws ClientException {
+            final boolean useNativeQuery, final List<String> fulltextFields)
+            throws ClientException {
         assert (model != null);
         assert (whereClause != null);
         NXQLQueryConverter.ExpressionBuilder eb = new NXQLQueryConverter.ExpressionBuilder(
                 "AND");
-        // Fixed part handled as query_string
         String fixedPart = whereClause.getFixedPart();
         if (params != null) {
             for (int i = 0; i < params.length; i++) {
                 fixedPart = fixedPart.replaceFirst("\\?",
-                        convertParam(params[i]));
+                        convertParam(params[i], true));
             }
             if (useNativeQuery) {
+                // Fixed part handled as query_string
                 eb.add(QueryBuilders.queryString(fixedPart));
             } else {
-                eb.add(NXQLQueryConverter.toESQueryBuilder(fixedPart, fulltextFields));
+                eb.add(NXQLQueryConverter.toESQueryBuilder(fixedPart,
+                        fulltextFields));
             }
         }
         // Process predicates
@@ -154,7 +157,7 @@ public class ElasticSearchQueryBuilder {
     /**
      * Convert a param for a query_string style
      */
-    protected static String convertParam(final Object param) {
+    protected static String convertParam(final Object param, boolean quote) {
         String ret;
         if (param == null) {
             ret = "";
@@ -167,7 +170,10 @@ public class ElasticSearchQueryBuilder {
         } else if (param instanceof Integer) {
             ret = ((Integer) param).toString();
         } else {
-            ret = "\"" + param.toString() + "\"";
+            ret = param.toString();
+            if (quote) {
+                ret = "\"" + ret + "\"";
+            }
         }
         return ret;
     }
@@ -184,6 +190,10 @@ public class ElasticSearchQueryBuilder {
                     }
                 } else if (v instanceof String[]) {
                     if (((String[]) v).length > 0) {
+                        return true;
+                    }
+                } else if (v instanceof Collection) {
+                    if (!((Collection) v).isEmpty()) {
                         return true;
                     }
                 } else {

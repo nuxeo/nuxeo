@@ -19,6 +19,7 @@ package org.nuxeo.elasticsearch.test;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -183,6 +184,72 @@ public class TestPageProvider {
     }
 
     @Test
+    public void ICanUseANxqlPageProviderWithFixedPart() throws Exception {
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
+        Assert.assertNotNull(pps);
+
+        PageProviderDefinition ppdef = pps
+                .getPageProviderDefinition("nxql_search");
+        Assert.assertNotNull(ppdef);
+
+        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+        long pageSize = 5;
+        PageProvider<?> pp = pps.getPageProvider("nxql_search", ppdef, null,
+                null, pageSize, Long.valueOf(0), props);
+        Assert.assertNotNull(pp);
+
+        // create 10 docs
+        ElasticSearchService ess = Framework
+                .getLocalService(ElasticSearchService.class);
+        Assert.assertNotNull(ess);
+        for (int i = 0; i < 10; i++) {
+            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
+                    "File");
+            doc.setPropertyValue("dc:title", "TestMe" + i);
+            doc = session.createDocument(doc);
+        }
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        ElasticSearchAdmin esa = Framework
+                .getLocalService(ElasticSearchAdmin.class);
+        Assert.assertNotNull(esa);
+        Assert.assertTrue(esa.getPendingDocs() > 0);
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+
+        TransactionHelper.startTransaction();
+        esi.flush();
+
+        // get current page
+        DocumentModel model = new DocumentModelImpl("/", "doc",
+                "AdvancedSearch");
+        pp.setSearchDocumentModel(model);
+        Object[] params = new Object[1];
+        params[0] = "Select * from Document ORDER BY dc:title DESC";
+        pp.setParameters(params);
+        List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
+        Assert.assertEquals(10, pp.getResultsCount());
+        Assert.assertNotNull(p);
+        Assert.assertEquals(pageSize, p.size());
+        Assert.assertEquals(2, pp.getNumberOfPages());
+        DocumentModel doc = p.get(0);
+        // TODO fix this order by is not taken in account
+        // Assert.assertEquals("TestMe9", doc.getTitle());
+
+        pp.nextPage();
+        p = (List<DocumentModel>) pp.getCurrentPage();
+        Assert.assertEquals(pageSize, p.size());
+        doc = p.get((int) pageSize - 1);
+        // Assert.assertEquals("TestMe0", doc.getTitle());
+    }
+
+    @Test
     public void testBuildInQuery() throws Exception {
         QueryBuilder qb;
         PageProviderService pps = Framework
@@ -279,6 +346,57 @@ public class TestPageProvider {
 
     }
 
+    @Test
+    public void testBuildInStringListQuery() throws Exception {
+        QueryBuilder qb;
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
+        Assert.assertNotNull(pps);
+
+        WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
+                "ADVANCED_SEARCH").getWhereClause();
+        String[] params = { "foo" };
+        DocumentModel model = new DocumentModelImpl("/", "doc",
+                "AdvancedSearch");
+        String[] arrayString = new String[] { "1", "2", "3" };
+        model.setPropertyValue("search:subjects", arrayString);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true, null);
+        String json = qb.toString();
+        Assert.assertEquals("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [ {\n" +
+                "      \"query_string\" : {\n" +
+                "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
+                "      }\n" +
+                "    }, {\n" +
+                "      \"constant_score\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"terms\" : {\n" +
+                "            \"dc:subjects\" : [ \"1\", \"2\", \"3\" ]\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    } ]\n" +
+                "  }\n" +
+                "}", qb.toString());
+
+        // lists work too
+        @SuppressWarnings("boxing")
+        List<String> list = Arrays.asList(arrayString);
+        model.setPropertyValue("search:subjects", (Serializable) list);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true, null);
+        Assert.assertEquals(json, qb.toString());
+
+        // don't take into account empty list
+        list = new ArrayList<String>();
+        model.setPropertyValue("search:subjects", (Serializable) list);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true, null);
+        Assert.assertEquals("{\n" +
+                "  \"match_all\" : { }\n" +
+                "}", qb.toString());
+
+
+    }
 
     @Test
     public void testBuildIsNullQuery() throws Exception {
@@ -373,10 +491,11 @@ public class TestPageProvider {
                 new Object[] { "Document", "dc:title", null }, false, true, true, null);
         Assert.assertEquals("{\n" +
                 "  \"query_string\" : {\n" +
-                "    \"query\" : \"SELECT * FROM \\\"Document\\\" WHERE \\\"dc:title\\\" = ''\"\n" +
+                "    \"query\" : \"SELECT * FROM Document WHERE dc:title = ''\"\n" +
                 "  }\n" +
                 "}",
                 qb.toString());
+
     }
 
 
