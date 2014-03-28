@@ -300,8 +300,29 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         return GraphVariablesUtil.getVariables(document, PROP_VARIABLES_FACET);
     }
 
+    @Override
     public void setVariables(Map<String, Serializable> map) {
-        GraphVariablesUtil.setVariables(document, PROP_VARIABLES_FACET, map);
+        if (map.containsKey(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)
+                && (Boolean) map.get(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)) {
+            Map<String, String> vars = new HashMap<String, String>();
+            map.remove(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON);
+            for (String key : map.keySet()) {
+                if (map.get(key) != null && !(map.get(key) instanceof String)) {
+                    throw new ClientRuntimeException(
+                            "Trying to decode JSON variables: The parameter 'map' should contain only Strings as it contains the marker '_MAP_VAR_FORMAT_JSON' ");
+                }
+                vars.put(key, (String) map.get(key));
+            }
+            GraphVariablesUtil.setJSONVariables(document, PROP_VARIABLES_FACET,
+                    vars);
+        } else {
+            GraphVariablesUtil.setVariables(document, PROP_VARIABLES_FACET, map);
+        }
+    }
+
+    @Override
+    public void setJSONVariables(Map<String, String> map) {
+        GraphVariablesUtil.setJSONVariables(document, PROP_VARIABLES_FACET, map);
     }
 
     @SuppressWarnings("unchecked")
@@ -309,6 +330,11 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     public void setAllVariables(Map<String, Object> map) {
         if (map == null) {
             return;
+        }
+        Boolean mapToJSON = Boolean.FALSE;
+        if (map.containsKey(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)
+                && (Boolean) map.get(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)) {
+            mapToJSON = Boolean.TRUE;
         }
 
         // get variables from node and graph
@@ -345,9 +371,13 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             }
         }
         if (changedNodeVariables) {
+            nodeVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON,
+                    mapToJSON);
             setVariables(nodeVariables);
         }
         if (changedGraphVariables) {
+            graphVariables.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON,
+                    mapToJSON);
             graph.setVariables(graphVariables);
         }
     }

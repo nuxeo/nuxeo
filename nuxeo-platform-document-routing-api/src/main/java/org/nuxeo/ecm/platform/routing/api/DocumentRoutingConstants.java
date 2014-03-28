@@ -84,6 +84,13 @@ public interface DocumentRoutingConstants {
 
     String WORKFLOW_FORCE_RESUME = "_FORCE_RESUME_";
 
+    /*
+     * @since 5.9.3
+     * If this flag is set to Boolean.TRUE in the map of variables to be
+     * set on node or workflow, these variables will be decoded to JSON format
+     */
+    String _MAP_VAR_FORMAT_JSON = "_MAP_VAR_FORMAT_JSON";
+
     /**
      * @since 5.6
      */

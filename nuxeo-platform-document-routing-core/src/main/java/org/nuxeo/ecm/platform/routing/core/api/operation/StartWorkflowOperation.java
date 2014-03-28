@@ -31,9 +31,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 
 /**
  * Starts the workflow with the given model id on the input documents. Returns
@@ -94,24 +93,19 @@ public class StartWorkflowOperation {
     }
 
     protected void startNewInstance(List<String> ids) throws ClientException {
-        Map<String, String> vars = new HashMap<String, String>();
+        Map<String, Serializable> vars = new HashMap<String, Serializable>();
         if (variables != null) {
             for (Entry<String, String> entry : variables.entrySet()) {
                 vars.put(entry.getKey(), entry.getValue());
             }
         }
+        vars.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, Boolean.TRUE);
         String workflowId = documentRoutingService.createNewInstance(id, ids,
-                new HashMap<String, Serializable>(), session,
-                Boolean.TRUE.equals(start));
+                vars, session, Boolean.TRUE.equals(start));
         ctx.put("WorkflowId", workflowId);
         // to be consistent with all the other workflow variablesin the context
         // @since 5.7.2
         ctx.put("workflowInstanceId", workflowId);
 
-        // set variables
-        DocumentModel routeInstanceDoc = session.getDocument(new IdRef(
-                workflowId));
-        GraphRoute graph = routeInstanceDoc.getAdapter(GraphRoute.class);
-        graph.setJSONVariables(vars);
     }
 }

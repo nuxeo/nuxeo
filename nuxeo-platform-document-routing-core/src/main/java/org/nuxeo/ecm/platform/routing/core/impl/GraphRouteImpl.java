@@ -139,7 +139,22 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
 
     @Override
     public void setVariables(Map<String, Serializable> map) {
-        GraphVariablesUtil.setVariables(document, PROP_VARIABLES_FACET, map);
+        if (map.containsKey(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)
+                && (Boolean) map.get(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON)) {
+            Map<String, String> vars = new HashMap<String, String>();
+            map.remove(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON);
+            for (String key : map.keySet()) {
+                if (map.get(key) != null && !(map.get(key) instanceof String)) {
+                    throw new ClientRuntimeException(
+                            "The parameter 'map' should contain only Strings as it contains the marker '_MAP_VAR_FORMAT_JSON' ");
+                }
+                vars.put(key, (String) map.get(key));
+            }
+            GraphVariablesUtil.setJSONVariables(document, PROP_VARIABLES_FACET,
+                    vars);
+        } else {
+            GraphVariablesUtil.setVariables(document, PROP_VARIABLES_FACET, map);
+        }
     }
 
     @Override
