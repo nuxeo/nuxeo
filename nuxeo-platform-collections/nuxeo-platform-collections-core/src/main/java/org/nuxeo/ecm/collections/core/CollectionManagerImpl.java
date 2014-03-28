@@ -190,7 +190,7 @@ public class CollectionManagerImpl extends DefaultComponent implements
                 CollectionConstants.DEFAULT_COLLECTIONS_NAME,
                 CollectionConstants.COLLECTIONS_TYPE);
         doc.setProperty("dublincore", "title",
-                CollectionConstants.DEFAULT_COLLECTIONS_NAME);
+                CollectionConstants.DEFAULT_COLLECTIONS_TITLE);
         doc.setProperty("dublincore", "description", "");
         doc = session.createDocument(doc);
 
