@@ -2,8 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm</groupId>
+<<<<<<< HEAD
     <artifactId>nuxeo-drive-server</artifactId>
     <version>5.8.0-HF11-SNAPSHOT</version>
+=======
+    <artifactId>nuxeo-drive-parent</artifactId>
+    <version>5.9.3-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+>>>>>>> d610cf8... NXP-10947: Refactor Maven parent project name: nuxeo-drive-server to nuxeo-drive-parent
   </parent>
 
   <groupId>org.nuxeo.ecm</groupId>

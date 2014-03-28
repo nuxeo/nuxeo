@@ -2,8 +2,9 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm</groupId>
-    <artifactId>nuxeo-drive-server</artifactId>
+    <artifactId>nuxeo-drive-parent</artifactId>
     <version>5.8.0-HF11-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
   <groupId>org.nuxeo.ecm</groupId>
   <artifactId>nuxeo-drive-core</artifactId>
