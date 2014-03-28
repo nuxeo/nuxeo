@@ -1,5 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.nuxeo.ecm</groupId>
     <artifactId>nuxeo-drive-parent</artifactId>
@@ -10,7 +12,9 @@
   <groupId>org.nuxeo.ecm</groupId>
   <artifactId>nuxeo-drive-operations</artifactId>
   <name>Nuxeo Drive Content Automation Operations</name>
-  <description>Custom Content Automation Operations required for Nuxeo Drive</description>
+  <description>Custom Content Automation Operations required for Nuxeo
+    Drive
+  </description>
 
   <dependencies>
     <dependency>
@@ -33,7 +37,7 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
-        <dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-user-profile</artifactId>
     </dependency>
@@ -140,9 +144,12 @@
             <projectnature>org.nuxeo.ide.NuxeoNature</projectnature>
           </additionalProjectnatures>
           <classpathContainers>
-            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
-            <classpathContainer>org.nuxeo.ide.SDK_CONTAINER</classpathContainer>
-            <classpathContainer>org.nuxeo.ide.SDK_TEST_CONTAINER</classpathContainer>
+            <classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER
+            </classpathContainer>
+            <classpathContainer>org.nuxeo.ide.SDK_CONTAINER
+            </classpathContainer>
+            <classpathContainer>org.nuxeo.ide.SDK_TEST_CONTAINER
+            </classpathContainer>
           </classpathContainers>
         </configuration>
       </plugin>
