@@ -13,7 +13,7 @@
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
   <property name="mp.install"
-            value="init,remove nuxeo-dam,${out.dir}/marketplace-dam-${nuxeo.distribution.version}.zip" />
+            value="${out.dir}/marketplace-dam-${nuxeo.distribution.version}.zip" />
   <target name="prepare-environment"
           depends="_init,prepare-db,prepare-tomcat,prepare-jboss">
     <copy todir="${out.dir}">
