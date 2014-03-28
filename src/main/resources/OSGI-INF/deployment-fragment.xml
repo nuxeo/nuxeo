@@ -21,6 +21,7 @@
       <supported-locale>gl_ES</supported-locale><!-- Galician -->
       <supported-locale>it_IT</supported-locale><!-- Italian - Italy -->
       <supported-locale>ja_JP</supported-locale><!-- Japanese (Gregorian calendar) - Japan -->
+      <supported-locale>mk_MK</supported-locale><!-- Macedonian - Macedonia -->
       <supported-locale>nl</supported-locale><!-- Dutch - Netherlands -->
       <supported-locale>nl_NL</supported-locale><!-- Dutch - Netherlands -->
       <supported-locale>pl</supported-locale><!-- Polish - Poland -->
@@ -31,6 +32,7 @@
       <supported-locale>ru</supported-locale><!-- Russian - Russia -->
       <supported-locale>ru_RU</supported-locale><!-- Russian - Russia -->
       <supported-locale>sr_RS</supported-locale><!-- Serbian(Cyrillic) - Serbia -->
+      <supported-locale>tr_TR</supported-locale><!-- Turkish - Turkey -->
       <supported-locale>vi_VN</supported-locale><!-- Vietnamese - Vietnam -->
     </locale-config>
   </extension>
