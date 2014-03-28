@@ -492,6 +492,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
         super.applicationStarted(context);
 
+        if (getConfig()==null) {
+            log.warn("Unable to initialize ElasticSearch service : no configuration is provided");
+            return;
+        }
+
         // start Server if needed
         if (getConfig() != null && !getConfig().isInProcess()
                 && getConfig().autostartLocalNode()) {
