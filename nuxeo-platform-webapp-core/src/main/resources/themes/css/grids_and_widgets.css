@@ -78,11 +78,27 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 .thumbnailContainer {
   height: 11em;
-  max-width: 14em }
+  max-width: 14em;
+  position: relative }
 
 .thumbnailContainer img {
   max-height: 100%;
   max-width: 100% }
+
+/* Lightbox on thumbnails */
+.thumbnailContainer .image-popup {
+  background: url("${basePath}/icons/lightbox_call.png") no-repeat scroll center center transparent;
+  opacity: 0;
+  display: inline-block;
+  height: inherit;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  transition: opacity 0.2s ease 0.1s }
+
+.thumbnailContainer:hover .image-popup {
+  opacity: 1 }
 
 /* =Standard Widgets */
 /* Widgets styles, spacing between blocks in .gridBox containers */
