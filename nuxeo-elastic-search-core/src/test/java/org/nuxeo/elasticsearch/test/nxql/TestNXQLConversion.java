@@ -205,7 +205,7 @@ public class TestNXQLConversion {
         Assert.assertEquals("{\n" +
                 "  \"regexp\" : {\n" +
                 "    \"f1\" : {\n" +
-                "      \"value\" : \"foo*\"\n" +
+                "      \"value\" : \"foo%\"\n" +
                 "    }\n" +
                 "  }\n" +
                 "}", es);
@@ -223,7 +223,7 @@ public class TestNXQLConversion {
                 "          \"query\" : {\n" +
                 "            \"regexp\" : {\n" +
                 "              \"f1\" : {\n" +
-                "                \"value\" : \"foo*\"\n" +
+                "                \"value\" : \"foo%\"\n" +
                 "              }\n" +
                 "            }\n" +
                 "          }\n" +
@@ -418,13 +418,13 @@ public class TestNXQLConversion {
                 "        \"should\" : [ {\n" +
                 "          \"regexp\" : {\n" +
                 "            \"f1\" : {\n" +
-                "              \"value\" : \"1*\"\n" +
+                "              \"value\" : \"1%\"\n" +
                 "            }\n" +
                 "          }\n" +
                 "        }, {\n" +
                 "          \"regexp\" : {\n" +
                 "            \"f2\" : {\n" +
-                "              \"value\" : \"2*\"\n" +
+                "              \"value\" : \"2%\"\n" +
                 "            }\n" +
                 "          }\n" +
                 "        } ]\n" +
