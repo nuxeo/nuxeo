@@ -58,12 +58,12 @@
 
     <type id="Folder">
       <subtypes>
-        <type>Collections</type>
+        <type>Collection</type>
       </subtypes>
     </type>
     <type id="Workspace">
       <subtypes>
-        <type>Collections</type>
+        <type>Collection</type>
       </subtypes>
     </type>
   </extension>
