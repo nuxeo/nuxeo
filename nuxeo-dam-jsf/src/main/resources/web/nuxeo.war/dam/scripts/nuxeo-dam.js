@@ -2,14 +2,17 @@ var nuxeo = nuxeo || {}
 
 nuxeo.dam = (function(m) {
 
+  var lastSelectedDocument;
+
   function removeAllSelectedItemClass() {
     jQuery('.jsDamItem.selectedItem').removeClass('selectedItem');
   }
 
   m.selectDocument = function(event, docRef) {
-    if (nuxeo.dam.canSelectDocument(event)) {
+    if (lastSelectedDocument !== docRef && nuxeo.dam.canSelectDocument(event)) {
       // trigger the a4j:jsFunction
       nuxeo.dam.displayLoading();
+      lastSelectedDocument = docRef;
       damSelectDocument(docRef);
     }
   };
