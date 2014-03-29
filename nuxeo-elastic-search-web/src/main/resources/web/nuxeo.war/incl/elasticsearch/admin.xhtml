@@ -22,8 +22,6 @@ jQuery(window).load(function() {
 
   displayESJSON('tasks', <h:outputText value="#{esAdmin.nodesTasks}" escape="false" />, jQuery('#ESTasks'));
 
-  displayESJSON('health', <h:outputText value="#{esAdmin.nodesHealth}" escape="false" />, jQuery('#ESHealth'));
-
 });
 </script>
 
@@ -34,7 +32,9 @@ jQuery(window).load(function() {
   <div id="ESStats"></div>
 
   <h3> ElasticSearch Health </h3>
-  <div id="ESHealth"></div>
+  <pre class="bubbleBox">
+    <h:outputText value="#{esAdmin.nodesHealth}" />
+  </pre>
 
   <h3> ElasticSearch Pending Tasks </h3>
   <div id="ESTasks"></div>
