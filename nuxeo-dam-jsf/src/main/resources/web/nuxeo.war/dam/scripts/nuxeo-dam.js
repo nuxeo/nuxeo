@@ -9,8 +9,17 @@ nuxeo.dam = (function(m) {
   m.selectDocument = function(event, docRef) {
     if (nuxeo.dam.canSelectDocument(event)) {
       // trigger the a4j:jsFunction
+      nuxeo.dam.displayLoading();
       damSelectDocument(docRef);
     }
+  };
+
+  m.displayLoading = function() {
+    jQuery(
+        "span.widgetPanel.containerWidgetPanel.assetViewContainer > div.containerSubWidget > div > div")
+        .replaceWith(
+            "<div class='pictureContainer'><img src='" + nxthemesPath
+                + "/img/big_loading.gif'/></span>");
   };
 
   m.canSelectDocument = function(event) {
