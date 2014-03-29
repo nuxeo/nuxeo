@@ -40,7 +40,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.elasticsearch.action.admin.cluster.node.shutdown.NodesShutdownRequest;
 import org.elasticsearch.action.admin.cluster.tasks.PendingClusterTasksResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequestBuilder;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
@@ -50,7 +50,6 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.service.PendingClusterTask;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -377,6 +376,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             Settings settings = getSettings();
             localNode = NodeBuilder.nodeBuilder().local(config.isInProcess()).settings(
                     settings).node();
+            localNode.start();
         }
         return localNode;
     }
@@ -503,6 +503,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
             startESServer(getConfig());
         }
 
+        // init client
+        getClient();
+
         // init indexes if needed
         initIndexes(false);
 
@@ -554,9 +557,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
             throws Exception {
 
         log.info("Initialize index " + idxConfig.getIndexName());
-        IndicesAdminClient cl = getClient().admin().indices();
-        IndicesExistsResponse exists = cl.exists(
-                new IndicesExistsRequest(idxConfig.getIndexName())).actionGet();
+        IndicesExistsRequestBuilder request =  getClient().admin().indices().prepareExists(idxConfig.getIndexName());
+        IndicesExistsResponse exists = request.execute().actionGet();
 
         boolean indexExists = exists.isExists();
         boolean createIndex = idxConfig.mustCreate();

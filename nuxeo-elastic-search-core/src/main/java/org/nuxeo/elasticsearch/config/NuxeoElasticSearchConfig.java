@@ -57,7 +57,7 @@ public class NuxeoElasticSearchConfig implements Serializable {
     protected String logPath;
 
     @XNode("indexStorageType")
-    protected String indexStorageType = "memory";
+    protected String indexStorageType;
 
     @XNode("hostIp")
     protected String hostIp;
@@ -108,6 +108,13 @@ public class NuxeoElasticSearchConfig implements Serializable {
     }
 
     public String getIndexStorageType() {
+        if (indexStorageType==null) {
+            if (Framework.isTestModeSet()) {
+                indexStorageType = "memory";
+            } else {
+                indexStorageType = "mmapfs";
+            }
+        }
         return indexStorageType;
     }
 
