@@ -142,7 +142,7 @@
       </properties>
     </action>
 
-    <action id="addToCollectioAction">
+    <action id="addToCollectionAction">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
     </action>
 
