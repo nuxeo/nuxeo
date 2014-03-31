@@ -141,14 +141,24 @@ public class NXQLQueryConverter {
 
     }
 
+    private static final String SELECT_ALL = "SELECT * FROM Document";;
+
+    private static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";;
+
     public static QueryBuilder toESQueryBuilder(String nxql) {
         return toESQueryBuilder(nxql, null);
     }
 
-    public static QueryBuilder toESQueryBuilder(String nxql,
+    public static QueryBuilder toESQueryBuilder(final String nxql,
             final List<String> fulltextFields) {
         final LinkedList<ExpressionBuilder> builders = new LinkedList<ExpressionBuilder>();
-        SQLQuery nxqlQuery = SQLQueryParser.parse(new StringReader(nxql));
+        String query = (nxql == null) ? "" : nxql.trim();
+        if (query.isEmpty()) {
+            query = SELECT_ALL;
+        } else if (!query.toLowerCase().startsWith("select ")) {
+            query = SELECT_ALL_WHERE + nxql;
+        }
+        SQLQuery nxqlQuery = SQLQueryParser.parse(new StringReader(query));
         final ExpressionBuilder ret = new ExpressionBuilder(null);
         builders.add(ret);
         final ArrayList<String> fromList = new ArrayList<String>();
@@ -278,14 +288,14 @@ public class NXQLQueryConverter {
                 || "NOT LIKE".equals(op) || "NOT ILIKE".equals(op)) {
             // Note that ILIKE will work only with a correct mapping
             String likeName = name.replace("ecm:fulltext.", "");
-            String likeValue = ((String) value).replace("%",  "*");
-            if (StringUtils.countMatches(((String) value), "*") == 1
-                    && ((String) value).endsWith("*")) {
+            String likeValue = ((String) value).replace("%", "*");
+            if (StringUtils.countMatches(likeValue, "*") == 1
+                    && likeValue.endsWith("*")) {
                 query = QueryBuilders.matchPhrasePrefixQuery(likeName,
-                        ((String) value).replace("*", ""));
+                        likeValue.replace("*", ""));
             } else {
                 query = QueryBuilders.regexpQuery(likeName,
-                        ((String) value).replace("*", ".*"));
+                        likeValue.replace("*", ".*"));
             }
             if (op.startsWith("NOT")) {
                 filter = FilterBuilders.notFilter(FilterBuilders

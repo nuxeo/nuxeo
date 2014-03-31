@@ -203,9 +203,10 @@ public class TestNXQLConversion {
         es = NXQLQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 LIKE 'foo%'").toString();
         Assert.assertEquals("{\n" +
-                "  \"regexp\" : {\n" +
+                "  \"match\" : {\n" +
                 "    \"f1\" : {\n" +
-                "      \"value\" : \"foo%\"\n" +
+                "      \"query\" : \"foo\",\n" +
+                "      \"type\" : \"phrase_prefix\"\n" +
                 "    }\n" +
                 "  }\n" +
                 "}", es);
@@ -221,9 +222,10 @@ public class TestNXQLConversion {
                 "      \"not\" : {\n" +
                 "        \"filter\" : {\n" +
                 "          \"query\" : {\n" +
-                "            \"regexp\" : {\n" +
+                "            \"match\" : {\n" +
                 "              \"f1\" : {\n" +
-                "                \"value\" : \"foo%\"\n" +
+                "                \"query\" : \"foo\",\n" +
+                "                \"type\" : \"phrase_prefix\"\n" +
                 "              }\n" +
                 "            }\n" +
                 "          }\n" +
@@ -416,15 +418,17 @@ public class TestNXQLConversion {
                 "    \"must\" : [ {\n" +
                 "      \"bool\" : {\n" +
                 "        \"should\" : [ {\n" +
-                "          \"regexp\" : {\n" +
+                "          \"match\" : {\n" +
                 "            \"f1\" : {\n" +
-                "              \"value\" : \"1%\"\n" +
+                "              \"query\" : \"1\",\n" +
+                "              \"type\" : \"phrase_prefix\"\n" +
                 "            }\n" +
                 "          }\n" +
                 "        }, {\n" +
-                "          \"regexp\" : {\n" +
+                "          \"match\" : {\n" +
                 "            \"f2\" : {\n" +
-                "              \"value\" : \"2%\"\n" +
+                "              \"query\" : \"2\",\n" +
+                "              \"type\" : \"phrase_prefix\"\n" +
                 "            }\n" +
                 "          }\n" +
                 "        } ]\n" +
@@ -524,6 +528,31 @@ public class TestNXQLConversion {
                 "      \"operator\" : \"AND\"\n" +
                 "    }\n" +
                 "  }\n" +
+                "}", es);
+    }
+
+    @Test
+    public void testConverterWhereWithoutSelect() throws Exception {
+        String es = NXQLQueryConverter.toESQueryBuilder(
+                "f1=1").toString();
+        Assert.assertEquals("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"term\" : {\n" +
+                "        \"f1\" : \"1\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}", es);
+        es = NXQLQueryConverter.toESQueryBuilder(
+                null).toString();
+        Assert.assertEquals("{\n" +
+                "  \"match_all\" : { }\n" +
+                "}", es);
+        es = NXQLQueryConverter.toESQueryBuilder(
+                "").toString();
+        Assert.assertEquals("{\n" +
+                "  \"match_all\" : { }\n" +
                 "}", es);
     }
 }
