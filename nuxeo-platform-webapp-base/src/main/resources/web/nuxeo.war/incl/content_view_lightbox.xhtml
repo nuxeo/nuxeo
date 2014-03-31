@@ -8,51 +8,20 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <a4j:jsFunction name="navigateToNextPage" action="#{provider.next}"
-    reRender="#{contentIdToBeReRendered}" oncomplete="afterNextPage();" />
-  <a4j:jsFunction name="navigateToPreviousPage"
+  <a4j:jsFunction name="#{contentViewPanelId}NP" action="#{provider.next}"
+    reRender="#{contentIdToBeReRendered}" oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterNP();" />
+  <a4j:jsFunction name="#{contentViewPanelId}PP"
     action="#{provider.previous}" reRender="#{contentIdToBeReRendered}"
-    oncomplete="afterPreviousPage();" />
+    oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterPP();" />
 
   <script>
-    var nx_mp_params = {
-      type : 'image',
-      gallery : {
-        enabled : true,
-        navigateByImgClick : false,
-        preload : [ 0, 1 ]
-      },
-      closeOnContentClick : true,
-      closeBtnInside : false,
-      fixedContentPos : true,
-      endOfPageCallback : navigateToNextPage,
-      startOfPageCallback : navigateToPreviousPage,
-      nxHasPreviousPage : #{provider.previousPageAvailable},
-      nxHasNextPage : #{provider.nextPageAvailable},
-      image : {
-        verticalFit : true
-      },
-      zoom : {
-        enabled : true,
-        duration : 300
-      // don't foget to change the duration also in CSS
-      },
-      tError: 'The image could not be loaded.'
-    };
-
-    var nx_mp_elt = jQuery("div[id$=#{contentViewPanelId}]");
-
-    function afterNextPage() {
-      jQuery(nx_mp_elt).find('div.thumbnailContainer a.image-popup').magnificPopup('open');
-    }
-
-    function afterPreviousPage() {
-      var nbItems = jQuery(nx_mp_elt).find('div.thumbnailContainer a.image-popup').size();
-      jQuery(nx_mp_elt).find('div.thumbnailContainer a.image-popup').magnificPopup('open', nbItems - 1);
-    }
-
     jQuery(document).ready(function() {
-      jQuery(nx_mp_elt).find('div.thumbnailContainer a.image-popup').magnificPopup(nx_mp_params);
+      jQuery("div[id$=#{contentViewPanelId}]").initNxCv({
+        nxHasPreviousPage : #{provider.previousPageAvailable},
+        nxHasNextPage : #{provider.nextPageAvailable},
+        endOfPageCallback : #{contentViewPanelId}NP,
+        startOfPageCallback : #{contentViewPanelId}PP,
+      });
     });
   </script>
 
