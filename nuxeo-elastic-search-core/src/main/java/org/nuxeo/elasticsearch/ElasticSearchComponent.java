@@ -180,13 +180,22 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (cname == null) {
                 cname = "NuxeoESCluster";
             }
-            settings = ImmutableSettings.settingsBuilder().put(
-                    "node.http.enabled", config.enableHttp()).put("path.logs",
-                    config.getLogPath()).put("path.data", config.getDataPath()).put(
-                    "gateway.type", "none").put("index.store.type",
-                    config.getIndexStorageType()).put("index.number_of_shards",
-                    1).put("index.number_of_replicas", 1).put("cluster.name",
-                    cname).put("node.name", config.getNodeName()).build();
+            Builder sBuilder = ImmutableSettings.settingsBuilder();
+            sBuilder.
+                    put("node.http.enabled", config.enableHttp()).
+                    put("path.logs",config.getLogPath()).
+                    put("path.data", config.getDataPath()).
+                    put("index.number_of_shards",1).
+                    put("index.number_of_replicas", 1).
+                    put("cluster.name",cname).
+                    put("node.name", config.getNodeName());
+            if (config.getIndexStorageType()!=null) {
+                sBuilder.put("index.store.type",config.getIndexStorageType());
+                if (config.getIndexStorageType().equals("memory")) {
+                    sBuilder.put("gateway.type", "none");
+                }
+            }
+            settings = sBuilder.build();
         } else {
             Builder builder = ImmutableSettings.settingsBuilder().put(
                     "node.http.enabled", config.enableHttp());
@@ -560,9 +569,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
         boolean createIndex = idxConfig.mustCreate();
 
         if (!indexExists) {
-            log.error("Index " + idxConfig.getIndexName() + " NOT FOUND : will be created");
+            log.info("Index " + idxConfig.getIndexName() + " NOT FOUND : will be created");
         } else {
-            log.info("Index " + idxConfig.getIndexName() + " already exists");
+            log.debug("Index " + idxConfig.getIndexName() + " already exists");
         }
 
         if (indexExists && recreate) {
