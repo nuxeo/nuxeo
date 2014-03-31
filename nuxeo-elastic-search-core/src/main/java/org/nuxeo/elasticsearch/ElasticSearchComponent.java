@@ -545,8 +545,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 "elasticsearch", "service", "search"));
         fetchTimer = registry.timer(MetricRegistry.name("nuxeo",
                 "elasticsearch", "service", "fetch"));
-        indexTimer = registry.timer(MetricRegistry.name("nuxeo",
-                "elasticsearch", "service", "index"));
         // start Server if needed
         if (getConfig() != null && !getConfig().isInProcess()
                 && getConfig().autostartLocalNode()) {
