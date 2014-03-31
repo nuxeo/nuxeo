@@ -331,6 +331,7 @@
             <property name="hideHelpLabel">true</property>
             <property name="width">95%</property>
             <property name="pageProviderName">default_collection</property>
+            <property name="suggestionFormatter">docSelectionDefaultFormatter</property>
           </properties>
         </widget>
       </subWidgets>
