@@ -104,7 +104,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class ElasticSearchComponent extends DefaultComponent implements
         ElasticSearchService, ElasticSearchIndexing, ElasticSearchAdmin {
 
-    protected static final Log log = LogFactory.getLog(ElasticSearchComponent.class);
+    protected static final Log log = LogFactory
+            .getLog(ElasticSearchComponent.class);
 
     public static final String EP_Config = "elasticSearchConfig";
 
@@ -181,16 +182,15 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 cname = "NuxeoESCluster";
             }
             Builder sBuilder = ImmutableSettings.settingsBuilder();
-            sBuilder.
-                    put("node.http.enabled", config.enableHttp()).
-                    put("path.logs",config.getLogPath()).
-                    put("path.data", config.getDataPath()).
-                    put("index.number_of_shards",1).
-                    put("index.number_of_replicas", 1).
-                    put("cluster.name",cname).
-                    put("node.name", config.getNodeName());
-            if (config.getIndexStorageType()!=null) {
-                sBuilder.put("index.store.type",config.getIndexStorageType());
+            sBuilder.put("node.http.enabled", config.enableHttp())
+                    .put("path.logs", config.getLogPath())
+                    .put("path.data", config.getDataPath())
+                    .put("index.number_of_shards", 1)
+                    .put("index.number_of_replicas", 1)
+                    .put("cluster.name", cname)
+                    .put("node.name", config.getNodeName());
+            if (config.getIndexStorageType() != null) {
+                sBuilder.put("index.store.type", config.getIndexStorageType());
                 if (config.getIndexStorageType().equals("memory")) {
                     sBuilder.put("gateway.type", "none");
                 }
@@ -212,13 +212,15 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
         try {
             CoreSession session = cmd.getTargetDocument().getCoreSession();
-            EventProducer evtProducer = Framework.getLocalService(EventProducer.class);
+            EventProducer evtProducer = Framework
+                    .getLocalService(EventProducer.class);
 
             EventContextImpl context = new EventContextImpl(session,
                     session.getPrincipal());
             context.getProperties().put(cmd.getId(), cmd.toJSON());
 
-            Event indexingEvent = context.newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
+            Event indexingEvent = context
+                    .newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
             evtProducer.fireEvent(indexingEvent);
         } catch (Exception e) {
             throw ClientException.wrap(e);
@@ -248,9 +250,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
         // execute bulk index if any
         if (bulkRequest.numberOfActions() > 0) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Index bulk request: curl -XPOST 'http://localhost:9200/_bulk' -d '%s'",
-                        bulkRequest.request().requests().toString()));
+                log.debug(String
+                        .format("Index bulk request: curl -XPOST 'http://localhost:9200/_bulk' -d '%s'",
+                                bulkRequest.request().requests().toString()));
             }
             bulkRequest.execute().actionGet();
         }
@@ -275,32 +277,33 @@ public class ElasticSearchComponent extends DefaultComponent implements
             DeleteRequestBuilder request = getClient().prepareDelete(MAIN_IDX,
                     NX_DOCUMENT, doc.getId());
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                        MAIN_IDX, NX_DOCUMENT, cmd.getTargetDocument().getId(),
-                        request.request().toString()));
+                log.debug(String
+                        .format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s' -d '%s'",
+                                MAIN_IDX, NX_DOCUMENT, cmd.getTargetDocument()
+                                        .getId(), request.request().toString()));
             }
             request.execute().actionGet();
 
             if (cmd.isRecurse()) {
-                DeleteByQueryRequestBuilder deleteRequest = getClient().prepareDeleteByQuery(
-                        MAIN_IDX).setQuery(
-                        QueryBuilders.prefixQuery("ecm:path",
-                                doc.getPathAsString() + "/"));
+                DeleteByQueryRequestBuilder deleteRequest = getClient()
+                        .prepareDeleteByQuery(MAIN_IDX).setQuery(
+                                QueryBuilders.prefixQuery("ecm:path",
+                                        doc.getPathAsString() + "/"));
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
-                            MAIN_IDX, NX_DOCUMENT, request.request().toString()));
+                    log.debug(String
+                            .format("Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
+                                    MAIN_IDX, NX_DOCUMENT, request.request()
+                                            .toString()));
                 }
                 deleteRequest.execute().actionGet();
             }
         } else {
             IndexRequestBuilder request = buildESIndexingRequest(cmd);
             if (log.isDebugEnabled()) {
-                log.debug(String.format(
-                        "Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                        MAIN_IDX, NX_DOCUMENT, cmd.getTargetDocument().getId(),
-                        request.request().toString()));
+                log.debug(String
+                        .format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
+                                MAIN_IDX, NX_DOCUMENT, cmd.getTargetDocument()
+                                        .getId(), request.request().toString()));
             }
             request.execute().actionGet();
         }
@@ -314,11 +317,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
             JsonFactory factory = new JsonFactory();
             XContentBuilder builder = jsonBuilder();
 
-            JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
+            JsonGenerator jsonGen = factory.createJsonGenerator(builder
+                    .stream());
             JsonESDocumentWriter.writeESDocument(jsonGen, doc,
                     cmd.getSchemas(), null);
-            return getClient().prepareIndex(MAIN_IDX, NX_DOCUMENT, doc.getId()).setSource(
-                    builder);
+            return getClient().prepareIndex(MAIN_IDX, NX_DOCUMENT, doc.getId())
+                    .setSource(builder);
         } catch (Exception e) {
             throw new ClientException(
                     "Unable to create index request for Document "
@@ -367,9 +371,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public void flush(boolean commit) {
         // refresh indexes
-        getClient().admin().indices().prepareRefresh(MAIN_IDX).execute().actionGet();
+        getClient().admin().indices().prepareRefresh(MAIN_IDX).execute()
+                .actionGet();
         if (commit) {
-            getClient().admin().indices().prepareFlush(MAIN_IDX).execute().actionGet();
+            getClient().admin().indices().prepareFlush(MAIN_IDX).execute()
+                    .actionGet();
         }
     }
 
@@ -380,8 +386,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
             }
             NuxeoElasticSearchConfig config = getConfig();
             Settings settings = getSettings();
-            localNode = NodeBuilder.nodeBuilder().local(config.isInProcess()).settings(
-                    settings).node();
+            localNode = NodeBuilder.nodeBuilder().local(config.isInProcess())
+                    .settings(settings).node();
             localNode.start();
         }
         return localNode;
@@ -421,13 +427,15 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
         // handle the built-in order by clause
         if (nxql.toLowerCase().contains("order by")) {
-            List<SortInfo> builtInSortInfos = NXQLQueryConverter.getSortInfo(nxql);
+            List<SortInfo> builtInSortInfos = NXQLQueryConverter
+                    .getSortInfo(nxql);
             if (sortInfos != null) {
                 for (SortInfo si : sortInfos) {
                     builtInSortInfos.add(si);
                 }
             }
-            sortInfos = builtInSortInfos.toArray(new SortInfo[builtInSortInfos.size()]);
+            sortInfos = builtInSortInfos.toArray(new SortInfo[builtInSortInfos
+                    .size()]);
         }
         return query(session, queryBuilder, limit, offset, sortInfos);
     }
@@ -437,15 +445,18 @@ public class ElasticSearchComponent extends DefaultComponent implements
             QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) throws ClientException {
         // Initialize request
-        SearchRequestBuilder request = getClient().prepareSearch(MAIN_IDX).setTypes(
-                NX_DOCUMENT).setSearchType(SearchType.DFS_QUERY_THEN_FETCH).addField(
-                ID_FIELD).setFrom(offset).setSize(limit);
+        SearchRequestBuilder request = getClient().prepareSearch(MAIN_IDX)
+                .setTypes(NX_DOCUMENT)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .addField(ID_FIELD).setFrom(offset).setSize(limit);
         // Add security filter
         TermsFilterBuilder aclFilter = null;
         Principal principal = session.getPrincipal();
         if (principal != null) {
-            if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal).isAdministrator())) {
-                String[] principals = SecurityService.getPrincipalsToCheck(principal);
+            if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal)
+                    .isAdministrator())) {
+                String[] principals = SecurityService
+                        .getPrincipalsToCheck(principal);
                 if (principals.length > 0) {
                     aclFilter = FilterBuilders.inFilter(ACL_FIELD, principals);
                 }
@@ -460,16 +471,15 @@ public class ElasticSearchComponent extends DefaultComponent implements
         // Add sort
         if (sortInfos != null) {
             for (SortInfo sortInfo : sortInfos) {
-                request.addSort(sortInfo.getSortColumn(),
-                        sortInfo.getSortAscending() ? SortOrder.ASC
-                                : SortOrder.DESC);
+                request.addSort(sortInfo.getSortColumn(), sortInfo
+                        .getSortAscending() ? SortOrder.ASC : SortOrder.DESC);
             }
         }
         // Execute the ES query
         if (log.isDebugEnabled()) {
-            log.debug(String.format(
-                    "Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
-                    MAIN_IDX, NX_DOCUMENT, request.toString()));
+            log.debug(String
+                    .format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
+                            MAIN_IDX, NX_DOCUMENT, request.toString()));
         }
         SearchResponse response = request.execute().actionGet();
         if (log.isDebugEnabled()) {
@@ -481,7 +491,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
             ids.add(hit.getId());
         }
         DocumentModelList ret = new DocumentModelListImpl(ids.size());
-        ((DocumentModelListImpl) ret).setTotalSize(response.getHits().getTotalHits());
+        ((DocumentModelListImpl) ret).setTotalSize(response.getHits()
+                .getTotalHits());
         // Fetch the document model
         if (!ids.isEmpty()) {
             try {
@@ -562,21 +573,24 @@ public class ElasticSearchComponent extends DefaultComponent implements
             throws Exception {
 
         log.info("Initialize index " + idxConfig.getIndexName());
-        IndicesExistsRequestBuilder request =  getClient().admin().indices().prepareExists(idxConfig.getIndexName());
+        IndicesExistsRequestBuilder request = getClient().admin().indices()
+                .prepareExists(idxConfig.getIndexName());
         IndicesExistsResponse exists = request.execute().actionGet();
 
         boolean indexExists = exists.isExists();
         boolean createIndex = idxConfig.mustCreate();
 
         if (!indexExists) {
-            log.info("Index " + idxConfig.getIndexName() + " NOT FOUND : will be created");
+            log.info("Index " + idxConfig.getIndexName()
+                    + " NOT FOUND : will be created");
         } else {
             log.debug("Index " + idxConfig.getIndexName() + " already exists");
         }
 
         if (indexExists && recreate) {
-            getClient().admin().indices().delete(
-                    new DeleteIndexRequest(idxConfig.getIndexName())).actionGet();
+            getClient().admin().indices()
+                    .delete(new DeleteIndexRequest(idxConfig.getIndexName()))
+                    .actionGet();
             indexExists = false;
             createIndex = true;
         }
@@ -584,24 +598,26 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (!indexExists && createIndex) {
             log.info("Create index " + idxConfig.getIndexName());
             // create index
-            getClient().admin().indices().prepareCreate(
-                    idxConfig.getIndexName()).setSettings(
-                    idxConfig.getSettings()).execute().actionGet();
-            getClient().admin().indices().preparePutMapping(
-                    idxConfig.getIndexName()).setType(NX_DOCUMENT).setSource(
-                    idxConfig.getMapping()).execute().actionGet();
+            getClient().admin().indices()
+                    .prepareCreate(idxConfig.getIndexName())
+                    .setSettings(idxConfig.getSettings()).execute().actionGet();
+            getClient().admin().indices()
+                    .preparePutMapping(idxConfig.getIndexName())
+                    .setType(NX_DOCUMENT).setSource(idxConfig.getMapping())
+                    .execute().actionGet();
         }
 
         if (idxConfig.forceUpdate()) {
             log.info("Update index config" + idxConfig.getIndexName());
             // update settings
-            getClient().admin().indices().prepareUpdateSettings(
-                    idxConfig.getIndexName()).setSettings(
-                    idxConfig.getSettings()).execute().actionGet();
+            getClient().admin().indices()
+                    .prepareUpdateSettings(idxConfig.getIndexName())
+                    .setSettings(idxConfig.getSettings()).execute().actionGet();
 
             // update mapping
-            getClient().admin().indices().preparePutMapping(
-                    idxConfig.getIndexName()).setSource(idxConfig.getMapping());
+            getClient().admin().indices()
+                    .preparePutMapping(idxConfig.getIndexName())
+                    .setSource(idxConfig.getMapping());
         }
     }
 
@@ -615,8 +631,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (client != null) {
             if (getConfig() != null && !getConfig().isInProcess()
                     && getConfig().autostartLocalNode()) {
-                client.admin().cluster().nodesShutdown(
-                        new NodesShutdownRequest(getConfig().getNodeName())).actionGet();
+                client.admin()
+                        .cluster()
+                        .nodesShutdown(
+                                new NodesShutdownRequest(getConfig()
+                                        .getNodeName())).actionGet();
             }
             client.close();
         }
@@ -652,7 +671,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public List<PendingClusterTask> getPendingTasks() {
-        PendingClusterTasksResponse response = getClient().admin().cluster().preparePendingClusterTasks().execute().actionGet();
+        PendingClusterTasksResponse response = getClient().admin().cluster()
+                .preparePendingClusterTasks().execute().actionGet();
         return response.getPendingTasks();
     }
 
