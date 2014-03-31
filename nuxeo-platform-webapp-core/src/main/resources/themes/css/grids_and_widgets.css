@@ -95,7 +95,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   right: 0;
   top: 0;
   width: 100%;
-  transition: opacity 0.2s ease 0.1s }
+  transition: opacity 0.1s ease 0.01s }
 
 .thumbnailContainer:hover .image-popup {
   opacity: 1 }
