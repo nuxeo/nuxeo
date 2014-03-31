@@ -917,8 +917,10 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(
                 node1,
-                transition("trans1", "node2",
-                        "NodeVariables[\"button\"] == \"trans1\"",
+                transition(
+                        "trans1",
+                        "node2",
+                        "NodeVariables[\"button\"] == \"trans1\" && WorkflowFn.timeSinceWorkflowWasStarted()>=0",
                         "testchain_title1"));
 
         // task properties
@@ -1075,8 +1077,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         try (CoreSession session2 = openSession(user2)) {
             route = instantiateAndRun(session2);
 
-            tasks = taskService.getTaskInstances(doc, user1,
-                    session2);
+            tasks = taskService.getTaskInstances(doc, user1, session2);
             assertNotNull(tasks);
             assertEquals(1, tasks.size());
             Task ts = tasks.get(0);
@@ -1762,7 +1763,8 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             assertEquals(1, tasks.size());
             task2 = tasks.get(0);
             assertEquals("MyTaskDoc", task2.getDocument().getType());
-            List<DocumentModel> docs = routing.getWorkflowInputDocuments(sessionUser2, task2);
+            List<DocumentModel> docs = routing.getWorkflowInputDocuments(
+                    sessionUser2, task2);
             assertEquals(doc.getId(), docs.get(0).getId());
             routing.endTask(sessionUser2, tasks.get(0), data, "trans1");
         }
@@ -2114,8 +2116,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         try (CoreSession sessionUser1 = openSession(user1)) {
             Task task1 = tasks.get(0);
             assertEquals("MyTaskDoc", task1.getDocument().getType());
-            docs = routing.getWorkflowInputDocuments(
-                    sessionUser1, task1);
+            docs = routing.getWorkflowInputDocuments(sessionUser1, task1);
 
             assertEquals(2, docs.size());
             // task assignees have WRITE on both documents following the

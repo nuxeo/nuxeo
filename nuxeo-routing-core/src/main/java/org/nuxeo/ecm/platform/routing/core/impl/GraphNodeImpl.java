@@ -54,6 +54,8 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.core.api.TasksInfoWrapper;
+import org.nuxeo.ecm.platform.routing.core.api.scripting.RoutingScriptingExpression;
+import org.nuxeo.ecm.platform.routing.core.api.scripting.RoutingScriptingFunctions;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
 import org.nuxeo.runtime.api.Framework;
@@ -594,7 +596,8 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             OperationContext context = getExecutionContext(getSession());
             for (Transition t : getOutputTransitions()) {
                 context.put("transition", t.id);
-                Expression expr = Scripting.newExpression(t.condition);
+                Expression expr = new RoutingScriptingExpression(t.condition,
+                        new RoutingScriptingFunctions(context));
                 Object res = null;
                 try {
                     res = expr.eval(context);
@@ -998,8 +1001,11 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
         try {
             List<EscalationRule> rulesToExecute = new ArrayList<EscalationRule>();
             OperationContext context = getExecutionContext(getSession());
+            // add specific helpers for escalation
             for (EscalationRule rule : getEscalationRules()) {
-                Expression expr = Scripting.newExpression(rule.condition);
+                Expression expr = new RoutingScriptingExpression(
+                        rule.condition, new RoutingScriptingFunctions(context,
+                                rule));
                 Object res = null;
                 try {
                     res = expr.eval(context);
@@ -1023,6 +1029,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
                     rulesToExecute.add(rule);
                 }
             }
+            saveDocument();
             return rulesToExecute;
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);

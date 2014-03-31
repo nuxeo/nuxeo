@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -172,6 +173,9 @@ public interface GraphNode {
 
     // @since 5.7.2
     String PROP_ESCALATION_RULE_EXECUTED = "executed";
+
+    // @since 5.9.3
+    String PROP_LAST_EXECUTION_TIME = "executionDate";
 
     // @since 5.7.3
     String PROP_HAS_MULTIPLE_TASKS = "rnode:hasMultipleTasks";
@@ -379,6 +383,11 @@ public interface GraphNode {
 
         protected GraphNode node;
 
+        /**
+         * @since 5.9.3
+         */
+        protected Calendar lastExcutionTime;
+
         public EscalationRule(GraphNode node, Property p)
                 throws ClientException {
             this.prop = (MapProperty) p;
@@ -395,6 +404,7 @@ public interface GraphNode {
                 executed = BooleanUtils.isTrue(evaluatedProp.getValue(Boolean.class));
             }
             this.chain = (String) p.get(PROP_ESCALATION_RULE_CHAIN).getValue();
+            this.lastExcutionTime = (Calendar) p.get(PROP_LAST_EXECUTION_TIME).getValue();
         }
 
         @Override
@@ -418,6 +428,14 @@ public interface GraphNode {
             this.executed = executed;
             prop.get(PROP_ESCALATION_RULE_EXECUTED).setValue(
                     Boolean.valueOf(executed));
+            if (executed) {
+                setExecutionTime(Calendar.getInstance());
+            }
+        }
+
+        protected void setExecutionTime(Calendar time) throws ClientException {
+            prop.get(PROP_LAST_EXECUTION_TIME).setValue(time);
+            this.lastExcutionTime = time;
         }
 
         public boolean isExecuted() {
@@ -430,6 +448,18 @@ public interface GraphNode {
 
         public boolean isMultipleExecution() {
             return multipleExecution;
+        }
+
+        /**
+         * @since 5.9.3 Returns 'null' if the node was not executed, or the
+         *        executed date was not computed ( for rules created before
+         * @5.9.3)
+         */
+        public Calendar getLastExecutionTime() {
+            if (executed && lastExcutionTime != null) {
+                return lastExcutionTime;
+            }
+            return null;
         }
     }
 

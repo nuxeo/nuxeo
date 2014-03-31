@@ -130,8 +130,13 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
                         "NodeVariables[\"button\"] == \"trans1\"",
                         "testchain_title1"));
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
-        setEscalationRules(node1,
-                escalationRule("rule1", "true", "testchain_title1", false));
+        node1.setPropertyValue(GraphNode.PROP_TASK_DUE_DATE_EXPR,
+                "CurrentDate.days(-1)");
+        setEscalationRules(
+                node1,
+                escalationRule("rule1",
+                        "WorkflowFn.timeSinceDueDateIsOver() >=3600000",
+                        "testchain_title1", false));
         node1 = session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
@@ -197,7 +202,12 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         setEscalationRules(
                 node1,
-                escalationRule("rule1", "true", "testchain_title1", true),
+                escalationRule(
+                        "rule1",
+                        "( (WorkflowFn.ruleAlreadyExecuted() && WorkflowFn.timeSinceRuleHasBeenFalse() >0 ) ||"
+                                + " !WorkflowFn.ruleAlreadyExecuted()) && "
+                                + "WorkflowFn.timeSinceTaskWasStarted() >=0",
+                        "testchain_title1", true),
                 escalationRule("rule2", "true", "testchain_title2", false),
                 escalationRule("rule3", "true", "testchain_stringfield", false),
                 escalationRule("rule4", "true", "testchain_stringfield2", false));

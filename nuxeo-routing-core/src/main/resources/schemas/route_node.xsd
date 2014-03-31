@@ -39,12 +39,13 @@
   <xs:element name="subRouteInstanceId" type="xs:string" />
   <xs:element name="button" type="xs:string" />
 
- <!-- used to display the graphView -->
+  <!-- used to display the graphView -->
   <xs:element name="taskX" type="xs:string" />
   <xs:element name="taskY" type="xs:string" />
   <xs:element name="escalationRules" type="node:escalation_rules" />
   <xs:element name="tasksInfo" type="node:tasks_info" />
-  <xs:element name="allowTaskReassignment" type="xs:boolean" default="true"/> 
+  <xs:element name="allowTaskReassignment" type="xs:boolean"
+    default="true" />
 
   <xs:complexType name="transitions">
     <xs:sequence>
@@ -64,11 +65,11 @@
       <xs:element name="chain" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="buttons">
     <xs:sequence>
-      <xs:element name="button" type="node:button"
-        minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="button" type="node:button" minOccurs="0"
+        maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
@@ -79,22 +80,25 @@
       <xs:element name="filter" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
-  
+
   <xs:complexType name="escalation_rules">
     <xs:sequence>
       <xs:element name="escalation_rule" type="node:escalation_rule"
         minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-   
-   <xs:complexType name="escalation_rule">
+
+  <xs:complexType name="escalation_rule">
     <xs:sequence>
       <xs:element name="name" type="xs:string" />
       <xs:element name="label" type="xs:string" />
-      <xs:element name="multipleExecution" type="xs:boolean" default="false"/>
+      <xs:element name="multipleExecution" type="xs:boolean"
+        default="false" />
       <xs:element name="condition" type="xs:string" />
-      <xs:element name="executed" type="xs:boolean" default="false"/> 
+      <xs:element name="executed" type="xs:boolean" default="false" />
       <xs:element name="chain" type="xs:string" />
+      <!-- last time the rule was executed -->
+      <xs:element name="executionDate" type="xs:date" />
     </xs:sequence>
   </xs:complexType>
 
@@ -111,21 +115,21 @@
       <xs:element name="value" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
-  
-   <xs:complexType name="tasks_info">
+
+  <xs:complexType name="tasks_info">
     <xs:sequence>
       <xs:element name="task_info" type="node:task_info"
         minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
-   
-   <xs:complexType name="task_info">
+
+  <xs:complexType name="task_info">
     <xs:sequence>
       <xs:element name="actor" type="xs:string" />
       <xs:element name="comment" type="xs:string" />
-      <xs:element name="status"  type="xs:string"/> 
+      <xs:element name="status" type="xs:string" />
       <xs:element name="taskDocId" type="xs:string" />
-      <xs:element name="ended" type="xs:boolean" default="false"/> 
+      <xs:element name="ended" type="xs:boolean" default="false" />
     </xs:sequence>
   </xs:complexType>
 
