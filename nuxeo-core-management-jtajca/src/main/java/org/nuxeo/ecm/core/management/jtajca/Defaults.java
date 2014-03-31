@@ -11,7 +11,7 @@ import org.nuxeo.ecm.core.api.CoreInstance.RegistrationInfo;
 
 public class Defaults {
 
-    public static Defaults instance = new Defaults();
+    public static final Defaults instance = new Defaults();
 
     public String name(Class<?> clazz) {
         return name(clazz, "default");

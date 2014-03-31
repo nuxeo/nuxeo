@@ -97,7 +97,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
         }
         out = managedConnectionFactory.getLogWriter();
         this.managedConnectionFactory = managedConnectionFactory;
-        this.connectionSpec = connectionRequestInfo.connectionSpec;
+        connectionSpec = connectionRequestInfo.connectionSpec;
         connections = new HashSet<ConnectionImpl>();
         listeners = new ListenerList();
         // create the underlying session

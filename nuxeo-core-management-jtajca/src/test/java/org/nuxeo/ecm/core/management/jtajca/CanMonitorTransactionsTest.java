@@ -1,10 +1,9 @@
-package org.nuxeo.runtime.jtajca.management;
+package org.nuxeo.ecm.core.management.jtajca;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import java.lang.management.ManagementFactory;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -12,31 +11,22 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
-import javax.management.JMX;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import javax.naming.NamingException;
 import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Level;
-import org.apache.log4j.MDC;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.management.jtajca.TransactionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.TransactionStatistics;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature.NoLogCaptureFilterException;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.slf4j.MDC;
 
 import com.google.inject.Inject;
 
@@ -61,26 +51,12 @@ import com.google.inject.Inject;
  * @author matic
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, RuntimeFeature.class,
-        LogCaptureFeature.class })
-@Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.management.jtajca" })
-public class CanMonitorTransactions {
+@Features({ JtajcaManagementFeature.class, LogCaptureFeature.class})
+public class CanMonitorTransactionsTest {
 
-    protected TransactionMonitor monitor;
+    @Inject protected TransactionMonitor monitor;
 
-    @Before
-    public void lookupMonitor() throws MalformedObjectNameException {
-        MBeanServer srv = ManagementFactory.getPlatformMBeanServer();
-        monitor = JMX.newMXBeanProxy(srv, new ObjectName(
-                TransactionMonitor.NAME), TransactionMonitor.class);
-    }
-
-    protected TransactionManager tm;
-
-    @Before
-    public void lookupTM() throws NamingException {
-        tm = TransactionHelper.lookupTransactionManager();
-    }
+    @Inject protected TransactionManager tm;
 
     protected Executor executor;
 
@@ -172,15 +148,18 @@ public class CanMonitorTransactions {
 
         @Override
         public Boolean call() {
-            long count = monitor.getActiveCount();
-            List<TransactionStatistics> stats = monitor.getActiveStatistics();
-            assertThat((long) stats.size(), is(count));
-            begin();
-            stats = monitor.getActiveStatistics();
-            assertThat((long) stats.size(), is(count + 1));
-            commit();
-            stats = monitor.getActiveStatistics();
-            assertThat((long) stats.size(), is(count));
+            try {
+                begin();
+                List<TransactionStatistics> stats = monitor.getActiveStatistics();
+                stats = monitor.getActiveStatistics();
+                assertThat((long) stats.size(), is(1L));
+                commit();
+                stats = monitor.getActiveStatistics();
+                assertThat((long) stats.size(), is(0L));
+            } catch (Exception cause) {
+                LogFactory.getLog(CanMonitorTransactionsTest.class).error(
+                        "Caught error while collecting statistics", cause);
+            }
 
             return Boolean.TRUE;
         }
@@ -200,7 +179,7 @@ public class CanMonitorTransactions {
     LogCaptureFeature.Result logCaptureResults;
 
     @Test
-    @LogCaptureFeature.FilterWith(value = CanMonitorTransactions.LogRollbackTraceFilter.class)
+    @LogCaptureFeature.FilterWith(value = CanMonitorTransactionsTest.LogRollbackTraceFilter.class)
     public void logContainsRollbackTrace() throws InterruptedException,
             ExecutionException, NoLogCaptureFilterException {
         FutureTask<Boolean> task = new FutureTask<Boolean>(
@@ -239,7 +218,7 @@ public class CanMonitorTransactions {
     }
 
     @Test
-    @LogCaptureFeature.FilterWith(value = CanMonitorTransactions.LogMessageFilter.class)
+    @LogCaptureFeature.FilterWith(value = CanMonitorTransactionsTest.LogMessageFilter.class)
     public void logContainsTxKey() throws InterruptedException,
             ExecutionException, NoLogCaptureFilterException {
         FutureTask<Boolean> task = new FutureTask<Boolean>(
