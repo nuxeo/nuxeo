@@ -270,8 +270,32 @@ public class TestTreeIndexing {
         Assert.assertEquals(2, docs.size());
 
         CoreInstance.getInstance().close(restrictedSession);
-
-        
     }
+
+    @Test
+    public void shouldReindexSubTreeInTrash() throws Exception {
+
+        buildAndIndexTree();
+
+
+        DocumentRef ref = new PathRef("/folder0/folder1/folder2");
+        Assert.assertTrue(session.exists(ref));
+        session.followTransition(ref, "delete");
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        Assert.assertEquals(1, esa.getPendingDocs());
+        // async command is not yet scheduled
+        Assert.assertEquals(1, esa.getPendingCommands());
+
+        waitForAsyncIndexing();
+
+        esi.flush();
+
+        DocumentModelList docs = ess.query(session, "select * from Document where ecm:currentLifeCycleState != 'deleted'", 20, 0);
+        Assert.assertEquals(2, docs.size());
+
+    }
+
 
 }

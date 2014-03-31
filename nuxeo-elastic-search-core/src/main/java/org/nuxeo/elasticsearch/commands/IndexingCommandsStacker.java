@@ -18,13 +18,13 @@
 package org.nuxeo.elasticsearch.commands;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -80,6 +81,8 @@ public abstract class IndexingCommandsStacker {
             cmds.add(IndexingCommand.UPDATE, sync, false);
         } else if (DOCUMENT_CREATED_BY_COPY.equals(eventId)) {
             cmds.add(IndexingCommand.INDEX, sync, doc.isFolder());
+        } else if (LifeCycleConstants.TRANSITION_EVENT.equals(eventId)) {
+            cmds.add(IndexingCommand.INDEX, sync, false);
         } else if (DOCUMENT_MOVED.equals(eventId)) {
             cmds.add(IndexingCommand.UPDATE, sync, doc.isFolder());
         } else if (DOCUMENT_SECURITY_UPDATED.equals(eventId)) {

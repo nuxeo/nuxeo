@@ -119,7 +119,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     public static final String ACL_FIELD = "ecm:acl";
 
     public static final String[] DEFAULT_FULLTEXT_FIELDS = { "ecm:fulltext",
-            "dc:title" };;
+            "dc:title" };
 
     protected NuxeoElasticSearchConfig config;
 
@@ -263,16 +263,19 @@ public class ElasticSearchComponent extends DefaultComponent implements
         log.debug("Sending indexing request to ElasticSearch " + cmd.toString());
         DocumentModel doc = cmd.getTargetDocument();
         if (IndexingCommand.DELETE.equals(cmd.getName())) {
-            DeleteRequestBuilder request = getClient().prepareDelete(MAIN_IDX, NX_DOCUMENT, doc.getId());
+            DeleteRequestBuilder request = getClient().prepareDelete(MAIN_IDX,
+                    NX_DOCUMENT, doc.getId());
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                        MAIN_IDX, NX_DOCUMENT,cmd.getTargetDocument().getId(), request.request().toString()));
+                        MAIN_IDX, NX_DOCUMENT, cmd.getTargetDocument().getId(),
+                        request.request().toString()));
             }
             request.execute().actionGet();
 
             if (cmd.isRecurse()) {
-                DeleteByQueryRequestBuilder deleteRequest=getClient().prepareDeleteByQuery(MAIN_IDX).setQuery(
+                DeleteByQueryRequestBuilder deleteRequest = getClient().prepareDeleteByQuery(
+                        MAIN_IDX).setQuery(
                         QueryBuilders.prefixQuery("ecm:path",
                                 doc.getPathAsString() + "/"));
                 if (log.isDebugEnabled()) {
@@ -287,7 +290,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                        MAIN_IDX, NX_DOCUMENT,cmd.getTargetDocument().getId(), request.request().toString()));
+                        MAIN_IDX, NX_DOCUMENT, cmd.getTargetDocument().getId(),
+                        request.request().toString()));
             }
             request.execute().actionGet();
         }
@@ -343,13 +347,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
             WorkManager wm = Framework.getLocalService(WorkManager.class);
             IndexingWorker idxWork = new IndexingWorker(cmd);
             wm.schedule(idxWork, true);
-        }
-    }
-
-    protected void flushIfLocal() {
-        if (getConfig().isInProcess()) {
-            // do the refresh
-            flush();
         }
     }
 
@@ -492,7 +489,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
         super.applicationStarted(context);
 
-        if (getConfig()==null) {
+        if (getConfig() == null) {
             log.warn("Unable to initialize ElasticSearch service : no configuration is provided");
             return;
         }
@@ -508,7 +505,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
         // init indexes if needed
         initIndexes(false);
-
     }
 
     protected void startESServer(NuxeoElasticSearchConfig config)
@@ -528,7 +524,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
         indexInitDone = true;
         if (stackedCommands.size() > 0) {
-            boolean txCreated=false;
+            boolean txCreated = false;
             if (!TransactionHelper.isTransactionActive()) {
                 txCreated = TransactionHelper.startTransaction();
             }
@@ -562,6 +558,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
         boolean indexExists = exists.isExists();
         boolean createIndex = idxConfig.mustCreate();
+
+        if (!indexExists) {
+            log.error("Index " + idxConfig.getIndexName() + " NOT FOUND : will be created");
+        } else {
+            log.info("Index " + idxConfig.getIndexName() + " already exists");
+        }
 
         if (indexExists && recreate) {
             getClient().admin().indices().delete(
@@ -610,6 +612,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             client.close();
         }
         if (localNode != null) {
+            localNode.stop();
             localNode.close();
         }
         client = null;
