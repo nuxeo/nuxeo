@@ -15,6 +15,22 @@
     oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterPP();" />
 
   <script>
+    jQuery.extend(true, jQuery.magnificPopup.defaults, {
+      tClose: "#{messages['label.lightbox.close']}",
+      tLoading: "#{messages['label.lightbox.loading']}",
+      gallery: {
+        tPrev: "#{messages['label.lightbox.galleyr.previous']}",
+        tNext: "#{messages['label.lightbox.gallery.next']}",
+        tCounter: ""
+      },
+      image: {
+        tError: "#{messages['label.lightbox.image.error']}"
+      },
+      ajax: {
+        tError: "#{messages['label.lightbox.ajax.error']}"
+      }
+    });
+
     jQuery(document).ready(function() {
       jQuery("div[id$=#{contentViewPanelId}]").initNxCv({
         nxHasPreviousPage : #{provider.previousPageAvailable},
