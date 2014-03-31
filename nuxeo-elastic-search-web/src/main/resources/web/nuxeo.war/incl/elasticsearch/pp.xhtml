@@ -7,25 +7,24 @@
   class="hostInfos">
 
 
-  <h3> Elastic Search PageProviders </h3>
-  <table class="dataTableNoBorder">
-        <c:forEach var="pp" items="#{esAdmin.elasticSearchPageProviders}">
-             <tr><td>#{pp.name}</td></tr>
+  <h3> PageProviders used in ContentViews </h3>
+  <table class="dataOutput">
+        <thead>
+             <tr>
+               <th>ContentView</th>
+               <th>PageProvider</th>
+               <th>Type</th>
+             </tr>
+        </thead>
+        <tbody>
+        <c:forEach var="cvs" items="#{esAdmin.contentViewStatus}">
+             <tr style="color:#{cvs.color}">
+               <td>#{cvs.cvName}</td>
+               <td>#{cvs.ppName}</td>
+               <td>#{cvs.type}</td>
+             </tr>
         </c:forEach>
-  </table>
-
-  <h3> Core PageProviders </h3>
-  <table class="dataTableNoBorder">
-        <c:forEach var="pp" items="#{esAdmin.corePageProviders}">
-             <tr><td>#{pp.name}</td></tr>
-        </c:forEach>
-  </table>
-
-  <h3> Other PageProviders </h3>
-  <table class="dataTableNoBorder">
-        <c:forEach var="pp" items="#{esAdmin.otherProviders}">
-             <tr><td>#{pp.name}</td></tr>
-        </c:forEach>
+        </tbody>
   </table>
 
 </div>
