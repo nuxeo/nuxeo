@@ -62,7 +62,6 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
@@ -137,7 +136,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
         return getOrCreateRootDocument(session, configurationName);
     }
 
-    protected DocumentModel getOrCreateRootDocument(CoreSession session,
+    public DocumentModel getOrCreateRootDocument(CoreSession session,
             String configurationName) throws ClientException {
         UserRegistrationConfiguration configuration = getConfiguration(configurationName);
 
@@ -759,7 +758,16 @@ public class UserRegistrationComponent extends DefaultComponent implements
             throws ClientException {
         StringWriter writer = new StringWriter();
         Map<String, Object> input = new HashMap<String, Object>();
-        additionalInfos.put("validationBaseURL", BaseURL.getBaseURL()
+
+        // Get the base url
+        String baseUrl = Framework.getProperty(NUXEO_URL_KEY);
+
+        baseUrl = StringUtils.isBlank(baseUrl) ? "/" : baseUrl;
+        if (!baseUrl.endsWith("/")) {
+            baseUrl += "/";
+        }
+
+        additionalInfos.put("validationBaseURL", baseUrl
                 + getConfiguration(registrationDoc).getValidationRelUrl());
         input.put("info", additionalInfos);
         input.put("userAlreadyExists",
