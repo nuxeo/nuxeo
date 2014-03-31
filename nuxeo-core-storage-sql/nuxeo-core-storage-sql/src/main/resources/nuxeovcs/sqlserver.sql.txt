@@ -664,17 +664,22 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'aclr_user_map' AND 
 #IF: emptyResult
 CREATE TABLE aclr_user_map (
   user_id CHAR(32) NOT NULL,
-  acl_id CHAR(32) NOT NULL
+  acl_id CHAR(32) NOT NULL,
+  CONSTRAINT aclrum_user_id_unique UNIQUE(user_id)
 )
 
+# -- add unique constraint if missing (upgrade from < 5.9.3)
+IF OBJECT_ID('dbo.aclrum_user_id_unique', 'UQ') IS NULL
+  ALTER TABLE aclr_user_map ADD CONSTRAINT aclrum_user_id_unique UNIQUE(user_id);
 
+# -- drop index not needed anymore due to above constraint's implicit index
 #TEST:
 SELECT 1 FROM sys.indexes WHERE name = 'aclr_user_map_user_id_idx'
 
-#IF: emptyResult
-CREATE CLUSTERED INDEX [aclr_user_map_user_id_idx] ON [dbo].[aclr_user_map] ([user_id])
+#IF: ! emptyResult
+DROP INDEX [aclr_user_map_user_id_idx] ON [dbo].[aclr_user_map]
 
-
+# -- index on two columns
 #TEST:
 SELECT 1 FROM sys.indexes WHERE name = 'aclr_user_map_acl_id_idx'
 
@@ -959,15 +964,31 @@ BEGIN
   SET NOCOUNT ON;
   DECLARE @permissions NVARCHAR(4000);
   SET @permissions = dbo.nx_get_read_permissions();
-  INSERT INTO aclr_user_map
-    SELECT u.user_id, NEW.acl_id
-    FROM aclr_user AS u, inserted AS NEW
-    JOIN hierarchy_read_acl AS r ON NEW.acl_id = r.acl_id
-    JOIN hierarchy AS h ON r.id = h.id
-    -- do not use orphan version
-    WHERE h.isversion IS NULL
-    GROUP BY u.user_id, u.principals, NEW.acl_id
-    HAVING dbo.NX_ACCESS_ALLOWED(max(h.id), u.principals, @permissions) = 1
+  BEGIN TRY
+    INSERT INTO aclr_user_map
+      SELECT u.user_id, NEW.acl_id
+      FROM aclr_user AS u, inserted AS NEW
+      JOIN hierarchy_read_acl AS r ON NEW.acl_id = r.acl_id
+      JOIN hierarchy AS h ON r.id = h.id
+      -- do not use orphan version
+      WHERE h.isversion IS NULL
+      GROUP BY u.user_id, u.principals, NEW.acl_id
+      HAVING dbo.NX_ACCESS_ALLOWED(max(h.id), u.principals, @permissions) = 1
+  END TRY
+  BEGIN CATCH
+    -- ignore Msg 2627 Violation of UNIQUE KEY constraint 'aclrum_user_id_unique'
+    IF ERROR_NUMBER() <> 2627 BEGIN
+      -- reraise other errors
+      DECLARE @ErrorMessage NVARCHAR(4000);
+      DECLARE @ErrorSeverity INT;
+      DECLARE @ErrorState INT;
+      SELECT @ErrorMessage = 'Msg ' + CAST(ERROR_NUMBER() AS NVARCHAR(10))
+                 + ' ' + ERROR_MESSAGE(),
+             @ErrorSeverity = ERROR_SEVERITY(),
+             @ErrorState = ERROR_STATE();
+      RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+    END;
+  END CATCH;
 END;
 
 
@@ -1008,7 +1029,6 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM aclr_user WHERE user_id = @user_md5) BEGIN
     BEGIN TRY
       INSERT INTO aclr_user VALUES (@user_md5, @users);
-      INSERT INTO aclr_user_map SELECT @user_md5, acl_id FROM dbo.nx_list_read_acls_for(@users) AS acl_id;
     END TRY
     BEGIN CATCH
       -- ignore Msg 2627 Violation of UNIQUE KEY constraint 'user_id_unique'
@@ -1022,6 +1042,23 @@ BEGIN
                @ErrorSeverity = ERROR_SEVERITY(),
                @ErrorState = ERROR_STATE();
         RAISERROR (@ErrorMessage, @ErrorSeverity, @ErrorState)
+      END;
+    END CATCH;
+    BEGIN TRY
+      INSERT INTO aclr_user_map SELECT @user_md5, acl_id FROM dbo.nx_list_read_acls_for(@users) AS acl_id;
+    END TRY
+    BEGIN CATCH
+      -- ignore Msg 2627 Violation of UNIQUE KEY constraint 'aclrum_user_id_unique'
+      IF ERROR_NUMBER() <> 2627 BEGIN
+        -- reraise other errors
+        DECLARE @ErrorMessage2 NVARCHAR(4000);
+        DECLARE @ErrorSeverity2 INT;
+        DECLARE @ErrorState2 INT;
+        SELECT @ErrorMessage2 = 'Msg ' + CAST(ERROR_NUMBER() AS NVARCHAR(10))
+                   + ' ' + ERROR_MESSAGE(),
+               @ErrorSeverity2 = ERROR_SEVERITY(),
+               @ErrorState2 = ERROR_STATE();
+        RAISERROR (@ErrorMessage2, @ErrorSeverity2, @ErrorState2)
       END;
     END CATCH;
   END;
