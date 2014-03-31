@@ -67,6 +67,7 @@
       <resource>tipsy.css</resource>
       <resource>jquery.magnific-popup.js</resource>
       <resource>magnific-popup.css</resource>
+      <resource>jquery.nuxeo.cv-lightbox.js</resource>
     </view>
 
     <view name="Nuxeo header" template-engine="jsf-facelets">
@@ -243,6 +244,10 @@
     </resource>
      <resource name="magnific-popup.css">
       <path>css/magnific-popup.css</path>
+    </resource>
+    <resource name="jquery.nuxeo.cv-lightbox.js">
+      <path>scripts/jquery.nuxeo.cv-lightbox.js</path>
+      <require>jquery.magnific-popup.js</require>
     </resource>
   </extension>
 
