@@ -548,7 +548,7 @@ class FolderPage(BasePage):
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['nxw_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_documentActionSubviewUpperList_newDocument_fancyform'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['nxw_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink', 'nxw_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:0:selectDocumentTypeForCreationCategoryTitleLink']],
+            ['nxw_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink', 'nxw_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink']],
             description="Create folder: New Folder")
 
         fl.assert_('document_create' in fl.getBody(),
