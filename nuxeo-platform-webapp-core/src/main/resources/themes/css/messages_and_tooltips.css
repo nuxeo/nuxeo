@@ -243,6 +243,7 @@ a.ambiance-close {
   padding: 5px }
 
 .tipsy-inner {
+  font-size: 1.1em;
   padding: 5px 8px 4px }
 
 /* Visible lists style, as lists are invisible in Nuxeo by default */
