@@ -1,0 +1,31 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  class="hostInfos">
+
+
+  <h3> Elastic Search PageProviders </h3>
+  <table class="dataTableNoBorder">
+        <c:forEach var="pp" items="#{esAdmin.elasticSearchPageProviders}">
+             <tr><td>#{pp.name}</td></tr>
+        </c:forEach>
+  </table>
+
+  <h3> Core PageProviders </h3>
+  <table class="dataTableNoBorder">
+        <c:forEach var="pp" items="#{esAdmin.corePageProviders}">
+             <tr><td>#{pp.name}</td></tr>
+        </c:forEach>
+  </table>
+
+  <h3> Other PageProviders </h3>
+  <table class="dataTableNoBorder">
+        <c:forEach var="pp" items="#{esAdmin.otherProviders}">
+             <tr><td>#{pp.name}</td></tr>
+        </c:forEach>
+  </table>
+
+</div>

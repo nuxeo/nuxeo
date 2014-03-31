@@ -6,14 +6,12 @@
   xmlns:c="http://java.sun.com/jstl/core"
   class="hostInfos">
 
-  <pre class="bubbleBox">
-    <h:outputText value="#{elastic.config}" />
-  </pre>
+  <h3> Index Operations </h3>
 
-  <h:outputText value="#{esAdmin.nodesInfo}"/>
-
-  <h:form id="restartForm">
-
+  <h:form id="esAdmin">
+     Rebuild Index : <h:commandButton action="#{esAdmin.startReindex}" value="ReIndex"/>
+     <br/><br/>
+     Flush Index : <h:commandButton action="#{esAdmin.flush}" value="Flush"/>
   </h:form>
 
 </div>
