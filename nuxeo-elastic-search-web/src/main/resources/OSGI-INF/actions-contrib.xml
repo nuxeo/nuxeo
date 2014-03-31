@@ -9,14 +9,26 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="ESConfig" link="/incl/elasticsearch/admin.xhtml" label="tab.elastic.config"
+    <action id="ESConfig" link="/incl/elasticsearch/info.xhtml" label="tab.elastic.info"
       order="20">
       <category>ElasticSearch_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
+    <action id="ESAdmin" link="/incl/elasticsearch/admin.xhtml" label="tab.elastic.admin"
+      order="30">
+      <category>ElasticSearch_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="ESpp" link="/incl/elasticsearch/pp.xhtml" label="tab.elastic.pp"
+      order="40">
+      <category>ElasticSearch_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
     <action id="ESQuery" link="/incl/elasticsearch/query.xhtml" label="tab.elastic.query"
-      order="20">
+      order="50">
       <category>ElasticSearch_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>

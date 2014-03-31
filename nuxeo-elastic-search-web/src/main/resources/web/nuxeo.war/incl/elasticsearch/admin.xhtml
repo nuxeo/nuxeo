@@ -6,41 +6,12 @@
   xmlns:c="http://java.sun.com/jstl/core"
   class="hostInfos">
 
-  <script src="#{baseURL}scripts/json2html.js" type='text/javascript'></script>
-  <script src="#{baseURL}scripts/jquery.json2html.js" type='text/javascript'></script>
-  <script src="#{baseURL}scripts/displayESJSON.js" type='text/javascript'></script>
-
-<script>
-jQuery(window).load(function() {
-
-  // I know this is bad
-  jQuery('head').append('<link rel="stylesheet" type="text/css" href="#{baseURL}css/displayESJSON.css"/>');
-
-  displayESJSON('config', <h:outputText value="#{esAdmin.nodesInfo}" escape="false" />, jQuery('#ESConfig'));
-
-  displayESJSON('stats', <h:outputText value="#{esAdmin.nodesStats}" escape="false" />, jQuery('#ESStats'));
-
-  displayESJSON('tasks', <h:outputText value="#{esAdmin.nodesTasks}" escape="false" />, jQuery('#ESTasks'));
-
-});
-</script>
-
-  <h3> ElasticSearch Cluster Config </h3>
-  <div id="ESConfig"></div>
-
-  <h3> ElasticSearch Stats </h3>
-  <div id="ESStats"></div>
-
-  <h3> ElasticSearch Health </h3>
-  <pre class="bubbleBox">
-    <h:outputText value="#{esAdmin.nodesHealth}" />
-  </pre>
-
-  <h3> ElasticSearch Pending Tasks </h3>
-  <div id="ESTasks"></div>
+  <h3> Index Operations </h3>
 
   <h:form id="esAdmin">
-     <h:commandButton action="#{esAdmin.startReindex}" value="ReIndex"/>
+     Rebuild Index : <h:commandButton action="#{esAdmin.startReindex}" value="ReIndex"/>
+     <br/><br/>
+     Flush Index : <h:commandButton action="#{esAdmin.flush}" value="Flush"/>
   </h:form>
 
 </div>
