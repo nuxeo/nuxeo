@@ -543,6 +543,8 @@ public class DialectSQLServer extends Dialect {
             properties.put("sequenceEnabled", Boolean.TRUE);
             properties.put("idSequenceName", idSequenceName);
         }
+        properties.put("lockEscalationDisabled",
+                Boolean.valueOf(supportsLockEscalationDisable()));
         properties.put("md5HashString", getMd5HashString());
         properties.put("reseedAclrModified", azure ? ""
                 : "DBCC CHECKIDENT('aclr_modified', RESEED, 0);");
@@ -575,6 +577,11 @@ public class DialectSQLServer extends Dialect {
             // this doesn't work on SQL Server 2005
             return "SUBSTRING(CONVERT(VARCHAR(34), HashBytes('MD5', @string), 1), 3, 32)";
         }
+    }
+
+    protected boolean supportsLockEscalationDisable() {
+        // not supported on SQL Server 2005
+        return majorVersion > 9;
     }
 
     @Override

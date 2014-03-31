@@ -29,6 +29,7 @@
 # pathOptimizationsEnabled
 # softDeleteEnabled
 # proxiesEnabled
+# lockEscalationDisabled true if not SQL Server 2005
 
 ############################################################
 
@@ -626,6 +627,7 @@ CREATE TABLE aclr (
 )
 
 #IF: emptyResult
+#IF: lockEscalationDisabled
 ALTER TABLE aclr SET (LOCK_ESCALATION=DISABLE);
 
 
@@ -699,6 +701,7 @@ CREATE TABLE hierarchy_read_acl (
 )
 
 #IF: emptyResult
+#IF: lockEscalationDisabled
 ALTER TABLE hierarchy_read_acl SET (LOCK_ESCALATION=DISABLE);
 
 #IF: emptyResult
@@ -729,6 +732,7 @@ CREATE TABLE aclr_modified (
 
 CREATE CLUSTERED INDEX aclr_modified_spid_idx ON aclr_modified (spid)
 
+#IF: lockEscalationDisabled
 ALTER TABLE aclr_modified SET (LOCK_ESCALATION=DISABLE);
 
 
