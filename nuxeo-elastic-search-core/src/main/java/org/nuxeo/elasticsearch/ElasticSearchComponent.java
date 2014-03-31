@@ -90,10 +90,16 @@ import org.nuxeo.elasticsearch.listener.EventConstants;
 import org.nuxeo.elasticsearch.nxql.NXQLQueryConverter;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 
 /**
  * Component used to configure and manage ElasticSearch integration
@@ -142,6 +148,14 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected Map<String, ElasticSearchIndex> indexes = new HashMap<String, ElasticSearchIndex>();
 
     protected List<String> fulltextFields;
+
+    // Metrics
+    protected final MetricRegistry registry = SharedMetricRegistries
+            .getOrCreate(MetricsService.class.getName());
+
+    protected Timer searchTimer;
+
+    protected Timer fetchTimer;
 
     @Override
     public void registerContribution(Object contribution,
@@ -444,62 +458,76 @@ public class ElasticSearchComponent extends DefaultComponent implements
     public DocumentModelList query(CoreSession session,
             QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) throws ClientException {
-        // Initialize request
-        SearchRequestBuilder request = getClient().prepareSearch(MAIN_IDX)
-                .setTypes(NX_DOCUMENT)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .addField(ID_FIELD).setFrom(offset).setSize(limit);
-        // Add security filter
-        TermsFilterBuilder aclFilter = null;
-        Principal principal = session.getPrincipal();
-        if (principal != null) {
-            if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal)
-                    .isAdministrator())) {
-                String[] principals = SecurityService
-                        .getPrincipalsToCheck(principal);
-                if (principals.length > 0) {
-                    aclFilter = FilterBuilders.inFilter(ACL_FIELD, principals);
+        long totalSize;
+        List<String> ids;
+        Context stopWatch = searchTimer.time();
+        try {
+            // Initialize request
+            SearchRequestBuilder request = getClient().prepareSearch(MAIN_IDX)
+                    .setTypes(NX_DOCUMENT)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .addField(ID_FIELD).setFrom(offset).setSize(limit);
+            // Add security filter
+            TermsFilterBuilder aclFilter = null;
+            Principal principal = session.getPrincipal();
+            if (principal != null) {
+                if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal)
+                        .isAdministrator())) {
+                    String[] principals = SecurityService
+                            .getPrincipalsToCheck(principal);
+                    if (principals.length > 0) {
+                        aclFilter = FilterBuilders.inFilter(ACL_FIELD,
+                                principals);
+                    }
                 }
             }
-        }
-        if (aclFilter == null) {
-            request.setQuery(queryBuilder);
-        } else {
-            request.setQuery(QueryBuilders.filteredQuery(queryBuilder,
-                    aclFilter));
-        }
-        // Add sort
-        if (sortInfos != null) {
-            for (SortInfo sortInfo : sortInfos) {
-                request.addSort(sortInfo.getSortColumn(), sortInfo
-                        .getSortAscending() ? SortOrder.ASC : SortOrder.DESC);
+            if (aclFilter == null) {
+                request.setQuery(queryBuilder);
+            } else {
+                request.setQuery(QueryBuilders.filteredQuery(queryBuilder,
+                        aclFilter));
             }
-        }
-        // Execute the ES query
-        if (log.isDebugEnabled()) {
-            log.debug(String
-                    .format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
-                            MAIN_IDX, NX_DOCUMENT, request.toString()));
-        }
-        SearchResponse response = request.execute().actionGet();
-        if (log.isDebugEnabled()) {
-            log.debug("Response: " + response.toString());
-        }
-        // Get the list of ids
-        List<String> ids = new ArrayList<String>();
-        for (SearchHit hit : response.getHits()) {
-            ids.add(hit.getId());
+            // Add sort
+            if (sortInfos != null) {
+                for (SortInfo sortInfo : sortInfos) {
+                    request.addSort(sortInfo.getSortColumn(), sortInfo
+                            .getSortAscending() ? SortOrder.ASC
+                            : SortOrder.DESC);
+                }
+            }
+            // Execute the ES query
+            if (log.isDebugEnabled()) {
+                log.debug(String
+                        .format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
+                                MAIN_IDX, NX_DOCUMENT, request.toString()));
+            }
+            SearchResponse response = request.execute().actionGet();
+            if (log.isDebugEnabled()) {
+                log.debug("Response: " + response.toString());
+            }
+            // Get the list of ids
+            ids = new ArrayList<String>(limit - offset);
+            for (SearchHit hit : response.getHits()) {
+                ids.add(hit.getId());
+            }
+            totalSize = response.getHits().getTotalHits();
+        } finally {
+            stopWatch.stop();
         }
         DocumentModelList ret = new DocumentModelListImpl(ids.size());
-        ((DocumentModelListImpl) ret).setTotalSize(response.getHits()
-                .getTotalHits());
-        // Fetch the document model
-        if (!ids.isEmpty()) {
-            try {
-                ret.addAll(fetchDocuments(ids, session));
-            } catch (ClientException e) {
-                log.error(e);
+        stopWatch = fetchTimer.time();
+        try {
+            ((DocumentModelListImpl) ret).setTotalSize(totalSize);
+            // Fetch the document model
+            if (!ids.isEmpty()) {
+                try {
+                    ret.addAll(fetchDocuments(ids, session));
+                } catch (ClientException e) {
+                    log.error(e);
+                }
             }
+        } finally {
+            stopWatch.stop();
         }
         return ret;
     }
@@ -508,21 +536,24 @@ public class ElasticSearchComponent extends DefaultComponent implements
     public void applicationStarted(ComponentContext context) throws Exception {
 
         super.applicationStarted(context);
-
         if (getConfig() == null) {
             log.warn("Unable to initialize ElasticSearch service : no configuration is provided");
             return;
         }
-
+        // init metrics
+        searchTimer = registry.timer(MetricRegistry.name("nuxeo",
+                "elasticsearch", "service", "search"));
+        fetchTimer = registry.timer(MetricRegistry.name("nuxeo",
+                "elasticsearch", "service", "fetch"));
+        indexTimer = registry.timer(MetricRegistry.name("nuxeo",
+                "elasticsearch", "service", "index"));
         // start Server if needed
         if (getConfig() != null && !getConfig().isInProcess()
                 && getConfig().autostartLocalNode()) {
             startESServer(getConfig());
         }
-
         // init client
         getClient();
-
         // init indexes if needed
         initIndexes(false);
     }
