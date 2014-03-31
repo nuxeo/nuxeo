@@ -126,7 +126,10 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
         }
 
         if (sync == null) {
-            sync = false;
+            sync = useSyncIndexing.get();
+            if (sync == null) {
+                sync = false;
+            }
         }
 
         stackCommand(doc, eventId, sync);
@@ -167,6 +170,14 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
             synched.set(false);
             getAllCommands().clear();
         }
+        useSyncIndexing.set(null);
     }
+
+    public static ThreadLocal<Boolean> useSyncIndexing = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return new Boolean(false);
+        }
+    };
 
 }
