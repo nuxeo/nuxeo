@@ -19,6 +19,7 @@
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.openqa.selenium.By;
@@ -35,34 +36,30 @@ import org.openqa.selenium.support.FindBy;
 public class UserCreationFormPage extends UsersGroupsBasePage {
 
     @Required
+    @FindBy(id = "createUserView:createUser:immediate_creation")
+    WebElement immediateCreation;
+
     @FindBy(id = "createUserView:createUser:nxl_user:nxw_username")
     WebElement usernameInput;
 
-    @Required
     @FindBy(id = "createUserView:createUser:nxl_user:nxw_firstname")
     WebElement firstnameInput;
 
-    @Required
     @FindBy(id = "createUserView:createUser:nxl_user:nxw_lastname")
     WebElement lastnameInput;
 
-    @Required
     @FindBy(id = "createUserView:createUser:nxl_user:nxw_company")
     WebElement companyInput;
 
-    @Required
     @FindBy(id = "createUserView:createUser:nxl_user:nxw_email")
     WebElement emailInput;
 
-    @Required
     @FindBy(id = "createUserView:createUser:nxl_user:nxw_firstPassword")
     WebElement firstPasswordInput;
 
-    @Required
     @FindBy(id = "createUserView:createUser:nxl_user:nxw_secondPassword")
     WebElement secondPasswordInput;
 
-    @Required
     @FindBy(id = "createUserView:createUser:button_save")
     WebElement createButton;
 
@@ -100,4 +97,13 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
         return asPage(UsersTabSubPage.class);
     }
 
+    public UserCreationFormPage switchCreationFormPage() {
+        if (!immediateCreation.isSelected()) {
+            immediateCreation.click();
+            Locator.waitUntilElementPresent(By.id("createUserView:createUser:nxl_user:nxw_username"));
+            return asPage(UserCreationFormPage.class);
+        } else {
+            return this;
+        }
+    }
 }

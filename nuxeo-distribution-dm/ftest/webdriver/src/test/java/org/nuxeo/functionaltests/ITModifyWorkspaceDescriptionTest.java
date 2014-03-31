@@ -54,7 +54,7 @@ public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
         UsersGroupsBasePage usergroupPage = login().getAdminCenter().getUsersGroupsHomePage();
         UsersTabSubPage page = usergroupPage.getUsersTab().searchUser(TEST_USERNAME);
         if (!page.isUserFound(TEST_USERNAME)) {
-            usergroupPage = page.getUserCreatePage().createUser(TEST_USERNAME,
+            usergroupPage = page.getUserCreatePage().switchCreationFormPage().createUser(TEST_USERNAME,
                     "John", "Smith", "Nuxeo", "jsmith@nuxeo.com", TEST_PASSWORD,
                     "members");
         }

@@ -40,7 +40,7 @@ public class ITUsersTest extends AbstractTest {
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         if (!usersTab.isUserFound(TEST_USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, firstname,
+            page = usersTab.getUserCreatePage().switchCreationFormPage().createUser(TEST_USERNAME, firstname,
                     "lastname1", "company1", "email1", TEST_PASSWORD, "members");
             // no confirmation message anymore
             // assertEquals(page.getFeedbackMessage(), "User created");
@@ -55,7 +55,7 @@ public class ITUsersTest extends AbstractTest {
         usersTab = usersTab.exitAdminCenter().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
 
         // user already exists
-        page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, "firstname1",
+        page = usersTab.getUserCreatePage().switchCreationFormPage().createUser(TEST_USERNAME, "firstname1",
                 "lastname1", "company1", "email1", TEST_PASSWORD, "members");
         assertEquals("User already exists", page.getErrorFeedbackMessage());
         // cancel

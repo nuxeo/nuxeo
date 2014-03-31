@@ -212,7 +212,7 @@ public class ITCollectionsTest extends AbstractTest {
         UsersTabSubPage usersTab = documentBasePage.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         if (!usersTab.isUserFound(TEST_USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME,
+            page = usersTab.getUserCreatePage().switchCreationFormPage().createUser(TEST_USERNAME,
                     TEST_USERNAME, "lastname1", "company1", "email1",
                     TEST_PASSWORD, "members");
             usersTab = page.getUsersTab(true);
