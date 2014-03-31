@@ -1,7 +1,6 @@
 package org.nuxeo.runtime.datasource.geronimo;
 
 import java.util.Hashtable;
-
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NamingException;
@@ -9,7 +8,6 @@ import javax.naming.RefAddr;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
 import javax.resource.ResourceException;
-import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.InvalidPropertyException;
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.sql.XADataSource;
@@ -17,6 +15,7 @@ import javax.sql.XADataSource;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
 import org.tranql.connector.jdbc.JDBCDriverMCF;
 
 public class PoolingDataSourceFactory implements ObjectFactory {
@@ -26,14 +25,14 @@ public class PoolingDataSourceFactory implements ObjectFactory {
             Hashtable<?, ?> environment) throws Exception {
         Reference ref = (Reference)obj;
         ManagedConnectionFactory mcf = createFactory(ref, ctx);
-        ConnectionManager cm =  createManager(ref, ctx);
+        ConnectionManagerWrapper cm =  createManager(ref, ctx);
         return new org.tranql.connector.jdbc.DataSource(mcf, cm);
     }
 
-    protected ConnectionManager createManager(Reference ref, Context ctx) throws ResourceException {
+    protected ConnectionManagerWrapper createManager(Reference ref, Context ctx) throws ResourceException {
         NuxeoConnectionManagerConfiguration config = NuxeoConnectionManagerFactory.getConfig(ref);
         String className = ref.getClassName();
-        String name = refAttribute(ref, "datasourceJNDI", null);
+        String name = refAttribute(ref, "name", null);
         config.setXAMode(XADataSource.class.getName().equals(className));
         return NuxeoContainer.initConnectionManager(name, config);
     }
@@ -74,6 +73,7 @@ public class PoolingDataSourceFactory implements ObjectFactory {
         }
         return (String)addr.getContent();
     }
+
 
 
 }

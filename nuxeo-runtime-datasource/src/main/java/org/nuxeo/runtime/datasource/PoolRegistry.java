@@ -11,22 +11,16 @@
  *******************************************************************************/
 package org.nuxeo.runtime.datasource;
 
-import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
 import javax.naming.Context;
 import javax.naming.Name;
-import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.LogFactory;
-import org.apache.tomcat.jdbc.pool.ConnectionPool;
 import org.nuxeo.runtime.datasource.geronimo.PoolingDataSourceFactory;
 
 public class PoolRegistry extends ReentrantReadWriteLock {
@@ -35,7 +29,7 @@ public class PoolRegistry extends ReentrantReadWriteLock {
 
     protected final Map<String, DataSource> pools = new HashMap<>();
 
-    protected final ObjectFactory poolFactory = new PoolingDataSourceFactory();
+    protected final PoolingDataSourceFactory poolFactory = new PoolingDataSourceFactory();
 
     public DataSource getOrCreatePool(Object obj, Name name,
             Context nameCtx, Hashtable<?, ?> env) throws Exception {
@@ -71,37 +65,6 @@ public class PoolRegistry extends ReentrantReadWriteLock {
             LogFactory.getLog(PoolRegistry.class).warn("Cannot find pool " + name);
             return;
         }
-    }
-
-    protected ObjectName getObjectName(ConnectionPool pool) {
-        try {
-            return new ObjectName("org.nuxeo:type=jdbc.pool,name="
-                    + pool.getName());
-        } catch (MalformedObjectNameException e) {
-            throw new RuntimeException("Cannot build jmx object name for "
-                    + pool.getName());
-        }
-    }
-
-    protected void registerJMX(ConnectionPool pool) {
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        try {
-            mbs.registerMBean(pool.getJmxPool(), getObjectName(pool));
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot publish datasource pool "
-                    + pool.getName() + " in platform mbean server", e);
-        }
-    }
-
-    protected void unregisterJMX(ConnectionPool pool) {
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        try {
-            mbs.unregisterMBean(getObjectName(pool));
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot unpublish datasource pool "
-                    + pool.getName() + " in platform mbean server", e);
-        }
-
     }
 
  }

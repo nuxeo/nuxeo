@@ -464,7 +464,7 @@ public class NuxeoContainer {
         return connectionManagers.get(repositoryName);
     }
 
-    public static void setConnectionManager(String name,
+    public static void installConnectionManager(String name,
             ConnectionManagerWrapper cm) {
         if (connectionManagers.containsKey(name)) {
             log.error("Connection manager " + name + " already set up",
@@ -472,7 +472,7 @@ public class NuxeoContainer {
         }
         connectionManagers.put(name, cm);
         for (NuxeoContainerListener listener:listeners) {
-            listener.handleConnectionManagerReset(name, cm.cm);
+            listener.handleNewConnectionManager(name, cm.cm);
         }
     }
 
@@ -508,10 +508,10 @@ public class NuxeoContainer {
     }
 
     public static synchronized ConnectionManagerWrapper initConnectionManager(
-            String repositoryName, NuxeoConnectionManagerConfiguration config) {
+            String name, NuxeoConnectionManagerConfiguration config) {
         GenericConnectionManager cm = createConnectionManager(config);
         ConnectionManagerWrapper cmw = new ConnectionManagerWrapper(cm, config);
-        setConnectionManager(repositoryName, cmw);
+        installConnectionManager(name, cmw);
         return cmw;
     }
 
