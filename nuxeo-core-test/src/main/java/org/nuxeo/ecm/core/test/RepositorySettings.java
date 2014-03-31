@@ -217,7 +217,7 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
     public CoreSession createSession() {
         assert session == null;
         try {
-            session = openSessionAs(getUsername());
+            session = openSessionAs(getUsername(), true, false);
         } catch (Exception e) {
             log.error(e.toString(), e);
         }
