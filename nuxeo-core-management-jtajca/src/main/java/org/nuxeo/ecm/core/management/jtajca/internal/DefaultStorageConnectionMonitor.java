@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 import org.nuxeo.ecm.core.storage.sql.SoftRefCachingMapper;
 import org.nuxeo.ecm.core.storage.sql.ra.ManagedConnectionImpl;
 import org.nuxeo.runtime.metrics.MetricsService;
+import org.tranql.connector.AbstractManagedConnection;
 
 import com.codahale.metrics.JmxAttributeGauge;
 import com.codahale.metrics.MetricRegistry;
@@ -134,20 +135,10 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
         }
 
         protected void traceInvoke(Method m, Object[] args) {
-            if (!log.isTraceEnabled()) {
-                return;
-            }
             log.trace("invoked " + stack.getClass().getSimpleName() + "."
                     + m.getName());
         }
 
-        protected void putMDC(ConnectionInfo info) {
-            MDC.put("mid", mapperId(info));
-        }
-
-        protected void popMDC(ConnectionInfo info) {
-            MDC.remove("mid");
-        }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args)
@@ -157,13 +148,60 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
             } finally {
                 String name = method.getName();
                 traceInvoke(method, args);
+                ConnectionInfo info = (ConnectionInfo) args[0];
+                ManagedConnection connection = info.getManagedConnectionInfo().getManagedConnection();
+                IdProvider midProvider = guessProvider(connection);
                 if (name.startsWith("get")) {
-                    MDC.put("mid", mapperId((ConnectionInfo) args[0]));
+                    MDC.put(midProvider.key(), midProvider.id(connection));
                 } else if (name.startsWith("return")) {
-                    MDC.remove("mid");
+                    MDC.remove(midProvider.key());
                 }
             }
         }
+
+        protected IdProvider midProvider;
+
+        protected IdProvider guessProvider(ManagedConnection connection) {
+            if (midProvider != null) {
+                return midProvider;
+            }
+            if (connection instanceof ManagedConnectionImpl) {
+                return new IdProvider() {
+
+                    @Override
+                    public String key() {
+                        return "vcs";
+                    }
+
+                    @Override
+                    public Object id(ManagedConnection connection) {
+                        return mapperId(connection);
+                    }
+
+                };
+            }
+            if (connection instanceof AbstractManagedConnection) {
+                return new IdProvider() {
+
+                    @Override
+                    public String key() {
+                        return "db";
+                    }
+
+                    @Override
+                    public Object id(ManagedConnection connection) {
+                        return ((AbstractManagedConnection)connection).getPhysicalConnection();
+                    }
+
+                };
+            }
+            throw new IllegalArgumentException("unknown connection type of " + connection.getClass());
+        }
+    }
+
+    interface IdProvider {
+        String key();
+        Object id(ManagedConnection connection);
     }
 
     private static final Field SESSION_FIELD = field(
@@ -172,11 +210,7 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
     private static final Field WRAPPED_FIELD = field(
             SoftRefCachingMapper.class, "mapper");
 
-    protected Identification mapperId(ConnectionInfo info) {
-        ManagedConnection connection = info.getManagedConnectionInfo().getManagedConnection();
-        if (connection == null) {
-            return null;
-        }
+    protected Identification mapperId(ManagedConnection connection) {
         SessionImpl session = fetch(SESSION_FIELD, connection);
         Mapper mapper = session.getMapper();
         if (mapper instanceof SoftRefCachingMapper) {
