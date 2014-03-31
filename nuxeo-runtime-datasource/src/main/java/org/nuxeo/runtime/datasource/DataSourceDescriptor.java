@@ -158,9 +158,6 @@ public class DataSourceDescriptor {
             Node attr = attrs.item(i);
             String attrName = attr.getNodeName();
             String value = Framework.expandVars(attr.getNodeValue());
-            if ("name".equals(attrName) || "xaDatasource".equals(attrName)) {
-                continue;
-            }
             StringRefAddr addr = new StringRefAddr(attrName, value);
             poolReference.add(addr);
         }
