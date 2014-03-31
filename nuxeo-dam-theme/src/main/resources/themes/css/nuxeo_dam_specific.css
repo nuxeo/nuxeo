@@ -92,7 +92,7 @@ author: lkemen@nuxeo.com
 
 .nxDamSearchResults .bubbleBox {
   background-color: #fff;
-  border-bottom: .25em solid #E7E7E7;
+  border-bottom-width: 3px;
   cursor: pointer;
   display: inline-block;
   font-size: .9em;
@@ -105,14 +105,20 @@ author: lkemen@nuxeo.com
   width: 186px }
 
 .nxDamSearchResults .bubbleBox:hover {
-  border-color: "color.major.strong (__FLAVOR__ border)";
-  box-shadow: 0 1px 2px 2px #fff }
-.nxDamSearchResults .bubbleBox:hover .fieldColumn { color: "black (__FLAVOR__ color)" }
+  border-bottom-color: "color.major.strong (__FLAVOR__ border)";}
+
+.nxDamSearchResults .bubbleBox:hover .fieldColumn {
+  color: "black (__FLAVOR__ color)" }
 
 .nxDamSearchResults .bubbleBox .bubbleHeader input {
   margin: 0 .2em }
 
-.nxDamSearchResults .bubbleBox .bubbleHeader { margin: 0 0 .2em }
+.nxDamSearchResults .bubbleBox .bubbleHeader {
+  background-color: #F7F7F7;
+  border: medium none;
+  margin: 0 0 0.2em;
+  padding: 0.4em 0 }
+
 .nxDamSearchResults .bubbleBox .fieldColumn { line-height: 135% }
 
   /* Reduce padding between widgets in the box*/
@@ -133,7 +139,7 @@ author: lkemen@nuxeo.com
 /* Styles when an asset is selected */
 .nxDamSearchResults .selectedItem,
 .nxDamSearchResults .selectedItem:hover {
-  border-color: "color.major.stronger (__FLAVOR__ border)" }
+  border-bottom-color: "color.major.stronger (__FLAVOR__ border)" }
 
 .nxDamSearchResults .selectedItem .fieldColumn,
 .nxDamSearchResults .selectedItem .documentTitle,
