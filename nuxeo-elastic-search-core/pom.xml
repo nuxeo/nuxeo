@@ -11,7 +11,7 @@
   <name>Elastic Search Connector implementation</name>
 
   <properties>
-     <lucene.version>4.6.1</lucene.version>
+     <lucene.version>4.7.0</lucene.version>
   </properties>
 
   <dependencies>
@@ -105,10 +105,10 @@
       <artifactId>elasticsearch</artifactId>
     </dependency>
 
-    <dependency>
+    <!--dependency>
       <groupId>com.yakaz.elasticsearch.plugins</groupId>
       <artifactId>elasticsearch-action-updatebyquery</artifactId>
-    </dependency>
+    </dependency-->
 
     <dependency>
       <groupId>javax.transaction</groupId>
