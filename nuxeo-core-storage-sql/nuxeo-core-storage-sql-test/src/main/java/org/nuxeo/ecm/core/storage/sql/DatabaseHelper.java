@@ -103,10 +103,10 @@ public abstract class DatabaseHelper {
 
     public static final String DEFAULT_DATABASE_NAME = "nuxeojunittests";
 
-    public String databaseName = DEFAULT_DATABASE_NAME;
+    protected String databaseName = DEFAULT_DATABASE_NAME;
 
     public void setDatabaseName(String name) {
-        databaseName = name;
+        this.databaseName = name;
     }
 
     public static final String DEFAULT_REPOSITORY_NAME = "test";
@@ -114,7 +114,7 @@ public abstract class DatabaseHelper {
     public String repositoryName = DEFAULT_REPOSITORY_NAME;
 
     public void setRepositoryName(String name) {
-        repositoryName = name;
+        this.repositoryName = name;
     }
 
     /**

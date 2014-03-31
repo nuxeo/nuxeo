@@ -17,8 +17,6 @@
 package org.nuxeo.ecm.core.management.jtajca.internal;
 
 import java.lang.management.ManagementFactory;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,7 +43,6 @@ import org.nuxeo.ecm.core.management.jtajca.DatabaseConnectionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.Defaults;
 import org.nuxeo.ecm.core.management.jtajca.StorageConnectionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.TransactionMonitor;
-import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
@@ -67,21 +64,19 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
     private class ConnectionManagerUpdater implements NuxeoContainerListener {
         @Override
-        public void handleNewConnectionManager(String name,
-                AbstractConnectionManager cm) {
+        public void handleNewConnectionManager(String repositoryName, AbstractConnectionManager cm) {
             DefaultStorageConnectionMonitor monitor = new DefaultStorageConnectionMonitor(
-                    name, cm);
+                    repositoryName, cm);
             monitor.install();
-            storageConnectionMonitors.put(name, monitor);
+            storageConnectionMonitors.put(repositoryName, monitor);
         }
 
         @Override
-        public void handleConnectionManagerReset(String name,
+        public void handleConnectionManagerReset(String repositoryName,
                 AbstractConnectionManager mgr) {
-            DefaultStorageConnectionMonitor monitor = (DefaultStorageConnectionMonitor) storageConnectionMonitors.get(name);
+            DefaultStorageConnectionMonitor monitor = (DefaultStorageConnectionMonitor)storageConnectionMonitors.get(repositoryName);
             monitor.handleNewConnectionManager(mgr);
         }
-
     }
 
     protected final Log log = LogFactory.getLog(DefaultMonitorComponent.class);
@@ -93,6 +88,11 @@ public class DefaultMonitorComponent extends DefaultComponent {
     protected Map<String, StorageConnectionMonitor> storageConnectionMonitors = new HashMap<String, StorageConnectionMonitor>();
 
     protected Map<String, DatabaseConnectionMonitor> databaseConnectionMonitors = new HashMap<String, DatabaseConnectionMonitor>();
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        super.activate(context);
+    }
 
     // don't use activate, it would be too early
     @Override
@@ -119,50 +119,41 @@ public class DefaultMonitorComponent extends DefaultComponent {
     protected void install() throws Exception {
         installed = true;
 
-        coreSessionMonitor = new DefaultCoreSessionMonitor();
-        coreSessionMonitor.install();
+        try {
+            coreSessionMonitor = new DefaultCoreSessionMonitor();
+            coreSessionMonitor.install();
+        } catch (Exception e) {
+            log.error("Cannot install transaction monitors", e);
+        }
 
-        transactionMonitor = new DefaultTransactionMonitor();
-        transactionMonitor.install();
+        try {
+            transactionMonitor = new DefaultTransactionMonitor();
+            transactionMonitor.install();
+        } catch (Exception e) {
+            log.error("Cannot install transaction monitors", e);
+        }
 
-        installDatabaseStorageMonitors();
-        installRepositoryStorageMonitors();
-
+        try {
+            installDatabaseStorageMonitors();
+        } catch (Exception e) {
+            log.error("Cannot install database storage monitors", e);
+        }
+        try {
+            installRepositoryStorageMonitors();
+        } catch (Exception e) {
+            log.error("Cannot install repository storage monitors", e);
+        }
     }
 
     protected void installRepositoryStorageMonitors() throws ClientException {
         NuxeoContainer.addListener(cmUpdater);
-        ClientException errors = new ClientException("Cannot install repository storage monitors");
-        for (String name:Framework.getLocalService(RepositoryService.class).getRepositoryNames()) {
-            try (CoreSession session=CoreInstance.openCoreSession(name)) {
-                ;
-            } catch (ClientException cause) {
-                errors.addSuppressed(cause);
-            }
-        }
-        if (errors.getSuppressed().length > 0) {
-            throw errors;
-        }
     }
 
-    protected void installDatabaseStorageMonitors() throws ClientException {
-        ClientException errors = new ClientException("Cannot install database storage monitors");
-        Map<String, DataSource> dsByName;
-        try {
-            dsByName = DataSourceHelper.getDatasources();
-        } catch (NamingException cause) {
-            errors.addSuppressed(cause);
-            throw errors;
-        }
+    protected void installDatabaseStorageMonitors() throws NamingException {
+        Map<String, DataSource> dsByName = DataSourceHelper.getDatasources();
         for (Map.Entry<String, DataSource> dsEntry : dsByName.entrySet()) {
             String name = dsEntry.getKey();
             DataSource ds = dsEntry.getValue();
-            try (Connection connection = ds.getConnection()) {
-                ;
-            } catch (SQLException cause) {
-                errors.addSuppressed(cause);
-                continue;
-            }
             DatabaseConnectionMonitor monitor = null;
             if (ds instanceof org.apache.commons.dbcp.BasicDataSource) {
                 monitor = new CommonsDatabaseConnectionMonitor(name,
@@ -175,9 +166,6 @@ public class DefaultMonitorComponent extends DefaultComponent {
             }
             monitor.install();
             databaseConnectionMonitors.put(name, monitor);
-        }
-        if (errors.getSuppressed().length > 0) {
-            throw errors;
         }
     }
 

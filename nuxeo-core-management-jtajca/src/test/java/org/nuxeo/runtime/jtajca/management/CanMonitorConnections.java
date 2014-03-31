@@ -14,20 +14,32 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.core.management.jtajca;
+package org.nuxeo.runtime.jtajca.management;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import javax.inject.Named;
+import java.lang.management.ManagementFactory;
 
+import javax.management.JMException;
+import javax.management.JMX;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.management.jtajca.StorageConnectionMonitor;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
 import com.google.inject.Inject;
 
 /**
@@ -35,38 +47,33 @@ import com.google.inject.Inject;
  *
  */
 @RunWith(FeaturesRunner.class)
-@Features( JtajcaManagementFeature.class )
-public class CanMonitorStoragesTest {
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@Deploy("org.nuxeo.ecm.core.management.jtajca")
+public class CanMonitorConnections {
 
-    @Inject @Named("test")
-    protected StorageConnectionMonitor repo;
+    protected StorageConnectionMonitor monitor;
 
-    @Inject @Named("jdbc/db")
-    protected StorageConnectionMonitor db;
+    @Before
+    public void lookupMonitor() throws JMException {
+        MBeanServer srv = ManagementFactory.getPlatformMBeanServer();
+        String repositoryName = DatabaseHelper.DATABASE.repositoryName;
+        String name = String.format(StorageConnectionMonitor.NAME, repositoryName);
+        monitor = JMX.newMXBeanProxy(srv, new ObjectName(name), StorageConnectionMonitor.class);
+    }
 
     @Inject
     CoreSession repository;
 
-
-    @Test public void areMonitorsInstalled() {
-        isMonitorInstalled(repo);
-        isMonitorInstalled(db);
-    }
-
     @Test
-    public void areConnectionOpened() throws ClientException {
-        isConnectionOpened(repo);
-    }
-
-    protected void isMonitorInstalled(StorageConnectionMonitor monitor) {
+    public void isMonitorInstalled() {
         assertThat(monitor, notNullValue());
         monitor.getConnectionCount(); // throw exception is monitor not present
     }
 
-    protected void isConnectionOpened(StorageConnectionMonitor monitor) throws ClientException {
+    @Test
+    public void isConnectionOpened() throws ClientException {
         int count = monitor.getConnectionCount();
         assertThat(count, greaterThan(0));
     }
-
 
 }

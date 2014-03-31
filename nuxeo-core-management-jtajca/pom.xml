@@ -47,10 +47,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-datasource</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-jtajca</artifactId>
     </dependency>
     <dependency>
@@ -61,10 +57,7 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql-ra</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.tranql</groupId>
-      <artifactId>tranql-connector</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
