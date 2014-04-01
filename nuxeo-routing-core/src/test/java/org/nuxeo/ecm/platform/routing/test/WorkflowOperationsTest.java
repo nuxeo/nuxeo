@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -100,7 +99,6 @@ public class WorkflowOperationsTest extends AbstractGraphRouteTest {
     }
 
     @Test
-    @Ignore
     public void testStartWorkflowOperation() throws Exception {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
