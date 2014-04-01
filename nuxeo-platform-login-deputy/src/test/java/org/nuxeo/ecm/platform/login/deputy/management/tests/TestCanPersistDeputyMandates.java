@@ -127,6 +127,9 @@ public class TestCanPersistDeputyMandates {
 
         List<String> alternateAfterRollback = dm.getAvalaibleDeputyIds("titi");
         assertThat(alternateAfterRollback, not(hasItems("adm"))); // deputy is not stored
+
+        // needed for session cleanup
+        TransactionHelper.startTransaction();
     }
 
 }
