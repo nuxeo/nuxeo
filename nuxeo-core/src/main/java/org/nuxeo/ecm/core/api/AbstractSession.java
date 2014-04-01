@@ -93,7 +93,6 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.core.utils.SIDGenerator;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -131,11 +130,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     public static final String LIMIT_RESULTS_PROPERTY = "org.nuxeo.ecm.core.limit.results";
 
-    // the repository name
-    protected String repositoryName;
-
-    protected Map<String, Serializable> sessionContext;
-
     private Boolean limitedResults;
 
     private Long maxResults;
@@ -151,11 +145,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     protected void createMetrics() {
         createDocumentCount = registry.counter(MetricRegistry.name(
-                "nuxeo.repositories", repositoryName, "documents", "create"));
+                "nuxeo.repositories", getRepositoryName(), "documents",
+                "create"));
         deleteDocumentCount = registry.counter(MetricRegistry.name(
-                "nuxeo.repositories", repositoryName, "documents", "delete"));
+                "nuxeo.repositories", getRepositoryName(), "documents",
+                "delete"));
         updateDocumentCount = registry.counter(MetricRegistry.name(
-                "nuxeo.repositories", repositoryName, "documents", "update"));
+                "nuxeo.repositories", getRepositoryName(), "documents",
+                "update"));
     }
 
     /**
@@ -188,13 +185,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      */
     protected final DocumentResolver documentResolver = new DocumentResolver();
 
-    private String sessionId;
-
-    @Override
-    public void close() {
-        CoreInstance.getInstance().close(this);
-    }
-
     /**
      * Internal method: Gets the current session based on the client session id.
      *
@@ -203,64 +193,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public abstract Session getSession() throws ClientException;
 
     @Override
-    public String connect(String repositoryName,
-            Map<String, Serializable> context) throws ClientException {
-        if (null == context) {
-            context = new HashMap<String, Serializable>();
-        }
-
-        if (sessionId != null) {
-            throw new AlreadyConnectedException();
-        }
-        this.repositoryName = repositoryName;
-        sessionContext = context;
-        // this session is valid until the disconnect method is called
-        sessionId = createSessionId();
-        sessionContext.put("SESSION_ID", sessionId);
-
-        createMetrics();
-
-        getSession();
-
-        // register this session locally -> this way document models can
-        // retrieve their session on the server side
-        CoreInstance.getInstance().registerSession(sessionId, this);
-
-        return sessionId;
-    }
-
-    /**
-     * Default implementation for session ID generation.
-     * <p>
-     * The ID has the following format:
-     * &lt;repository-name&gt;-&lt;JVM-Unique-ID&gt; where the JVM-Unique-ID is
-     * an unique ID on a running JVM and repository-name is a used to avoid name
-     * clashes with sessions on different machines (the repository name should
-     * be unique in the system)
-     * <ul>
-     * <li>A is the repository name (which uniquely identifies the repository in
-     * the system)
-     * <li>B is the time of the session creation in milliseconds
-     * </ul>
-     */
-    protected String createSessionId() {
-        return repositoryName + '-' + SIDGenerator.next();
-    }
-
-    @Override
     public DocumentType getDocumentType(String type) {
         return Framework.getLocalService(SchemaManager.class).getDocumentType(
                 type);
-    }
-
-    @Override
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    @Override
-    public Principal getPrincipal() {
-        return ANONYMOUS;
     }
 
     protected final void checkPermission(Document doc, String permission)
@@ -293,28 +228,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public DocumentEventContext newEventContext(DocumentModel source) {
         DocumentEventContext ctx = new DocumentEventContext(this,
                 getPrincipal(), source);
-        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, repositoryName);
-        ctx.setProperty(CoreEventConstants.SESSION_ID, sessionId);
+        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, getRepositoryName());
+        ctx.setProperty(CoreEventConstants.SESSION_ID, getSessionId());
         return ctx;
-    }
-
-    @Override
-    public void afterBegin() {
-    }
-
-    @Override
-    public void beforeCompletion() {
-    }
-
-    @Override
-    public void afterCompletion(boolean committed) {
-        if (isSessionAlive()) {
-            try {
-                getSession().dispose();
-            } catch (ClientException e) {
-                log.error("Cannot dispose session", e);
-            }
-        }
     }
 
     protected void notifyEvent(String eventId, DocumentModel source,
@@ -329,8 +245,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (options != null) {
             ctx.setProperties(options);
         }
-        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, repositoryName);
-        ctx.setProperty(CoreEventConstants.SESSION_ID, sessionId);
+        ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, getRepositoryName());
+        ctx.setProperty(CoreEventConstants.SESSION_ID, getSessionId());
         // Document life cycle
         if (source != null && withLifeCycle) {
             String currentLifeCycleState = null;
@@ -524,14 +440,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             // notify document created by copy
             DocumentModel docModel = readModel(doc);
 
-            String comment = srcDoc.getRepository().getName() + ':'
-                    + src.toString();
+            String comment = srcDoc.getRepositoryName() + ':' + src.toString();
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel,
                     options, null, comment, true, false);
             docModel = writeModel(doc, docModel);
 
             // notify document copied
-            comment = doc.getRepository().getName() + ':'
+            comment = doc.getRepositoryName() + ':'
                     + docModel.getRef().toString();
 
             notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel,
@@ -594,13 +509,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             // add resetLifeCycle flag to the event
             options.put(CoreEventConstants.RESET_LIFECYCLE, resetLifeCycle);
             // notify document created by copy
-            String comment = srcDoc.getRepository().getName() + ':'
-                    + src.toString();
+            String comment = srcDoc.getRepositoryName() + ':' + src.toString();
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel,
                     options, null, comment, true, false);
 
             // notify document copied
-            comment = doc.getRepository().getName() + ':'
+            comment = doc.getRepositoryName() + ':'
                     + docModel.getRef().toString();
             notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel,
                     options, null, comment, true, false);
@@ -672,7 +586,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
             name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
 
-            String comment = srcDoc.getRepository().getName() + ':'
+            String comment = srcDoc.getRepositoryName() + ':'
                     + srcDoc.getParent().getUUID();
 
             Document doc = getSession().move(srcDoc, dstDoc, name);
@@ -736,12 +650,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public void cancel() throws ClientException {
-        try {
-            getSession().cancel();
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to cancel session", e);
-        }
+    public void cancel() {
+        // nothing
     }
 
     private DocumentModel createDocumentModelFromTypeName(String typeName,
@@ -754,7 +664,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                         + " is not a registered core type");
             }
             DocumentModel docModel = DocumentModelFactory.createDocumentModel(
-                    sessionId, docType);
+                    getSessionId(), docType);
             if (options == null) {
                 options = new HashMap<String, Serializable>();
             }
@@ -964,21 +874,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             models[i++] = createDocument(docModel);
         }
         return models;
-    }
-
-    public abstract boolean isSessionAlive();
-
-    @Override
-    public void disconnect() throws ClientException {
-        if (isSessionAlive()) {
-            getSession().dispose();
-        }
-        if (sessionId != null) {
-            CoreInstance.getInstance().unregisterSession(sessionId);
-        }
-        sessionContext = null;
-        sessionId = null;
-        repositoryName = null;
     }
 
     @Override
@@ -2855,16 +2750,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public void destroy() {
-        log.debug("Destroying core session ...");
-        try {
-            disconnect();
-        } catch (Exception e) {
-            log.error("Failed to destroy core session", e);
-        }
-    }
-
-    @Override
     public DocumentModel publishDocument(DocumentModel docToPublish,
             DocumentModel section) throws ClientException {
         return publishDocument(docToPublish, section, true);
@@ -3001,11 +2886,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         } catch (DocumentException e) {
             throw new ClientException(e);
         }
-    }
-
-    @Override
-    public String getRepositoryName() {
-        return repositoryName;
     }
 
     @Override

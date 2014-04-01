@@ -104,21 +104,11 @@ public interface CoreSession extends AutoCloseable {
     void close();
 
     /**
-     * The container calls this when this session sees a transaction begin.
+     * Destroys any system resources held by this instance.
+     * <p>
+     * Called when the instance is no more needed.
      */
-    void afterBegin();
-
-    /**
-     * The container calls this when this session is about to see a transaction
-     * completion.
-     */
-    void beforeCompletion();
-
-    /**
-     * The container calls this when this session sees a transaction
-     * commit/rollback.
-     */
-    void afterCompletion(boolean committed);
+    void destroy();
 
     /**
      * Gets the document type object given its type name.
@@ -129,32 +119,16 @@ public interface CoreSession extends AutoCloseable {
     DocumentType getDocumentType(String type);
 
     /**
-     * Connects to the repository given its URI. This opens a new session on the
-     * specified repository.
+     * NOT PUBLIC, DO NOT CALL.
      * <p>
-     * This method <b>must</b> never be called by users. Is is indirectly called
-     * from {@link CoreInstance#open(String, Map)} when creating the client.
+     * Connects the CoreSession to a low-level Session.
      *
-     * @param repositoryUri the repository URI (unique in the platform)
-     * @param context a map of properties used to initialize the session. Can be
-     *            null if no context properties are specified.
-     * @return the session ID if the connection succeed, null otherwise
+     * @param repositoryName the repository name
+     * @param principal the principal
      * @throws ClientException
      */
-    String connect(String repositoryUri, Map<String, Serializable> context)
+    void connect(String repositoryName, NuxeoPrincipal principal)
             throws ClientException;
-
-    /**
-     * Closes the current session and disconnects from the repository.
-     * <p>
-     * This method <b>must</b> never be called by users. Is is indirectly called
-     * from {@link CoreInstance#close(CoreSession)} when closing the client
-     * <p>
-     * All pending change made on the repository through this session are saved.
-     *
-     * @throws ClientException
-     */
-    void disconnect() throws ClientException;
 
     /**
      * Cancels any pending change made through this session.
@@ -1511,13 +1485,6 @@ public interface CoreSession extends AutoCloseable {
      * @throws ClientException
      */
     void applyDefaultPermissions(String userOrGroupName) throws ClientException;
-
-    /**
-     * Destroys any system resources held by this instance.
-     * <p>
-     * Called when the instance is no more needed.
-     */
-    void destroy();
 
     /**
      * Checks if the given document is dirty.

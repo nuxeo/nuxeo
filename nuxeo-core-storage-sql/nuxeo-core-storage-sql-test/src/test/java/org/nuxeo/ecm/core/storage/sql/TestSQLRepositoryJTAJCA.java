@@ -13,8 +13,11 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,8 +25,10 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -39,15 +44,16 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
+    private static final String NO_TX_CANNOT_RECONN = "No transaction, cannot reconnect";
+
     /**
      * Test that connection sharing allows use of several sessions at the same
      * time.
      */
     @Test
     public void testSessionSharing() throws Exception {
-        if (!hasPoolingConfig()) {
-            return;
-        }
+        assumeTrue(hasPoolingConfig());
+
         RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
         Repository repo = repositoryManager.getRepository(REPOSITORY_NAME);
         assertEquals(1, repo.getActiveSessionsCount());
@@ -72,9 +78,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
      */
     @Test
     public void testSaveOnCommit() throws Exception {
-        if (!hasPoolingConfig()) {
-            return;
-        }
+        assumeTrue(hasPoolingConfig());
 
         // first transaction
         DocumentModel doc = new DocumentModelImpl("/", "doc", "Document");
@@ -111,10 +115,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
      */
     @Test
     public void testRollbackOnException() throws Exception {
-        if (!(database instanceof DatabaseH2)) {
-            // no pooling conf available
-            return;
-        }
+        assumeTrue(hasPoolingConfig());
 
         assertTrue(TransactionHelper.isTransactionActive());
         try {
@@ -180,13 +181,21 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
     }
 
+    /**
+     * Cannot use session after close if no tx.
+     */
     @Test
     public void testAccessWithoutTx() throws ClientException {
         TransactionHelper.commitOrRollbackTransaction();
         TxWarnChecker checker = new TxWarnChecker();
         Logger.getRootLogger().addAppender(checker);
-        session.getRootDocument();
-        assertTrue(checker.seenWarn);
+        try {
+            session.getRootDocument();
+            fail("should throw");
+        } catch (ClientRuntimeException e) {
+            assertTrue(e.getMessage(),
+                    e.getMessage().contains(NO_TX_CANNOT_RECONN));
+        }
     }
 
     /**
@@ -194,10 +203,12 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
      * document on 2 separate transactions, one is rejected
      * (TransactionRuntimeException)
      */
-    public void XXX_TODO_testConcurrentModification() throws Exception {
-        if (!hasPoolingConfig()) {
-            return;
-        }
+    // not working as is
+    @Ignore
+    @Test
+    public void testConcurrentModification() throws Exception {
+        assumeTrue(hasPoolingConfig());
+
         // first transaction
         DocumentModel doc = session.createDocumentModel("/", "doc", "Note");
         doc.getProperty("dc:title").setValue("initial");
@@ -262,6 +273,133 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
         assertEquals(2, DummyAsyncRetryListener.getCountHandled());
         assertEquals(1, DummyAsyncRetryListener.getCountOk());
+    }
+
+    @Test
+    public void testAcquireThroughSessionId() throws Exception {
+        DocumentModel file = session.createDocumentModel("/", "file", "File");
+        file = session.createDocument(file);
+        session.save();
+
+        assertNotNull(file.getCoreSession());
+    }
+
+    @Test
+    public void testReconnectAfterClose() throws Exception {
+        DocumentModel file = session.createDocumentModel("/", "file", "File");
+        file = session.createDocument(file);
+        session.save();
+        CoreSession closedSession = session;
+        closeSession();
+        TransactionHelper.commitOrRollbackTransaction();
+
+        TransactionHelper.startTransaction();
+        // use a closed session. because of tx, we can reconnect it
+        assertNotNull(closedSession.getRootDocument());
+        // commit will close low-level session
+        TransactionHelper.commitOrRollbackTransaction();
+    }
+
+    @Test
+    public void testReconnectAfterCommit() throws Exception {
+        DocumentModel file = session.createDocumentModel("/", "file", "File");
+        file = session.createDocument(file);
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        // keep existing CoreSession whose Session was implicitly closed
+        // by commit
+        // reconnect possible through tx
+        assertNotNull(session.getRootDocument());
+    }
+
+    @Test
+    public void testReconnectAfterCloseNoTx() throws Exception {
+        DocumentModel file = session.createDocumentModel("/", "file", "File");
+        file = session.createDocument(file);
+        session.save();
+        CoreSession closedSession = session;
+        closeSession();
+        TransactionHelper.commitOrRollbackTransaction();
+
+        // no startTransaction
+        // use a closed session -> exception
+        try {
+            closedSession.getRootDocument();
+            fail("should throw");
+        } catch (ClientRuntimeException e) {
+            assertTrue(e.getMessage(),
+                    e.getMessage().contains(NO_TX_CANNOT_RECONN));
+        }
+    }
+
+    /**
+     * DocumentModel.getCoreSession cannot reconnect through a sid that does
+     * not exist anymore.
+     */
+    @Test
+    public void testReconnectAfterCloseThroughSessionId() throws Exception {
+        DocumentModel file = session.createDocumentModel("/", "file", "File");
+        file = session.createDocument(file);
+        session.save();
+
+        closeSession();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        openSession();
+
+        assertNull(file.getCoreSession());
+    }
+
+    @Test
+    public void testMultiThreaded() throws Exception {
+        assertNotNull(session.getRootDocument());
+
+        final CoreSession finalSession = session;
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    TransactionHelper.startTransaction();
+                    try {
+                        assertNotNull(finalSession.getRootDocument());
+                    } finally {
+                        TransactionHelper.commitOrRollbackTransaction();
+                    }
+                } catch (Exception e) {
+                    fail(e.toString());
+                }
+            }
+        };
+        t.start();
+        t.join();
+
+        assertNotNull(session.getRootDocument());
+    }
+
+    @Test
+    public void testMultiThreadedNeedsTx() throws Exception {
+        assertNotNull(session.getRootDocument());
+
+        final CoreSession finalSession = session;
+        final Exception[] threadException = new Exception[1];
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    // no tx
+                    finalSession.getRootDocument();
+                } catch (Exception e) {
+                    threadException[0] = e;
+                }
+            }
+        };
+        t.start();
+        t.join();
+        Exception e = threadException[0];
+        assertNotNull(e);
+        assertTrue(e.getMessage(), e.getMessage().contains(NO_TX_CANNOT_RECONN));
     }
 
 }

@@ -14,10 +14,8 @@
 
 package org.nuxeo.ecm.core.model;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 
 /**
@@ -27,7 +25,8 @@ public interface Repository {
 
     String getName();
 
-    Session getSession(Map<String, Serializable> context) throws DocumentException;
+    Session getSession(NuxeoPrincipal principal, String sessionId)
+            throws DocumentException;
 
     SchemaManager getTypeManager();
 

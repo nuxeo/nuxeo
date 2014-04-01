@@ -32,8 +32,6 @@ import javax.transaction.xa.XAResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
-import org.nuxeo.ecm.core.storage.Credentials;
-import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 
 /**
@@ -56,8 +54,6 @@ public class ManagedConnectionImpl implements ManagedConnection,
     private PrintWriter out;
 
     private final ManagedConnectionFactoryImpl managedConnectionFactory;
-
-    private final ConnectionSpecImpl connectionSpec;
 
     /**
      * All the {@link Connection} handles for this managed connection. There is
@@ -88,8 +84,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * @throws ResourceException
      */
     public ManagedConnectionImpl(
-            ManagedConnectionFactoryImpl managedConnectionFactory,
-            ConnectionRequestInfoImpl connectionRequestInfo)
+            ManagedConnectionFactoryImpl managedConnectionFactory)
             throws ResourceException {
         log.debug("construct: " + this);
         if (log.isTraceEnabled()) {
@@ -97,11 +92,10 @@ public class ManagedConnectionImpl implements ManagedConnection,
         }
         out = managedConnectionFactory.getLogWriter();
         this.managedConnectionFactory = managedConnectionFactory;
-        this.connectionSpec = connectionRequestInfo.connectionSpec;
         connections = new HashSet<ConnectionImpl>();
         listeners = new ListenerList();
         // create the underlying session
-        session = managedConnectionFactory.getConnection(connectionSpec);
+        session = managedConnectionFactory.getConnection();
         xaresource = new ConnectionAwareXAResource(session.getXAResource(),
                 this);
     }
@@ -118,8 +112,8 @@ public class ManagedConnectionImpl implements ManagedConnection,
     public synchronized Connection getConnection(Subject subject,
             ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
+        // connectionRequestInfo unused
         log.debug("getConnection: " + this);
-        assert connectionRequestInfo instanceof ConnectionRequestInfoImpl;
         ConnectionImpl connection = new ConnectionImpl(this);
         addConnection(connection);
         return connection;
@@ -243,11 +237,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
 
     @Override
     public String getUserName() throws ResourceException {
-        Credentials credentials = connectionSpec.getCredentials();
-        if (credentials == null) {
-            return ""; // XXX
-        }
-        return credentials.getUserName();
+        return null;
     }
 
     /*

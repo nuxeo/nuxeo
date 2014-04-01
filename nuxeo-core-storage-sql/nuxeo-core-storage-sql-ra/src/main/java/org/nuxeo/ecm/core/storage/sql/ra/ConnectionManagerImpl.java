@@ -40,8 +40,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
             ManagedConnectionFactory managedConnectionFactory,
             ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
+        // connectionRequestInfo unused
         ManagedConnection managedConnection = managedConnectionFactory.createManagedConnection(
-                null, connectionRequestInfo);
-        return managedConnection.getConnection(null, connectionRequestInfo);
+                null, null);
+        return managedConnection.getConnection(null, null);
     }
 }

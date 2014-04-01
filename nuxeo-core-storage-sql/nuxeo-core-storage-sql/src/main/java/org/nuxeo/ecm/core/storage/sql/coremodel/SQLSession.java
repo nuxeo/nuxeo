@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -102,34 +103,28 @@ public class SQLSession implements Session {
 
     private final Repository repository;
 
-    private final Map<String, Serializable> context;
+    private final NuxeoPrincipal principal;
 
     private final org.nuxeo.ecm.core.storage.sql.Session session;
 
     private Document root;
 
-    private final String userSessionId;
+    private final String sessionId;
 
     public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session,
-            Repository repository, Map<String, Serializable> context)
+            Repository repository, NuxeoPrincipal principal, String sessionId)
             throws DocumentException {
         this.session = session;
         this.repository = repository;
-        if (context == null) {
-            context = new HashMap<String, Serializable>();
-        }
-        this.context = context;
-        context.put("creationTime", Long.valueOf(System.currentTimeMillis()));
-
+        this.principal = principal;
         Node rootNode;
         try {
             rootNode = session.getRootNode();
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
+        this.sessionId = sessionId;
         root = newDocument(rootNode);
-
-        userSessionId = (String) context.get("SESSION_ID");
     }
 
     /*
@@ -153,13 +148,13 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public void close() throws DocumentException {
+    public void close() {
+        root = null;
         try {
-            session.save();
-        } catch (StorageException e) {
-            throw new DocumentException(e);
+            session.close();
+        } catch (ResourceException e) {
+            throw new RuntimeException(e);
         }
-        dispose();
     }
 
     @Override
@@ -181,6 +176,9 @@ public class SQLSession implements Session {
 
     @Override
     public boolean isLive() {
+        // session can become non-live behind our back
+        // through ConnectionAwareXAResource that closes
+        // all handles (sessions) at tx end() time
         return session != null && session.isLive();
     }
 
@@ -190,35 +188,18 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public void dispose() {
-        try {
-            session.close();
-        } catch (ResourceException e) {
-            throw new RuntimeException(e);
-        }
-        root = null;
-    }
-
-    // not used?
-    @Override
-    public long getSessionId() {
-        throw new RuntimeException();
-        // return sid;
+    public String getSessionId() {
+        return sessionId;
     }
 
     @Override
-    public String getUserSessionId() {
-        return userSessionId;
+    public String getRepositoryName() {
+        return repository.getName();
     }
 
     @Override
-    public Repository getRepository() {
-        return repository;
-    }
-
-    @Override
-    public Map<String, Serializable> getSessionContext() {
-        return context;
+    public NuxeoPrincipal getPrincipal() {
+        return principal;
     }
 
     @Override
@@ -439,6 +420,7 @@ public class SQLSession implements Session {
             props.put(Model.MISC_LIFECYCLE_STATE_PROP,
                     properties.get(CoreSession.IMPORT_LIFECYCLE_STATE));
             // compat with old lock import
+            @SuppressWarnings("deprecation")
             String key = (String) properties.get(CoreSession.IMPORT_LOCK);
             if (key != null) {
                 String[] values = key.split(":");

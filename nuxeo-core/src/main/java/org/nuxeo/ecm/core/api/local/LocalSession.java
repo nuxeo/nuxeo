@@ -13,144 +13,205 @@
 
 package org.nuxeo.ecm.core.api.local;
 
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
-import java.io.Serializable;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.transaction.RollbackException;
+import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.TransactionalCoreSessionWrapper;
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.login.LoginComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
- * Local Session: a CoreSession not tied to an EJB container.
+ * Local Session: implementation of {@link CoreSession} beyond
+ * {@link AbstractSession}, dealing with low-level stuff.
  */
-public class LocalSession extends AbstractSession {
+public class LocalSession extends AbstractSession implements Synchronization {
 
     private static final long serialVersionUID = 1L;
 
-    private Session session;
+    private static final AtomicLong SID_COUNTER = new AtomicLong();
+
+    private static final Log log = LogFactory.getLog(LocalSession.class);
+
+    protected String repositoryName;
+
+    protected NuxeoPrincipal principal;
+
+    /** Defined once at connect time. */
+    private String sessionId;
+
+    public static final class SessionInfo {
+        private final Session session;
+
+        private Exception openException;
+
+        public SessionInfo(Session session) {
+            this.session = session;
+            openException = new Exception("Open stack trace");
+        }
+    }
+
+    /**
+     * Thread-local sessions allocated.
+     */
+    private final ThreadLocal<SessionInfo> threadSessions = new ThreadLocal<SessionInfo>();
+
+    /**
+     * All sessions allocated in all threads, in order to detect close leaks.
+     */
+    private final Set<SessionInfo> allSessions = Collections.newSetFromMap(new ConcurrentHashMap<SessionInfo, Boolean>());
 
     public static CoreSession createInstance() {
         return TransactionalCoreSessionWrapper.wrap(new LocalSession());
     }
 
-    // Locally we don't yet support NXCore.getRepository()
-    protected Session createSession(String repoName) throws ClientException {
-        try {
-            NuxeoPrincipal principal = null;
-            if (sessionContext != null) {
-                principal = (NuxeoPrincipal) sessionContext.get("principal");
-                if (principal == null) {
-                    String username = (String) sessionContext.get("username");
-                    if (username != null) {
-                        if (SYSTEM_USERNAME.equals(username)) {
-                            principal = new SystemPrincipal(null);
-                        } else {
-                            principal = new UserPrincipal(username,
-                                    new ArrayList<String>(), false, false);
-                        }
-                    }
-                }
-            } else {
-                sessionContext = new HashMap<String, Serializable>();
-            }
-            if (principal == null) {
-                LoginStack.Entry entry = ClientLoginModule.getCurrentLogin();
-                if (entry != null) {
-                    Principal p = entry.getPrincipal();
-                    if (p instanceof NuxeoPrincipal) {
-                        principal = (NuxeoPrincipal) p;
-                    } else if (LoginComponent.isSystemLogin(p)) {
-                        principal = new SystemPrincipal(p.getName());
-                    } else {
-                        throw new RuntimeException("Unsupported principal: "
-                                + p.getClass());
-                    }
-                }
-            }
-            if (principal == null) {
-                if (isTestingContext()) {
-                    principal = new SystemPrincipal(null);
-                } else {
-                    throw new ClientException(
-                            "Cannot create a core session outside a security context. You must login first.");
-                }
-            }
-            // store the principal in the core session context so that other
-            // core tools may retrieve it
-            sessionContext.put("principal", principal);
-
-            Repository repo = lookupRepository(repoName);
-            return repo.getSession(sessionContext);
-        } catch (Exception e) {
-            throw new ClientException("Failed to load repository " + repoName
-                    + ": " + e.getMessage(), e);
-        }
+    @Override
+    public String getRepositoryName() {
+        return repositoryName;
     }
 
-    protected Repository lookupRepository(String name) throws Exception {
-        RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
-        Repository repo = repositoryService.getRepository(name);
-        if (repo == null) {
-            throw new IllegalArgumentException("Repository not found: " + name);
+    @Override
+    public void connect(String repositoryName, NuxeoPrincipal principal)
+            throws ClientException {
+        if (sessionId != null) {
+            throw new ClientException("CoreSession already connected");
         }
-        return repo;
+        this.repositoryName = repositoryName;
+        this.principal = principal;
+        createMetrics(); // needs repo name
+        sessionId = newSessionId(repositoryName, principal);
+        log.debug("Creating CoreSession: " + sessionId);
+        createSession(); // create first session for current thread
+    }
+
+    protected static String newSessionId(String repositoryName,
+            NuxeoPrincipal principal) {
+        return repositoryName + '/' + principal.getName() + '#'
+                + SID_COUNTER.incrementAndGet();
+    }
+
+    @Override
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    @Override
+    public Session getSession() {
+        SessionInfo si = threadSessions.get();
+        if (si == null || !si.session.isLive()) {
+            // close old one, previously completed
+            closeInThisThread();
+            log.debug("Reconnecting CoreSession: " + sessionId);
+            if (!TransactionHelper.isTransactionActive()) {
+                throw new ClientRuntimeException(
+                        "No transaction, cannot reconnect: " + sessionId);
+            }
+            try {
+                TransactionHelper.lookupTransactionManager().getTransaction().registerSynchronization(
+                        this);
+            } catch (NamingException | SystemException | RollbackException e) {
+                throw new ClientRuntimeException(
+                        "Cannot register synchronization", e);
+            }
+            si = createSession();
+        }
+        return si.session;
     }
 
     /**
-     * This method is for compatibility with < 1.5 core In older core this
-     * class were used only for testing - but now it is used by webengine and a
-     * security fix that break tests was done. This method is checking if we
-     * are in a testing context
+     * Creates the session. It will be destroyed by calling {@link #destroy}.
      */
-    public boolean isTestingContext() { // neither in jboss nor in nuxeo
-        // launcher
-        return Framework.isTestModeSet();
-    }
-
-    @Override
-    public Principal getPrincipal() {
-        return (Principal) sessionContext.get("principal");
-    }
-
-    @Override
-    public Session getSession() throws ClientException {
-        if (session == null || !session.isLive()) {
-            session = createSession(repositoryName);
+    protected SessionInfo createSession() {
+        RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
+        Repository repository = repositoryService.getRepository(repositoryName);
+        if (repository == null) {
+            throw new ClientRuntimeException("No such repository: "
+                    + repositoryName);
         }
-        return session;
+        Session session;
+        try {
+            session = repository.getSession(principal, sessionId);
+        } catch (DocumentException e) {
+            throw new ClientRuntimeException("Failed to load repository "
+                    + repositoryName + ": " + e.getMessage(), e);
+        }
+        SessionInfo si = new SessionInfo(session);
+        threadSessions.set(si);
+        allSessions.add(si);
+        return si;
     }
 
     @Override
-    public void cancel() throws ClientException {
-        if (session != null && session.isLive()) {
-            super.cancel();
+    public void close() {
+        CoreInstance.closeCoreSession(this); // calls back destroy()
+    }
+
+    @Override
+    public void beforeCompletion() {
+    }
+
+    /**
+     * Synchronization registered only when reconnecting a session, because
+     * {@link #close} will not be called explicitly.
+     */
+    @Override
+    public void afterCompletion(int status) {
+        closeInThisThread();
+    }
+
+    protected void closeInThisThread() {
+        SessionInfo si = threadSessions.get();
+        if (si != null) {
+            si.session.close();
+            threadSessions.remove();
+            allSessions.remove(si);
         }
+    }
+
+    // explicit close()
+    @Override
+    public void destroy() {
+        log.debug("Closing CoreSession: " + sessionId);
+        closeInThisThread();
+        if (!allSessions.isEmpty()) {
+            log.error("Leaking " + allSessions.size()
+                    + " Session objects, due to incorrect thread use."
+                    + " Dumping open stack trace");
+            for (SessionInfo si : allSessions) {
+                log.error("Leaking Session open at", si.openException);
+                si.session.close();
+                si.openException = null;
+            }
+            allSessions.clear();
+        }
+    }
+
+    @Override
+    public NuxeoPrincipal getPrincipal() {
+        return principal;
     }
 
     @Override
     public boolean isStateSharedByAllThreadSessions() {
-        return session.isStateSharedByAllThreadSessions();
-    }
-
-    @Override
-    public boolean isSessionAlive() {
-        return session != null && session.isLive();
+        return getSession().isStateSharedByAllThreadSessions();
     }
 
 }

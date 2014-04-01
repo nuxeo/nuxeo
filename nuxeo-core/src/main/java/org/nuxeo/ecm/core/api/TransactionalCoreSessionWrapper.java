@@ -121,7 +121,6 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
                         // register last, we want post-commit stuff to be
                         // executed after everything else is committed
                         ConnectionHelper.registerSynchronizationLast(this);
-                        session.afterBegin();
                         threadBound.set(main);
                     }
                 }
@@ -160,7 +159,6 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
 
     @Override
     public void beforeCompletion() {
-        session.beforeCompletion();
     }
 
     @Override
@@ -175,16 +173,6 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
         if (main.equals(current)) {
             threadBound.remove();
         }
-        boolean committed;
-        if (status == Status.STATUS_COMMITTED) {
-            committed = true;
-        } else if (status == Status.STATUS_ROLLEDBACK) {
-            committed = false;
-        } else {
-            log.error("Unexpected status after completion: " + status);
-            return;
-        }
-        session.afterCompletion(committed);
     }
 
     @Override

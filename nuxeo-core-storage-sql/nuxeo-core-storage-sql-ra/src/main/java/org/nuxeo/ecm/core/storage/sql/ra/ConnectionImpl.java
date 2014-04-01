@@ -89,7 +89,6 @@ public class ConnectionImpl implements Session {
      * Called by {@link ManagedConnectionImpl#removeConnection}.
      */
     protected void disassociate() {
-        session.checkLive();
         session = null;
     }
 
@@ -101,13 +100,9 @@ public class ConnectionImpl implements Session {
     public void close() throws ResourceException {
         if (managedConnection == null) {
             log.error("Closing an already closed connection: " + this);
-            return;
         }
-        try {
-            managedConnection.close(this);
-        } finally {
-            managedConnection = null;
-        }
+        // don't close managedConnection, it's not our job
+        managedConnection = null;
     }
 
     @Override

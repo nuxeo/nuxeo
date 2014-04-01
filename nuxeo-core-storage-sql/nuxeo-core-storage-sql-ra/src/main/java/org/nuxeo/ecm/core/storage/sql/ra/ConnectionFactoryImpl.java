@@ -12,9 +12,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.ra;
 
-import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Map;
 
 import javax.naming.Reference;
 import javax.resource.ResourceException;
@@ -22,15 +20,12 @@ import javax.resource.cci.ConnectionSpec;
 import javax.resource.cci.RecordFactory;
 import javax.resource.cci.ResourceAdapterMetaData;
 import javax.resource.spi.ConnectionManager;
-import javax.resource.spi.ConnectionRequestInfo;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
@@ -89,39 +84,27 @@ public class ConnectionFactoryImpl implements Repository,
      */
 
     /**
-     * Gets a new connection, with no credentials.
-     *
-     * @return the connection
-     */
-    @Override
-    public Session getConnection() throws StorageException {
-        ConnectionRequestInfo connectionRequestInfo = new ConnectionRequestInfoImpl();
-        try {
-            return (Session) connectionManager.allocateConnection(
-                    managedConnectionFactory, connectionRequestInfo);
-        } catch (StorageException e) {
-            throw e;
-        } catch (ResourceException e) {
-            throw new StorageException(e);
-        }
-    }
-
-    /**
      * Gets a new connection.
      *
-     * @param connectionSpec the connection spec, containing credentials
+     * @param connectionSpec the connection spec (unused)
      * @return the connection
      */
     @Override
     public Session getConnection(ConnectionSpec connectionSpec)
             throws StorageException {
-        assert connectionSpec instanceof ConnectionSpecImpl;
-        // encapsulate connectionSpec into internal connectionRequestInfo
-        ConnectionRequestInfo connectionRequestInfo = new ConnectionRequestInfoImpl(
-                (ConnectionSpecImpl) connectionSpec);
+        return getConnection();
+    }
+
+    /**
+     * Gets a new connection.
+     *
+     * @return the connection
+     */
+    @Override
+    public Session getConnection() throws StorageException {
         try {
             return (Session) connectionManager.allocateConnection(
-                    managedConnectionFactory, connectionRequestInfo);
+                    managedConnectionFactory, null);
         } catch (StorageException e) {
             throw e;
         } catch (ResourceException e) {
@@ -189,24 +172,13 @@ public class ConnectionFactoryImpl implements Repository,
 
     @Override
     public org.nuxeo.ecm.core.model.Session getSession(
-            Map<String, Serializable> context) throws DocumentException {
-        ConnectionSpec connectionSpec;
-        if (context == null) {
-            connectionSpec = null;
-        } else {
-            NuxeoPrincipal principal = (NuxeoPrincipal) context.get("principal");
-            String username = principal == null ? (String) context.get("username")
-                    : principal.getName();
-            connectionSpec = new ConnectionSpecImpl(new Credentials(username,
-                    null));
-        }
-        Session session;
+            NuxeoPrincipal principal, String sessionId)
+            throws DocumentException {
         try {
-            session = getConnection(connectionSpec);
+            return new SQLSession(getConnection(), this, principal, sessionId);
         } catch (StorageException e) {
             throw new DocumentException(e.getMessage(), e);
         }
-        return new SQLSession(session, this, context);
     }
 
     @Override

@@ -30,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend.MapperKind;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
@@ -271,36 +270,32 @@ public class RepositoryImpl implements Repository {
      */
 
     /**
-     * Gets a new connection by logging in to the repository with default
-     * credentials.
+     * Gets a new connection.
      *
+     * @param connectionSpec the parameters to use to connect (unused)
      * @return the session
      * @throws StorageException
      */
     @Override
-    public SessionImpl getConnection() throws StorageException {
-        return getConnection(null);
+    public SessionImpl getConnection(ConnectionSpec connectionSpec)
+            throws StorageException {
+        return getConnection();
     }
 
     /**
-     * Gets a new connection by logging in to the repository with given
-     * connection information (credentials).
+     * Gets a new connection.
      *
-     * @param connectionSpec the parameters to use to connnect
      * @return the session
      * @throws StorageException
      */
     @Override
-    public synchronized SessionImpl getConnection(ConnectionSpec connectionSpec)
-            throws StorageException {
+    public synchronized SessionImpl getConnection() throws StorageException {
         if (model == null) {
             initRepository();
         }
-        Credentials credentials = connectionSpec == null ? null
-                : ((ConnectionSpecImpl) connectionSpec).getCredentials();
         SessionPathResolver pathResolver = new SessionPathResolver();
         Mapper mapper = backend.newMapper(model, pathResolver, null);
-        SessionImpl session = newSession(model, mapper, credentials);
+        SessionImpl session = newSession(model, mapper);
         pathResolver.setSession(session);
         sessions.add(session);
         sessionCount.inc();
@@ -341,10 +336,10 @@ public class RepositoryImpl implements Repository {
         }
     }
 
-    protected SessionImpl newSession(Model model, Mapper mapper,
-            Credentials credentials) throws StorageException {
+    protected SessionImpl newSession(Model model, Mapper mapper)
+            throws StorageException {
         mapper = createCachingMapper(model, mapper);
-        return new SessionImpl(this, model, mapper, credentials);
+        return new SessionImpl(this, model, mapper);
     }
 
     public static class SessionPathResolver implements PathResolver {

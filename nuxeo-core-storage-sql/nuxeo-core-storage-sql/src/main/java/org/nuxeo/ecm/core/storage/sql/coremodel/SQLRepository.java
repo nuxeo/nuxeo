@@ -11,12 +11,10 @@
  */
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -70,15 +68,14 @@ public class SQLRepository implements Repository {
      * Called by LocalSession.createSession
      */
     @Override
-    public Session getSession(Map<String, Serializable> context)
+    public Session getSession(NuxeoPrincipal principal, String sessionId)
             throws DocumentException {
-        org.nuxeo.ecm.core.storage.sql.Session session;
         try {
-            session = repository.getConnection();
+            return new SQLSession(repository.getConnection(), this, principal,
+                    sessionId);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
-        return new SQLSession(session, this, context);
     }
 
     @Override

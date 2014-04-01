@@ -194,9 +194,9 @@ public interface Document extends DocumentContainer, PropertyContainer,
     /**
      * Returns the repository in which the document lives.
      *
-     * @return a Repository instance.
+     * @return the repository name.
      */
-    Repository getRepository();
+    String getRepositoryName();
 
     /**
      * Set a system property which is a property of by the built-in node type

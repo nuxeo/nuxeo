@@ -197,8 +197,8 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     }
 
     @Override
-    public Repository getRepository() {
-        return session.getRepository();
+    public String getRepositoryName() {
+        return session.getRepositoryName();
     }
 
     @Override

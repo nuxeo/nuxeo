@@ -75,7 +75,7 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public Repository getRepository() {
+    public String getRepositoryName() {
         return null;
     }
 

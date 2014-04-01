@@ -24,6 +24,7 @@ import javax.transaction.xa.XAResource;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.query.Query;
@@ -43,39 +44,25 @@ public interface Session {
 
     /**
      * Gets the session id.
-     * <p>
-     * This is an unique identifier of this session relative to the current JVM.
      *
      * @return the session id
      */
-    long getSessionId();
-
-    /**
-     * The unique ID of the user session on this repository.
-     * <p>
-     * The ID is unique in the application (possible deployed on multiple
-     * machines).
-     * <p>
-     * This ID is normally passed by the session creator through the session
-     * context.
-     *
-     * @return the user session id
-     */
-    String getUserSessionId();
+    String getSessionId();
 
     /**
      * Gets the repository that created this session.
      *
      * @return the repository
      */
-    Repository getRepository();
+    String getRepositoryName();
 
     /**
-     * Gets the session context used to create this session.
+     * Gets the principal that created this session.
      *
-     * @return the session context
+     * @since 5.9.3
+     * @return the principal
      */
-    Map<String, Serializable> getSessionContext();
+    NuxeoPrincipal getPrincipal();
 
     /**
      * Creates a query object given a SQL like query string.
@@ -144,16 +131,11 @@ public interface Session {
     boolean isStateSharedByAllThreadSessions();
 
     /**
-     * Closes this session and saves changes on the workspace, if any.
+     * Closes this session. Does not save.
      *
      * @throws DocumentException if any error occurs
      */
-    void close() throws DocumentException;
-
-    /**
-     * Closes the session and cancel changes on workspace, if any.
-     */
-    void dispose();
+    void close();
 
     /**
      * Gets the document at the given path, if any.

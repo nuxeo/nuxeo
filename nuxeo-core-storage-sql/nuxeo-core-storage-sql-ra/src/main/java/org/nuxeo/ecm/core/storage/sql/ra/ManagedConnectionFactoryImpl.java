@@ -34,7 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
@@ -178,18 +177,14 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * the application server pool (or the non-managed ConnectionManagerImpl)
      * when it needs a new connection.
      */
-    /*
-     * If connectionRequestInfo is null then it means that the call is made by
-     * the application server for the recovery case (6.5.3.5).
-     */
     @Override
     public ManagedConnection createManagedConnection(Subject subject,
             ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
-        assert connectionRequestInfo instanceof ConnectionRequestInfoImpl;
+        // subject unused
+        // connectionRequestInfo unused
         initialize();
-        return new ManagedConnectionImpl(this,
-                (ConnectionRequestInfoImpl) connectionRequestInfo);
+        return new ManagedConnectionImpl(this);
     }
 
     /**
@@ -322,9 +317,8 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * Called by the {@link ManagedConnectionImpl} constructor to get a new
      * physical connection.
      */
-    protected SessionImpl getConnection(ConnectionSpecImpl connectionSpec)
-            throws StorageException {
-        return repository.getConnection(connectionSpec);
+    protected SessionImpl getConnection() throws StorageException {
+        return repository.getConnection();
     }
 
     private static final Pattern KEYVALUE = Pattern.compile("([^=]*)=(.*)");

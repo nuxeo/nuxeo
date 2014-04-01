@@ -53,7 +53,6 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -130,8 +129,8 @@ public class SessionImpl implements Session, XAResource {
 
     private final Timer aclrUpdateTimer;
 
-    public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper,
-            Credentials credentials) throws StorageException {
+    public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper)
+            throws StorageException {
         this.repository = repository;
         this.mapper = mapper;
         if (mapper instanceof CachingMapper) {
@@ -260,6 +259,7 @@ public class SessionImpl implements Session, XAResource {
         // close the mapper and therefore the connection
         mapper.close();
         // don't clean the caches, we keep the pristine cache around
+        // TODO this is getting destroyed, we can clean everything
     }
 
     @Override
@@ -309,7 +309,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public Node getRootNode() {
-        checkThread();
         checkLive();
         return rootNode;
     }
@@ -642,7 +641,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public Node getNodeById(Serializable id) throws StorageException {
-        checkThread();
         checkLive();
         if (id == null) {
             throw new IllegalArgumentException("Illegal null id");
@@ -804,7 +802,6 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public List<Node> getNodesByIds(List<Serializable> ids)
             throws StorageException {
-        checkThread();
         checkLive();
         return getNodesByIds(ids, true);
     }

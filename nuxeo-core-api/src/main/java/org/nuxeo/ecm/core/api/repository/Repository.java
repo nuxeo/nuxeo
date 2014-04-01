@@ -13,14 +13,13 @@
 package org.nuxeo.ecm.core.api.repository;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * A high-level repository descriptor, from which you get a {@link CoreSession}
@@ -94,13 +93,15 @@ public class Repository {
      */
     @Deprecated
     public CoreSession open() throws Exception {
-        return open(new HashMap<String, Serializable>());
+        return CoreInstance.openCoreSession(name);
     }
 
+    /**
+     * @deprecated since 5.9.3, use {@link CoreInstance#openCoreSession} instead.
+     */
+    @Deprecated
     public CoreSession open(Map<String, Serializable> context) throws Exception {
-        CoreSession session = Framework.getService(CoreSession.class, name);
-        session.connect(name, context);
-        return session;
+        return CoreInstance.openCoreSession(name, context);
     }
 
     /**

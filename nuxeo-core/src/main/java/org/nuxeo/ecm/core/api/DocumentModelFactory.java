@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.PropertyContainer;
-import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.Prefetch;
@@ -86,7 +85,7 @@ public class DocumentModelFactory {
             throw new DocumentException("Type not found for doc " + doc);
         }
 
-        String sid = doc.getSession().getUserSessionId();
+        String sid = doc.getSession().getSessionId();
 
         DocumentRef docRef = new IdRef(doc.getUUID());
         Document parent = doc.getParent();
@@ -108,9 +107,7 @@ public class DocumentModelFactory {
         }
 
         // Compute repository name.
-        Repository repository = doc.getRepository();
-        String repositoryName = repository == null ? null
-                : repository.getName();
+        String repositoryName = doc.getRepositoryName();
 
         // versions being imported before their live doc don't have a path
         String p = doc.getPath();

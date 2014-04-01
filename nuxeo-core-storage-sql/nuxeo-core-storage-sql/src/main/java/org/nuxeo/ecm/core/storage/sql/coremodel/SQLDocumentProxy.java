@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.DocumentProxy;
 import org.nuxeo.ecm.core.model.Property;
-import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -152,8 +151,8 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public Repository getRepository() {
-        return target.getRepository();
+    public String getRepositoryName() {
+        return target.getRepositoryName();
     }
 
     @Override
