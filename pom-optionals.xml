@@ -15,7 +15,6 @@
 included in the default full build). Thus they are not deprecated.</description>
 
   <modules>
-    <module>nuxeo-platform-importer</module>
     <module>nuxeo-cmf</module>
     <module>nuxeo-platform-jbpm</module>
     <module>nuxeo-platform-audit-web-access</module>

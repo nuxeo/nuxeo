@@ -133,6 +133,7 @@
     <module>nuxeo-javaagent</module>
     <module>nuxeo-session-inspector</module>
     <module>nuxeo-box-api</module>
+    <module>nuxeo-platform-importer</module>
   </modules>
 
   <dependencyManagement>
