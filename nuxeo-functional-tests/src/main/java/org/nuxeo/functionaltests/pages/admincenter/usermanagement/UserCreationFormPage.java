@@ -74,21 +74,32 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
     public UsersGroupsBasePage createUser(String username, String firstname,
             String lastname, String company, String email, String password,
             String group) throws NoSuchElementException {
-        usernameInput.sendKeys(username);
-        firstnameInput.sendKeys(firstname);
-        lastnameInput.sendKeys(lastname);
-        companyInput.sendKeys(company);
-        emailInput.sendKeys(email);
-        firstPasswordInput.sendKeys(password);
-        secondPasswordInput.sendKeys(password);
-        if (StringUtils.isNotBlank(group)) {
-            Select2WidgetElement groups = new Select2WidgetElement(
-                    driver,
-                    driver.findElement(By.xpath("//div[@id='s2id_createUserView:createUser:nxl_user:nxw_groups_select2']")),
-                    true);
-            groups.selectValue(group);
+      return createUser(username, firstname, lastname, company, email, password, group, false);
+    }
+
+    public UsersGroupsBasePage createUser(String username, String firstname,
+            String lastname, String company, String email, String password,
+            String group, final boolean invite) throws NoSuchElementException {
+        if (!invite) {
+            switchCreationFormPage();
+            usernameInput.sendKeys(username);
+            firstnameInput.sendKeys(firstname);
+            lastnameInput.sendKeys(lastname);
+            companyInput.sendKeys(company);
+            emailInput.sendKeys(email);
+            firstPasswordInput.sendKeys(password);
+            secondPasswordInput.sendKeys(password);
+            if (StringUtils.isNotBlank(group)) {
+                Select2WidgetElement groups = new Select2WidgetElement(
+                        driver,
+                        driver.findElement(By.xpath("//div[@id='s2id_createUserView:createUser:nxl_user:nxw_groups_select2']")),
+                        true);
+                groups.selectValue(group);
+            }
+            createButton.click();
+        } else {
+            // TODO invite
         }
-        createButton.click();
         return asPage(UsersGroupsBasePage.class);
     }
 
@@ -97,13 +108,10 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
         return asPage(UsersTabSubPage.class);
     }
 
-    public UserCreationFormPage switchCreationFormPage() {
+    protected void switchCreationFormPage() {
         if (!immediateCreation.isSelected()) {
             immediateCreation.click();
             Locator.waitUntilElementPresent(By.id("createUserView:createUser:nxl_user:nxw_username"));
-            return asPage(UserCreationFormPage.class);
-        } else {
-            return this;
         }
     }
 }
