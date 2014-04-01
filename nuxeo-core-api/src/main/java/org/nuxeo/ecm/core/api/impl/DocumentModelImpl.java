@@ -1678,4 +1678,13 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     public void setId(String id) {
         this.id = id;
     }
+
+    @Override
+    public String getBinaryFulltext() throws ClientException {
+        CoreSession session = getCoreSession();
+        if (session == null) {
+            return null;
+        }
+        return session.getBinaryFulltext(ref);
+    }
 }

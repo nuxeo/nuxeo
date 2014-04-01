@@ -550,6 +550,11 @@ public class UnifiedCachingRowMapper implements RowMapper {
     }
 
     @Override
+    public String getBinaryFulltext(RowId rowId) throws StorageException {
+        return rowMapper.getBinaryFulltext(rowId);
+    }
+
+    @Override
     public Serializable[] readCollectionRowArray(RowId rowId)
             throws StorageException {
         Row row = cacheGet(rowId);

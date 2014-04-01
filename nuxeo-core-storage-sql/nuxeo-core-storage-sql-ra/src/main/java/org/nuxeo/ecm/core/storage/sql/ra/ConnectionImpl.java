@@ -408,4 +408,9 @@ public class ConnectionImpl implements Session {
         getSession().rebuildReadAcls();
     }
 
+    @Override
+    public String getBinaryFulltext(Serializable id) throws StorageException {
+        return getSession().getBinaryFulltext(id);
+    }
+
 }

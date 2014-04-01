@@ -69,7 +69,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * Cluster node handler, or {@code null} if this {@link Mapper} is not the
      * cluster node mapper.
      */
-    private ClusterNodeHandler clusterNodeHandler;
+    private final ClusterNodeHandler clusterNodeHandler;
 
     /**
      * Queue of invalidations received for this cluster node.
@@ -920,6 +920,41 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         List<Row> maps = getSelectRows(rowId.tableName, select, criteriaMap,
                 null, true);
         return maps.isEmpty() ? null : maps.get(0);
+    }
+
+    @Override
+    public String getBinaryFulltext(RowId rowId) throws StorageException {
+        Set<String> columns = model.fulltextInfo.indexesAllBinary;
+        Serializable id = rowId.id;
+        String ret = "";
+        String sql = dialect.getBinaryFulltextSql();
+        if (sql == null) {
+            logger.info("getBinaryFulltextSql not supported for dialect " + dialect);
+            return ret;
+        }
+        if (logger.isLogEnabled()) {
+            logger.logSQL(sql, Collections.singletonList(id));
+        }
+        PreparedStatement ps;
+        try {
+            ps = connection.prepareStatement(sql);
+            try {
+                dialect.setId(ps, 1, id);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    ret = rs.getString(1);
+                }
+                if (logger.isLogEnabled()) {
+                    logger.log("  -> " + ret);
+                }
+            } finally {
+                closeStatement(ps);
+            }
+        } catch (SQLException e) {
+            checkConnectionReset(e);
+            throw new StorageException("Could not select: " + sql, e);
+        }
+        return ret;
     }
 
     @Override

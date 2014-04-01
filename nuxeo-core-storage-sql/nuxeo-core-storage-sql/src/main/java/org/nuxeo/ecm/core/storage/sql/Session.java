@@ -584,4 +584,12 @@ public interface Session extends Connection {
      */
     void rebuildReadAcls() throws StorageException;
 
+    /**
+     * Gets the fulltext extracted from the binary fields if supported by the
+     * dialect.
+     *
+     * @since 5.9.3
+     */
+    String getBinaryFulltext(Serializable id) throws StorageException;
+
 }

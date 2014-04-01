@@ -171,6 +171,15 @@ public interface RowMapper {
     Row readSimpleRow(RowId rowId) throws StorageException;
 
     /**
+     * Gets the fulltext extracted from the binary fields if supported by the
+     * dialect.
+     *
+     * @param rowId the row id
+     * @return the fulltext string representation or {@code null} if unsupported
+     */
+    String getBinaryFulltext(RowId rowId) throws StorageException;
+
+    /**
      * Gets an array for a {@link CollectionFragment} from the database, given
      * its table name and id. If no rows are found, an empty array is returned.
      *

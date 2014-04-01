@@ -1407,4 +1407,13 @@ public class SQLSession implements Session {
         return merged;
     }
 
+    @Override
+    public String getBinaryFulltext(Serializable id) throws DocumentException {
+        try {
+            return session.getBinaryFulltext(id);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
 }
