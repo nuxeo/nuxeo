@@ -1567,7 +1567,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public String getBinaryFulltext(Serializable id) throws StorageException {
+    public Map<String, String> getBinaryFulltext(Serializable id) throws StorageException {
         RowId rowId = new RowId(Model.FULLTEXT_TABLE_NAME, id);
         return mapper.getBinaryFulltext(rowId);
     }

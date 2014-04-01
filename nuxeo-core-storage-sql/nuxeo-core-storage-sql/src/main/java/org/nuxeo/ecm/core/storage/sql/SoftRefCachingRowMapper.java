@@ -446,7 +446,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     @Override
-    public String getBinaryFulltext(RowId rowId) throws StorageException {
+    public Map<String, String> getBinaryFulltext(RowId rowId) throws StorageException {
         return rowMapper.getBinaryFulltext(rowId);
     }
 

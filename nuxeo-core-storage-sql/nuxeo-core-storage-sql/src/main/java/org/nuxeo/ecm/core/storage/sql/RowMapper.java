@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.xa.XAException;
@@ -171,13 +172,13 @@ public interface RowMapper {
     Row readSimpleRow(RowId rowId) throws StorageException;
 
     /**
-     * Gets the fulltext extracted from the binary fields if supported by the
-     * dialect.
+     * Gets the fulltext extracted from the binary fields.
      *
+     * @since 5.9.3
      * @param rowId the row id
      * @return the fulltext string representation or {@code null} if unsupported
      */
-    String getBinaryFulltext(RowId rowId) throws StorageException;
+    Map<String, String> getBinaryFulltext(RowId rowId) throws StorageException;
 
     /**
      * Gets an array for a {@link CollectionFragment} from the database, given

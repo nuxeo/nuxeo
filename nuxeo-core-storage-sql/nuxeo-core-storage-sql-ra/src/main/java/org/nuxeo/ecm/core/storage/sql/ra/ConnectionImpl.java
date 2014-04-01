@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core.storage.sql.ra;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionFactory;
@@ -404,7 +405,7 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public String getBinaryFulltext(Serializable id) throws StorageException {
+    public Map<String, String> getBinaryFulltext(Serializable id) throws StorageException {
         return getSession().getBinaryFulltext(id);
     }
 

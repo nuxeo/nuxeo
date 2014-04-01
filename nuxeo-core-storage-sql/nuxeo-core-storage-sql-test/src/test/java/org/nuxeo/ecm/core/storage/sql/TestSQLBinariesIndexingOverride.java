@@ -12,6 +12,9 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -52,6 +55,30 @@ public class TestSQLBinariesIndexingOverride extends TXSQLRepositoryTestCase {
         // other index
         res = session.query("SELECT * FROM Document WHERE ecm:fulltext_binaries = 'test'");
         assertEquals(1, res.size());
+    }
+
+    @Test
+    public void testGetBinaryFulltext() throws Exception {
+        DocumentModelList res;
+        DocumentModel doc = session.createDocumentModel("/", "source", "File");
+        BlobHolder holder = doc.getAdapter(BlobHolder.class);
+        holder.setBlob(new StringBlob("test"));
+        doc = session.createDocument(doc);
+        session.save();
+        closeSession();
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForFulltextIndexing();
+        TransactionHelper.startTransaction();
+        openSession();
+        // main index
+        res = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'test'");
+        assertEquals(1, res.size());
+        Map<String, String> map = session.getBinaryFulltext(res.get(0).getRef());
+        // we have 2 binaries field
+        assertTrue(map.containsKey("binarytext"));
+        assertTrue(map.containsKey("binarytext_binaries"));
+        assertEquals("test", map.get("binarytext"));
+        assertEquals("test", map.get("binarytext_binaries"));
     }
 
 }

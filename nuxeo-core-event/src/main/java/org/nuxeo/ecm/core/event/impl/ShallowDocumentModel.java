@@ -558,7 +558,7 @@ public class ShallowDocumentModel implements DocumentModel {
     }
 
     @Override
-    public String getBinaryFulltext() throws ClientException {
+    public Map<String, String> getBinaryFulltext() throws ClientException {
         return null;
     }
 }

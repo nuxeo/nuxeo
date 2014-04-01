@@ -962,9 +962,4 @@ public class DialectOracle extends Dialect {
         return "{CALL NX_DELETE_PURGE(?, ?, ?)}";
     }
 
-    @Override
-    public String getBinaryFulltextSql() {
-        return "SELECT binarytext FROM fulltext WHERE id=?";
-    }
-
 }

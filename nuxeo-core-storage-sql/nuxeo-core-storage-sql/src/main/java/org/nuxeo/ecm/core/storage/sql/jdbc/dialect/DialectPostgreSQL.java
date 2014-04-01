@@ -1326,15 +1326,18 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public String getBinaryFulltextSql() {
-        String sql;
+    public String getBinaryFulltextSql(List<String> columns) {
         if (compatibilityFulltextTable) {
             // extract tokens from tsvector
-            sql = "SELECT regexp_replace(binarytext::text, $$'|:|,|[0-9]$$, ' ', 'g') AS binarytext FROM fulltext WHERE id=?";
-        } else {
-            sql = "SELECT binarytext FROM fulltext WHERE id=?";
+            List<String> columnsAs = new ArrayList<String>(columns.size());
+            for (String col : columns) {
+                columnsAs.add("regexp_replace(" + col
+                        + "::text, $$'|'\\:[^']*'?$$, ' ', 'g')");
+            }
+            return "SELECT " + StringUtils.join(columnsAs, ", ")
+                    + " FROM fulltext WHERE id=?";
         }
-        return sql;
+        return super.getBinaryFulltextSql(columns);
     }
 
 }

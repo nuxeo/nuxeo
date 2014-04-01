@@ -929,4 +929,14 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         assertEventSet(IGNORE_VCS, "sessionSaved=1");
     }
 
+    @Test
+    public void testGetBinaryFulltext() throws Exception {
+        createDocs();
+        waitForFulltextIndexing();
+        DocumentModelList list = session.query("SELECT * FROM File WHERE ecm:fulltext = 'Drink'");
+        assertTrue(! list.isEmpty());
+        Map<String, String> map = session.getBinaryFulltext(list.get(0).getRef());
+        assertTrue(map.containsKey("binarytext"));
+        assertTrue(map.get("binarytext").contains("drink"));
+    }
 }

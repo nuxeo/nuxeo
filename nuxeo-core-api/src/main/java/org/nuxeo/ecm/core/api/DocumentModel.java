@@ -987,10 +987,9 @@ public interface DocumentModel extends Serializable {
     String getChangeToken();
 
     /**
-     * Gets the fulltext extracted from the binary fields if supported by the
-     * dialect.
+     * Gets the fulltext extracted from the binary fields.
      *
      * @since 5.9.3
      */
-    String getBinaryFulltext() throws ClientException;
+    Map<String, String> getBinaryFulltext() throws ClientException;
 }

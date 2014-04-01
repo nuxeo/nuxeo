@@ -1390,7 +1390,7 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public String getBinaryFulltext(Serializable id) throws DocumentException {
+    public Map<String, String> getBinaryFulltext(Serializable id) throws DocumentException {
         try {
             return session.getBinaryFulltext(id);
         } catch (StorageException e) {

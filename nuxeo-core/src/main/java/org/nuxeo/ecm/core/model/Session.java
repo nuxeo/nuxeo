@@ -293,6 +293,11 @@ public interface Session {
     void setACP(Document doc, ACP acp, boolean overwrite)
             throws SecurityException;
 
-    String getBinaryFulltext(Serializable id) throws DocumentException;
+    /**
+     * Gets the fulltext extracted from the binary fields.
+     *
+     * @since 5.9.3
+     */
+    Map<String, String> getBinaryFulltext(Serializable id) throws DocumentException;
 
 }
