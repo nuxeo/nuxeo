@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
 import com.google.inject.Inject;
 
 /**
@@ -41,12 +42,11 @@ public class CanMonitorStoragesTest {
     @Inject @Named("test")
     protected StorageConnectionMonitor repo;
 
-    @Inject @Named("jdbc/db")
+    @Inject @Named("jdbc/NuxeoTestDS")
     protected StorageConnectionMonitor db;
 
     @Inject
     CoreSession repository;
-
 
     @Test public void areMonitorsInstalled() {
         isMonitorInstalled(repo);
@@ -54,8 +54,9 @@ public class CanMonitorStoragesTest {
     }
 
     @Test
-    public void areConnectionOpened() throws ClientException {
+    public void areConnectionsOpened() throws ClientException {
         isConnectionOpened(repo);
+        isConnectionOpened(db);
     }
 
     protected void isMonitorInstalled(StorageConnectionMonitor monitor) {

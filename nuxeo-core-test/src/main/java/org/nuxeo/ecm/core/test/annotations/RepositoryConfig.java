@@ -30,6 +30,8 @@ import org.nuxeo.ecm.core.test.NoopRepositoryInit;
 @Target( { ElementType.TYPE })
 public @interface RepositoryConfig {
 
+    String singleDatasource() default "";
+
     Class<? extends RepositoryFactory> repositoryFactoryClass() default SQLRepositoryFactory.class;
 
     /**

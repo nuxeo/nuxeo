@@ -55,7 +55,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
-import org.nuxeo.runtime.api.ConnectionHelper;
 
 /**
  * Oracle-specific dialect.
@@ -702,7 +701,6 @@ public class DialectOracle extends Dialect {
             throw new AssertionError("Unknown type: " + type);
         }
         try {
-            connection = ConnectionHelper.unwrap(connection);
             Object arrayDescriptor = arrayDescriptorConstructor.newInstance(
                     typeName, connection);
             return (Array) arrayConstructor.newInstance(arrayDescriptor,

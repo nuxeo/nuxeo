@@ -32,6 +32,8 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.osgi.OSGiAdapter;
+import org.nuxeo.runtime.api.ConnectionHelper;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.persistence.Contribution;
 import org.nuxeo.runtime.model.persistence.fs.ContributionLocation;
 import org.nuxeo.runtime.test.runner.Defaults;
@@ -64,6 +66,8 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
     protected String databaseName;
 
     protected String username;
+
+    protected String singleDatasource;
 
     protected RepositoryInit repoInitializer;
 
@@ -104,6 +108,7 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
 
     public void importAnnotations(RepositoryConfig repo) {
         type = repo.type();
+        singleDatasource = repo.singleDatasource();
         repositoryName = repo.repositoryName();
         databaseName = repo.databaseName();
         username = repo.user();
@@ -132,6 +137,7 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
         username = settings.username;
         repositoryName = settings.repositoryName;
         databaseName = settings.databaseName;
+        singleDatasource = settings.singleDatasource;
     }
 
     public BackendType getBackendType() {
@@ -147,7 +153,7 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
     }
 
     public void setName(String name) {
-        this.repositoryName = name;
+        repositoryName = name;
     }
 
     public String getUsername() {
@@ -163,7 +169,7 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
     }
 
     public void setInitializer(RepositoryInit initializer) {
-        this.repoInitializer = initializer;
+        repoInitializer = initializer;
     }
 
     public Granularity getGranularity() {
@@ -182,6 +188,9 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
             // type is ignored, the config inferred by DatabaseHelper from
             // system properties will be used
             dbHelper.setRepositoryName(repositoryName);
+            if (!singleDatasource.isEmpty()) {
+                Framework.getProperties().setProperty(ConnectionHelper.SINGLE_DS, singleDatasource);
+            }
             dbHelper.setUp(repositoryFactoryClass);
             OSGiAdapter osgi = harness.getOSGiAdapter();
             Bundle bundle = osgi.getRegistry().getBundle(
