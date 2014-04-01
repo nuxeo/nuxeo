@@ -1728,12 +1728,13 @@ public abstract class Dialect {
     }
 
     /**
-     * Return the SQL to get the fulltext extracted from binaries.
+     * Return the SQL to get the columns fulltext fields
      *
+     * @param columns
      * @since 5.9.3
      */
-    public String getBinaryFulltextSql() {
-        return null;
+    public String getBinaryFulltextSql(List<String> columns) {
+        return "SELECT " + StringUtils.join(columns, ", ") + " FROM fulltext WHERE id=?";
     }
 
 }

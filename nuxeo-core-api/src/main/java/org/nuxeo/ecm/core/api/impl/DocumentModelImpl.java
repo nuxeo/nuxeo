@@ -1680,7 +1680,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
-    public String getBinaryFulltext() throws ClientException {
+    public Map<String, String> getBinaryFulltext() throws ClientException {
         CoreSession session = getCoreSession();
         if (session == null) {
             return null;

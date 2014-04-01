@@ -679,7 +679,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public String getBinaryFulltext() throws ClientException {
+    public Map<String, String> getBinaryFulltext() throws ClientException {
         return null;
     }
 }

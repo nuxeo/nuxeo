@@ -3450,7 +3450,7 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
     }
 
     @Override
-    public String getBinaryFulltext(DocumentRef ref) throws ClientException {
+    public Map<String, String> getBinaryFulltext(DocumentRef ref) throws ClientException {
         try {
             Document doc = resolveReference(ref);
             checkPermission(doc, READ);

@@ -923,11 +923,15 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public String getBinaryFulltext(RowId rowId) throws StorageException {
-        Set<String> columns = model.fulltextInfo.indexesAllBinary;
+    public Map<String, String> getBinaryFulltext(RowId rowId) throws StorageException {
+        ArrayList<String> columns = new ArrayList<String>();
+        for (String index: model.fulltextInfo.indexesAllBinary) {
+            String col = Model.FULLTEXT_BINARYTEXT_KEY + model.getFulltextIndexSuffix(index);
+            columns.add(col);
+        }
         Serializable id = rowId.id;
-        String ret = "";
-        String sql = dialect.getBinaryFulltextSql();
+        Map<String, String> ret = new HashMap<String, String>(columns.size());
+        String sql = dialect.getBinaryFulltextSql(columns);
         if (sql == null) {
             logger.info("getBinaryFulltextSql not supported for dialect " + dialect);
             return ret;
@@ -942,7 +946,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 dialect.setId(ps, 1, id);
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
-                    ret = rs.getString(1);
+                    for (int i=1; i <= columns.size(); i++) {
+                        ret.put(columns.get(i-1), rs.getString(i));
+                    }
                 }
                 if (logger.isLogEnabled()) {
                     logger.log("  -> " + ret);

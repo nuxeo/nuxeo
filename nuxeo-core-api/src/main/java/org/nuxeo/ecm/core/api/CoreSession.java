@@ -1847,15 +1847,14 @@ public interface CoreSession {
             throws ClientException;
 
     /**
-     * Gets the fulltext extracted from the binary fields if supported by the
-     * dialect.
+     * Gets the fulltext extracted from the binary fields.
      *
      * @param doc the document reference
-     * @return the fulltext
+     * @return the fulltext map or {@code null} if not supported.
      * @throws ClientException
      *
      * @since 5.9.3
      */
-    String getBinaryFulltext(DocumentRef ref) throws ClientException;
+    Map<String, String> getBinaryFulltext(DocumentRef ref) throws ClientException;
 
 }

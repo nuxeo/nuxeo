@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import javax.resource.cci.Connection;
 
@@ -585,11 +586,11 @@ public interface Session extends Connection {
     void rebuildReadAcls() throws StorageException;
 
     /**
-     * Gets the fulltext extracted from the binary fields if supported by the
-     * dialect.
+     * Gets the fulltext extracted from the binary fields.
      *
      * @since 5.9.3
      */
-    String getBinaryFulltext(Serializable id) throws StorageException;
+    Map<String, String> getBinaryFulltext(Serializable id)
+            throws StorageException;
 
 }
