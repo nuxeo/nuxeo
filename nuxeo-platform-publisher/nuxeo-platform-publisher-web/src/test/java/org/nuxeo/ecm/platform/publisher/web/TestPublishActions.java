@@ -48,8 +48,7 @@ public class TestPublishActions {
     @Inject
     private ResourcesAccessorBean resourcesAccessor;
 
-    @Test(timeout = 3000)
-    // In case an infinite loop occurs
+    @Test
     public void testGetPathFragments() throws ClientException {
         // Create file in standard domain
         DocumentModel fileModel = documentManager.createDocumentModel(

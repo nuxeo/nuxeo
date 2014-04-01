@@ -95,6 +95,9 @@ public class TestTransactedAudit {
         assertThat(seenDocUndeleted, is(true));
         assertThat(seenDocDeleted, is(true));
         assertThat(seenDocCreated, is(true));
+
+        // needed for session cleanup
+        TransactionHelper.startTransaction();
     }
 
     @Test
@@ -132,5 +135,8 @@ public class TestTransactedAudit {
         assertNotNull(eventDate);
         assertNotNull(logDate);
         assertTrue(logDate.after(eventDate));
+
+        // needed for session cleanup
+        TransactionHelper.startTransaction();
     }
 }

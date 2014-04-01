@@ -703,6 +703,10 @@ public class CoreOperationsTest {
         } catch (Exception e) {
             assertTrue(TransactionHelper.isTransactionMarkedRollback());
         }
+
+        // needed for session cleanup
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
     }
 
     @Test
