@@ -7,7 +7,7 @@
     point="widgettypes">
     <widgetType name="summary_current_document_collections">
       <configuration>
-        <sinceVersion>5.9.4</sinceVersion>
+        <sinceVersion>5.9.3</sinceVersion>
         <title>Collections</title>
         <description>
           <p>
