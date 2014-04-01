@@ -21,7 +21,7 @@
     </script>
     
     <a4j:region id="immediate_creation_region">
-		<h:selectBooleanCheckbox id="immediate_creation" title="#{messages['immediateCreation']}" 
+		<h:selectBooleanCheckbox id="immediate_creation" title="#{messages['label.immediateCreation']}" 
 			valueChangeListener="#{userManagementActions.changeTypeUserModel}" value="#{userManagementActions.immediateCreation}">
 			<a4j:support event="onchange"
 		        reRender="usersPanel"
