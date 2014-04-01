@@ -133,6 +133,19 @@ public class Select2ActionsBean implements Serializable {
         return result;
     }
 
+    /**
+     * @since 5.9.3
+     */
+    protected static Map<String, String> getContextParameter(final DocumentModel doc) {
+        DocumentIdCodec documentIdCodec = new DocumentIdCodec();
+        Map<String, String> contextParameters = new HashMap<String, String>();
+        contextParameters.put(
+                "documentURL",
+                documentIdCodec.getUrlFromDocumentView(new DocumentViewImpl(
+                        doc)));
+        return contextParameters;
+    }
+
     public String encodeParametersForUserSuggestion(final Widget widget, final Map<String, Serializable> resolvedWidgetProperties) {
         Map<String, String> params = getDefaultFormattersMap(
                 Select2Common.USER_DEFAULT_SUGGESTION_FORMATTER,
@@ -771,8 +784,9 @@ public class Select2ActionsBean implements Serializable {
             if (doc == null) {
                 processDocumentNotFound(ref, jg);
             } else {
+                Map<String, String> contextParameters = getContextParameter(doc);
                 HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-                JsonDocumentWriter.writeDocument(jg, doc, schemas,request);
+                JsonDocumentWriter.writeDocument(jg, doc, schemas, contextParameters, request);
             }
         }
 
@@ -979,12 +993,7 @@ public class Select2ActionsBean implements Serializable {
         } else {
             String[] schemas = Select2Common.getSchemas(schemaNames);
 
-            DocumentIdCodec documentIdCodec = new DocumentIdCodec();
-            Map<String, String> contextParameters = new HashMap<String, String>();
-            contextParameters.put(
-                    "documentURL",
-                    documentIdCodec.getUrlFromDocumentView(new DocumentViewImpl(
-                            doc)));
+            Map<String, String> contextParameters = getContextParameter(doc);
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             JsonDocumentWriter.writeDocument(jg, doc, schemas,
                     contextParameters, request);
