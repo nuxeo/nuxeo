@@ -671,12 +671,12 @@ SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME =  'aclr_user_map' AND 
 CREATE TABLE aclr_user_map (
   user_id CHAR(32) NOT NULL,
   acl_id CHAR(32) NOT NULL,
-  CONSTRAINT aclrum_user_id_unique UNIQUE(user_id)
+  CONSTRAINT aclrum_unique UNIQUE(user_id, acl_id)
 )
 
 # -- add unique constraint if missing (upgrade from < 5.9.3)
-IF OBJECT_ID('dbo.aclrum_user_id_unique', 'UQ') IS NULL
-  ALTER TABLE aclr_user_map ADD CONSTRAINT aclrum_user_id_unique UNIQUE(user_id);
+IF OBJECT_ID('dbo.aclrum_unique', 'UQ') IS NULL
+  ALTER TABLE aclr_user_map ADD CONSTRAINT aclrum_unique UNIQUE(user_id, acl_id);
 
 # -- drop index not needed anymore due to above constraint's implicit index
 #TEST:
@@ -685,12 +685,12 @@ SELECT 1 FROM sys.indexes WHERE name = 'aclr_user_map_user_id_idx'
 #IF: ! emptyResult
 DROP INDEX [aclr_user_map_user_id_idx] ON [dbo].[aclr_user_map]
 
-# -- index on two columns
+# -- drop index not needed anymore due to above constraint's implicit index
 #TEST:
 SELECT 1 FROM sys.indexes WHERE name = 'aclr_user_map_acl_id_idx'
 
-#IF: emptyResult
-CREATE INDEX [aclr_user_map_acl_id_idx] ON [dbo].[aclr_user_map] ([acl_id], [user_id])
+#IF: ! emptyResult
+DROP INDEX [aclr_user_map_acl_id_idx] ON [dbo].[aclr_user_map]
 
 
 # -- Associate a read acl for each hierarchy entry
