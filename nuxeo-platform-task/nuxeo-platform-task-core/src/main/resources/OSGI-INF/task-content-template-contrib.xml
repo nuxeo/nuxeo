@@ -14,10 +14,6 @@
       <template>
         <templateItem typeName="TaskRoot" id="task-root" title="Task" >
           <acl>
-            <ace principal="Administrator" permission="Everything"
-              granted="true" />
-            <ace principal="administrators" permission="Everything"
-              granted="true" /> 
             <ace principal="Everyone" permission="Everything" granted="false" />
           </acl>
         </templateItem>
