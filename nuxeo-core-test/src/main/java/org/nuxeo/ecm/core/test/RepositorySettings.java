@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
@@ -33,7 +32,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.osgi.OSGiAdapter;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.persistence.Contribution;
 import org.nuxeo.runtime.model.persistence.fs.ContributionLocation;
 import org.nuxeo.runtime.test.runner.Defaults;
@@ -291,7 +289,6 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
 
     public CoreSession openSessionAs(String username, boolean isAdmin,
             boolean isAnonymous) throws ClientException {
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         UserPrincipal principal = new UserPrincipal(username,
                 new ArrayList<String>(), isAnonymous, isAdmin);
         return CoreInstance.openCoreSession(repositoryName, principal);
