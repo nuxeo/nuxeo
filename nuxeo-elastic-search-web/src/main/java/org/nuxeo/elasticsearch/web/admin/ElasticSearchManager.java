@@ -14,7 +14,7 @@
  * Contributors:
  *     Nuxeo
  */
-package org.nuxeo.elasticsearch.web;
+package org.nuxeo.elasticsearch.web.admin;
 
 import static org.jboss.seam.ScopeType.EVENT;
 

@@ -30,6 +30,10 @@
       <artifactId>nuxeo-platform-webapp-base</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-jsf</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
     </dependency>

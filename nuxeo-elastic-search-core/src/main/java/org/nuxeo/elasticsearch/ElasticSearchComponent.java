@@ -76,7 +76,6 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
-import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -86,7 +85,6 @@ import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndex;
 import org.nuxeo.elasticsearch.config.NuxeoElasticSearchConfig;
-import org.nuxeo.elasticsearch.listener.EventConstants;
 import org.nuxeo.elasticsearch.nxql.NXQLQueryConverter;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
@@ -223,18 +221,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected void schedulePostCommitIndexing(IndexingCommand cmd)
             throws ClientException {
-
         try {
-            CoreSession session = cmd.getTargetDocument().getCoreSession();
             EventProducer evtProducer = Framework
                     .getLocalService(EventProducer.class);
-
-            EventContextImpl context = new EventContextImpl(session,
-                    session.getPrincipal());
-            context.getProperties().put(cmd.getId(), cmd.toJSON());
-
-            Event indexingEvent = context
-                    .newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
+            Event indexingEvent = cmd.asIndexingEvent();
             evtProducer.fireEvent(indexingEvent);
         } catch (Exception e) {
             throw ClientException.wrap(e);

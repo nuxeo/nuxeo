@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -178,6 +179,22 @@ public class ElasticsearchInlineListener extends IndexingCommandsStacker
         protected Boolean initialValue() {
             return new Boolean(false);
         }
+
+        @Override
+        public void set(Boolean value) {
+            super.set(value);
+            if (Boolean.TRUE.equals(value)) {
+                // switch existing stack to sync
+                for (IndexingCommands cmds : transactionCommands.get().values()) {
+                    for (IndexingCommand cmd : cmds.getAllCommands()) {
+                        if (!cmd.isRecurse()&& cmd.getTargetDocument()!=null) {
+                            cmd.update(true, cmd.isRecurse());
+                        }
+                    }
+                }
+            }
+        }
+
     };
 
 }

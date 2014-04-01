@@ -32,8 +32,16 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.elasticsearch.listener.EventConstants;
 
 /**
+ *
+ * Holds information about what type of indexing operation must be processed.
+ * IndexingCommands are create "on the fly" via a Synchronous event listener and
+ * at commit time the system will merge the commands and generate events for the
+ * sync commands.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  *
@@ -70,6 +78,8 @@ public class IndexingCommand {
 
     protected List<String> schemas;
 
+    protected transient Event indexingEvent;
+
     protected IndexingCommand() {
         //
     }
@@ -81,6 +91,7 @@ public class IndexingCommand {
         this.sync = sync;
         this.recurse = recurse;
         this.targetDocument = targetDocument;
+        markUpdated();
     }
 
     public IndexingCommand(DocumentModel targetDocument, boolean sync,
@@ -95,13 +106,14 @@ public class IndexingCommand {
             // Doc was deleted : no way we can fetch it
             // re-attach ???
         }
+        markUpdated();
     }
 
     public String getRepository() {
-        if (repository!=null) {
+        if (repository != null) {
             return repository;
         }
-        if (targetDocument!=null) {
+        if (targetDocument != null) {
             return targetDocument.getRepositoryName();
         }
         return null;
@@ -114,6 +126,7 @@ public class IndexingCommand {
     public void update(boolean sync, boolean recurse) {
         this.sync = this.sync || sync;
         this.recurse = this.recurse || recurse;
+        markUpdated();
     }
 
     public boolean isSync() {
@@ -189,7 +202,7 @@ public class IndexingCommand {
             } else if ("path".equals(fieldname)) {
                 cmd.path = jp.getText();
             } else if ("repo".equals(fieldname)) {
-                cmd.repository= jp.getText();
+                cmd.repository = jp.getText();
             } else if ("id".equals(fieldname)) {
                 cmd.id = jp.getText();
             } else if ("recurse".equals(fieldname)) {
@@ -201,15 +214,15 @@ public class IndexingCommand {
         // resolve DocumentModel if possible
         if (cmd.uid != null) {
             if (!session.getRepositoryName().equals(cmd.repository)) {
-                log.error("Unable to restore doc from repository " + cmd.repository
-                        + " with a session on repository "
+                log.error("Unable to restore doc from repository "
+                        + cmd.repository + " with a session on repository "
                         + session.getRepositoryName());
             } else {
                 IdRef ref = new IdRef(cmd.uid);
                 if (!session.exists(ref)) {
-                    if(!IndexingCommand.DELETE.equals(cmd.getName())) {
-                        log.warn("Unable to restieve document "
-                                + cmd.uid + " form indexing command " + cmd.name);
+                    if (!IndexingCommand.DELETE.equals(cmd.getName())) {
+                        log.warn("Unable to restieve document " + cmd.uid
+                                + " form indexing command " + cmd.name);
                     }
                 } else {
                     cmd.targetDocument = session.getDocument(ref);
@@ -242,6 +255,7 @@ public class IndexingCommand {
         if (!schemas.contains(schema)) {
             schemas.add(schema);
         }
+        markUpdated();
     }
 
     @Override
@@ -252,4 +266,39 @@ public class IndexingCommand {
             return super.toString();
         }
     }
+
+    public void computeIndexingEvent() throws IOException {
+        if (getTargetDocument() != null) {
+            CoreSession session = getTargetDocument().getCoreSession();
+            if (session != null) {
+                EventContextImpl context = new EventContextImpl(session,
+                        session.getPrincipal());
+                indexingEvent = context.newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
+            } else {
+                log.error("Unable to generate event from cmd " + toString());
+            }
+        }
+    }
+
+    public Event asIndexingEvent() throws IOException {
+        if (indexingEvent == null) {
+            computeIndexingEvent();
+        }
+        if (indexingEvent != null) {
+            indexingEvent.getContext().getProperties().put(getId(), toJSON());
+        }
+        return indexingEvent;
+    }
+
+    protected void markUpdated() {
+        indexingEvent = null;
+        if (sync) {
+            try {
+                computeIndexingEvent();
+            } catch (IOException e) {
+                log.error("Unable to build event from Command", e);
+            }
+        }
+    }
+
 }

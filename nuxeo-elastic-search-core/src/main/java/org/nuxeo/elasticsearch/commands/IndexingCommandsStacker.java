@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -114,6 +115,18 @@ public abstract class IndexingCommandsStacker {
         } catch (Exception e) {
             log.error("Unable to register synchronization", e);
             return false;
+        }
+    }
+
+    // never called because we don't have a proper hook for that !
+    protected void prepareFlush() throws IOException {
+        Map<String, IndexingCommands> allCmds = getAllCommands();
+        for (IndexingCommands cmds : allCmds.values()) {
+            for (IndexingCommand cmd : cmds.getAllCommands()) {
+                if (cmd.isSync()) {
+                    cmd.computeIndexingEvent();
+                }
+            }
         }
     }
 

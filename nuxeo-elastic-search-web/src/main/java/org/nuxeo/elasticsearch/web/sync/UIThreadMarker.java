@@ -1,4 +1,4 @@
-package org.nuxeo.elasticsearch.web;
+package org.nuxeo.elasticsearch.web.sync;
 
 import static org.jboss.seam.ScopeType.APPLICATION;
 

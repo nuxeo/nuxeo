@@ -14,7 +14,7 @@
  * Contributors:
  *     Nuxeo
  */
-package org.nuxeo.elasticsearch.web;
+package org.nuxeo.elasticsearch.web.admin;
 
 /**
  *

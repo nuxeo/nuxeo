@@ -169,4 +169,10 @@ public class IndexingCommands {
         return cmds;
     }
 
+    public List<IndexingCommand> getAllCommands() {
+        return commands;
+    }
+
+
 }
+

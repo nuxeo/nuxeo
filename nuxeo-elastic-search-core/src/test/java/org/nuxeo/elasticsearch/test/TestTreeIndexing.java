@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -277,7 +278,6 @@ public class TestTreeIndexing {
 
         buildAndIndexTree();
 
-
         DocumentRef ref = new PathRef("/folder0/folder1/folder2");
         Assert.assertTrue(session.exists(ref));
         session.followTransition(ref, "delete");
@@ -294,6 +294,10 @@ public class TestTreeIndexing {
 
         DocumentModelList docs = ess.query(session, "select * from Document where ecm:currentLifeCycleState != 'deleted'", 20, 0);
         Assert.assertEquals(2, docs.size());
+
+    }
+
+    public void t() {
 
     }
 
