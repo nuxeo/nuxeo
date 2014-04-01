@@ -149,6 +149,9 @@ public class TestAuditFileSystemChangeFinder {
 
     @After
     public void tearDown() throws ClientException {
+        // needed for session cleanup
+        TransactionHelper.startTransaction();
+
         if (user1Session != null) {
             user1Session.close();
         }

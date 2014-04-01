@@ -166,6 +166,9 @@ public class TestPermissionHierarchyFileSystemChanges {
 
     @After
     public void tearDown() throws ClientException {
+        // needed for session cleanup
+        TransactionHelper.startTransaction();
+
         // Close core sessions
         session1.close();
         session2.close();
@@ -352,11 +355,15 @@ public class TestPermissionHierarchyFileSystemChanges {
         // Check file creation in a sync root with ReadWrite permission only:
         // user1File1 => non adaptable parent user1Folder2 so doesn't appear in
         // the file system changes
-        createFile(session1, user1Folder2.getPathAsString(), "user1File1",
-                "File", "user1File1.txt", CONTENT_PREFIX + "user1File1");
-        session1.save();
-        // Wait for creation events to be logged in the audit
-        eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+        try {
+            createFile(session1, user1Folder2.getPathAsString(), "user1File1",
+                    "File", "user1File1.txt", CONTENT_PREFIX + "user1File1");
+            session1.save();
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
         TransactionHelper.startTransaction();
         try {
             List<FileSystemItemChange> changes = getChanges(principal2);
