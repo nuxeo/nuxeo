@@ -1691,4 +1691,16 @@ public interface CoreSession extends AutoCloseable {
             DocumentRef docRef, String facet, Class<T> adapterClass)
             throws ClientException;
 
+    /**
+     * Gets the fulltext extracted from the binary fields if supported by the
+     * dialect.
+     *
+     * @param doc the document reference
+     * @return the fulltext
+     * @throws ClientException
+     *
+     * @since 5.9.3
+     */
+    String getBinaryFulltext(DocumentRef ref) throws ClientException;
+
 }

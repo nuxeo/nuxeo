@@ -55,7 +55,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
-
 /**
  * PostgreSQL-specific dialect.
  *
@@ -417,8 +416,9 @@ public class DialectPostgreSQL extends Dialect {
             } else {
                 return (Serializable) array.getArray();
             }
-        }
-        throw new SQLException("Unhandled JDBC type: " + column.getJdbcType());
+        };
+        throw new SQLException("Unhandled JDBC type: " + column.getJdbcType()
+                + " for type " + column.getType().toString());
     }
 
     @Override
@@ -1323,6 +1323,18 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public String getSoftDeleteCleanupSql() {
         return "SELECT NX_DELETE_PURGE(?, ?)";
+    }
+
+    @Override
+    public String getBinaryFulltextSql() {
+        String sql;
+        if (compatibilityFulltextTable) {
+            // extract tokens from tsvector
+            sql = "SELECT regexp_replace(binarytext::text, $$'|:|,|[0-9]$$, ' ', 'g') AS binarytext FROM fulltext WHERE id=?";
+        } else {
+            sql = "SELECT binarytext FROM fulltext WHERE id=?";
+        }
+        return sql;
     }
 
 }

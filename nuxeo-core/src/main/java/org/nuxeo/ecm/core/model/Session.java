@@ -293,4 +293,6 @@ public interface Session {
     void setACP(Document doc, ACP acp, boolean overwrite)
             throws SecurityException;
 
+    String getBinaryFulltext(Serializable id) throws DocumentException;
+
 }

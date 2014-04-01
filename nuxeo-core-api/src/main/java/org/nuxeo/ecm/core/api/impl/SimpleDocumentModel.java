@@ -677,4 +677,9 @@ public class SimpleDocumentModel implements DocumentModel {
     public String getChangeToken() {
         return null;
     }
+
+    @Override
+    public String getBinaryFulltext() throws ClientException {
+        return null;
+    }
 }

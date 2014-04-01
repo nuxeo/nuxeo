@@ -3034,4 +3034,15 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
     }
 
+    @Override
+    public String getBinaryFulltext(DocumentRef ref) throws ClientException {
+        try {
+            Document doc = resolveReference(ref);
+            checkPermission(doc, READ);
+            return getSession().getBinaryFulltext(ref.toString());
+        } catch (DocumentException e) {
+            throw new ClientException("Failed to get fulltext info  on " + ref, e);
+        }
+    }
+
 }

@@ -1727,4 +1727,13 @@ public abstract class Dialect {
         throw new UnsupportedOperationException("Soft deletes not supported");
     }
 
+    /**
+     * Return the SQL to get the fulltext extracted from binaries.
+     *
+     * @since 5.9.3
+     */
+    public String getBinaryFulltextSql() {
+        return null;
+    }
+
 }

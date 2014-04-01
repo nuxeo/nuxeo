@@ -985,4 +985,12 @@ public interface DocumentModel extends Serializable {
      * @return the ChangeToken string that can be null for some Document types
      */
     String getChangeToken();
+
+    /**
+     * Gets the fulltext extracted from the binary fields if supported by the
+     * dialect.
+     *
+     * @since 5.9.3
+     */
+    String getBinaryFulltext() throws ClientException;
 }
