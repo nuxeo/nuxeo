@@ -81,12 +81,13 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         }
         jg.writeStringField("ecm:changeToken", doc.getChangeToken());
         // Add a positive ACL only
-        SecurityService securityService = Framework.getService(SecurityService.class);
+        SecurityService securityService = Framework
+                .getService(SecurityService.class);
         List<String> browsePermissions = new ArrayList<String>(
                 Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
         ACP acp = doc.getACP();
         ACL acl = acp.getACL(ACL.INHERITED_ACL);
-        if (acl==null) {
+        if (acl == null) {
             // blocked inheritance at this level
             acl = acp.getACL(ACL.LOCAL_ACL);
         }
@@ -104,7 +105,15 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
             }
         }
         jg.writeEndArray();
-        // TODO Add binary fulltext
+        Map<String, String> bmap = doc.getBinaryFulltext();
+        if (bmap != null && !bmap.isEmpty()) {
+            for (Map.Entry<String, String> item : bmap.entrySet()) {
+                String value = item.getValue();
+                if (value != null) {
+                    jg.writeStringField("ecm:" + item.getKey(), item.getValue());
+                }
+            }
+        }
         if (schemas == null || (schemas.length == 1 && "*".equals(schemas[0]))) {
             schemas = doc.getSchemas();
         }
@@ -112,7 +121,8 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
             writeProperties(jg, doc, schema, null);
         }
         if (contextParameters != null && !contextParameters.isEmpty()) {
-            for (Map.Entry<String, String> parameter : contextParameters.entrySet()) {
+            for (Map.Entry<String, String> parameter : contextParameters
+                    .entrySet()) {
                 jg.writeStringField(parameter.getKey(), parameter.getValue());
             }
         }
