@@ -46,8 +46,8 @@ public class IsolatedSessionRunner {
      * @throws Exception
      */
     public void run(RunnableWithException runnable) throws Exception {
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-
         try {
             runnable.run();
             session.save();
@@ -56,6 +56,7 @@ public class IsolatedSessionRunner {
             TransactionHelper.commitOrRollbackTransaction();
             Thread.sleep(getWaitTimeInMs());
             eventService.waitForAsyncCompletion();
+            TransactionHelper.startTransaction();
         }
 
     }

@@ -173,6 +173,7 @@ public class TestQuotaViaAutomation {
             TransactionHelper.commitOrRollbackTransaction();
         }
         eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
     }
 
     protected void assertQuota(SimpleQuotaInfo sqi, long innerSize,
@@ -240,6 +241,7 @@ public class TestQuotaViaAutomation {
             TransactionHelper.commitOrRollbackTransaction();
         }
         eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
     }
 
     @Test

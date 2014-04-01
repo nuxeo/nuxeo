@@ -119,6 +119,7 @@ public class TestQuotaService {
             TransactionHelper.commitOrRollbackTransaction();
         }
         eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
         DocumentModel uw1 = session.getDocument(uwRef1);
         DocumentModel uw2 = session.getDocument(uwRef2);
         workManager.awaitCompletion("quota", 3, TimeUnit.SECONDS);
