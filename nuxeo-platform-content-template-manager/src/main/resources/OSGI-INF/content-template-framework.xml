@@ -49,8 +49,6 @@
       <code>
         <factoryBinding name="RootFactory" factoryName="SimpleTemplateFactory" targetType="Root">
           <acl>
-            <ace principal="Administrator" permission="Everything" granted="true"/>
-            <ace principal="administrators" permission="Everything" granted="true"/>
             <ace principal="members" permission="Read" granted="true"/>
             <ace principal="members" permission="Version" granted="true"/>
           </acl>
