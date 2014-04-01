@@ -149,6 +149,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         List<String> nodes = escalationService.queryForSuspendedNodesWithEscalation(session);
         assertEquals(1, nodes.size());
@@ -163,6 +164,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         // fetch node doc to check that the rule is marked as executed
         nodeDoc = session.getDocument(new IdRef(nodes.get(0)));
         node = nodeDoc.getAdapter(GraphNode.class);
@@ -226,6 +228,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         List<String> nodes = escalationService.queryForSuspendedNodesWithEscalation(session);
         assertEquals(1, nodes.size());
 
@@ -241,11 +244,13 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         // check that the rule was executed
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         doc = session.getDocument(doc.getRef());
         assertEquals("title 1", doc.getTitle());
 
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         // check that are still 4 rules, since rule1 is marked for
         // multipleExecution
         nodeDoc = session.getDocument(new IdRef(node.getDocument().getId()));
@@ -260,11 +265,13 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         // check that the rule was executed
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         doc = session.getDocument(doc.getRef());
         assertEquals("title 2", doc.getTitle());
 
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         // check that only 3 rules are found now
         nodeDoc = session.getDocument(new IdRef(node.getDocument().getId()));
         node = nodeDoc.getAdapter(GraphNode.class);
@@ -278,6 +285,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         assertEquals(0, workManager.getQueueSize("escalation", null));
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // check that the rules were executed
 
