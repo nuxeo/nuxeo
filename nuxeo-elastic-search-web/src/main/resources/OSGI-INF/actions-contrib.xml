@@ -4,7 +4,7 @@
     point="actions">
 
     <action id="ElasticSearch" link="view_admin-fragment.xhtml" label="admcommand.elasticsearch"
-      order="10">
+      order="70">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
