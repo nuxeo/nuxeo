@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -97,13 +96,14 @@ public class TestTreeIndexing {
 
         esi.flush();
 
+        TransactionHelper.startTransaction();
+
         // check indexing
         SearchResponse searchResponse = ess.getClient().prepareSearch(
                 ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
-        TransactionHelper.startTransaction();
     }
 
     @Test
@@ -167,6 +167,8 @@ public class TestTreeIndexing {
         waitForAsyncIndexing();
 
         esi.flush();
+
+        TransactionHelper.startTransaction();
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
                 ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
@@ -292,14 +294,14 @@ public class TestTreeIndexing {
 
         esi.flush();
 
-        DocumentModelList docs = ess.query(session, "select * from Document where ecm:currentLifeCycleState != 'deleted'", 20, 0);
+        TransactionHelper.startTransaction();
+
+        DocumentModelList docs = ess.query(
+                session,
+                "select * from Document where ecm:currentLifeCycleState != 'deleted'",
+                20, 0);
         Assert.assertEquals(2, docs.size());
 
     }
-
-    public void t() {
-
-    }
-
 
 }
