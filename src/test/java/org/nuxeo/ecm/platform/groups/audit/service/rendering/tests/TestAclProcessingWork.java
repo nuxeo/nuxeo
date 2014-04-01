@@ -102,6 +102,7 @@ public class TestAclProcessingWork extends AbstractAclLayoutTest {
         workManager.schedule(work, true);
 
         eventService.waitForAsyncCompletion(60 * 1000);
+        TransactionHelper.startTransaction();
     }
 
 }

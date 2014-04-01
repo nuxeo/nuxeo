@@ -134,6 +134,7 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
         workManager.schedule(work, true);
 
         eventService.waitForAsyncCompletion(2 * 60 * 1000);
+        TransactionHelper.startTransaction();
     }
 
     protected void assertProcessInterruptStatusInOutputFile() throws InvalidFormatException, IOException {
