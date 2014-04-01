@@ -402,4 +402,24 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         assertTrue(e.getMessage(), e.getMessage().contains(NO_TX_CANNOT_RECONN));
     }
 
+    @Test
+    public void testCloseFromOtherTx() throws Exception {
+        assertNotNull(session.getRootDocument());
+
+        final CoreSession finalSession = session;
+        session = null;
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    finalSession.close();
+                } catch (Exception e) {
+                    fail(e.toString());
+                }
+            }
+        };
+        t.start();
+        t.join();
+    }
+
 }

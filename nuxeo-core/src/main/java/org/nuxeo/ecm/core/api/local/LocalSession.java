@@ -190,13 +190,27 @@ public class LocalSession extends AbstractSession implements Synchronization {
     @Override
     public void destroy() {
         log.debug("Closing CoreSession: " + sessionId);
+        int size = allSessions.size();
         closeInThisThread();
         if (!allSessions.isEmpty()) {
-            log.error("Leaking " + allSessions.size()
-                    + " Session objects, due to incorrect thread use."
-                    + " Dumping open stack trace");
+            int newSize = allSessions.size();
+            boolean wrongThread = size == 1 && newSize == 1;
+            if (wrongThread) {
+                // must be a close from wrong thread
+                log.debug("CoreSession " + sessionId
+                        + " closed from different thread than open");
+            } else {
+                log.warn("Leaking " + newSize
+                        + " Session objects, due to incorrect thread use."
+                        + " Dumping open stack trace");
+            }
+            // close them all
             for (SessionInfo si : allSessions) {
-                log.error("Leaking Session open at", si.openException);
+                if (wrongThread) {
+                    log.debug("Session open at", si.openException);
+                } else {
+                    log.warn("Leaking Session open at", si.openException);
+                }
                 si.session.close();
                 si.openException = null;
             }
