@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Transaction;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -70,12 +72,23 @@ public class RepositoryService extends DefaultComponent {
         if (handler == null) {
             return;
         }
+        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         boolean started = false;
         boolean ok = false;
+        { // open repositories without a tx active
+            Transaction tx = TransactionHelper.suspendTransaction();
+            try {
+                for (String name : repositoryManager.getRepositoryNames()) {
+                    openRepository(name);
+                }
+            } finally {
+                TransactionHelper.resumeTransaction(tx);
+            }
+        }
+        // initialize repositories with a tx active
         try {
             started = !TransactionHelper.isTransactionActive()
                     && TransactionHelper.startTransaction();
-            RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
             for (String name : repositoryManager.getRepositoryNames()) {
                 initializeRepository(handler, name);
             }
@@ -103,6 +116,17 @@ public class RepositoryService extends DefaultComponent {
             return (T) LocalSession.createInstance();
         }
         return null;
+    }
+
+    protected void openRepository(String name) throws ClientException {
+        new UnrestrictedSessionRunner(name) {
+
+            @Override
+            public void run() throws ClientException {
+                ;
+            }
+
+        }.runUnrestricted();
     }
 
     protected void initializeRepository(
