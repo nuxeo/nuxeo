@@ -207,7 +207,7 @@ class BasePage:
                    lastname='', company='', groups=''):
         """This method does not raise exception if user already exists"""
         fl = self.fl
-        if (not 'createUser:button_save_and_create' in fl.getBody()):
+        if (not 'createUser:button_save_and_create' in fl.getBody() and not 'createUser:button_save_and_invite' in fl.getBody()):
             fl.assert_('createUserButton' in fl.getBody(),
                        "You should call usersAndGroupsPage first")
             fl.post(fl.server_url + "/view_admin.faces", params=[
@@ -216,8 +216,25 @@ class BasePage:
                     ['javax.faces.ViewState', fl.getLastJsfState()],
                     ['usersListingView:createUserActionsForm:createUserButton', 'usersListingView:createUserActionsForm:createUserButton']],
                     description="View user creation form")
-        fl.assert_('createUser:button_save_and_create' in fl.getBody(),
+            fl.assert_('createUser:immediate_creation' in fl.getBody(),
                    'Wrong page')
+	if (not 'createUser:button_save_and_create' in fl.getBody()):
+            fl.post(fl.server_url + "/view_admin.faces", params=[
+            		['createUserView:createUser:nxl_user_registration:nxw_username', ''],
+            		['createUserView:createUser:nxl_user_registration:nxw_firstname', ''],
+		        ['createUserView:createUser:nxl_user_registration:nxw_lastname', ''],
+		        ['createUserView:createUser:nxl_user_registration:nxw_company', ''],
+		        ['createUserView:createUser:nxl_user_registration:nxw_email', ''],
+		        ['createUserView:createUser', 'createUserView:createUser'],
+		        ['autoScroll', ''],
+		        ['javax.faces.ViewState', fl.getLastJsfState()],
+            		['createUserView:createUser:immediate_creation','on'],
+            		['ajaxSingle', 'createUserView:createUser:immediate_creation'],
+            		['AJAX:EVENTS_COUNT', '1']],
+            		description="Immediate creation")
+	# The assert is removed because the body contains now the Ajax response and not the body of the page so the assert will always fail
+        #fl.assert_('createUser:button_save_and_create' in fl.getBody(),
+        #           'Wrong page')
 
         jsfState = fl.getLastJsfState()
         fl.post(fl.server_url + "/site/automation/UserGroup.Suggestion",
@@ -229,6 +246,7 @@ class BasePage:
         # /tmp/tmp2uCzyC_funkload/watch0001.request
         fl.post(fl.server_url + "/view_admin.faces", params=[
             ['AJAXREQUEST', '_viewRoot'],
+            ['createUserView:createUser:immediate_creation', 'on'],
             ['createUserView:createUser:nxl_user:nxw_username', username],
             ['createUserView:createUser:nxl_user:nxw_firstname', firstname],
             ['createUserView:createUser:nxl_user:nxw_lastname', lastname],
@@ -246,6 +264,7 @@ class BasePage:
             ['createUserView:createUser:button_save_and_create', 'createUserView:createUser:button_save_and_create'],
             ['AJAX:EVENTS_COUNT', '1']],
             description="Create user")
+        
         fl.assert_('User already exists' in fl.getBody() or
                    'User created' in fl.getBody())
         return self
