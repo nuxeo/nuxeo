@@ -71,7 +71,10 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         CoreSession docSession = doc.getCoreSession();
         DocumentModel parentDoc = null;
         try {
-            parentDoc = docSession.getParentDocument(doc.getRef());
+            DocumentRef parentDocRef = docSession.getParentDocumentRef(doc.getRef());
+            if (parentDocRef != null) {
+                parentDoc = docSession.getDocument(parentDocRef);
+            }
         } catch (DocumentSecurityException e) {
             log.debug(String.format(
                     "User %s has no READ access on parent of document %s (%s), will throw RootlessItemException.",
