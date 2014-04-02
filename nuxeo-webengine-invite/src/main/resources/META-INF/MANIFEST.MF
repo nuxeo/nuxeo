@@ -4,5 +4,5 @@ Bundle-Name: Nuxeo User WebEngine Invite
 Bundle-SymbolicName: org.nuxeo.ecm.webengine.invite;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
-Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=invite;extends=base
 Nuxeo-Component: OSGI-INF/invite-auth-contrib.xml

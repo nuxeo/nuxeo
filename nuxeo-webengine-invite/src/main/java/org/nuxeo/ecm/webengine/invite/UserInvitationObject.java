@@ -17,7 +17,7 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.user.invite.AlreadyProcessedRegistrationException;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
-import org.nuxeo.ecm.user.invite.UserRegistrationService;
+import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -27,16 +27,16 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
-@Path("/userRegistration")
+@Path("/userInvitation")
 @Produces("text/html;charset=UTF-8")
 @WebObject(type = "userRegistration")
-public class UserRegistrationObject extends ModuleRoot {
-    private static final Log log = LogFactory.getLog(UserRegistrationObject.class);
+public class UserInvitationObject extends ModuleRoot {
+    private static final Log log = LogFactory.getLog(UserInvitationObject.class);
 
     @POST
     @Path("validate")
     public Object validateTrialForm() throws Exception {
-        UserRegistrationService usr = Framework.getLocalService(UserRegistrationService.class);
+        UserInvitationService usr = fetchService();
 
         FormData formData = getContext().getForm();
         String requestId = formData.getString("RequestId");
@@ -112,13 +112,17 @@ public class UserRegistrationObject extends ModuleRoot {
                 "logout", logoutUrl);
     }
 
+    protected UserInvitationService fetchService() {
+        UserInvitationService usr = Framework.getLocalService(UserInvitationService.class);
+        return usr;
+    }
+
     @GET
     @Path("enterpassword/{requestId}")
     public Object validatePasswordForm(@PathParam("requestId")
     String requestId) throws Exception {
 
-        // Check if the requestId is an existing one
-        UserRegistrationService usr = Framework.getLocalService(UserRegistrationService.class);
+        UserInvitationService usr = fetchService();
         try {
             usr.checkRequestId(requestId);
         } catch (AlreadyProcessedRegistrationException ape) {

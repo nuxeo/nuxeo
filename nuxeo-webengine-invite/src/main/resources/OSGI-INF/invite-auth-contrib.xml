@@ -5,10 +5,10 @@
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
       point="openUrl">
     <openUrl name="RegisterUser_validate">
-      <grantPattern>${org.nuxeo.ecm.contextPath}/site/userRegistration/validate</grantPattern>
+      <grantPattern>${org.nuxeo.ecm.contextPath}/site/userInvitation/validate</grantPattern>
     </openUrl>
     <openUrl name="RegisterUser_enterpassword">
-      <grantPattern>${org.nuxeo.ecm.contextPath}/site/userRegistration/enterpassword/.*</grantPattern>
+      <grantPattern>${org.nuxeo.ecm.contextPath}/site/userInvitation/enterpassword/.*</grantPattern>
     </openUrl>
     <openUrl name="Graphical_Resources">
       <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/userRegistration/.*</grantPattern>
