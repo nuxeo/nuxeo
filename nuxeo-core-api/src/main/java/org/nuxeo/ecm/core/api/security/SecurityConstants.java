@@ -94,4 +94,9 @@ public interface SecurityConstants {
 
     static final String UNLOCK = "Unlock";
 
+    /**
+     * Flag that can be used as principal to mark an unsupported ACL.
+     */
+    static final String UNSUPPORTED_ACL = "_UNSUPPORTED_ACL_";
+
 }
