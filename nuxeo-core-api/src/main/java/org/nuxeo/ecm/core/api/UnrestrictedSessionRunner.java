@@ -132,8 +132,10 @@ public abstract class UnrestrictedSessionRunner {
                     if (loginContext == null && Framework.isTestModeSet()) {
                         NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
                         if (principal instanceof SystemPrincipal) {
-                            // we are in a test that is not using authentication =>
-                            // we're not stacking the originating user in the authentication stack
+                            // we are in a test that is not using authentication
+                            // =>
+                            // we're not stacking the originating user in the
+                            // authentication stack
                             // so we're setting manually now
                             principal.setOriginatingUser(originatingUsername);
                         }
@@ -175,6 +177,9 @@ public abstract class UnrestrictedSessionRunner {
             }
         } finally {
             isUnrestricted = false;
+            if (Framework.isTestModeSet() && sessionIsAlreadyUnrestricted) {
+                session.save();
+            }
         }
     }
 
