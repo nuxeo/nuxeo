@@ -84,6 +84,10 @@ public class TestTreeIndexing {
 
     protected void buildAndIndexTree() throws Exception {
 
+        if (!TransactionHelper.isTransactionActive()) {
+            TransactionHelper.startTransaction();
+        }
+
         // build the tree
         buildTree();
 
@@ -139,6 +143,8 @@ public class TestTreeIndexing {
         waitForAsyncIndexing();
 
         esi.flush();
+
+        TransactionHelper.startTransaction();
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
                 ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
@@ -300,6 +306,10 @@ public class TestTreeIndexing {
                 session,
                 "select * from Document where ecm:currentLifeCycleState != 'deleted'",
                 20, 0);
+
+        for (DocumentModel doc : docs) {
+            System.out.println(doc.getPathAsString());
+        }
         Assert.assertEquals(2, docs.size());
 
     }
