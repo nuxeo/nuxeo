@@ -2810,7 +2810,7 @@
       <dependency>
         <groupId>org.tranql</groupId>
         <artifactId>tranql-connector</artifactId>
-        <version>1.4</version>
+        <version>1.8</version>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.components</groupId>
