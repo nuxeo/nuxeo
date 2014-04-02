@@ -198,11 +198,29 @@ public class TransactionHelper {
             return null;
         }
         try {
-            Transaction tx = null;
-            if (tm.getStatus() == Status.STATUS_ACTIVE) {
+            Transaction tx = tm.getTransaction();
+            if (tx != null) {
                 tx = tm.suspend();
             }
             tm.begin();
+            return tx;
+        } catch (Exception e) {
+            throw new TransactionRuntimeException("Cannot suspend tx", e);
+        }
+    }
+
+    public static Transaction suspendTransaction() {
+        TransactionManager tm;
+        try {
+            tm = lookupTransactionManager();
+        } catch (NamingException e) {
+            return null;
+        }
+        try {
+            Transaction tx = tm.getTransaction();
+            if (tx != null) {
+                tx = tm.suspend();
+            }
             return tx;
         } catch (Exception e) {
             throw new TransactionRuntimeException("Cannot suspend tx", e);
