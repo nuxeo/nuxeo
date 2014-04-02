@@ -974,6 +974,7 @@ BEGIN
   SET NOCOUNT ON;
   DECLARE @permissions NVARCHAR(4000);
   SET @permissions = dbo.nx_get_read_permissions();
+  SET XACT_ABORT OFF; -- needed in trigger to avoid doomed transactions
   BEGIN TRY
     INSERT INTO aclr_user_map
       SELECT u.user_id, NEW.acl_id
