@@ -94,7 +94,7 @@
       "enabled" : true
    },
    "_all" : {
-      "analyzer" : "fr_analyzer"
+      "analyzer" : "en_analyzer"
    },
    "properties" : {
       "dc:description" : {
@@ -114,6 +114,14 @@
       "dc:modified": {
          "format": "dateOptionalTime",
         "type": "date"
+      },
+      "ecm:binarytext*" : {
+         "type" : "string",
+         "analyzer" : "en_analyzer"
+      },
+      "ecm:fulltext*" : {
+         "type" : "string",
+         "analyzer" : "en_analyzer"
       },
       "ecm:path" : {
          "fields" : {
@@ -135,6 +143,7 @@
 
     <fulltext>
       <field>ecm:fulltext</field>
+      <field>ecm:binarytext</field>
       <field>dc:title</field>
       <field>dc:description</field>
     </fulltext>

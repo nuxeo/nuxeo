@@ -57,6 +57,7 @@ import org.elasticsearch.common.settings.ImmutableSettings.Builder;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -98,6 +99,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
+
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 
 /**
  * Component used to configure and manage ElasticSearch integration
@@ -458,17 +461,19 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addField(ID_FIELD).setFrom(offset).setSize(limit);
             // Add security filter
-            TermsFilterBuilder aclFilter = null;
+            AndFilterBuilder aclFilter = null;
             Principal principal = session.getPrincipal();
             if (principal != null) {
                 if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal)
                         .isAdministrator())) {
                     String[] principals = SecurityService
                             .getPrincipalsToCheck(principal);
-                    if (principals.length > 0) {
-                        aclFilter = FilterBuilders.inFilter(ACL_FIELD,
-                                principals);
-                    }
+                    // we want an ACL that match principals but we discard
+                    // unsupported ACE that contains negative ACE
+                    aclFilter = FilterBuilders.andFilter(FilterBuilders
+                            .inFilter(ACL_FIELD, principals), FilterBuilders
+                            .notFilter(FilterBuilders.inFilter(ACL_FIELD,
+                                    UNSUPPORTED_ACL)));
                 }
             }
             if (aclFilter == null) {
