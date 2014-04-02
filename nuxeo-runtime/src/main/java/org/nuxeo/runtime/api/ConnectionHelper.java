@@ -869,7 +869,7 @@ public class ConnectionHelper {
     public static Connection getConnection(String dataSourceName,
             boolean noSharing) throws SQLException {
         if (!useSingleConnection(dataSourceName)) {
-            return null;
+            return getPhysicalConnection(dataSourceName);
         }
         return getConnection(noSharing);
     }
