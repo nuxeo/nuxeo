@@ -1,7 +1,9 @@
 package org.nuxeo.runtime.datasource.geronimo;
 
 import java.util.Hashtable;
+
 import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.RefAddr;
@@ -17,6 +19,7 @@ import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
 import org.tranql.connector.jdbc.JDBCDriverMCF;
+import org.tranql.connector.jdbc.XADataSourceWrapper;
 
 public class PoolingDataSourceFactory implements ObjectFactory {
 
@@ -26,7 +29,7 @@ public class PoolingDataSourceFactory implements ObjectFactory {
         Reference ref = (Reference)obj;
         ManagedConnectionFactory mcf = createFactory(ref, ctx);
         ConnectionManagerWrapper cm =  createManager(ref, ctx);
-        return new org.tranql.connector.jdbc.DataSource(mcf, cm);
+        return new org.tranql.connector.jdbc.TranqlDataSource(mcf, cm);
     }
 
     protected ConnectionManagerWrapper createManager(Reference ref, Context ctx) throws ResourceException {
@@ -41,10 +44,8 @@ public class PoolingDataSourceFactory implements ObjectFactory {
         String className = ref.getClassName();
         if (XADataSource.class.getName().equals(className)) {
             String name = refAttribute(ref, "dataSourceJNDI", null);
-            XADataSource ds = (XADataSource) ctx.lookup(name);
-            String username = refAttribute(ref, "username", "");
-            String password = refAttribute(ref, "password", "");
-            return new XADataSourceMCF(ds, username, password);
+            XADataSource ds = (XADataSource) new InitialContext().lookup(name);
+            return new XADataSourceWrapper(ds);
         }
         if (javax.sql.DataSource.class.getName().equals(className)) {
             String name = refAttribute(ref, "driverClassName", null);
