@@ -4,12 +4,12 @@
   <require>org.nuxeo.ecm.user.invite.core.types.contrib</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
-    <doctype name="UserRegistration" extends="File">
-      <facet name="UserRegistration"/>
+    <doctype name="UserInvitation" extends="File">
+      <facet name="UserInvitation"/>
       <facet name="HiddenInNavigation"/>
     </doctype>
 
-    <doctype name="UserRegistrationContainer" extends="Workspace">
+    <doctype name="UserInvitationContainer" extends="Workspace">
       <facet name="HiddenInNavigation"/>
     </doctype>
   </extension>
@@ -17,20 +17,20 @@
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
              point="types">
     <types>
-      <type name="UserRegistrationContainer">default></type>
-      <type name="UserRegistration">registrationRequest</type>
+      <type name="UserInvitationContainer">default></type>
+      <type name="UserInvitation">invitationRequest</type>
     </types>
   </extension>
 
-  <extension target="org.nuxeo.ecm.user.invite.UserRegistrationService"
+  <extension target="org.nuxeo.ecm.user.invite.UserInvitationService"
              point="configuration">
     <configuration>
-      <requestDocType>UserRegistration</requestDocType>
+      <requestDocType>UserInvitation</requestDocType>
       <container>
-        <docType>UserRegistrationContainer</docType>
+        <docType>UserInvitationContainer</docType>
         <parentPath>/management/</parentPath>
-        <name>registrationRequests</name>
-        <title>Registration Requests Container</title>
+        <name>invitationRequests</name>
+        <title>Invitation Requests Container</title>
       </container>
       <validationEmail>
         <title>You are invited to access Nuxeo</title>
@@ -40,8 +40,8 @@
         <title>You are invited to access Nuxeo</title>
         <template>skin/views/userRegistration/ReviveEmailTemplate.ftl</template>
       </reviveEmail>
-      <enterPasswordUrl>site/userRegistration/enterpassword/</enterPasswordUrl>
-      <validationRelUrl>site/userRegistration/validate</validationRelUrl>
+      <enterPasswordUrl>site/userInvitation/enterpassword/</enterPasswordUrl>
+      <validationRelUrl>site/userInvitation/validate</validationRelUrl>
     </configuration>
   </extension>
 

@@ -22,7 +22,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.jboss.seam.international.StatusMessage.Severity.ERROR;
 import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_CHANGED_EVENT;
 import static org.nuxeo.ecm.platform.ui.web.api.WebActions.CURRENT_TAB_SELECTED_EVENT;
-import static org.nuxeo.ecm.user.invite.UserRegistrationService.ValidationMethod.EMAIL;
+import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod.EMAIL;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
-import org.nuxeo.ecm.user.invite.UserRegistrationService;
+import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -92,9 +92,6 @@ public class UserManagementActions extends AbstractUserGroupManagement
 
     protected DocumentModel newUser;
 
-    @In(create = true)
-    protected transient UserRegistrationService userRegistrationService;
-
     protected boolean immediateCreation = false;
 
     @Override
@@ -120,7 +117,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
         setSelectedUser(refreshUser(userName));
     }
 
-    /**
+    /** UserRegistrationService userRegistrationService = Framework.getLocalService(UserRegistrationService.class);
      * @since 5.5
      */
     public void setSelectedUserName(String userName) throws ClientException {
@@ -155,6 +152,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
             if (immediateCreation) {
                 newUser = userManager.getBareUserModel();
             } else {
+                UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
                 newUser = userRegistrationService.getUserRegistrationModel(null);
             }
         }
@@ -487,6 +485,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
     public void inviteUser(boolean inviteAnotherUser) throws ClientException {
         try {
             Map<String, Serializable> additionnalInfo = new HashMap<String, Serializable>();
+            UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
             userRegistrationService.submitRegistrationRequest(newUser, additionnalInfo, EMAIL, true);
             newUser = null;
             // Set the default value for the creation
@@ -634,6 +633,7 @@ public class UserManagementActions extends AbstractUserGroupManagement
             if ((Boolean) newValue) {
                 newUser = userManager.getBareUserModel();
             } else {
+                UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
                 newUser = userRegistrationService.getUserRegistrationModel(null);
             }
         }
