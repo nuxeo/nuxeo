@@ -32,8 +32,9 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.naming.NamingException;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import javax.sql.DataSource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
@@ -130,15 +131,21 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
     }
 
-    protected void installRepositoryStorageMonitors() throws ClientException {
+    protected void installRepositoryStorageMonitors() throws ClientException, LoginException {
         NuxeoContainer.addListener(cmUpdater);
         ClientException errors = new ClientException("Cannot install repository storage monitors");
-        for (String name:Framework.getLocalService(RepositoryService.class).getRepositoryNames()) {
-            try (CoreSession session=CoreInstance.openCoreSession(name)) {
-                ;
-            } catch (ClientException cause) {
-                errors.addSuppressed(cause);
+        LoginContext loginContext = Framework.login();
+        try {
+            for (String name : Framework.getLocalService(
+                    RepositoryService.class).getRepositoryNames()) {
+                try (CoreSession session = CoreInstance.openCoreSession(name)) {
+                    ;
+                } catch (ClientException cause) {
+                    errors.addSuppressed(cause);
+                }
             }
+        } finally {
+            loginContext.logout();
         }
         if (errors.getSuppressed().length > 0) {
             throw errors;
