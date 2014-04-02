@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
-public interface UserRegistrationService {
+public interface UserInvitationService {
 
     public static final String REGISTRATION_DATA_DOC = "registrationDoc";
 
@@ -36,16 +36,6 @@ public interface UserRegistrationService {
     public enum ValidationMethod {
         EMAIL, NONE
     }
-
-    // events fired by the service impl
-    public static final String REGISTRATION_SUBMITTED_EVENT = "registrationSubmitted";
-
-    public static final String REGISTRATION_ACCEPTED_EVENT = "registrationAccepted";
-
-    public static final String REGISTRATION_REJECTED_EVENT = "registrationRejected";
-
-    public static final String REGISTRATION_VALIDATED_EVENT = "registrationValidated";
-
 
     /**
      * Create a document model for the UserRegistration doctype.
@@ -192,4 +182,32 @@ public interface UserRegistrationService {
      */
     void checkRequestId(String requestId) throws ClientException,
             UserRegistrationException;
+
+    /**
+     * @return The name of the event when the registration is submitted.
+     *
+     * @since 5.9.3
+     */
+    String getNameEventRegistrationSubmitted();
+
+    /**
+     * @return The name of the event when the registration is accepted.
+     *
+     * @since 5.9.3
+     */
+    String getNameEventRegistrationAccepted();
+
+    /**
+     * @return The name of the event when the registration is rejected.
+     *
+     * @since 5.9.3
+     */
+    String getNameEventRegistrationRejected();
+
+    /**
+     * @return The name of the event when the registration is validated.
+     *
+     * @since 5.9.3
+     */
+    String getNameEventRegistrationValidated();
 }

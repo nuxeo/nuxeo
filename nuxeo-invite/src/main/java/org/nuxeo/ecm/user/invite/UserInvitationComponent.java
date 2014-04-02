@@ -22,7 +22,7 @@ import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CO
 import static org.nuxeo.ecm.user.invite.UserRegistrationInfo.EMAIL_FIELD;
 import static org.nuxeo.ecm.user.invite.UserRegistrationInfo.SCHEMA_NAME;
 import static org.nuxeo.ecm.user.invite.UserRegistrationInfo.USERNAME_FIELD;
-import static org.nuxeo.ecm.user.invite.UserRegistrationService.ValidationMethod.EMAIL;
+import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod.EMAIL;
 
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -70,10 +70,10 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class UserRegistrationComponent extends DefaultComponent implements
-        UserRegistrationService {
+public class UserInvitationComponent extends DefaultComponent implements
+        UserInvitationService {
 
-    protected static Log log = LogFactory.getLog(UserRegistrationService.class);
+    protected static Log log = LogFactory.getLog(UserInvitationService.class);
 
     public static final String NUXEO_URL_KEY = "nuxeo.url";
 
@@ -84,6 +84,14 @@ public class UserRegistrationComponent extends DefaultComponent implements
     protected RenderingHelper rh = new RenderingHelper();
 
     protected Map<String, UserRegistrationConfiguration> configurations = new HashMap<String, UserRegistrationConfiguration>();
+
+    private static final String INVITATION_SUBMITTED_EVENT = "invitationSubmitted";
+
+    private static final String INVITATION_ACCEPTED_EVENT = "invitationAccepted";
+
+    private static final String INVITATION_REJECTED_EVENT = "invitationRejected";
+
+    private static final String INVITATION_VALIDATED_EVENT = "invitationValidated";
 
     public String getTestedRendering() {
         return testRendering;
@@ -253,8 +261,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
             registrationUuid = userRegistrationModel.getId();
 
-            sendEvent(session, userRegistrationModel,
-                    UserRegistrationService.REGISTRATION_SUBMITTED_EVENT);
+            sendEvent(session, userRegistrationModel, getNameEventRegistrationSubmitted());
 
             session.save();
         }
@@ -292,8 +299,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
             doc = session.saveDocument(doc);
             session.save();
 
-            sendEvent(session, doc,
-                    UserRegistrationService.REGISTRATION_ACCEPTED_EVENT);
+            sendEvent(session, doc, getNameEventRegistrationAccepted());
         }
     }
 
@@ -322,8 +328,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
             doc = session.saveDocument(doc);
             session.save();
 
-            sendEvent(session, doc,
-                    UserRegistrationService.REGISTRATION_REJECTED_EVENT);
+            sendEvent(session, doc, getNameEventRegistrationRejected());
         }
     }
 
@@ -381,8 +386,7 @@ public class UserRegistrationComponent extends DefaultComponent implements
 
             session.saveDocument(registrationDoc);
             session.save();
-            EventContext evContext = sendEvent(session, registrationDoc,
-                    UserRegistrationService.REGISTRATION_VALIDATED_EVENT);
+            EventContext evContext = sendEvent(session, registrationDoc, getNameEventRegistrationValidated());
 
             ((DocumentModelImpl) registrationDoc).detach(sessionIsAlreadyUnrestricted);
             registrationData.put(REGISTRATION_DATA_DOC, registrationDoc);
@@ -838,5 +842,25 @@ public class UserRegistrationComponent extends DefaultComponent implements
             UserRegistrationException {
         RequestIdValidator runner = new RequestIdValidator(requestId);
         runner.runUnrestricted();
+    }
+
+    @Override
+    public String getNameEventRegistrationSubmitted() {
+        return INVITATION_SUBMITTED_EVENT;
+    }
+
+    @Override
+    public String getNameEventRegistrationAccepted() {
+        return INVITATION_ACCEPTED_EVENT;
+    }
+
+    @Override
+    public String getNameEventRegistrationRejected() {
+        return INVITATION_REJECTED_EVENT;
+    }
+
+    @Override
+    public String getNameEventRegistrationValidated() {
+        return INVITATION_VALIDATED_EVENT;
     }
 }

@@ -24,7 +24,7 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
 
     @Test
     public void testMultipleConfigurationRegistration() {
-        Map<String, UserRegistrationConfiguration> configurations = ((UserRegistrationComponent) userRegistrationService).configurations;
+        Map<String, UserRegistrationConfiguration> configurations = ((UserInvitationComponent) userRegistrationService).configurations;
         assertEquals(2, configurations.size());
         assertTrue(configurations.containsKey("test"));
         assertTrue(configurations.containsKey(DEFAULT_CONFIGURATION_NAME));
@@ -34,7 +34,7 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
     public void testMultipleRegistrationRules() throws ClientException {
         initializeRegistrations();
 
-        DocumentModel root = ((UserRegistrationComponent) userRegistrationService).getOrCreateRootDocument(
+        DocumentModel root = ((UserInvitationComponent) userRegistrationService).getOrCreateRootDocument(
                 session, DEFAULT_CONFIGURATION_NAME);
         root.setPropertyValue(FIELD_ALLOW_USER_CREATION, false);
         session.saveDocument(root);
@@ -61,7 +61,7 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
         assertEquals(0, userManager.searchUsers("testUser").size());
         assertEquals(0, userManager.searchUsers("testUser2").size());
 
-        UserRegistrationConfiguration configuration = ((UserRegistrationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
+        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
 
         // User info
         DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
@@ -73,14 +73,14 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
         String requestId = userRegistrationService.submitRegistrationRequest(
                 DEFAULT_CONFIGURATION_NAME, userInfo,
                 new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true);
+                UserInvitationService.ValidationMethod.NONE, true);
         userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         // Invite second user with test conf
         userInfo.setPropertyValue("userinfo:login","testUser2");
         requestId = userRegistrationService.submitRegistrationRequest("test",
                 userInfo, new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true);
+                UserInvitationService.ValidationMethod.NONE, true);
         userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         session.save();

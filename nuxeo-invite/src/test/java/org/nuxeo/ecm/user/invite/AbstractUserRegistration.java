@@ -35,7 +35,7 @@ public abstract class AbstractUserRegistration {
     protected UserManager userManager;
 
     @Inject
-    protected UserRegistrationService userRegistrationService;
+    protected UserInvitationService userRegistrationService;
 
     public void initializeRegistrations() throws ClientException {
         DocumentModel container = session.createDocumentModel("Workspace");

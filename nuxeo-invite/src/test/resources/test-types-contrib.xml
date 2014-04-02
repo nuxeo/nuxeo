@@ -5,15 +5,15 @@
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
     <doctype name="TestRegistration" extends="File">
-      <facet name="UserRegistration"/>
+      <facet name="UserInvitation"/>
     </doctype>
 
     <doctype name="TestTwoRegistration" extends="File">
-      <facet name="UserRegistration"/>
+      <facet name="UserInvitation"/>
     </doctype>
   </extension>
 
-  <extension target="org.nuxeo.ecm.user.invite.UserRegistrationService"
+  <extension target="org.nuxeo.ecm.user.invite.UserInvitationService"
              point="configuration">
 
     <configuration>
@@ -21,8 +21,8 @@
       <container>
         <docType>Workspace</docType>
         <parentPath>/requests/</parentPath>
-        <name>registrationRequests</name>
-        <title>Registration Requests</title>
+        <name>invitationRequests</name>
+        <title>Invitation Requests</title>
       </container>
       <validationEmail>
         <title>Invitation for a test workspace</title>
@@ -35,8 +35,8 @@
       <container>
         <docType>Folder</docType>
         <parentPath>/test-requests/</parentPath>
-        <name>registrationRequests</name>
-        <title>Registration test Requests</title>
+        <name>invitationRequests</name>
+        <title>Invitation test Requests</title>
       </container>
       <validationEmail>
         <title>Invitation for another test folder</title>

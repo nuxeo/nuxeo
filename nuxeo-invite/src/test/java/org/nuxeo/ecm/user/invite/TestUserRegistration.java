@@ -28,7 +28,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
     @Test
     public void testTestContribution() throws ClientException {
         DocumentModel doc = session.createDocumentModel("TestRegistration");
-        assertTrue(doc.hasFacet("UserRegistration"));
+        assertTrue(doc.hasFacet("UserInvitation"));
 
         assertNotNull(userRegistrationService);
         UserRegistrationConfiguration config = userRegistrationService.getConfiguration();
@@ -37,7 +37,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
     @Test
     public void testBasicUserRegistration() throws ClientException {
-        UserRegistrationConfiguration configuration = ((UserRegistrationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
+        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
         // User info
         DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
         userInfo.setPropertyValue("userinfo:login","jolivier");
@@ -49,7 +49,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
         String requestId = userRegistrationService.submitRegistrationRequest(
                 userInfo, new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true);
+                UserInvitationService.ValidationMethod.NONE, true);
         userRegistrationService.validateRegistration(requestId,
                 new HashMap<String, Serializable>());
 
@@ -59,7 +59,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
     @Test
     public void testBasicUserRegistrationWithLoginChanged()
             throws ClientException {
-        UserRegistrationConfiguration configuration = ((UserRegistrationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
+        UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
         // User info
         DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
         String templogin = "templogin";
@@ -75,7 +75,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
         String requestId = userRegistrationService.submitRegistrationRequest(
                 userInfo, new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true);
+                UserInvitationService.ValidationMethod.NONE, true);
         Map<String, Serializable> additionnalInfos = new HashMap<String, Serializable>();
         additionnalInfos.put("userinfo:login", newUser);
         userRegistrationService.validateRegistration(requestId,

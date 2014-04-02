@@ -5,9 +5,9 @@
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
              point="listener">
 
-    <listener name="registrationListener" async="false" postCommit="false"
-              class="org.nuxeo.ecm.user.invite.UserRegistrationListener" priority="140">
-      <event>registrationValidated</event>
+    <listener name="invitationListener" async="false" postCommit="false"
+              class="org.nuxeo.ecm.user.invite.UserInvitationListener" priority="140">
+      <event>invitationValidated</event>
     </listener>
 
   </extension>

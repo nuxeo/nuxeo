@@ -27,24 +27,24 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
-public class UserRegistrationListener implements EventListener {
+public class UserInvitationListener implements EventListener {
 
-    protected static Log log = LogFactory.getLog(UserRegistrationListener.class);
+    protected static Log log = LogFactory.getLog(UserInvitationListener.class);
 
     public void handleEvent(Event event) throws ClientException {
+        try {
+            UserInvitationService userRegistrationService = Framework.getService(UserInvitationService.class);
 
-        if (!event.getName().equals(
-                UserRegistrationService.REGISTRATION_VALIDATED_EVENT)) {
-            return;
-        }
+            if (!event.getName().equals(
+                    userRegistrationService.getNameEventRegistrationValidated())) {
+                return;
+            }
 
-        EventContext ctx = event.getContext();
-        if (ctx instanceof DocumentEventContext) {
-            DocumentEventContext docCtx = (DocumentEventContext) ctx;
-            DocumentModel registration = docCtx.getSourceDocument();
+            EventContext ctx = event.getContext();
+            if (ctx instanceof DocumentEventContext) {
+                DocumentEventContext docCtx = (DocumentEventContext) ctx;
+                DocumentModel registration = docCtx.getSourceDocument();
 
-            try {
-                UserRegistrationService userRegistrationService = Framework.getService(UserRegistrationService.class);
                 UserRegistrationConfiguration config = userRegistrationService.getConfiguration(registration);
                 RegistrationRules rules = userRegistrationService.getRegistrationRules(config.getName());
                 if (rules.allowUserCreation()) {
@@ -53,11 +53,11 @@ public class UserRegistrationListener implements EventListener {
                     docCtx.setProperty("registeredUser", principal);
                 }
 
-            } catch (Exception e) {
-                event.markRollBack();
-                throw new ClientException("Unable to complete registration", e);
             }
 
+        } catch (Exception e) {
+            event.markRollBack();
+            throw new ClientException("Unable to complete registration", e);
         }
     }
 
