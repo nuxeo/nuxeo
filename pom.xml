@@ -132,7 +132,7 @@
     <!-- nuxeo-distribution-tools is still used as a dependency -->
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
-    <ant.assembly.version>2.0.1-SNAPSHOT</ant.assembly.version>
+    <ant.assembly.version>2.0.1</ant.assembly.version>
     <nuxeo.ftest.version>1.7.14</nuxeo.ftest.version>
     <nuxeo.richfaces.version>3.3.1.GA-NX9.03</nuxeo.richfaces.version>
 
@@ -4559,7 +4559,7 @@
                 <banRelease>true</banRelease>
                 <banSnapshots>true</banSnapshots>
                 <!-- to comment when NXP-13880 is fixed -->
-                <unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin,org.nuxeo.build:nuxeo-distribution-tools</unCheckedPluginList>
+                <!--<unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin,org.nuxeo.build:nuxeo-distribution-tools</unCheckedPluginList>-->
               </requirePluginVersions>
               <requireReleaseDeps>
                 <message>No Snapshots Allowed!</message>
