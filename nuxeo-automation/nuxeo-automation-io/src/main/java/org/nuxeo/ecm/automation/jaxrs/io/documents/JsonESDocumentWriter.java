@@ -2,6 +2,7 @@ package org.nuxeo.ecm.automation.jaxrs.io.documents;
 
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
@@ -97,7 +98,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
             }
             if (ace.isDenied()) {
                 if (!EVERYONE.equals(ace.getUsername())) {
-                    jg.writeString("UNSUPPORTED_DENIED_ACL");
+                    jg.writeString(UNSUPPORTED_ACL);
                 }
                 break;
             }
