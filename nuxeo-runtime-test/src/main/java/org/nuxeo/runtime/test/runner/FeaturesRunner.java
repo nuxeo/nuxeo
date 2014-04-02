@@ -292,10 +292,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             notifier.addFirstListener(listener);
             try {
                 start();
-                // create injector
-                resetInjector();
                 try {
                     beforeRun();
+                    // create injector
+                    resetInjector();
                     super.run(notifier); // launch tests
                 } finally {
                     afterRun();
