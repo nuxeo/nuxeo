@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -41,10 +40,10 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
@@ -60,9 +59,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
+ *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -94,6 +93,9 @@ public class TestRenditionPublicationWFAprove {
 
     @Inject
     protected DirectoryService directoryService;
+
+    @Inject
+    protected RepositorySettings settings;
 
     @Inject
     protected EventService eventService;
@@ -181,12 +183,7 @@ public class TestRenditionPublicationWFAprove {
     }
 
     private void changeUser(String userName) throws Exception {
-        Session userdir = directoryService.open("userDirectory");
-        DocumentModel userModel = userdir.getEntry(userName);
-        // set it on session
-        NuxeoPrincipal originalUser = (NuxeoPrincipal) session.getPrincipal();
-        originalUser.setModel(userModel);
-        originalUser.setName(userName);
+        session = settings.openSessionAs(userName, false, false);
     }
 
     @Test
@@ -224,8 +221,9 @@ public class TestRenditionPublicationWFAprove {
                         new DocumentLocationImpl(doc2Publish)).size());
 
         // myuser3 can't see the document waiting for validation
-        changeUser("myuser3");
         session.save(); // Save session to get modifications made by other
+        changeUser("myuser3");
+
         // sessions
         PublicationTree treeUser3 = publisherService.getPublicationTree(
                 defaultTreeName, session, factoryParams);
