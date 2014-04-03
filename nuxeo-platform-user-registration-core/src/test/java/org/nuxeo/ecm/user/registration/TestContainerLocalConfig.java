@@ -21,21 +21,21 @@ public class TestContainerLocalConfig extends AbstractUserRegistration {
     public void testGetRegistrationRules() throws ClientException {
         initializeRegistrations();
 
-        RegistrationRules rules = userRegistrationDocService.getRegistrationRules(DEFAULT_CONFIGURATION_NAME);
+        RegistrationRules rules = userRegistrationService.getRegistrationRules(DEFAULT_CONFIGURATION_NAME);
         assertNotNull(rules);
 
         assertTrue(rules.allowUserCreation());
         session.save();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
-        DocumentModel root = ((UserRegistrationComponent) userRegistrationDocService).getOrCreateRootDocument(
+        DocumentModel root = ((UserRegistrationComponent) userRegistrationService).getOrCreateRootDocument(
                 session, DEFAULT_CONFIGURATION_NAME);
         root.setPropertyValue(RegistrationRules.FIELD_ALLOW_USER_CREATION,
                 false);
         session.saveDocument(root);
         session.save();
 
-        rules = userRegistrationDocService.getRegistrationRules(DEFAULT_CONFIGURATION_NAME);
+        rules = userRegistrationService.getRegistrationRules(DEFAULT_CONFIGURATION_NAME);
         assertFalse(rules.allowUserCreation());
     }
 }
