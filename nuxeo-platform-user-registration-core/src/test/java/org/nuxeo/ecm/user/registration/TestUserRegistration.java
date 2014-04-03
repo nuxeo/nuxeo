@@ -1,5 +1,15 @@
 package org.nuxeo.ecm.user.registration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -9,13 +19,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.*;
-import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
 
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
@@ -123,13 +126,13 @@ public class TestUserRegistration extends AbstractUserRegistration {
                 SecurityConstants.READ_WRITE).toBoolean());
 
         String searchUserRegistration = "Select * from Document where ecm:mixinType = 'UserRegistration'";
-        assertNotSame(0, session.query(searchUserRegistration).size());
+        assertEquals(1, session.query(searchUserRegistration).size());
 
+        // check cleanup
         session.removeDocument(testWorkspace.getRef());
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-
         session.save();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+
         assertEquals(0, session.query(searchUserRegistration).size());
     }
 }
