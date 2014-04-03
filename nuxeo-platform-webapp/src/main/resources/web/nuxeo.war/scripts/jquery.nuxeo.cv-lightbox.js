@@ -1,7 +1,20 @@
 (function($) {
 
   var defaultArgs = {
-    type : 'image',
+    type : 'ajax',
+    ajax: {
+      settings: {
+        beforeSend: function (request) {
+          nuxeo.lightbox.setRequestHeaders(request);
+        }
+      }
+    },
+    callbacks: {
+      parseAjax: function(mfpResponse) {
+        var jsonDoc = mfpResponse.data;
+        mfpResponse.data = nuxeo.lightbox.formatDoc(jsonDoc);
+      }
+    },
     gallery : {
       enabled : true,
       navigateByImgClick : true,
