@@ -712,6 +712,24 @@ ALTER TABLE hierarchy_read_acl SET (LOCK_ESCALATION=DISABLE);
 #IF: emptyResult
 CREATE CLUSTERED INDEX [hierarchy_read_acl_oid_idx] ON [dbo].[hierarchy_read_acl] ([_oid])
 
+# Add a new _oid clustered column if not present
+#TEST:
+SELECT 1 FROM sys.columns WHERE [name] = N'_oid' AND [object_id] = OBJECT_ID(N'hierarchy_read_acl')
+
+#IF: emptyResult
+ALTER TABLE [hierarchy_read_acl] DROP CONSTRAINT [hierarchy_read_acl_id_fk]
+
+#IF: emptyResult
+DROP INDEX [hierarchy_read_acl_acl_id_idx] ON [dbo].[hierarchy_read_acl]
+
+#IF: emptyResult
+ALTER TABLE [hierarchy_read_acl] ADD [_oid] INTEGER NOT NULL IDENTITY
+
+#IF: emptyResult
+CREATE CLUSTERED INDEX [hierarchy_read_acl_oid_idx] ON [dbo].[hierarchy_read_acl] ([_oid])
+
+#IF: emptyResult
+ALTER TABLE [hierarchy_read_acl] ADD CONSTRAINT hierarchy_read_acl_id_fk FOREIGN KEY (id) REFERENCES hierarchy (id) ON DELETE CASCADE
 
 # add index
 #TEST:
