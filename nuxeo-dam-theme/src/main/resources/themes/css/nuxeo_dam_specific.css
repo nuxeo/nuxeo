@@ -12,7 +12,7 @@ author: lkemen@nuxeo.com
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  padding: 0 .5em }
+  padding: .5em }
 
 .nxDamSearchForm {
   background-color: "neutral.lighter (__FLAVOR__ background)";
@@ -70,7 +70,7 @@ author: lkemen@nuxeo.com
 .nxDamSearchResults .globalActionBar .button,
 .nxDamSingleAssetLeft .globalActionBar .button {
   font-size: .9em;
-  margin: .5em .5em .5em 0;
+  margin: .3em .5em .5em 0;
   padding: .2em .4em }
 
 .nxDamSingleAssetLeft .globalActionBar .button {
