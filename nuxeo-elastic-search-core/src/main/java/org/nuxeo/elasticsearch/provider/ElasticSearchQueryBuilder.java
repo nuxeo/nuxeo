@@ -120,6 +120,10 @@ public class ElasticSearchQueryBuilder {
             }
             String name = predicate.getParameter();
             String operator = predicate.getOperator().toUpperCase();
+            if ("FULLTEXT".equals(operator)) {
+                // fulltext search is handled by the mapping
+                operator = "=";
+            }
             eb.add(NXQLQueryConverter.makeQueryFromSimpleExpression(operator,
                     name, value, values, fulltextFields));
         }

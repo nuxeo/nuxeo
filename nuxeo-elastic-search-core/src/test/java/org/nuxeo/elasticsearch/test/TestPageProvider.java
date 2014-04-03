@@ -412,7 +412,8 @@ public class TestPageProvider {
                 "AdvancedSearch");
         model.setPropertyValue("search:title", "bar");
 
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params,
+                true, null);
         Assert.assertEquals("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : [ {\n" +
@@ -498,5 +499,40 @@ public class TestPageProvider {
 
     }
 
+    @Test
+    public void testBuildFulltextQuery() throws Exception {
+        QueryBuilder qb;
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
+        Assert.assertNotNull(pps);
+
+        WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
+                "ADVANCED_SEARCH").getWhereClause();
+        String[] params = { "foo" };
+        DocumentModel model = new DocumentModelImpl("/", "doc",
+                "AdvancedSearch");
+        model.setPropertyValue("search:fulltext_all", "you know for search");
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params,
+                true, Arrays.asList("ecm:fulltext"));
+        String json = qb.toString();
+        Assert.assertEquals("{\n" +
+                "  \"bool\" : {\n" +
+                "    \"must\" : [ {\n" +
+                "      \"query_string\" : {\n" +
+                "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
+                "      }\n" +
+                "    }, {\n" +
+                "      \"match\" : {\n" +
+                "        \"_all\" : {\n" +
+                "          \"query\" : \"you know for search\",\n" +
+                "          \"type\" : \"boolean\",\n" +
+                "          \"operator\" : \"AND\",\n" +
+                "          \"analyzer\" : \"fulltext\"\n" +
+                "        }\n" +
+                "      }\n" +
+                "    } ]\n" +
+                "  }\n" +
+                "}", qb.toString());
+    }
 
 }
