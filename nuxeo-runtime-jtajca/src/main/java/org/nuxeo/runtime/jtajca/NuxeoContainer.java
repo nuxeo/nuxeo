@@ -179,17 +179,13 @@ public class NuxeoContainer {
      * @param config the pool configuration
      * @return the created connection manager
      */
-    public static synchronized ConnectionManagerWrapper installConnectionManager(
-            String name, NuxeoConnectionManagerConfiguration config) {
+    public static synchronized ConnectionManagerWrapper installConnectionManager(NuxeoConnectionManagerConfiguration config) {
+        String name = config.getName();
         ConnectionManagerWrapper cm = connectionManagers.get(name);
         if (cm != null) {
             return cm;
         }
-        if (config == null) {
-            config = new NuxeoConnectionManagerConfiguration();
-            config.setName(config.getName() + "/" + name);
-        }
-        cm = initConnectionManager(name, config);
+        cm = initConnectionManager(config);
         // also bind it in JNDI
         if (rootContext != null) {
             String jndiName = JNDI_NUXEO_CONNECTION_MANAGER_PREFIX
@@ -218,24 +214,16 @@ public class NuxeoContainer {
             throw new RuntimeException("Nuxeo container not installed");
         }
         try {
-            try {
-                removeBinding(JNDI_TRANSACTION_MANAGER);
-            } catch (NamingException e) {
-                log.error(e, e);
-            }
-            try {
-                removeBinding(JNDI_USER_TRANSACTION);
-            } catch (NamingException e) {
-                log.error(e, e);
-            }
-            for (String repositoryName : connectionManagers.keySet()) {
-                String jndiName = JNDI_NUXEO_CONNECTION_MANAGER_PREFIX
-                        + repositoryName;
+            NamingException errors = new NamingException("Cannot shutdown connection managers");
+            for (ConnectionManagerWrapper cm : connectionManagers.values()) {
                 try {
-                    removeBinding(jndiName);
-                } catch (NamingException e) {
-                    log.error(e, e);
+                    cm.dispose();
+                } catch (Exception cause) {
+                    errors.addSuppressed(cause);
                 }
+            }
+            if (errors.getSuppressed().length > 0) {
+                throw errors;
             }
         } finally {
             uninstallNaming();
@@ -278,7 +266,7 @@ public class NuxeoContainer {
             listeners.add(listener);
         }
         for(Map.Entry<String, ConnectionManagerWrapper> entry:connectionManagers.entrySet()) {
-            listener.handleNewConnectionManager(entry.getKey(), entry.getValue().cm);
+            listener.handleNewConnectionManager(entry.getKey(), entry.getValue().target);
         }
     }
 
@@ -464,15 +452,16 @@ public class NuxeoContainer {
         return connectionManagers.get(repositoryName);
     }
 
-    public static void installConnectionManager(String name,
+    public static void installConnectionManager(
             ConnectionManagerWrapper cm) {
+        String name = cm.config.getName();
         if (connectionManagers.containsKey(name)) {
             log.error("Connection manager " + name + " already set up",
                     new Exception());
         }
         connectionManagers.put(name, cm);
         for (NuxeoContainerListener listener:listeners) {
-            listener.handleNewConnectionManager(name, cm.cm);
+            listener.handleNewConnectionManager(name, cm.target);
         }
     }
 
@@ -507,23 +496,41 @@ public class NuxeoContainer {
         return new TransactionManagerWrapper(tm);
     }
 
-    public static synchronized ConnectionManagerWrapper initConnectionManager(
-            String name, NuxeoConnectionManagerConfiguration config) {
+    public static synchronized ConnectionManagerWrapper initConnectionManager(NuxeoConnectionManagerConfiguration config) {
         GenericConnectionManager cm = createConnectionManager(config);
         ConnectionManagerWrapper cmw = new ConnectionManagerWrapper(cm, config);
-        installConnectionManager(name, cmw);
+        installConnectionManager(cmw);
         return cmw;
+    }
+
+
+    public static synchronized void disposeConnectionManager(String name) throws Exception {
+        ConnectionManagerWrapper cm = connectionManagers.remove(name);
+        cm.dispose();
+    }
+
+
+
+    public static synchronized void resetConnectionManager(String name) throws Exception {
+        ConnectionManagerWrapper cm = connectionManagers.get(name);
+        cm.reset();
+        for (NuxeoContainerListener listener:listeners) {
+            listener.handleConnectionManagerReset(name, cm.target);
+        }
     }
 
     // called by reflection from RepositoryReloader
     public static synchronized void resetConnectionManager() throws Exception {
-        for (Map.Entry<String,ConnectionManagerWrapper> entry : connectionManagers.entrySet()) {
-            String repositoryName = entry.getKey();
-            ConnectionManagerWrapper mgr = entry.getValue();
-            mgr.reset();
-            for (NuxeoContainerListener listener:listeners) {
-                listener.handleConnectionManagerReset(repositoryName, mgr.cm);
+        Exception errors = new Exception("Cannot reset connection managers");
+        for (String name : connectionManagers.keySet()) {
+            try {
+                resetConnectionManager(name);
+            } catch (Exception cause) {
+                errors.addSuppressed(cause);
             }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
         }
     }
 
@@ -779,13 +786,13 @@ public class NuxeoContainer {
     public static class ConnectionManagerWrapper implements ConnectionManager {
         private static final long serialVersionUID = 1L;
 
-        protected AbstractConnectionManager cm;
+        protected AbstractConnectionManager target;
 
         protected final NuxeoConnectionManagerConfiguration config;
 
         public ConnectionManagerWrapper(AbstractConnectionManager cm,
                 NuxeoConnectionManagerConfiguration config) {
-            this.cm = cm;
+            target = cm;
             this.config = config;
         }
 
@@ -794,13 +801,18 @@ public class NuxeoContainer {
                 ManagedConnectionFactory managedConnectionFactory,
                 ConnectionRequestInfo connectionRequestInfo)
                 throws ResourceException {
-            return cm.allocateConnection(managedConnectionFactory,
+            return target.allocateConnection(managedConnectionFactory,
                     connectionRequestInfo);
         }
 
         public void reset() throws Exception {
-            cm.doStop();
-            cm = createConnectionManager(config);
+            target.doStop();
+            target = createConnectionManager(config);
+        }
+
+        public void dispose() throws Exception {
+            NuxeoContainer.connectionManagers.remove(config.getName());
+            target.doStop();
         }
 
         public NuxeoConnectionManagerConfiguration getConfiguration() {

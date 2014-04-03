@@ -8,20 +8,38 @@ import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.RefAddr;
 import javax.naming.Reference;
-import javax.naming.spi.ObjectFactory;
 import javax.resource.ResourceException;
 import javax.resource.spi.InvalidPropertyException;
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.sql.XADataSource;
 
+import org.nuxeo.runtime.datasource.PooledDataSourceRegistry;
+import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
 import org.tranql.connector.jdbc.JDBCDriverMCF;
+import org.tranql.connector.jdbc.TranqlDataSource;
 import org.tranql.connector.jdbc.XADataSourceWrapper;
 
-public class PoolingDataSourceFactory implements ObjectFactory {
+public class PooledDataSourceFactory implements PooledDataSourceRegistry.Factory {
+
+    protected static class DataSource extends TranqlDataSource implements PooledDataSource {
+
+        protected ConnectionManagerWrapper wrapper;
+
+        public DataSource(ManagedConnectionFactory mcf,
+                ConnectionManagerWrapper wrapper) {
+            super(mcf, wrapper);
+            this.wrapper = wrapper;
+        }
+
+        @Override
+        public void dispose() throws Exception {
+            wrapper.dispose();
+        }
+    }
 
     @Override
     public Object getObjectInstance(Object obj, Name name, Context ctx,
@@ -29,15 +47,14 @@ public class PoolingDataSourceFactory implements ObjectFactory {
         Reference ref = (Reference)obj;
         ManagedConnectionFactory mcf = createFactory(ref, ctx);
         ConnectionManagerWrapper cm =  createManager(ref, ctx);
-        return new org.tranql.connector.jdbc.TranqlDataSource(mcf, cm);
+        return new DataSource(mcf, cm);
     }
 
     protected ConnectionManagerWrapper createManager(Reference ref, Context ctx) throws ResourceException {
         NuxeoConnectionManagerConfiguration config = NuxeoConnectionManagerFactory.getConfig(ref);
         String className = ref.getClassName();
-        String name = refAttribute(ref, "name", null);
         config.setXAMode(XADataSource.class.getName().equals(className));
-        return NuxeoContainer.initConnectionManager(name, config);
+        return NuxeoContainer.initConnectionManager(config);
     }
 
     protected ManagedConnectionFactory createFactory(Reference ref, Context ctx) throws NamingException, InvalidPropertyException {
