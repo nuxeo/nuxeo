@@ -43,7 +43,7 @@
     "type": "boolean",
     "required": false
 },
-"isLasPageAvailable": {
+"isLastPageAvailable": {
     "uniqueItems": false,
     "type": "boolean",
     "required": false
