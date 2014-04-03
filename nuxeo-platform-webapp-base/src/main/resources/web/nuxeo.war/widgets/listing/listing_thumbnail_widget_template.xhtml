@@ -14,16 +14,10 @@
         cache="true">
         <nxh:graphicImage
                   value="#{thumbnailUrl}" />
-        <nxu:set var="hasPicture"
-          value="#{field.hasFacet('Picture')}"
-          cache="true">
-              <c:if test="#{hasPicture}">
               <a
-                href="#{nxd:fileUrl('downloadPicture', field, 'OriginalJpeg:content', fieldOrValue.dublincore.modified)}"
+                href="#{contextPath}/api/v1/id/#{field.id}"
                 class="image-popup" >
               </a>
-              </c:if>
-        </nxu:set>
       </nxu:set>
     </div>
 
