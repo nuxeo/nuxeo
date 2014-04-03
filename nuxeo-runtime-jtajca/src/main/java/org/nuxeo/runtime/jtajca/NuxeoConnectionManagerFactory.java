@@ -40,30 +40,32 @@ public class NuxeoConnectionManagerFactory implements ObjectFactory {
         if (!ConnectionManager.class.getName().equals(ref.getClassName())) {
             return null;
         }
-        String repositoryName;
+        String name;
         int size = objName.size();
         if (size == 1) {
-            repositoryName = "default";
+            name = "default";
         } else {
-            repositoryName = objName.get(size - 1);
+            name = objName.get(size - 1);
         }
-        if (NuxeoContainer.getConnectionManager(repositoryName) == null) {
-            // initialize
-            NuxeoConnectionManagerConfiguration config = new NuxeoConnectionManagerConfiguration();
-            for (RefAddr addr : Collections.list(ref.getAll())) {
-                String name = addr.getType();
-                String value = (String) addr.getContent();
-                try {
-                    BeanUtils.setProperty(config, name, value);
-                } catch (Exception e) {
-                    log.error(String.format(
-                            "NuxeoConnectionManagerFactory cannot set %s = %s",
-                            name, value));
-                }
+
+        final ConnectionManager cm = NuxeoContainer.getConnectionManager(name);
+        if (cm != null) {
+            return cm;
+        }
+
+        NuxeoConnectionManagerConfiguration config = new NuxeoConnectionManagerConfiguration();
+        for (RefAddr addr : Collections.list(ref.getAll())) {
+            String type = addr.getType();
+            String content = (String) addr.getContent();
+            try {
+                BeanUtils.setProperty(config, type, content);
+            } catch (Exception e) {
+                log.error(String.format(
+                        "NuxeoConnectionManagerFactory cannot set %s = %s",
+                        type, content));
             }
-            NuxeoContainer.initConnectionManager(repositoryName, config);
         }
-        return NuxeoContainer.getConnectionManager(repositoryName);
+        return NuxeoContainer.initConnectionManager(config);
     }
 
     public static NuxeoConnectionManagerConfiguration getConfig(Reference ref) {

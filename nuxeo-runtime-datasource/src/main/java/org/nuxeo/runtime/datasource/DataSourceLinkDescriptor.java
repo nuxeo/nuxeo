@@ -16,7 +16,6 @@ package org.nuxeo.runtime.datasource;
 import javax.naming.InitialContext;
 import javax.naming.LinkRef;
 import javax.naming.NamingException;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.DataSourceHelper;
@@ -45,4 +44,9 @@ public class DataSourceLinkDescriptor {
     public void bindSelf(InitialContext namingContext) throws NamingException {
         namingContext.bind(name, new LinkRef(global));
     }
+
+    public void unbindSelf(InitialContext namingContext) throws NamingException {
+        namingContext.unbind(name);
+    }
+
 }

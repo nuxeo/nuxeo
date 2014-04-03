@@ -153,7 +153,9 @@ public class DataSourceHelper {
                 name = prefix + "/" + name;
             }
             Object ds = naming.lookup(name);
-            datasourcesByName.put(name, (DataSource)ds);
+            if (ds instanceof DataSource){
+                datasourcesByName.put(name, (DataSource)ds);
+            }
         }
         return datasourcesByName;
     }

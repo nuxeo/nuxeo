@@ -89,7 +89,7 @@
 	</documentation>
 
 	<service>
-		<provide interface="org.nuxeo.runtime.datasource.PoolRegistry" />
+		<provide interface="org.nuxeo.runtime.datasource.PooledDataSourceRegistry" />
 	</service>
 
 	<implementation class="org.nuxeo.runtime.datasource.DataSourceComponent" />

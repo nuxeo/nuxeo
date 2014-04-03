@@ -25,9 +25,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.Name;
 import javax.naming.NamingException;
-import javax.naming.NoInitialContextException;
-import javax.naming.NotContextException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.DataSourceHelper;
@@ -53,7 +50,7 @@ public class DataSourceComponent extends DefaultComponent {
 
     protected final Map<String, DataSourceLinkDescriptor> links = new HashMap<String, DataSourceLinkDescriptor>();
 
-    protected final PoolRegistry registry = new PoolRegistry();
+    protected final PooledDataSourceRegistry registry = new PooledDataSourceRegistry();
 
     protected InitialContext namingContext;
 
@@ -164,11 +161,10 @@ public class DataSourceComponent extends DefaultComponent {
         }
         log.info("Unregistering datasource: " + descr.name);
         try {
-            registry.clearPool(descr.name);
             descr.unbindSelf(namingContext);
-        } catch (NamingException e) {
+        } catch (NamingException cause) {
             log.error("Cannot unbind datasource '" + descr.name + "' in JNDI",
-                    e);
+                    cause);
         }
     }
 
@@ -200,21 +196,15 @@ public class DataSourceComponent extends DefaultComponent {
         }
         log.info("Unregistering DataSourceLink: " + descr.name);
         try {
-            Context ctx = new InitialContext();
-            ctx.unbind(ENV_CTX_NAME + descr.name);
-        } catch (NotContextException e) {
-            log.warn(e);
-        } catch (NoInitialContextException e) {
-            ;
+            descr.unbindSelf(namingContext);
         } catch (NamingException e) {
-            log.error("Cannot unbind DataSourceLink '" + descr.name + "' in JNDI",
-                    e);
+            log.error("Cannot unbind DataSourceLink '" + descr.name + "' in JNDI", e);
         }
     }
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.isAssignableFrom(PoolRegistry.class)) {
+        if (adapter.isAssignableFrom(PooledDataSourceRegistry.class)) {
             return adapter.cast(registry);
         }
         return super.getAdapter(adapter);

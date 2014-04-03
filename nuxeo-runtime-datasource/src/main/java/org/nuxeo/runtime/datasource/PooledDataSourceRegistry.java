@@ -18,53 +18,60 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.naming.Context;
 import javax.naming.Name;
+import javax.naming.Reference;
+import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.datasource.geronimo.PoolingDataSourceFactory;
+import org.nuxeo.runtime.datasource.geronimo.PooledDataSourceFactory;
 
-public class PoolRegistry extends ReentrantReadWriteLock {
+public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
 
     private static final long serialVersionUID = 1L;
 
-    protected final Map<String, DataSource> pools = new HashMap<>();
+    public interface Factory extends ObjectFactory {
 
-    protected final PoolingDataSourceFactory poolFactory = new PoolingDataSourceFactory();
+    }
 
-    public DataSource getOrCreatePool(Object obj, Name name,
+    public interface PooledDataSource extends DataSource {
+        void dispose() throws Exception;
+    }
+
+    protected final Map<String, PooledDataSource> pools = new HashMap<>();
+
+    protected final PooledDataSourceFactory poolFactory = new org.nuxeo.runtime.datasource.geronimo.PooledDataSourceFactory();
+
+    public DataSource getOrCreatePool(Object obj, Name objectName,
             Context nameCtx, Hashtable<?, ?> env) throws Exception {
-        DataSource ds = pools.get(name.toString());
+        final Reference ref = (Reference)obj;
+        String dsName = (String)ref.get("name").getContent();
+        DataSource ds = pools.get(dsName);
         if (ds != null) {
             return ds;
         }
-        return createPool(obj, name, nameCtx, env);
+        return createPool(dsName, ref, objectName, nameCtx, env);
     }
 
-    protected DataSource createPool(Object obj, Name name,
+    protected DataSource createPool(String dsName, Reference ref, Name objectName,
             Context nameCtx, Hashtable<?, ?> env) throws Exception {
-        DataSource ds;
+        PooledDataSource ds;
         try {
             readLock().lock();
-            String nameString = name.toString();
-            ds = pools.get(nameString);
+            ds = pools.get(dsName);
             if (ds != null) {
                 return ds;
             }
-            ds = (DataSource) poolFactory.getObjectInstance(obj, name,
+            ds = (PooledDataSource) poolFactory.getObjectInstance(ref, objectName,
                    nameCtx, env);
-            pools.put(nameString, ds);
+            pools.put(dsName, ds);
         } finally {
             readLock().unlock();
         }
         return ds;
     }
 
-    protected void clearPool(String name) {
-        DataSource ds = pools.remove(name);
-        if (ds == null) {
-            LogFactory.getLog(PoolRegistry.class).warn("Cannot find pool " + name);
-            return;
-        }
+    protected void clearPool(String name) throws Exception {
+        PooledDataSource ds = pools.remove(name);
+        ds.dispose();
     }
 
  }
