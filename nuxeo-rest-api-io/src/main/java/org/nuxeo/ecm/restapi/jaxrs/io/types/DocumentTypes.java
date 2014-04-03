@@ -16,37 +16,36 @@
  */
 package org.nuxeo.ecm.restapi.jaxrs.io.types;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 
 public class DocumentTypes {
 
-    protected final Schema[] schemas;
-
     protected final DocumentType[] docTypes;
 
-    public DocumentTypes(Schema[] schemas, DocumentType[] docTypes) {
-        this.schemas = schemas;
+    protected Set<Schema> usedSchemas = null;
+
+    public DocumentTypes(DocumentType[] docTypes) {
         this.docTypes = docTypes;
     }
 
-    public List<Schema> getUsedSchemas() {
-        List<Schema> result = new ArrayList<Schema>();
-        for (DocumentType type : docTypes) {
-            for (Schema schema : type.getSchemas()) {
-                if (!result.contains(schema)) {
-                    result.add(schema);
+    protected Set<Schema> getUsedSchemas() {
+        if (usedSchemas == null) {
+            usedSchemas = new HashSet<Schema>();
+            for (DocumentType type : docTypes) {
+                for (Schema schema : type.getSchemas()) {
+                    usedSchemas.add(schema);
                 }
             }
         }
-        return result;
+        return usedSchemas;
     }
 
     public Schema[] getSchemas() {
-        List<Schema> schemas = getUsedSchemas();
+        Set<Schema> schemas = getUsedSchemas();
         return schemas.toArray(new Schema[schemas.size()]);
     }
 

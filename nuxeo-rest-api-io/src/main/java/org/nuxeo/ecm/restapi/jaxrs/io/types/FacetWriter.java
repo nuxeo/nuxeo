@@ -28,10 +28,11 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 
 @Provider
-@Produces("text/json")
+@Produces(MediaType.APPLICATION_JSON)
 public class FacetWriter extends AbstractTypeDefWriter implements
         MessageBodyWriter<CompositeType> {
 
@@ -63,7 +64,7 @@ public class FacetWriter extends AbstractTypeDefWriter implements
     @Override
     public boolean isWriteable(Class<?> arg0, Type type, Annotation[] arg2,
             MediaType arg3) {
-        return CompositeType.class.isAssignableFrom(arg0);
+        return CompositeType.class.isAssignableFrom(arg0) && !DocumentType.class.isAssignableFrom(arg0);
     }
 
 }

@@ -31,7 +31,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.schema.DocumentType;
 
 @Provider
-@Produces("text/json")
+@Produces(MediaType.APPLICATION_JSON)
 public class DocumentTypeWriter extends AbstractTypeDefWriter implements
         MessageBodyWriter<DocumentType> {
 

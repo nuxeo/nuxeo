@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 
 @Provider
-@Produces("text/json")
+@Produces(MediaType.APPLICATION_JSON)
 public class DocumentTypesWriter extends AbstractTypeDefWriter implements
         MessageBodyWriter<DocumentTypes> {
 

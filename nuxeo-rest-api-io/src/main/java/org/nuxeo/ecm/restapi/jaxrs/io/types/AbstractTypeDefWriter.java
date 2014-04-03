@@ -72,6 +72,8 @@ public class AbstractTypeDefWriter {
 
         if (docType.getSuperType() != null) {
             jg.writeStringField("parent", docType.getSuperType().getName());
+        } else {
+            jg.writeStringField("parent", "None!!!");
         }
 
         jg.writeArrayFieldStart("facets");
