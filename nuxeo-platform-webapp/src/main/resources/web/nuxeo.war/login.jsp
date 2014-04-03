@@ -55,8 +55,8 @@ String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenCon
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
 boolean disableBackgroundSizeCover = Boolean.TRUE.equals(screenConfig.getDisableBackgroundSizeCover());
 
-String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWidth(), "92");
-String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "36");
+String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWidth(), "118");
+String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "26");
 String logoAlt = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoAlt(), "Nuxeo");
 String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl(), context + "/img/nuxeo_logo.png");
 String currentYear = new DateTime().toString("Y");
