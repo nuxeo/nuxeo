@@ -5,17 +5,38 @@ author: lkemen@nuxeo.com
 */
 
 /* =Main Frame */
-.adminTabsColumn { min-height: 660px; height: auto!important; height: 660px }
-.adminViewContent { height: 100%; width: 100% }
-.adminContentColumn { padding: 2em }
-.adminViewContent h2 { padding: 2em 0 1em }
-.adminViewContent p { padding: .4em 0 }
-.adminContentColumn .tabsContent { font-size: normal }
+.adminTabsColumn {
+  min-height: 660px;
+  height: auto!important;
+  height: 660px }
+
+.adminViewContent {
+  height: 100%;
+  width: 100% }
+
+.adminContentColumn {
+  padding: 2em }
+
+.adminViewContent h2 {
+  padding: 2em 0 1em }
+
+.adminViewContent p {
+  padding: .4em 0 }
+
+.adminContentColumn .tabsContent {
+  font-size: normal }
 
 /* =Override GWT styles*/
-body, table td, select { font-family: "default (__FLAVOR__ font)"; }
-.widget .content { width: 100% }
+body,
+table td,
+select {
+  font-family: "default (__FLAVOR__ font)" }
 
-.adminViewContent p.directoryBack {  padding: .2em .2em .2em 2em }
+.widget .content {
+  width: 100% }
 
-.description_block span { font-size: 1em }
+.adminViewContent p.directoryBack {
+  padding: .2em .2em .2em 2em }
+
+.description_block span {
+  font-size: 1em }
