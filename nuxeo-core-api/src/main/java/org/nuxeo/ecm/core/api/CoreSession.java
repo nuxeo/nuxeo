@@ -509,6 +509,7 @@ public interface CoreSession {
      * @return the parent document or null if this is the root document
      * @throws ClientException
      */
+    @NoRollbackOnException
     DocumentModel getParentDocument(DocumentRef docRef) throws ClientException;
 
     /**

@@ -29,11 +29,17 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventTransactionListener;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyAsyncRetryListener;
 import org.nuxeo.runtime.api.Framework;
@@ -147,6 +153,51 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         // tx not active anymore because CoreSession.createDocument is not
         // marked @NoRollbackOnException
         assertTrue(TransactionHelper.isTransactionMarkedRollback());
+    }
+
+    /**
+     * Test NoRollbackOnException annotation on some methods.
+     */
+    @Test
+    public void testNoRollbackOnException() throws Exception {
+        if (!hasPoolingConfig()) {
+            return;
+        }
+
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/folder", "doc", "File");
+        doc = session.createDocument(doc);
+        ACP acp;
+        ACL acl;
+        // set ACP on folder to block bob
+        acp = new ACPImpl();
+        acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(new ACE("bob", "Everything", false));
+        acp.addACL(acl);
+        folder.setACP(acp, true);
+        // allow bob on doc
+        acp = new ACPImpl();
+        acl = new ACLImpl();
+        acl.add(new ACE("bob", "Everything", true));
+        acp.addACL(acl);
+        doc.setACP(acp, true);
+        session.save();
+        closeSession();
+        TransactionHelper.commitOrRollbackTransaction();
+
+        TransactionHelper.startTransaction();
+        session = openSessionAs("bob");
+        try {
+            session.getParentDocument(doc.getRef());
+            fail("Missing document should throw");
+        } catch (DocumentSecurityException e) {
+            // ok
+        }
+        // tx still active because CoreSession.getParentDocument is marked
+        // @NoRollbackOnException
+        assertTrue(TransactionHelper.isTransactionActive());
     }
 
     protected static class HelperEventTransactionListener implements
