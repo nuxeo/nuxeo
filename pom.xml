@@ -127,6 +127,7 @@
     <module>nuxeo-webengine-sites</module>
     <module>nuxeo-rest-api</module>
     <module>nuxeo-style-guide</module>
+    <module>nuxeo-platform-importer</module>
   </modules>
 
   <dependencyManagement>
