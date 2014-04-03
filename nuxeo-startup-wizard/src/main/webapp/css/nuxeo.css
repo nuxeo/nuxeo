@@ -15,41 +15,18 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 }
 
 body {
-  		     /* SVG fallback(Opera 11.10-, IE9) */
-background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjpyZ2JhKDI1NSwyNTUsMjU1LDEpOyIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOnJnYmEoMTQ4LDIxNywyNTUsMSk7IiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IGZpbGw9InVybCgjZ3JhZGllbnQpIiBoZWlnaHQ9IjEwMCUiIHdpZHRoPSIxMDAlIiAvPjwvc3ZnPg==);
-
-/* Opera 11.10+ */
-background: -o-linear-gradient(top, rgba(255,255,255,1), rgba(241,242,243,1));
-
-/* Firefox 3.6+ */
-background: -moz-linear-gradient(top, rgba(255,255,255,1), rgba(241,242,243,1));
-
-/* Chrome 7+ & Safari 5.03+ */
-background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(255,255,255,1)), color-stop(1, rgba(241,242,243,1)));
-
-/* IE5.5 - IE7 */
-filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#FFFFFFFF,EndColorStr=#f1f2f3);
-
-/* IE8 */
--ms-filter: "progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#FFFFFFFF,EndColorStr=#f1f2f3)";
-}
-
+  background: url("../images/bg.png") no-repeat scroll right bottom #eaf3f7;}
 
 #topbar {
-  line-height: 36px;
-  background-color: #3670b9;
-  border-bottom: 1px solid #003366;
-}
+  background-color: #fff; }
 
 .container {
-		   width:810px;
-		   margin:auto;
-		 }
+  width:810px;
+  margin:auto; }
 
-#topbar img {
-  margin-left: 20px;
+#wizardFrame {
+ margin-top: 10px;
 }
-
 		 
 hr {
     color: #FFFFFF;
@@ -60,48 +37,41 @@ hr {
 h1 {
     font: bold 22px "Lucida Grande", Verdana, sans-serif;
     margin: 0 0 15px;
-    color: #000;
-    text-shadow: 0 1px 0 #FFFFFF;
+    color: #00adff;
 }
 
 h2 {
     font: bold 16px "Lucida Grande", Verdana, sans-serif;
     margin: 0.75em 0 0.5em 0;
     color: #c30000;
-    text-shadow: 0 1px 0 #FFFFFF;
 }
 
 h3 {
     color: #2466a3;
     font: bold 14px "Lucida Grande", Verdana, sans-serif;
     margin: 15px 0 7px;
-    text-shadow: 0 1px 0 #FFFFFF;
 }
 
 h4 {
     font: bold 14px "lucida grande", Verdana, sans-serif;
     color: #5290ca;
-    text-shadow: 0 1px 0 #FFFFFF;
 }
 
 h5 {
     border-bottom: 1px solid #E8E8E8;
     font: bold 15px "Lucida Grande", Arial, sans-serif;
     margin: 10px 0;
-    text-shadow: 0 1px 0 #FFFFFF;
 }
 
 h6 {
     font: bold 12px "Lucida Grande", Verdana, sans-serif;
     border-bottom: 1px solid #E8E8E8;
     margin: 0 0 5px;
-    text-shadow: 0 1px 0 #FFFFFF;
 }
 
 p {
     line-height: 150%;
     margin: 3px 0 10px;
-    text-shadow: 0 1px 0 #FFFFFF;
 }
 
 a,a:link,a:active,a:visited {
@@ -309,22 +279,20 @@ div.logout {
 
 /* Main Content style */
 .mainBlock {
-    background-color: #fcfcfc;
+    background-color: #fff;
     padding: 0;
-    border-bottom: 2px solid #3670b9;
 }
 
 .leftCell {
   width:15%;
-  padding:2em 0;
+  padding:1em 0 2em;
   background-color:#f9f9f9;
   color:#666;
 }
 
 .mainCell {
   width: 65%;
-  padding:2em;
-  padding-bottom: 1.5em;
+  padding:1em 2em 1.5em;
 }
 
 .rightCell {
@@ -575,15 +543,13 @@ select.project-choice {
 /* Footer style */
 .footer {
     padding: 1em;
-    background-color: #f9f9f9;
-    color: #5b5b5b;
-    text-shadow: 0 1px 0 #FFFFFF;
+    background-color: #404040;
+    color: #aaa;
     text-align: center;
-    text-shadow: 0 1px 0 #FFFFFF;
 }
 
 .footer a, .footer a:visited, .footer a:hover {
- color:#666;
+ color:#fff;
 }
 
 .footer span a {
@@ -778,7 +744,7 @@ table.registration .header {
 }
 
 .glossyButton,a.glossyButton {
-   background-color: #3670B9;
+   background-color: #00adff;
     border-radius: 0.4em 0.4em 0.4em 0.4em;
     border-style: none;
     color: white;
@@ -789,9 +755,8 @@ table.registration .header {
 }
 
 .glossyButton:hover,a.glossyButton:hover {
+  background-color: #ff452a;
   cursor: pointer;
-  box-shadow: 2px 2px 3px rgba(50,50,50,0.3);
-  text-shadow: -1px -1px 2px rgba(50,50,50,0.3)
 }
 
 ul.noBullet {
@@ -965,17 +930,6 @@ ul.hide {
   border-radius: 2px;
 }
 
-#wizardFrame {
-  box-shadow:0 4px 10px rgba(50, 50, 50, 0.1);
-/*  text-align: left; 
- margin : 1em auto;
- box-shadow : 0 0 1em #CCCCCC;
- width: 730px;
- border-radius : 1em;
- -moz-border-radius : 1em;
- -webkit-border-radius : 1em; */
-}
-
 .buttonContainer {
   margin : 1em 0;
 }
@@ -998,10 +952,6 @@ ul.hide {
   border-color: #ffeb6d;
   border-style: solid;
   padding-right: 1em;
-}
-
-.presetContainer {
-
 }
 
 .blocContainer {
