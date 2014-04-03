@@ -102,7 +102,7 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
                     paginable.isPreviousPageAvailable());
             jg.writeBooleanField("isNextPageAvailable",
                     paginable.isNextPageAvailable());
-            jg.writeBooleanField("isLasPageAvailable",
+            jg.writeBooleanField("isLastPageAvailable",
                     paginable.isLastPageAvailable());
             jg.writeBooleanField("isSortable", paginable.isSortable());
             jg.writeBooleanField("hasError", paginable.hasError());

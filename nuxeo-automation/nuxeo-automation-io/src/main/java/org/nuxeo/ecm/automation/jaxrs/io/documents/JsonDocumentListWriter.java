@@ -132,7 +132,7 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
                     provider.isPreviousPageAvailable());
             jg.writeBooleanField("isNextPageAvailable",
                     provider.isNextPageAvailable());
-            jg.writeBooleanField("isLasPageAvailable",
+            jg.writeBooleanField("isLastPageAvailable",
                     provider.isLastPageAvailable());
             jg.writeBooleanField("isSortable", provider.isSortable());
             jg.writeBooleanField("hasError", provider.hasError());
