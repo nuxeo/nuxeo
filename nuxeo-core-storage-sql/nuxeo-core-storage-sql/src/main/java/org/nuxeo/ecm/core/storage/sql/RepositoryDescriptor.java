@@ -151,7 +151,7 @@ public class RepositoryDescriptor {
         @XNode("@name")
         public void setName(String name) {
             if (!StringUtils.isBlank(name) && field == null) {
-                this.field = name;
+                field = name;
             }
         }
 
@@ -213,8 +213,13 @@ public class RepositoryDescriptor {
     @XNode("repository")
     public RepositoryDescriptor repositoryDescriptor;
 
-    @XNode("pool")
     public NuxeoConnectionManagerConfiguration pool;
+
+    @XNode("pool")
+    public void setPool(NuxeoConnectionManagerConfiguration pool) {
+        pool.setName(pool.getName() + "/" + name);
+        this.pool = pool;
+    }
 
     @XNode("backendClass")
     public Class<? extends RepositoryBackend> backendClass;

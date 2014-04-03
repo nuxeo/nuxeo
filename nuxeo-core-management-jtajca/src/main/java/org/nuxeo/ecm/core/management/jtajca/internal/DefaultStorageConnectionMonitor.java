@@ -56,12 +56,12 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
     // @since 5.7.2
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final String repositoryName;
+    protected final String name;
 
     protected AbstractConnectionManager cm;
 
-    protected DefaultStorageConnectionMonitor(String repositoryName, AbstractConnectionManager cm) {
-        this.repositoryName = repositoryName;
+    protected DefaultStorageConnectionMonitor(String mame, AbstractConnectionManager cm) {
+        name = mame;
         this.cm = enhanceConnectionManager(cm);
     }
 
@@ -148,13 +148,15 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
             } finally {
                 String name = method.getName();
                 traceInvoke(method, args);
-                ConnectionInfo info = (ConnectionInfo) args[0];
-                ManagedConnection connection = info.getManagedConnectionInfo().getManagedConnection();
-                IdProvider midProvider = guessProvider(connection);
-                if (name.startsWith("get")) {
-                    MDC.put(midProvider.key(), midProvider.id(connection));
-                } else if (name.startsWith("return")) {
-                    MDC.remove(midProvider.key());
+                if (args != null && args.length > 0) {
+                    ConnectionInfo info = (ConnectionInfo) args[0];
+                    ManagedConnection connection = info.getManagedConnectionInfo().getManagedConnection();
+                    IdProvider midProvider = guessProvider(connection);
+                    if (name.startsWith("get")) {
+                        MDC.put(midProvider.key(), midProvider.id(connection));
+                    } else if (name.startsWith("return")) {
+                        MDC.remove(midProvider.key());
+                    }
                 }
             }
         }
@@ -228,12 +230,12 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
 
     @Override
     public void install() {
-        self = DefaultMonitorComponent.bind(this, repositoryName);
+        self = DefaultMonitorComponent.bind(this, name);
         registry.register(MetricRegistry.name("nuxeo", "repositories",
-                repositoryName, "connections", "count"), new JmxAttributeGauge(
+                name, "connections", "count"), new JmxAttributeGauge(
                 self.getObjectName(), "ConnectionCount"));
         registry.register(MetricRegistry.name("nuxeo", "repositories",
-                repositoryName, "connections", "idle"), new JmxAttributeGauge(
+                name, "connections", "idle"), new JmxAttributeGauge(
                 self.getObjectName(), "IdleConnectionCount"));
     }
 

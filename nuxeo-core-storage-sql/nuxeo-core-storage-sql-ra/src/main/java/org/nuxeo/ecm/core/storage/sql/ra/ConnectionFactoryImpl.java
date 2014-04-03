@@ -21,6 +21,7 @@ import javax.resource.cci.RecordFactory;
 import javax.resource.cci.ResourceAdapterMetaData;
 import javax.resource.spi.ConnectionManager;
 
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
@@ -179,7 +180,13 @@ public class ConnectionFactoryImpl implements Repository,
 
     @Override
     public void shutdown() {
-        managedConnectionFactory.shutdown();
+        try {
+            NuxeoContainer.disposeConnectionManager(connectionManager);
+        } catch (Exception cause) {
+            // don't report as an error, datasources may not be available
+            LogFactory.getLog(ConnectionFactoryImpl.class).warn("cannot dispose connection manager of "
+                    + name, cause);
+        }
     }
 
     /*

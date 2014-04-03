@@ -78,9 +78,9 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
         @Override
         public void handleConnectionManagerReset(String name,
-                AbstractConnectionManager mgr) {
+                AbstractConnectionManager cm) {
             DefaultStorageConnectionMonitor monitor = (DefaultStorageConnectionMonitor) storageConnectionMonitors.get(name);
-            monitor.handleNewConnectionManager(mgr);
+            monitor.handleNewConnectionManager(cm);
         }
 
     }
