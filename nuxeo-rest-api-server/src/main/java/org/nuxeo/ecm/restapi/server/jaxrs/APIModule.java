@@ -44,6 +44,12 @@ import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntriesWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntryReader;
 import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntryWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.documents.ACPWriter;
+import org.nuxeo.ecm.restapi.jaxrs.io.types.DocumentTypeWriter;
+import org.nuxeo.ecm.restapi.jaxrs.io.types.DocumentTypesWriter;
+import org.nuxeo.ecm.restapi.jaxrs.io.types.FacetWriter;
+import org.nuxeo.ecm.restapi.jaxrs.io.types.FacetsWriter;
+import org.nuxeo.ecm.restapi.jaxrs.io.types.SchemaWriter;
+import org.nuxeo.ecm.restapi.jaxrs.io.types.SchemasWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoGroupListWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoGroupReader;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoGroupWriter;
@@ -102,6 +108,13 @@ public class APIModule extends WebEngineModule {
         result.add(new LogEntryListWriter());
         result.add(new LogEntryWriter());
         result.add(new BusinessAdapterListWriter());
+        result.add(new SchemasWriter());
+        result.add(new SchemaWriter());
+        result.add(new DocumentTypeWriter());
+        result.add(new DocumentTypesWriter());
+        result.add(new FacetWriter());
+        result.add(new FacetsWriter());
+
         return result;
     }
 }

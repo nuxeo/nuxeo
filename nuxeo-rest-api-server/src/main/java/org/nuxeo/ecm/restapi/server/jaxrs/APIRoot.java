@@ -82,6 +82,11 @@ public class APIRoot extends ModuleRoot {
         return newObject("doc");
     }
 
+    @Path("/config")
+    public Object doGetConfig() {
+        return newObject("config");
+    }
+
     @Override
     public Object handleError(WebApplicationException e) {
         if (e instanceof WebSecurityException) {
