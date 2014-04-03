@@ -28,6 +28,7 @@
         <title>Invitation for a test workspace</title>
         <template>templates/TestUserRegistration.ftl</template>
       </validationEmail>
+      <registrationUserFactory>org.nuxeo.ecm.user.registration.DefaultRegistrationUserFactory</registrationUserFactory>
     </configuration>
 
     <configuration name="test">
@@ -42,6 +43,7 @@
         <title>Invitation for another test folder</title>
         <template>templates/TestUserRegistration.ftl</template>
       </validationEmail>
+      <registrationUserFactory>org.nuxeo.ecm.user.registration.DefaultRegistrationUserFactory</registrationUserFactory>
     </configuration>
   </extension>
 </component>

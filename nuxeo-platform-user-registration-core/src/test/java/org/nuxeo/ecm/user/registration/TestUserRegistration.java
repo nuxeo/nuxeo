@@ -129,6 +129,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
         session.save();
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         assertEquals(0, session.query(searchUserRegistration).size());
     }
 }

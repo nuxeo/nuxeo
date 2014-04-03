@@ -22,13 +22,14 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
 
 public interface UserRegistrationService extends UserInvitationService {
 
-    public static final String CONFIGURATION_NAME = "user_registration_doc";
+    public static final String CONFIGURATION_NAME = UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
 
     /**
      * Stores a registration request and return a unique ID for it

@@ -25,7 +25,7 @@
 
   <extension target="org.nuxeo.ecm.user.registration.UserRegistrationService"
              point="configuration">
-    <configuration name="user_registration_doc" merge="true">
+    <configuration merge="true">
       <requestDocType>UserRegistration</requestDocType>
       <container>
         <docType>UserRegistrationContainer</docType>
