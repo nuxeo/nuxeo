@@ -654,10 +654,10 @@ public class UserInvitationComponent extends DefaultComponent implements
         }
     }
 
-    protected RegistrationUserFactory getRegistrationUserFactory(
+    protected InvitationUserFactory getRegistrationUserFactory(
             UserRegistrationConfiguration configuration) {
-        RegistrationUserFactory factory = null;
-        Class<? extends RegistrationUserFactory> factoryClass = configuration.getRegistrationUserFactory();
+        InvitationUserFactory factory = null;
+        Class<? extends InvitationUserFactory> factoryClass = configuration.getRegistrationUserFactory();
         if (factoryClass != null) {
             try {
                 factory = factoryClass.newInstance();
@@ -668,7 +668,7 @@ public class UserInvitationComponent extends DefaultComponent implements
             }
         }
         if (factory == null) {
-            factory = new DefaultRegistrationUserFactory();
+            factory = new DefaultInvitationUserFactory();
         }
         return factory;
     }

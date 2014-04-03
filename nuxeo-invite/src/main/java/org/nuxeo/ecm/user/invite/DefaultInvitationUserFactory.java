@@ -27,9 +27,9 @@ import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
-public class DefaultRegistrationUserFactory implements RegistrationUserFactory {
+public class DefaultInvitationUserFactory implements InvitationUserFactory {
 
-    private static final Log log = LogFactory.getLog(DefaultRegistrationUserFactory.class);
+    private static final Log log = LogFactory.getLog(DefaultInvitationUserFactory.class);
 
     @Override
     public void doPostUserCreation(CoreSession session,

@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
-public interface RegistrationUserFactory {
+public interface InvitationUserFactory {
 
     /**
      * Handle user creation

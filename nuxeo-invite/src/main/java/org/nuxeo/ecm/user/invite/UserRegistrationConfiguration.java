@@ -72,7 +72,7 @@ public class UserRegistrationConfiguration {
     private String reviveEmailTemplate;
 
     @XNode("registrationUserFactory")
-    private Class<? extends RegistrationUserFactory> registrationUserFactory;
+    private Class<? extends InvitationUserFactory> registrationUserFactory;
 
     @XNode("validationRelUrl")
     private String validationRelUrl;
@@ -122,7 +122,7 @@ public class UserRegistrationConfiguration {
         return successEmailTemplate;
     }
 
-    public Class<? extends RegistrationUserFactory> getRegistrationUserFactory() {
+    public Class<? extends InvitationUserFactory> getRegistrationUserFactory() {
         return registrationUserFactory;
     }
 
