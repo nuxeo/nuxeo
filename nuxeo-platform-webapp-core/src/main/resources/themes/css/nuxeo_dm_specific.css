@@ -13,12 +13,14 @@ author: lkemen@nuxeo.com
   height: auto!important;
   height: 660px }
 
+.nxMainContainer .content {
+  padding: 1em 1.5em 2em }
+
 .nxMainContainer .column {
-  border-width: 1px;
-  border-style: none solid none none;
-  border-color: "neutral.lighter (__FLAVOR__ border)";
+  background: none 0;
+  border-right: 1px solid #eee;
   font-size: .85em;
-  padding: 5px }
+  padding: 1em .5em }
 
 /* =List of available servers  */
 .serverChoice {
@@ -49,11 +51,11 @@ author: lkemen@nuxeo.com
 
 /* =Clipboard & Worklist */
 .userClipboard {
-  margin: 1em 0 }
+  margin: 0 0 2em }
 
 .userClipboardContent {
   margin: 0;
-  padding: 1em 0;
+  padding: 1.2em 0;
   word-wrap: break-word }
 
 .dropInto,

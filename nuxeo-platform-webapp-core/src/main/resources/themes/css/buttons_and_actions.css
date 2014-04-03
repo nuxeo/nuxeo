@@ -18,7 +18,7 @@ input::-moz-focus-inner {
 a.button,
 input.button,
 .action_bar a {
-  box-shadow: 0 -2px 5px #fff inset;
+  box-shadow: 0 -2px 3px #f3f3f3 inset;
   background-color: "button (__FLAVOR__ background)";
   border-radius: 3px;
   border: 1px solid;
@@ -72,7 +72,7 @@ input.tinyButton,
 input.smallButton {
   background-color: #fff;
   color: "link (__FLAVOR__ color)";
-  font-size: .92em;
+  font-size: .9em;
   padding: .25em .5em;
   text-decoration: none }
 
@@ -87,9 +87,6 @@ input.tinyButton {
   background: url("${basePath}/icons/dropdown.png") no-repeat scroll right center;
   background-color: "button (__FLAVOR__ background)";
   padding: .25em 1.5em .2em .8em !important }
-
-.dropdown:hover {
-  background-color: "neutral.light (__FLAVOR__ background)" }
 
 /* =Action Bar */
 .action_bar {

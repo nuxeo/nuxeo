@@ -66,7 +66,7 @@ a.linkedin .footerLabel {
 .links a:link,
 .links a:visited,
 .bannerBottom .links a {
-  background-color: #009aea;
+  background-color: #ff452a;
   border-radius: 5px;
   color: #fff;
   cursor: pointer;
@@ -77,7 +77,7 @@ a.linkedin .footerLabel {
   text-transform: uppercase }
 
 .bannerBottom .links a:hover {
-  background-color: #00c168;
+  background-color: #e71d00;
   color:#fff;
   text-decoration: none }
 
@@ -85,11 +85,10 @@ a.linkedin .footerLabel {
   padding: .1em }
 
 .bannerMessage a {
-  color: #009aea }
+  color: #fff }
 
 .unregistered {
-  background-color: #eee;
-  border-top: 1px solid #ddd;
+  background-color: #00adff;
   color: #02316c }
 
 .unregistered .bannerMessage {

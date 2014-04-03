@@ -5,23 +5,19 @@ author: lkemen@nuxeo.com
 
 /* Container of the main part without header and footer */
 .nxMainContainer {
-  width: 100%;
-  font-size: .8em }
+  font-size: .8em;
+  margin-top: 3.6em;
+  width: 100% }
 
 /* Left column */
-.nxMainContainer .column {
-  border-width: 1px;
-  border-style: none solid none none;
-  border-color: "neutral.lighter (__FLAVOR__ border)";
-  font-size: .85em;
-  padding: .5em; width: 18% }
+.column,
+.adminTabsColumn {
+  background: transparent url('${basePath}/img/nxbg.png') repeat left top;
+  width: 18% }
 
 /* Main region */
-.nxMainContainer .content {
-  padding: 0 }
-
 .mainFragment {
-  padding: .6em }
+  padding: .6em 0 }
 
 /* Description of folders - to be moved to tabs_content */
 .currentDocumentDescription {

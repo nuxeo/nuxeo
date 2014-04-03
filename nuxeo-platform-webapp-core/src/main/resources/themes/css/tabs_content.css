@@ -9,7 +9,7 @@ author: lkemen@nuxeo.com
 /* =TabsContent */
 .tabsContent {
   margin: 0;
-  padding: 1.5em 1em }
+  padding: 2em 0 }
 
 .contentViewTitle {
   border-bottom: 1px solid;
@@ -62,7 +62,7 @@ author: lkemen@nuxeo.com
 .note_content_block {
   background-color: #fff;
   border: 1px solid;
-  border-color: "neutral.light (__FLAVOR__ border)";
+  border-color: "neutral.lighter (__FLAVOR__ border)";
   color: "black (__FLAVOR__ color)";
   display: block;
   margin: 0 0 1.4em;

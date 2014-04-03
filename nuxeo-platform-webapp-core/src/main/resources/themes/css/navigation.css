@@ -11,12 +11,11 @@ author: lkemen@nuxeo.com
 .tabsBar {
   background: none #fff;
   border-width: 1px; border-style: solid;
-  border-color: "neutral.lighter (__FLAVOR__ border)" "neutral.lighter (__FLAVOR__ border)" "neutral.light (__FLAVOR__ border)";
+  border-color: "neutral.lighter (__FLAVOR__ border)";
   border-radius: 3px;
   float: left;
   font-family: arial,sans-serif;
   font-size: 1em;
-  margin-top: .4em;
   width: 100% }
 
 .tabsBar ul {
@@ -25,7 +24,6 @@ author: lkemen@nuxeo.com
   padding: 0 1em 0 0 }
 
 .tabsBar li {
-  background-color: "neutral.lighter (__FLAVOR__ background)";
   border-width: 1px;
   border-style: none solid none none;
   border-color: "neutral.lighter (__FLAVOR__ border)";
@@ -35,38 +33,29 @@ author: lkemen@nuxeo.com
 .tabsBar a,
 .tabsBar a:visited {
   background: transparent;
+  border-top: 4px solid transparent;
   color: "gray.dark (__FLAVOR__ color)";
   display: block;
   float: left;
-  padding: .4em .5em .5em;
+  padding: .3em .5em .6em;
   text-decoration: none }
+
+.column .tabsBar li a,
+.modularTabs li a {
+  border-top: 3px solid transparent }
 
 .tabsBar li a:hover,
 .tabsBar li.selected a,
-.tabsBar li.selected a:visited {
-  background: none "color.major.stronger (__FLAVOR__ background)";
-  color: #fff }
-
-.modularTabs,
-.column .tabsBar {
-  border: 1px solid;
-  border-color: "neutral.lighter (__FLAVOR__ border)" }
-
-.modularTabs li a,
-.column .tabsBar li a {
-  border-top: 3px solid transparent;
-  color: "gray.dark (__FLAVOR__ color)";
-  padding-top: .3em }
-
-.tabsBar.modularTabs li a:hover,
-.tabsBar.modularTabs li.selected a,
-.tabsBar.modularTabs li.selected a:visited,
-.column .tabsBar li a:hover,
-.column .tabsBar li.selected a,
-.column .tabsBar li.selected a:visited {
-  background-color: #fff;
+.tabsBar li.selected a:visited,
+.modularTabs li a:hover,
+.modularTabs li.selected a,
+.modularTabs li.selected a:visited {
   border-color: "color.major.stronger (__FLAVOR__ border)";
   color: "tabs.selected (__FLAVOR__ color)" }
+
+
+.tabsBar li.selected a {
+  font-weight: bold }
 
 .subtabsBar {
   background: none transparent;
@@ -104,17 +93,16 @@ author: lkemen@nuxeo.com
 
 /* Vertical tabs in home and admin Center */
 .adminTabsColumn {
-  background: "color.major.light (__FLAVOR__ background)";
   height: auto!important;
   padding: 0;
-  width: 210px }
+  border-right: 1px solid #eee; }
 
 .adminTabBlock {
   height: 100%;
   margin: 0 }
 
 .adminTabsColumn ul {
-  margin: 0;
+  margin: 0 -1px 0 8px;
   padding: 2em 0 }
 
 .adminTabsColumn li {
@@ -137,9 +125,13 @@ author: lkemen@nuxeo.com
 .adminTabsColumn li.selected:hover {
   background-color: #fff;
   margin-left: .2em;
-  -moz-transition: margin 0.1s ease 0.1s;
-  -webkit-transition: margin 0.1s ease 0.1s;
-  transition: margin 0.1s ease 0.1s }
+  -moz-transition: margin 0.1s ease-in 0.1s;
+  -webkit-transition: margin 0.1s ease-in 0.1s;
+  transition: margin 0.1s ease-in 0.1s }
+
+.adminTabsColumn li.selected {
+  border: 1px solid #eee;
+  border-style: solid none }
 
 .adminTabsColumn li:hover a,
 .adminTabsColumn li.selected a {

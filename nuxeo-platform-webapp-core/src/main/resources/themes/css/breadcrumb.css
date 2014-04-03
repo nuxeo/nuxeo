@@ -6,8 +6,8 @@ author: lkemen@nuxeo.com
 /* =Breadcrumb */
 .breadcrumb {
   color: "gray.light (__FLAVOR__ color)";
-  font-size: .7em;
-  padding: .3em .6em }
+  font-size: .85em;
+  margin: 0 0 .5em }
 
 .breadcrumb .action_bar {
   margin: 0 }
@@ -23,12 +23,18 @@ author: lkemen@nuxeo.com
 .breadcrumbs a,
 .breadcrumbs a:link,
 .breadcrumbs a:visited {
-  color: "gray.light (__FLAVOR__ color)" }
+  color: "gray.dark (__FLAVOR__ color)" }
 
 .breadcrumbs a:hover,
 .breadcrumbs a:active {
   color: "link (__FLAVOR__ color)";
   font-weight: normal }
+
+.breadcrumbs a:last-of-type,
+.breadcrumbs a:last-of-type:hover,
+.breadcrumbs a:last-of-type:active {
+  color: "gray.light (__FLAVOR__ color)";
+  cursor: default }
 
 .breadcrumbs a img {
   border: 1px solid transparent;
@@ -39,3 +45,6 @@ author: lkemen@nuxeo.com
 
 .printButton {
   float: right }
+
+.breadcrumb .actionsWidgetPanel {
+  padding: 0 }

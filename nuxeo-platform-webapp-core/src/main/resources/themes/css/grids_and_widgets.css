@@ -47,15 +47,14 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .summaryTitle,
 .gridBox .summaryTitle {
   border-width: 3px;
-  border-style: double none none;
-  border-color: #eee;
+  border-style: solid none none;
+  border-color: #f9f9f9;
   color: "black (__FLAVOR__ color)";
   display: block;
   font-size: 1.2em;
   font-weight: bold;
   margin: 0 0 .6em;
-  padding: .8em 0 .2em;
-  text-transform: uppercase }
+  padding: .8em 0 .2em }
 
 .gridBox .foldableBox {
   margin-right: 1em;

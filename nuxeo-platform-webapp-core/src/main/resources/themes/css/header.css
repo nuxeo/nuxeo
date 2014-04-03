@@ -11,8 +11,12 @@ author: lkemen@nuxeo.com
 /* =Header */
 .nxHeader {
   background-color: "header (__FLAVOR__ background)";
+  box-shadow: 0 1px 2px #ccc;
   overflow: auto;
-  width:100% }
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1041 }
 
 .nxHeader .logo {
   padding: .1em 0;
@@ -24,7 +28,7 @@ author: lkemen@nuxeo.com
   font-size: 12px;
   font-family: Arial;
   line-height: 280%;
-  padding: .5em 0;
+  padding: .85em 0;
   text-transform: uppercase;
   vertical-align: middle;
   width: 82% }
@@ -82,18 +86,15 @@ author: lkemen@nuxeo.com
 
 .userSearchBlock .directoryFilter {
   background: #fff url('${basePath}/icons/search.png') no-repeat 98% center;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   box-shadow: none;
+  border: 1px solid #ddd;
   border-radius: .25em;
   font-size: 1em;
   height: 25px;
   line-height: normal;
   padding: .4em 1.8em .3em .3em;
   margin: 0 .6em 0 0;
-  -moz-transition: all 0.2s ease 0.1s;
-  -webkit-transition: all 0.2s ease 0.1s;
   transition: all 0.2s ease 0.1s }
 
 .userSearchBlock input.button {
