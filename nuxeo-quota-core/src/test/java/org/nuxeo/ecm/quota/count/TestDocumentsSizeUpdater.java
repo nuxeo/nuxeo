@@ -76,7 +76,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ QuotaFeature.class })
-@TransactionalConfig(autoStart = false)
+@TransactionalConfig
 public class TestDocumentsSizeUpdater {
 
     @Inject
@@ -121,7 +121,6 @@ public class TestDocumentsSizeUpdater {
     public void testQuotaOnAddContent() throws Exception {
 
         addContent();
-
         isr.run(new RunnableWithException() {
 
             @Override
@@ -1324,16 +1323,19 @@ public class TestDocumentsSizeUpdater {
                 DocumentModel ws = session.createDocumentModel("/", "ws",
                         "Workspace");
                 ws = session.createDocument(ws);
+                ws = session.saveDocument(ws);
                 wsRef = ws.getRef();
 
                 DocumentModel firstFolder = session.createDocumentModel(
                         ws.getPathAsString(), "folder1", "Folder");
                 firstFolder = session.createDocument(firstFolder);
+                firstFolder = session.saveDocument(firstFolder);
                 firstFolderRef = firstFolder.getRef();
 
                 DocumentModel firstSubFolder = session.createDocumentModel(
                         firstFolder.getPathAsString(), "subfolder1", "Folder");
                 firstSubFolder = session.createDocument(firstSubFolder);
+                firstSubFolder = session.saveDocument(firstSubFolder);
 
                 firstSubFolderRef = firstSubFolder.getRef();
 
@@ -1342,6 +1344,7 @@ public class TestDocumentsSizeUpdater {
                 firstFile.setPropertyValue("file:content",
                         (Serializable) getFakeBlob(100));
                 firstFile = session.createDocument(firstFile);
+                firstFile = session.saveDocument(firstFile);
                 if (checkInFirstFile) {
                     firstFile.checkIn(VersioningOption.MINOR, null);
                 }
@@ -1354,18 +1357,20 @@ public class TestDocumentsSizeUpdater {
                         (Serializable) getFakeBlob(200));
 
                 secondFile = session.createDocument(secondFile);
+                secondFile = session.saveDocument(secondFile);
                 secondFileRef = secondFile.getRef();
 
                 DocumentModel secondSubFolder = session.createDocumentModel(
                         firstFolder.getPathAsString(), "subfolder2", "Folder");
                 secondSubFolder = session.createDocument(secondSubFolder);
+                secondSubFolder = session.saveDocument(secondSubFolder);
                 secondSubFolderRef = secondSubFolder.getRef();
 
                 DocumentModel secondFolder = session.createDocumentModel(
                         ws.getPathAsString(), "folder2", "Folder");
                 secondFolder = session.createDocument(secondFolder);
+                secondFolder = session.saveDocument(secondFolder);
                 secondFolderRef = secondFolder.getRef();
-
             }
         });
     }

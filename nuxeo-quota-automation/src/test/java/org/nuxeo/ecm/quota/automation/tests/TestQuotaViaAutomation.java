@@ -60,7 +60,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@TransactionalConfig(autoStart = false)
+@TransactionalConfig
 @RepositoryConfig(repositoryFactoryClass = PoolingRepositoryFactory.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.quota.core", "org.nuxeo.ecm.quota.automation",
         "org.nuxeo.ecm.automation.core" })
