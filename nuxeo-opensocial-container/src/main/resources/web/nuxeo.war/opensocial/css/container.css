@@ -38,32 +38,17 @@ iframe.gwt-Frame { border-width: 0;
 	margin-top: .5em }
 
 /*-- Gadgets --*/
-.widget { -moz-border-radius: 2px;
-	-webkit-border-radius: 2px;
+.widget {
 	border-radius: 2px;
-	border: 1px solid #ccc;
+	border: 1px solid #ddd;
 	background-color: #fff;
 	margin:0 0 1.5em !important }
 
 /* Widgets Header */
-.header { color:#666;
+.header { color:#000;
 	text-shadow: 1px 1px 3px #fff;
-	border-bottom: 1px solid #ccc;
-  background-image: -webkit-gradient(
-    linear,
-    left bottom,
-    left top,
-    color-stop(0, rgb(231,231,231)),
-    color-stop(.66, rgb(255,255,255)));
-  background-image: -moz-linear-gradient(
-    center bottom,
-    rgb(231,231,231) 0%,
-    rgb(255,255,255) 66%);
-  background-color: #e7e7e7;
-    /* For Internet Explorer 5.5 - 7 */
-  filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr='#ffffff', EndColorStr='#e8e8e8');
-    /* For Internet Explorer 8 */
-  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#e8e8e8)";}
+	border-bottom: 1px solid #ddd;
+  background-color: #fff;}
 
 .header .title { font-weight: bold;
   font-size: 102%;
