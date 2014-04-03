@@ -88,9 +88,6 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
         if ("connect".equals(name)) {
             return;
         }
-        if ("disconnect".equals(name)) {
-            return;
-        }
         if ("close".equals(name)) {
             return;
         }
@@ -98,11 +95,10 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
             return;
         }
 
-        log.warn("Session invoked in a container without a "
-                + "transaction active: turn on debug logs for more "
-                + "information about the faulty call.");
+        log.warn("CoreSession." + name + " invoked without a transaction,"
+                + " check debug logs for more information");
         if (log.isDebugEnabled()) {
-            log.debug("Session invoked in a container without a transaction",
+            log.debug("CoreSession." + name + " invoked without a transaction",
                     new Throwable());
         }
     }
