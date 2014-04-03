@@ -3,12 +3,13 @@ package org.nuxeo.ecm.user.registration;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.user.registration.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
+import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.user.invite.RegistrationRules;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -20,21 +21,21 @@ public class TestContainerLocalConfig extends AbstractUserRegistration {
     public void testGetRegistrationRules() throws ClientException {
         initializeRegistrations();
 
-        RegistrationRules rules = userRegistrationService.getRegistrationRules(DEFAULT_CONFIGURATION_NAME);
+        RegistrationRules rules = userRegistrationDocService.getRegistrationRules(DEFAULT_CONFIGURATION_NAME);
         assertNotNull(rules);
 
         assertTrue(rules.allowUserCreation());
         session.save();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
-        DocumentModel root = ((UserRegistrationComponent) userRegistrationService).getOrCreateRootDocument(
+        DocumentModel root = ((UserRegistrationComponent) userRegistrationDocService).getOrCreateRootDocument(
                 session, DEFAULT_CONFIGURATION_NAME);
         root.setPropertyValue(RegistrationRules.FIELD_ALLOW_USER_CREATION,
                 false);
         session.saveDocument(root);
         session.save();
 
-        rules = userRegistrationService.getRegistrationRules(DEFAULT_CONFIGURATION_NAME);
+        rules = userRegistrationDocService.getRegistrationRules(DEFAULT_CONFIGURATION_NAME);
         assertFalse(rules.allowUserCreation());
     }
 }

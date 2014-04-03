@@ -19,35 +19,9 @@ package org.nuxeo.ecm.user.registration;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.user.invite.InvitationUserFactory;
 
-public interface RegistrationUserFactory {
-
-    /**
-     * 
-     * @deprecated Logic into createUser will be moved into the component to
-     *             prevent from the need to call doPostUserCreation inside this
-     *             method. Must be moved into doCreateUser method.
-     * @see org.nuxeo.ecm.user.registration.DefaultRegistrationUserFactory#createUser
-     */
-    NuxeoPrincipal createUser(CoreSession session, DocumentModel registrationDoc)
-            throws ClientException, UserRegistrationException;
-
-    /**
-     * Handle user creation
-     * 
-     * @since 5.6
-     */
-    NuxeoPrincipal doCreateUser(CoreSession session,
-            DocumentModel registrationDoc) throws ClientException,
-            UserRegistrationException;
-
-    /**
-     * Called just after the user is created
-     */
-    void doPostUserCreation(CoreSession session, DocumentModel registrationDoc,
-            NuxeoPrincipal user) throws ClientException,
-            UserRegistrationException;
+public interface RegistrationUserFactory extends InvitationUserFactory {
 
     /**
      * @since 5.6
@@ -58,7 +32,7 @@ public interface RegistrationUserFactory {
 
     /**
      * Called just after the right is setted
-     * 
+     *
      * @since 5.6
      * @see UserRegistrationComponent#addRightsOnDoc
      */

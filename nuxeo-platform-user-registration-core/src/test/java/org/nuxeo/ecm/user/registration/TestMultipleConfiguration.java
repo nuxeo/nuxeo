@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.user.registration.RegistrationRules.FIELD_ALLOW_USER_CREATION;
-import static org.nuxeo.ecm.user.registration.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
+import static org.nuxeo.ecm.user.invite.RegistrationRules.FIELD_ALLOW_USER_CREATION;
+import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -16,36 +16,14 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.user.invite.RegistrationRules;
+import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
+import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
 public class TestMultipleConfiguration extends AbstractUserRegistration {
-
-    @Test
-    public void testMultipleConfigurationRegistration() {
-        Map<String, UserRegistrationConfiguration> configurations = ((UserRegistrationComponent) userRegistrationService).configurations;
-        assertEquals(2, configurations.size());
-        assertTrue(configurations.containsKey("test"));
-        assertTrue(configurations.containsKey(DEFAULT_CONFIGURATION_NAME));
-    }
-
-    @Test
-    public void testMultipleRegistrationRules() throws ClientException {
-        initializeRegistrations();
-
-        DocumentModel root = ((UserRegistrationComponent) userRegistrationService).getOrCreateRootDocument(
-                session, DEFAULT_CONFIGURATION_NAME);
-        root.setPropertyValue(FIELD_ALLOW_USER_CREATION, false);
-        session.saveDocument(root);
-        session.save();
-
-        RegistrationRules rules = userRegistrationService.getRegistrationRules(DEFAULT_CONFIGURATION_NAME);
-        assertFalse(rules.allowUserCreation());
-
-        rules = userRegistrationService.getRegistrationRules("test");
-        assertTrue(rules.allowUserCreation());
-    }
 
     @Test
     public void testMultipleUserRegistration() throws ClientException {
@@ -72,18 +50,18 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
         docInfo.setPermission(SecurityConstants.READ_WRITE);
 
         // Invite first user with defautl conf
-        String requestId = userRegistrationService.submitRegistrationRequest(
+        String requestId = userRegistrationDocService.submitRegistrationRequest(
                 DEFAULT_CONFIGURATION_NAME, userInfo, docInfo,
                 new HashMap<String, Serializable>(),
                 UserRegistrationService.ValidationMethod.NONE, true);
-        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
+        userRegistrationDocService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         // Invite second user with test conf
         userInfo.setLogin("testUser2");
-        requestId = userRegistrationService.submitRegistrationRequest("test",
+        requestId = userRegistrationDocService.submitRegistrationRequest("test",
                 userInfo, docInfo, new HashMap<String, Serializable>(),
                 UserRegistrationService.ValidationMethod.NONE, true);
-        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
+        userRegistrationDocService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
         session.save();
 

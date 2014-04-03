@@ -25,6 +25,8 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.user.invite.RegistrationRules;
+import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
 import org.nuxeo.runtime.api.Framework;
 
 public class UserRegistrationListener implements EventListener {
@@ -33,18 +35,20 @@ public class UserRegistrationListener implements EventListener {
 
     public void handleEvent(Event event) throws ClientException {
 
-        if (!event.getName().equals(
-                UserRegistrationService.REGISTRATION_VALIDATED_EVENT)) {
-            return;
-        }
+        try {
 
-        EventContext ctx = event.getContext();
-        if (ctx instanceof DocumentEventContext) {
-            DocumentEventContext docCtx = (DocumentEventContext) ctx;
-            DocumentModel registration = docCtx.getSourceDocument();
+            UserRegistrationService userRegistrationService = Framework.getService(UserRegistrationService.class);
 
-            try {
-                UserRegistrationService userRegistrationService = Framework.getService(UserRegistrationService.class);
+            if (!event.getName().equals(
+                    userRegistrationService.getNameEventRegistrationValidated())) {
+                return;
+            }
+
+            EventContext ctx = event.getContext();
+            if (ctx instanceof DocumentEventContext) {
+                DocumentEventContext docCtx = (DocumentEventContext) ctx;
+                DocumentModel registration = docCtx.getSourceDocument();
+
                 UserRegistrationConfiguration config = userRegistrationService.getConfiguration(registration);
                 RegistrationRules rules = userRegistrationService.getRegistrationRules(config.getName());
                 if (rules.allowUserCreation()) {
@@ -57,11 +61,11 @@ public class UserRegistrationListener implements EventListener {
                     userRegistrationService.addRightsOnDoc(
                             ctx.getCoreSession(), registration);
                 }
-            } catch (Exception e) {
-                event.markRollBack();
-                throw new ClientException("Unable to complete registration", e);
             }
 
+        } catch (Exception e) {
+            event.markRollBack();
+            throw new ClientException("Unable to complete registration", e);
         }
     }
 

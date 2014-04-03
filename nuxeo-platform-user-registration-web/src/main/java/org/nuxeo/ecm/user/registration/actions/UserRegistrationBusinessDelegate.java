@@ -9,7 +9,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Simple UserRegistrationService Business Delegate
- * 
+ *
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  * @since 5.6
  */

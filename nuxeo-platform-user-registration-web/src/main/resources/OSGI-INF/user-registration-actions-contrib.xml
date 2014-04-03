@@ -46,7 +46,7 @@
       <filter-id>view_content</filter-id>
       <filter id="displayRegistrationListingLocal">
         <rule grant="true">
-          <condition>#{userRegistrationConfigurationActions.getRules('default_registration').isDisplayLocalTab()}
+          <condition>#{userRegistrationConfigurationActions.getRules('user_registration_doc').isDisplayLocalTab()}
           </condition>
         </rule>
       </filter>

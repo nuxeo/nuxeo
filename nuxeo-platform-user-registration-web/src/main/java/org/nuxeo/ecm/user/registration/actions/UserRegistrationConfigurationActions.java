@@ -2,7 +2,7 @@ package org.nuxeo.ecm.user.registration.actions;
 
 import static org.jboss.seam.international.StatusMessage.Severity.ERROR;
 import static org.jboss.seam.international.StatusMessage.Severity.INFO;
-import static org.nuxeo.ecm.user.registration.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
+import static org.nuxeo.ecm.user.registration.UserRegistrationService.CONFIGURATION_NAME;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -18,7 +18,7 @@ import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.user.registration.RegistrationRules;
+import org.nuxeo.ecm.user.invite.RegistrationRules;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -49,7 +49,7 @@ public class UserRegistrationConfigurationActions implements Serializable {
 
     protected DocumentModel selectedConfigurationDocument;
 
-    protected String selectedConfiguration = DEFAULT_CONFIGURATION_NAME;
+    protected String selectedConfiguration = CONFIGURATION_NAME;
 
     public String getSelectedConfiguration() {
         return selectedConfiguration;
@@ -67,7 +67,7 @@ public class UserRegistrationConfigurationActions implements Serializable {
     public RegistrationRules getRules(String configurationName) throws ClientException {
         return userRegistrationService.getRegistrationRules(configurationName);
     }
-    
+
     public DocumentModel getConfigurationDocument() throws ClientException {
         if (selectedConfigurationDocument == null) {
             selectedConfigurationDocument = userRegistrationService.getRegistrationRulesDocument(
@@ -96,7 +96,7 @@ public class UserRegistrationConfigurationActions implements Serializable {
 
     @Observer({ EventNames.DOCUMENT_CHANGED })
     public void resetState() {
-        selectedConfiguration = DEFAULT_CONFIGURATION_NAME;
+        selectedConfiguration = CONFIGURATION_NAME;
         selectedConfigurationDocument = null;
     }
 }

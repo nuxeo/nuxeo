@@ -18,8 +18,8 @@ package org.nuxeo.ecm.user.registration.actions;
 
 import static org.jboss.seam.international.StatusMessage.Severity.ERROR;
 import static org.jboss.seam.international.StatusMessage.Severity.INFO;
-import static org.nuxeo.ecm.user.registration.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
-import static org.nuxeo.ecm.user.registration.UserRegistrationService.ValidationMethod.EMAIL;
+import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod.EMAIL;
+import static org.nuxeo.ecm.user.registration.UserRegistrationService.CONFIGURATION_NAME;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -54,7 +54,7 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
-import org.nuxeo.ecm.user.registration.UserRegistrationInfo;
+import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -135,7 +135,7 @@ public class UserRegistrationActions implements Serializable {
     }
 
     public String getDocType() throws ClientException {
-        return getDocType(DEFAULT_CONFIGURATION_NAME);
+        return getDocType(CONFIGURATION_NAME);
     }
 
     public String getDocType(String name) throws ClientException {
@@ -169,11 +169,11 @@ public class UserRegistrationActions implements Serializable {
     }
 
     public String getValidationBaseUrl() throws ClientException {
-        return getValidationBaseUrl(DEFAULT_CONFIGURATION_NAME);
+        return getValidationBaseUrl(CONFIGURATION_NAME);
     }
 
     public String getEnterPasswordUrl() throws ClientException {
-        return getEnterPasswordUrl(DEFAULT_CONFIGURATION_NAME);
+        return getEnterPasswordUrl(CONFIGURATION_NAME);
     }
 
     public void acceptRegistrationRequest(DocumentModel request) {
@@ -403,7 +403,7 @@ public class UserRegistrationActions implements Serializable {
 
     protected void doSubmitUserRegistration(String configurationName) {
         if (StringUtils.isBlank(configurationName)) {
-            configurationName = DEFAULT_CONFIGURATION_NAME;
+            configurationName = CONFIGURATION_NAME;
         }
 
         try {

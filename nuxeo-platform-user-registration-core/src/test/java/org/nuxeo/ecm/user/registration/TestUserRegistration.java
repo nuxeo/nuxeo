@@ -6,6 +6,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
+import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 import org.nuxeo.runtime.api.Framework;
 
 import java.io.Serializable;
@@ -13,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static org.nuxeo.ecm.user.registration.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
+import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
 
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
@@ -30,8 +32,8 @@ public class TestUserRegistration extends AbstractUserRegistration {
         DocumentModel doc = session.createDocumentModel("TestRegistration");
         assertTrue(doc.hasFacet("UserRegistration"));
 
-        assertNotNull(userRegistrationService);
-        UserRegistrationConfiguration config = userRegistrationService.getConfiguration();
+        assertNotNull(userRegistrationDocService);
+        UserRegistrationConfiguration config = userRegistrationDocService.getConfiguration();
         assertEquals("Workspace", config.getContainerDocType());
     }
 
@@ -45,10 +47,10 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
         assertEquals(0, userManager.searchUsers("jolivier").size());
 
-        String requestId = userRegistrationService.submitRegistrationRequest(
+        String requestId = userRegistrationDocService.submitRegistrationRequest(
                 userInfo, new HashMap<String, Serializable>(),
                 UserRegistrationService.ValidationMethod.NONE, true);
-        userRegistrationService.validateRegistration(requestId,
+        userRegistrationDocService.validateRegistration(requestId,
                 new HashMap<String, Serializable>());
 
         assertEquals(1, userManager.searchUsers("jolivier").size());
@@ -69,12 +71,12 @@ public class TestUserRegistration extends AbstractUserRegistration {
         assertEquals(0, userManager.searchUsers(templogin).size());
         assertEquals(0, userManager.searchUsers(newUser).size());
 
-        String requestId = userRegistrationService.submitRegistrationRequest(
+        String requestId = userRegistrationDocService.submitRegistrationRequest(
                 userInfo, new HashMap<String, Serializable>(),
                 UserRegistrationService.ValidationMethod.NONE, true);
         Map<String, Serializable> additionnalInfos = new HashMap<String, Serializable>();
         additionnalInfos.put("userinfo:login", newUser);
-        userRegistrationService.validateRegistration(requestId,
+        userRegistrationDocService.validateRegistration(requestId,
                 additionnalInfos);
 
         assertEquals(0, userManager.searchUsers(templogin).size());
@@ -104,11 +106,11 @@ public class TestUserRegistration extends AbstractUserRegistration {
         assertFalse(session.getACP(testWorkspace.getRef()).getAccess(
                 "testUser", SecurityConstants.READ_WRITE).toBoolean());
 
-        String requestId = userRegistrationService.submitRegistrationRequest(
+        String requestId = userRegistrationDocService.submitRegistrationRequest(
                 DEFAULT_CONFIGURATION_NAME, userInfo, docInfo,
                 new HashMap<String, Serializable>(),
                 UserRegistrationService.ValidationMethod.NONE, true);
-        userRegistrationService.validateRegistration(requestId,
+        userRegistrationDocService.validateRegistration(requestId,
                 new HashMap<String, Serializable>());
 
         session.save();

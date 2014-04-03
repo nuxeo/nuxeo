@@ -17,34 +17,18 @@
 package org.nuxeo.ecm.user.registration;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.user.invite.UserRegistrationException;
+import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
+import org.nuxeo.ecm.user.invite.UserInvitationService;
 
-public interface UserRegistrationService {
+public interface UserRegistrationService extends UserInvitationService {
 
-    public static final String REGISTRATION_DATA_DOC = "registrationDoc";
-
-    public static final String REGISTRATION_DATA_USER = "registeredUser";
-
-    public enum ValidationMethod {
-        EMAIL, NONE
-    }
-
-    // events fired by the service impl
-    public static final String REGISTRATION_SUBMITTED_EVENT = "registrationSubmitted";
-
-    public static final String REGISTRATION_ACCEPTED_EVENT = "registrationAccepted";
-
-    public static final String REGISTRATION_REJECTED_EVENT = "registrationRejected";
-
-    public static final String REGISTRATION_VALIDATED_EVENT = "registrationValidated";
+    public static final String CONFIGURATION_NAME = "user_registration_doc";
 
     /**
      * Stores a registration request and return a unique ID for it
@@ -56,31 +40,6 @@ public interface UserRegistrationService {
             ValidationMethod validationMethod, boolean autoAccept)
             throws ClientException, UserRegistrationException;
 
-    /**
-     * accept the registration request
-     *
-     * @param requestId
-     */
-    void acceptRegistrationRequest(String requestId,
-            Map<String, Serializable> additionnalInfo) throws ClientException,
-            UserRegistrationException;
-
-    /**
-     * reject the registration request
-     *
-     * @param requestId
-     */
-    void rejectRegistrationRequest(String requestId,
-            Map<String, Serializable> additionnalInfo) throws ClientException,
-            UserRegistrationException;
-
-    /**
-     * Validate a registration request and generate the target User
-     *
-     * @param requestId
-     */
-    Map<String, Serializable> validateRegistration(String requestId,
-            Map<String, Serializable> additionnalInfo) throws ClientException;
 
     /**
      * Validate a registration request and generate the target User
@@ -91,25 +50,6 @@ public interface UserRegistrationService {
             String requestId, Map<String, Serializable> additionnalInfo)
             throws ClientException, UserRegistrationException;
 
-    NuxeoPrincipal createUser(CoreSession session, DocumentModel registrationDoc)
-            throws ClientException, UserRegistrationException;
-
-    /**
-     * Send a mail to the invited user to revive his invitation If an error
-     * occured while sending an email, it logs it and continue.
-     *
-     * @since 5.6
-     */
-    void reviveRegistrationRequests(CoreSession session,
-            List<DocumentModel> registrationDocs) throws ClientException;
-
-    /**
-     * Delete a registration document
-     *
-     * @since 5.6
-     */
-    void deleteRegistrationRequests(CoreSession session,
-            List<DocumentModel> registrationDoc) throws ClientException;
 
     /**
      * Add an ACL with the right specified in the registration Doc or nothing,
@@ -121,44 +61,11 @@ public interface UserRegistrationService {
     void addRightsOnDoc(CoreSession session, DocumentModel registrationDoc)
             throws ClientException;
 
-    UserRegistrationConfiguration getConfiguration();
-
-    /**
-     * Retrieve registrations for a document givent the username
-     *
-     * @since 5.6
-     */
-    DocumentModelList getRegistrationsForUser(String docId, String username)
-            throws ClientException;
-
-    /**
-     * Return specific configuration for the specified name
-     *
-     * @param name configuration name
-     * @since 5.6
-     */
-    UserRegistrationConfiguration getConfiguration(String name);
-
-    /**
-     * @since 5.6
-     */
-    UserRegistrationConfiguration getConfiguration(DocumentModel requestDoc);
-
-    /**
-     * Get documentmodel that stores request configuration using
-     * RegistrationConfiguration facet.
-     *
-     * @param session
-     * @return
-     */
-    DocumentModel getRegistrationRulesDocument(CoreSession session,
-            String configurationName) throws ClientException;
-
     /**
      * Stores a resgitration request like submitRegistrationRequest with
      * Document information
      *
-     * @return a unique ID for it
+     * @return a unique ID for it`
      * @since 5.6
      */
     String submitRegistrationRequest(String configurationName,
@@ -166,27 +73,4 @@ public interface UserRegistrationService {
             Map<String, Serializable> additionnalInfo,
             ValidationMethod validationMethod, boolean autoAccept)
             throws ClientException, UserRegistrationException;
-
-    /**
-     * Get registration rules adapter
-     *
-     * @since 5.6
-     */
-    RegistrationRules getRegistrationRules(String configurationName)
-            throws ClientException;
-
-    /**
-     * List all registered onfiguration name
-     */
-    Set<String> getConfigurationsName();
-
-    /**
-     * The method checks if the request id is a valid one.
-     *
-     * @param requestId The value of the request id.
-     *
-     * @since 5.9.3
-     */
-    void checkRequestId(String requestId) throws ClientException,
-            UserRegistrationException;
 }
