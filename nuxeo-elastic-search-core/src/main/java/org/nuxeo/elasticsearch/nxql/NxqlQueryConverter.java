@@ -47,7 +47,9 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Helper class that holds the conversion logic.
@@ -179,9 +181,11 @@ public class NxqlQueryConverter {
             @Override
             public void visitFromClause(FromClause node) {
                 FromList elements = node.elements;
+                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+
                 for (int i = 0; i < elements.size(); i++) {
                     String type = elements.get(i);
-                    fromList.add(type);
+                    fromList.addAll(schemaManager.getDocumentTypeNamesExtending(type));
                     if (NXQLQueryMaker.TYPE_DOCUMENT.equalsIgnoreCase(type)) {
                         // From Document means all doc types
                         fromList.clear();
