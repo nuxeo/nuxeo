@@ -86,31 +86,29 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         List<String> browsePermissions = new ArrayList<String>(
                 Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
         ACP acp = doc.getACP();
-        ACL acl = acp.getACL(ACL.INHERITED_ACL);
-        if (acl == null) {
-            // blocked inheritance at this level
-            acl = acp.getACL(ACL.LOCAL_ACL);
-        }
         jg.writeArrayFieldStart("ecm:acl");
-        for (ACE ace : acl.getACEs()) {
-            if (ace.isGranted()
-                    && browsePermissions.contains(ace.getPermission())) {
-                jg.writeString(ace.getUsername());
-            }
-            if (ace.isDenied()) {
-                if (!EVERYONE.equals(ace.getUsername())) {
-                    jg.writeString(UNSUPPORTED_ACL);
+        outerloop: for (ACL acl : acp.getACLs()) {
+            for (ACE ace : acl.getACEs()) {
+                if (ace.isGranted()
+                        && browsePermissions.contains(ace.getPermission())) {
+                    jg.writeString(ace.getUsername());
                 }
-                break;
+                if (ace.isDenied()) {
+                    if (!EVERYONE.equals(ace.getUsername())) {
+                        jg.writeString(UNSUPPORTED_ACL);
+                    }
+                    break outerloop;
+                }
             }
         }
+
         jg.writeEndArray();
         Map<String, String> bmap = doc.getBinaryFulltext();
         if (bmap != null && !bmap.isEmpty()) {
             for (Map.Entry<String, String> item : bmap.entrySet()) {
                 String value = item.getValue();
                 if (value != null) {
-                    jg.writeStringField("ecm:" + item.getKey(), item.getValue());
+                    jg.writeStringField("ecm:" + item.getKey(), value);
                 }
             }
         }
