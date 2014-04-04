@@ -5,10 +5,10 @@ nuxeo.lightbox = (function(m) {
   var currentLocale;
 
   function getCurrentLocale() {
-    if (currentLocale) {
+    if (undefined == currentLocale) {
       var cookieLocale = jQuery.cookie('org.jboss.seam.core.Locale');
       if (cookieLocale) {
-        currentLocale = jQuery.cookie('org.jboss.seam.core.Locale');
+        currentLocale = cookieLocale;
       } else {
         var navLang = navigator.language || navigator.userLanguage;
         if (navLang) {
