@@ -25,7 +25,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-public class CompareCoreWithES {
+public class TestCompareCoreWithES {
 
     @Inject
     protected CoreSession session;
