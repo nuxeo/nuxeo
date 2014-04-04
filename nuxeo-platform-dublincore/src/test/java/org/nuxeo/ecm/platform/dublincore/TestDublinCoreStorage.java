@@ -217,7 +217,7 @@ public class TestDublinCoreStorage extends SQLRepositoryTestCase {
         closeSession();
 
         // Test if a previously contributor will be move to the end of the list
-        session = openSessionAs("Administrator");
+        session = openSessionAsAdminUser("Administrator");
 
         childFile3 = session.getDocument(childFile2.getRef());
         childFile3.setProperty("dublincore", "source", "testing");
