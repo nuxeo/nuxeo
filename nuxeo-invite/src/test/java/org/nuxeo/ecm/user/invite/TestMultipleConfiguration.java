@@ -1,3 +1,18 @@
+/*
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ */
 package org.nuxeo.ecm.user.invite;
 
 import static org.junit.Assert.assertEquals;
@@ -15,7 +30,6 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
@@ -65,30 +79,32 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
 
         // User info
         DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
-        userInfo.setPropertyValue("userinfo:login","testUser");
-        userInfo.setPropertyValue("userinfo:email","dummy@test.com");
-
+        userInfo.setPropertyValue("userinfo:login", "testUser");
+        userInfo.setPropertyValue("userinfo:email", "dummy@test.com");
 
         // Invite first user with defautl conf
         String requestId = userRegistrationService.submitRegistrationRequest(
                 DEFAULT_CONFIGURATION_NAME, userInfo,
                 new HashMap<String, Serializable>(),
                 UserInvitationService.ValidationMethod.NONE, true);
-        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
+        userRegistrationService.validateRegistration(requestId,
+                new HashMap<String, Serializable>());
 
         // Invite second user with test conf
-        userInfo.setPropertyValue("userinfo:login","testUser2");
+        userInfo.setPropertyValue("userinfo:login", "testUser2");
         requestId = userRegistrationService.submitRegistrationRequest("test",
                 userInfo, new HashMap<String, Serializable>(),
                 UserInvitationService.ValidationMethod.NONE, true);
-        userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
+        userRegistrationService.validateRegistration(requestId,
+                new HashMap<String, Serializable>());
 
         session.save();
 
         // Default registration container
         assertEquals(1, session.getChildren(new PathRef("/requests")).size());
         // Test registration container
-        assertEquals(1, session.getChildren(new PathRef("/test-requests")).size());
+        assertEquals(1,
+                session.getChildren(new PathRef("/test-requests")).size());
 
         assertNotNull(userManager.getUserModel("testUser"));
         assertNotNull(userManager.getUserModel("testUser2"));
