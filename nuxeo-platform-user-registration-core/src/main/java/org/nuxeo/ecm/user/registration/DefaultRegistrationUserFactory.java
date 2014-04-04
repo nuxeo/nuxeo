@@ -30,7 +30,8 @@ import org.nuxeo.ecm.user.invite.DefaultInvitationUserFactory;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 
-public class DefaultRegistrationUserFactory extends DefaultInvitationUserFactory implements RegistrationUserFactory {
+public class DefaultRegistrationUserFactory extends
+        DefaultInvitationUserFactory implements RegistrationUserFactory {
 
     private static final Log log = LogFactory.getLog(DefaultRegistrationUserFactory.class);
 
@@ -51,7 +52,8 @@ public class DefaultRegistrationUserFactory extends DefaultInvitationUserFactory
         DocumentModel document = session.getDocument(new IdRef(docId));
         if (!document.getACP().getAccess(login, permission).toBoolean()) {
             ACE ace = new ACE(login, permission, true);
-            // Always append ACL to the first place to be after the block rights inheritance ACE.
+            // Always append ACL to the first place to be after the block
+            // rights inheritance ACE.
             document.getACP().getOrCreateACL(ACL_NAME).add(0, ace);
 
             session.setACP(document.getRef(), document.getACP(), true);

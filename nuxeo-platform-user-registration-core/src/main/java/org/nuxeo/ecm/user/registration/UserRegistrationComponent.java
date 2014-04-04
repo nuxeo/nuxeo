@@ -42,8 +42,8 @@ import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 import org.nuxeo.runtime.api.Framework;
 
-public class UserRegistrationComponent extends UserInvitationComponent implements
-        UserRegistrationService {
+public class UserRegistrationComponent extends UserInvitationComponent
+        implements UserRegistrationService {
 
     protected static Log log = LogFactory.getLog(UserRegistrationService.class);
 
@@ -178,8 +178,8 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
         byPassAdminValidation |= registrationRules.allowDirectValidationForExistingUser()
                 && registrationRules.allowDirectValidationForNonExistingUser();
         if (byPassAdminValidation) {
-            // Build validationBaseUrl with nuxeo.url property as request is not
-            // accessible.
+            // Build validationBaseUrl with nuxeo.url property as request is
+            // not accessible.
             if (!additionnalInfo.containsKey("enterPasswordUrl")) {
                 String baseUrl = Framework.getProperty(NUXEO_URL_KEY);
 

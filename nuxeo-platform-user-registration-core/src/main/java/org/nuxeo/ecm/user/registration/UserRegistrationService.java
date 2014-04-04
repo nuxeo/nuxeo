@@ -22,10 +22,10 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
-import org.nuxeo.ecm.user.invite.UserInvitationService;
 
 public interface UserRegistrationService extends UserInvitationService {
 
@@ -41,7 +41,6 @@ public interface UserRegistrationService extends UserInvitationService {
             ValidationMethod validationMethod, boolean autoAccept)
             throws ClientException, UserRegistrationException;
 
-
     /**
      * Validate a registration request and generate the target User
      *
@@ -50,7 +49,6 @@ public interface UserRegistrationService extends UserInvitationService {
     Map<String, Serializable> validateRegistrationAndSendEmail(
             String requestId, Map<String, Serializable> additionnalInfo)
             throws ClientException, UserRegistrationException;
-
 
     /**
      * Add an ACL with the right specified in the registration Doc or nothing,
@@ -63,7 +61,7 @@ public interface UserRegistrationService extends UserInvitationService {
             throws ClientException;
 
     /**
-     * Stores a resgitration request like submitRegistrationRequest with
+     * Stores a registration request like submitRegistrationRequest with
      * Document information
      *
      * @return a unique ID for it`
