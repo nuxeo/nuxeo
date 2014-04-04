@@ -5,8 +5,21 @@ nuxeo.lightbox = (function(m) {
   var currentLocale;
 
   function getCurrentLocale() {
-    if (undefined == currentLocale) {
-      currentLocale = jQuery.cookie('org.jboss.seam.core.Locale');
+    if (currentLocale) {
+      var cookieLocale = jQuery.cookie('org.jboss.seam.core.Locale');
+      if (cookieLocale) {
+        currentLocale = jQuery.cookie('org.jboss.seam.core.Locale');
+      } else {
+        var navLang = navigator.language || navigator.userLanguage;
+        if (navLang) {
+          currentLocale = navLang;
+        }
+      }
+      if (currentLocale) {
+        currentLocale = currentLocale.split(new RegExp("[-_]+", "g"))[0];
+      } else {
+        currentLocale = 'en';
+      }
     }
     return currentLocale;
   }
@@ -33,7 +46,6 @@ nuxeo.lightbox = (function(m) {
 
     return markup;
   }
-  ;
 
   m.requestedSchema = 'dublincore, common, picture';
 
@@ -54,11 +66,11 @@ nuxeo.lightbox = (function(m) {
   m.formatUnknownDoc = function(doc) {
     var markup = '<div>' + '<h3>Not supported yet!</h3>' + '<div>';
     return markup;
-  }
+  };
 
   m.formatVideoDoc = function(doc) {
     return formatDocWithPicture(doc, '/nuxeo/img/empty_picture.png');
-  }
+  };
 
   m.formatDoc = function(doc) {
     if (doc.facets.indexOf('MultiviewPicture') > -1) {
@@ -70,7 +82,7 @@ nuxeo.lightbox = (function(m) {
     } else {
       return nuxeo.lightbox.formatUnknownDoc(doc);
     }
-  }
+  };
 
   return m;
 
