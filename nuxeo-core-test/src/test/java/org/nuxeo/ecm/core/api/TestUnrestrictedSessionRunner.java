@@ -48,7 +48,7 @@ public class TestUnrestrictedSessionRunner extends SQLRepositoryTestCase {
 
     @Test
     public void testUnrestrictedSessionSeesDocCreatedBefore() throws Exception {
-        session = openSessionAs("Administrator");
+        session = openSessionAsAdminUser("Administrator");
         unrestrictedSeesDocCreatedBefore(session);
         closeSession();
     }

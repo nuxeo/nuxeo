@@ -64,7 +64,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         Repository repo = repositoryManager.getRepository(REPOSITORY_NAME);
         assertEquals(1, repo.getActiveSessionsCount());
 
-        CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
+        CoreSession session2 = openSessionAsAdminUser(SecurityConstants.ADMINISTRATOR);
         assertEquals(1, repo.getActiveSessionsCount());
         try {
             DocumentModel doc = new DocumentModelImpl("/", "doc", "Document");
@@ -100,7 +100,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
                 try {
                     TransactionHelper.startTransaction();
                     CoreSession session2;
-                    session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
+                    session2 = openSessionAsAdminUser(SecurityConstants.ADMINISTRATOR);
                     try {
                         assertTrue(session2.exists(new PathRef("/doc")));
                     } finally {
@@ -278,7 +278,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
                 try {
                     TransactionHelper.startTransaction();
                     CoreSession session2;
-                    session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
+                    session2 = openSessionAsAdminUser(SecurityConstants.ADMINISTRATOR);
                     try {
                         DocumentModel doc = session2.getDocument(ref);
                         doc.getProperty("dc:title").setValue("second update");

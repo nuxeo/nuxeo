@@ -132,7 +132,7 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
                 TransactionHelper.startTransaction();
                 CoreSession s = null;
                 try {
-                    s = openSessionAs(SecurityConstants.ADMINISTRATOR);
+                    s = openSessionAsAdminUser(SecurityConstants.ADMINISTRATOR);
                     Thread.sleep(sleepMillis);
                 } finally {
                     try {

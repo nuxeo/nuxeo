@@ -18,6 +18,9 @@
 
 package org.nuxeo.ecm.core.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.Constants.CORE_TEST_TESTS_BUNDLE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ANONYMOUS;
@@ -32,13 +35,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
@@ -48,7 +48,7 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
 
     private void setTestPermissions(String user, String... perms)
             throws ClientException {
-        CoreSession session = openSessionAs(SecurityConstants.SYSTEM_USERNAME);
+        CoreSession session = openSessionAsSystemUser();
         DocumentModel doc = session.getRootDocument();
         ACP acp = doc.getACP();
         if (acp == null) {
@@ -67,7 +67,7 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
     @SuppressWarnings("deprecation")
     public void checkCorePolicy() throws Exception {
         // create document
-        CoreSession session = openSessionAs(ADMINISTRATOR);
+        CoreSession session = openSessionAsAdminUser(ADMINISTRATOR);
         setTestPermissions(ANONYMOUS, READ);
         DocumentModel root = session.getRootDocument();
         DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
@@ -85,7 +85,7 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
         closeSession(session);
 
         // open session as anonymous and set access on user info
-        session = openSessionAs(ANONYMOUS);
+        session = openSessionAsAnonymousUser(ANONYMOUS);
         DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("accessLevel", Long.valueOf(3));
@@ -123,23 +123,28 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
     @Test
     public void testLockSecurityPolicy() throws Exception {
         // create document
-        CoreSession session = openSessionAs(ADMINISTRATOR);
+        CoreSession session = openSessionAsAdminUser(ADMINISTRATOR);
         DocumentModel root = session.getRootDocument();
         DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
                 "folder#1", "Folder");
         folder = session.createDocument(folder);
         DocumentRef docRef = folder.getRef();
+        session.save();
+        closeSession(session);
 
-        // write granted to admin
+        // add read/write to bob
+        setTestPermissions("bob", READ_WRITE);
+
+        session = openSessionAs("bob");
+        // write granted to bob
         checkLockPermissions(session, docRef, true);
+        session.save();
+        closeSession(session);
 
         // add read/write to anonymous
         setTestPermissions(ANONYMOUS, READ_WRITE);
 
-        session.save();
-        closeSession(session);
-
-        session = openSessionAs(ANONYMOUS);
+        session = openSessionAsAnonymousUser(ANONYMOUS);
         // write granted to anonymous
         checkLockPermissions(session, docRef, true);
 
@@ -154,8 +159,11 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
         session.save();
         closeSession(session);
 
-        // write denied to admin
-        session = openSessionAs(ADMINISTRATOR);
+        // add read/write to bob
+        setTestPermissions("bob", READ_WRITE);
+
+        // write denied to bob
+        session = openSessionAs("bob");
         checkLockPermissions(session, docRef, false);
         session.save();
         closeSession(session);

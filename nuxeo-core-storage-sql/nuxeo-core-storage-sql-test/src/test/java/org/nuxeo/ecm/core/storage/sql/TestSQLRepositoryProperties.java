@@ -404,8 +404,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         session.save();
         // has not created the complex properties at that point
 
-        CoreSession s1 = openSessionAs("Administrator");
-        CoreSession s2 = openSessionAs("Administrator");
+        CoreSession s1 = openSessionAsAdminUser("Administrator");
+        CoreSession s2 = openSessionAsAdminUser("Administrator");
         DocumentModel d1 = s1.getDocument(new IdRef(doc2.getId()));
         DocumentModel d2 = s2.getDocument(new IdRef(doc2.getId()));
         // read the complex prop to trigger documentpart fetch

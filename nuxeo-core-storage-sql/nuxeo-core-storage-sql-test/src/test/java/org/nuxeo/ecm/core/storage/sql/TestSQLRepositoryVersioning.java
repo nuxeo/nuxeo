@@ -344,7 +344,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     @Test
     public void testRestoreInvalidations() throws Exception {
         // open second session to receive invalidations
-        CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
+        CoreSession session2 = openSessionAsAdminUser(SecurityConstants.ADMINISTRATOR);
 
         DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
         doc.setPropertyValue("dc:title", "t1");
@@ -464,7 +464,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         acp = session.getACP(version.getRef());
         assertNull(acp);
         // check proxy still accessible (in another session)
-        CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
+        CoreSession session2 = openSessionAsAdminUser(SecurityConstants.ADMINISTRATOR);
         try {
             session2.getDocument(proxy.getRef());
         } finally {

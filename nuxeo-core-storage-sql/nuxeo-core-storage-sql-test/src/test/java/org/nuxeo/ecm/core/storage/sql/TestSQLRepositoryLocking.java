@@ -184,7 +184,7 @@ public class TestSQLRepositoryLocking extends TXSQLRepositoryTestCase {
                 CoreSession session2 = null;
                 TransactionHelper.startTransaction();
                 try {
-                    session2 = openSessionAs(ADMINISTRATOR);
+                    session2 = openSessionAsAdminUser(ADMINISTRATOR);
                     DocumentModel root2 = session2.getRootDocument();
                     DocumentModel doc2 = session2.getChild(root2.getRef(),
                             "doc");

@@ -32,7 +32,7 @@ public class TestUnrestrictedSessionRunnerJCA extends TXSQLRepositoryTestCase {
     @Test
     public void testUnrestrictedSessionSeesDocCreatedBefore() throws Exception {
         closeSession();
-        session = openSessionAs("Administrator");
+        session = openSessionAsAdminUser("Administrator");
         TestUnrestrictedSessionRunner.unrestrictedSeesDocCreatedBefore(session);
     }
 }

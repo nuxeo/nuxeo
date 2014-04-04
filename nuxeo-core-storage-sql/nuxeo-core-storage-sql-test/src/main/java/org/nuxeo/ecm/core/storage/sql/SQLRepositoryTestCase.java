@@ -12,18 +12,21 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
+import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
 
-import org.junit.Before;
-import org.junit.After;
-import static org.junit.Assert.*;
+import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
+import org.junit.Before;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -94,12 +97,13 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
                             + "the test leaked %s session(s).",
                     Integer.valueOf(finalOpenSessions),
                     Integer.valueOf(leakedOpenSessions)));
-            for (CoreInstance.RegistrationInfo info:core.getRegistrationInfos()) {
+            for (CoreInstance.RegistrationInfo info : core.getRegistrationInfos()) {
                 log.warn("Leaking session", info);
             }
         }
         int finalSingleConnections = ConnectionHelper.countConnectionReferences();
-        int leakedSingleConnections = finalSingleConnections - initialSingleConnections;
+        int leakedSingleConnections = finalSingleConnections
+                - initialSingleConnections;
         if (leakedSingleConnections > 0) {
             log.error(String.format(
                     "There are %s single datasource connection(s) open at tear down; "
@@ -124,12 +128,33 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
             log.warn("Closing session for you");
             closeSession();
         }
-        session = openSessionAs(ADMINISTRATOR);
+        session = openSessionAsAdminUser(ADMINISTRATOR);
         assertNotNull(session);
     }
 
+    public CoreSession openSessionAs(String username, boolean isAdmin,
+            boolean isAnonymous) throws ClientException {
+        UserPrincipal principal = new UserPrincipal(username,
+                new ArrayList<String>(), isAnonymous, isAdmin);
+        return CoreInstance.openCoreSession(database.repositoryName, principal);
+    }
+
     public CoreSession openSessionAs(String username) throws ClientException {
-        return CoreInstance.openCoreSession(database.repositoryName, username);
+        return openSessionAs(username, false, false);
+    }
+
+    public CoreSession openSessionAsAdminUser(String username)
+            throws ClientException {
+        return openSessionAs(username, true, false);
+    }
+
+    public CoreSession openSessionAsAnonymousUser(String username)
+            throws ClientException {
+        return openSessionAs(username, false, true);
+    }
+
+    public CoreSession openSessionAsSystemUser() throws ClientException {
+        return openSessionAs(SecurityConstants.SYSTEM_USERNAME, true, false);
     }
 
     public CoreSession openSessionAs(NuxeoPrincipal principal)

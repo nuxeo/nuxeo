@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -773,7 +774,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
                 AbstractSession.MAX_RESULTS_PROPERTY, "5");
         // need to open a new session to refresh properties
         closeSession(session);
-        session = openSessionAs("Administrator");
+        session = openSessionAsAdminUser("Administrator");
         dml = session.query(sql, null, 5, 0, true);
         assertEquals(5, dml.size());
         assertTrue(dml.totalSize() < 0);
@@ -1209,6 +1210,18 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         createDocs();
         DocumentModelList dml;
 
+        // give bob Browse permission
+        DocumentModel root = session.getRootDocument();
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(new ACE("bob", "Browse", true));
+        acp.addACL(acl);
+        root.setACP(acp, true);
+        session.save();
+        closeSession();
+        session = openSessionAs("bob");
+
         dml = session.query("SELECT * FROM Document");
         assertEquals(7, dml.size());
         assertEquals(7, dml.totalSize());
@@ -1239,13 +1252,8 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(4, dml.totalSize());
 
         // add an ACL as well
-        DocumentModel root = session.getRootDocument();
-        ACP acp = new ACPImpl();
-        ACL acl = new ACLImpl();
-        acl.add(new ACE("Administrator", "Everything", true));
-        acl.add(new ACE("bob", "Browse", true));
-        acp.addACL(acl);
-        root.setACP(acp, true);
+        closeSession();
+        openSession();
         DocumentModel folder1 = session.getDocument(new PathRef(
                 "/testfolder2/testfolder3"));
         acp = new ACPImpl();

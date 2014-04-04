@@ -146,7 +146,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         // so that we can create a folder
         setPermissionToAnonymous(EVERYTHING);
 
-        CoreSession anonSession = openSessionAs("anonymous");
+        CoreSession anonSession = openSessionAsAnonymousUser("anonymous");
         try {
             DocumentModel root = anonSession.getRootDocument();
 
