@@ -248,7 +248,7 @@ public class TestTreeIndexing {
         TransactionHelper.startTransaction();
 
         docs = ess.query(restrictedSession, "select * from Document", 10, 0);
-        Assert.assertEquals(7, docs.size());
+        Assert.assertEquals(8, docs.size());
 
         // block rights and check that blocking is taken into account
 
@@ -276,28 +276,24 @@ public class TestTreeIndexing {
         esi.flush();
 
         docs = ess.query(restrictedSession, "select * from Document", 10, 0);
-        Assert.assertEquals(2, docs.size());
+        Assert.assertEquals(3, docs.size());
 
         CoreInstance.getInstance().close(restrictedSession);
     }
 
     @Test
     public void shouldDenyAccessOnUnsupportedACL() throws Exception {
-
         buildAndIndexTree();
-
         DocumentModelList docs = ess.query(session, "select * from Document",
                 10, 0);
         Assert.assertEquals(10, docs.size());
 
         // check for user with no rights
-
         CoreSession restrictedSession = getRestrictedSession("toto");
         docs = ess.query(restrictedSession, "select * from Document", 10, 0);
         Assert.assertEquals(0, docs.size());
 
         // add READ rights and check that user now has access
-
         DocumentRef ref = new PathRef("/folder0/folder1/folder2");
         ACP acp = new ACPImpl();
         ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
@@ -306,41 +302,30 @@ public class TestTreeIndexing {
         session.setACP(ref, acp, true);
 
         TransactionHelper.commitOrRollbackTransaction();
-
-        Assert.assertEquals(1, esa.getPendingDocs());
-        Assert.assertEquals(1, esa.getPendingCommands());
         waitForAsyncIndexing();
         esi.flush();
 
         TransactionHelper.startTransaction();
+        docs = ess.query(restrictedSession, "select * from Document order by dc:title", 10, 0);
+        Assert.assertEquals(8, docs.size());
 
-        docs = ess.query(restrictedSession, "select * from Document", 10, 0);
-        Assert.assertEquals(7, docs.size());
-
-        // Add a negative ACL which is not supported
-
+        // Add an unsupported negative ACL
         ref = new PathRef("/folder0/folder1/folder2/folder3/folder4/folder5");
         acp = new ACPImpl();
         acl = ACPImpl.newACL(ACL.LOCAL_ACL);
-        acl.add(new ACE("bob",
-                SecurityConstants.EVERYTHING, false));
+        acl.add(new ACE("bob", SecurityConstants.EVERYTHING, false));
+
         acp.addACL(acl);
         session.setACP(ref, acp, true);
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
-
-        TransactionHelper.startTransaction();
-        Assert.assertEquals(1, esa.getPendingDocs());
-        Assert.assertEquals(1, esa.getPendingCommands());
         waitForAsyncIndexing();
         esi.flush();
 
-        docs = ess.query(restrictedSession, "select * from Document", 10, 0);
-        // TODO: fix it returns folder5 the acl has not been updated for this doc
-        // Assert.assertEquals(2, docs.size());
-
-        // TODO: fix it returns folder5 the acl has not been updated for this doc
-        // Assert.assertEquals(2, docs.size());
+        TransactionHelper.startTransaction();
+        docs = ess.query(restrictedSession, "select * from Document order by dc:title", 10, 0);
+        // can view folder2, folder3 and folder4
+        Assert.assertEquals(3, docs.size());
 
         CoreInstance.getInstance().close(restrictedSession);
     }
