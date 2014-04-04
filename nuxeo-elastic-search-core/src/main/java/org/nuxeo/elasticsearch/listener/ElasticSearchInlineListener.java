@@ -28,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -62,7 +61,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker
     protected static ThreadLocal<Boolean> synched = new ThreadLocal<Boolean>() {
         @Override
         protected Boolean initialValue() {
-            return new Boolean(false);
+            return Boolean.FALSE;
         }
     };
 
@@ -136,6 +135,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker
         stackCommand(doc, eventId, sync);
     }
 
+    @Override
     protected void fireSyncIndexing(List<IndexingCommand> syncCommands)
             throws ClientException {
         ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
@@ -144,6 +144,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker
         }
     }
 
+    @Override
     protected void fireAsyncIndexing(List<IndexingCommand> asyncCommands)
             throws ClientException {
         ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
@@ -177,7 +178,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker
     public static ThreadLocal<Boolean> useSyncIndexing = new ThreadLocal<Boolean>() {
         @Override
         protected Boolean initialValue() {
-            return new Boolean(false);
+            return Boolean.FALSE;
         }
 
         @Override

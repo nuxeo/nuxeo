@@ -182,6 +182,7 @@ public class ElasticSearchQueryBuilder {
         return ret;
     }
 
+    @SuppressWarnings("rawtypes")
     protected static boolean isNonNullParam(final Object[] val) {
         if (val == null) {
             return false;

@@ -58,6 +58,9 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
  */
 public class NxqlQueryConverter {
 
+    private NxqlQueryConverter() {
+    }
+
     /**
      * Class to hold both a query and a filter
      *
@@ -84,8 +87,9 @@ public class NxqlQueryConverter {
         }
 
         public void add(final QueryAndFilter qf) {
-            if (qf != null)
+            if (qf != null) {
                 add(qf.query, qf.filter);
+            }
         }
 
         public void add(QueryBuilder q) {
@@ -120,7 +124,7 @@ public class NxqlQueryConverter {
         }
 
         public void merge(ExpressionBuilder expr) {
-            if ((expr.operator == operator) && (query == null)) {
+            if (expr.operator == operator && query == null) {
                 query = expr.query;
             } else {
                 add(new QueryAndFilter(expr.query, null));

@@ -61,7 +61,6 @@ import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermsFilterBuilder;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -111,12 +110,12 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 public class ElasticSearchComponent extends DefaultComponent implements
         ElasticSearchService, ElasticSearchIndexing, ElasticSearchAdmin {
 
-    protected static final Log log = LogFactory
+    private static final Log log = LogFactory
             .getLog(ElasticSearchComponent.class);
 
-    public static final String EP_Config = "elasticSearchConfig";
+    public static final String EP_CONFIG = "elasticSearchConfig";
 
-    public static final String EP_Index = "elasticSearchIndex";
+    public static final String EP_INDEX = "elasticSearchIndex";
 
     public static final String MAIN_IDX = "nxmain";
 
@@ -162,10 +161,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (EP_Config.equals(extensionPoint)) {
+        if (EP_CONFIG.equals(extensionPoint)) {
             release();
             config = (NuxeoElasticSearchConfig) contribution;
-        } else if (EP_Index.equals(extensionPoint)) {
+        } else if (EP_INDEX.equals(extensionPoint)) {
             ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
             indexes.put(idx.getIndexName(), idx);
         }
@@ -518,7 +517,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 try {
                     ret.addAll(fetchDocuments(ids, session));
                 } catch (ClientException e) {
-                    log.error(e);
+                    log.error(e.getMessage(), e);
                 }
             }
         } finally {
@@ -567,7 +566,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             initIndex(idx, recreate);
         }
         indexInitDone = true;
-        if (stackedCommands.size() > 0) {
+        if (!stackedCommands.isEmpty()) {
             boolean txCreated = false;
             if (!TransactionHelper.isTransactionActive()) {
                 txCreated = TransactionHelper.startTransaction();
@@ -732,7 +731,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             return fulltextFields;
         }
         ElasticSearchIndexConfig idxConfig = indexes.get(MAIN_IDX);
-        if (idxConfig != null && (!idxConfig.getFulltextFields().isEmpty())) {
+        if (idxConfig != null && !idxConfig.getFulltextFields().isEmpty()) {
             fulltextFields = idxConfig.getFulltextFields();
         } else {
             fulltextFields = Arrays.asList(DEFAULT_FULLTEXT_FIELDS);

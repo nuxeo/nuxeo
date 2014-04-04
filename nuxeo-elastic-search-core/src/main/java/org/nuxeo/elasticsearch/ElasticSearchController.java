@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.elasticsearch.client.Client;
-import org.nuxeo.common.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.elasticsearch.config.NuxeoElasticSearchConfig;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 
@@ -98,9 +98,8 @@ public class ElasticSearchController {
         err.start();
         out.start();
 
-        int exitCode = 0;
         try {
-            exitCode = p1.waitFor();
+            p1.waitFor();
             out.join();
             err.join();
         } catch (InterruptedException e) {
