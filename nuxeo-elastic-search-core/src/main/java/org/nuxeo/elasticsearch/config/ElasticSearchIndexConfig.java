@@ -30,7 +30,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
  *
  */
 @XObject(value = "elasticSearchIndex")
-public class ElasticSearchIndex {
+public class ElasticSearchIndexConfig {
 
     @XNode("@name")
     protected String indexName;

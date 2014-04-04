@@ -14,7 +14,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.Filter;
 import org.jboss.seam.web.AbstractFilter;
-import org.nuxeo.elasticsearch.listener.ElasticsearchInlineListener;
+import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
 
 @Scope(APPLICATION)
 @Filter(within="org.jboss.seam.web.ajax4jsfFilter")
@@ -25,11 +25,11 @@ public class UIThreadMarker extends AbstractFilter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
-        ElasticsearchInlineListener.useSyncIndexing.set(true);
+        ElasticSearchInlineListener.useSyncIndexing.set(true);
         try {
             chain.doFilter(request, response);
         } finally {
-            ElasticsearchInlineListener.useSyncIndexing.set(false);
+            ElasticSearchInlineListener.useSyncIndexing.set(false);
         }
     }
 

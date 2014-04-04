@@ -34,7 +34,7 @@ import org.nuxeo.elasticsearch.ElasticSearchComponent;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
-import org.nuxeo.elasticsearch.nxql.NXQLQueryConverter;
+import org.nuxeo.elasticsearch.nxql.NxqlQueryConverter;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -136,17 +136,17 @@ public class TestNXQLConversion {
 
     @Test
     public void testConverterSelect() throws Exception {
-        String es = NXQLQueryConverter.toESQueryBuilder(
+        String es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document").toString();
         Assert.assertEquals("{\n" +
                 "  \"match_all\" : { }\n" +
                 "}", es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from File, Document").toString();
         Assert.assertEquals("{\n" +
                 "  \"match_all\" : { }\n" +
                 "}", es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from File").toString();
         Assert.assertEquals("{\n" +
                 "  \"filtered\" : {\n" +
@@ -160,7 +160,7 @@ public class TestNXQLConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from File, Note").toString();
         Assert.assertEquals("{\n" +
                 "  \"filtered\" : {\n" +
@@ -178,7 +178,7 @@ public class TestNXQLConversion {
 
     @Test
     public void testConverterExpression() throws Exception {
-        String es = NXQLQueryConverter.toESQueryBuilder(
+        String es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1=1").toString();
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -189,7 +189,7 @@ public class TestNXQLConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 IN (1, '2', 3)").toString();
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -200,7 +200,7 @@ public class TestNXQLConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 LIKE 'foo%'").toString();
         Assert.assertEquals("{\n" +
                 "  \"match\" : {\n" +
@@ -211,10 +211,10 @@ public class TestNXQLConversion {
                 "  }\n" +
                 "}", es);
         String old = es;
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 ILIKE 'foo%'").toString();
         Assert.assertEquals(old, es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 NOT LIKE 'foo%'").toString();
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -234,7 +234,7 @@ public class TestNXQLConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 IS NULL").toString();
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -246,7 +246,7 @@ public class TestNXQLConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 IS NOT NULL").toString();
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -257,7 +257,7 @@ public class TestNXQLConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 BETWEEN 1 AND 2").toString();
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -273,7 +273,7 @@ public class TestNXQLConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1 NOT BETWEEN 1 AND 2").toString();
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -293,7 +293,7 @@ public class TestNXQLConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where ecm:path STARTSWITH '/the/path'").toString();
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -309,7 +309,7 @@ public class TestNXQLConversion {
 
     @Test
     public void testConverterWhereCombination() throws Exception {
-            String  es = NXQLQueryConverter.toESQueryBuilder(
+            String  es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1=1 AND f2=2").toString();
         Assert.assertEquals("{\n" +
                 "  \"bool\" : {\n" +
@@ -332,7 +332,7 @@ public class TestNXQLConversion {
                 "    } ]\n" +
                 "  }\n" +
                 "}", es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1=1 OR f2=2").toString();
         Assert.assertEquals("{\n" +
                 "  \"bool\" : {\n" +
@@ -356,19 +356,19 @@ public class TestNXQLConversion {
                 "  }\n" +
                 "}", es);
 
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1=1 AND f2=2 AND f3=3").toString();
         //Assert.assertEquals("foo", es);
 
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1=1 OR f2=2 OR f3=3").toString();
         // Assert.assertEquals("foo", es);
 
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1=1 OR f2 LIKE 'foo' OR f3=3").toString();
         //Assert.assertEquals("foo", es);
 
-        es = NXQLQueryConverter
+        es = NxqlQueryConverter
                 .toESQueryBuilder(
                         "select * from Document where (f1=1 OR f2=2) AND f3=3")
                 .toString();
@@ -409,7 +409,7 @@ public class TestNXQLConversion {
 
     @Test
     public void testConverterComplex() throws Exception {
-        String es = NXQLQueryConverter
+        String es = NxqlQueryConverter
                 .toESQueryBuilder(
                         "select * from Document where (f1 LIKE '1%' OR f2 LIKE '2%') AND f3=3")
                 .toString();
@@ -445,13 +445,13 @@ public class TestNXQLConversion {
                 "  }\n" +
                 "}", es);
         //Assert.assertEquals("foo", es);
-        es = NXQLQueryConverter
+        es = NxqlQueryConverter
                 .toESQueryBuilder(
                         "select * from Document where ecm:fulltext='foo bar' AND ecm:path STARTSWITH '/foo/bar' OR ecm:path='/foo/'")
                .toString();
         //Assert.assertEquals("foo", es);
 
-        es = NXQLQueryConverter
+        es = NxqlQueryConverter
                 .toESQueryBuilder(
                         "select * from File, Note, Workspace where f1 IN ('foo', 'bar', 'foo') AND NOT f2>=3")
                .toString();
@@ -498,7 +498,7 @@ public class TestNXQLConversion {
 
     @Test
     public void testConverterIsVersion() throws Exception {
-        String es = NXQLQueryConverter.toESQueryBuilder(
+        String es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where ecm:isVersion = 1").toString();
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -509,7 +509,7 @@ public class TestNXQLConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        String es2 = NXQLQueryConverter.toESQueryBuilder(
+        String es2 = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where ecm:isCheckedInVersion = 1").toString();
         Assert.assertEquals(es, es2);
     }
@@ -517,7 +517,7 @@ public class TestNXQLConversion {
     @Test
     public void testConverterFulltext() throws Exception {
         // Given a search on a fulltext field
-        String es = NXQLQueryConverter.toESQueryBuilder(
+        String es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where f1='foo bar'", Arrays.asList(new String[] { "f1", "f2" })).toString();
         // then we have a query and not a filter
         Assert.assertEquals("{\n" +
@@ -533,7 +533,7 @@ public class TestNXQLConversion {
 
     @Test
     public void testConverterWhereWithoutSelect() throws Exception {
-        String es = NXQLQueryConverter.toESQueryBuilder(
+        String es = NxqlQueryConverter.toESQueryBuilder(
                 "f1=1").toString();
         Assert.assertEquals("{\n" +
                 "  \"constant_score\" : {\n" +
@@ -544,12 +544,12 @@ public class TestNXQLConversion {
                 "    }\n" +
                 "  }\n" +
                 "}", es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 null).toString();
         Assert.assertEquals("{\n" +
                 "  \"match_all\" : { }\n" +
                 "}", es);
-        es = NXQLQueryConverter.toESQueryBuilder(
+        es = NxqlQueryConverter.toESQueryBuilder(
                 "").toString();
         Assert.assertEquals("{\n" +
                 "  \"match_all\" : { }\n" +

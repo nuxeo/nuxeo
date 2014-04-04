@@ -84,9 +84,9 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
-import org.nuxeo.elasticsearch.config.ElasticSearchIndex;
+import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
 import org.nuxeo.elasticsearch.config.NuxeoElasticSearchConfig;
-import org.nuxeo.elasticsearch.nxql.NXQLQueryConverter;
+import org.nuxeo.elasticsearch.nxql.NxqlQueryConverter;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -146,7 +146,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected final CopyOnWriteArrayList<String> pendingCommands = new CopyOnWriteArrayList<String>();
 
-    protected Map<String, ElasticSearchIndex> indexes = new HashMap<String, ElasticSearchIndex>();
+    protected Map<String, ElasticSearchIndexConfig> indexes = new HashMap<String, ElasticSearchIndexConfig>();
 
     protected List<String> fulltextFields;
 
@@ -166,7 +166,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             release();
             config = (NuxeoElasticSearchConfig) contribution;
         } else if (EP_Index.equals(extensionPoint)) {
-            ElasticSearchIndex idx = (ElasticSearchIndex) contribution;
+            ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
             indexes.put(idx.getIndexName(), idx);
         }
     }
@@ -429,12 +429,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public DocumentModelList query(CoreSession session, String nxql, int limit,
             int offset, SortInfo... sortInfos) throws ClientException {
-        QueryBuilder queryBuilder = NXQLQueryConverter.toESQueryBuilder(nxql,
+        QueryBuilder queryBuilder = NxqlQueryConverter.toESQueryBuilder(nxql,
                 getFulltextFields());
 
         // handle the built-in order by clause
         if (nxql.toLowerCase().contains("order by")) {
-            List<SortInfo> builtInSortInfos = NXQLQueryConverter
+            List<SortInfo> builtInSortInfos = NxqlQueryConverter
                     .getSortInfo(nxql);
             if (sortInfos != null) {
                 for (SortInfo si : sortInfos) {
@@ -563,7 +563,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public void initIndexes(boolean recreate) throws Exception {
-        for (ElasticSearchIndex idx : indexes.values()) {
+        for (ElasticSearchIndexConfig idx : indexes.values()) {
             initIndex(idx, recreate);
         }
         indexInitDone = true;
@@ -593,7 +593,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-    protected void initIndex(ElasticSearchIndex idxConfig, boolean recreate)
+    protected void initIndex(ElasticSearchIndexConfig idxConfig, boolean recreate)
             throws Exception {
 
         log.info("Initialize index " + idxConfig.getIndexName());
@@ -731,7 +731,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (fulltextFields != null) {
             return fulltextFields;
         }
-        ElasticSearchIndex idxConfig = indexes.get(MAIN_IDX);
+        ElasticSearchIndexConfig idxConfig = indexes.get(MAIN_IDX);
         if (idxConfig != null && (!idxConfig.getFulltextFields().isEmpty())) {
             fulltextFields = idxConfig.getFulltextFields();
         } else {

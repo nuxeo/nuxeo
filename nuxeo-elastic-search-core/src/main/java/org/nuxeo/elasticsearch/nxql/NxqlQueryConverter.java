@@ -56,7 +56,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
  * to build the ES request.
  *
  */
-public class NXQLQueryConverter {
+public class NxqlQueryConverter {
 
     /**
      * Class to hold both a query and a filter

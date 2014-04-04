@@ -42,7 +42,7 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
 
     @Override
     public String getTitle() {
-        String title = " Elasticsearch indexing children for doc "
+        String title = " ElasticSearch indexing children for doc "
                 + cmd.getTargetDocument().getId() + " in repository "
                 + cmd.getTargetDocument().getId();
         if (path != null) {

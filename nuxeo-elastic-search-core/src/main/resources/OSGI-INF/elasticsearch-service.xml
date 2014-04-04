@@ -52,7 +52,7 @@
     <documentation>
     </documentation>
 
-    <object class="org.nuxeo.elasticsearch.config.ElasticSearchIndex" />
+    <object class="org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig" />
   </extension-point>
 
 </component>

@@ -6,7 +6,7 @@
 
     <listener name="elasticSearchInlineListener" async="false"
       postCommit="false" priority="500"
-      class="org.nuxeo.elasticsearch.listener.ElasticsearchInlineListener">
+      class="org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener">
       <event>beforeDocumentModification</event>
       <event>documentCreated</event>
       <event>documentCreatedByCopy</event>
@@ -21,7 +21,7 @@
 
     <listener name="elasticSearchPostCommitSyncListener" async="false"
       postCommit="true" priority="500"
-      class="org.nuxeo.elasticsearch.listener.ElasticsearchPostCommitSyncListener">
+      class="org.nuxeo.elasticsearch.listener.ElasticSearchPostCommitSyncListener">
       <event>ESIndexSyncTrigger</event>
     </listener>
 

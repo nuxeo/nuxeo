@@ -44,10 +44,10 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  *
  */
-public class ElasticsearchInlineListener extends IndexingCommandsStacker
+public class ElasticSearchInlineListener extends IndexingCommandsStacker
         implements EventListener, Synchronization {
 
-    private static final Log log = LogFactory.getLog(ElasticsearchInlineListener.class);
+    private static final Log log = LogFactory.getLog(ElasticSearchInlineListener.class);
 
     // rely on TransactionManager rather than on Save event
     protected static boolean useTxSync = true;

@@ -13,7 +13,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
 
-public class ElasticsearchPostCommitSyncListener implements
+public class ElasticSearchPostCommitSyncListener implements
         PostCommitEventListener {
 
     @Override

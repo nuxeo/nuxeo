@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
-import org.nuxeo.elasticsearch.nxql.NXQLQueryConverter;
+import org.nuxeo.elasticsearch.nxql.NxqlQueryConverter;
 
 public class ElasticSearchQueryBuilder {
 
@@ -58,7 +58,7 @@ public class ElasticSearchQueryBuilder {
         if (useNativeQuery) {
             return QueryBuilders.queryString(query);
         } else {
-            return NXQLQueryConverter.toESQueryBuilder(query, fulltextFields);
+            return NxqlQueryConverter.toESQueryBuilder(query, fulltextFields);
         }
     }
 
@@ -72,7 +72,7 @@ public class ElasticSearchQueryBuilder {
             throws ClientException {
         assert (model != null);
         assert (whereClause != null);
-        NXQLQueryConverter.ExpressionBuilder eb = new NXQLQueryConverter.ExpressionBuilder(
+        NxqlQueryConverter.ExpressionBuilder eb = new NxqlQueryConverter.ExpressionBuilder(
                 "AND");
         String fixedPart = whereClause.getFixedPart();
         if (params != null) {
@@ -84,7 +84,7 @@ public class ElasticSearchQueryBuilder {
                 // Fixed part handled as query_string
                 eb.add(QueryBuilders.queryString(fixedPart));
             } else {
-                eb.add(NXQLQueryConverter.toESQueryBuilder(fixedPart,
+                eb.add(NxqlQueryConverter.toESQueryBuilder(fixedPart,
                         fulltextFields));
             }
         }
@@ -124,7 +124,7 @@ public class ElasticSearchQueryBuilder {
                 // fulltext search is handled by the mapping
                 operator = "=";
             }
-            eb.add(NXQLQueryConverter.makeQueryFromSimpleExpression(operator,
+            eb.add(NxqlQueryConverter.makeQueryFromSimpleExpression(operator,
                     name, value, values, fulltextFields));
         }
         return eb.get();

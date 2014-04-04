@@ -49,7 +49,7 @@ public interface ElasticSearchService {
             int offset, SortInfo... sortInfos) throws ClientException;
 
     /**
-     * Returns a document list using an Elasticsearch QueryBuilder
+     * Returns a document list using an ElasticSearch QueryBuilder
      *
      */
     DocumentModelList query(CoreSession session, QueryBuilder queryBuilder,
