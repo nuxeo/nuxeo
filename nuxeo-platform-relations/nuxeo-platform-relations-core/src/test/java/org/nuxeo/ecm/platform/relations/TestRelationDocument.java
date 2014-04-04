@@ -83,6 +83,7 @@ public class TestRelationDocument {
                 "The relation comment"));
         Graph graph = relationManager.getGraph("myrelations", session);
         graph.add(statement);
+        session.save();
 
         // Check file1 relation document
         DocumentModelList docRelations = session.query(String.format(

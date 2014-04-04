@@ -12,8 +12,6 @@ author: lkemen@nuxeo.com
 .adminViewContent p { padding: .4em 0 }
 .adminContentColumn { padding: 2em }
 
-.tabsContent { padding: 1.5em 0 }
-
 /* ActionBar*/
 .actionBar { background-color: #efefef; border-bottom: 1px solid #bde7F3; padding: .9em }
 .actionBar span { margin: 0 .9em 0 0 }

@@ -99,7 +99,7 @@ public class JsonRecordSetWriter implements MessageBodyWriter<RecordSet> {
                     pRecord.isPreviousPageAvailable());
             jg.writeBooleanField("isNextPageAvailable",
                     pRecord.isNextPageAvailable());
-            jg.writeBooleanField("isLasPageAvailable",
+            jg.writeBooleanField("isLastPageAvailable",
                     pRecord.isLastPageAvailable());
             jg.writeBooleanField("isSortable", pRecord.isSortable());
             jg.writeBooleanField("hasError", pRecord.hasError());

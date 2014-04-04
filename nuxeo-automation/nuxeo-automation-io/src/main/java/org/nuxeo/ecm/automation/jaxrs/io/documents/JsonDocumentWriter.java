@@ -16,7 +16,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +40,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.automation.io.services.contributor.HeaderDocEvaluationContext;
 import org.nuxeo.ecm.automation.io.services.contributor.RestContributorService;
 import org.nuxeo.ecm.automation.io.services.contributor.RestEvaluationContext;
@@ -397,9 +397,10 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         blobUrlBuilder.append(":");
         String canonicalXPath = ComplexTypeImpl.canonicalXPath(prop.getPath().substring(
                 1));
-        blobUrlBuilder.append(URLEncoder.encode(canonicalXPath, "UTF-8"));
+        blobUrlBuilder.append(canonicalXPath);
         blobUrlBuilder.append("/");
-        blobUrlBuilder.append(((Blob) prop.getValue()).getFilename());
+        String filename = ((Blob) prop.getValue()).getFilename();
+        blobUrlBuilder.append(URIUtils.quoteURIPathComponent(filename, true));
         return blobUrlBuilder.toString();
     }
 
