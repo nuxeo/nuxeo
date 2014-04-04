@@ -36,6 +36,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import javax.resource.ResourceException;
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
@@ -130,12 +131,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
 
         tableUpgrader = new TableUpgrader(this);
-        tableUpgrader.add(model.VERSION_TABLE_NAME,
-                model.VERSION_IS_LATEST_KEY, "upgradeVersions",
+        tableUpgrader.add(Model.VERSION_TABLE_NAME,
+                Model.VERSION_IS_LATEST_KEY, "upgradeVersions",
                 TEST_UPGRADE_VERSIONS);
         tableUpgrader.add("dublincore", "lastContributor",
                 "upgradeLastContributor", TEST_UPGRADE_LAST_CONTRIBUTOR);
-        tableUpgrader.add(model.LOCK_TABLE_NAME, model.LOCK_OWNER_KEY,
+        tableUpgrader.add(Model.LOCK_TABLE_NAME, Model.LOCK_OWNER_KEY,
                 "upgradeLocks", TEST_UPGRADE_LOCKS);
 
     }
@@ -618,7 +619,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 Column column = sqlInfo.getSelectRootIdWhatColumn();
                 Serializable id = column.getFromResultSet(rs, 1);
                 if (logger.isLogEnabled()) {
-                    logger.log("  -> " + model.MAIN_KEY + '=' + id);
+                    logger.log("  -> " + Model.MAIN_KEY + '=' + id);
                 }
                 // check that we didn't get several rows
                 if (rs.next()) {
@@ -652,9 +653,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     i++;
                     String key = column.getKey();
                     Serializable v;
-                    if (key.equals(model.MAIN_KEY)) {
+                    if (key.equals(Model.MAIN_KEY)) {
                         v = id;
-                    } else if (key.equals(model.REPOINFO_REPONAME_KEY)) {
+                    } else if (key.equals(Model.REPOINFO_REPONAME_KEY)) {
                         v = repositoryId;
                     } else {
                         throw new RuntimeException(key);
@@ -956,7 +957,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                         }
                     }
                 } else {
-                    Serializable id = (Serializable) what.getFromResultSet(rs,
+                    Serializable id = what.getFromResultSet(rs,
                             1);
                     if (id != null) {
                         res.add(id);
@@ -1015,7 +1016,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     debugIds = new LinkedList<Serializable>();
                 }
                 while (rs.next()) {
-                    Serializable id = (Serializable) what.getFromResultSet(rs,
+                    Serializable id = what.getFromResultSet(rs,
                             1);
                     if (id != null) {
                         res.add(id);
@@ -1413,6 +1414,25 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public boolean isSameRM(XAResource xares) throws XAException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isConnected() {
+        return connection != null;
+    }
+
+    @Override
+    public void connect() throws StorageException {
+        try {
+            openBaseConnection();
+        } catch (SQLException | ResourceException cause) {
+            throw new StorageException("Cannot connect to database", cause);
+        }
+    }
+
+    @Override
+    public void disconnect() {
+        closeConnections();
     }
 
 }

@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.resource.ResourceException;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
@@ -27,7 +28,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
-import org.nuxeo.runtime.api.ConnectionHelper;
+import org.nuxeo.runtime.datasource.ConnectionHelper;
 
 /**
  * Holds a connection to a JDBC database.
@@ -60,7 +61,7 @@ public class JDBCConnection {
 
     protected boolean supportsBatchUpdates;
 
-    protected XAResource xaresource;
+    protected XAResource xaresource = new XAResourceConnectionAdapter(this);
 
     protected final JDBCConnectionPropagator connectionPropagator;
 
@@ -104,7 +105,19 @@ public class JDBCConnection {
         this.noSharing = noSharing;
         dialect = sqlInfo.dialect;
         connectionPropagator.addConnection(this);
-        open();
+    }
+
+    /**
+     * for tests only
+     * @since 5.9.3
+     */
+    public JDBCConnection() {
+        xadatasource = null;
+        sqlInfo = null;
+        noSharing = false;
+        model = null;
+        dialect = null;
+        connectionPropagator = null;
     }
 
     public Identification getIdentification() {
@@ -126,12 +139,12 @@ public class JDBCConnection {
             openBaseConnection();
             supportsBatchUpdates = connection.getMetaData().supportsBatchUpdates();
             dialect.performPostOpenStatements(connection);
-        } catch (SQLException e) {
-            throw new StorageException(e);
+        } catch (SQLException | ResourceException cause) {
+            throw new StorageException("Cannot connect to database", cause);
         }
     }
 
-    protected void openBaseConnection() throws SQLException {
+    protected void openBaseConnection() throws SQLException, ResourceException {
         // try single-datasource non-XA mode
         String repositoryName = model.getRepositoryDescriptor().name;
         String dataSourceName = ConnectionHelper.getPseudoDataSourceNameForRepository(repositoryName);
@@ -172,17 +185,15 @@ public class JDBCConnection {
         } else {
             // single-datasource non-XA mode
             xaconnection = null;
-            xaresource = new XAResourceConnectionAdapter(connection);
         }
     }
 
     public void close() {
         connectionPropagator.removeConnection(this);
         closeConnections();
-        xaresource = null;
     }
 
-    private void closeConnections() {
+    public void closeConnections() {
         if (connection != null) {
             try {
                 connection.close();

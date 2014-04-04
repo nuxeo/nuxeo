@@ -55,7 +55,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
-import org.nuxeo.runtime.api.ConnectionHelper;
+import org.nuxeo.runtime.datasource.ConnectionHelper;
 
 /**
  * Oracle-specific dialect.

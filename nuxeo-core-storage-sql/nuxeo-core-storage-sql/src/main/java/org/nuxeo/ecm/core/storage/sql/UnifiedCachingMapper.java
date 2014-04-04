@@ -222,4 +222,18 @@ public class UnifiedCachingMapper extends UnifiedCachingRowMapper implements Cac
         return mapper.isSameRM(xares);
     }
 
+    @Override
+    public boolean isConnected() {
+        return mapper.isConnected();
+    }
+
+    @Override
+    public void connect() throws StorageException {
+        mapper.connect();
+    }
+
+    @Override
+    public void disconnect() {
+        mapper.disconnect();
+    }
 }

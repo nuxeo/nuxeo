@@ -20,7 +20,6 @@ import static javax.transaction.xa.XAException.XAER_INVAL;
 import static javax.transaction.xa.XAException.XAER_PROTO;
 import static javax.transaction.xa.XAException.XAER_RMERR;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.transaction.xa.XAException;
@@ -40,12 +39,12 @@ public class XAResourceConnectionAdapter implements XAResource {
 
     private static final Log log = LogFactory.getLog(XAResourceConnectionAdapter.class);
 
-    protected final Connection connection;
+    protected JDBCConnection owner;
 
     protected Xid xid;
 
-    public XAResourceConnectionAdapter(Connection connection) {
-        this.connection = connection;
+    public XAResourceConnectionAdapter(JDBCConnection connection) {
+        owner = connection;
     }
 
     @Override
@@ -56,7 +55,7 @@ public class XAResourceConnectionAdapter implements XAResource {
             }
             this.xid = xid;
             try {
-                connection.setAutoCommit(false);
+                owner.connection.setAutoCommit(false);
             } catch (SQLException e) {
                 throw newXAException(XAER_RMERR, "Cannot set autoCommit=false");
             }
@@ -88,12 +87,12 @@ public class XAResourceConnectionAdapter implements XAResource {
         }
         this.xid = null;
         try {
-            connection.commit();
+            owner.connection.commit();
         } catch (SQLException e) {
             throw newXAException(XAER_RMERR, "Cannot commit", e);
         } finally {
             try {
-                connection.setAutoCommit(true);
+                owner.connection.setAutoCommit(true);
             } catch (SQLException e) {
                 log.error("Cannot set autoCommit=true", e);
             }
@@ -107,12 +106,12 @@ public class XAResourceConnectionAdapter implements XAResource {
         }
         this.xid = null;
         try {
-            connection.rollback();
+            owner.connection.rollback();
         } catch (SQLException e) {
             throw newXAException(XAER_RMERR, "Cannot rollback", e);
         } finally {
             try {
-                connection.setAutoCommit(true);
+                owner.connection.setAutoCommit(true);
             } catch (SQLException e) {
                 log.error("Cannot set autoCommit=true", e);
             }

@@ -272,4 +272,20 @@ public interface Mapper extends RowMapper, XAResource {
     int cleanupDeletedRows(int max, Calendar beforeTime)
             throws StorageException;
 
+    /**
+     *
+     * @since 5.9.3
+     */
+    boolean isConnected();
+
+    /**
+     * @since 5.9.3
+     */
+    void connect() throws StorageException;
+
+    /**
+     * @since 5.9.3
+     */
+    void disconnect();
+
 }

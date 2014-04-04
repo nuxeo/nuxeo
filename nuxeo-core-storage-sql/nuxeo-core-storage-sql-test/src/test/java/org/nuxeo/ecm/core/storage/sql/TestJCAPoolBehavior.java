@@ -46,11 +46,12 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
     @Override
     protected void setUpContainer() throws Exception {
         NuxeoConnectionManagerConfiguration cmconfig = new NuxeoConnectionManagerConfiguration();
+        cmconfig.setName(database.repositoryName);
         cmconfig.setMinPoolSize(MIN_POOL_SIZE);
         cmconfig.setMaxPoolSize(MAX_POOL_SIZE);
         cmconfig.setBlockingTimeoutMillis(BLOCKING_TIMEOUT);
         NuxeoContainer.install();
-        NuxeoContainer.installConnectionManager(database.repositoryName,
+        NuxeoContainer.installConnectionManager(
                 cmconfig);
     }
 

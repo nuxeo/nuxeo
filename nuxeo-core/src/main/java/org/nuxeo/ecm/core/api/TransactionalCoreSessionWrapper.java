@@ -25,8 +25,8 @@ import javax.transaction.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.J2EEContainerDescriptor;
+import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**

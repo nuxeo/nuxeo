@@ -13,7 +13,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.common.Environment;
-import org.nuxeo.runtime.api.ConnectionHelper;
+import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 

@@ -28,9 +28,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.XAResourceConnectionAdapter;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
-import org.nuxeo.runtime.api.ConnectionHelper;
+import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -423,23 +424,24 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
      */
     @Test
     public void testXAResourceBeginDoStuffCommit() throws Exception {
-        Connection connection = ConnectionHelper.getConnection(null);
+        JDBCConnection jdbc = new JDBCConnection();
+        jdbc.connection = ConnectionHelper.getConnection(null);
         try {
             Transaction transaction = TransactionHelper.lookupTransactionManager().getTransaction();
             XAResourceConnectionAdapter xaresource = new XAResourceConnectionAdapter(
-                    connection);
+                    jdbc);
             transaction.enlistResource(xaresource);
             // lazy so not yet allocated
             assertSharedConnectionCount(0);
             // use connection
-            connection.createStatement();
+            jdbc.connection.createStatement();
             assertSharedConnectionCount(1);
             // then commit
             TransactionHelper.commitOrRollbackTransaction();
         } finally {
-            assertFalse(connection.isClosed());
-            connection.close();
-            assertTrue(connection.isClosed());
+            assertFalse(jdbc.connection.isClosed());
+            jdbc.connection.close();
+            assertTrue(jdbc.connection.isClosed());
         }
     }
 
@@ -450,20 +452,21 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
      */
     @Test
     public void testXAResourceBeginDoNothingCommit() throws Exception {
-        Connection connection = ConnectionHelper.getConnection(null);
+        JDBCConnection jdbc = new JDBCConnection();
+        jdbc.connection = ConnectionHelper.getConnection(null);
         try {
             Transaction transaction = TransactionHelper.lookupTransactionManager().getTransaction();
             XAResourceConnectionAdapter xaresource = new XAResourceConnectionAdapter(
-                    connection);
+                    jdbc);
             transaction.enlistResource(xaresource);
             // lazy so not yet allocated
             assertSharedConnectionCount(0);
             // do nothing between start and end
             TransactionHelper.commitOrRollbackTransaction();
         } finally {
-            assertFalse(connection.isClosed());
-            connection.close();
-            assertTrue(connection.isClosed());
+            assertFalse(jdbc.connection.isClosed());
+            jdbc.connection.close();
+            assertTrue(jdbc.connection.isClosed());
         }
     }
 
@@ -474,11 +477,12 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
      */
     @Test
     public void testXAResourceBeginDoNothingRollback() throws Exception {
-        Connection connection = ConnectionHelper.getConnection(null);
+        JDBCConnection jdbc = new JDBCConnection();
+        jdbc.connection = ConnectionHelper.getConnection(null);
         try {
             Transaction transaction = TransactionHelper.lookupTransactionManager().getTransaction();
             XAResourceConnectionAdapter xaresource = new XAResourceConnectionAdapter(
-                    connection);
+                    jdbc);
             transaction.enlistResource(xaresource);
             // lazy so not yet allocated
             assertSharedConnectionCount(0);
@@ -487,9 +491,9 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
             TransactionHelper.setTransactionRollbackOnly();
             TransactionHelper.commitOrRollbackTransaction();
         } finally {
-            assertFalse(connection.isClosed());
-            connection.close();
-            assertTrue(connection.isClosed());
+            assertFalse(jdbc.connection.isClosed());
+            jdbc.connection.close();
+            assertTrue(jdbc.connection.isClosed());
         }
     }
 

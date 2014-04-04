@@ -16,6 +16,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map.Entry;
 
+import javax.resource.ResourceException;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
@@ -32,8 +33,8 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
-import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.datasource.ConnectionHelper;
 
 /**
  * JDBC Backend for a repository.
@@ -74,8 +75,8 @@ public class JDBCBackend implements RepositoryBackend {
                 connection.close();
                 return;
             }
-        } catch (SQLException e) {
-            throw new StorageException(e);
+        } catch (SQLException | ResourceException cause) {
+            throw new StorageException("Cannot close connection", cause);
         }
 
         // standard XA mode
@@ -150,8 +151,8 @@ public class JDBCBackend implements RepositoryBackend {
                     xaconnection.close();
                 }
             }
-        } catch (SQLException e) {
-            throw new StorageException(e);
+        } catch (SQLException | ResourceException cause) {
+            throw new StorageException("Cannot connect to database", cause);
         }
         modelSetup.materializeFulltextSyntheticColumn = dialect.getMaterializeFulltextSyntheticColumn();
         modelSetup.supportsArrayColumns = dialect.supportsArrayColumns();
@@ -192,6 +193,10 @@ public class JDBCBackend implements RepositoryBackend {
         Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo,
                 xadatasource, clusterNodeHandler, connectionPropagator,
                 noSharing, repository);
+        mapper = JDBCMapperConnector.newConnector(mapper);
+        if (noSharing) {
+            mapper = JDBCMapperTxSuspender.newConnector(mapper);
+        }
         if (create) {
             if (repositoryDescriptor.getNoDDL()) {
                 log.info("Skipping database creation");
