@@ -293,8 +293,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (cmd.isRecurse()) {
                 DeleteByQueryRequestBuilder deleteRequest = getClient()
                         .prepareDeleteByQuery(MAIN_IDX).setQuery(
-                                QueryBuilders.prefixQuery("ecm:path",
-                                        doc.getPathAsString() + "/"));
+                                QueryBuilders.constantScoreQuery(FilterBuilders
+                                        .termFilter("ecm:path.children",
+                                                doc.getPathAsString())));
                 if (log.isDebugEnabled()) {
                     log.debug(String
                             .format("Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
