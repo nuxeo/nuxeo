@@ -130,6 +130,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     public static final String LIMIT_RESULTS_PROPERTY = "org.nuxeo.ecm.core.limit.results";
 
+    public static final String BINARY_TEXT_SYS_PROP = "binaryText";
+
     private Boolean limitedResults;
 
     private Long maxResults;
@@ -819,6 +821,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     protected static final PathRef EMPTY_PATH = new PathRef("");
+
 
     protected void importDocument(DocumentModel docModel)
             throws DocumentException, ClientException {
@@ -2910,6 +2913,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc;
         try {
             doc = resolveReference(ref);
+            if (systemProperty != null
+                    && systemProperty.startsWith(BINARY_TEXT_SYS_PROP)) {
+                DocumentModel docModel = readModel(doc);
+                Map<String, Serializable> options = new HashMap<String, Serializable>();
+                options.put(systemProperty, value != null);
+                notifyEvent(DocumentEventTypes.BINARYTEXT_UPDATED,
+                        docModel, options, null, null, false, true);
+            }
         } catch (DocumentException e) {
             throw new ClientException("Failed to get document " + ref, e);
         }
