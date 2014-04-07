@@ -86,7 +86,7 @@ public class TestTokenAuthenticationServlet {
             // Acquire new token
             status = executeGetMethod(httpClient, getMethod, "Administrator",
                     "Administrator");
-            assertEquals(200, status);
+            assertEquals(201, status);
             String token = getMethod.getResponseBodyAsString();
             assertNotNull(token);
             assertNotNull(getTokenAuthenticationService().getUserName(token));
@@ -97,7 +97,7 @@ public class TestTokenAuthenticationServlet {
 
             // Acquire existing token
             status = httpClient.executeMethod(getMethod);
-            assertEquals(200, status);
+            assertEquals(201, status);
             String existingToken = getMethod.getResponseBodyAsString();
             assertEquals(token, existingToken);
 
@@ -107,7 +107,7 @@ public class TestTokenAuthenticationServlet {
                     "http://localhost:18080/authentication/token?applicationName=nonExistingApp&deviceId=dead-beaf-cafe-babe&revoke=true");
             status = executeGetMethod(httpClient, getMethod, "Administrator",
                     "Administrator");
-            assertEquals(200, status);
+            assertEquals(400, status);
             String response = getMethod.getResponseBodyAsString();
             assertEquals(
                     String.format(
@@ -122,7 +122,7 @@ public class TestTokenAuthenticationServlet {
             getMethod = new GetMethod(uri.toString());
             status = executeGetMethod(httpClient, getMethod, "Administrator",
                     "Administrator");
-            assertEquals(200, status);
+            assertEquals(202, status);
             response = getMethod.getResponseBodyAsString();
             assertEquals(
                     String.format(

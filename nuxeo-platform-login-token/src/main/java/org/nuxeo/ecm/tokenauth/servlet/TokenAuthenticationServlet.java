@@ -111,6 +111,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
 
         // Write response
         String response = null;
+        int statusCode;
         TokenAuthenticationService tokenAuthService = Framework.getLocalService(TokenAuthenticationService.class);
         try {
             // Token acquisition: acquire token and write it to the response
@@ -119,6 +120,7 @@ public class TokenAuthenticationServlet extends HttpServlet {
                 response = tokenAuthService.acquireToken(userName,
                         applicationName, deviceId, deviceDescription,
                         permission);
+                statusCode = 201;
             }
             // Token revocation
             else {
@@ -128,14 +130,16 @@ public class TokenAuthenticationServlet extends HttpServlet {
                     response = String.format(
                             "No token found for userName %s, applicationName %s and deviceId %s; nothing to do.",
                             userName, applicationName, deviceId);
+                    statusCode = 400;
                 } else {
                     tokenAuthService.revokeToken(token);
                     response = String.format(
                             "Token revoked for userName %s, applicationName %s and deviceId %s.",
                             userName, applicationName, deviceId);
+                    statusCode = 202;
                 }
             }
-            sendTextResponse(resp, response);
+            sendTextResponse(resp, response, statusCode);
         } catch (TokenAuthenticationException e) {
             // Should never happen as parameters have already been checked
             resp.sendError(HttpStatus.SC_NOT_FOUND);
@@ -143,9 +147,10 @@ public class TokenAuthenticationServlet extends HttpServlet {
     }
 
     protected void sendTextResponse(HttpServletResponse resp,
-            String textResponse) throws IOException {
+            String textResponse, int statusCode) throws IOException {
 
         resp.setContentType("text/plain");
+        resp.setStatus(statusCode);
         resp.setContentLength(textResponse.getBytes().length);
         OutputStream out = resp.getOutputStream();
         out.write(textResponse.getBytes());
