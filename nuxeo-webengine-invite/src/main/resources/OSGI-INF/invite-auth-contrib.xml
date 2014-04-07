@@ -11,7 +11,7 @@
       <grantPattern>${org.nuxeo.ecm.contextPath}/site/userInvitation/enterpassword/.*</grantPattern>
     </openUrl>
     <openUrl name="Graphical_Resources">
-      <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/userRegistration/.*</grantPattern>
+      <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/invite/.*</grantPattern>
     </openUrl>
   </extension>
   
