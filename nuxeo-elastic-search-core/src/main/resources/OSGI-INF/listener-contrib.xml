@@ -17,6 +17,7 @@
       <event>sessionSaved</event>
       <event>documentCheckedOut</event>
       <event>documentCheckedIn</event>
+      <event>binaryTextUpdated</event>
     </listener>
 
     <listener name="elasticSearchPostCommitSyncListener" async="false"

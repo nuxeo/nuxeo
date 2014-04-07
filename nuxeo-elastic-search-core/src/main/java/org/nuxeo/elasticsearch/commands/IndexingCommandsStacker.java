@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_B
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BINARYTEXT_UPDATED;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -94,6 +95,8 @@ public abstract class IndexingCommandsStacker {
                 // subtree delete is always async
                 cmds.add(IndexingCommand.DELETE, false, true);
             }
+        } else if (BINARYTEXT_UPDATED.equals(eventId)) {
+            cmds.add(IndexingCommand.UPDATE, sync, false);
         }
 
     }

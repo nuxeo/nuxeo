@@ -30,8 +30,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.ElasticSearchComponent;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -404,4 +407,28 @@ public class TestAutomaticIndexing {
 
     }
 
+    @Test
+    public void shouldIndexBinaryFulltext() throws Exception {
+        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+        DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
+        BlobHolder holder = doc.getAdapter(BlobHolder.class);
+        holder.setBlob(new StringBlob("You know for search"));
+        doc = session.createDocument(doc);
+        session.save();
+
+        String docId = doc.getId();
+        TransactionHelper.commitOrRollbackTransaction();
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        esi.flush();
+
+        TransactionHelper.startTransaction();
+        DocumentModelList ret = ess.query(session, "SELECT * FROM Document", 10, 0);
+        Assert.assertEquals(1, ret.totalSize());
+
+        ret = ess.query(session, "SELECT * FROM Document WHERE ecm:fulltext='search'", 10, 0);
+        Assert.assertEquals(1, ret.totalSize());
+    }
 }
