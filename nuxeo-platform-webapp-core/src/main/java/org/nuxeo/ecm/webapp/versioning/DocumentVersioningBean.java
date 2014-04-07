@@ -130,6 +130,9 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     @Factory(autoCreate = true, value = "currentDocumentVersionInfo", scope = EVENT)
     public VersionInfo getCurrentDocumentVersionInfo() throws ClientException {
         DocumentModel doc = navigationContext.getCurrentDocument();
+        if (doc == null) {
+            return null;
+        }
         String versionLabel = versioningManager.getVersionLabel(doc);
         boolean available = versionLabel != null && versionLabel.length() != 0;
         return new VersionInfo(versionLabel, available);
