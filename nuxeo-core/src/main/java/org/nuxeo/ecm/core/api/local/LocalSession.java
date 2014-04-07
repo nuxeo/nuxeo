@@ -65,7 +65,9 @@ public class LocalSession extends AbstractSession implements Synchronization {
 
         public SessionInfo(Session session) {
             this.session = session;
-            openException = new Exception("Open stack trace");
+            openException = new Exception("Open stack trace for "
+                    + session.getSessionId() + " in thread "
+                    + Thread.currentThread().getName());
         }
     }
 
@@ -191,26 +193,23 @@ public class LocalSession extends AbstractSession implements Synchronization {
     public void destroy() {
         log.debug("Closing CoreSession: " + sessionId);
         int size = allSessions.size();
+        if (size != 1 || threadSessions.get() == null) {
+            // multiple sessions, or one but in wrong thread
+            Exception closeException = new Exception("Close stack trace for "
+                    + sessionId + " in thread "
+                    + Thread.currentThread().getName());
+            log.warn("At close time there are still " + size
+                    + " Session objects."
+                    + " Dumping close() then open() stack traces.",
+                    closeException);
+            for (SessionInfo si : allSessions) {
+                log.warn("Session open at", si.openException);
+            }
+        }
         closeInThisThread();
         if (!allSessions.isEmpty()) {
-            int newSize = allSessions.size();
-            boolean wrongThread = size == 1 && newSize == 1;
-            if (wrongThread) {
-                // must be a close from wrong thread
-                log.debug("CoreSession " + sessionId
-                        + " closed from different thread than open");
-            } else {
-                log.warn("Leaking " + newSize
-                        + " Session objects, due to incorrect thread use."
-                        + " Dumping open stack trace");
-            }
-            // close them all
+            // close leaks previously logged
             for (SessionInfo si : allSessions) {
-                if (wrongThread) {
-                    log.debug("Session open at", si.openException);
-                } else {
-                    log.warn("Leaking Session open at", si.openException);
-                }
                 si.session.close();
                 si.openException = null;
             }
