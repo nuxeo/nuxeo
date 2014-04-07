@@ -27,6 +27,7 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -61,7 +62,7 @@ public class VocabulariesPage extends AdminCenterBasePage {
             final String entryFrenchLabel, final boolean obsolete,
             final int order) {
         addNewEntryLink.click();
-        waitForLoading();
+        //waitForLoading();
         NewVocabularyEntryForm newVocabularyEntryForm = getWebFragment(
                 By.id("addEntryView:addEntryForm"),
                 NewVocabularyEntryForm.class);
@@ -153,18 +154,27 @@ public class VocabulariesPage extends AdminCenterBasePage {
      * @since 5.9.3
      */
     protected void waitForLoading() {
-        Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
-            public Boolean apply(WebDriver driver) {
-                return driver.findElement(By.id("_viewRoot:status.stop")).getAttribute(
-                        "style").equals("display: none;");
-            }
-        }, StaleElementReferenceException.class);
-        Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
-            public Boolean apply(WebDriver driver) {
-                return driver.findElement(By.id("_viewRoot:status.start")).getAttribute(
-                        "style").equals("display: none;");
-            }
-        }, StaleElementReferenceException.class);
+        try {
+            Locator.waitUntilGivenFunctionIgnoring(
+                    new Function<WebDriver, Boolean>() {
+                        public Boolean apply(WebDriver driver) {
+                            return driver.findElement(
+                                    By.id("_viewRoot:status.stop")).getAttribute(
+                                    "style").equals("display: none;");
+                        }
+                    }, StaleElementReferenceException.class);
+        } catch (TimeoutException e) {
+            // maybe this was fast and it is already loaded
+            // let's keep going and see
+        }
+        Locator.waitUntilGivenFunctionIgnoring(
+                new Function<WebDriver, Boolean>() {
+                    public Boolean apply(WebDriver driver) {
+                        return driver.findElement(
+                                By.id("_viewRoot:status.start")).getAttribute(
+                                "style").equals("display: none;");
+                    }
+                }, StaleElementReferenceException.class);
     }
 
 }
