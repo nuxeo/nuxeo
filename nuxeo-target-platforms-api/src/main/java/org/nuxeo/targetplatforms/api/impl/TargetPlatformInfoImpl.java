@@ -39,8 +39,6 @@ public class TargetPlatformInfoImpl extends TargetInfoImpl implements
 
     protected boolean fastTrack = false;
 
-    protected boolean trial = false;
-
     protected Map<String, TargetPackageInfo> availablePackagesInfo;
 
     /**
@@ -97,14 +95,6 @@ public class TargetPlatformInfoImpl extends TargetInfoImpl implements
 
     public void setFastTrack(boolean fastTrack) {
         this.fastTrack = fastTrack;
-    }
-
-    public boolean isTrial() {
-        return trial;
-    }
-
-    public void setTrial(boolean trial) {
-        this.trial = trial;
     }
 
     @Override

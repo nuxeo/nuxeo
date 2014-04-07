@@ -591,6 +591,14 @@ public class TestTargetPlatformService {
         assertEquals(1, tps.size());
         assertEquals("cmf-1.8", tps.get(0).getId());
 
+        // filter on trial
+        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
+                true));
+        Collections.sort(tps);
+        assertEquals(2, tps.size());
+        assertEquals("cap-5.8", tps.get(0).getId());
+        assertEquals("cap-5.9.2", tps.get(1).getId());
+
         // filter none
         tps = service.getAvailableTargetPlatforms(null);
         Collections.sort(tps);

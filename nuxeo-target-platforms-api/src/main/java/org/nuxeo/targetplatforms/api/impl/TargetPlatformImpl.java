@@ -36,8 +36,6 @@ public class TargetPlatformImpl extends TargetImpl implements TargetPlatform {
 
     protected boolean fastTrack = false;
 
-    protected boolean trial = false;
-
     protected Map<String, TargetPackage> availablePackages;
 
     protected List<String> testVersions;
@@ -120,14 +118,6 @@ public class TargetPlatformImpl extends TargetImpl implements TargetPlatform {
             // dereference
             this.testVersions = new ArrayList<>(testVersions);
         }
-    }
-
-    public boolean isTrial() {
-        return trial;
-    }
-
-    public void setTrial(boolean trial) {
-        this.trial = trial;
     }
 
     @Override

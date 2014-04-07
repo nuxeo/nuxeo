@@ -48,6 +48,8 @@ public class TargetInfoImpl implements TargetInfo {
 
     protected boolean restricted = false;
 
+    protected boolean trial = false;
+
     protected Calendar releaseDate;
 
     protected Calendar endOfAvailability;
@@ -188,6 +190,14 @@ public class TargetInfoImpl implements TargetInfo {
 
     public void setDeprecated(boolean deprecated) {
         this.deprecated = deprecated;
+    }
+
+    public boolean isTrial() {
+        return trial;
+    }
+
+    public void setTrial(boolean trial) {
+        this.trial = trial;
     }
 
     public boolean isOverridden() {
