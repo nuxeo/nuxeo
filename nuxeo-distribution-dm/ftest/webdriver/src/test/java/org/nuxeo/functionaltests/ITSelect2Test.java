@@ -118,17 +118,18 @@ public class ITSelect2Test extends AbstractTest {
         FileDocumentBasePage filePage = createFile(workspacePage, "Test file",
                 "Test File description", false, null, null, null);
         EditTabSubPage editTabSubPage = filePage.getEditTab();
-        Select2WidgetElement coverageWidget = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_select2']")),
-                false);
-        coverageWidget.selectValue(COVERAGE);
 
         Select2WidgetElement subjectsWidget = new Select2WidgetElement(
                 driver,
                 driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_select2']")),
                 true);
         subjectsWidget.selectValues(SUBJECTS);
+
+        Select2WidgetElement coverageWidget = new Select2WidgetElement(
+                driver,
+                driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_select2']")),
+                false);
+        coverageWidget.selectValue(COVERAGE);
 
         editTabSubPage.save();
 
