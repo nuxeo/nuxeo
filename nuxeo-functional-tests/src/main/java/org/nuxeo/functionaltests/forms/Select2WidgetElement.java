@@ -206,7 +206,8 @@ public class Select2WidgetElement extends WebFragmentImpl {
 
         if (getSuggestedEntries() != null && getSuggestedEntries().size() > 1) {
             ScreenshotTaker screenshotTaker = new ScreenshotTaker();
-            screenshotTaker.takeScreenshot(driver, "DEBUG-NXP-13875");
+            screenshotTaker.takeScreenshot(driver, "DEBUG-NXP-13875-");
+            screenshotTaker.dumpPageSource(driver, "DEBUG-NXP-13875-");
             log.warn("Suggestion for element "
                     + element.getAttribute("id")
                     + " returned more than 1 result, the first suggestion will be selected : "
