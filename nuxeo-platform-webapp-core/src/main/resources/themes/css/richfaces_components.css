@@ -30,6 +30,9 @@ a.treeLink:hover,
 .menu dd {
   margin: 0 }
 
+.menu .menuForm {
+  margin-bottom: 2em }
+
 td.dr-tree-h-text,
 td.dr-tree-h-text span,
 td.dr-tree-h-text a.treeLink {
