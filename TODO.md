@@ -1,7 +1,7 @@
 
 ## Lucene / H2
 
-Current unit tests run using Derby rather than H2 because otherwise we have a conflict between the lucene version comming from H2 and the version of lucence comming from Elastic Search.
+Current unit tests run using Derby rather than H2 because otherwise we have a conflict between the lucene version comming from H2 and the version of lucence comming from Elasticsearch.
 
 The solution is to upgrade H2/Lucene integration.
 
