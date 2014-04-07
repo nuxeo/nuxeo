@@ -42,6 +42,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPackageInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatform;
+import org.nuxeo.targetplatforms.api.TargetPlatformFilter;
 import org.nuxeo.targetplatforms.api.TargetPlatformInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
 import org.nuxeo.targetplatforms.api.impl.TargetPackageImpl;
@@ -443,46 +444,34 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
 
     @Override
     public List<TargetPlatform> getAvailableTargetPlatforms(
-            boolean filterDisabled, boolean filterRestricted,
-            boolean filterDeprecated, String type) throws ClientException {
+            TargetPlatformFilter filter) throws ClientException {
         List<TargetPlatform> tps = new ArrayList<>();
         for (TargetPlatformDescriptor desc : platforms.getTargetPlatforms()) {
             TargetPlatform tp = getTargetPlatform(desc);
             if (tp == null) {
                 continue;
             }
-            if ((filterDisabled && !tp.isEnabled())
-                    || (filterDeprecated && tp.isDeprecated())
-                    || (filterRestricted && tp.isRestricted())
-                    || (!StringUtils.isBlank(type) && !tp.matchesType(type))) {
+            if (filter != null && !filter.accepts(tp)) {
                 continue;
             }
-            if (tp != null) {
-                tps.add(tp);
-            }
+            tps.add(tp);
         }
         return tps;
     }
 
     @Override
     public List<TargetPlatformInfo> getAvailableTargetPlatformsInfo(
-            boolean filterDisabled, boolean filterRestricted,
-            boolean filterDeprecated, String type) throws ClientException {
+            TargetPlatformFilter filter) throws ClientException {
         List<TargetPlatformInfo> tps = new ArrayList<>();
         for (TargetPlatformDescriptor desc : platforms.getTargetPlatforms()) {
             TargetPlatformInfo tp = getTargetPlatformInfo(desc);
             if (tp == null) {
                 continue;
             }
-            if ((filterDisabled && !tp.isEnabled())
-                    || (filterDeprecated && tp.isDeprecated())
-                    || (filterRestricted && tp.isRestricted())
-                    || (!StringUtils.isBlank(type) && !tp.matchesType(type))) {
+            if (filter != null && !filter.accepts(tp)) {
                 continue;
             }
-            if (tp != null) {
-                tps.add(tp);
-            }
+            tps.add(tp);
         }
         return tps;
     }

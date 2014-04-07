@@ -57,6 +57,7 @@ import org.nuxeo.targetplatforms.api.TargetPlatform;
 import org.nuxeo.targetplatforms.api.TargetPlatformInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
 import org.nuxeo.targetplatforms.api.impl.TargetImpl;
+import org.nuxeo.targetplatforms.api.impl.TargetPlatformFilterImpl;
 import org.nuxeo.targetplatforms.api.service.TargetPlatformService;
 import org.nuxeo.targetplatforms.core.service.DirectoryUpdater;
 
@@ -551,8 +552,8 @@ public class TestTargetPlatformService {
     @Test
     public void testGetAvailableTargetPlatforms() throws ClientException {
         // filter all
-        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(true,
-                true, true, null);
+        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
+                true, true, true, null));
         Collections.sort(tps);
         assertEquals(4, tps.size());
         // order is registration order
@@ -562,7 +563,8 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(3).getId());
 
         // filter deprecated
-        tps = service.getAvailableTargetPlatforms(true, true, true, null);
+        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
+                true, true, true, null));
         Collections.sort(tps);
         assertEquals(4, tps.size());
         // order is registration order
@@ -572,7 +574,8 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(3).getId());
 
         // filter restricted
-        tps = service.getAvailableTargetPlatforms(true, false, true, null);
+        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
+                true, false, true, null));
         Collections.sort(tps);
         assertEquals(5, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -582,17 +585,32 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(4).getId());
 
         // filter on type
-        tps = service.getAvailableTargetPlatforms(true, false, false, "CMF");
+        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
+                true, false, false, "CMF"));
         Collections.sort(tps);
         assertEquals(1, tps.size());
         assertEquals("cmf-1.8", tps.get(0).getId());
+
+        // filter none
+        tps = service.getAvailableTargetPlatforms(null);
+        Collections.sort(tps);
+        assertEquals(7, tps.size());
+        // order is registration order
+        int index = 0;
+        assertEquals("cap-5.7.2", tps.get(index).getId());
+        assertEquals("cap-5.8", tps.get(++index).getId());
+        assertEquals("cap-5.9.1", tps.get(++index).getId());
+        assertEquals("cap-5.9.2", tps.get(++index).getId());
+        assertEquals("cap-5.9.3", tps.get(++index).getId());
+        assertEquals("cmf-1.8", tps.get(++index).getId());
+        assertEquals("dm-5.3.0", tps.get(++index).getId());
     }
 
     @Test
     public void testGetAvailableTargetPlatformsOverride()
             throws ClientException {
-        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(true,
-                true, true, null);
+        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
+                true, true, true, null));
         Collections.sort(tps);
         assertEquals(4, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -602,7 +620,8 @@ public class TestTargetPlatformService {
 
         service.restrictTargetPlatform(true, "cap-5.9.2");
 
-        tps = service.getAvailableTargetPlatforms(true, true, true, null);
+        tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
+                true, true, true, null));
         Collections.sort(tps);
         assertEquals(3, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -613,8 +632,8 @@ public class TestTargetPlatformService {
     @Test
     public void testGetAvailableTargetPlatformsInfo() throws ClientException {
         // filter all
-        List<TargetPlatformInfo> tps = service.getAvailableTargetPlatformsInfo(
-                true, true, true, null);
+        List<TargetPlatformInfo> tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
+                true, true, true, null));
         Collections.sort(tps);
         assertEquals(4, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -623,7 +642,8 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(3).getId());
 
         // filter deprecated
-        tps = service.getAvailableTargetPlatformsInfo(true, false, true, null);
+        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
+                true, false, true, null));
         Collections.sort(tps);
         assertEquals(5, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -633,7 +653,8 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(4).getId());
 
         // filter restricted
-        tps = service.getAvailableTargetPlatformsInfo(true, false, true, null);
+        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
+                true, false, true, null));
         Collections.sort(tps);
         assertEquals(5, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -643,14 +664,16 @@ public class TestTargetPlatformService {
         assertEquals("cmf-1.8", tps.get(4).getId());
 
         // filter on type
-        tps = service.getAvailableTargetPlatformsInfo(true, false, false, "CMF");
+        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
+                true, false, false, "CMF"));
         Collections.sort(tps);
         assertEquals(1, tps.size());
         assertEquals("cmf-1.8", tps.get(0).getId());
 
         // disable target platform
         service.enableTargetPlatform(false, "cmf-1.8");
-        tps = service.getAvailableTargetPlatformsInfo(true, false, false, "CMF");
+        tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
+                true, false, false, "CMF"));
         assertEquals(0, tps.size());
     }
 

@@ -41,8 +41,7 @@ public class TargetPlatformActions {
     protected TargetPlatformService targetPlatformService;
 
     public List<TargetPlatformInfo> getPlatforms() throws ClientException {
-        List<TargetPlatformInfo> res = targetPlatformService.getAvailableTargetPlatformsInfo(
-                false, false, false, null);
+        List<TargetPlatformInfo> res = targetPlatformService.getAvailableTargetPlatformsInfo(null);
         Collections.sort(res);
         return res;
     }

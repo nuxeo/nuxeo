@@ -22,6 +22,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPackageInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatform;
+import org.nuxeo.targetplatforms.api.TargetPlatformFilter;
 import org.nuxeo.targetplatforms.api.TargetPlatformInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
 
@@ -74,23 +75,22 @@ public interface TargetPlatformService {
     /**
      * Returns all target platforms matching given criteria.
      *
-     * @param filterRestricted true if restricted target platforms should be
-     *            filtered from the resulting list.
-     * @param filterDeprecated true if deprecated target platforms should be
-     *            filtered from the resulting list.
-     * @param type null if no filtering should be done, otherwise filters all
-     *            target platforms that would not hold this type.
+     * @param filter the filter to apply, can be null if no filtering is
+     *            needed.
+     * @see TargetPlatformFilter
      */
-    List<TargetPlatform> getAvailableTargetPlatforms(boolean filterDisabled,
-            boolean filterRestricted, boolean filterDeprecated, String type)
+    List<TargetPlatform> getAvailableTargetPlatforms(TargetPlatformFilter filter)
             throws ClientException;
 
     /**
      * Returns all target platforms info matching given criteria.
+     *
+     * @param filter the filter to apply, can be null if no filtering is
+     *            needed.
+     * @see TargetPlatformFilter
      */
     List<TargetPlatformInfo> getAvailableTargetPlatformsInfo(
-            boolean filterDisabled, boolean filterRestricted,
-            boolean filterDeprecated, String type) throws ClientException;
+            TargetPlatformFilter filter) throws ClientException;
 
     /**
      * Deprecates the target platform if given boolean is true (or
