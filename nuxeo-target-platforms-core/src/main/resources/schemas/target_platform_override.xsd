@@ -7,5 +7,6 @@
   <xs:element name="deprecated" type="xs:integer" default="-1" />
   <xs:element name="enabled" type="xs:integer" default="-1" />
   <xs:element name="restricted" type="xs:integer" default="-1" />
+  <xs:element name="trial" type="xs:integer" default="-1" />
 
 </xs:schema>

@@ -271,10 +271,11 @@ public class TestTargetPlatformService {
         String id = "cap-5.8";
         TargetPlatform tp = service.getTargetPlatform(id);
         assertNotNull(tp);
+        assertFalse(tp.isOverridden());
         assertTrue(tp.isEnabled());
         assertFalse(tp.isRestricted());
         assertFalse(tp.isDeprecated());
-        assertFalse(tp.isOverridden());
+        assertTrue(tp.isTrial());
 
         // disable
         service.enableTargetPlatform(false, id);
@@ -283,6 +284,7 @@ public class TestTargetPlatformService {
         assertFalse(tp.isEnabled());
         assertFalse(tp.isRestricted());
         assertFalse(tp.isDeprecated());
+        assertTrue(tp.isTrial());
 
         // enable again
         service.enableTargetPlatform(true, id);
@@ -291,6 +293,7 @@ public class TestTargetPlatformService {
         assertTrue(tp.isEnabled());
         assertFalse(tp.isRestricted());
         assertFalse(tp.isDeprecated());
+        assertTrue(tp.isTrial());
 
         // restrict
         service.restrictTargetPlatform(true, id);
@@ -299,6 +302,7 @@ public class TestTargetPlatformService {
         assertTrue(tp.isEnabled());
         assertTrue(tp.isRestricted());
         assertFalse(tp.isDeprecated());
+        assertTrue(tp.isTrial());
 
         // unrestrict
         service.restrictTargetPlatform(false, id);
@@ -307,14 +311,16 @@ public class TestTargetPlatformService {
         assertTrue(tp.isEnabled());
         assertFalse(tp.isRestricted());
         assertFalse(tp.isDeprecated());
+        assertTrue(tp.isTrial());
 
-        // deprecated
+        // deprecate
         service.deprecateTargetPlatform(true, id);
         tp = service.getTargetPlatform(id);
         assertTrue(tp.isOverridden());
         assertTrue(tp.isEnabled());
         assertFalse(tp.isRestricted());
         assertTrue(tp.isDeprecated());
+        assertTrue(tp.isTrial());
 
         // undeprecate
         service.deprecateTargetPlatform(false, id);
@@ -323,6 +329,25 @@ public class TestTargetPlatformService {
         assertTrue(tp.isEnabled());
         assertFalse(tp.isRestricted());
         assertFalse(tp.isDeprecated());
+        assertTrue(tp.isTrial());
+
+        // unset trial
+        service.trialTargetPlatform(false, id);
+        tp = service.getTargetPlatform(id);
+        assertTrue(tp.isOverridden());
+        assertTrue(tp.isEnabled());
+        assertFalse(tp.isRestricted());
+        assertFalse(tp.isDeprecated());
+        assertFalse(tp.isTrial());
+
+        // set trial
+        service.trialTargetPlatform(true, id);
+        tp = service.getTargetPlatform(id);
+        assertTrue(tp.isOverridden());
+        assertTrue(tp.isEnabled());
+        assertFalse(tp.isRestricted());
+        assertFalse(tp.isDeprecated());
+        assertTrue(tp.isTrial());
 
         // disable again
         service.enableTargetPlatform(false, id);
@@ -331,6 +356,7 @@ public class TestTargetPlatformService {
         assertFalse(tp.isEnabled());
         assertFalse(tp.isRestricted());
         assertFalse(tp.isDeprecated());
+        assertTrue(tp.isTrial());
 
         // restore
         service.restoreTargetPlatform(id);
@@ -339,6 +365,7 @@ public class TestTargetPlatformService {
         assertTrue(tp.isEnabled());
         assertFalse(tp.isRestricted());
         assertFalse(tp.isDeprecated());
+        assertTrue(tp.isTrial());
 
         // test restore all
         tp = service.getTargetPlatform("cap-5.8");

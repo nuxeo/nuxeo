@@ -215,6 +215,11 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
             if (deprecated != null && deprecated.intValue() >= 0) {
                 tp.setDeprecated(deprecated.intValue() == 0 ? false : true);
             }
+            Long trial = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
+                    DirectoryUpdater.TRIAL_PROP);
+            if (trial != null && trial.intValue() >= 0) {
+                tp.setTrial(trial.intValue() == 0 ? false : true);
+            }
             tp.setOverridden(true);
         }
 
@@ -312,6 +317,11 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
                     DirectoryUpdater.DEPRECATED_PROP);
             if (deprecated != null && deprecated.intValue() >= 0) {
                 tpi.setDeprecated(deprecated.intValue() == 0 ? false : true);
+            }
+            Long trial = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
+                    DirectoryUpdater.TRIAL_PROP);
+            if (trial != null && trial.intValue() >= 0) {
+                tpi.setTrial(trial.intValue() == 0 ? false : true);
             }
             tpi.setOverridden(true);
         }
@@ -496,6 +506,13 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
             throws ClientException {
         Integer val = restrict ? Integer.valueOf(1) : Integer.valueOf(0);
         updateOrCreateEntry(id, DirectoryUpdater.RESTRICTED_PROP, val);
+    }
+
+    @Override
+    public void trialTargetPlatform(boolean trial, final String id)
+            throws ClientException {
+        Integer val = trial ? Integer.valueOf(1) : Integer.valueOf(0);
+        updateOrCreateEntry(id, DirectoryUpdater.TRIAL_PROP, val);
     }
 
     @Override

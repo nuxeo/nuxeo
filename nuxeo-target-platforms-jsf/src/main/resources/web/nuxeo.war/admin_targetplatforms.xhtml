@@ -104,6 +104,18 @@
                   action="#{targetPlatformService.deprecateTargetPlatform(true, tp.id)}"
                   value="#{messages['command.admin.targetplatforms.deprecate']}" />
               </h:outputText>
+              <h:outputText rendered="#{tp.trial}">
+                <a4j:commandLink styleClass="button" id="untrial_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.trialTargetPlatform(false, tp.id)}"
+                  value="#{messages['command.admin.targetplatforms.untrial']}" />
+              </h:outputText>
+              <h:outputText rendered="#{!tp.trial}">
+                <a4j:commandLink styleClass="button" id="trial_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.trialTargetPlatform(true, tp.id)}"
+                  value="#{messages['command.admin.targetplatforms.trial']}" />
+              </h:outputText>
             </h:outputText>
             <h:outputText rendered="#{!tp.enabled}">
               <a4j:commandLink styleClass="button" id="enable_#{status.index}"

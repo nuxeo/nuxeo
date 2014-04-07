@@ -116,6 +116,13 @@ public interface TargetPlatformService {
             throws ClientException;
 
     /**
+     * Set the target platform as trial if given boolean is true (or unset it
+     * as trial if boolean is false), overriding the default value from
+     * extension points and adding an entry in the override directory.
+     */
+    void trialTargetPlatform(boolean trial, String id) throws ClientException;
+
+    /**
      * Removes overrides for this target platform.
      */
     void restoreTargetPlatform(String id) throws ClientException;

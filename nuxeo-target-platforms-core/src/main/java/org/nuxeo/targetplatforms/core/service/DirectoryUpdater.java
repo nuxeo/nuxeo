@@ -39,6 +39,8 @@ public abstract class DirectoryUpdater {
 
     public static final String RESTRICTED_PROP = "restricted";
 
+    public static final String TRIAL_PROP = "trial";
+
     protected String dirName;
 
     public DirectoryUpdater(String dirName) {
