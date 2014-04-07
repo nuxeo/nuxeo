@@ -158,6 +158,8 @@ public class LocalSession extends AbstractSession implements Synchronization {
         SessionInfo si = new SessionInfo(session);
         threadSessions.set(si);
         allSessions.add(si);
+        log.debug("Adding thread " + Thread.currentThread().getName()
+                + " for CoreSession: " + sessionId);
         return si;
     }
 
@@ -185,6 +187,8 @@ public class LocalSession extends AbstractSession implements Synchronization {
             si.session.close();
             threadSessions.remove();
             allSessions.remove(si);
+            log.debug("Removing thread " + Thread.currentThread().getName()
+                    + " for CoreSession: " + sessionId);
         }
     }
 
@@ -193,8 +197,8 @@ public class LocalSession extends AbstractSession implements Synchronization {
     public void destroy() {
         log.debug("Closing CoreSession: " + sessionId);
         int size = allSessions.size();
-        if (size != 1 || threadSessions.get() == null) {
-            // multiple sessions, or one but in wrong thread
+        if (size > 1) {
+            // multiple sessions
             Exception closeException = new Exception("Close stack trace for "
                     + sessionId + " in thread "
                     + Thread.currentThread().getName());
