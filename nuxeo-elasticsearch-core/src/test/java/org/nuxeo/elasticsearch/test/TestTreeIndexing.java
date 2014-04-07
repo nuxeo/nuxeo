@@ -9,7 +9,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -55,12 +54,6 @@ public class TestTreeIndexing {
 
     @Inject
     protected ElasticSearchIndexing esi;
-
-    @Before
-    public void initIndex() throws Exception {
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
-        esa.initIndexes(true);
-    }
 
     protected void buildTree() throws ClientException {
         String root = "/";

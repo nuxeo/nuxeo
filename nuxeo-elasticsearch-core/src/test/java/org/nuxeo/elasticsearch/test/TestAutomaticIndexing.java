@@ -25,7 +25,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -64,12 +63,6 @@ public class TestAutomaticIndexing {
 
     @Inject
     ElasticSearchIndexing esi;
-
-    @Before
-    public void initIndex() throws Exception {
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
-        esa.initIndexes(false);
-    }
 
     @After
     public void cleanupIndexed() throws Exception {
@@ -411,14 +404,12 @@ public class TestAutomaticIndexing {
     public void shouldIndexBinaryFulltext() throws Exception {
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
         holder.setBlob(new StringBlob("You know for search"));
         doc = session.createDocument(doc);
         session.save();
 
-        String docId = doc.getId();
         TransactionHelper.commitOrRollbackTransaction();
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));

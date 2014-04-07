@@ -40,7 +40,7 @@ public class TestCompareCoreWithES {
     protected ElasticSearchIndexing esi;
 
     @Before
-    public void initIndex() throws Exception {
+    public void initWorkingDocuments() throws Exception {
         buildDocsIfNeeded();
     }
 
