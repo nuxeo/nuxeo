@@ -478,41 +478,24 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void deprecateTargetPlatform(final String id) throws ClientException {
-        updateOrCreateEntry(id, DirectoryUpdater.DEPRECATED_PROP,
-                Integer.valueOf(1));
-    }
-
-    @Override
-    public void undeprecateTargetPlatform(final String id)
+    public void deprecateTargetPlatform(boolean deprecate, final String id)
             throws ClientException {
-        updateOrCreateEntry(id, DirectoryUpdater.DEPRECATED_PROP,
-                Integer.valueOf(0));
+        Integer val = deprecate ? Integer.valueOf(1) : Integer.valueOf(0);
+        updateOrCreateEntry(id, DirectoryUpdater.DEPRECATED_PROP, val);
     }
 
     @Override
-    public void enableTargetPlatform(final String id) throws ClientException {
-        updateOrCreateEntry(id, DirectoryUpdater.ENABLED_PROP,
-                Integer.valueOf(1));
-    }
-
-    @Override
-    public void disableTargetPlatform(final String id) throws ClientException {
-        updateOrCreateEntry(id, DirectoryUpdater.ENABLED_PROP,
-                Integer.valueOf(0));
-    }
-
-    @Override
-    public void restrictTargetPlatform(final String id) throws ClientException {
-        updateOrCreateEntry(id, DirectoryUpdater.RESTRICTED_PROP,
-                Integer.valueOf(1));
-    }
-
-    @Override
-    public void unrestrictTargetPlatform(final String id)
+    public void enableTargetPlatform(boolean enable, final String id)
             throws ClientException {
-        updateOrCreateEntry(id, DirectoryUpdater.RESTRICTED_PROP,
-                Integer.valueOf(0));
+        Integer val = enable ? Integer.valueOf(1) : Integer.valueOf(0);
+        updateOrCreateEntry(id, DirectoryUpdater.ENABLED_PROP, val);
+    }
+
+    @Override
+    public void restrictTargetPlatform(boolean restrict, final String id)
+            throws ClientException {
+        Integer val = restrict ? Integer.valueOf(1) : Integer.valueOf(0);
+        updateOrCreateEntry(id, DirectoryUpdater.RESTRICTED_PROP, val);
     }
 
     @Override

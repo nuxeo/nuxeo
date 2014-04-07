@@ -76,12 +76,12 @@
             <h:outputText rendered="#{tp.enabled}">
               <a4j:commandLink styleClass="button" id="disable_#{status.index}"
                 reRender="targetPlatformsTable"
-                action="#{targetPlatformService.disableTargetPlatform(tp.id)}"
+                action="#{targetPlatformService.enableTargetPlatform(false, tp.id)}"
                 value="#{messages['command.admin.targetplatforms.disable']}" />
               <h:outputText rendered="#{tp.restricted}">
                 <a4j:commandLink styleClass="button" id="unrestrict_#{status.index}"
                   reRender="targetPlatformsTable"
-                  action="#{targetPlatformService.unrestrictTargetPlatform(tp.id)}">
+                  action="#{targetPlatformService.restrictTargetPlatform(false, tp.id)}">
                   <h:graphicImage value="/icons/warning.gif" />
                   <h:outputText value="#{messages['command.admin.targetplatforms.removeRestriction']}" />
                 </a4j:commandLink>
@@ -89,27 +89,27 @@
               <h:outputText rendered="#{!tp.restricted}">
                 <a4j:commandLink styleClass="button" id="restrict_#{status.index}"
                   reRender="targetPlatformsTable"
-                  action="#{targetPlatformService.restrictTargetPlatform(tp.id)}"
+                  action="#{targetPlatformService.restrictTargetPlatform(true, tp.id)}"
                   value="#{messages['command.admin.targetplatforms.addRestriction']}" />
+              </h:outputText>
+              <h:outputText rendered="#{tp.deprecated}">
+                <a4j:commandLink styleClass="button" id="undeprecate_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.deprecateTargetPlatform(false, tp.id)}"
+                  value="#{messages['command.admin.targetplatforms.undeprecate']}" />
+              </h:outputText>
+              <h:outputText rendered="#{!tp.deprecated}">
+                <a4j:commandLink styleClass="button" id="deprecate_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.deprecateTargetPlatform(true, tp.id)}"
+                  value="#{messages['command.admin.targetplatforms.deprecate']}" />
               </h:outputText>
             </h:outputText>
             <h:outputText rendered="#{!tp.enabled}">
               <a4j:commandLink styleClass="button" id="enable_#{status.index}"
                 reRender="targetPlatformsTable"
-                action="#{targetPlatformService.enableTargetPlatform(tp.id)}"
+                action="#{targetPlatformService.enableTargetPlatform(true, tp.id)}"
                 value="#{messages['command.admin.targetplatforms.enable']}" />
-            </h:outputText>
-            <h:outputText rendered="#{tp.deprecated}">
-              <a4j:commandLink styleClass="button" id="undeprecate_#{status.index}"
-                reRender="targetPlatformsTable"
-                action="#{targetPlatformService.undeprecateTargetPlatform(tp.id)}"
-                value="#{messages['command.admin.targetplatforms.undeprecate']}" />
-            </h:outputText>
-            <h:outputText rendered="#{!tp.deprecated}">
-              <a4j:commandLink styleClass="button" id="deprecate_#{status.index}"
-                reRender="targetPlatformsTable"
-                action="#{targetPlatformService.deprecateTargetPlatform(tp.id)}"
-                value="#{messages['command.admin.targetplatforms.deprecate']}" />
             </h:outputText>
             <a4j:status>
               <f:facet name="start">

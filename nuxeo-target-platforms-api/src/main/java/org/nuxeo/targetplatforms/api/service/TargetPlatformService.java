@@ -93,40 +93,27 @@ public interface TargetPlatformService {
             boolean filterDeprecated, String type) throws ClientException;
 
     /**
-     * Deprecates the target platform, overriding the default value from
+     * Deprecates the target platform if given boolean is true (or
+     * un-deprecates it if boolean is false), overriding the default value from
      * extension points and adding an entry in the override directory.
      */
-    void deprecateTargetPlatform(String id) throws ClientException;
+    void deprecateTargetPlatform(boolean deprecate, String id)
+            throws ClientException;
 
     /**
-     * Undeprecates the target platform, overriding the default value from
-     * extension points and adding an entry in the override directory.
+     * Enables the target platform if given boolean is true (or disables it
+     * boolean is false), overriding the default value from extension points
+     * and adding an entry in the override directory.
      */
-    void undeprecateTargetPlatform(String id) throws ClientException;
+    void enableTargetPlatform(boolean enable, String id) throws ClientException;
 
     /**
-     * Enables the target platform, overriding the default value from extension
+     * Restricts the target platform if given boolean is true (or un-restricts
+     * it if boolean is false), overriding the default value from extension
      * points and adding an entry in the override directory.
      */
-    void enableTargetPlatform(String id) throws ClientException;
-
-    /**
-     * Disables the target platform, overriding the default value from
-     * extension points and adding an entry in the override directory.
-     */
-    void disableTargetPlatform(String id) throws ClientException;
-
-    /**
-     * Restricts the target platform, overriding the default value from
-     * extension points and adding an entry in the override directory.
-     */
-    void restrictTargetPlatform(String id) throws ClientException;
-
-    /**
-     * Unrestricts the target platform, overriding the default value from
-     * extension points and adding an entry in the override directory.
-     */
-    void unrestrictTargetPlatform(String id) throws ClientException;
+    void restrictTargetPlatform(boolean restrict, String id)
+            throws ClientException;
 
     /**
      * Removes overrides for this target platform.
