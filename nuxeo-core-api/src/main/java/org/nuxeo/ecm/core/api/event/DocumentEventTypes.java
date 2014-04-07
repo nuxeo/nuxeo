@@ -124,6 +124,13 @@ public final class DocumentEventTypes {
      */
     public static final String USER_WORKSPACE_CREATED = "userWorkspaceCreated";
 
+    /**
+     * A binary fulltext field has been updated.
+     *
+     * @since 5.9.3
+     */
+    public static final String BINARYTEXT_UPDATED = "binaryTextUpdated";
+
     // Constant utility class
     private DocumentEventTypes() {
     }
