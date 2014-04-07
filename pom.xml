@@ -134,6 +134,7 @@
     <module>nuxeo-session-inspector</module>
     <module>nuxeo-box-api</module>
     <module>nuxeo-platform-importer</module>
+    <module>nuxeo-elasticsearch</module>
   </modules>
 
   <dependencyManagement>
