@@ -26,17 +26,21 @@ nuxeo.lightbox = (function(m) {
 
   function formatDocWithPicture(doc, img) {
     var creationDate = new Date(doc.properties['dc:created']);
+    var maxWidth = jQuery(window).width() - 120;
+    var maxHeight = jQuery(window).height() - 180;
     var markup = '<div class="mfp-figure">'
         + '<figure><img class="mfp-img" src="'
         + img
-        + '" style="max-width:'
-        + (jQuery(window).width() - 120)
+        + '" style="margin-top:-40px;max-width:'
+        + maxWidth
         + 'px;max-height:'
-        + (jQuery(window).height() - 80)
+        + maxHeight
         + 'px"><figcaption>'
-        + '<div class="mfp-bottom-bar"><div class="mfp-title">'
+        + '<div class="mfp-bottom-bar" style="top:auto;bottom:0;left:60px;position:fixed;padding-bottom:20px;max-width:'
+        + maxWidth
+        + 'px;"><div class="mfp-title">'
         + doc.title
-        + '<small>'
+        + '<small style="padding-top:5px;overflow:auto;max-height:50px">'
         + (doc.properties['dc:description'] === null ? ''
             : doc.properties['dc:description'])
         + '</small></div><div class="mfp-counter">'
@@ -55,7 +59,7 @@ nuxeo.lightbox = (function(m) {
   };
 
   m.formatDefaultDoc = function(doc) {
-    return formatDocWithPicture(doc, nxContextPath + '/img/empty_picture.png');
+    return formatDocWithPicture(doc, nxContextPath + '/img/lightbox_placeholder.png');
   };
 
   m.formatPictureDoc = function(doc) {
@@ -69,7 +73,7 @@ nuxeo.lightbox = (function(m) {
   };
 
   m.formatVideoDoc = function(doc) {
-    return formatDocWithPicture(doc, '/nuxeo/img/empty_picture.png');
+    return formatDocWithPicture(doc, nxContextPath + '/img/lightbox_placeholder.png');
   };
 
   m.formatDoc = function(doc) {
@@ -77,10 +81,8 @@ nuxeo.lightbox = (function(m) {
       return nuxeo.lightbox.formatPictureDoc(doc);
     } else if (doc.facets.indexOf('Video') > -1) {
       return nuxeo.lightbox.formatVideoDoc(doc);
-    } else if (doc.facets.indexOf('Thumbnail') > -1) {
-      return nuxeo.lightbox.formatDefaultDoc(doc);
     } else {
-      return nuxeo.lightbox.formatUnknownDoc(doc);
+      return nuxeo.lightbox.formatDefaultDoc(doc);
     }
   };
 

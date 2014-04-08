@@ -20,7 +20,7 @@
       navigateByImgClick : true,
       preload : [ 0, 1 ],
     },
-    closeOnContentClick : true,
+    closeOnContentClick : false,
     closeBtnInside : false,
     fixedContentPos : true,
     image : {
