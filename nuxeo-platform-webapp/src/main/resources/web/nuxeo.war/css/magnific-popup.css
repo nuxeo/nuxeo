@@ -253,19 +253,6 @@ img.mfp-img {
 /* The shadow behind the image */
 .mfp-figure {
   line-height: 0; }
-  .mfp-figure:after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 40px;
-    bottom: 40px;
-    display: block;
-    right: 0;
-    width: auto;
-    height: auto;
-    z-index: -1;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
-    background: #444444; }
   .mfp-figure small {
     color: #bdbdbd;
     display: block;
