@@ -22,8 +22,6 @@ import static org.junit.Assert.assertNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.faces.context.ResponseWriter;
-
 import org.junit.Test;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 
