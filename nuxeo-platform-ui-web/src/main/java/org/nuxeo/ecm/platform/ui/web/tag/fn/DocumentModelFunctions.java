@@ -445,11 +445,15 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     protected static Field getField(Field parent, String subFieldName) {
         if (parent != null) {
             Type type = parent.getType();
-            Type itemType = ((ListType) type).getFieldType();
-            if (itemType.isComplexType()) {
-                ComplexType complexType = (ComplexType) itemType;
-                Field subField = complexType.getField(subFieldName);
-                return subField;
+            if (type.isListType()) {
+                Type itemType = ((ListType) type).getFieldType();
+                if (itemType.isComplexType()) {
+                    ComplexType complexType = (ComplexType) itemType;
+                    Field subField = complexType.getField(subFieldName);
+                    return subField;
+                }
+            } else if (type.isComplexType()) {
+                return ((ComplexType) type).getField(subFieldName);
             }
         }
         return null;
