@@ -170,6 +170,11 @@ public class GroupManagementActions extends AbstractUserGroupManagement
     }
 
     public boolean getAllowDeleteGroup() throws ClientException {
+        if (getAllAdminGroups().contains(
+                selectedGroup.getId())) {
+            return ((NuxeoPrincipal) currentUser).isAdministrator();
+        }
+
         return getCanEditGroups()
                 && !BaseSession.isReadOnlyEntry(selectedGroup);
     }
@@ -178,7 +183,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement
         // Changing administrator group is only given to administrators (not
         // powerusers)
         // NXP-10584
-        if (userManager.getAdministratorsGroups().contains(
+        if (getAllAdminGroups().contains(
                 selectedGroup.getId())) {
             return ((NuxeoPrincipal) currentUser).isAdministrator();
         }
