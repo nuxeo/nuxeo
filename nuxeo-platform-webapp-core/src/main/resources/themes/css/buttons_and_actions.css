@@ -406,6 +406,7 @@ a.tag,
 
 .tagLink img {
   display: inline;
+  height: 12px;
   margin: 0 0 -0.1em;
   opacity: .7;
   width: 12px }
