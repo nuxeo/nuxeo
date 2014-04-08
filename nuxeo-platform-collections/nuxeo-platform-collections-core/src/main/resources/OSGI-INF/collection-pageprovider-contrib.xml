@@ -8,12 +8,8 @@
       <property name="maxResults">PAGE_SIZE</property>
       <pattern>
         SELECT * FROM Document WHERE dc:title ILIKE ? AND ecm:mixinType = 'Collection' AND
-        ecm:isProxy =
-        0 AND
-        ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:isCheckedInVersion = 0
-        AND
-        ecm:currentLifeCycleState != 'deleted'
+        ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>
@@ -23,11 +19,9 @@
       <property name="maxResults">PAGE_SIZE</property>
       <pattern>
         SELECT * FROM Document where dc:title ILIKE ? AND ecm:isProxy = 0
-        AND ecm:mixinType !=
-        'SystemDocument' AND ecm:mixinType !=
-        'NotCollectionMember' AND ecm:mixinType !=
-        'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
-        ecm:currentLifeCycleState != 'deleted'
+        AND ecm:mixinType != 'SystemDocument' AND ecm:mixinType !=
+        'NotCollectionMember' AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>
