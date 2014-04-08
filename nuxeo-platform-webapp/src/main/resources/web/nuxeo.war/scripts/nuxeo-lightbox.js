@@ -77,10 +77,8 @@ nuxeo.lightbox = (function(m) {
       return nuxeo.lightbox.formatPictureDoc(doc);
     } else if (doc.facets.indexOf('Video') > -1) {
       return nuxeo.lightbox.formatVideoDoc(doc);
-    } else if (doc.facets.indexOf('Thumbnail') > -1) {
-      return nuxeo.lightbox.formatDefaultDoc(doc);
     } else {
-      return nuxeo.lightbox.formatUnknownDoc(doc);
+      return nuxeo.lightbox.formatDefaultDoc(doc);
     }
   };
 
