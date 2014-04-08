@@ -42,9 +42,6 @@ public class ElasticSearchIndexConfig {
     @XNode("@create")
     protected boolean create = true;
 
-    @XNode("@forceUpdate")
-    protected boolean forceUpdate = false;
-
     @XNode("settings")
     protected String settings;
 
@@ -76,10 +73,6 @@ public class ElasticSearchIndexConfig {
 
     public boolean mustCreate() {
         return create;
-    }
-
-    public boolean forceUpdate() {
-        return forceUpdate;
     }
 
     /**

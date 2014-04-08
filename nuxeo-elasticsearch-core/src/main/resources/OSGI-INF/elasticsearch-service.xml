@@ -50,16 +50,39 @@
 
   <extension-point name="elasticSearchIndex">
     <documentation>
-      Extension point used to contribute the settings and mapping for Elasticsearch indexes.
+      Extension point used to setup an Elasticsearch index.
 
-      The index of type "doc" will be used for Nuxeo documents.
+      The one used to index Nuxeo documents must be of type "doc".
 
       <code>
-       <elasticSearchIndex name="nxmain" type="doc">
-         ...
+       <elasticSearchIndex name="nuxeo" type="doc" create="true">
+         <settings></settings>
+         <mapping></mapping>
+         <fulltext>
+            <field>dc:title</field>
+            <field>dc:description</field>
+            <field>note:note</field>
+         </fulltext>
        </elasticSearchIndex>
       </code>
 
+    name is the Elasticsearch index name.
+
+    type is the Elasticsearch type that hold a mapping, "doc" is the mapping
+    for Nuxeo documents
+
+    create can be set to false if you don't want Nuxeo to initialize the index
+    and mapping.
+
+    settings the Elasticsearch settings
+    @see http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/index-modules.html
+
+    mapping the Elasticsearch mapping for the type
+    @see http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping.html
+
+    fulltext/field a list fo Nuxeo field that should be searched as fulltext.
+
+    @Since 5.9.3
     </documentation>
 
     <object class="org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig" />

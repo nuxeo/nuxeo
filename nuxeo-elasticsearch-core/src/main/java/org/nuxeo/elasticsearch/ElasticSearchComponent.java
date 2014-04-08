@@ -45,8 +45,6 @@ import org.codehaus.jackson.JsonGenerator;
 import org.elasticsearch.action.admin.cluster.node.shutdown.NodesShutdownRequest;
 import org.elasticsearch.action.admin.cluster.tasks.PendingClusterTasksResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequestBuilder;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
@@ -601,42 +599,46 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-    protected void initIndex(ElasticSearchIndexConfig idxConfig, boolean recreate)
+    protected void initIndex(ElasticSearchIndexConfig conf, boolean dropIfExists)
             throws Exception {
-        log.info("Initialize index " + idxConfig.getIndexName());
-        IndicesExistsRequestBuilder request = getClient().admin().indices()
-                .prepareExists(idxConfig.getIndexName());
-        IndicesExistsResponse exists = request.execute().actionGet();
-
-        boolean indexExists = exists.isExists();
-        boolean createIndex = idxConfig.mustCreate();
-
+        if (! conf.mustCreate()) {
+            return;
+        }
+        log.info(String.format("Initialize index: %s, type: %s",
+                conf.getIndexName(), conf.getIndexType()));
+        boolean mappingExists = false;
+        boolean indexExists = getClient().admin().indices()
+                .prepareExists(conf.getIndexName()).execute().actionGet()
+                .isExists();
+        if (indexExists) {
+            if (!dropIfExists) {
+                log.debug("Index " + conf.getIndexName() + " already exists");
+                mappingExists = getClient().admin().indices()
+                        .prepareGetMappings(conf.getIndexName()).execute()
+                        .actionGet().getMappings().containsKey(DOC_TYPE);
+            } else {
+                log.warn(String.format("Initializing index: %s, type: %s with "
+                        + "dropIfExists flag, deleting an existing index",
+                        conf.getIndexName(), conf.getIndexType()));
+                getClient().admin().indices()
+                        .delete(new DeleteIndexRequest(conf.getIndexName()))
+                        .actionGet();
+                indexExists = false;
+            }
+        }
         if (!indexExists) {
-            log.info("Index " + idxConfig.getIndexName()
-                    + " NOT FOUND : will be created");
-        } else {
-            log.debug("Index " + idxConfig.getIndexName() + " already exists");
+            log.info(String.format("Creating index: %s", conf.getIndexName()));
+            getClient().admin().indices().prepareCreate(conf.getIndexName())
+                    .setSettings(conf.getSettings()).execute().actionGet();
         }
+        if (!mappingExists) {
+            log.info(String.format("Creating mapping type: %s on index: %s",
+                    conf.getIndexType(), conf.getIndexName()));
+            getClient().admin().indices()
+                    .preparePutMapping(conf.getIndexName())
+                    .setType(conf.getIndexType()).setSource(conf.getMapping())
+                    .execute().actionGet();
 
-        if (indexExists && recreate) {
-            getClient().admin().indices()
-                    .delete(new DeleteIndexRequest(idxConfig.getIndexName()))
-                    .actionGet();
-            indexExists = false;
-            createIndex = true;
-        }
-
-        if ((!indexExists && createIndex) || idxConfig.forceUpdate()) {
-            log.info(idxConfig.forceUpdate() ? "Update" : "Create" + " index: "
-                    + idxConfig.getIndexName() + " type: "
-                    + idxConfig.getIndexType());
-            getClient().admin().indices()
-                    .prepareCreate(idxConfig.getIndexName())
-                    .setSettings(idxConfig.getSettings()).execute().actionGet();
-            getClient().admin().indices()
-                    .preparePutMapping(idxConfig.getIndexName())
-                    .setType(idxConfig.getIndexType())
-                    .setSource(idxConfig.getMapping()).execute().actionGet();
         }
     }
 
