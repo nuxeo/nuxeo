@@ -25,6 +25,7 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -52,14 +53,17 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
     private static final String NO_TX_CANNOT_RECONN = "No transaction, cannot reconnect";
 
+    @Before
+    public void checkAssumptions() {
+        assumeTrue(hasPoolingConfig());
+    }
+
     /**
      * Test that connection sharing allows use of several sessions at the same
      * time.
      */
     @Test
     public void testSessionSharing() throws Exception {
-        assumeTrue(hasPoolingConfig());
-
         RepositoryService repositoryManager = Framework.getLocalService(RepositoryService.class);
         Repository repo = repositoryManager.getRepository(REPOSITORY_NAME);
         assertEquals(1, repo.getActiveSessionsCount());
@@ -84,8 +88,6 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
      */
     @Test
     public void testSaveOnCommit() throws Exception {
-        assumeTrue(hasPoolingConfig());
-
         // first transaction
         DocumentModel doc = new DocumentModelImpl("/", "doc", "Document");
         doc = session.createDocument(doc);
@@ -121,8 +123,6 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
      */
     @Test
     public void testRollbackOnException() throws Exception {
-        assumeTrue(hasPoolingConfig());
-
         assertTrue(TransactionHelper.isTransactionActive());
         try {
             session.getDocument(new PathRef("/nosuchdoc"));
@@ -157,8 +157,6 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
      */
     @Test
     public void testNoRollbackOnException() throws Exception {
-        assumeTrue(hasPoolingConfig());
-
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/folder", "doc", "File");
@@ -256,8 +254,6 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
     @Ignore
     @Test
     public void testConcurrentModification() throws Exception {
-        assumeTrue(hasPoolingConfig());
-
         // first transaction
         DocumentModel doc = session.createDocumentModel("/", "doc", "Note");
         doc.getProperty("dc:title").setValue("initial");
