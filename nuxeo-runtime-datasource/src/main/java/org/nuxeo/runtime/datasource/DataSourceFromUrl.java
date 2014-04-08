@@ -15,7 +15,7 @@
  *     George Lefter
  *     Florent Guillaume
  */
-package org.nuxeo.runtime.api;
+package org.nuxeo.runtime.datasource;
 
 import java.io.PrintWriter;
 import java.sql.Connection;

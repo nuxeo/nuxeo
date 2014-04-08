@@ -9,7 +9,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.runtime.api;
+package org.nuxeo.runtime.datasource;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.naming.NamingException;
+import javax.resource.ResourceException;
 import javax.sql.DataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
@@ -33,6 +34,9 @@ import javax.transaction.Transaction;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.DataSourceHelper;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -842,9 +846,10 @@ public class ConnectionHelper {
      *            requested
      * @return a new reference to the connection, or {@code null} if single
      *         datasource connection sharing is not in effect
+     * @throws ResourceException
      */
     public static Connection getConnection(String dataSourceName)
-            throws SQLException {
+            throws SQLException, ResourceException {
         return getConnection(dataSourceName, false);
     }
 
@@ -865,10 +870,15 @@ public class ConnectionHelper {
      *            others
      * @return a new reference to the connection, or {@code null} if single
      *         datasource connection sharing is not in effect
+     * @throws ResourceException
      */
     public static Connection getConnection(String dataSourceName,
-            boolean noSharing) throws SQLException {
+            boolean noSharing) throws SQLException, ResourceException {
         if (!useSingleConnection(dataSourceName)) {
+            DataSource ds = getDataSource(dataSourceName);
+            if (ds instanceof PooledDataSource) {
+                return ((PooledDataSource)ds).getConnection(noSharing);
+            }
             return getPhysicalConnection(dataSourceName);
         }
         return getConnection(noSharing);
@@ -944,17 +954,17 @@ public class ConnectionHelper {
      */
     private static DataSource getDataSource(String dataSourceName)
             throws SQLException {
-        if (Framework.isTestModeSet()) {
-            String url = Framework.getProperty("nuxeo.test.vcs.url");
-            String user = Framework.getProperty("nuxeo.test.vcs.user");
-            String password = Framework.getProperty("nuxeo.test.vcs.password");
-            if (url != null && user != null) {
-                return new DataSourceFromUrl(url, user, password); // driver?
-            }
-        }
         try {
             return DataSourceHelper.getDataSource(dataSourceName);
         } catch (NamingException e) {
+            if (Framework.isTestModeSet()) {
+                String url = Framework.getProperty("nuxeo.test.vcs.url");
+                String user = Framework.getProperty("nuxeo.test.vcs.user");
+                String password = Framework.getProperty("nuxeo.test.vcs.password");
+                if (url != null && user != null) {
+                    return new DataSourceFromUrl(url, user, password); // driver?
+                }
+            }
             throw new SQLException("Cannot find datasource: " + dataSourceName,
                     e);
         }
