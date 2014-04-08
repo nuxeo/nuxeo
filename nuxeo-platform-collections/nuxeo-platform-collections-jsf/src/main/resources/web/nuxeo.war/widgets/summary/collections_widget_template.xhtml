@@ -36,7 +36,7 @@
         <span class="tag tagLink"> <nxu:graphicImage
             value="#{nxd:iconPath(collection)}"
             rendered="#{!empty nxd:iconPath(collection)}"
-            style="vertical-align:middle" styleClass="smallIcon" /> <nxd:restDocumentLink
+            styleClass="smallIcon" /> <nxd:restDocumentLink
             document="#{collection}" tab="#{widgetProperty_tab}"
             subTab="#{widgetProperty_subTab}">
             <h:outputText value=" #{nxd:titleOrId(collection)} " />
@@ -45,7 +45,7 @@
             actionListener="#{collectionActions.removeCurrentDocumentFromCollection}"
             reRender="documentViewPanel" bypassUpdates="true"
             ajaxSingle="true">
-            <h:graphicImage value="/icons/delete.png"
+            <h:graphicImage value="/icons/action_tag_delete.png"
               alt="#{messages['label.addToCollection.multiple.remove']}"
               title="#{messages['label.addToCollection.multiple.remove']}" />
             <f:param name="collectionId" value="#{collection.id}" />

@@ -32,10 +32,19 @@ author: lkemen@nuxeo.com
   -moz-user-select: text;
   -ms-user-select: text;
   cursor: text;
-  margin: 0 0.3em 0 0 }
+  margin: 0 .3em 0 0 }
+
+.select2-result-label > a {
+  vertical-align: top }
+
+.select2-results img {
+  margin: .1em .4em 0 0 }
 
 .select2-choices .select2-search-choice img {
   margin: 0 .2em -0.3em -0.4em }
+
+.select2-choice .select2-chosen img {
+  margin: .4em .4em 0 0 }
 
 .select2-container-active .select2-focused,
 .select2-container-active .select2-focused:focus {
@@ -61,7 +70,7 @@ author: lkemen@nuxeo.com
   padding: .3em .5em }
 
 .select2-results .select2-result-label {
-  padding: .1em .5em .2em }
+  padding: .2em 0.5em .3em }
 
 /* make select2 appears in front of fancybox */
 .select2-drop {
