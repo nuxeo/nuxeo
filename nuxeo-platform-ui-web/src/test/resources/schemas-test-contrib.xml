@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.ui.schemas.test" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="layout_demo_schema" src="schemas/layout_demo_schema.xsd"
+      prefix="lds" />
+    <schema name="customschema" prefix="customschema" src="schemas/orglifecycle.xsd" />
+  </extension>
+
+</component>

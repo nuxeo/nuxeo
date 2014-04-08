@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/project/schemas/orglifecycle"
+  targetNamespace="http://www.nuxeo.org/ecm/project/schemas/orglifecycle">
+  <xs:element name="activities" type="nxs:orglifecycle_activitiesListType" />
+  <xs:complexType name="orglifecycle_activitiesListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:orglifecycle_activitiesType"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="orglifecycle_activitiesType">
+    <xs:sequence>
+      <xs:element name="actiontype" type="xs:string" />
+      <xs:element name="decision" type="nxs:orglifecycle_decisionType" />
+      <xs:element name="hasdecision" type="xs:boolean" />
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="performedby" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="orglifecycle_decisionType">
+    <xs:sequence>
+      <xs:element name="label" type="xs:string" />
+      <xs:element name="options" type="nxs:orglifecycle_optionsListType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="orglifecycle_optionsListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:orglifecycle_optionsType"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="orglifecycle_optionsType">
+    <xs:sequence>
+      <xs:element name="optionaction" type="xs:string" default="defaultAction" />
+      <xs:element name="optionlabel" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
