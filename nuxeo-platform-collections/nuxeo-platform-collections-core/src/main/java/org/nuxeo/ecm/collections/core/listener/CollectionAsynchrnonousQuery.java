@@ -21,13 +21,13 @@ package org.nuxeo.ecm.collections.core.listener;
  */
 public class CollectionAsynchrnonousQuery {
 
-    public final static String QUERY_FOR_COLLECTION_DUPLICATED = "SELECT collection:documentIds/* FROM Collection WHERE ecm:isProxy = 0 AND ecm:uuid = ?";
+    public final static String QUERY_FOR_COLLECTION_DUPLICATED = "SELECT collection:documentIds/* FROM Document WHERE ecm:mixinType = 'Collection' AND ecm:isProxy = 0 AND ecm:uuid = ?";
 
     //public final static String QUERY_FOR_COLLECTION_MEMBER_DUPLICATED = "SELECT collectionMember:collectionIds/* FROM Document WHERE ecm:mixinType = 'CollectionMember' AND ecm:isProxy = 0 AND ecm:uuid = ?";
 
     public final static String QUERY_FOR_COLLECTION_REMOVED = "SELECT * FROM Document WHERE ecm:isProxy = 0 AND collectionMember:collectionIds/* = ?";
 
-    public final static String QUERY_FOR_COLLECTION_MEMBER_REMOVED = "SELECT * FROM Collection WHERE collection:documentIds/* = ?";
+    public final static String QUERY_FOR_COLLECTION_MEMBER_REMOVED = "SELECT * FROM Document WHERE collection:documentIds/* = ?";
 
     public final static long MAX_RESULT = 50;
 }

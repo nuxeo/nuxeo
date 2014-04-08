@@ -7,7 +7,7 @@
     <coreQueryPageProvider name="default_collection">
       <property name="maxResults">PAGE_SIZE</property>
       <pattern>
-        SELECT * FROM Collection WHERE dc:title ILIKE ? AND
+        SELECT * FROM Document WHERE dc:title ILIKE ? AND ecm:mixinType = 'Collection' AND
         ecm:isProxy =
         0 AND
         ecm:mixinType != 'HiddenInNavigation' AND
