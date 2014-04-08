@@ -2,17 +2,17 @@
 <component name="org.nuxeo.elasticsearch.test.contrib">
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
-    point="elasticSearchConfig">
+    point="elasticSearchServer">
 
-    <elasticSearchConfig inProcess="true">
+    <elasticSearchServer inProcess="true">
       <nodeName>nuxeoTestNode</nodeName>
       <clusterName>nuxeoTestCluster</clusterName>
-    </elasticSearchConfig>
+    </elasticSearchServer>
     <!--
-    <elasticSearchConfig inProcess="false" autostartLocalNode="false">
+    <elasticSearchServer inProcess="false" autostartLocalNode="false">
       <hostIp>localhost</hostIp>
       <hostPort>9300</hostPort>
-    </elasticSearchConfig>
+    </elasticSearchServer>
     -->
   </extension>
 

@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
-import org.nuxeo.elasticsearch.config.NuxeoElasticSearchConfig;
+import org.nuxeo.elasticsearch.config.ElasticSearchServerConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -64,7 +64,7 @@ public class TestService {
         ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
 
-        NuxeoElasticSearchConfig config = esa.getConfig();
+        ElasticSearchServerConfig config = esa.getConfig();
         Assert.assertEquals("nuxeoTestNode", config.getNodeName());
         Assert.assertEquals("nuxeoTestCluster", config.getClusterName());
 

@@ -22,7 +22,7 @@ import java.util.List;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.service.PendingClusterTask;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.elasticsearch.config.NuxeoElasticSearchConfig;
+import org.nuxeo.elasticsearch.config.ElasticSearchServerConfig;
 
 /**
  * Administration interface for Elasticsearch service
@@ -39,7 +39,7 @@ public interface ElasticSearchAdmin {
      */
     Client getClient();
 
-    NuxeoElasticSearchConfig getConfig();
+    ElasticSearchServerConfig getConfig();
 
     void initIndexes(boolean recreate) throws Exception;
 

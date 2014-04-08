@@ -33,8 +33,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  *
  */
-@XObject(value = "elasticSearchConfig")
-public class NuxeoElasticSearchConfig implements Serializable {
+@XObject(value = "elasticSearchServer")
+public class ElasticSearchServerConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

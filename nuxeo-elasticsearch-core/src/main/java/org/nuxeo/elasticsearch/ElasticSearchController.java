@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.elasticsearch.client.Client;
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.elasticsearch.config.NuxeoElasticSearchConfig;
+import org.nuxeo.elasticsearch.config.ElasticSearchServerConfig;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 
 /**
@@ -43,9 +43,9 @@ public class ElasticSearchController {
 
     protected static final Log log = LogFactory.getLog(ElasticSearchController.class);
 
-    protected final NuxeoElasticSearchConfig config;
+    protected final ElasticSearchServerConfig config;
 
-    public ElasticSearchController(NuxeoElasticSearchConfig config) {
+    public ElasticSearchController(ElasticSearchServerConfig config) {
         this.config = config;
     }
 

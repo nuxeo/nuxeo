@@ -89,7 +89,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
-import org.nuxeo.elasticsearch.config.NuxeoElasticSearchConfig;
+import org.nuxeo.elasticsearch.config.ElasticSearchServerConfig;
 import org.nuxeo.elasticsearch.nxql.NxqlQueryConverter;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
@@ -116,13 +116,13 @@ public class ElasticSearchComponent extends DefaultComponent implements
     private static final Log log = LogFactory
             .getLog(ElasticSearchComponent.class);
 
-    public static final String EP_CONFIG = "elasticSearchConfig";
+    public static final String EP_CONFIG = "elasticSearchServer";
 
     public static final String EP_INDEX = "elasticSearchIndex";
 
     public static final String ID_FIELD = "_id";
 
-    protected NuxeoElasticSearchConfig config;
+    protected ElasticSearchServerConfig config;
 
     protected Node localNode;
 
@@ -160,7 +160,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             throws Exception {
         if (EP_CONFIG.equals(extensionPoint)) {
             release();
-            config = (NuxeoElasticSearchConfig) contribution;
+            config = (ElasticSearchServerConfig) contribution;
         } else if (EP_INDEX.equals(extensionPoint)) {
             ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
             ElasticSearchIndexConfig previous = indexes.put(idx.getIndexType(), idx);
@@ -172,10 +172,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
-    public NuxeoElasticSearchConfig getConfig() {
+    public ElasticSearchServerConfig getConfig() {
         if (Framework.isTestModeSet() && config == null) {
             // automatically generate test config
-            config = new NuxeoElasticSearchConfig();
+            config = new ElasticSearchServerConfig();
             config.setInProcess(true);
             config.enableHttp(true);
             File home = Framework.getRuntime().getHome();
@@ -189,7 +189,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     protected Settings getSettings() {
-        NuxeoElasticSearchConfig config = getConfig();
+        ElasticSearchServerConfig config = getConfig();
         Settings settings = null;
         String cname = config.getClusterName();
         if (config.isInProcess()) {
@@ -399,7 +399,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (log.isDebugEnabled()) {
                 log.debug("Create a local ES node inside the Nuxeo JVM");
             }
-            NuxeoElasticSearchConfig config = getConfig();
+            ElasticSearchServerConfig config = getConfig();
             Settings settings = getSettings();
             localNode = NodeBuilder.nodeBuilder().local(config.isInProcess())
                     .settings(settings).node();
@@ -559,7 +559,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         initIndexes(false);
     }
 
-    protected void startESServer(NuxeoElasticSearchConfig config)
+    protected void startESServer(ElasticSearchServerConfig config)
             throws Exception {
         ElasticSearchController controler = new ElasticSearchController(config);
         if (controler.start()) {
