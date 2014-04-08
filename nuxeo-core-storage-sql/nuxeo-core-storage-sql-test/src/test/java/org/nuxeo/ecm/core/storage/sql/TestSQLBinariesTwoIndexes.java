@@ -76,11 +76,15 @@ public class TestSQLBinariesTwoIndexes extends TXSQLRepositoryTestCase {
         res = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'test'");
         assertEquals(1, res.size());
         Map<String, String> map = session.getBinaryFulltext(res.get(0).getRef());
-        // we have 2 binaries field
-        assertTrue(map.containsKey("binarytext"));
-        assertTrue(map.containsKey("binarytext_binaries"));
-        assertEquals("test", map.get("binarytext"));
-        assertEquals("test", map.get("binarytext_binaries"));
+        assertTrue(map.containsValue("test"));
+        if (! (DatabaseHelper.DATABASE instanceof DatabaseMySQL
+                || DatabaseHelper.DATABASE instanceof DatabaseSQLServer)) {
+            // we have 2 binaries field
+            assertTrue(map.containsKey("binarytext"));
+            assertTrue(map.containsKey("binarytext_binaries"));
+            assertEquals("test", map.get("binarytext"));
+            assertEquals("test", map.get("binarytext_binaries"));
+        }
     }
 
 }
