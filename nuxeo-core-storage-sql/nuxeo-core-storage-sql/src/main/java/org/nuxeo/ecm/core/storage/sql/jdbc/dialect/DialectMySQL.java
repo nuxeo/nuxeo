@@ -466,4 +466,9 @@ public class DialectMySQL extends Dialect {
         return true;
     }
 
+    @Override
+    public String getBinaryFulltextSql(List<String> columns) {
+        return "SELECT " + StringUtils.join(columns, ", ") + " FROM `fulltext` WHERE id=?";
+    }
+
 }
