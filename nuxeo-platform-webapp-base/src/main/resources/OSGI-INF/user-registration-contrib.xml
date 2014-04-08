@@ -18,7 +18,7 @@
              point="types">
     <types>
       <type name="UserInvitationContainer">default></type>
-      <type name="UserInvitation">invitationRequest</type>
+      <type name="UserInvitation">registrationRequest</type>
     </types>
   </extension>
 
