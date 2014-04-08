@@ -192,7 +192,7 @@ public class TestFileManagerService {
         assertNotNull(doc);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
         String noteText = ((String)doc.getProperty("note", "note"));
-        assertEquals(NOTE_HTML_CONTENT, noteText);
+        assertEquals(NOTE_HTML_CONTENT.trim(), noteText.trim());
     }
 
     @Test
@@ -209,7 +209,7 @@ public class TestFileManagerService {
 
         assertNotNull(doc);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
-        assertEquals(NOTE_HTML_CONTENT, ((String)doc.getProperty("note", "note")));
+        assertEquals(NOTE_HTML_CONTENT.trim(), ((String)doc.getProperty("note", "note")).trim());
 
         List<DocumentModel> versions = coreSession.getVersions(docRef);
         assertEquals(0, versions.size());
@@ -221,7 +221,7 @@ public class TestFileManagerService {
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
-        assertEquals(NOTE_HTML_CONTENT, ((String)doc.getProperty("note", "note")));
+        assertEquals(NOTE_HTML_CONTENT.trim(), ((String)doc.getProperty("note", "note")).trim());
 
         versions = coreSession.getVersions(docRef);
         assertEquals(1, versions.size());
