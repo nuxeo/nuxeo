@@ -23,6 +23,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+
 /**
  * XMap descriptor for configuring an index
  *
@@ -34,6 +35,9 @@ public class ElasticSearchIndexConfig {
 
     @XNode("@name")
     protected String indexName;
+
+    @XNode("@type")
+    protected String indexType = "doc";
 
     @XNode("@create")
     protected boolean create = true;
@@ -58,6 +62,10 @@ public class ElasticSearchIndexConfig {
         return indexName;
     }
 
+    public String getIndexType() {
+        return indexType;
+    }
+
     public String getSettings() {
         return settings;
     }
@@ -72,6 +80,24 @@ public class ElasticSearchIndexConfig {
 
     public boolean forceUpdate() {
         return forceUpdate;
+    }
+
+    /**
+     * Uses settings, mapping and fulltext fields if not defined.
+     */
+    public void merge(final ElasticSearchIndexConfig other) {
+        if (other == null) {
+            return;
+        }
+        if (mapping == null) {
+            mapping = other.getMapping();
+        }
+        if (settings == null) {
+            settings = other.getSettings();
+        }
+        if (fulltextFields == null) {
+            fulltextFields = other.getFulltextFields();
+        }
     }
 
 }

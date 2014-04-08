@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.elasticsearch.ElasticSearchComponent;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -51,8 +50,13 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy("org.nuxeo.elasticsearch.core:disable-listener-contrib.xml")
+@LocalDeploy({ "org.nuxeo.elasticsearch.core:disable-listener-contrib.xml",
+        "org.nuxeo.elasticsearch.core:elasticsearch-config-test-contrib.xml" })
 public class TestManualIndexing {
+
+    private static final String IDX_NAME = "nxutest";
+
+    private static final String TYPE_NAME = "doc";
 
     @Inject
     protected CoreSession session;
@@ -84,13 +88,13 @@ public class TestManualIndexing {
         esi.flush();
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setSearchType(
+                IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
         searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
                 60).execute().actionGet();
@@ -132,12 +136,12 @@ public class TestManualIndexing {
 
         // only one doc should be indexed for now
         SearchResponse searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setSearchType(
+                IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
         searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
                 60).execute().actionGet();
@@ -162,13 +166,13 @@ public class TestManualIndexing {
         TransactionHelper.startTransaction();
 
         searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setSearchType(
+                IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
         searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
                 60).execute().actionGet();
@@ -210,12 +214,12 @@ public class TestManualIndexing {
 
         // only one doc should be indexed for now
         SearchResponse searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setSearchType(
+                IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
         searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
                 60).execute().actionGet();
@@ -239,13 +243,13 @@ public class TestManualIndexing {
         TransactionHelper.startTransaction();
 
         searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setSearchType(
+                IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
         searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
                 60).execute().actionGet();

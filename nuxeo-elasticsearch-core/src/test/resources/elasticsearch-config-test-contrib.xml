@@ -16,4 +16,9 @@
     -->
   </extension>
 
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
+    point="elasticSearchIndex">
+   <elasticSearchIndex name="nxutest" type="doc" />
+  </extension>
+
 </component>

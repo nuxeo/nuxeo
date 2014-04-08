@@ -55,6 +55,10 @@ import com.google.inject.Inject;
 @LocalDeploy({"org.nuxeo.elasticsearch.core:elasticsearch-config-test-contrib.xml"})
 public class TestNxqlConversion {
 
+    private static final String IDX_NAME = "nxutest";
+
+    private static final String TYPE_NAME = "doc";
+
     @Inject
     protected CoreSession session;
 
@@ -95,21 +99,21 @@ public class TestNxqlConversion {
         buildDocs();
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.queryString(" dc\\:nature:\"Nature1\" AND dc\\:title:\"File1\"")).setFrom(
                 0).setSize(60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
         searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.queryString(" dc\\:nature:\"Nature2\" AND dc\\:title:\"File1\"")).setFrom(
                 0).setSize(60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
 
         searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.queryString(" NOT dc\\:nature:\"Nature2\"")).setFrom(
                 0).setSize(60).execute().actionGet();

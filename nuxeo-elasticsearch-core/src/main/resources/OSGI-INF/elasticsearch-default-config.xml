@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.ElasticSearchComponent.defaultConfig" version="1.0">
 
-
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
     point="elasticSearchIndex">
 
-   <elasticSearchIndex name="nxmain">
+   <elasticSearchIndex name="nuxeo" type="doc">
 
     <settings>
 {
@@ -146,6 +145,7 @@
       <field>ecm:binarytext</field>
       <field>dc:title</field>
       <field>dc:description</field>
+      <field>note:note</field>
     </fulltext>
 
    </elasticSearchIndex>

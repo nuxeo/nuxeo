@@ -19,6 +19,11 @@
 package org.nuxeo.elasticsearch;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.DEFAULT_FULLTEXT_FIELDS;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -99,8 +104,6 @@ import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
 
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
-
 /**
  * Component used to configure and manage ElasticSearch integration
  *
@@ -117,16 +120,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     public static final String EP_INDEX = "elasticSearchIndex";
 
-    public static final String MAIN_IDX = "nxmain";
-
-    public static final String NX_DOCUMENT = "doc";
-
     public static final String ID_FIELD = "_id";
-
-    public static final String ACL_FIELD = "ecm:acl";
-
-    public static final String[] DEFAULT_FULLTEXT_FIELDS = { "ecm:fulltext",
-            "dc:title" };
 
     protected NuxeoElasticSearchConfig config;
 
@@ -149,6 +143,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected List<String> fulltextFields;
 
+    protected String docIndexName;
+
     // Metrics
     protected final MetricRegistry registry = SharedMetricRegistries
             .getOrCreate(MetricsService.class.getName());
@@ -156,6 +152,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected Timer searchTimer;
 
     protected Timer fetchTimer;
+
 
     @Override
     public void registerContribution(Object contribution,
@@ -166,7 +163,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
             config = (NuxeoElasticSearchConfig) contribution;
         } else if (EP_INDEX.equals(extensionPoint)) {
             ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
-            indexes.put(idx.getIndexName(), idx);
+            ElasticSearchIndexConfig previous = indexes.put(idx.getIndexType(), idx);
+            idx.merge(previous);
+            if (DOC_TYPE.equals(idx.getIndexType())) {
+                docIndexName = idx.getIndexName();
+            }
         }
     }
 
@@ -280,26 +281,26 @@ public class ElasticSearchComponent extends DefaultComponent implements
         log.debug("Sending indexing request to ElasticSearch " + cmd.toString());
         DocumentModel doc = cmd.getTargetDocument();
         if (IndexingCommand.DELETE.equals(cmd.getName())) {
-            DeleteRequestBuilder request = getClient().prepareDelete(MAIN_IDX,
-                    NX_DOCUMENT, doc.getId());
+            DeleteRequestBuilder request = getClient().prepareDelete(getDocIndex(),
+                    DOC_TYPE, doc.getId());
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                                MAIN_IDX, NX_DOCUMENT, cmd.getTargetDocument()
+                                getDocIndex(), DOC_TYPE, cmd.getTargetDocument()
                                         .getId(), request.request().toString()));
             }
             request.execute().actionGet();
 
             if (cmd.isRecurse()) {
                 DeleteByQueryRequestBuilder deleteRequest = getClient()
-                        .prepareDeleteByQuery(MAIN_IDX).setQuery(
+                        .prepareDeleteByQuery(getDocIndex()).setQuery(
                                 QueryBuilders.constantScoreQuery(FilterBuilders
-                                        .termFilter("ecm:path.children",
+                                        .termFilter(CHILDREN_FIELD,
                                                 doc.getPathAsString())));
                 if (log.isDebugEnabled()) {
                     log.debug(String
                             .format("Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
-                                    MAIN_IDX, NX_DOCUMENT, request.request()
+                                    getDocIndex(), DOC_TYPE, request.request()
                                             .toString()));
                 }
                 deleteRequest.execute().actionGet();
@@ -309,12 +310,19 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                                MAIN_IDX, NX_DOCUMENT, cmd.getTargetDocument()
+                                getDocIndex(), DOC_TYPE, cmd.getTargetDocument()
                                         .getId(), request.request().toString()));
             }
             request.execute().actionGet();
         }
         markCommandExecuted(cmd);
+    }
+
+    /**
+     * Get the elastic search index name for the documents
+     */
+    protected String getDocIndex() {
+        return docIndexName;
     }
 
     protected IndexRequestBuilder buildESIndexingRequest(IndexingCommand cmd)
@@ -328,7 +336,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     .stream());
             JsonESDocumentWriter.writeESDocument(jsonGen, doc,
                     cmd.getSchemas(), null);
-            return getClient().prepareIndex(MAIN_IDX, NX_DOCUMENT, doc.getId())
+            return getClient().prepareIndex(getDocIndex(), DOC_TYPE, doc.getId())
                     .setSource(builder);
         } catch (Exception e) {
             throw new ClientException(
@@ -378,10 +386,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public void flush(boolean commit) {
         // refresh indexes
-        getClient().admin().indices().prepareRefresh(MAIN_IDX).execute()
+        getClient().admin().indices().prepareRefresh(getDocIndex()).execute()
                 .actionGet();
         if (commit) {
-            getClient().admin().indices().prepareFlush(MAIN_IDX).execute()
+            getClient().admin().indices().prepareFlush(getDocIndex()).execute()
                     .actionGet();
         }
     }
@@ -456,8 +464,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         Context stopWatch = searchTimer.time();
         try {
             // Initialize request
-            SearchRequestBuilder request = getClient().prepareSearch(MAIN_IDX)
-                    .setTypes(NX_DOCUMENT)
+            SearchRequestBuilder request = getClient().prepareSearch(getDocIndex())
+                    .setTypes(DOC_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addField(ID_FIELD).setFrom(offset).setSize(limit);
             // Add security filter
@@ -494,7 +502,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
-                                MAIN_IDX, NX_DOCUMENT, request.toString()));
+                                getDocIndex(), DOC_TYPE, request.toString()));
             }
             SearchResponse response = request.execute().actionGet();
             if (log.isDebugEnabled()) {
@@ -595,7 +603,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected void initIndex(ElasticSearchIndexConfig idxConfig, boolean recreate)
             throws Exception {
-
         log.info("Initialize index " + idxConfig.getIndexName());
         IndicesExistsRequestBuilder request = getClient().admin().indices()
                 .prepareExists(idxConfig.getIndexName());
@@ -619,29 +626,17 @@ public class ElasticSearchComponent extends DefaultComponent implements
             createIndex = true;
         }
 
-        if (!indexExists && createIndex) {
-            log.info("Create index " + idxConfig.getIndexName());
-            // create index
+        if ((!indexExists && createIndex) || idxConfig.forceUpdate()) {
+            log.info(idxConfig.forceUpdate() ? "Update" : "Create" + " index: "
+                    + idxConfig.getIndexName() + " type: "
+                    + idxConfig.getIndexType());
             getClient().admin().indices()
                     .prepareCreate(idxConfig.getIndexName())
                     .setSettings(idxConfig.getSettings()).execute().actionGet();
             getClient().admin().indices()
                     .preparePutMapping(idxConfig.getIndexName())
-                    .setType(NX_DOCUMENT).setSource(idxConfig.getMapping())
-                    .execute().actionGet();
-        }
-
-        if (idxConfig.forceUpdate()) {
-            log.info("Update index config" + idxConfig.getIndexName());
-            // update settings
-            getClient().admin().indices()
-                    .prepareUpdateSettings(idxConfig.getIndexName())
-                    .setSettings(idxConfig.getSettings()).execute().actionGet();
-
-            // update mapping
-            getClient().admin().indices()
-                    .preparePutMapping(idxConfig.getIndexName())
-                    .setSource(idxConfig.getMapping());
+                    .setType(idxConfig.getIndexType())
+                    .setSource(idxConfig.getMapping()).execute().actionGet();
         }
     }
 
@@ -731,7 +726,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (fulltextFields != null) {
             return fulltextFields;
         }
-        ElasticSearchIndexConfig idxConfig = indexes.get(MAIN_IDX);
+        ElasticSearchIndexConfig idxConfig = indexes.get(getDocIndex());
         if (idxConfig != null && !idxConfig.getFulltextFields().isEmpty()) {
             fulltextFields = idxConfig.getFulltextFields();
         } else {

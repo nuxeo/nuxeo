@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 public interface ElasticSearchService {
 
     /**
-     * Retrieves the {@link Client} that can be used to acces ElasticSearch API
+     * Retrieves the {@link Client} that can be used to access ElasticSearch API
      *
      * @return
      */
@@ -49,7 +49,7 @@ public interface ElasticSearchService {
             int offset, SortInfo... sortInfos) throws ClientException;
 
     /**
-     * Returns a document list using an ElasticSearch QueryBuilder
+     * Returns a document list using an ElasticSearch QueryBuilder.
      *
      */
     DocumentModelList query(CoreSession session, QueryBuilder queryBuilder,
@@ -57,7 +57,7 @@ public interface ElasticSearchService {
             throws ClientException;
 
     /**
-     * Returns the list of field name that use a fulltext analyzer
+     * Returns the list of field names that use a fulltext analyzer.
      *
      */
     List<String> getFulltextFields();

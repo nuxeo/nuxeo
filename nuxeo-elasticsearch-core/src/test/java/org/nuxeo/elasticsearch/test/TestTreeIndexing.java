@@ -43,6 +43,10 @@ import com.google.inject.Inject;
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-config-test-contrib.xml")
 public class TestTreeIndexing {
 
+    private static final String IDX_NAME = "nxutest";
+
+    private static final String TYPE_NAME = "doc";
+
     @Inject
     protected CoreSession session;
 
@@ -97,7 +101,7 @@ public class TestTreeIndexing {
 
         // check indexing
         SearchResponse searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
@@ -110,7 +114,7 @@ public class TestTreeIndexing {
 
         // check sub tree search
         SearchResponse searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.prefixQuery("ecm:path",
                         "/folder0/folder1/folder2")).execute().actionGet();
@@ -140,7 +144,7 @@ public class TestTreeIndexing {
         TransactionHelper.startTransaction();
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
@@ -170,27 +174,27 @@ public class TestTreeIndexing {
         TransactionHelper.startTransaction();
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
         // check sub tree search
         searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.prefixQuery("ecm:path",
                         "/folder0/folder1/folder2")).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
 
         searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.prefixQuery("ecm:path",
                         "/folder0/folder1/folderA")).execute().actionGet();
         Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
 
         searchResponse = ess.getClient().prepareSearch(
-                ElasticSearchComponent.MAIN_IDX).setTypes("doc").setSearchType(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1")).execute().actionGet();
         Assert.assertEquals(9, searchResponse.getHits().getTotalHits());

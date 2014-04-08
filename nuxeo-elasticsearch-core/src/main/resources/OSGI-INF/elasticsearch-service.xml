@@ -50,6 +50,16 @@
 
   <extension-point name="elasticSearchIndex">
     <documentation>
+      Extension point used to contribute the settings and mapping for Elasticsearch indexes.
+
+      The index of type "doc" will be used for Nuxeo documents.
+
+      <code>
+       <elasticSearchIndexConfig name="nxmain" type="doc">
+         ...
+       </elasticSearchIndexConfig>
+      </code>
+
     </documentation>
 
     <object class="org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig" />

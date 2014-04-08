@@ -64,7 +64,7 @@ public class TestElasticSearchController {
                 "test1").field("type", "File").field("yo", "man").field(
                 "dc:title", "Yohou").field("dc:created", new Date()).endObject();
 
-        IndexResponse response = elasticSearchClient.prepareIndex("nxmain",
+        IndexResponse response = elasticSearchClient.prepareIndex("nxutest",
                 "doc", "1").setSource(builder).execute().actionGet();
 
         Assert.assertNotNull(response.getId());
@@ -73,7 +73,7 @@ public class TestElasticSearchController {
         elasticSearchClient.admin().indices().prepareRefresh().execute().actionGet();
 
         SearchResponse searchResponse = elasticSearchClient.prepareSearch(
-                "nxmain").setTypes("doc").setSearchType(
+                "nxutest").setTypes("doc").setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("name", "test1")) // Query
         .setFrom(0).setSize(60).execute().actionGet();
@@ -81,7 +81,7 @@ public class TestElasticSearchController {
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
         //System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
 
-        searchResponse = elasticSearchClient.prepareSearch("nxmain").setTypes(
+        searchResponse = elasticSearchClient.prepareSearch("nxutest").setTypes(
                 "doc").setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("dc:title", "YoHou")) // Query
         .setFrom(0).setSize(60).execute().actionGet();

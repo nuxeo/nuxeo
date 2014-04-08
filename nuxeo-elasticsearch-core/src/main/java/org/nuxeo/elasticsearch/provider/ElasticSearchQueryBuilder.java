@@ -17,6 +17,8 @@
 
 package org.nuxeo.elasticsearch.provider;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
+
 import java.security.Principal;
 import java.util.Calendar;
 import java.util.Collection;
@@ -136,7 +138,7 @@ public class ElasticSearchQueryBuilder {
             String[] principals = SecurityService
                     .getPrincipalsToCheck(principal);
             if (principals.length > 0) {
-                return FilterBuilders.inFilter("ecm:acl", principals);
+                return FilterBuilders.inFilter(ACL_FIELD, principals);
             }
         }
         return null;

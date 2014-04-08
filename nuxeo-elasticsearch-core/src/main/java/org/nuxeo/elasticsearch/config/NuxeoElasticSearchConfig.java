@@ -108,7 +108,7 @@ public class NuxeoElasticSearchConfig implements Serializable {
     }
 
     public String getIndexStorageType() {
-        if (indexStorageType==null) {
+        if (indexStorageType == null) {
             if (Framework.isTestModeSet()) {
                 indexStorageType = "memory";
             } else {
@@ -135,7 +135,7 @@ public class NuxeoElasticSearchConfig implements Serializable {
     }
 
     public List<String> getRemoteNodes() {
-        if (remoteNodes.size() == 0 && ! autostartLocalNode) {
+        if (remoteNodes.size() == 0 && !autostartLocalNode) {
             remoteNodes.add(getHostIp() + ":" + getHostPort());
         }
         return remoteNodes;
