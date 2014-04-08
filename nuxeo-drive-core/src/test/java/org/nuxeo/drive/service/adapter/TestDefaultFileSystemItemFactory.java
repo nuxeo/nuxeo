@@ -89,7 +89,7 @@ public class TestDefaultFileSystemItemFactory {
     private static final String DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory#test#";
 
     // needs to be bigger than 1s for MySQL
-    private static final int VERSIONING_DELAY = 1500; // ms
+    private static final int VERSIONING_DELAY = 3000; // ms
 
     @Inject
     protected CoreSession session;
