@@ -205,7 +205,7 @@ public class TestContentDiffAdapter {
             String actual = contentDiffBlob.getString();
             // make tests pass under windows
             actual = actual.replace("\r", "");
-            assertEquals(expectedblob.getString(), actual);
+            assertEquals(expectedblob.getString().trim(), actual.trim());
         } catch (IOException ioe) {
             fail("Error while getting content diff blob strings");
         }
