@@ -19,18 +19,11 @@ package org.nuxeo.ecm.platform.ui.web.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.faces.context.ResponseWriter;
-
 import org.junit.Test;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
-
-import com.sun.faces.config.WebConfiguration;
-import com.sun.faces.renderkit.html_basic.HtmlResponseWriter;
 
 /**
  * @author arussel

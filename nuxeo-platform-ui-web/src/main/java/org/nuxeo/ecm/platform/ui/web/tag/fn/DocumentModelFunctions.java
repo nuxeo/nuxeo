@@ -389,8 +389,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         }
         CoreSession session = document.getCoreSession();
         if (session == null) {
-            session = (CoreSession) Component.getInstance(
-                "documentManager", ScopeType.CONVERSATION);
+            session = (CoreSession) Component.getInstance("documentManager",
+                    ScopeType.CONVERSATION);
         }
         if (session == null) {
             log.error("Cannot retrieve CoreSession for " + document);
