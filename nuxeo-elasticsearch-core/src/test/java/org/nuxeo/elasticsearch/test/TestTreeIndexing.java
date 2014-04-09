@@ -95,14 +95,15 @@ public class TestTreeIndexing {
 
         waitForAsyncIndexing();
 
-        esi.refresh();
+        esa.refresh();
 
         TransactionHelper.startTransaction();
 
         // check indexing
-        SearchResponse searchResponse = ess.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
     }
@@ -113,11 +114,15 @@ public class TestTreeIndexing {
         buildAndIndexTree();
 
         // check sub tree search
-        SearchResponse searchResponse = ess.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.prefixQuery("ecm:path",
-                        "/folder0/folder1/folder2")).execute().actionGet();
+        SearchResponse searchResponse = esa
+                .getClient()
+                .prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setQuery(
+                        QueryBuilders.prefixQuery("ecm:path",
+                                "/folder0/folder1/folder2")).execute()
+                .actionGet();
         Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
 
     }
@@ -139,13 +144,14 @@ public class TestTreeIndexing {
 
         waitForAsyncIndexing();
 
-        esi.refresh();
+        esa.refresh();
 
         TransactionHelper.startTransaction();
 
-        SearchResponse searchResponse = ess.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).execute().actionGet();
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
     }
@@ -169,41 +175,55 @@ public class TestTreeIndexing {
 
         waitForAsyncIndexing();
 
-        esi.refresh();
+        esa.refresh();
 
         TransactionHelper.startTransaction();
 
-        SearchResponse searchResponse = ess.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
         // check sub tree search
-        searchResponse = ess.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.prefixQuery("ecm:path",
-                        "/folder0/folder1/folder2")).execute().actionGet();
+        searchResponse = esa
+                .getClient()
+                .prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setQuery(
+                        QueryBuilders.prefixQuery("ecm:path",
+                                "/folder0/folder1/folder2")).execute()
+                .actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
 
-        searchResponse = ess.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.prefixQuery("ecm:path",
-                        "/folder0/folder1/folderA")).execute().actionGet();
+        searchResponse = esa
+                .getClient()
+                .prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setQuery(
+                        QueryBuilders.prefixQuery("ecm:path",
+                                "/folder0/folder1/folderA")).execute()
+                .actionGet();
         Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
 
-        searchResponse = ess.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1")).execute().actionGet();
+        searchResponse = esa
+                .getClient()
+                .prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setQuery(
+                        QueryBuilders.prefixQuery("ecm:path",
+                                "/folder0/folder1")).execute().actionGet();
         Assert.assertEquals(9, searchResponse.getHits().getTotalHits());
 
     }
 
     protected CoreSession getRestrictedSession(String userName)
             throws Exception {
-        RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
+        RepositoryManager rm = Framework
+                .getLocalService(RepositoryManager.class);
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("principal", new UserPrincipal("toto", null, false, false));
         return rm.getDefaultRepository().open(ctx);
@@ -240,7 +260,7 @@ public class TestTreeIndexing {
 
         waitForAsyncIndexing();
 
-        esi.refresh();
+        esa.refresh();
 
         TransactionHelper.startTransaction();
 
@@ -270,7 +290,7 @@ public class TestTreeIndexing {
         Assert.assertEquals(1, esa.getPendingCommands());
 
         waitForAsyncIndexing();
-        esi.refresh();
+        esa.refresh();
 
         docs = ess.query(restrictedSession, "select * from Document", 10, 0);
         Assert.assertEquals(3, docs.size());
@@ -300,10 +320,11 @@ public class TestTreeIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForAsyncIndexing();
-        esi.refresh();
+        esa.refresh();
 
         TransactionHelper.startTransaction();
-        docs = ess.query(restrictedSession, "select * from Document order by dc:title", 10, 0);
+        docs = ess.query(restrictedSession,
+                "select * from Document order by dc:title", 10, 0);
         Assert.assertEquals(8, docs.size());
 
         // Add an unsupported negative ACL
@@ -317,10 +338,11 @@ public class TestTreeIndexing {
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
         waitForAsyncIndexing();
-        esi.refresh();
+        esa.refresh();
 
         TransactionHelper.startTransaction();
-        docs = ess.query(restrictedSession, "select * from Document order by dc:title", 10, 0);
+        docs = ess.query(restrictedSession,
+                "select * from Document order by dc:title", 10, 0);
         // can view folder2, folder3 and folder4
         Assert.assertEquals(3, docs.size());
 
@@ -344,14 +366,14 @@ public class TestTreeIndexing {
 
         waitForAsyncIndexing();
 
-        esi.refresh();
+        esa.refresh();
 
         TransactionHelper.startTransaction();
 
-        DocumentModelList docs = ess.query(
-                session,
-                "select * from Document where ecm:currentLifeCycleState != 'deleted'",
-                20, 0);
+        DocumentModelList docs = ess
+                .query(session,
+                        "select * from Document where ecm:currentLifeCycleState != 'deleted'",
+                        20, 0);
 
         for (DocumentModel doc : docs) {
             System.out.println(doc.getPathAsString());

@@ -73,8 +73,10 @@ public class TestManualIndexing {
 
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(ess);
         Assert.assertNotNull(esi);
+        Assert.assertNotNull(esa);
 
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:title", "TestMe");
@@ -85,15 +87,15 @@ public class TestManualIndexing {
         IndexingCommand cmd = new IndexingCommand(doc, true, false);
         esi.indexNow(cmd);
 
-        esi.refresh();
+        esa.refresh();
 
-        SearchResponse searchResponse = ess.getClient().prepareSearch(
+        SearchResponse searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        searchResponse = ess.getClient().prepareSearch(
+        searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
@@ -132,15 +134,15 @@ public class TestManualIndexing {
         IndexingCommand cmd = new IndexingCommand(doc, true, false);
         esi.scheduleIndexing(cmd);
 
-        esi.refresh();
+        esa.refresh();
 
         // only one doc should be indexed for now
-        SearchResponse searchResponse = ess.getClient().prepareSearch(
+        SearchResponse searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        searchResponse = ess.getClient().prepareSearch(
+        searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
@@ -165,13 +167,13 @@ public class TestManualIndexing {
 
         TransactionHelper.startTransaction();
 
-        searchResponse = ess.getClient().prepareSearch(
+        searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
-        searchResponse = ess.getClient().prepareSearch(
+        searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
@@ -210,15 +212,15 @@ public class TestManualIndexing {
         IndexingCommand cmd = new IndexingCommand(doc, false, false);
         esi.scheduleIndexing(cmd);
 
-        esi.refresh();
+        esa.refresh();
 
         // only one doc should be indexed for now
-        SearchResponse searchResponse = ess.getClient().prepareSearch(
+        SearchResponse searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
-        searchResponse = ess.getClient().prepareSearch(
+        searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
@@ -238,17 +240,17 @@ public class TestManualIndexing {
         Assert.assertEquals(0, esa.getPendingCommands());
         Assert.assertEquals(0, esa.getPendingDocs());
 
-        esi.refresh();
+        esa.refresh();
 
         TransactionHelper.startTransaction();
 
-        searchResponse = ess.getClient().prepareSearch(
+        searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
-        searchResponse = ess.getClient().prepareSearch(
+        searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(

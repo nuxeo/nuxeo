@@ -43,15 +43,14 @@ public class TestService {
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
 
-        Client client = ess.getClient();
-        Assert.assertNotNull(client);
-
         ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
         Assert.assertNotNull(esi);
 
         ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
 
+        Client client = esa.getClient();
+        Assert.assertNotNull(client);
     }
 
     @Test
@@ -63,7 +62,7 @@ public class TestService {
         ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
 
-        NodesInfoResponse nodeInfoResponse = ess.getClient().admin().cluster().nodesInfo(
+        NodesInfoResponse nodeInfoResponse = esa.getClient().admin().cluster().nodesInfo(
                 new NodesInfoRequest()).actionGet();
 
         Assert.assertEquals(1, nodeInfoResponse.getNodes().length);

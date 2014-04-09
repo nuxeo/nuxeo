@@ -20,7 +20,6 @@ package org.nuxeo.elasticsearch.api;
 
 import java.util.List;
 
-import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -33,13 +32,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
  * @since 5.9.3
  */
 public interface ElasticSearchService {
-
-    /**
-     * Retrieves the {@link Client} that can be used to access Elasticsearch API
-     *
-     * @since 5.9.3
-     */
-    Client getClient();
 
     /**
      * Returns a document list using an NXQL query.
@@ -57,11 +49,5 @@ public interface ElasticSearchService {
             int limit, int offset, SortInfo... sortInfos)
             throws ClientException;
 
-    /**
-     * Returns the list of field names that use a fulltext analyzer.
-     *
-     * @since 5.9.3
-     */
-    List<String> getFulltextFields();
 
 }

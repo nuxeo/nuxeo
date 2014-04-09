@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
@@ -54,7 +55,9 @@ public class ElasticSearchPostCommitSyncListener implements
             ElasticSearchIndexing esi = Framework
                     .getLocalService(ElasticSearchIndexing.class);
             esi.indexNow(cmds);
-            esi.refresh();
+            ElasticSearchAdmin esa = Framework
+                    .getLocalService(ElasticSearchAdmin.class);
+            esa.refresh();
         }
     }
 

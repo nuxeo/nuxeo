@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.elasticsearch.ElasticSearchComponent;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -119,7 +118,7 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        SearchResponse searchResponse = ess.getClient().prepareSearch(
+        SearchResponse searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
@@ -163,7 +162,7 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        SearchResponse searchResponse = ess.getClient().prepareSearch(
+        SearchResponse searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
@@ -206,9 +205,9 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        esi.refresh();
+        esa.refresh();
 
-        SearchResponse searchResponse = ess.getClient().prepareSearch(
+        SearchResponse searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
@@ -251,9 +250,9 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        esi.refresh();
+        esa.refresh();
 
-        SearchResponse searchResponse = ess.getClient().prepareSearch(
+        SearchResponse searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
@@ -289,9 +288,9 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        esi.refresh();
+        esa.refresh();
 
-        SearchResponse searchResponse = ess.getClient().prepareSearch(
+        SearchResponse searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
@@ -311,9 +310,9 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        esi.refresh();
+        esa.refresh();
 
-        searchResponse = ess.getClient().prepareSearch(
+        searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
@@ -356,9 +355,9 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        esi.refresh();
+        esa.refresh();
 
-        SearchResponse searchResponse = ess.getClient().prepareSearch(
+        SearchResponse searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("dc:nature", "A")).setFrom(0).setSize(
@@ -388,16 +387,16 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        esi.refresh();
+        esa.refresh();
 
-        searchResponse = ess.getClient().prepareSearch(
+        searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("dc:nature", "A")).setFrom(0).setSize(
                 60).execute().actionGet();
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
-        searchResponse = ess.getClient().prepareSearch(
+        searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("dc:nature", "B")).setFrom(0).setSize(
@@ -410,6 +409,7 @@ public class TestAutomaticIndexing {
     public void shouldIndexBinaryFulltext() throws Exception {
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
+        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
         holder.setBlob(new StringBlob("You know for search"));
@@ -419,7 +419,7 @@ public class TestAutomaticIndexing {
         TransactionHelper.commitOrRollbackTransaction();
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        esi.refresh();
+        esa.refresh();
 
         TransactionHelper.startTransaction();
         DocumentModelList ret = ess.query(session, "SELECT * FROM Document", 10, 0);
