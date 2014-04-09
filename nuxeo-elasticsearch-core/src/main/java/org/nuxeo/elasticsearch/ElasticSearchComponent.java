@@ -25,7 +25,6 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DEFAULT_FULLTEXT_FIELDS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.Principal;
@@ -38,11 +37,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.elasticsearch.action.admin.cluster.node.shutdown.NodesShutdownRequest;
 import org.elasticsearch.action.admin.cluster.tasks.PendingClusterTasksResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -87,7 +86,8 @@ import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
-import org.nuxeo.elasticsearch.config.ElasticSearchServerConfig;
+import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
+import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.elasticsearch.nxql.NxqlQueryConverter;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
@@ -114,13 +114,13 @@ public class ElasticSearchComponent extends DefaultComponent implements
     private static final Log log = LogFactory
             .getLog(ElasticSearchComponent.class);
 
-    public static final String EP_CONFIG = "elasticSearchServer";
+    public static final String EP_REMOTE = "elasticSearchRemote";
+
+    public static final String EP_LOCAL = "elasticSearchLocal";
 
     public static final String EP_INDEX = "elasticSearchIndex";
 
     public static final String ID_FIELD = "_id";
-
-    protected ElasticSearchServerConfig config;
 
     protected Node localNode;
 
@@ -151,73 +151,46 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected Timer fetchTimer;
 
+    private ElasticSearchLocalConfig localConfig;
+
+    private ElasticSearchRemoteConfig remoteConfig;
 
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (EP_CONFIG.equals(extensionPoint)) {
+        if (EP_LOCAL.equals(extensionPoint)) {
             release();
-            config = (ElasticSearchServerConfig) contribution;
+            localConfig = (ElasticSearchLocalConfig) contribution;
+            remoteConfig = null;
+        } else if (EP_REMOTE.equals(extensionPoint)) {
+            release();
+            remoteConfig = (ElasticSearchRemoteConfig) contribution;
+            localConfig = null;
         } else if (EP_INDEX.equals(extensionPoint)) {
             ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
-            ElasticSearchIndexConfig previous = indexes.put(idx.getIndexType(), idx);
+            ElasticSearchIndexConfig previous = indexes.put(idx.getType(), idx);
             idx.merge(previous);
-            if (DOC_TYPE.equals(idx.getIndexType())) {
-                docIndexName = idx.getIndexName();
+            if (DOC_TYPE.equals(idx.getType())) {
+                docIndexName = idx.getName();
             }
         }
     }
 
-    @Override
-    public ElasticSearchServerConfig getConfig() {
-        if (Framework.isTestModeSet() && config == null) {
-            // automatically generate test config
-            config = new ElasticSearchServerConfig();
-            config.setInProcess(true);
-            config.enableHttp(true);
-            File home = Framework.getRuntime().getHome();
-            File esDirectory = new File(home, "elasticsearch");
-            esDirectory.mkdir();
-            config.setLogPath(esDirectory.getPath() + "/logs");
-            config.setDataPath(esDirectory.getPath() + "/data");
-            config.setIndexStorageType("memory");
+    public ElasticSearchLocalConfig getLocalConfig() {
+        if (Framework.isTestModeSet() && localConfig == null
+                && remoteConfig == null) {
+            // automatically generate a test config
+            localConfig = new ElasticSearchLocalConfig();
+            localConfig.enableHttp(true);
+            localConfig.setIndexStorageType("memory");
+            localConfig.setNodeName("nuxeoTestNode");
+            // use something random so we don't join an existing cluster
+            localConfig.setClusterName("nuxeoTestCluster-"
+                    + RandomStringUtils.randomAlphanumeric(6));
+            remoteConfig = null;
         }
-        return config;
-    }
-
-    protected Settings getSettings() {
-        ElasticSearchServerConfig config = getConfig();
-        Settings settings = null;
-        String cname = config.getClusterName();
-        if (config.isInProcess()) {
-            if (cname == null) {
-                cname = "NuxeoESCluster";
-            }
-            Builder sBuilder = ImmutableSettings.settingsBuilder();
-            sBuilder.put("node.http.enabled", config.enableHttp())
-                    .put("path.logs", config.getLogPath())
-                    .put("path.data", config.getDataPath())
-                    .put("index.number_of_shards", 1)
-                    .put("index.number_of_replicas", 1)
-                    .put("cluster.name", cname)
-                    .put("node.name", config.getNodeName());
-            if (config.getIndexStorageType() != null) {
-                sBuilder.put("index.store.type", config.getIndexStorageType());
-                if (config.getIndexStorageType().equals("memory")) {
-                    sBuilder.put("gateway.type", "none");
-                }
-            }
-            settings = sBuilder.build();
-        } else {
-            Builder builder = ImmutableSettings.settingsBuilder().put(
-                    "node.http.enabled", config.enableHttp());
-            if (cname != null) {
-                builder.put("cluster.name", cname);
-            }
-            settings = builder.build();
-        }
-        return settings;
+        return localConfig;
     }
 
     protected void schedulePostCommitIndexing(IndexingCommand cmd)
@@ -279,13 +252,14 @@ public class ElasticSearchComponent extends DefaultComponent implements
         log.debug("Sending indexing request to ElasticSearch " + cmd.toString());
         DocumentModel doc = cmd.getTargetDocument();
         if (IndexingCommand.DELETE.equals(cmd.getName())) {
-            DeleteRequestBuilder request = getClient().prepareDelete(getDocIndex(),
-                    DOC_TYPE, doc.getId());
+            DeleteRequestBuilder request = getClient().prepareDelete(
+                    getDocIndex(), DOC_TYPE, doc.getId());
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                                getDocIndex(), DOC_TYPE, cmd.getTargetDocument()
-                                        .getId(), request.request().toString()));
+                                getDocIndex(), DOC_TYPE, cmd
+                                        .getTargetDocument().getId(), request
+                                        .request().toString()));
             }
             request.execute().actionGet();
 
@@ -308,8 +282,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                                getDocIndex(), DOC_TYPE, cmd.getTargetDocument()
-                                        .getId(), request.request().toString()));
+                                getDocIndex(), DOC_TYPE, cmd
+                                        .getTargetDocument().getId(), request
+                                        .request().toString()));
             }
             request.execute().actionGet();
         }
@@ -334,8 +309,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     .stream());
             JsonESDocumentWriter.writeESDocument(jsonGen, doc,
                     cmd.getSchemas(), null);
-            return getClient().prepareIndex(getDocIndex(), DOC_TYPE, doc.getId())
-                    .setSource(builder);
+            return getClient().prepareIndex(getDocIndex(), DOC_TYPE,
+                    doc.getId()).setSource(builder);
         } catch (Exception e) {
             throw new ClientException(
                     "Unable to create index request for Document "
@@ -392,38 +367,60 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-    protected Node getLocalNode() {
-        if (localNode == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Create a local ES node inside the Nuxeo JVM");
-            }
-            ElasticSearchServerConfig config = getConfig();
-            Settings settings = getSettings();
-            localNode = NodeBuilder.nodeBuilder().local(config.isInProcess())
-                    .settings(settings).node();
-            localNode.start();
-        }
-        return localNode;
-    }
-
     @Override
     public Client getClient() {
         if (client == null) {
-            if (getConfig().isInProcess()) {
-                client = getLocalNode().client();
-            } else {
-                TransportClient tClient = new TransportClient(getSettings());
-                for (String remoteNode : getConfig().getRemoteNodes()) {
-                    String[] address = remoteNode.split(":");
-                    try {
-                        InetAddress inet = InetAddress.getByName(address[0]);
-                        if (log.isDebugEnabled()) {
-                            log.debug("Use a remote ES node: " + remoteNode);
+            ElasticSearchLocalConfig lConf = getLocalConfig();
+            if (lConf != null) {
+                log.info("Create a local ES node inJVM");
+                Builder sBuilder = ImmutableSettings.settingsBuilder();
+                sBuilder.put("node.http.enabled", lConf.enableHttp())
+                        .put("path.logs", lConf.getLogPath())
+                        .put("path.data", lConf.getDataPath())
+                        .put("index.number_of_shards", 1)
+                        .put("index.number_of_replicas", 1)
+                        .put("cluster.name", lConf.getClusterName())
+                        .put("node.name", lConf.getNodeName());
+                if (lConf.getIndexStorageType() != null) {
+                    sBuilder.put("index.store.type",
+                            lConf.getIndexStorageType());
+                    if (lConf.getIndexStorageType().equals("memory")) {
+                        sBuilder.put("gateway.type", "none");
+                    }
+                }
+                Settings settings = sBuilder.build();
+                localNode = NodeBuilder.nodeBuilder().local(true)
+                        .settings(settings).node();
+                client = localNode.start().client();
+            } else if (remoteConfig != null) {
+                Builder builder = ImmutableSettings
+                        .settingsBuilder()
+                        .put("cluster.name", remoteConfig.getClusterName())
+                        .put("client.transport.nodes_sampler_interval",
+                                remoteConfig.getSamplerInterval())
+                        .put("client.transport.ping_timeout",
+                                remoteConfig.getPingTimeout())
+                        .put("client.transport.ignore_cluster_name",
+                                remoteConfig.isIgnoreClusterName())
+                        .put("client.transport.sniff",
+                                remoteConfig.isClusterSniff());
+                Settings settings = builder.build();
+                TransportClient tClient = new TransportClient(settings);
+                String[] addresses = remoteConfig.getAddresses();
+                if (addresses == null) {
+                    log.error("You need to provide an addressList to join a cluster");
+                } else {
+                    for (String item : remoteConfig.getAddresses()) {
+                        String[] address = item.split(":");
+                        log.info("Connect to a remote Elasticsearch: " + item);
+                        try {
+                            InetAddress inet = InetAddress
+                                    .getByName(address[0]);
+                            tClient.addTransportAddress(new InetSocketTransportAddress(
+                                    inet, Integer.parseInt(address[1])));
+                        } catch (UnknownHostException e) {
+                            log.error("Unable to resolve host " + address[0], e);
                         }
-                        tClient.addTransportAddress(new InetSocketTransportAddress(
-                                inet, Integer.parseInt(address[1])));
-                    } catch (UnknownHostException e) {
-                        log.error("Unable to resolve host " + address[0], e);
                     }
                 }
                 client = tClient;
@@ -462,8 +459,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         Context stopWatch = searchTimer.time();
         try {
             // Initialize request
-            SearchRequestBuilder request = getClient().prepareSearch(getDocIndex())
-                    .setTypes(DOC_TYPE)
+            SearchRequestBuilder request = getClient()
+                    .prepareSearch(getDocIndex()).setTypes(DOC_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addField(ID_FIELD).setFrom(offset).setSize(limit);
             // Add security filter
@@ -537,8 +534,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
     public void applicationStarted(ComponentContext context) throws Exception {
 
         super.applicationStarted(context);
-        if (getConfig() == null) {
-            log.warn("Unable to initialize ElasticSearch service : no configuration is provided");
+        if (remoteConfig == null && getLocalConfig() == null) {
+            log.warn("Unable to initialize Elasticsearch service : no configuration is provided");
             return;
         }
         // init metrics
@@ -546,25 +543,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 "elasticsearch", "service", "search"));
         fetchTimer = registry.timer(MetricRegistry.name("nuxeo",
                 "elasticsearch", "service", "fetch"));
-        // start Server if needed
-        if (getConfig() != null && !getConfig().isInProcess()
-                && getConfig().autostartLocalNode()) {
-            startESServer(getConfig());
-        }
         // init client
         getClient();
         // init indexes if needed
         initIndexes(false);
-    }
-
-    protected void startESServer(ElasticSearchServerConfig config)
-            throws Exception {
-        ElasticSearchController controler = new ElasticSearchController(config);
-        if (controler.start()) {
-            log.info("Started Elasticsearch");
-        } else {
-            log.error("Failed to start ElasticSearch");
-        }
     }
 
     @Override
@@ -601,42 +583,40 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected void initIndex(ElasticSearchIndexConfig conf, boolean dropIfExists)
             throws Exception {
-        if (! conf.mustCreate()) {
+        if (!conf.mustCreate()) {
             return;
         }
         log.info(String.format("Initialize index: %s, type: %s",
-                conf.getIndexName(), conf.getIndexType()));
+                conf.getName(), conf.getType()));
         boolean mappingExists = false;
         boolean indexExists = getClient().admin().indices()
-                .prepareExists(conf.getIndexName()).execute().actionGet()
-                .isExists();
+                .prepareExists(conf.getName()).execute().actionGet().isExists();
         if (indexExists) {
             if (!dropIfExists) {
-                log.debug("Index " + conf.getIndexName() + " already exists");
+                log.debug("Index " + conf.getName() + " already exists");
                 mappingExists = getClient().admin().indices()
-                        .prepareGetMappings(conf.getIndexName()).execute()
+                        .prepareGetMappings(conf.getName()).execute()
                         .actionGet().getMappings().containsKey(DOC_TYPE);
             } else {
                 log.warn(String.format("Initializing index: %s, type: %s with "
                         + "dropIfExists flag, deleting an existing index",
-                        conf.getIndexName(), conf.getIndexType()));
+                        conf.getName(), conf.getType()));
                 getClient().admin().indices()
-                        .delete(new DeleteIndexRequest(conf.getIndexName()))
+                        .delete(new DeleteIndexRequest(conf.getName()))
                         .actionGet();
                 indexExists = false;
             }
         }
         if (!indexExists) {
-            log.info(String.format("Creating index: %s", conf.getIndexName()));
-            getClient().admin().indices().prepareCreate(conf.getIndexName())
+            log.info(String.format("Creating index: %s", conf.getName()));
+            getClient().admin().indices().prepareCreate(conf.getName())
                     .setSettings(conf.getSettings()).execute().actionGet();
         }
         if (!mappingExists) {
             log.info(String.format("Creating mapping type: %s on index: %s",
-                    conf.getIndexType(), conf.getIndexName()));
-            getClient().admin().indices()
-                    .preparePutMapping(conf.getIndexName())
-                    .setType(conf.getIndexType()).setSource(conf.getMapping())
+                    conf.getType(), conf.getName()));
+            getClient().admin().indices().preparePutMapping(conf.getName())
+                    .setType(conf.getType()).setSource(conf.getMapping())
                     .execute().actionGet();
 
         }
@@ -650,14 +630,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected void release() {
         if (client != null) {
-            if (getConfig() != null && !getConfig().isInProcess()
-                    && getConfig().autostartLocalNode()) {
-                client.admin()
-                        .cluster()
-                        .nodesShutdown(
-                                new NodesShutdownRequest(getConfig()
-                                        .getNodeName())).actionGet();
-            }
             client.close();
         }
         if (localNode != null) {

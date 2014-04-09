@@ -2,23 +2,34 @@
 <component name="org.nuxeo.elasticsearch.test.contrib">
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
-    point="elasticSearchServer">
+    point="elasticSearchLocal">
+    <elasticSearchLocal clusterName="nuxeoTestClusterLocal"
+      nodeName="nuxeoTestNode" />
+  </extension>
 
-    <elasticSearchServer inProcess="true">
-      <nodeName>nuxeoTestNode</nodeName>
-      <clusterName>nuxeoTestCluster</clusterName>
-    </elasticSearchServer>
-    <!--
-    <elasticSearchServer inProcess="false" autostartLocalNode="false">
-      <hostIp>localhost</hostIp>
-      <hostPort>9300</hostPort>
-    </elasticSearchServer>
-    -->
+  <!--
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
+    point="elasticSearchLocal">
+    <elasticSearchLocal
+          clusterName="nuxeoTestClusterLocalFs"
+          nodeName="nuxeoTestNode"
+          pathData="/tmp/elasticsearch"
+          pathLogs="/tmp/elastcisearch-log"
+          indexStoreType="mmapfs"
+          nodeEnableHttp="true"
+        />
   </extension>
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
+    point="elasticSearchRemote">
+    <elasticSearchRemote clusterName="elasticsearch"
+      addressList="localhost:9300" />
+  </extension>
+  -->
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
     point="elasticSearchIndex">
-   <elasticSearchIndex name="nxutest" type="doc" />
+    <elasticSearchIndex name="nxutest" type="doc" />
   </extension>
 
 </component>

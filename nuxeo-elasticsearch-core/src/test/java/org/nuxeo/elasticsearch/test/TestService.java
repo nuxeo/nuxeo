@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
-import org.nuxeo.elasticsearch.config.ElasticSearchServerConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -64,18 +63,14 @@ public class TestService {
         ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
 
-        ElasticSearchServerConfig config = esa.getConfig();
-        Assert.assertEquals("nuxeoTestNode", config.getNodeName());
-        Assert.assertEquals("nuxeoTestCluster", config.getClusterName());
-
         NodesInfoResponse nodeInfoResponse = ess.getClient().admin().cluster().nodesInfo(
                 new NodesInfoRequest()).actionGet();
 
-        Assert.assertEquals("nuxeoTestCluster",
-                nodeInfoResponse.getClusterNameAsString());
         Assert.assertEquals(1, nodeInfoResponse.getNodes().length);
-        Assert.assertEquals("nuxeoTestNode",
-                nodeInfoResponse.getNodes()[0].getNode().getName());
+        Assert.assertTrue(nodeInfoResponse.getClusterNameAsString().startsWith(
+                "nuxeoTestCluster"));
+        Assert.assertEquals("nuxeoTestNode", nodeInfoResponse.getNodes()[0]
+                .getNode().getName());
 
     }
 }

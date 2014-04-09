@@ -93,18 +93,18 @@
       "enabled" : true
    },
    "_all" : {
-      "analyzer" : "en_analyzer"
+      "analyzer" : "fulltext"
    },
    "properties" : {
       "dc:description" : {
          "boost" : 1.5,
          "type" : "string",
-         "analyzer" : "en_analyzer"
+         "analyzer" : "fulltext"
       },
       "dc:title" : {
          "boost" : 2,
          "type" : "string",
-         "analyzer" : "en_analyzer"
+         "analyzer" : "fulltext"
       },
       "dc:created": {
          "format": "dateOptionalTime",
@@ -116,11 +116,11 @@
       },
       "ecm:binarytext*" : {
          "type" : "string",
-         "analyzer" : "en_analyzer"
+         "analyzer" : "fulltext"
       },
       "ecm:fulltext*" : {
          "type" : "string",
-         "analyzer" : "en_analyzer"
+         "analyzer" : "fulltext"
       },
       "ecm:path" : {
          "fields" : {

@@ -34,10 +34,10 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 public class ElasticSearchIndexConfig {
 
     @XNode("@name")
-    protected String indexName;
+    protected String name;
 
     @XNode("@type")
-    protected String indexType = "doc";
+    protected String type = "doc";
 
     @XNode("@create")
     protected boolean create = true;
@@ -55,12 +55,12 @@ public class ElasticSearchIndexConfig {
         return fulltextFields;
     }
 
-    public String getIndexName() {
-        return indexName;
+    public String getName() {
+        return name;
     }
 
-    public String getIndexType() {
-        return indexType;
+    public String getType() {
+        return type;
     }
 
     public String getSettings() {
