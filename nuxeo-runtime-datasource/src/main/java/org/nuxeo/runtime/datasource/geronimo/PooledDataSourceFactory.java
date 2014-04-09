@@ -1,7 +1,8 @@
 package org.nuxeo.runtime.datasource.geronimo;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Hashtable;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.Name;
@@ -23,9 +24,11 @@ import org.tranql.connector.jdbc.JDBCDriverMCF;
 import org.tranql.connector.jdbc.TranqlDataSource;
 import org.tranql.connector.jdbc.XADataSourceWrapper;
 
-public class PooledDataSourceFactory implements PooledDataSourceRegistry.Factory {
+public class PooledDataSourceFactory implements
+        PooledDataSourceRegistry.Factory {
 
-    protected static class DataSource extends TranqlDataSource implements PooledDataSource {
+    protected static class DataSource extends TranqlDataSource implements
+            PooledDataSource {
 
         protected ConnectionManagerWrapper wrapper;
 
@@ -39,25 +42,40 @@ public class PooledDataSourceFactory implements PooledDataSourceRegistry.Factory
         public void dispose() throws Exception {
             wrapper.dispose();
         }
+
+        @Override
+        public Connection getConnection(boolean noSharing) throws ResourceException, SQLException {
+            if (!noSharing) {
+                return getConnection();
+            }
+            wrapper.enterNoSharing();
+            try {
+                return getConnection();
+            } finally {
+                wrapper.exitNoSharing();
+            }
+        }
     }
 
     @Override
     public Object getObjectInstance(Object obj, Name name, Context ctx,
             Hashtable<?, ?> environment) throws Exception {
-        Reference ref = (Reference)obj;
+        Reference ref = (Reference) obj;
         ManagedConnectionFactory mcf = createFactory(ref, ctx);
-        ConnectionManagerWrapper cm =  createManager(ref, ctx);
+        ConnectionManagerWrapper cm = createManager(ref, ctx);
         return new DataSource(mcf, cm);
     }
 
-    protected ConnectionManagerWrapper createManager(Reference ref, Context ctx) throws ResourceException {
+    protected ConnectionManagerWrapper createManager(Reference ref, Context ctx)
+            throws ResourceException {
         NuxeoConnectionManagerConfiguration config = NuxeoConnectionManagerFactory.getConfig(ref);
         String className = ref.getClassName();
         config.setXAMode(XADataSource.class.getName().equals(className));
         return NuxeoContainer.initConnectionManager(config);
     }
 
-    protected ManagedConnectionFactory createFactory(Reference ref, Context ctx) throws NamingException, InvalidPropertyException {
+    protected ManagedConnectionFactory createFactory(Reference ref, Context ctx)
+            throws NamingException, InvalidPropertyException {
         String className = ref.getClassName();
         if (XADataSource.class.getName().equals(className)) {
             String name = refAttribute(ref, "dataSourceJNDI", null);
@@ -66,7 +84,7 @@ public class PooledDataSourceFactory implements PooledDataSourceRegistry.Factory
         }
         if (javax.sql.DataSource.class.getName().equals(className)) {
             String name = refAttribute(ref, "driverClassName", null);
-            String url = refAttribute(ref,"url",null);
+            String url = refAttribute(ref, "url", null);
             String username = refAttribute(ref, "username", "");
             String password = refAttribute(ref, "password", "");
             JDBCDriverMCF factory = new JDBCDriverMCF();
@@ -79,19 +97,16 @@ public class PooledDataSourceFactory implements PooledDataSourceRegistry.Factory
         throw new IllegalArgumentException("unsupported class " + className);
     }
 
-
     protected String refAttribute(Reference ref, String key, String defvalue) {
         RefAddr addr = ref.get(key);
         if (addr == null) {
             if (defvalue == null) {
-                throw new IllegalArgumentException(
-                        key + " address is mandatory");
+                throw new IllegalArgumentException(key
+                        + " address is mandatory");
             }
             return defvalue;
         }
-        return (String)addr.getContent();
+        return (String) addr.getContent();
     }
-
-
 
 }

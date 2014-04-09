@@ -13,6 +13,7 @@
 package org.nuxeo.runtime.jtajca;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -44,13 +45,17 @@ import javax.transaction.UserTransaction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
+import org.apache.geronimo.connector.outbound.ConnectionInfo;
+import org.apache.geronimo.connector.outbound.ConnectionReturnAction;
+import org.apache.geronimo.connector.outbound.ConnectionTrackingInterceptor;
 import org.apache.geronimo.connector.outbound.GenericConnectionManager;
+import org.apache.geronimo.connector.outbound.PoolingAttributes;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.LocalTransactions;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.PoolingSupport;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.SinglePool;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.TransactionSupport;
 import org.apache.geronimo.connector.outbound.connectionmanagerconfig.XATransactions;
-import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTrackingCoordinator;
+import org.apache.geronimo.connector.outbound.connectiontracking.ConnectionTracker;
 import org.apache.geronimo.transaction.manager.NamedXAResourceFactory;
 import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
@@ -266,7 +271,7 @@ public class NuxeoContainer {
             listeners.add(listener);
         }
         for(Map.Entry<String, ConnectionManagerWrapper> entry:connectionManagers.entrySet()) {
-            listener.handleNewConnectionManager(entry.getKey(), entry.getValue().target);
+            listener.handleNewConnectionManager(entry.getKey(), entry.getValue().cm);
         }
     }
 
@@ -453,15 +458,15 @@ public class NuxeoContainer {
     }
 
     public static void installConnectionManager(
-            ConnectionManagerWrapper cm) {
-        String name = cm.config.getName();
+            ConnectionManagerWrapper wrapper) {
+        String name = wrapper.config.getName();
         if (connectionManagers.containsKey(name)) {
             log.error("Connection manager " + name + " already set up",
                     new Exception());
         }
-        connectionManagers.put(name, cm);
+        connectionManagers.put(name, wrapper);
         for (NuxeoContainerListener listener:listeners) {
-            listener.handleNewConnectionManager(name, cm.target);
+            listener.handleNewConnectionManager(name, wrapper.cm);
         }
     }
 
@@ -497,8 +502,9 @@ public class NuxeoContainer {
     }
 
     public static synchronized ConnectionManagerWrapper initConnectionManager(NuxeoConnectionManagerConfiguration config) {
-        GenericConnectionManager cm = createConnectionManager(config);
-        ConnectionManagerWrapper cmw = new ConnectionManagerWrapper(cm, config);
+        ConnectionTrackingCoordinator coordinator = new ConnectionTrackingCoordinator();
+        GenericConnectionManager cm = createConnectionManager(coordinator, config);
+        ConnectionManagerWrapper cmw = new ConnectionManagerWrapper(coordinator, cm, config);
         installConnectionManager(cmw);
         return cmw;
     }
@@ -512,10 +518,10 @@ public class NuxeoContainer {
 
 
     public static synchronized void resetConnectionManager(String name) throws Exception {
-        ConnectionManagerWrapper cm = connectionManagers.get(name);
-        cm.reset();
+        ConnectionManagerWrapper wrapper = connectionManagers.get(name);
+        wrapper.reset();
         for (NuxeoContainerListener listener:listeners) {
-            listener.handleConnectionManagerReset(name, cm.target);
+            listener.handleConnectionManagerReset(name, wrapper.cm);
         }
     }
 
@@ -652,7 +658,7 @@ public class NuxeoContainer {
      * @throws NamingException
      */
     public static GenericConnectionManager createConnectionManager(
-            NuxeoConnectionManagerConfiguration config) {
+            ConnectionTracker tracker, NuxeoConnectionManagerConfiguration config) {
         TransactionSupport transactionSupport = createTransactionSupport(config);
         // note: XATransactions -> TransactionCachingInterceptor ->
         // ConnectorTransactionContext casts transaction to Geronimo's
@@ -663,11 +669,10 @@ public class NuxeoContainer {
                 config.getIdleTimeoutMinutes(), config.getMatchOne(),
                 config.getMatchAll(), config.getSelectOneNoMatch());
 
-        ConnectionTrackingCoordinator connectionTracker = new ConnectionTrackingCoordinator();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader(); // NuxeoContainer.class.getClassLoader();
 
         return new GenericConnectionManager(transactionSupport, poolingSupport,
-                null, connectionTracker, transactionManager,
+                null, tracker, transactionManager,
                 config.getName(), classLoader);
     }
 
@@ -779,20 +784,99 @@ public class NuxeoContainer {
 
     }
 
+    public static class ConnectionTrackingCoordinator implements ConnectionTracker {
+
+
+        protected static class Context {
+
+            boolean unshareable;
+
+            protected final String threadName = Thread.currentThread().getName();
+
+            protected final Map<ConnectionInfo,Allocation> inuse = new HashMap<ConnectionInfo,Allocation>();
+
+            protected static class Allocation extends Throwable {
+
+                private static final long serialVersionUID = 1L;
+
+                public final ConnectionInfo info;
+
+                Allocation(ConnectionInfo info) {
+                    super("Allocation stack trace of " + info.toString());
+                    this.info = info;
+                }
+
+            };
+
+            @Override
+            protected void finalize() throws Throwable {
+                if (inuse.isEmpty()) {
+                    return;
+                }
+                Throwable error = new Throwable("leaked allocation stack traces");
+                for (Allocation eachAllocation : inuse.values()) {
+                    error.addSuppressed(eachAllocation);
+                }
+                LogFactory.getLog(ConnectionTrackingCoordinator.class).error(
+                        "leaked " + inuse.size() + " connections in "
+                                + threadName, error);
+            }
+        }
+
+        protected final ThreadLocal<Context> contextHolder = new ThreadLocal<Context>() {
+            @Override
+            protected Context initialValue() {
+                return new Context();
+            }
+
+        };
+
+        @Override
+        public void handleObtained(
+                ConnectionTrackingInterceptor connectionTrackingInterceptor,
+                ConnectionInfo connectionInfo, boolean reassociate)
+                throws ResourceException {
+            final Context context = contextHolder.get();
+            context.inuse.put(connectionInfo, new Context.Allocation(connectionInfo));
+        }
+
+        @Override
+        public void handleReleased(
+                ConnectionTrackingInterceptor connectionTrackingInterceptor,
+                ConnectionInfo connectionInfo,
+                ConnectionReturnAction connectionReturnAction) {
+            final Context context = contextHolder.get();
+            context.inuse.remove(connectionInfo);
+            if (context.inuse.isEmpty()) {
+                contextHolder.remove();
+            }
+        }
+
+        @Override
+        public void setEnvironment(ConnectionInfo connectionInfo, String key) {
+            connectionInfo.setUnshareable(contextHolder.get().unshareable);
+        }
+
+    }
+
     /**
      * Wraps a Geronimo ConnectionManager and adds a {@link #reset} method to
      * flush the pool.
      */
     public static class ConnectionManagerWrapper implements ConnectionManager {
+
         private static final long serialVersionUID = 1L;
 
-        protected AbstractConnectionManager target;
+        protected  ConnectionTrackingCoordinator coordinator;
+
+        protected AbstractConnectionManager cm;
 
         protected final NuxeoConnectionManagerConfiguration config;
 
-        public ConnectionManagerWrapper(AbstractConnectionManager cm,
+        public ConnectionManagerWrapper(ConnectionTrackingCoordinator coordinator, AbstractConnectionManager cm,
                 NuxeoConnectionManagerConfiguration config) {
-            target = cm;
+            this.coordinator = coordinator;
+            this.cm = cm;
             this.config = config;
         }
 
@@ -801,22 +885,38 @@ public class NuxeoContainer {
                 ManagedConnectionFactory managedConnectionFactory,
                 ConnectionRequestInfo connectionRequestInfo)
                 throws ResourceException {
-            return target.allocateConnection(managedConnectionFactory,
+            return cm.allocateConnection(managedConnectionFactory,
                     connectionRequestInfo);
         }
 
         public void reset() throws Exception {
-            target.doStop();
-            target = createConnectionManager(config);
+            cm.doStop();
+            cm = createConnectionManager(coordinator, config);
         }
 
         public void dispose() throws Exception {
             NuxeoContainer.connectionManagers.remove(config.getName());
-            target.doStop();
+            cm.doStop();
         }
 
         public NuxeoConnectionManagerConfiguration getConfiguration() {
             return config;
+        }
+
+        public Collection<ConnectionTrackingCoordinator.Context.Allocation> getCurrentThreadAllocations() {
+            return coordinator.contextHolder.get().inuse.values();
+        }
+
+        public PoolingAttributes getPooling() {
+            return cm.getPooling();
+        }
+
+        public void enterNoSharing() throws ResourceException {
+            coordinator.contextHolder.get().unshareable = true;
+        }
+
+        public void exitNoSharing() throws ResourceException {
+            coordinator.contextHolder.get().unshareable = false;
         }
     }
 
