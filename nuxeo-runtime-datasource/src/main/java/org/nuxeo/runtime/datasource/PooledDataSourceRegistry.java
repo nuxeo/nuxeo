@@ -11,6 +11,8 @@
  *******************************************************************************/
 package org.nuxeo.runtime.datasource;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -20,6 +22,7 @@ import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
+import javax.resource.ResourceException;
 import javax.sql.DataSource;
 
 import org.nuxeo.runtime.datasource.geronimo.PooledDataSourceFactory;
@@ -34,6 +37,8 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
 
     public interface PooledDataSource extends DataSource {
         void dispose() throws Exception;
+
+        Connection getConnection(boolean noSharing) throws ResourceException, SQLException;
     }
 
     protected final Map<String, PooledDataSource> pools = new HashMap<>();
