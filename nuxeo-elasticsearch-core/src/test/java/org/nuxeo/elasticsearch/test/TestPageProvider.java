@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.SystemUtils;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -257,7 +258,7 @@ public class TestPageProvider {
         model.setPropertyValue("dc:subjects", new String[] { "foo", "bar" });
 
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true, null);
-        Assert.assertEquals("{\n" +
+        assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : {\n" +
                 "      \"constant_score\" : {\n" +
@@ -273,7 +274,7 @@ public class TestPageProvider {
 
         model.setPropertyValue("dc:subjects", new String[] { "foo" });
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true, null);
-        Assert.assertEquals("{\n" +
+        assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : {\n" +
                 "      \"constant_score\" : {\n" +
@@ -290,7 +291,7 @@ public class TestPageProvider {
         // criteria with no values are removed
         model.setPropertyValue("dc:subjects", new String[] {});
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true, null);
-        Assert.assertEquals("{\n" +
+        assertEqualsEvenUnderWindows("{\n" +
                 "  \"match_all\" : { }\n" +
                 "}", qb.toString());
     }
@@ -308,7 +309,7 @@ public class TestPageProvider {
         Integer[] array1 = new Integer[] { 1, 2, 3 };
         model.setPropertyValue("search:integerlist", array1);
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true, null);
-        Assert.assertEquals("{\n" +
+        assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : {\n" +
                 "      \"constant_score\" : {\n" +
@@ -327,7 +328,7 @@ public class TestPageProvider {
         List<Long> list = Arrays.asList(1L, 2L, 3L);
         model.setPropertyValue("search:integerlist", (Serializable) list);
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true, null);
-        Assert.assertEquals("{\n" +
+        assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : {\n" +
                 "      \"constant_score\" : {\n" +
@@ -359,7 +360,7 @@ public class TestPageProvider {
         model.setPropertyValue("search:subjects", arrayString);
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true, null);
         String json = qb.toString();
-        Assert.assertEquals("{\n" +
+        assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : [ {\n" +
                 "      \"query_string\" : {\n" +
@@ -382,13 +383,13 @@ public class TestPageProvider {
         List<String> list = Arrays.asList(arrayString);
         model.setPropertyValue("search:subjects", (Serializable) list);
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true, null);
-        Assert.assertEquals(json, qb.toString());
+        assertEqualsEvenUnderWindows(json, qb.toString());
 
         // don't take into account empty list
         list = new ArrayList<String>();
         model.setPropertyValue("search:subjects", (Serializable) list);
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true, null);
-        Assert.assertEquals("{\n" +
+        assertEqualsEvenUnderWindows("{\n" +
                 "  \"match_all\" : { }\n" +
                 "}", qb.toString());
 
@@ -411,7 +412,7 @@ public class TestPageProvider {
 
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params,
                 true, null);
-        Assert.assertEquals("{\n" +
+        assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : [ {\n" +
                 "      \"query_string\" : {\n" +
@@ -430,7 +431,7 @@ public class TestPageProvider {
         model.setPropertyValue("search:isPresent", Boolean.TRUE);
 
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true, null);
-        Assert.assertEquals("{\n" +
+        assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : [ {\n" +
                 "      \"query_string\" : {\n" +
@@ -459,7 +460,7 @@ public class TestPageProvider {
         // only boolean available in schema without default value
         model.setPropertyValue("search:isPresent", Boolean.FALSE);
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true, null);
-        Assert.assertEquals("{\n" +
+        assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : [ {\n" +
                 "      \"query_string\" : {\n" +
@@ -487,7 +488,7 @@ public class TestPageProvider {
 
         qb = ElasticSearchQueryBuilder.makeQuery("SELECT * FROM ? WHERE ? = '?'",
                 new Object[] { "Document", "dc:title", null }, false, true, true, null);
-        Assert.assertEquals("{\n" +
+        assertEqualsEvenUnderWindows("{\n" +
                 "  \"query_string\" : {\n" +
                 "    \"query\" : \"SELECT * FROM Document WHERE dc:title = ''\"\n" +
                 "  }\n" +
@@ -512,7 +513,7 @@ public class TestPageProvider {
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params,
                 true, Arrays.asList("ecm:fulltext"));
         String json = qb.toString();
-        Assert.assertEquals("{\n" +
+        assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : [ {\n" +
                 "      \"query_string\" : {\n" +
@@ -530,6 +531,19 @@ public class TestPageProvider {
                 "    } ]\n" +
                 "  }\n" +
                 "}", qb.toString());
+    }
+
+    protected void assertEqualsEvenUnderWindows(String expected, String actual) {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            // make tests pass under Windows
+            expected = expected.trim();
+            expected = expected.replace("\n", "");
+            expected = expected.replace("\r", "");
+            actual = actual.trim();
+            actual = actual.replace("\n", "");
+            actual = actual.replace("\r", "");
+         }
+         Assert.assertEquals(expected, actual);
     }
 
 }
