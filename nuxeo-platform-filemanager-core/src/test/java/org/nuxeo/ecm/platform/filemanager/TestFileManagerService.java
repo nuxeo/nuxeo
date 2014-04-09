@@ -28,6 +28,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.commons.lang.SystemUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -177,8 +178,9 @@ public class TestFileManagerService {
 
     protected static final String SEPARATOR = "\n";
 
-    protected static final String NOTE_HTML_CONTENT = "<html>" + SEPARATOR + "<body>" + SEPARATOR +
-            "  <p>Hello from HTML document</p>" + SEPARATOR + "</body>" + SEPARATOR + "</html>";
+    protected static final String NOTE_HTML_CONTENT = "<html>" + SEPARATOR
+            + "<body>" + SEPARATOR + "  <p>Hello from HTML document</p>"
+            + SEPARATOR + "</body>" + SEPARATOR + "</html>";
 
     @Test
     public void testCreateNote() throws Exception {
@@ -191,8 +193,17 @@ public class TestFileManagerService {
                 workspace.getPathAsString(), true, "test-data/hello.html");
         assertNotNull(doc);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
-        String noteText = ((String)doc.getProperty("note", "note"));
-        assertEquals(NOTE_HTML_CONTENT.trim(), noteText.trim());
+        String expectedNoteTest = NOTE_HTML_CONTENT;
+        String noteText = ((String) doc.getProperty("note", "note"));
+        if (SystemUtils.IS_OS_WINDOWS) {
+            expectedNoteTest = expectedNoteTest.trim();
+            expectedNoteTest = expectedNoteTest.replace("\n", "");
+            expectedNoteTest = expectedNoteTest.replace("\r", "");
+            noteText = expectedNoteTest.trim();
+            noteText = expectedNoteTest.replace("\n", "");
+            noteText = expectedNoteTest.replace("\r", "");
+        }
+        assertEquals(expectedNoteTest, noteText);
     }
 
     @Test
@@ -209,7 +220,17 @@ public class TestFileManagerService {
 
         assertNotNull(doc);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
-        assertEquals(NOTE_HTML_CONTENT.trim(), ((String)doc.getProperty("note", "note")).trim());
+        String expectedNoteTest = NOTE_HTML_CONTENT;
+        String noteText = ((String) doc.getProperty("note", "note"));
+        if (SystemUtils.IS_OS_WINDOWS) {
+            expectedNoteTest = expectedNoteTest.trim();
+            expectedNoteTest = expectedNoteTest.replace("\n", "");
+            expectedNoteTest = expectedNoteTest.replace("\r", "");
+            noteText = expectedNoteTest.trim();
+            noteText = expectedNoteTest.replace("\n", "");
+            noteText = expectedNoteTest.replace("\r", "");
+        }
+        assertEquals(expectedNoteTest, noteText);
 
         List<DocumentModel> versions = coreSession.getVersions(docRef);
         assertEquals(0, versions.size());
@@ -221,7 +242,13 @@ public class TestFileManagerService {
         DocumentRef newDocRef = doc.getRef();
         assertEquals(docRef, newDocRef);
         assertEquals("hello.html", doc.getProperty("dublincore", "title"));
-        assertEquals(NOTE_HTML_CONTENT.trim(), ((String)doc.getProperty("note", "note")).trim());
+        noteText = ((String) doc.getProperty("note", "note"));
+        if (SystemUtils.IS_OS_WINDOWS) {
+            noteText = expectedNoteTest.trim();
+            noteText = expectedNoteTest.replace("\n", "");
+            noteText = expectedNoteTest.replace("\r", "");
+        }
+        assertEquals(expectedNoteTest, noteText);
 
         versions = coreSession.getVersions(docRef);
         assertEquals(1, versions.size());
