@@ -394,6 +394,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
                         .put("cluster.name", remoteConfig.getClusterName())
                         .put("client.transport.nodes_sampler_interval",
                                 remoteConfig.getSamplerInterval())
+                        .put("index.number_of_shards",
+                                remoteConfig.getNumberOfShards())
+                        .put("index.number_of_replicas",
+                                remoteConfig.getNumberOfReplicas())
                         .put("client.transport.ping_timeout",
                                 remoteConfig.getPingTimeout())
                         .put("client.transport.ignore_cluster_name",

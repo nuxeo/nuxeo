@@ -49,6 +49,12 @@ public class ElasticSearchRemoteConfig implements Serializable {
     @XNode("@clientTransportNodesSamplerInterval")
     protected String clientTransportNodesSamplerInterval = "5s";
 
+    @XNode("@indexNumberOfShards")
+    private final String numberOfShards = "1";
+
+    @XNode("@indexNumberOfReplicas")
+    private final String numberOfReplicas = "0";
+
     public String getClusterName() {
         return clusterName;
     }
@@ -78,5 +84,13 @@ public class ElasticSearchRemoteConfig implements Serializable {
 
     public String getSamplerInterval() {
         return clientTransportNodesSamplerInterval;
+    }
+
+    public String getNumberOfShards() {
+        return numberOfShards;
+    }
+
+    public String getNumberOfReplicas() {
+        return numberOfReplicas;
     }
 }

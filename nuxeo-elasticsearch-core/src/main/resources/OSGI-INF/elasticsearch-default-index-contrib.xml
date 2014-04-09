@@ -8,8 +8,6 @@
 
     <settings>
 {
-   "index.number_of_replicas" : "0",
-   "index.number_of_shards" : "1",
    "analysis" : {
       "filter" : {
          "en_stem_filter" : {
