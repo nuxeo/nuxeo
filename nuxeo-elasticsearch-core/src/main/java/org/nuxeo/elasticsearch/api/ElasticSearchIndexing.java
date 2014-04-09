@@ -51,21 +51,4 @@ public interface ElasticSearchIndexing {
      */
     void scheduleIndexing(IndexingCommand cmd) throws ClientException;
 
-    /**
-     * Refresh document index, immediately after the operation occurs, so that
-     * the updated document appears in search results immediately.
-     *
-     * There is no fsync thus doesn't guarantee durability.
-     *
-     * @since 5.9.3
-     */
-    void refresh();
-
-    /**
-     * Elasticsearch flush on document index, triggers a lucene commit, empties
-     * the transaction log. Data is flushed to disk.
-     *
-     * @since 5.9.3
-     */
-    void flush();
 }

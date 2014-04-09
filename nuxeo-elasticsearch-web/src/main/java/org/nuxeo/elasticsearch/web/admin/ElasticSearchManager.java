@@ -87,7 +87,7 @@ public class ElasticSearchManager {
     }
 
     public void flush() throws Exception {
-        esi.flush();
+        esa.flush();
     }
 
     protected void introspectPageProviders() throws Exception {
