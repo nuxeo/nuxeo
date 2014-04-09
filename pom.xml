@@ -22,7 +22,7 @@
   </modules>
 
   <properties>
-    <nuxeo.importer.version>5.8.0-HF06-SNAPSHOT</nuxeo.importer.version>
+    <nuxeo.importer.version>5.8.0-HF11-SNAPSHOT</nuxeo.importer.version>
   </properties>
 
   <dependencyManagement>
