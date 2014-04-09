@@ -165,10 +165,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
         ManagedConnectionImpl other = connection.getManagedConnection();
         if (other != this) {
             log.debug("associateConnection other: " + other);
-            // deassociate it from other ManagedConnection
             other.removeConnection(connection);
-            // reassociate it with this
-            connection.setManagedConnection(this);
             addConnection(connection);
         }
     }
@@ -248,29 +245,30 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * Adds a connection to those using this managed connection.
      */
     private void addConnection(ConnectionImpl connection) {
-        synchronized (connections) {
-            log.debug("addConnection: " + connection);
-            connections.add(connection);
-            connection.associate(session);
+        log.debug("addConnection: " + connection);
+        if (connections.add(connection) == false) {
+            throw new IllegalStateException("already known connection " + connection + " in " + this);
         }
+        connection.setManagedConnection(this);
+        connection.associate(session);
     }
 
     /**
-     * Removes a connection from those of this managed connection.
+     * Removes a connection to those using this managed connection.
      */
     private void removeConnection(ConnectionImpl connection) {
-        synchronized (connections) {
-            log.debug("removeConnection: " + connection);
-            connection.disassociate();
-            connections.remove(connection);
+        log.debug("removeConnection: " + connection);
+        if (connections.remove(connection) == false) {
+            throw new IllegalStateException("unknown connection " + connection + " in " + this);
         }
+        connection.setManagedConnection(null);
+        connection.disassociate();
     }
 
     /**
      * Called by {@link ConnectionImpl#close} when the connection is closed.
      */
     protected void close(ConnectionImpl connection) {
-        log.debug("close: " + this);
         removeConnection(connection);
         sendClosedEvent(connection);
     }
@@ -280,16 +278,11 @@ public class ManagedConnectionImpl implements ManagedConnection,
      */
     protected void closeConnections() {
         log.debug("closeConnections: " + this);
-        synchronized (connections) {
-            // copy to avoid ConcurrentModificationException
-            ConnectionImpl[] array = new ConnectionImpl[connections.size()];
-            for (ConnectionImpl connection : connections.toArray(array)) {
-                log.debug("closing connection: " + connection);
-                connection.disassociate();
-                sendClosedEvent(connection);
-            }
-            connections.clear();
+        for (ConnectionImpl connection : connections) {
+            connection.disassociate();
+            sendClosedEvent(connection);
         }
+        connections.clear();
     }
 
     /**
@@ -304,6 +297,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
      */
 
     private void sendClosedEvent(ConnectionImpl connection) {
+        log.debug("closing a connection " + connection);
         sendEvent(ConnectionEvent.CONNECTION_CLOSED, connection, null);
     }
 

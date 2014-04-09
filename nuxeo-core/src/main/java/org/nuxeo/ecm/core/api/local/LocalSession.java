@@ -18,11 +18,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.naming.NamingException;
-import javax.transaction.RollbackException;
 import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.AbstractSession;
@@ -100,7 +96,9 @@ public class LocalSession extends AbstractSession implements Synchronization {
         this.principal = principal;
         createMetrics(); // needs repo name
         sessionId = newSessionId(repositoryName, principal);
-        log.debug("Creating CoreSession: " + sessionId);
+        if (log.isDebugEnabled()) {
+            log.debug("Creating CoreSession: " + sessionId);
+        }
         createSession(); // create first session for current thread
     }
 
@@ -126,13 +124,6 @@ public class LocalSession extends AbstractSession implements Synchronization {
                 throw new ClientRuntimeException(
                         "No transaction, cannot reconnect: " + sessionId);
             }
-            try {
-                TransactionHelper.lookupTransactionManager().getTransaction().registerSynchronization(
-                        this);
-            } catch (NamingException | SystemException | RollbackException e) {
-                throw new ClientRuntimeException(
-                        "Cannot register synchronization", e);
-            }
             si = createSession();
         }
         return si.session;
@@ -157,6 +148,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
         }
         SessionInfo si = new SessionInfo(session);
         threadSessions.set(si);
+        TransactionHelper.registerSynchronization(this);
         allSessions.add(si);
         log.debug("Adding thread " + Thread.currentThread().getName()
                 + " for CoreSession: " + sessionId);
@@ -170,26 +162,24 @@ public class LocalSession extends AbstractSession implements Synchronization {
 
     @Override
     public void beforeCompletion() {
+        // insure the connection is closed before commit
+        closeInThisThread();
     }
 
-    /**
-     * Synchronization registered only when reconnecting a session, because
-     * {@link #close} will not be called explicitly.
-     */
     @Override
     public void afterCompletion(int status) {
-        closeInThisThread();
     }
 
     protected void closeInThisThread() {
         SessionInfo si = threadSessions.get();
-        if (si != null) {
-            si.session.close();
-            threadSessions.remove();
-            allSessions.remove(si);
-            log.debug("Removing thread " + Thread.currentThread().getName()
-                    + " for CoreSession: " + sessionId);
+        if (si == null) {
+            return;
         }
+        si.session.close();
+        threadSessions.remove();
+        allSessions.remove(si);
+        log.debug("Removing thread " + Thread.currentThread().getName()
+          + " for CoreSession: " + sessionId);
     }
 
     // explicit close()
