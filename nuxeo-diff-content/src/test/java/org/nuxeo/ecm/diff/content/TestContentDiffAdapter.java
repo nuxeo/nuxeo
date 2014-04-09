@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang.SystemUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -202,10 +203,18 @@ public class TestContentDiffAdapter {
         try {
             Blob expectedblob = new FileBlob(
                     FileUtils.getResourceFileFromContext(expectedBlobPath));
+            String expected = expectedblob.getString();
             String actual = contentDiffBlob.getString();
-            // make tests pass under windows
-            actual = actual.replace("\r", "");
-            assertEquals(expectedblob.getString().trim(), actual.trim());
+            if (SystemUtils.IS_OS_WINDOWS) {
+	            // make tests pass under Windows
+	            expected = expected.trim();
+	            expected = expected.replace("\n","");
+	            expected = expected.replace("\r","");
+	            actual = actual.trim();
+	            actual = actual.replace("\n","");
+	            actual = actual.replace("\r","");
+            }
+            assertEquals(expected, actual);
         } catch (IOException ioe) {
             fail("Error while getting content diff blob strings");
         }
