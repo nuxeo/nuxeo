@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.SystemUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
@@ -116,7 +117,7 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
 
         InputStream expected = new FileInputStream(
                 getTestFile("expecteddata/c_output.txt"));
-        assertEquals(FileUtils.read(expected), writer.toString());
+        assertTextEquals(FileUtils.read(expected), writer.toString());
 
         // System.out.println(writer.getBuffer());
         // System.out.println(">>>>>>>>>> RENDERING TOOK: " + ((e - s) / 1000));
@@ -134,6 +135,19 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         // + ((e - s) / 1000));
         // System.out.println("###############################");
         // }
+    }
+
+    protected void assertTextEquals(String expected, String actual) {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            // make tests pass under Windows
+            expected = expected.trim();
+            expected = expected.replace("\n","");
+            expected = expected.replace("\r","");
+            actual = actual.trim();
+            actual = actual.replace("\n","");
+            actual = actual.replace("\r","");
+        }
+        assertEquals(expected, actual);
     }
 
     @Test
