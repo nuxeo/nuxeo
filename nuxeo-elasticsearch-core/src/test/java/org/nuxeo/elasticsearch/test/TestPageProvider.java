@@ -53,7 +53,7 @@ import com.google.inject.Inject;
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy({ "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-config-test-contrib.xml"})
+        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml"})
 public class TestPageProvider {
 
     @Inject

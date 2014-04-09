@@ -52,7 +52,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
-@LocalDeploy({"org.nuxeo.elasticsearch.core:elasticsearch-config-test-contrib.xml"})
+@LocalDeploy({"org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml"})
 public class TestNxqlConversion {
 
     private static final String IDX_NAME = "nxutest";

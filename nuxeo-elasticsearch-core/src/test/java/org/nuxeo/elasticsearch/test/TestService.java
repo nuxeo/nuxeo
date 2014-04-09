@@ -32,7 +32,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
-@LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-config-test-contrib.xml")
+@LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 @Features({ RepositoryElasticSearchFeature.class })
 public class TestService {
 
