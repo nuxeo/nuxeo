@@ -628,6 +628,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             client.close();
         }
         if (localNode != null) {
+            log.info("Shutting down local node");
             localNode.stop();
             localNode.close();
         }
