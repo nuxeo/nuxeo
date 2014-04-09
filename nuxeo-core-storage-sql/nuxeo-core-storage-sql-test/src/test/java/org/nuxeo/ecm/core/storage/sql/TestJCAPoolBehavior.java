@@ -21,11 +21,13 @@ import static org.junit.Assert.assertTrue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -43,16 +45,20 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
 
     public volatile Exception threadException;
 
+    private NuxeoConnectionManagerConfiguration cmconfig;
+
+    private ConnectionManagerWrapper cm;
+
     @Override
     protected void setUpContainer() throws Exception {
-        NuxeoConnectionManagerConfiguration cmconfig = new NuxeoConnectionManagerConfiguration();
-        cmconfig.setName(database.repositoryName);
+        cmconfig = new NuxeoConnectionManagerConfiguration();
+        cmconfig.setName("NuxeoConnectionManager/"+database.repositoryName);
         cmconfig.setMinPoolSize(MIN_POOL_SIZE);
         cmconfig.setMaxPoolSize(MAX_POOL_SIZE);
         cmconfig.setBlockingTimeoutMillis(BLOCKING_TIMEOUT);
         NuxeoContainer.install();
-        NuxeoContainer.installConnectionManager(
-                cmconfig);
+        NuxeoContainer.installConnectionManager(cmconfig);
+        cm = (ConnectionManagerWrapper) NuxeoContainer.getConnectionManager(cmconfig.getName());
     }
 
     @Test
@@ -69,12 +75,14 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
             threads[i] = new Thread(new SessionHolder(2000));
             threads[i].start();
         }
-        Thread.sleep(500);
-        assertNull(threadException);
-
-        // finish all threads
-        for (int i = 0; i < threads.length; i++) {
-            threads[i].join();
+        try {
+            Thread.sleep(500);
+            assertNull(threadException);
+        } finally {
+            // finish all threads
+            for (int i = 0; i < threads.length; i++) {
+                threads[i].join();
+            }
         }
         assertNull(threadException);
     }
@@ -104,13 +112,15 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
         Thread t = new Thread(new SessionHolder(2000));
         t.start();
         Thread.sleep(BLOCKING_TIMEOUT + 500);
-        assertNotNull(threadException);
-        threadException = null;
-
-        // finish all threads
-        for (int i = 0; i < threads.length; i++) {
-            threads[i].join();
+        try {
+            assertNotNull(threadException);
+        } finally {
+            // finish all threads
+            for (int i = 0; i < threads.length; i++) {
+                threads[i].join();
+            }
         }
+        threadException = null;
         assertNull(threadException);
 
         // re-test full threads use
@@ -187,4 +197,60 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
                 session2.getRootDocument().getId());
     }
 
+    @Test
+    public void doesntLeakWithoutTx() throws ClientException {
+        checkSessionLeak();
+    }
+
+    protected void checkSessionLeak() throws ClientException {
+        closeSession();
+        int count = threadAllocatedConnectionsCount();
+        try (CoreSession session = openSessionAs("jdoe")) {
+            assertEquals(count + 1, threadAllocatedConnectionsCount());
+        }
+        assertEquals(count, threadAllocatedConnectionsCount());
+    }
+
+    @Test
+    public void doesntLeakWithTx() throws ClientException {
+        TransactionHelper.startTransaction();
+        try {
+            checkSessionLeak();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+    }
+
+    @Test
+    public void doesntRelease() throws ClientException {
+        TransactionHelper.commitOrRollbackTransaction();
+        assertEquals(0, activeConnectionCount());
+        assertEquals(0, threadAllocatedConnectionsCount());
+        closeSession();
+        TransactionHelper.startTransaction();
+        try {
+            try (CoreSession first = openSessionAs("jdoe")){
+                assertEquals(1, threadAllocatedConnectionsCount());
+                assertEquals(1, activeConnectionCount());
+                try (CoreSession second = openSessionAs("jdoe")) {
+                    assertEquals(2, threadAllocatedConnectionsCount());
+                    assertEquals(1, activeConnectionCount());
+                    TransactionHelper.commitOrRollbackTransaction();
+                    assertEquals(0, threadAllocatedConnectionsCount());
+                    assertEquals(0, activeConnectionCount());
+                }
+            }
+            assertEquals(0, threadAllocatedConnectionsCount());
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+    }
+
+    protected int threadAllocatedConnectionsCount() {
+        return cm.getCurrentThreadAllocations().size();
+    }
+
+    protected int activeConnectionCount() {
+        return cm.getPooling().getConnectionCount() - cm.getPooling().getIdleConnectionCount();
+    }
 }

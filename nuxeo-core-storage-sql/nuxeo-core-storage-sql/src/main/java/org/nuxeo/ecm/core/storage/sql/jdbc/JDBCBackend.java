@@ -16,7 +16,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map.Entry;
 
+import javax.naming.NamingException;
 import javax.resource.ResourceException;
+import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
@@ -33,8 +35,10 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
+import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
+import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 
 /**
  * JDBC Backend for a repository.
@@ -61,11 +65,23 @@ public class JDBCBackend implements RepositoryBackend {
         connectionPropagator = new JDBCConnectionPropagator();
     }
 
+    protected boolean isPooledDataSource;
+
     @Override
     public void initialize(RepositoryImpl repository) throws StorageException {
         this.repository = repository;
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
         pseudoDataSourceName = ConnectionHelper.getPseudoDataSourceNameForRepository(repositoryDescriptor.name);
+
+        try {
+            DataSource ds = DataSourceHelper.getDataSource(pseudoDataSourceName);
+            if (ds instanceof PooledDataSource) {
+                isPooledDataSource = true;
+                return;
+            }
+        } catch (NamingException cause) {
+            ;
+        }
 
         // try single-datasource non-XA mode
         Connection connection = null;
@@ -193,9 +209,13 @@ public class JDBCBackend implements RepositoryBackend {
         Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo,
                 xadatasource, clusterNodeHandler, connectionPropagator,
                 noSharing, repository);
-        mapper = JDBCMapperConnector.newConnector(mapper);
-        if (noSharing) {
-            mapper = JDBCMapperTxSuspender.newConnector(mapper);
+        if (isPooledDataSource) {
+            mapper = JDBCMapperConnector.newConnector(mapper);
+            if (noSharing) {
+                mapper = JDBCMapperTxSuspender.newConnector(mapper);
+            }
+        } else {
+            mapper.connect();
         }
         if (create) {
             if (repositoryDescriptor.getNoDDL()) {

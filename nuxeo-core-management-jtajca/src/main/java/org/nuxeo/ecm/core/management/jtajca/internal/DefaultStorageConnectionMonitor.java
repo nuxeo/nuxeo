@@ -135,8 +135,12 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
         }
 
         protected void traceInvoke(Method m, Object[] args) {
+            Throwable stackTrace = null;
+            if (ConnectionInterceptor.class.isAssignableFrom(m.getDeclaringClass())) {
+                stackTrace = new Throwable("debug stack trace");
+            }
             log.trace("invoked " + stack.getClass().getSimpleName() + "."
-                    + m.getName());
+                    + m.getName(), stackTrace);
         }
 
 
