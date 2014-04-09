@@ -103,7 +103,7 @@ public class TestPageProvider {
         Assert.assertEquals(0, esa.getPendingDocs());
 
         TransactionHelper.startTransaction();
-        esi.flush();
+        esi.refresh();
 
         // get current page
         List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
@@ -162,7 +162,7 @@ public class TestPageProvider {
         Assert.assertEquals(0, esa.getPendingDocs());
 
         TransactionHelper.startTransaction();
-        esi.flush();
+        esi.refresh();
 
         // get current page
         List<DocumentModel> p = (List<DocumentModel>) pp.getCurrentPage();
@@ -221,7 +221,7 @@ public class TestPageProvider {
         Assert.assertEquals(0, esa.getPendingDocs());
 
         TransactionHelper.startTransaction();
-        esi.flush();
+        esi.refresh();
 
         // get current page
         DocumentModel model = new DocumentModelImpl("/", "doc",

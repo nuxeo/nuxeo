@@ -95,7 +95,7 @@ public class TestTreeIndexing {
 
         waitForAsyncIndexing();
 
-        esi.flush();
+        esi.refresh();
 
         TransactionHelper.startTransaction();
 
@@ -139,7 +139,7 @@ public class TestTreeIndexing {
 
         waitForAsyncIndexing();
 
-        esi.flush();
+        esi.refresh();
 
         TransactionHelper.startTransaction();
 
@@ -169,7 +169,7 @@ public class TestTreeIndexing {
 
         waitForAsyncIndexing();
 
-        esi.flush();
+        esi.refresh();
 
         TransactionHelper.startTransaction();
 
@@ -240,7 +240,7 @@ public class TestTreeIndexing {
 
         waitForAsyncIndexing();
 
-        esi.flush();
+        esi.refresh();
 
         TransactionHelper.startTransaction();
 
@@ -270,7 +270,7 @@ public class TestTreeIndexing {
         Assert.assertEquals(1, esa.getPendingCommands());
 
         waitForAsyncIndexing();
-        esi.flush();
+        esi.refresh();
 
         docs = ess.query(restrictedSession, "select * from Document", 10, 0);
         Assert.assertEquals(3, docs.size());
@@ -300,7 +300,7 @@ public class TestTreeIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForAsyncIndexing();
-        esi.flush();
+        esi.refresh();
 
         TransactionHelper.startTransaction();
         docs = ess.query(restrictedSession, "select * from Document order by dc:title", 10, 0);
@@ -317,7 +317,7 @@ public class TestTreeIndexing {
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
         waitForAsyncIndexing();
-        esi.flush();
+        esi.refresh();
 
         TransactionHelper.startTransaction();
         docs = ess.query(restrictedSession, "select * from Document order by dc:title", 10, 0);
@@ -344,7 +344,7 @@ public class TestTreeIndexing {
 
         waitForAsyncIndexing();
 
-        esi.flush();
+        esi.refresh();
 
         TransactionHelper.startTransaction();
 

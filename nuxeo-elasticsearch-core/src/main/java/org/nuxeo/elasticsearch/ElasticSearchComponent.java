@@ -352,19 +352,15 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
-    public void flush() {
-        flush(false);
+    public void refresh() {
+        getClient().admin().indices().prepareRefresh(getDocIndex()).execute()
+                .actionGet();
     }
 
     @Override
-    public void flush(boolean commit) {
-        // refresh indexes
-        getClient().admin().indices().prepareRefresh(getDocIndex()).execute()
+    public void flush() {
+        getClient().admin().indices().prepareFlush(getDocIndex()).execute()
                 .actionGet();
-        if (commit) {
-            getClient().admin().indices().prepareFlush(getDocIndex()).execute()
-                    .actionGet();
-        }
     }
 
     @Override
@@ -550,9 +546,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override
-    public void initIndexes(boolean recreate) throws Exception {
+    public void initIndexes(boolean dropIfExists) {
         for (ElasticSearchIndexConfig idx : indexes.values()) {
-            initIndex(idx, recreate);
+            initIndex(idx, dropIfExists);
         }
         indexInitDone = true;
         if (!stackedCommands.isEmpty()) {
@@ -581,8 +577,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-    protected void initIndex(ElasticSearchIndexConfig conf, boolean dropIfExists)
-            throws Exception {
+    protected void initIndex(ElasticSearchIndexConfig conf, boolean dropIfExists) {
         if (!conf.mustCreate()) {
             return;
         }

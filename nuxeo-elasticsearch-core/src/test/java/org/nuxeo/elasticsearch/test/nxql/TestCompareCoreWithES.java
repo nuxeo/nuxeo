@@ -99,7 +99,7 @@ public class TestCompareCoreWithES {
         Assert.assertEquals(0, esa.getPendingCommands());
         Assert.assertEquals(0, esa.getPendingDocs());
 
-        esi.flush();
+        esi.refresh();
         TransactionHelper.startTransaction();
 
     }

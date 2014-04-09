@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo
+ *     tdelprat
+ *     bdelbosc
  */
 
 package org.nuxeo.elasticsearch.api;
@@ -27,17 +28,16 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 
 /**
- * Main service interface for using ElasticSearch
+ * Interface to search on documents
  *
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.9.3
  */
 public interface ElasticSearchService {
 
     /**
-     * Retrieves the {@link Client} that can be used to access ElasticSearch API
+     * Retrieves the {@link Client} that can be used to access Elasticsearch API
      *
-     * @return
+     * @since 5.9.3
      */
     Client getClient();
 
@@ -49,8 +49,9 @@ public interface ElasticSearchService {
             int offset, SortInfo... sortInfos) throws ClientException;
 
     /**
-     * Returns a document list using an ElasticSearch QueryBuilder.
+     * Returns a document list using an ElasticSearch {@link QueryBuilder}.
      *
+     * @since 5.9.3
      */
     DocumentModelList query(CoreSession session, QueryBuilder queryBuilder,
             int limit, int offset, SortInfo... sortInfos)
@@ -59,6 +60,7 @@ public interface ElasticSearchService {
     /**
      * Returns the list of field names that use a fulltext analyzer.
      *
+     * @since 5.9.3
      */
     List<String> getFulltextFields();
 

@@ -206,7 +206,7 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        esi.flush();
+        esi.refresh();
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
@@ -251,7 +251,7 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        esi.flush();
+        esi.refresh();
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
@@ -289,7 +289,7 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        esi.flush();
+        esi.refresh();
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
@@ -311,7 +311,7 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        esi.flush();
+        esi.refresh();
 
         searchResponse = ess.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
@@ -356,7 +356,7 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        esi.flush();
+        esi.refresh();
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
@@ -388,7 +388,7 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.startTransaction();
 
-        esi.flush();
+        esi.refresh();
 
         searchResponse = ess.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
@@ -419,7 +419,7 @@ public class TestAutomaticIndexing {
         TransactionHelper.commitOrRollbackTransaction();
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        esi.flush();
+        esi.refresh();
 
         TransactionHelper.startTransaction();
         DocumentModelList ret = ess.query(session, "SELECT * FROM Document", 10, 0);

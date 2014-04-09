@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo
+ *     tdelprat
+ *     bdelbosc
  */
 
 package org.nuxeo.elasticsearch.api;
@@ -26,26 +27,56 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 /**
  * Administration interface for Elasticsearch service
  *
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
+ * @since 5.9.3
  */
 public interface ElasticSearchAdmin {
 
     /**
-     * Retrieves the {@link Client} that can be used to acces ElasticSearch API
+     * Retrieves the {@link Client} that can be used to access Elasticsearch API
      *
-     * @return
+     * @since 5.9.3
      */
     Client getClient();
 
-    void initIndexes(boolean recreate) throws Exception;
+    /**
+     * Initialize Elasticsearch indexes.
+     *
+     * Setup the index settings and mapping for each index that has been
+     * registered.
+     *
+     * @param dropIfExists
+     *            if {true} remove an existing index
+     *
+     * @since 5.9.3
+     */
+    void initIndexes(boolean dropIfExists);
 
+    /**
+     * {true} if a doc has already been submited for indexing.
+     *
+     * @since 5.9.3
+     */
     boolean isAlreadyScheduledForIndexing(DocumentModel doc);
 
+    /**
+     * Returns the number of documents that are waiting for being indexed.
+     *
+     * @since 5.9.3
+     */
     int getPendingDocs();
 
+    /**
+     * Returns the number of indexing command that are waiting to be processed.
+     *
+     * @since 5.9.3
+     */
     int getPendingCommands();
 
+    /**
+     * Returns list of {@link PendingClusterTask} not yet processed.
+     *
+     * @since 5.9.3
+     */
     List<PendingClusterTask> getPendingTasks();
 
 }

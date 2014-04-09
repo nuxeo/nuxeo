@@ -85,7 +85,7 @@ public class TestManualIndexing {
         IndexingCommand cmd = new IndexingCommand(doc, true, false);
         esi.indexNow(cmd);
 
-        esi.flush();
+        esi.refresh();
 
         SearchResponse searchResponse = ess.getClient().prepareSearch(
                 IDX_NAME).setSearchType(
@@ -132,7 +132,7 @@ public class TestManualIndexing {
         IndexingCommand cmd = new IndexingCommand(doc, true, false);
         esi.scheduleIndexing(cmd);
 
-        esi.flush();
+        esi.refresh();
 
         // only one doc should be indexed for now
         SearchResponse searchResponse = ess.getClient().prepareSearch(
@@ -210,7 +210,7 @@ public class TestManualIndexing {
         IndexingCommand cmd = new IndexingCommand(doc, false, false);
         esi.scheduleIndexing(cmd);
 
-        esi.flush();
+        esi.refresh();
 
         // only one doc should be indexed for now
         SearchResponse searchResponse = ess.getClient().prepareSearch(
@@ -238,7 +238,7 @@ public class TestManualIndexing {
         Assert.assertEquals(0, esa.getPendingCommands());
         Assert.assertEquals(0, esa.getPendingDocs());
 
-        esi.flush();
+        esi.refresh();
 
         TransactionHelper.startTransaction();
 

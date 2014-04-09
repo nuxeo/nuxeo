@@ -54,7 +54,7 @@ public class ElasticSearchPostCommitSyncListener implements
             ElasticSearchIndexing esi = Framework
                     .getLocalService(ElasticSearchIndexing.class);
             esi.indexNow(cmds);
-            esi.flush();
+            esi.refresh();
         }
     }
 
