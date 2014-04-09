@@ -102,7 +102,7 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
             }
 
             // Check the state token
-            if (!provider.verifyStateToken(req)) {
+            if (!"true".equals(Framework.getProperty("nuxeo.skip.oauth.token.state.check")) && !provider.verifyStateToken(req)) {
                 sendError(req, "Invalid state parameter.");
             }
 
