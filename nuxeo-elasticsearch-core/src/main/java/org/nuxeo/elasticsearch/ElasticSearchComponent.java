@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
@@ -44,6 +45,7 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.elasticsearch.action.admin.cluster.tasks.PendingClusterTasksResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.status.IndicesStatusRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
@@ -52,6 +54,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.service.PendingClusterTask;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -368,7 +371,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (client == null) {
             ElasticSearchLocalConfig lConf = getLocalConfig();
             if (lConf != null) {
-                log.info("Create a local ES node inJVM");
+                log.info("Creating a local ES node inJVM");
                 Builder sBuilder = ImmutableSettings.settingsBuilder();
                 sBuilder.put("http.enabled", lConf.httpEnabled())
                         .put("path.logs", lConf.getLogPath())
@@ -385,10 +388,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     }
                 }
                 Settings settings = sBuilder.build();
+                log.debug("Using settings: " + settings.toDelimitedString(','));
                 localNode = NodeBuilder.nodeBuilder().local(true)
                         .settings(settings).node();
                 client = localNode.start().client();
             } else if (remoteConfig != null) {
+                log.info("Connecting to an ES cluster");
                 Builder builder = ImmutableSettings
                         .settingsBuilder()
                         .put("cluster.name", remoteConfig.getClusterName())
@@ -405,6 +410,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
                         .put("client.transport.sniff",
                                 remoteConfig.isClusterSniff());
                 Settings settings = builder.build();
+                if (log.isDebugEnabled()) {
+                    log.debug("Using settings: " + settings.toDelimitedString(','));
+                }
                 TransportClient tClient = new TransportClient(settings);
                 String[] addresses = remoteConfig.getAddresses();
                 if (addresses == null) {
@@ -412,7 +420,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 } else {
                     for (String item : remoteConfig.getAddresses()) {
                         String[] address = item.split(":");
-                        log.info("Connect to a remote Elasticsearch: " + item);
+                        log.info("Add transport address: " + item);
                         try {
                             InetAddress inet = InetAddress
                                     .getByName(address[0]);
@@ -424,6 +432,14 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     }
                 }
                 client = tClient;
+            }
+            if (client != null) {
+                try {
+                    client.admin().indices().status(new IndicesStatusRequest()).get();
+                } catch (InterruptedException | ExecutionException | NoNodeAvailableException e) {
+                    log.error("Failed to connect to elasticsearch: " + e.getMessage(), e);
+                    client = null;
+                }
             }
         }
         return client;
