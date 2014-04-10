@@ -78,7 +78,7 @@ public class ITRichfileUploadTest extends AbstractTest {
 
         // select a file
         final String mockFile1 = getTmpFileToUploadPath("dummy", "test", "txt");
-        driver.findElement(By.id(RF_FILE_UPLOAD_INPUT_ID)).sendKeys(mockFile1);
+        Locator.findElementWithTimeout(By.id(RF_FILE_UPLOAD_INPUT_ID)).sendKeys(mockFile1);
         // check that submit button appears
         Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
         // check that clear all is visible
@@ -98,10 +98,9 @@ public class ITRichfileUploadTest extends AbstractTest {
         // do it again but with two files and use clear all
         final String mockFile2 = getTmpFileToUploadPath("dummy", "test", "txt");
         final String mockFile3 = getTmpFileToUploadPath("dummy", "test", "txt");
-        driver.findElement(By.id(RF_FILE_UPLOAD_INPUT_ID + "0")).sendKeys(
-                mockFile2);
+        Locator.findElementWithTimeout(By.id(RF_FILE_UPLOAD_INPUT_ID + "0")).sendKeys(mockFile2);
         Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
-        driver.findElement(By.id(RF_FILE_UPLOAD_INPUT_ID + "1")).sendKeys(
+        Locator.findElementWithTimeout(By.id(RF_FILE_UPLOAD_INPUT_ID + "1")).sendKeys(
                 mockFile3);
         // check we have 2 items
         clearLinks = driver.findElements(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
@@ -121,10 +120,10 @@ public class ITRichfileUploadTest extends AbstractTest {
         // upload 2 and submit
         final String mockFile4 = getTmpFileToUploadPath("dummy", "test", "txt");
         final String mockFile5 = getTmpFileToUploadPath("dummy", "test", "txt");
-        driver.findElement(By.id(RF_FILE_UPLOAD_INPUT_ID + "2")).sendKeys(
+        Locator.findElementWithTimeout(By.id(RF_FILE_UPLOAD_INPUT_ID + "2")).sendKeys(
                 mockFile4);
         Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
-        driver.findElement(By.id(RF_FILE_UPLOAD_INPUT_ID + "3")).sendKeys(
+        Locator.findElementWithTimeout(By.id(RF_FILE_UPLOAD_INPUT_ID + "3")).sendKeys(
                 mockFile5);
         Locator.findElement(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH)).click();
         Locator.waitUntilElementNotPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
@@ -146,7 +145,7 @@ public class ITRichfileUploadTest extends AbstractTest {
         // reselect file and check Clear All and individual clear are still
         // rerendered correctly
         final String mockFile6 = getTmpFileToUploadPath("dummy", "test", "txt");
-        driver.findElement(By.id(RF_FILE_UPLOAD_INPUT_ID)).sendKeys(mockFile6);
+        Locator.findElementWithTimeout(By.id(RF_FILE_UPLOAD_INPUT_ID)).sendKeys(mockFile6);
         // check that submit button appears
         Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
         // check that clear all is visible
