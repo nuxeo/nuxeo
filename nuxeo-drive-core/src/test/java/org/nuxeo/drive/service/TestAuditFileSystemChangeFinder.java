@@ -54,6 +54,8 @@ import org.nuxeo.ecm.core.event.impl.EventListenerList;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
@@ -97,6 +99,9 @@ public class TestAuditFileSystemChangeFinder {
     @Inject
     protected EventServiceAdmin eventServiceAdmin;
 
+    @Inject
+    protected WorkManager workManager;
+
     protected long lastSuccessfulSync;
 
     protected String lastSyncActiveRootDefinitions;
@@ -119,6 +124,14 @@ public class TestAuditFileSystemChangeFinder {
             if (!"auditLoggerListener".equals(postCommitListenerDescName)) {
                 eventServiceAdmin.setListenerEnabledFlag(
                         postCommitListenerDescName, false);
+            }
+        }
+        // Disable work queues except for the audit one
+        List<String> workQueueIds = workManager.getWorkQueueIds();
+        for (String workQueueId : workQueueIds) {
+            if (!"audit".equals(workQueueId)) {
+                WorkQueueDescriptor desc = workManager.getWorkQueueDescriptor(workQueueId);
+                desc.queuing = Boolean.FALSE;
             }
         }
         // Enable deletion listener because the tear down disables it
