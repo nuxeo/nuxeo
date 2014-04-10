@@ -157,16 +157,14 @@ public class CoreFeature extends SimpleFeature {
         }
     }
 
-    protected void cleanupSession(FeaturesRunner runner) {
-        CoreSession session = repository.getSession();
-        if (session == null) {
-            // session was never properly created, error during setup
-            return;
+    protected void cleanupSession(FeaturesRunner runner) throws ClientException {
+        waitForAsyncCompletion();
+        if (TransactionHelper.isTransactionMarkedRollback()) { // ensure tx is active
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
+        CoreSession session = repository.createSession();
         try {
-            // flush anything not saved
-            session.save();
-            waitForAsyncCompletion();
             // remove everything except root
             session.removeChildren(new PathRef("/"));
             session.save();
@@ -181,13 +179,13 @@ public class CoreFeature extends SimpleFeature {
     }
 
     protected void initializeSession(FeaturesRunner runner) throws Exception {
-        CoreScope.INSTANCE.enter();
         if (cleaned) {
             // re-trigger application started
             RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
             repositoryService.applicationStarted(null);
             cleaned = false;
         }
+        CoreScope.INSTANCE.enter();
         CoreSession session = repository.createSession();
         RepositoryInit factory = repository.getInitializer();
         if (factory != null) {
