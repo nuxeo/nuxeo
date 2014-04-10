@@ -1,0 +1,820 @@
+/* Reset rules */
+/* http://meyerweb.com/eric/tools/css/reset/ v2.0 | 20110126 */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline }
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary {
+  display: block }
+
+body {
+  line-height: 1 }
+
+ol, ul {
+  list-style: none }
+
+blockquote, q {
+  quotes: none }
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0 }
+
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+  vertical-align: middle }
+
+img,
+a img {
+  border: none }
+
+/* Global styles */
+body {
+  background-color: #e8eff5;
+  color: #444;
+  margin: 0;
+  font: 1em/1.4em 'PT Sans Caption', Helvetica, Arial, sans-serif;
+  line-height: 1.4 }
+
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+  text-decoration: none }
+
+h1 span.divider, h2 span.divider, h3 span.divider,
+h4 span.divider, h5 span.divider, h6 span.divider {
+  color: #aaa }
+
+h1 {
+  color: #000;
+  font-size: 1.5em;
+  line-height: 1.3em;
+  padding: 10px 0 10px 0;
+  font-weight: bold }
+
+h2 {
+  color: #000;
+  font-size: 1.3em;
+  padding: 10px 0 10px 0 }
+
+h2 a {
+  color: #000 }
+
+h2 span.sub {
+  font-size: .7em;
+  color: #b4b4bc;
+  font-style: italic }
+
+h2 span.sub a {
+  color: #777 }
+
+h3 {
+  color: #000;
+  font-size: 1.1em;
+  padding: 10px 0 10px 0 }
+
+p {
+  line-height: 1.4em;
+  padding: 0 0 10px;
+  color: #333 }
+
+ol {
+  margin: 0 0 10px;
+  padding: 0 0 0 18px;
+  list-style-type: decimal }
+
+ol li {
+  padding: 5px 0;
+  font-size: .9em;
+  color: #333 }
+
+a,
+a:visited {
+  color: #06bbe5;
+  text-decoration: none;
+  transition: all 0.15s ease 0s }
+a:hover {
+  color: #006ab1 }
+a:hover, a:active {
+  outline: 0 }
+
+b, strong {
+  font-weight: bold }
+
+pre, .code,
+.markdown pre,
+.markdown p code,
+.markdown li code {
+  font-family: "Anonymous Pro", "Menlo", "Consolas", "Bitstream Vera Sans Mono", "Courier New", monospace }
+
+pre, input[type="search"],
+input[type="text"],
+input[type="button"],
+textarea {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  font-size: 103%;
+  padding: .4em }
+
+pre:focus, input[type="search"]:focus,
+input[type="text"]:focus,
+input[type="button"]:focus,
+textarea:focus {
+  border-color: #2e9cff;
+  box-shadow: 0 0 3px #b5dcff;
+  outline: 0 none }
+
+input[type="button"] {
+  box-shadow: 0 -3px 0 rgba(0, 0, 0, 0.2) inset;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  cursor: pointer }
+
+pre {
+  cursor: text }
+
+pre code {
+  background: none;
+  line-height: 1.6em }
+
+::-webkit-input-placeholder {
+  color: #747c88;
+  font-weight: normal }
+
+::-moz-placeholder {
+  color: #747c88;
+  font-weight: normal }
+
+:-ms-input-placeholder {
+  color: #747c88;
+  font-weight: normal }
+
+/* Rest api styles */
+.heading_with_menu {
+  float: none;
+  clear: both;
+  overflow: hidden;
+  display: block }
+
+.heading_with_menu ul,
+.heading_with_menu h1, .heading_with_menu h2, .heading_with_menu h3,
+.heading_with_menu h4, .heading_with_menu h5, .heading_with_menu h6 {
+  display: block;
+  clear: none;
+  float: left;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 60% }
+
+.heading_with_menu ul {
+  float: right;
+  margin-top: 10px;
+  width: auto }
+
+input.parameter {
+  width: 300px }
+
+.body-textarea {
+  height: 100px;
+  margin-bottom: 0.5em;
+  width: 300px }
+
+.markdown h3 {
+  color: #547f00 }
+
+.markdown h4 {
+  color: #666 }
+
+.markdown pre {
+  margin: 0 0 10px 0 }
+
+.markdown pre code {
+  line-height: 1.6em }
+
+.markdown p code, .markdown li code {
+  background-color: #f0f0f0;
+  color: #000;
+  padding: 1px 3px }
+
+.markdown ol, .markdown ul {
+  margin: 5px 0 10px;
+  padding: 0 0 0 18px;
+  list-style-type: disc }
+
+.markdown ol li, .markdown ul li {
+  padding: 3px 0;
+  line-height: 1.4em;
+  color: #333 }
+
+div.gist {
+  margin: 20px 0 25px 0 !important }
+
+p.big, div.big p {
+  font-size: 1em;
+  margin-bottom: 10px }
+
+span.weak {
+  color: #666 }
+
+span.blank, span.empty {
+  color: #888;
+  font-style: italic }
+
+table.fullwidth {
+  border: 1px solid #eee;
+  margin-bottom: .5em;
+  font-size: .9em;
+  width: 100% }
+
+table thead tr th {
+  background-color: #f7f7f7;
+  border: 1px solid #eee;
+  color: #000;
+  font-family: Arial;
+  font-size: .9em;
+  padding: .35em; }
+
+table tbody tr.offset {
+  background-color: #f5f5f5 }
+
+table tbody tr td {
+  padding: .35em;
+  border: 1px solid #eee;
+  vertical-align: top;
+  line-height: 1.3em }
+
+table tbody tr:last-child td {
+  border-bottom: none }
+
+table tbody tr.offset {
+  background-color: #f0f0f0 }
+
+form.form_box {
+  background-color: #ebf3f9;
+  border: 1px solid #c3d9ec;
+  padding: 10px }
+
+form.form_box label {
+  color: #0080c2 !important }
+
+form.form_box input[type=submit] {
+  display: block }
+
+form.form_box p {
+  font-size: .9em;
+  padding: 0 0 15px;
+  color: #7e7b6d }
+
+form.form_box p a {
+  color: #646257 }
+
+form.form_box p strong {
+  color: #000 }
+
+form.form_box p.weak {
+  font-size: .8em }
+
+form.formtastic fieldset.inputs ol li p.inline-hints {
+  margin-left: 0;
+  font-style: italic;
+  font-size: .9em;
+  margin: 0 }
+
+form.formtastic fieldset.inputs ol li label {
+  display: block;
+  clear: both;
+  width: auto;
+  padding: 0 0 3px;
+  color: #666 }
+
+form.formtastic fieldset.inputs ol li label abbr {
+  padding-left: 3px;
+  color: #888 }
+
+form.formtastic fieldset.inputs ol li.required label {
+  color: #000 }
+
+form.formtastic fieldset.inputs ol li.url input,
+form.formtastic fieldset.inputs ol li.string input,
+form.formtastic fieldset.inputs ol li.numeric input {
+  display: block;
+  padding: 4px;
+  width: auto;
+  clear: both }
+
+form.formtastic fieldset.inputs ol li.url input.title,
+form.formtastic fieldset.inputs ol li.string input.title,
+form.formtastic fieldset.inputs ol li.numeric input.title {
+  font-size: 1.3em }
+
+form.formtastic fieldset.inputs ol li.text textarea {
+  height: 250px;
+  padding: 4px;
+  display: block;
+  clear: both }
+
+form.formtastic fieldset.inputs ol li.select select {
+  display: block;
+  clear: both }
+
+form.formtastic fieldset.inputs ol li.boolean {
+  float: none;
+  clear: both;
+  overflow: hidden;
+  display: block }
+
+form.formtastic fieldset.inputs ol li.boolean input {
+  display: block;
+  float: left;
+  clear: none;
+  margin: 0 5px 0 0 }
+
+form.formtastic fieldset.inputs ol li.boolean label {
+  display: block;
+  float: left;
+  clear: none;
+  margin: 0;
+  padding: 0 }
+
+form.formtastic fieldset.buttons {
+  margin: 0;
+  padding: 0 }
+
+form.fullwidth ol li.string input, form.fullwidth ol li.url input,
+form.fullwidth ol li.text textarea, form.fullwidth ol li.numeric input {
+  width: 500px !important }
+
+body #content_message {
+  margin: 10px 15px;
+  font-style: italic;
+  color: #b4b4bc }
+
+body p#colophon {
+  margin: 0 15px 40px 15px;
+  padding: 10px 0;
+  font-size: .8em;
+  border-top: 1px solid #ddd;
+  color: #b4b4bc;
+  font-style: italic }
+
+body p#colophon a {
+  text-decoration: none;
+  color: #547f00 }
+
+body ul#resources {
+  font-size: .9em }
+
+body ul#resources li.resource {
+  border-bottom: 1px solid #eee }
+
+body ul#resources li.resource:last-child {
+  border-bottom: none }
+
+body ul#resources li.resource div.heading {
+  float: none;
+  clear: both;
+  overflow: hidden;
+  display: block }
+
+body ul#resources li.resource div.heading h2 {
+  color: #b4b4bc;
+  padding-left: 0;
+  display: block;
+  clear: none;
+  float: left }
+
+body ul#resources li.resource div.heading h2 a {
+  color: #7b8da2;
+  font-weight: bold }
+
+body ul#resources li.resource div.heading h2 a:hover,
+body ul#resources li.resource:hover div.heading h2 a,
+body ul#resources li.resource.active div.heading h2,
+body ul#resources li.resource.active div.heading h2 a {
+  color: #000 }
+
+body ul#resources li.resource div.heading ul.options {
+  overflow: hidden;
+  padding: 0;
+  display: block;
+  clear: none;
+  float: right;
+  margin: 14px 10px 0 0 }
+
+body ul#resources li.resource div.heading ul.options li,
+body ul#resources li.resource div.heading ul.options li a {
+  color: #666;
+  font-size: .9em }
+
+body ul#resources li.resource:hover div.heading ul.options li a,
+body ul#resources li.resource.active div.heading ul.options li a {
+  color: #06bbe5 }
+
+body ul#resources li.resource:hover div.heading ul.options li a:hover {
+  color: #006ab1 }
+
+body ul#resources li.resource.active div.heading li a {
+  color: #06bbe5 }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation {
+  float: none;
+  clear: both;
+  overflow: hidden;
+  display: block;
+  margin: 0 0 10px;
+  padding: 0 }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading {
+  float: none;
+  clear: both;
+  overflow: hidden;
+  display: block;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+  border: 1px solid #eee }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading h3 {
+  display: block;
+  clear: none;
+  float: left;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  line-height: 1.1em;
+  color: #000 }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading h3 span {
+  margin: 0;
+  padding: 0 }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading h3 span.http_method a {
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #fff;
+  display: inline-block;
+  width: 50px;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: .7em;
+  text-align: center;
+  padding: 7px 0 4px 0;
+  border-radius: 0 2px 2px 0 }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading h3 span.http_method a,
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.content div.sandbox_header input.submit {
+  background-color: #0080c2 }
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.post div.heading h3 span.http_method a,
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.post div.content div.sandbox_header input.submit {
+  background-color: #0b7574 }
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.put div.heading h3 span.http_method a,
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.put div.content div.sandbox_header input.submit {
+  background-color: #e99400 }
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.patch div.heading h3 span.http_method a,
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.patch div.content div.sandbox_header input.submit {
+  background-color: #8a9b0f }
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.head div.heading h3 span.http_method a,
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.head div.content div.sandbox_header input.submit {
+  background-color: #70338a }
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.delete div.heading h3 span.http_method a,
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.delete div.content div.sandbox_header input.submit {
+  background-color: #d70000 }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading h3 span.path {
+  padding-left: 10px }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading h3 span.path a {
+  color: #7b8da2;
+  text-decoration: none }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading:hover span.http_method a {
+  background-color: #333!important;
+  transition: none }
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading:hover h3 span.path a,
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading:hover ul.options li a {
+  color: #000 !important;
+  transition: none }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading ul.options {
+  overflow: hidden;
+  padding: 0;
+  display: block;
+  clear: none;
+  float: right;
+  margin: 6px 10px 0 0 }
+
+body ul#resources li.resource div.heading ul.options li,
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading ul.options li {
+  float: left;
+  clear: none;
+  margin: 0;
+  padding: 2px 10px }
+
+body ul#resources li.resource div.heading ul.options li.first-child,
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading ul.options li.first-child {
+  padding-left: 0 }
+
+body ul#resources li.resource div.heading ul.options li.last-child,
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading ul.options li.last-child {
+  padding-right: 0;
+  border-right: none }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading ul.options li,
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.heading ul.options li a {
+  border: none;
+  color: #7b8da2;
+  font-size: .9em }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.content {
+  background-color: #f5f5f5;
+  border: 1px solid #eee;
+  border-top: none;
+  padding: 10px;
+  border-radius: 0 0 6px 6px;
+  margin: 0 0 20px }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.content h4 {
+  color: #0080c2;
+  font-size: 1.1em;
+  margin: 0;
+  padding: 15px 0 5px }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.put div.content h4 {
+  color: #e99400 }
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.post div.content h4 {
+  color: #0b7574 }
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.patch div.content h4 {
+  color: #8A9B0F }
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.head div.content h4 {
+  color: #70338a }
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.delete div.content h4 {
+  color: #bd1550 }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.content form input[type='text'].error {
+  border: 1px solid #e40046 }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.content div.sandbox_header {
+  float: none;
+  clear: both;
+  overflow: hidden;
+  display: block }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.content div.sandbox_header input.submit {
+  border: none 0;
+  display: block;
+  clear: none;
+  color: #fff;
+  float: left }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.content div.sandbox_header input.submit:hover { box-shadow: 0 -3px 0 rgba(0,0,0,0.2) inset, 0 20px 20px rgba(255,255,255,0.2) inset }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.content div.sandbox_header img {
+  display: block;
+  clear: none;
+  float: right }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.content div.sandbox_header a {
+  padding: 4px 0 0 10px;
+  display: inline-block;
+  font-size: .9em }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation div.content div.response div.block pre {
+  font-size: .9em;
+  max-height: 400px;
+  overflow-y: auto }
+
+body ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.head div.content div.response div.block {
+  background-color: #f0f0f0;
+  border: 1px solid #fafafa }
+
+.model-signature {
+  font-size: 1em;
+  line-height: 1.5em }
+
+.model-signature .description div {
+  font-size: .9em;
+  line-height: 1.5em;
+  margin-left: 1em }
+
+.model-signature .description .strong,
+.model-signature .description .stronger {
+  font-weight: bold;
+  color: #000;
+  font-size: .9em }
+
+.model-signature .description .stronger {
+  font-size: inherit; }
+
+.model-signature pre {
+  font-size: .85em;
+  line-height: 1.2em;
+  overflow: auto;
+  max-height: 200px }
+
+.model-signature .snippet small {
+  color: #06bbe5;
+  cursor: pointer;
+  font-size: .75em }
+
+.model-signature .signature-container {
+  clear: both }
+
+.model-signature .signature-nav a:hover,
+.model-signature .signature-nav .selected {
+  color: #000 }
+
+ .model-signature .signature-nav .selected {
+  text-decoration: none }
+
+.model-signature ul.signature-nav {
+  display: block;
+  margin: 0;
+  padding: 0 }
+
+.model-signature ul.signature-nav li {
+  float: left;
+  margin: 0 5px 5px 0;
+  padding: 2px 5px 2px 0;
+  border-right: 1px solid #ddd }
+
+.model-signature ul.signature-nav li:last-child {
+  padding-right: 0;
+  border-right: none }
+
+.model-signature .propName {
+  font-weight: bold }
+.model-signature .propType {
+  color: #55a }
+.model-signature .propOptKey {
+  font-style: italic }
+.model-signature .propOpt {
+  color: #555 }
+
+.content pre {
+  font-size: 12px;
+  margin-top: 5px }
+
+.content > .content-type > div > label {
+  clear: both;
+  display: block;
+  color: #0080c2;
+  font-size: 1.1em;
+  margin: 0;
+  padding: 15px 0 5px }
+
+.icon-btn {
+  cursor: pointer }
+
+.container .footer {
+  display: none }
+
+/* Container */
+.swagger-ui-wrap {
+  background-color: #fff;
+  border-bottom: 3px solid #d3e0eb;
+  margin: .3em auto 2.5em;
+  max-width: 960px;
+  padding: 1em 1.5em }
+
+/* Messages on top of container */
+#message-bar {
+  min-height: 30px;
+  background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
+  border: medium none;
+  margin: 0 auto;
+  padding: .5em 1.5em;
+  text-align: center }
+
+.message-success {
+  color: #89bf04 }
+
+.message-fail {
+  color: #c00 }
+
+/* Header */
+header[role="banner"]{
+  background-color: #1b5983;
+  color: #fff;
+  font-family: sans-serif;
+  vertical-align: middle }
+
+header span {
+  margin-right: .15em }
+
+header h1 {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 1.5em;
+  display: inline-block;
+  letter-spacing: .03em;
+  margin: 0;
+  padding: .4em 1em;
+  color: #fff }
+
+header .slash {
+  color: #ffde00 }
+
+header .slash,
+header .doctitle {
+  font-weight: 100 }
+
+header > nav {
+  float: right;
+  font-size: .8em;
+  margin: 0 1.5em }
+
+header a,
+header a:visited {
+  color: rgba(255, 255, 255, 0.4);
+  display: inline-block;
+  margin: 0 .1em;
+  padding: 1.3em .4em .2em }
+
+header a:hover {
+  color: #06bbe5 }
+
+/* Footer */
+footer {
+  background-color: #3670b9;
+  box-shadow: 0 6px 5px rgba(0, 0, 0, 0.2) inset;
+  clear: both;
+  color: #f1f2f3;
+  font: 12px 'Lucida Grande', Lucida, Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 10px 0;
+  text-align: center }
+
+footer nav {
+  margin: 0 auto 10px;
+  max-width: 1000px }
+
+footer nav ul {
+  float: left;
+  list-style: none outside none;
+  margin: 0;
+  padding: 5px 20px;
+  text-align: left }
+
+footer nav li {
+  line-height: 150%;
+  list-style: none outside none;
+  margin: 0 0 0 25px;
+  padding: 0 0 2px;
+  text-align: left }
+
+footer h6 {
+  color: #f1f2f3;
+  font-size: 12px;
+  margin: 0;
+  padding: 16px 0 8px;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5) }
+
+footer ul ul {
+  list-style: none outside none;
+  margin: 5px 0;
+  padding: 0 }
+
+footer ul li ul li {
+  list-style-type: disc;
+  text-transform: none }
+
+footer a:link,
+footer a:visited,
+footer a:active,
+footer a.PagerLink {
+  color: #f1f2f3;
+  font-size: 11px;
+  text-decoration: none }
+
+footer a:hover {
+  color: #fff }
+
+/* Helpers */
+.clearfix {
+  clear: both }
+
+.required {
+  font-weight: bold }
