@@ -160,7 +160,7 @@ public class CoreFeature extends SimpleFeature {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
         }
-        CoreSession session = repository.getSession();
+        CoreSession session = repository.createSession();
         try {
             // remove everything except root
             session.removeChildren(new PathRef("/"));
