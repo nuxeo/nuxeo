@@ -849,7 +849,7 @@ public class ConnectionHelper {
      * @throws ResourceException
      */
     public static Connection getConnection(String dataSourceName)
-            throws SQLException, ResourceException {
+            throws SQLException {
         return getConnection(dataSourceName, false);
     }
 
@@ -873,7 +873,7 @@ public class ConnectionHelper {
      * @throws ResourceException
      */
     public static Connection getConnection(String dataSourceName,
-            boolean noSharing) throws SQLException, ResourceException {
+            boolean noSharing) throws SQLException {
         if (!useSingleConnection(dataSourceName)) {
             DataSource ds = getDataSource(dataSourceName);
             if (ds instanceof PooledDataSource) {
