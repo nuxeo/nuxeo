@@ -44,7 +44,7 @@ public class PooledDataSourceFactory implements
         }
 
         @Override
-        public Connection getConnection(boolean noSharing) throws ResourceException, SQLException {
+        public Connection getConnection(boolean noSharing) throws SQLException {
             if (!noSharing) {
                 return getConnection();
             }
@@ -77,19 +77,22 @@ public class PooledDataSourceFactory implements
     protected ManagedConnectionFactory createFactory(Reference ref, Context ctx)
             throws NamingException, InvalidPropertyException {
         String className = ref.getClassName();
+        String user = refAttribute(ref, "user", "");
+        String password = refAttribute(ref, "password", "");
         if (XADataSource.class.getName().equals(className)) {
             String name = refAttribute(ref, "dataSourceJNDI", null);
             XADataSource ds = (XADataSource) new InitialContext().lookup(name);
-            return new XADataSourceWrapper(ds);
+            XADataSourceWrapper wrapper = new XADataSourceWrapper(ds);
+            wrapper.setUserName(user);
+            wrapper.setPassword(password);
+            return wrapper;
         }
         if (javax.sql.DataSource.class.getName().equals(className)) {
             String name = refAttribute(ref, "driverClassName", null);
             String url = refAttribute(ref, "url", null);
-            String username = refAttribute(ref, "username", "");
-            String password = refAttribute(ref, "password", "");
             JDBCDriverMCF factory = new JDBCDriverMCF();
             factory.setDriver(name);
-            factory.setUserName(username);
+            factory.setUserName(user);
             factory.setPassword(password);
             factory.setConnectionURL(url);
             return factory;

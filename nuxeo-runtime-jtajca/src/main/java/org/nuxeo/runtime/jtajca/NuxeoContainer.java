@@ -911,11 +911,11 @@ public class NuxeoContainer {
             return cm.getPooling();
         }
 
-        public void enterNoSharing() throws ResourceException {
+        public void enterNoSharing()  {
             coordinator.contextHolder.get().unshareable = true;
         }
 
-        public void exitNoSharing() throws ResourceException {
+        public void exitNoSharing()  {
             coordinator.contextHolder.get().unshareable = false;
         }
     }

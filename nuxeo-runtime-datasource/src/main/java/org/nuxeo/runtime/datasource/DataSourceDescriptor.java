@@ -39,6 +39,8 @@ import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.h2.XADatasourceFactory;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
  * The descriptor for a Nuxeo-defined datasource.
@@ -143,7 +145,15 @@ public class DataSourceDescriptor {
                     + " should have xaDataSource or driverClassName attribute");
         }
 
-        poolReference.add(new StringRefAddr("name", name));
+        NamedNodeMap attrs = element.getAttributes();
+        for (int i = 0; i < attrs.getLength(); i++) {
+            Node attr = attrs.item(i);
+            String attrName = attr.getNodeName();
+            String value = Framework.expandVars(attr.getNodeValue());
+            StringRefAddr addr = new StringRefAddr(attrName, value);
+            poolReference.add(addr);
+        }
+
         initialContext.bind(DataSourceHelper.getDataSourceJNDIName(name), poolReference);
     }
 
