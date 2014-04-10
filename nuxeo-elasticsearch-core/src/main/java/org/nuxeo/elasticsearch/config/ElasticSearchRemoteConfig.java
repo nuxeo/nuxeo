@@ -50,10 +50,10 @@ public class ElasticSearchRemoteConfig implements Serializable {
     protected String clientTransportNodesSamplerInterval = "5s";
 
     @XNode("@indexNumberOfShards")
-    private final String numberOfShards = "1";
+    protected String numberOfShards = "1";
 
     @XNode("@indexNumberOfReplicas")
-    private final String numberOfReplicas = "0";
+    protected String numberOfReplicas = "0";
 
     public String getClusterName() {
         return clusterName;

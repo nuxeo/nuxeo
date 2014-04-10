@@ -48,8 +48,8 @@ public class ElasticSearchLocalConfig implements Serializable {
     @XNode("@indexStoreType")
     protected String indexStoreType;
 
-    @XNode("@nodeEnableHttp")
-    protected boolean enableHttp = false;
+    @XNode("@httpEnabled")
+    protected boolean httpEnabled = false;
 
     public String getDataPath() {
         if (dataPath == null) {
@@ -96,12 +96,12 @@ public class ElasticSearchLocalConfig implements Serializable {
         this.indexStoreType = indexStorageType;
     }
 
-    public boolean enableHttp() {
-        return enableHttp;
+    public boolean httpEnabled() {
+        return httpEnabled;
     }
 
-    public void enableHttp(boolean enableHttp) {
-        this.enableHttp = enableHttp;
+    public void setHttpEnabled(boolean httpEnabled) {
+        this.httpEnabled = httpEnabled;
     }
 
     public String getClusterName() {

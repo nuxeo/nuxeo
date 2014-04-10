@@ -25,7 +25,7 @@
           pathData="/var/lib/nuxeo/elasticsearch/"
           pathLogs="/var/log/nuxeo-elasticsearch.log"
           indexStoreType="mmapfs"
-          nodeEnableHttp="true"
+          httpEnabled="true"
         />
      </code>
 
@@ -41,7 +41,7 @@
 
      indexStoreType is the index.store_type
 
-     nodeEnableHttp is the node.enable_http
+     httpEnabled is the node.enable_http
 
     </documentation>
 

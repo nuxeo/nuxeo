@@ -182,7 +182,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 && remoteConfig == null) {
             // automatically generate a test config
             localConfig = new ElasticSearchLocalConfig();
-            localConfig.enableHttp(true);
+            localConfig.setHttpEnabled(true);
             localConfig.setIndexStorageType("memory");
             localConfig.setNodeName("nuxeoTestNode");
             // use something random so we don't join an existing cluster
@@ -370,7 +370,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (lConf != null) {
                 log.info("Create a local ES node inJVM");
                 Builder sBuilder = ImmutableSettings.settingsBuilder();
-                sBuilder.put("node.http.enabled", lConf.enableHttp())
+                sBuilder.put("http.enabled", lConf.httpEnabled())
                         .put("path.logs", lConf.getLogPath())
                         .put("path.data", lConf.getDataPath())
                         .put("index.number_of_shards", 1)

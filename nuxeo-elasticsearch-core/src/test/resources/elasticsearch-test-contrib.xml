@@ -16,7 +16,7 @@
           pathData="/tmp/elasticsearch"
           pathLogs="/tmp/elastcisearch-log"
           indexStoreType="mmapfs"
-          nodeEnableHttp="true"
+          httpEnabled="true"
         />
   </extension>
 

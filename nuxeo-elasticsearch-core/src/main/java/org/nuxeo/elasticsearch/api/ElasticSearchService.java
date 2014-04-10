@@ -18,8 +18,6 @@
 
 package org.nuxeo.elasticsearch.api;
 
-import java.util.List;
-
 import org.elasticsearch.index.query.QueryBuilder;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
