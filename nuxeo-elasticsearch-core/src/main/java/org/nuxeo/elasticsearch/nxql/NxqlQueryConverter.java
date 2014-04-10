@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -185,11 +186,14 @@ public class NxqlQueryConverter {
 
                 for (int i = 0; i < elements.size(); i++) {
                     String type = elements.get(i);
-                    fromList.addAll(schemaManager.getDocumentTypeNamesExtending(type));
                     if (NXQLQueryMaker.TYPE_DOCUMENT.equalsIgnoreCase(type)) {
                         // From Document means all doc types
                         fromList.clear();
                         return;
+                    }
+                    Set<String> types = schemaManager.getDocumentTypeNamesExtending(type);
+                    if (types != null) {
+                        fromList.addAll(types);
                     }
                 }
             }
@@ -296,6 +300,7 @@ public class NxqlQueryConverter {
                 || "NOT LIKE".equals(op) || "NOT ILIKE".equals(op)) {
             // Note that ILIKE will work only with a correct mapping
             String likeName = name.replace("ecm:fulltext.", "");
+            likeName = likeName.replace(NXQL.ECM_FULLTEXT, "_all");
             String likeValue = ((String) value).replace("%", "*");
             if (StringUtils.countMatches(likeValue, "*") == 1
                     && likeValue.endsWith("*")) {
