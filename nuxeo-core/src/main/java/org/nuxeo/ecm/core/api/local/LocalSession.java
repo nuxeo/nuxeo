@@ -119,11 +119,11 @@ public class LocalSession extends AbstractSession implements Synchronization {
         if (si == null || !si.session.isLive()) {
             // close old one, previously completed
             closeInThisThread();
-            log.debug("Reconnecting CoreSession: " + sessionId);
             if (!TransactionHelper.isTransactionActive()) {
                 throw new ClientRuntimeException(
-                        "No transaction, cannot reconnect: " + sessionId);
+                        "No transaction active, cannot reconnect: " + sessionId);
             }
+            log.debug("Reconnecting CoreSession: " + sessionId);
             si = createSession();
         }
         return si.session;
@@ -146,9 +146,9 @@ public class LocalSession extends AbstractSession implements Synchronization {
             throw new ClientRuntimeException("Failed to load repository "
                     + repositoryName + ": " + e.getMessage(), e);
         }
+        TransactionHelper.registerSynchronization(this);
         SessionInfo si = new SessionInfo(session);
         threadSessions.set(si);
-        TransactionHelper.registerSynchronization(this);
         allSessions.add(si);
         log.debug("Adding thread " + Thread.currentThread().getName()
                 + " for CoreSession: " + sessionId);
