@@ -828,11 +828,11 @@
 
     <unzip from="${bundle.fileName}" to="nxwebplatform.tmp">
       <include>WEB/**</include>
-      <include>tiny_mce/**</include>
+      <include>tinymce/**</include>
     </unzip>
 
     <copy from="nxwebplatform.tmp/WEB/" to="nuxeo.war/WEB-INF/" />
-    <copy from="nxwebplatform.tmp/tiny_mce/" to="nuxeo.war/tiny_mce/" />
+    <copy from="nxwebplatform.tmp/tinymce/" to="nuxeo.war/tinymce/" />
 
     <delete path="nxwebplatform.tmp" />
   </install>
