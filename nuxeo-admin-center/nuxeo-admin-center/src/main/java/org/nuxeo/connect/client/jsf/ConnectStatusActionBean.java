@@ -409,7 +409,7 @@ public class ConnectStatusActionBean implements Serializable {
                 if (!isRegistred()) {
                     connectionStatusCache = ConnectUpdateStatusInfo.unregistered();
                 } else {
-                    if (isConnectServerReachable()) {
+                    if (isConnectBannerEnabled() && isConnectServerReachable()) {
                         if (getStatus().isError()) {
                             connectionStatusCache = ConnectUpdateStatusInfo.connectServerUnreachable();
                         } else {
