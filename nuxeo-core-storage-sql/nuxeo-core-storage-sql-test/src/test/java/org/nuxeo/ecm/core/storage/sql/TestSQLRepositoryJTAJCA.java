@@ -29,13 +29,13 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.local.LocalException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -239,9 +239,8 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         try {
             session.getRootDocument();
             fail("should throw");
-        } catch (ClientRuntimeException e) {
-            assertTrue(e.getMessage(),
-                    e.getMessage().contains(NO_TX_CANNOT_RECONN));
+        } catch (LocalException e) {
+
         }
     }
 
@@ -373,9 +372,8 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         try {
             closedSession.getRootDocument();
             fail("should throw");
-        } catch (ClientRuntimeException e) {
-            assertTrue(e.getMessage(),
-                    e.getMessage().contains(NO_TX_CANNOT_RECONN));
+        } catch (LocalException e) {
+
         }
     }
 
@@ -444,7 +442,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         t.join();
         Exception e = threadException[0];
         assertNotNull(e);
-        assertTrue(e.getMessage(), e.getMessage().contains(NO_TX_CANNOT_RECONN));
+        assertTrue(e.getMessage(), e instanceof LocalException);
     }
 
     @Test

@@ -20,12 +20,14 @@ import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -45,21 +47,26 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
 
     public volatile Exception threadException;
 
-    private NuxeoConnectionManagerConfiguration cmconfig;
+    private RepositoryDescriptor desc;
 
     private ConnectionManagerWrapper cm;
 
     @Override
-    protected void setUpContainer() throws Exception {
-        cmconfig = new NuxeoConnectionManagerConfiguration();
-        cmconfig.setName("NuxeoConnectionManager/"+database.repositoryName);
-        cmconfig.setMinPoolSize(MIN_POOL_SIZE);
-        cmconfig.setMaxPoolSize(MAX_POOL_SIZE);
-        cmconfig.setBlockingTimeoutMillis(BLOCKING_TIMEOUT);
-        NuxeoContainer.install();
-        NuxeoContainer.installConnectionManager(cmconfig);
-        cm = (ConnectionManagerWrapper) NuxeoContainer.getConnectionManager(cmconfig.getName());
+    protected void deployRepositoryContrib() throws Exception {
+        super.deployRepositoryContrib();
+        desc = Framework.getLocalService(SQLRepositoryService.class).getRepositoryDescriptor(
+                database.repositoryName);
+        desc.pool.setMinPoolSize(MIN_POOL_SIZE);
+        desc.pool.setMaxPoolSize(MAX_POOL_SIZE);
+        desc.pool.setBlockingTimeoutMillis(BLOCKING_TIMEOUT);
     }
+
+    @Before
+    public void lookupCM() {
+        cm = (ConnectionManagerWrapper) NuxeoContainer.getConnectionManager(desc.pool.getName());
+        assertNotNull("no pooling", cm);
+    }
+
 
     @Test
     public void testOpenAllConnections() throws Exception {
@@ -198,8 +205,18 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
     }
 
     @Test
-    public void doesntLeakWithoutTx() throws ClientException {
+    public void doesntLeakWithTx() throws ClientException {
         checkSessionLeak();
+    }
+
+    @Test
+    public void doesntLeakWithoutTx() throws ClientException {
+        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            checkSessionLeak();
+        } finally {
+            TransactionHelper.startTransaction();
+        }
     }
 
     protected void checkSessionLeak() throws ClientException {
@@ -211,25 +228,17 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
         assertEquals(count, threadAllocatedConnectionsCount());
     }
 
-    @Test
-    public void doesntLeakWithTx() throws ClientException {
-        TransactionHelper.startTransaction();
-        try {
-            checkSessionLeak();
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-    }
+
 
     @Test
-    public void doesntRelease() throws ClientException {
+    public void doesntReleaseBeforeCommit() throws ClientException {
         TransactionHelper.commitOrRollbackTransaction();
         assertEquals(0, activeConnectionCount());
         assertEquals(0, threadAllocatedConnectionsCount());
         closeSession();
         TransactionHelper.startTransaction();
         try {
-            try (CoreSession first = openSessionAs("jdoe")){
+            try (CoreSession first = openSessionAs("jdoe")) {
                 assertEquals(1, threadAllocatedConnectionsCount());
                 assertEquals(1, activeConnectionCount());
                 try (CoreSession second = openSessionAs("jdoe")) {
@@ -251,6 +260,7 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
     }
 
     protected int activeConnectionCount() {
-        return cm.getPooling().getConnectionCount() - cm.getPooling().getIdleConnectionCount();
+        return cm.getPooling().getConnectionCount()
+                - cm.getPooling().getIdleConnectionCount();
     }
 }

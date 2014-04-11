@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.common.Environment;
+import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -44,16 +45,9 @@ public abstract class TXSQLRepositoryTestCase extends SQLRepositoryTestCase {
      */
     @Override
     protected void deployRepositoryContrib() throws Exception {
+        DatabaseHelper.setRepositoryFactory(PoolingRepositoryFactory.class);
+        super.deployRepositoryContrib();
         setUpContainer();
-        if (database instanceof DatabaseH2) {
-            String contrib = "OSGI-INF/test-pooling-h2-contrib.xml";
-            deployContrib("org.nuxeo.ecm.core.storage.sql.test", contrib);
-        } else if (database instanceof DatabasePostgreSQL) {
-            String contrib = "OSGI-INF/test-pooling-postgres-contrib.xml";
-            deployContrib("org.nuxeo.ecm.core.storage.sql.test", contrib);
-        } else {
-            super.deployRepositoryContrib();
-        }
     }
 
     protected boolean hasPoolingConfig() {
