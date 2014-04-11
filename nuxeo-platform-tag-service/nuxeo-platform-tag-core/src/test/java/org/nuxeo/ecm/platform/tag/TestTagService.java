@@ -128,7 +128,7 @@ public class TestTagService {
         tags = tagService.getDocumentTags(session, file2Id, "bob");
         assertTrue(tags.isEmpty());
 
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        maybeSleep();
 
         // find docs for tag
         List<String> docIds;
@@ -148,7 +148,7 @@ public class TestTagService {
         docIds = tagService.getTagDocumentIds(session, "othertag", "bob");
         assertTrue(docIds.isEmpty());
 
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        maybeSleep();
 
         // global cloud
         List<Tag> cloud = tagService.getTagCloud(session, null, null, null);
@@ -190,7 +190,7 @@ public class TestTagService {
         suggestions = tagService.getSuggestions(session, "%tag", null);
         assertEquals(twotags, labels(suggestions));
 
-        DatabaseHelper.DATABASE.sleepForFulltext();
+        maybeSleep();
 
         // ws loader
 
