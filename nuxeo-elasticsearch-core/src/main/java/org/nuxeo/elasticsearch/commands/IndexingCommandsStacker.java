@@ -70,7 +70,9 @@ public abstract class IndexingCommandsStacker {
     }
 
     protected void stackCommand(DocumentModel doc, String eventId, boolean sync) {
-
+        if (doc == null) {
+            return;
+        }
         IndexingCommands cmds = getOrCreateCommands(doc);
 
         if (DOCUMENT_CREATED.equals(eventId)) {

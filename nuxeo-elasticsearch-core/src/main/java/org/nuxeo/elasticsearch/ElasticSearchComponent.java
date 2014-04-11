@@ -252,16 +252,20 @@ public class ElasticSearchComponent extends DefaultComponent implements
             return;
         }
 
-        log.debug("Sending indexing request to ElasticSearch " + cmd.toString());
         DocumentModel doc = cmd.getTargetDocument();
+        if (doc == null) {
+            return;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Sending indexing request to ElasticSearch " + cmd.toString());
+        }
         if (IndexingCommand.DELETE.equals(cmd.getName())) {
             DeleteRequestBuilder request = getClient().prepareDelete(
                     getDocIndex(), DOC_TYPE, doc.getId());
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                                getDocIndex(), DOC_TYPE, cmd
-                                        .getTargetDocument().getId(), request
+                                getDocIndex(), DOC_TYPE, doc.getId(), request
                                         .request().toString()));
             }
             request.execute().actionGet();
@@ -285,8 +289,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                                getDocIndex(), DOC_TYPE, cmd
-                                        .getTargetDocument().getId(), request
+                                getDocIndex(), DOC_TYPE, doc.getId(), request
                                         .request().toString()));
             }
             request.execute().actionGet();
@@ -329,6 +332,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public void scheduleIndexing(IndexingCommand cmd) throws ClientException {
         DocumentModel doc = cmd.getTargetDocument();
+        if (doc == null) {
+            return;
+        }
         boolean added = pendingCommands.addIfAbsent(cmd.getId());
         if (!added) {
             log.debug("Skip indexing for " + doc
@@ -344,10 +350,14 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
 
         if (cmd.isSync()) {
-            log.debug("Schedule PostCommit indexing request " + cmd.toString());
+            if (log.isDebugEnabled()) {
+                log.debug("Schedule PostCommit indexing request " + cmd.toString());
+            }
             schedulePostCommitIndexing(cmd);
         } else {
-            log.debug("Schedule Async indexing request  " + cmd.toString());
+            if (log.isDebugEnabled()) {
+                log.debug("Schedule Async indexing request  " + cmd.toString());
+            }
             WorkManager wm = Framework.getLocalService(WorkManager.class);
             IndexingWorker idxWork = new IndexingWorker(cmd);
             wm.schedule(idxWork, true);
