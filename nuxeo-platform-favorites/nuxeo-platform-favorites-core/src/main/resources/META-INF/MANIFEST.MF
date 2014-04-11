@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-Name: Nuxeo ECM Favorites
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/favorites-core-types-contrib.xml,
+ OSGI-INF/favorites-service.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform.favorites.core;singleton:=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
