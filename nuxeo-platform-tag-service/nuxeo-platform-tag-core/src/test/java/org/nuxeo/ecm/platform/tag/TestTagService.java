@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
+import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -77,7 +78,8 @@ public class TestTagService {
     // Oracle fails if we do too many connections in a short time, sleep
     // here to prevent this.
     public void maybeSleep() throws Exception {
-        if (DatabaseHelper.DATABASE instanceof DatabaseOracle) {
+        if (DatabaseHelper.DATABASE instanceof DatabaseOracle ||
+                DatabaseHelper.DATABASE instanceof DatabaseSQLServer) {
             Thread.sleep(5 * 1000);
         }
     }
