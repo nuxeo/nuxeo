@@ -6,7 +6,7 @@ ESPORT=${ESPORT:-9200}
 # number of concurrent importer
 CONCURRENCY=${J:-4}
 
-ESINDEX=${ESINDEX:-nxmain}
+ESINDEX=${ESINDEX:-nuxeo}
 ESTYPE=${ESTYPE:-doc}
 
 

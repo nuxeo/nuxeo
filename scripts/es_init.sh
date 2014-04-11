@@ -3,7 +3,7 @@
 # Configure ES
 ESHOST=${ESHOST:-localhost}
 ESPORT=${ESPORT:-9200}
-ESINDEX=${ESINDEX:-nxmain}
+ESINDEX=${ESINDEX:-nuxeo}
 # Single shard = single lucene index, easier to debug using luke, not for production
 ESSHARDS=${ESSHARDS:-1}
 ESREPLICAS=${ESREPLICAS:-0}

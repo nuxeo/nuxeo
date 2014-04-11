@@ -7,7 +7,7 @@ NXUSER=${NXUSER:-Administrator}
 NXPASSWORD=${NXPASSWORD:-Administrator}
 NXURL=${NXURL:-http://localhost:8080/nuxeo}
 
-ESINDEX=${ESINDEX:-nxmain}
+ESINDEX=${ESINDEX:-nuxeo}
 ESTYPE=${ESTYPE:-doc}
 TMPDIR=/tmp/dump-$ESINDEX-$ESTYPE
 
