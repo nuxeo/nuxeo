@@ -131,6 +131,11 @@ public interface CoreSession extends AutoCloseable {
             throws ClientException;
 
     /**
+     * Returns true if the session is currently connected to the repository.
+     */
+    boolean isLive(boolean onThread);
+
+    /**
      * Cancels any pending change made through this session.
      *
      * @throws ClientException

@@ -119,9 +119,6 @@ public class CoreFeature extends SimpleFeature {
                             + "the test leaked %s session(s).",
                     Integer.valueOf(finalOpenSessions),
                     Integer.valueOf(leakedOpenSessions)));
-            for (CoreInstance.RegistrationInfo info : core.getRegistrationInfos()) {
-                log.warn("Leaking session", info);
-            }
         }
     }
 
@@ -163,7 +160,7 @@ public class CoreFeature extends SimpleFeature {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
         }
-        CoreSession session = repository.createSession();
+        CoreSession session = repository.getSession();
         try {
             // remove everything except root
             session.removeChildren(new PathRef("/"));
@@ -176,6 +173,7 @@ public class CoreFeature extends SimpleFeature {
         }
         repository.releaseSession();
         cleaned = true;
+        CoreInstance.getInstance().cleanupThisThread();
     }
 
     protected void initializeSession(FeaturesRunner runner) throws Exception {

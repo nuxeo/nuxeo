@@ -29,6 +29,9 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+
 /**
  * The CoreInstance is the main access point to a CoreSession.
  */
@@ -46,6 +49,7 @@ public class CoreInstance {
                     + session.getSessionId() + ")");
             this.session = session;
         }
+
     }
 
     /**
@@ -285,4 +289,25 @@ public class CoreInstance {
         return sessions.values();
     }
 
+    public Collection<RegistrationInfo> getRegistrationInfosLive(final boolean onThread) {
+        return Collections2.filter(sessions.values(), new Predicate<RegistrationInfo>() {
+
+            @Override
+            public boolean apply(RegistrationInfo input) {
+                return input.session.isLive(onThread);
+            }
+
+        });
+    }
+
+    public void cleanupThisThread() throws ClientException {
+        ClientException errors = new ClientException("disconnecting from storage for you");
+        for (RegistrationInfo each:CoreInstance.getInstance().getRegistrationInfosLive(true)) {
+            each.session.destroy();
+            errors.addSuppressed(each);
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
+    }
 }

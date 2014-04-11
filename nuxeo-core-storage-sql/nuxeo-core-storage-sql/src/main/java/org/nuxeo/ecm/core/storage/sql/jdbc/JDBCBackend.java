@@ -91,7 +91,7 @@ public class JDBCBackend implements RepositoryBackend {
                 connection.close();
                 return;
             }
-        } catch (SQLException | ResourceException cause) {
+        } catch (SQLException cause) {
             throw new StorageException("Cannot close connection", cause);
         }
 

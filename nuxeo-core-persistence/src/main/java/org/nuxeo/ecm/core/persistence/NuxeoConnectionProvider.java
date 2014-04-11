@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.naming.NamingException;
-import javax.resource.ResourceException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -69,12 +68,7 @@ public class NuxeoConnectionProvider implements ConnectionProvider {
     @Override
     public Connection getConnection() throws SQLException {
         // try single-datasource non-XA mode
-        Connection connection;
-        try {
-            connection = ConnectionHelper.getConnection(dataSourceName);
-        } catch (ResourceException cause) {
-           throw new SQLException("Cannot get connection from " + dataSourceName, cause);
-        }
+        Connection connection = ConnectionHelper.getConnection(dataSourceName);
         if (connection == null) {
             // standard datasource usage
             connection = dscp.getConnection();

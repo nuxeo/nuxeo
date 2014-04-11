@@ -18,6 +18,9 @@ package org.nuxeo.ecm.core.work;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.work.api.Work;
 
 /**

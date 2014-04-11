@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -54,23 +53,10 @@ public class LocalSession extends AbstractSession implements Synchronization {
     /** Defined once at connect time. */
     private String sessionId;
 
-    public static final class SessionInfo {
-        private final Session session;
-
-        private Exception openException;
-
-        public SessionInfo(Session session) {
-            this.session = session;
-            openException = new Exception("Open stack trace for "
-                    + session.getSessionId() + " in thread "
-                    + Thread.currentThread().getName());
-        }
-    }
-
     /**
-     * Thread-local sessions allocated.
+     * Thread-local session allocated.
      */
-    private final ThreadLocal<SessionInfo> threadSessions = new ThreadLocal<SessionInfo>();
+    private final ThreadLocal<SessionInfo> sessionHolder = new ThreadLocal<SessionInfo>();
 
     /**
      * All sessions allocated in all threads, in order to detect close leaks.
@@ -90,7 +76,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
     public void connect(String repositoryName, NuxeoPrincipal principal)
             throws ClientException {
         if (sessionId != null) {
-            throw new ClientException("CoreSession already connected");
+            throw new LocalException("CoreSession already connected");
         }
         this.repositoryName = repositoryName;
         this.principal = principal;
@@ -115,12 +101,12 @@ public class LocalSession extends AbstractSession implements Synchronization {
 
     @Override
     public Session getSession() {
-        SessionInfo si = threadSessions.get();
+        SessionInfo si = sessionHolder.get();
         if (si == null || !si.session.isLive()) {
             // close old one, previously completed
             closeInThisThread();
             if (!TransactionHelper.isTransactionActive()) {
-                throw new ClientRuntimeException(
+                throw new LocalException(
                         "No transaction active, cannot reconnect: " + sessionId);
             }
             log.debug("Reconnecting CoreSession: " + sessionId);
@@ -136,23 +122,31 @@ public class LocalSession extends AbstractSession implements Synchronization {
         RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
         Repository repository = repositoryService.getRepository(repositoryName);
         if (repository == null) {
-            throw new ClientRuntimeException("No such repository: "
+            throw new LocalException("No such repository: "
                     + repositoryName);
         }
         Session session;
         try {
             session = repository.getSession(sessionId);
         } catch (DocumentException e) {
-            throw new ClientRuntimeException("Failed to load repository "
+            throw new LocalException("Failed to load repository "
                     + repositoryName + ": " + e.getMessage(), e);
         }
         TransactionHelper.registerSynchronization(this);
         SessionInfo si = new SessionInfo(session);
-        threadSessions.set(si);
+        sessionHolder.set(si);
         allSessions.add(si);
         log.debug("Adding thread " + Thread.currentThread().getName()
                 + " for CoreSession: " + sessionId);
         return si;
+    }
+
+    @Override
+    public boolean isLive(boolean onThread) {
+        if (!onThread) {
+            return !allSessions.isEmpty();
+        }
+        return sessionHolder.get() != null;
     }
 
     @Override
@@ -171,12 +165,12 @@ public class LocalSession extends AbstractSession implements Synchronization {
     }
 
     protected void closeInThisThread() {
-        SessionInfo si = threadSessions.get();
+        SessionInfo si = sessionHolder.get();
         if (si == null) {
             return;
         }
         si.session.close();
-        threadSessions.remove();
+        sessionHolder.remove();
         allSessions.remove(si);
         log.debug("Removing thread " + Thread.currentThread().getName()
           + " for CoreSession: " + sessionId);
