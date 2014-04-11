@@ -520,7 +520,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 log.debug("Response: " + response.toString());
             }
             // Get the list of ids
-            ids = new ArrayList<String>(limit - offset);
+            ids = new ArrayList<String>(limit);
             for (SearchHit hit : response.getHits()) {
                 ids.add(hit.getId());
             }
