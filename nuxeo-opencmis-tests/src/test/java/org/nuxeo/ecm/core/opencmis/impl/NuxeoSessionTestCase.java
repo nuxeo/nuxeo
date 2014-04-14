@@ -404,7 +404,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     public void testContentStream() throws Exception {
         Document file = (Document) session.getObjectByPath("/testfolder1/testfile1");
 
-        // check Cache Response Headers
+        // check Cache Response Headers (eTag and Last-Modified)
         if (isAtomPub || isBrowser) {
             RepositoryInfo ri = session.getRepositoryInfo();
             String uri = ri.getThinClientUri() + ri.getId() + "/";
