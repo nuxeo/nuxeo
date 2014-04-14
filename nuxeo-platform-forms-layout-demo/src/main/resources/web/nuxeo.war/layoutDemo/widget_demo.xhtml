@@ -29,14 +29,18 @@ Needed parameters:
       </thead>
       <tbody>
         <tr>
+          <td colspan="2">
+            <span class="processMessage completeInfo">
+              Fill the form and click on 'Submit' to display the widget
+              rendering in view mode.
+            </span>
+          </td>
+        </tr>
+        <tr>
           <td width="50%" valign="top">
             <c:if test="#{useMultipartForm}">
               <h:form id="#{demoLayout.name}_edit_form"
                 enctype="multipart/form-data">
-                <span class="infoMessage">
-                  Fill the form and click on 'Submit' to display the widget
-                  rendering in view mode.
-                </span>
                 <nxl:layout value="#{layoutDemoDocument}"
                   mode="edit"
                   name="#{demoLayout.name}" />
@@ -52,10 +56,6 @@ Needed parameters:
               <a4j:form id="#{demoLayout.name}_edit_form"
                 ajaxSubmit="true"
                 onsubmit="removeAllTinyMCEEditors(); return true;">
-                <span class="infoMessage">
-                  Fill the form and click on 'Submit' to display the widget
-                  rendering in view mode.
-                </span>
                 <nxl:layout value="#{layoutDemoDocument}"
                   mode="edit"
                   name="#{demoLayout.name}" />

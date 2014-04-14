@@ -36,7 +36,10 @@ public final class LayoutDemoTheme implements Scheme {
         if (servletPath != null
                 && servletPath.startsWith("/"
                         + LayoutDemoManager.APPLICATION_PATH)) {
-            return "galaxy/popup";
+            if (servletPath.contains("preview")) {
+                return "layoutDemo/frame";
+            }
+            return "layoutDemo/default";
         }
         final Map<String, Object> requestMap = eContext.getRequestMap();
         return (String) requestMap.get("org.nuxeo.theme.default.theme");

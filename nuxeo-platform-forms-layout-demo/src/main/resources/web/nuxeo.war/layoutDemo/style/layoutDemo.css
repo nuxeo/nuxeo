@@ -2,15 +2,6 @@
   Layout demo specific CSS
 **/
 
-/* Remove default padding from Nuxeo Galaxy Theme */
-.themeCellFrame {
-  border: none;
-}
-
-.themeRegion {
-  padding: 0px;
-}
-
 .layoutDemoPage {
   border-spacing: 0;
   border-collapse: collapse;
@@ -23,26 +14,22 @@
 }
 
 /* HEADER */
-div.header {
-  background: url(/nuxeo/layoutDemo/img/header_nuxeo.png) no-repeat scroll
-    right bottom #000;
-  border-bottom: 1px solid #bbb;
-  text-shadow: 2px 2px 2px #000;
-  /* -moz-box-shadow:  -3px 0px 3px #555555;
-  -webkit-box-shadow:  -3px 0px 3px #555555;
-  box-shadow:  -3px 0px 3px #555555; */
-}
-
 div.nuxeoLogo {
   float: left;
-  padding: 10px 20px !important;
+  line-height: normal;
+  padding: 0 0 0 1em;
+}
+
+.nxHeader .nuxeoLogo>a:link {
+  opacity: 1;
 }
 
 div.nuxeoLogo span {
   color: #fff;
-  font: 18px/1.25em 'Lucida Grande', Verdana, Arial, sans-serif;
+  font: 18px/1.25em Arial, sans-serif;
   padding: 0 30px;
-  vertical-align: top;
+  text-transform: none;
+  vertical-align: super;
 }
 
 div.customButtons {
@@ -52,11 +39,9 @@ div.customButtons {
 
 div.customButtons p {
   color: #dedede;
-  -moz-border-radius: 0 0 5px 5px;
-  -webkit-border-radius: 0 0 5px 5px;
   border-radius: 0 0 5px 5px;
   background-color: #212121;
-  border: 1px solid #333333;
+  border: 1px solid #333;
   color: #153e6b;
   margin-left: 10px;
   padding: 2px 15px 5px;
@@ -103,32 +88,39 @@ ul.layoutDemoMenu li.selected a,ul.layoutDemoMenu li.selected a:hover,ul.layoutD
   font-weight: normal;
   display: block;
   padding: 3px 7px;
-  background: #c0dcf5;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
+  background: #d9eaff;
   border-radius: 3px;
 }
 
 /* MAIN CONTENT */
-div.mainContent {
-  padding: 15px;
+.nxMainContainer .content {
+  padding: 1em;
 }
 
-ul.layoutDemoList, .layoutDemoList li {
+.layoutDemoPage td:nth-child(2) {
+  padding: 0 2em;
+}
+
+.layoutDemoPage td:nth-child(2) td {
+  padding: .5em .6em .5em 0;
+}
+
+div.mainContent {
+  padding: 1em 0;
+}
+
+.layoutDemoPage h3 {
+  color: #46a7de;
+  font-size: 1.4em;
+}
+
+ul.layoutDemoList,.layoutDemoList li {
   list-style-type: circle;
   padding: 1px 1px 1px 15px;
 }
 
-/* FOOTER */
-div.footer {
-  color: #5c5c5c;
-  font: 9px 'Lucida Grande', Verdana, Arial, sans-serif;
-  padding: 5px 15px 5px 5px !important;
-  border-top: 1px solid #dedede;
-  text-align: right;
-}
-
-div.footer a {
-  color: #00a1f5;
-  text-decoration: none;
+.foldableBox pre.prettyprint {
+  border: medium none;
+  font-size: 1.2em;
+  line-height: 110%;
 }
