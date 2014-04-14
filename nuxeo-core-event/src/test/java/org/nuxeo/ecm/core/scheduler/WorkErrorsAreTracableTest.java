@@ -10,6 +10,7 @@ package org.nuxeo.ecm.core.scheduler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 
@@ -131,7 +132,8 @@ public class WorkErrorsAreTracableTest {
 
     protected WorkSchedulePath.Trace awaitFailure(Work work)
             throws InterruptedException, NoLogCaptureFilterException {
-        manager.awaitCompletion(100, TimeUnit.MILLISECONDS);
+        boolean completed = manager.awaitCompletion(1000, TimeUnit.MILLISECONDS);
+        assertTrue(completed);
         result.assertHasEvent();
         LoggingEvent loggingEvent = result.getCaughtEvents().get(0);
         WorkSchedulePath.Trace trace = (WorkSchedulePath.Trace)loggingEvent.getThrowableInformation().getThrowable();
