@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -162,7 +163,7 @@ public class AsyncEventExecutor {
         }
 
         @Override
-        public void retryableWork() throws Exception {
+        public void work() throws Exception {
             EventService eventService = Framework.getLocalService(EventService.class);
             listener = eventService.getEventListener(listenerName);
             if (listener == null) {
@@ -172,20 +173,14 @@ public class AsyncEventExecutor {
         }
 
         @Override
-        public void rollbackAndRetryTransaction() {
-            bundle.disconnect();
-            super.rollbackAndRetryTransaction();
-        }
-
-        @Override
         public void cleanUp(boolean ok, Exception e) {
             super.cleanUp(ok, e);
             bundle.disconnect();
-            if (e != null && !(e instanceof InterruptedException)) {
+            if (e != null && !(e instanceof InterruptedException)
+                    && !(e instanceof ConcurrentUpdateException)) {
                 log.error("Failed to execute async event " + bundle.getName()
                         + " on listener " + listenerName, e);
             }
-            bundle = null;
             if (listener != null) {
                 EventStats stats = Framework.getLocalService(EventStats.class);
                 if (stats != null) {

@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -53,6 +52,7 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -66,6 +66,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
@@ -1455,24 +1456,27 @@ public class SessionImpl implements Session, XAResource {
                 try {
                     flushAndScheduleWork();
                 } catch (Exception e) {
-                    String msg = "Could not end transaction";
-                    if (e instanceof ConcurrentModificationException) {
+                    String msg = "Exception during transaction commit";
+                    if (e instanceof ConcurrentUpdateStorageException) {
+                        TransactionHelper.noteSuppressedException(e);
                         log.debug(msg, e);
+                        // set rollback only manually instead of throwing,
+                        // this avoids a spurious log in Geronimo TransactionImpl
+                        // and has the same effect
+                        TransactionHelper.setTransactionRollbackOnly();
+                        return;
                     } else {
                         log.error(msg, e);
+                        throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
                     }
-                    throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
                 }
             }
             failed = false;
             mapper.end(xid, flags);
         } finally {
             if (failed) {
-                try {
-                    mapper.end(xid, TMFAIL);
-                } finally {
-                    rollback(xid);
-                }
+                mapper.end(xid, TMFAIL);
+                // rollback done by tx manager
             }
         }
     }

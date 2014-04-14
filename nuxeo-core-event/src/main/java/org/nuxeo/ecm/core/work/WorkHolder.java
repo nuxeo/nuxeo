@@ -19,17 +19,12 @@ package org.nuxeo.ecm.core.work;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.nuxeo.ecm.core.work.api.Work;
-import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * A {@link WorkHolder} adapts a {@link Work} to {@link Runnable} for queuing
  * and execution by a {@link ThreadPoolExecutor}.
  * <p>
- * It also deals with transaction management, and prevents running work
- * instances that are suspending.
- * <p>
- * Calls {@link Work#work} and {@link Work#cleanUp}.
+ * Calls (indirectly) {@link Work#work} and {@link Work#cleanUp}.
  *
  * @see Work
  * @see Work#work
@@ -51,48 +46,7 @@ public class WorkHolder implements Runnable {
 
     @Override
     public void run() {
-        if (work.isSuspending()) {
-            // don't run anything if we're being started while a suspend
-            // has been requested
-            work.suspended();
-            return;
-        }
-        TransactionHelper.startTransaction();
-        WorkSchedulePath.handleEnter(work);
-        boolean ok = false;
-        Exception exc = null;
-        try {
-            work.setStartTime();
-            work.work();
-            ok = true;
-        } catch (Exception e) { // InterruptedException managed below
-            exc = e;
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            } else {
-                throw new RuntimeException(e);
-            }
-        } finally {
-            WorkSchedulePath.handleReturn();
-            try {
-                work.cleanUp(ok, exc);
-            } finally {
-                try {
-                    if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                        if (!ok) {
-                            TransactionHelper.setTransactionRollbackOnly();
-                        }
-                        TransactionHelper.commitOrRollbackTransaction();
-                    }
-                } finally {
-                    if (exc instanceof InterruptedException) {
-                        // restore interrupted status for the thread pool
-                        // worker
-                        Thread.currentThread().interrupt();
-                    }
-                }
-            }
-        }
+        work.run();
     }
 
 }

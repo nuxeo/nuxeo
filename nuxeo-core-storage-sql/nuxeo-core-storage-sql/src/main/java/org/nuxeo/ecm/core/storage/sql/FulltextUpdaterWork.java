@@ -93,7 +93,7 @@ public class FulltextUpdaterWork extends AbstractWork {
     }
 
     @Override
-    public void retryableWork() throws Exception {
+    public void work() throws Exception {
         initSession();
         // if the runtime has shut down (normally because tests are finished)
         // this can happen, see NXP-4009

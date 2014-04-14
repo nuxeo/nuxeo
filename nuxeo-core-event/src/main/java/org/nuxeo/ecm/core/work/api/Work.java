@@ -197,6 +197,14 @@ public interface Work extends Serializable {
     }
 
     /**
+     * Runs the work instance and does all the transaction management and retry.
+     * <p>
+     * Usually only implemented by {@link AbstractWork}, which should be
+     * subclassed instead of implementing {@link #run}.
+     */
+    void run();
+
+    /**
      * This method should implement the actual work done by the {@link Work}
      * instance.
      * <p>

@@ -34,10 +34,14 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
  * A base implementation for a {@link Work} instance, dealing with most of the
  * details around state change.
+ * <p>
+ * It also deals with transaction management, and prevents running work
+ * instances that are suspending.
  * <p>
  * Actual implementations must at a minimum implement the {@link #work()}
  * method. A method {@link #cleanUp} is available.
@@ -262,50 +266,135 @@ public abstract class AbstractWork implements Work {
     }
 
     @Override
-    public void work() throws Exception {
-        Exception exception = null;
+    public void run() {
+        if (isSuspending()) {
+            // don't run anything if we're being started while a suspend
+            // has been requested
+            suspended();
+            return;
+        }
+        Exception suppressed = null;
         int retryCount = getRetryCount(); // may be 0
         for (int i = 0; i <= retryCount; i++) {
             if (i > 0) {
                 log.debug("Retrying work due to concurrent update (" + i
                         + "): " + this);
-                log.trace("Concurrent update", exception);
-                rollbackAndRetryTransaction();
+                log.trace("Concurrent update", suppressed);
             }
-            try {
-                retryableWork();
+            Exception e = runWorkWithTransactionAndCheckExceptions();
+            if (e == null) {
+                // no exception, work is done
                 return;
-            } catch (ConcurrentUpdateException e) {
-                exception = e;
+            }
+            if (suppressed == null) {
+                suppressed = e;
+            } else {
+                suppressed.addSuppressed(e);
             }
         }
-        if (exception == null) {
-            throw new RuntimeException("Invalid retry count: " + retryCount);
+        // all retries have been done, throw the exception
+        if (suppressed != null) {
+            if (suppressed instanceof RuntimeException) {
+                throw (RuntimeException) suppressed;
+            } else {
+                throw new RuntimeException(suppressed);
+            }
         }
-        throw exception;
     }
+
+    /**
+     * Does work under a transaction, and collects exception and suppressed
+     * exceptions that may lead to a retry.
+     *
+     * @since 5.9.4
+     */
+    protected Exception runWorkWithTransactionAndCheckExceptions() {
+        List<Exception> suppressed = Collections.emptyList();
+        try {
+            TransactionHelper.noteSuppressedExceptions();
+            try {
+                runWorkWithTransaction();
+            } finally {
+                suppressed = TransactionHelper.getSuppressedExceptions();
+            }
+        } catch (ConcurrentUpdateException e) {
+            // happens typically during save()
+            return e;
+        } catch (TransactionRuntimeException e) {
+            // error at commit time
+            if (suppressed.isEmpty()) {
+                return e;
+            }
+        }
+        // reached if no catch, or if TransactionRuntimeException caught
+        if (suppressed.isEmpty()) {
+            return null;
+        }
+        // exceptions during commit caused a rollback in SessionImpl#end
+        Exception e = suppressed.get(0);
+        for (int i = 1; i < suppressed.size(); i++) {
+            e.addSuppressed(suppressed.get(i));
+        }
+        return e;
+    }
+
+    /**
+     * Does work under a transaction.
+     *
+     * @since 5.9.4
+     * @throws ConcurrentUpdateException, TransactionRuntimeException
+     */
+    protected void runWorkWithTransaction() throws ConcurrentUpdateException {
+        TransactionHelper.startTransaction();
+        boolean ok = false;
+        Exception exc = null;
+        try {
+            WorkSchedulePath.handleEnter(this);
+            // --- do work
+            setStartTime();
+            work(); // may throw ConcurrentUpdateException
+            ok = true;
+            // --- end work
+        } catch (Exception e) {
+            exc = e;
+            if (e instanceof ConcurrentUpdateException) {
+                throw (ConcurrentUpdateException) e;
+            } else if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            } else if (e instanceof InterruptedException) {
+                // restore interrupted status for the thread pool worker
+                Thread.currentThread().interrupt();
+            }
+            throw new RuntimeException(e);
+        } finally {
+            WorkSchedulePath.handleReturn();
+            try {
+                setCompletionTime();
+                cleanUp(ok, exc);
+            } finally {
+                if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                    if (!ok) {
+                        TransactionHelper.setTransactionRollbackOnly();
+                    }
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+            }
+        }
+    }
+
+    @Override
+    public abstract void work() throws Exception;
 
     /**
      * Gets the number of times that this Work instance can be retried in case
      * of concurrent update exceptions.
      *
      * @return 0 for no retry, or more if some retries are possible
-     * @see #retryableWork
+     * @see #work
      * @since 5.8
      */
     public int getRetryCount() {
         return 0;
-    }
-
-    /**
-     * This method, along with {@link #getRetryCount}, should be implemented if
-     * the work instance can be retried in case of concurrent update exceptions.
-     *
-     * @see #getRetryCount
-     * @since 5.8
-     */
-    public void retryableWork() throws Exception {
-        throw new UnsupportedOperationException("Missing implementation");
     }
 
     /**
@@ -317,14 +406,16 @@ public abstract class AbstractWork implements Work {
      */
     @Override
     public void cleanUp(boolean ok, Exception e) {
-        setCompletionTime();
         if (!ok) {
             if (e instanceof InterruptedException) {
                 log.debug("Suspended work: " + this);
             } else {
-                log.error("Exception during work: " + this, e);
-                if (WorkSchedulePath.captureStack) {
-                    WorkSchedulePath.log.error("Work schedule path", schedulePath.getStack());
+                if (!(e instanceof ConcurrentUpdateException)) {
+                    log.error("Exception during work: " + this, e);
+                    if (WorkSchedulePath.captureStack) {
+                        WorkSchedulePath.log.error("Work schedule path",
+                                schedulePath.getStack());
+                    }
                 }
             }
         }
@@ -418,19 +509,6 @@ public abstract class AbstractWork implements Work {
     @Override
     public boolean isDocumentTree() {
         return isTree;
-    }
-
-    /**
-     * Rolls back the transaction and starts another one. Closes the session as
-     * well.
-     *
-     * @since 5.8
-     */
-    public void rollbackAndRetryTransaction() {
-        closeSession();
-        TransactionHelper.setTransactionRollbackOnly();
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
     }
 
     /**
