@@ -28,12 +28,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
-import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.google.inject.Inject;
@@ -44,7 +43,7 @@ import com.google.inject.Inject;
 public abstract class AbstractUserProfileImporterTest {
 
     @Inject
-    protected FeaturesRunner featuresRunner;
+    protected RepositorySettings settings;
 
     @Inject
     protected RuntimeHarness harness;
@@ -76,10 +75,7 @@ public abstract class AbstractUserProfileImporterTest {
 
     protected CoreSession openSession(NuxeoPrincipal principal)
             throws ClientException {
-        CoreFeature coreFeature = featuresRunner.getFeature(CoreFeature.class);
-        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
-        return coreFeature.getRepository().getRepositoryHandler().openSession(
-                ctx);
+        return settings.openSessionAs(principal);
     }
 
     protected NuxeoPrincipal createUser(String username, String tenant)
