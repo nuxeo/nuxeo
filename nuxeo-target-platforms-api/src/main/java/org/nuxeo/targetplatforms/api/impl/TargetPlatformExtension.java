@@ -16,60 +16,58 @@
  */
 package org.nuxeo.targetplatforms.api.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.targetplatforms.api.TargetPackage;
+import org.nuxeo.targetplatforms.api.TargetPlatform;
 
 /**
+ * {@link TargetPlatform} implementation relying on an original implementation,
+ * useful for override when adding additional metadata.
+ *
  * @since 5.7.1
  */
-public class TargetPackageImpl extends TargetImpl implements TargetPackage,
-        Comparable<TargetPackage> {
+public class TargetPlatformExtension extends TargetExtension implements
+        TargetPlatform, Comparable<TargetPlatform> {
 
     private static final long serialVersionUID = 1L;
 
-    protected List<String> dependencies;
-
-    protected TargetPackage parent;
+    protected TargetPlatform origPlatform;
 
     // needed by GWT serialization
-    protected TargetPackageImpl() {
-        super();
+    protected TargetPlatformExtension() {
     }
 
-    public TargetPackageImpl(String id, String name, String version,
-            String refVersion, String label) {
-        super(id, name, version, refVersion, label);
-        this.dependencies = new ArrayList<String>();
-    }
-
-    public void addDependency(String dependency) {
-        dependencies.add(dependency);
-    }
-
-    public List<String> getDependencies() {
-        return dependencies;
-    }
-
-    public void setDependencies(List<String> dependencies) {
-        if (dependencies == null) {
-            this.dependencies = null;
-        } else {
-            this.dependencies = new ArrayList<>(dependencies);
-        }
-    }
-
-    public TargetPackage getParent() {
-        return parent;
-    }
-
-    public void setParent(TargetPackage parent) {
-        this.parent = parent;
+    public TargetPlatformExtension(TargetPlatform orig) {
+        super(orig);
+        this.origPlatform = orig;
     }
 
     @Override
-    public int compareTo(TargetPackage o) {
+    public boolean isFastTrack() {
+        return origPlatform.isFastTrack();
+    }
+
+    @Override
+    public List<String> getAvailablePackagesIds() {
+        return origPlatform.getAvailablePackagesIds();
+    }
+
+    @Override
+    public List<TargetPackage> getAvailablePackages() {
+        return origPlatform.getAvailablePackages();
+    }
+
+    public TargetPlatform getParent() {
+        return origPlatform.getParent();
+    }
+
+    public List<String> getTestVersions() {
+        return origPlatform.getTestVersions();
+    }
+
+    @Override
+    public int compareTo(TargetPlatform o) {
         // compare first on name, then on version
         int comp = getName().compareTo(o.getName());
         if (comp == 0) {

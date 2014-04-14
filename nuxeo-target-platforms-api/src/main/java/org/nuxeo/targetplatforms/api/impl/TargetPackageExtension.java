@@ -16,56 +16,46 @@
  */
 package org.nuxeo.targetplatforms.api.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.targetplatforms.api.TargetPackage;
 
 /**
+ * {@link TargetPackage} implementation relying on an original implementation,
+ * useful for override when adding additional metadata.
+ *
  * @since 5.7.1
  */
-public class TargetPackageImpl extends TargetImpl implements TargetPackage,
-        Comparable<TargetPackage> {
+public class TargetPackageExtension extends TargetExtension implements
+        TargetPackage, Comparable<TargetPackage> {
 
     private static final long serialVersionUID = 1L;
 
-    protected List<String> dependencies;
-
-    protected TargetPackage parent;
+    protected TargetPackage origPackage;
 
     // needed by GWT serialization
-    protected TargetPackageImpl() {
-        super();
+    protected TargetPackageExtension() {
     }
 
-    public TargetPackageImpl(String id, String name, String version,
-            String refVersion, String label) {
-        super(id, name, version, refVersion, label);
-        this.dependencies = new ArrayList<String>();
+    public TargetPackageExtension(TargetPackage orig) {
+        super(orig);
+        this.origPackage = orig;
     }
 
     public void addDependency(String dependency) {
-        dependencies.add(dependency);
+        origPackage.addDependency(dependency);
     }
 
     public List<String> getDependencies() {
-        return dependencies;
+        return origPackage.getDependencies();
     }
 
     public void setDependencies(List<String> dependencies) {
-        if (dependencies == null) {
-            this.dependencies = null;
-        } else {
-            this.dependencies = new ArrayList<>(dependencies);
-        }
+        origPackage.setDependencies(dependencies);
     }
 
     public TargetPackage getParent() {
-        return parent;
-    }
-
-    public void setParent(TargetPackage parent) {
-        this.parent = parent;
+        return origPackage.getParent();
     }
 
     @Override
