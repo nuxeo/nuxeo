@@ -12,6 +12,10 @@
 
 package org.nuxeo.runtime.transaction;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
@@ -310,6 +314,42 @@ public class TransactionHelper {
             }
             throw new TransactionRuntimeException(msg, e);
         }
+    }
+
+    private static ThreadLocal<List<Exception>> suppressedExceptions = new ThreadLocal<List<Exception>>();
+
+    /**
+     * After this, some exceptions during transaction commit may be suppressed
+     * and remembered.
+     *
+     * @since 5.9.4
+     */
+    public static void noteSuppressedExceptions() {
+        suppressedExceptions.set(new ArrayList<Exception>(1));
+    }
+
+    /**
+     * If activated by {@linked #noteSuppressedExceptions}, remembers the exception.
+     *
+     * @since 5.9.4
+     */
+    public static void noteSuppressedException(Exception e) {
+        List<Exception> exceptions = suppressedExceptions.get();
+        if (exceptions != null) {
+            exceptions.add(e);
+        }
+    }
+
+    /**
+     * Gets the suppressed exceptions, and stops remembering.
+     *
+     * @since 5.9.4
+     */
+    public static List<Exception> getSuppressedExceptions() {
+        List<Exception> exceptions = suppressedExceptions.get();
+        suppressedExceptions.remove();
+        return exceptions == null ? Collections.<Exception> emptyList()
+                : exceptions;
     }
 
     /**
