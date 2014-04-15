@@ -3,7 +3,6 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <a4j:outputPanel id="damPermanentLink_panel" ajaxRendered="true" layout="block">
@@ -19,19 +18,14 @@
   </a4j:outputPanel>
 
   <a4j:form>
-    <a4j:region>
-      <a4j:jsFunction name="damSelectDocument"
-        reRender="nxw_damAssetView_panel" ajaxSingle="true"
-        oncomplete="nuxeo.dam.afterDocumentSelected(data);"
-        data="#{damActions.selectedDocumentId}">
-        <a4j:actionparam name="param1"
-          assignTo="#{damActions.selectedDocumentId}" />
-        <f:setPropertyActionListener value="nxw_damAssetView_panel"
-          target="#{jsfResetActions.baseComponentId}" />
-        <nxu:actionListenerMethod
-          value="#{jsfResetActions.resetComponentsFor}" />
-      </a4j:jsFunction>
-    </a4j:region>
+    <a4j:jsFunction name="damSelectDocument" reRender="nxw_damAssetView_panel"
+      oncomplete="nuxeo.dam.afterDocumentSelected(data);" data="#{damActions.selectedDocumentId}">
+      <a4j:actionparam name="param1" assignTo="#{damActions.selectedDocumentId}"  />
+      <f:setPropertyActionListener
+        value="nxw_damAssetView_panel"
+        target="#{jsfResetActions.baseComponentId}" />
+      <nxu:actionListenerMethod value="#{jsfResetActions.resetComponentsFor}" />
+    </a4j:jsFunction>
   </a4j:form>
 
 </c:if>
