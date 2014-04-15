@@ -8,6 +8,9 @@
 
     <doctype name="Favorites" extends="Document">
       <facet name="Collection" />
+      <facet name="NotCollectionMember" />
+      <schema name="dublincore" />
+      <schema name="common" />
     </doctype>
 
   </extension>
