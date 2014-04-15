@@ -523,14 +523,45 @@ public class TestNxqlConversion {
     public void testConverterFulltext() throws Exception {
         // Given a search on a fulltext field
         String es = NxqlQueryConverter.toESQueryBuilder(
-                "select * from Document where f1='foo bar'", Arrays.asList(new String[] { "f1", "f2" })).toString();
-        // then we have a query and not a filter
+                "select * from Document where ecm:fulltext='+foo -bar'").toString();
+        // then we have a simple query text and not a filter
         assertEqualsEvenUnderWindows("{\n" +
-                "  \"match\" : {\n" +
-                "    \"f1\" : {\n" +
-                "      \"query\" : \"foo bar\",\n" +
-                "      \"type\" : \"boolean\",\n" +
-                "      \"operator\" : \"AND\"\n" +
+                "  \"simple_query_string\" : {\n" +
+                "    \"query\" : \"+foo -bar\",\n" +
+                "    \"fields\" : [ \"_all\" ],\n" +
+                "    \"analyzer\" : \"fulltext\",\n" +
+                "    \"default_operator\" : \"and\"\n" +
+                "  }\n" +
+                "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where ecm:fulltext_someindex LIKE '+foo -bar'").toString();
+        // don't handle nxql fulltext index definition, match to _all field
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"simple_query_string\" : {\n" +
+                "    \"query\" : \"+foo -bar\",\n" +
+                "    \"fields\" : [ \"_all\" ],\n" +
+                "    \"analyzer\" : \"fulltext\",\n" +
+                "    \"default_operator\" : \"and\"\n" +
+                "  }\n" +
+                "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "select * from Document where ecm:fulltext.dc:title!='+foo -bar'").toString();
+        // request on field match field.fulltext
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"not\" : {\n" +
+                "        \"filter\" : {\n" +
+                "          \"query\" : {\n" +
+                "            \"simple_query_string\" : {\n" +
+                "              \"query\" : \"+foo -bar\",\n" +
+                "              \"fields\" : [ \"dc:title.fulltext\" ],\n" +
+                "              \"analyzer\" : \"fulltext\",\n" +
+                "              \"default_operator\" : \"and\"\n" +
+                "            }\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
                 "    }\n" +
                 "  }\n" +
                 "}", es);

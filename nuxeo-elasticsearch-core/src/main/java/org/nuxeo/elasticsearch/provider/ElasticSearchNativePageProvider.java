@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
-import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -60,10 +59,8 @@ public class ElasticSearchNativePageProvider extends
                             getName(), getMinMaxPageSize(),
                             getCurrentPageOffset()));
         }
-        ElasticSearchAdmin esa = Framework
-                .getLocalService(ElasticSearchAdmin.class);
         // Build the ES query
-        QueryBuilder query = makeQueryBuilder(esa.getFulltextFields());
+        QueryBuilder query = makeQueryBuilder();
         SortInfo[] sortArray = null;
         if (sortInfos != null) {
             sortArray = sortInfos.toArray(new SortInfo[] {});
@@ -83,14 +80,14 @@ public class ElasticSearchNativePageProvider extends
         return currentPageDocuments;
     }
 
-    protected QueryBuilder makeQueryBuilder(List<String> fulltextFields) {
+    protected QueryBuilder makeQueryBuilder() {
         QueryBuilder ret = null;
         try {
             PageProviderDefinition def = getDefinition();
             if (def.getWhereClause() == null) {
                 ret = ElasticSearchQueryBuilder.makeQuery(def.getPattern(),
                         getParameters(), def.getQuotePatternParameters(),
-                        def.getEscapePatternParameters(), isNativeQuery(), fulltextFields);
+                        def.getEscapePatternParameters(), isNativeQuery());
             } else {
                 DocumentModel searchDocumentModel = getSearchDocumentModel();
                 if (searchDocumentModel == null) {
@@ -100,7 +97,7 @@ public class ElasticSearchNativePageProvider extends
                             getName()));
                 }
                 ret = ElasticSearchQueryBuilder.makeQuery(searchDocumentModel,
-                        def.getWhereClause(), getParameters(), isNativeQuery(), fulltextFields);
+                        def.getWhereClause(), getParameters(), isNativeQuery());
             }
         } catch (ClientException e) {
             throw new ClientRuntimeException(e);

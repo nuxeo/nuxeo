@@ -22,7 +22,6 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
 import java.security.Principal;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.List;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
@@ -34,6 +33,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
@@ -50,7 +50,7 @@ public class ElasticSearchQueryBuilder {
     public static QueryBuilder makeQuery(final String pattern,
             final Object[] params, final boolean quotePatternParameters,
             final boolean escapePatternParameters,
-            final boolean useNativeQuery, final List<String> fulltextFields)
+            final boolean useNativeQuery)
             throws ClientException {
         String query = pattern;
         for (int i = 0; i < params.length; i++) {
@@ -60,7 +60,7 @@ public class ElasticSearchQueryBuilder {
         if (useNativeQuery) {
             return QueryBuilders.queryString(query);
         } else {
-            return NxqlQueryConverter.toESQueryBuilder(query, fulltextFields);
+            return NxqlQueryConverter.toESQueryBuilder(query);
         }
     }
 
@@ -70,7 +70,7 @@ public class ElasticSearchQueryBuilder {
      */
     public static QueryBuilder makeQuery(final DocumentModel model,
             final WhereClauseDefinition whereClause, final Object[] params,
-            final boolean useNativeQuery, final List<String> fulltextFields)
+            final boolean useNativeQuery)
             throws ClientException {
         assert (model != null);
         assert (whereClause != null);
@@ -86,8 +86,7 @@ public class ElasticSearchQueryBuilder {
                 // Fixed part handled as query_string
                 eb.add(QueryBuilders.queryString(fixedPart));
             } else {
-                eb.add(NxqlQueryConverter.toESQueryBuilder(fixedPart,
-                        fulltextFields));
+                eb.add(NxqlQueryConverter.toESQueryBuilder(fixedPart));
             }
         }
         // Process predicates
@@ -123,11 +122,13 @@ public class ElasticSearchQueryBuilder {
             String name = predicate.getParameter();
             String operator = predicate.getOperator().toUpperCase();
             if ("FULLTEXT".equals(operator)) {
-                // fulltext search is handled by the mapping
                 operator = "=";
+                if (! name.startsWith(NXQL.ECM_FULLTEXT)) {
+                    name = NXQL.ECM_FULLTEXT + "." + name;
+                }
             }
             eb.add(NxqlQueryConverter.makeQueryFromSimpleExpression(operator,
-                    name, value, values, fulltextFields));
+                    name, value, values));
         }
         return eb.get();
     }

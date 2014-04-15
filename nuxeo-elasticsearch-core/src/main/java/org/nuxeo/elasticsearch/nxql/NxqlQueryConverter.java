@@ -29,9 +29,9 @@ import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
@@ -152,12 +152,7 @@ public class NxqlQueryConverter {
 
     private static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";;
 
-    public static QueryBuilder toESQueryBuilder(String nxql) {
-        return toESQueryBuilder(nxql, null);
-    }
-
-    public static QueryBuilder toESQueryBuilder(final String nxql,
-            final List<String> fulltextFields) {
+    public static QueryBuilder toESQueryBuilder(final String nxql) {
         final LinkedList<ExpressionBuilder> builders = new LinkedList<ExpressionBuilder>();
         String query = (nxql == null) ? "" : nxql.trim();
         if (query.isEmpty()) {
@@ -250,7 +245,7 @@ public class NxqlQueryConverter {
                     // add expression to the last builder
                     builders.getLast().add(
                             makeQueryFromSimpleExpression(op.toString(), name,
-                                    value, values, fulltextFields));
+                                    value, values));
                 }
             }
         });
@@ -259,55 +254,52 @@ public class NxqlQueryConverter {
             return QueryBuilders.filteredQuery(
                     queryBuilder,
                     makeQueryFromSimpleExpression("IN", NXQL.ECM_PRIMARYTYPE,
-                            null, fromList.toArray(), null).filter);
+                            null, fromList.toArray()).filter);
         }
         return queryBuilder;
     }
 
     public static QueryAndFilter makeQueryFromSimpleExpression(String op,
-            String name, Object value, Object[] values,
-            List<String> fulltextFields) {
+            String name, Object value, Object[] values) {
         QueryBuilder query = null;
         FilterBuilder filter = null;
         if (NXQL.ECM_ISVERSION_OLD.equals(name)) {
             name = NXQL.ECM_ISVERSION;
         }
-        if ("=".equals(op) || "!=".equals(op) || "<>".equals(op)) {
-            if (fulltextFields != null && fulltextFields.contains(name)) {
-                if (NXQL.ECM_FULLTEXT.equals(name)) {
-                    // ecm:fulltext match _all field
-                    query = QueryBuilders.matchQuery("_all", value)
-                            .operator(MatchQueryBuilder.Operator.AND)
-                            .analyzer("fulltext");
-                } else {
-                    // use the analyzer defined by the mapping
-                    query = QueryBuilders.matchQuery(name, value).operator(
-                            MatchQueryBuilder.Operator.AND);
-                }
+        if (name.startsWith(NXQL.ECM_FULLTEXT)
+                && ("=".equals(op) || "!=".equals(op) || "<>".equals(op)
+                        || "LIKE".equals(op) || "NOT LIKE".equals(op))) {
+            String field = name.replace(NXQL.ECM_FULLTEXT, "");
+            if (field.startsWith(".")) {
+                field = field.substring(1) + ".fulltext";
             } else {
-                filter = FilterBuilders.termFilter(name, value);
+                // map ecm:fulltext_someindex to default
+                field = "_all";
             }
-            if (!"=".equals(op)) {
-                if (filter != null) {
-                    filter = FilterBuilders.notFilter(filter);
-                } else {
-                    filter = FilterBuilders.notFilter(FilterBuilders
-                            .queryFilter(query));
-                    query = null;
-                }
+            query = QueryBuilders.simpleQueryString((String) value)
+                    .field(field)
+                    .defaultOperator(SimpleQueryStringBuilder.Operator.AND)
+                    .analyzer("fulltext");
+            if ("!=".equals(op) || "<>".equals(op) || "NOT LIKE".equals(op)) {
+                filter = FilterBuilders.notFilter(FilterBuilders
+                        .queryFilter(query));
+                query = null;
             }
+        } else if ("=".equals(op)) {
+            filter = FilterBuilders.termFilter(name, value);
+        } else if ("<>".equals(op) || "!=".equals(op)) {
+            filter = FilterBuilders.notFilter(FilterBuilders.termFilter(name,
+                    value));
         } else if ("LIKE".equals(op) || "ILIKE".equals(op)
                 || "NOT LIKE".equals(op) || "NOT ILIKE".equals(op)) {
-            // Note that ILIKE will work only with a correct mapping
-            String likeName = name.replace("ecm:fulltext.", "");
-            likeName = likeName.replace(NXQL.ECM_FULLTEXT, "_all");
+            // ILIKE will work only with a correct mapping
             String likeValue = ((String) value).replace("%", "*");
             if (StringUtils.countMatches(likeValue, "*") == 1
                     && likeValue.endsWith("*")) {
-                query = QueryBuilders.matchPhrasePrefixQuery(likeName,
+                query = QueryBuilders.matchPhrasePrefixQuery(name,
                         likeValue.replace("*", ""));
             } else {
-                query = QueryBuilders.regexpQuery(likeName,
+                query = QueryBuilders.regexpQuery(name,
                         likeValue.replace("*", ".*"));
             }
             if (op.startsWith("NOT")) {

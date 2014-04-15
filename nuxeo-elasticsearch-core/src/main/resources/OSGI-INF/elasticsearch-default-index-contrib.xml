@@ -94,33 +94,54 @@
       "analyzer" : "fulltext"
    },
    "properties" : {
-      "dc:description" : {
-         "boost" : 1.5,
-         "type" : "string",
-         "analyzer" : "fulltext"
-      },
       "dc:title" : {
-         "boost" : 2,
-         "type" : "string",
-         "analyzer" : "fulltext"
+         "type" : "multi_field",
+         "fields" : {
+           "dc:title" : {
+             "index" : "not_analyzed",
+             "type" : "string"
+           },
+           "fulltext" : {
+             "boost": 2,
+             "type": "string",
+             "analyzer" : "fulltext"
+          }
+        }
       },
-      "dc:created": {
-         "format": "dateOptionalTime",
-        "type": "date"
+      "dc:description" : {
+         "type" : "multi_field",
+         "fields" : {
+           "dc:description" : {
+             "index" : "no",
+             "type" : "string"
+           },
+           "fulltext" : {
+             "boost": 1.5,
+             "type": "string",
+             "analyzer" : "fulltext"
+          }
+        }
       },
-      "dc:modified": {
-         "format": "dateOptionalTime",
-        "type": "date"
+      "note:note" : {
+         "type" : "multi_field",
+         "fields" : {
+           "note:note" : {
+             "index" : "no",
+             "type" : "string"
+           },
+           "fulltext" : {
+             "boost": 1.5,
+             "type": "string",
+             "analyzer" : "fulltext"
+          }
+        }
       },
       "ecm:binarytext*" : {
          "type" : "string",
          "analyzer" : "fulltext"
       },
-      "ecm:fulltext*" : {
-         "type" : "string",
-         "analyzer" : "fulltext"
-      },
       "ecm:path" : {
+         "type" : "multi_field",
          "fields" : {
             "children" : {
                "search_analyzer" : "keyword",
@@ -131,20 +152,19 @@
                "index" : "not_analyzed",
                "type" : "string"
             }
-         },
-         "type" : "multi_field"
+         }
+      },
+      "dc:created": {
+         "format": "dateOptionalTime",
+        "type": "date"
+      },
+      "dc:modified": {
+         "format": "dateOptionalTime",
+        "type": "date"
       }
    }
 }
     </mapping>
-
-    <fulltext>
-      <field>ecm:fulltext</field>
-      <field>ecm:binarytext</field>
-      <field>dc:title</field>
-      <field>dc:description</field>
-      <field>note:note</field>
-    </fulltext>
 
    </elasticSearchIndex>
 

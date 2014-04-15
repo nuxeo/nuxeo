@@ -30,6 +30,4 @@ public class ElasticSearchConstants {
 
     public static final String CHILDREN_FIELD = "ecm:path.children";
 
-    public static final String[] DEFAULT_FULLTEXT_FIELDS = { "ecm:fulltext",
-            "dc:title", "dc:description", "note:note" };
 }

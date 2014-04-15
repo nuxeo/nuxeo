@@ -22,14 +22,12 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DEFAULT_FULLTEXT_FIELDS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -458,8 +456,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public DocumentModelList query(CoreSession session, String nxql, int limit,
             int offset, SortInfo... sortInfos) throws ClientException {
-        QueryBuilder queryBuilder = NxqlQueryConverter.toESQueryBuilder(nxql,
-                getFulltextFields());
+        QueryBuilder queryBuilder = NxqlQueryConverter.toESQueryBuilder(nxql);
 
         // handle the built-in order by clause
         if (nxql.toLowerCase().contains("order by")) {
@@ -723,19 +720,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
             }
         });
         return ret;
-    }
-
-    @Override
-    public List<String> getFulltextFields() {
-        if (fulltextFields == null) {
-            ElasticSearchIndexConfig idxConfig = indexes.get(getDocIndex());
-            if (idxConfig != null && !idxConfig.getFulltextFields().isEmpty()) {
-                fulltextFields = idxConfig.getFulltextFields();
-            } else {
-                fulltextFields = Arrays.asList(DEFAULT_FULLTEXT_FIELDS);
-            }
-        }
-        return fulltextFields;
     }
 
 }

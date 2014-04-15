@@ -80,13 +80,6 @@ public interface ElasticSearchAdmin {
     List<PendingClusterTask> getPendingTasks();
 
     /**
-     * Returns the list of field names that use a fulltext analyzer.
-     *
-     * @since 5.9.3
-     */
-    List<String> getFulltextFields();
-
-    /**
      * Refresh document index, immediately after the operation occurs, so that
      * the updated document appears in search results immediately.
      *

@@ -257,7 +257,7 @@ public class TestPageProvider {
         DocumentModel model = new DocumentModelImpl("/", "doc", "File");
         model.setPropertyValue("dc:subjects", new String[] { "foo", "bar" });
 
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : {\n" +
@@ -273,7 +273,7 @@ public class TestPageProvider {
                 "}", qb.toString());
 
         model.setPropertyValue("dc:subjects", new String[] { "foo" });
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : {\n" +
@@ -290,7 +290,7 @@ public class TestPageProvider {
 
         // criteria with no values are removed
         model.setPropertyValue("dc:subjects", new String[] {});
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"match_all\" : { }\n" +
                 "}", qb.toString());
@@ -308,7 +308,7 @@ public class TestPageProvider {
         @SuppressWarnings("boxing")
         Integer[] array1 = new Integer[] { 1, 2, 3 };
         model.setPropertyValue("search:integerlist", array1);
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : {\n" +
@@ -327,7 +327,7 @@ public class TestPageProvider {
         @SuppressWarnings("boxing")
         List<Long> list = Arrays.asList(1L, 2L, 3L);
         model.setPropertyValue("search:integerlist", (Serializable) list);
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : {\n" +
@@ -358,7 +358,7 @@ public class TestPageProvider {
                 "AdvancedSearch");
         String[] arrayString = new String[] { "1", "2", "3" };
         model.setPropertyValue("search:subjects", arrayString);
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true);
         String json = qb.toString();
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
@@ -382,13 +382,13 @@ public class TestPageProvider {
         @SuppressWarnings("boxing")
         List<String> list = Arrays.asList(arrayString);
         model.setPropertyValue("search:subjects", (Serializable) list);
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true);
         assertEqualsEvenUnderWindows(json, qb.toString());
 
         // don't take into account empty list
         list = new ArrayList<String>();
         model.setPropertyValue("search:subjects", (Serializable) list);
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, null, true);
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"match_all\" : { }\n" +
                 "}", qb.toString());
@@ -411,7 +411,7 @@ public class TestPageProvider {
         model.setPropertyValue("search:title", "bar");
 
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params,
-                true, null);
+                true);
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : [ {\n" +
@@ -430,7 +430,7 @@ public class TestPageProvider {
 
         model.setPropertyValue("search:isPresent", Boolean.TRUE);
 
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true);
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : [ {\n" +
@@ -459,7 +459,7 @@ public class TestPageProvider {
 
         // only boolean available in schema without default value
         model.setPropertyValue("search:isPresent", Boolean.FALSE);
-        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true, null);
+        qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params, true);
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : [ {\n" +
@@ -487,7 +487,7 @@ public class TestPageProvider {
                 qb.toString());
 
         qb = ElasticSearchQueryBuilder.makeQuery("SELECT * FROM ? WHERE ? = '?'",
-                new Object[] { "Document", "dc:title", null }, false, true, true, null);
+                new Object[] { "Document", "dc:title", null }, false, true, true);
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"query_string\" : {\n" +
                 "    \"query\" : \"SELECT * FROM Document WHERE dc:title = ''\"\n" +
@@ -511,8 +511,7 @@ public class TestPageProvider {
                 "AdvancedSearch");
         model.setPropertyValue("search:fulltext_all", "you know for search");
         qb = ElasticSearchQueryBuilder.makeQuery(model, whereClause, params,
-                true, Arrays.asList("ecm:fulltext"));
-        String json = qb.toString();
+                true);
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"bool\" : {\n" +
                 "    \"must\" : [ {\n" +
@@ -520,13 +519,11 @@ public class TestPageProvider {
                 "        \"query\" : \"ecm\\\\:parentId: \\\"foo\\\"\"\n" +
                 "      }\n" +
                 "    }, {\n" +
-                "      \"match\" : {\n" +
-                "        \"_all\" : {\n" +
-                "          \"query\" : \"you know for search\",\n" +
-                "          \"type\" : \"boolean\",\n" +
-                "          \"operator\" : \"AND\",\n" +
-                "          \"analyzer\" : \"fulltext\"\n" +
-                "        }\n" +
+                "      \"simple_query_string\" : {\n" +
+                "        \"query\" : \"you know for search\",\n" +
+                "        \"fields\" : [ \"_all\" ],\n" +
+                "        \"analyzer\" : \"fulltext\",\n" +
+                "        \"default_operator\" : \"and\"\n" +
                 "      }\n" +
                 "    } ]\n" +
                 "  }\n" +
