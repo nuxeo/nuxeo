@@ -22,7 +22,7 @@ import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 
 /**
  * Definition of a rendition.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */
@@ -51,6 +51,9 @@ public class RenditionDefinition {
 
     @XNode("@class")
     protected Class<? extends RenditionProvider> providerClass;
+
+    @XNode("contentType")
+    protected String contentType;
 
     public String getName() {
         return name;
@@ -95,4 +98,9 @@ public class RenditionDefinition {
         }
         return provider.getClass().getSimpleName();
     }
+
+    public String getContentType() {
+        return contentType;
+    }
+
 }

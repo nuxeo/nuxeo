@@ -12,6 +12,8 @@ import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 
 public class DummyRenditionProvider implements RenditionProvider {
 
+    private static final String CONTENT_TYPE = "dummy/pdf";
+
     @Override
     public boolean isAvailable(DocumentModel doc, RenditionDefinition def) {
         return true;
@@ -21,7 +23,7 @@ public class DummyRenditionProvider implements RenditionProvider {
     public List<Blob> render(DocumentModel doc, RenditionDefinition definition)
             throws RenditionException {
         try {
-            StringBlob blob = new StringBlob(doc.getTitle());
+            StringBlob blob = new StringBlob(doc.getTitle(), CONTENT_TYPE);
             List<Blob> blobs = new ArrayList<Blob>();
             blobs.add(blob);
             return blobs;

@@ -6,6 +6,7 @@
     <renditionDefinition name="pdf" enable="true">
       <label>label.rendition.pdf</label>
       <icon>/icons/pdf.png</icon>
+      <contentType>application/pdf</contentType>
       <operationChain>blobToPDF</operationChain>
     </renditionDefinition>
   </extension>

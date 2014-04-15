@@ -6,6 +6,7 @@
   <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService" point="renditionDefinitions">
     <renditionDefinition name="dummyRendition" enable="true" class="org.nuxeo.ecm.platform.rendition.service.DummyRenditionProvider">
       <label>label.rendition.dummy</label>
+      <contentType>dummy/pdf</contentType>
     </renditionDefinition>
   </extension>
 
