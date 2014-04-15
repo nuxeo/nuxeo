@@ -582,6 +582,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
         indexInitDone = true;
         if (!stackedCommands.isEmpty()) {
+            log.info("Processing indexing command stacked during startup");
             boolean txCreated = false;
             if (!TransactionHelper.isTransactionActive()) {
                 txCreated = TransactionHelper.startTransaction();
@@ -594,15 +595,18 @@ public class ElasticSearchComponent extends DefaultComponent implements
                             cmd.refresh(session);
                             indexNow(cmd);
                         }
-                    };
+                    }.runUnrestricted();
                 }
             } catch (Exception e) {
-                log.error("Unable to flush pending indexing commands", e);
+                log.error(
+                        "Unable to flush pending indexing commands: "
+                                + e.getMessage(), e);
             } finally {
                 if (txCreated) {
                     TransactionHelper.commitOrRollbackTransaction();
                 }
                 stackedCommands.clear();
+                log.debug("Done");
             }
         }
     }
@@ -723,14 +727,13 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public List<String> getFulltextFields() {
-        if (fulltextFields != null) {
-            return fulltextFields;
-        }
-        ElasticSearchIndexConfig idxConfig = indexes.get(getDocIndex());
-        if (idxConfig != null && !idxConfig.getFulltextFields().isEmpty()) {
-            fulltextFields = idxConfig.getFulltextFields();
-        } else {
-            fulltextFields = Arrays.asList(DEFAULT_FULLTEXT_FIELDS);
+        if (fulltextFields == null) {
+            ElasticSearchIndexConfig idxConfig = indexes.get(getDocIndex());
+            if (idxConfig != null && !idxConfig.getFulltextFields().isEmpty()) {
+                fulltextFields = idxConfig.getFulltextFields();
+            } else {
+                fulltextFields = Arrays.asList(DEFAULT_FULLTEXT_FIELDS);
+            }
         }
         return fulltextFields;
     }
