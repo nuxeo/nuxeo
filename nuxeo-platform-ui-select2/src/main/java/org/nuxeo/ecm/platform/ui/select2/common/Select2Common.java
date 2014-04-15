@@ -126,11 +126,20 @@ public class Select2Common {
 
     private static Boolean forceDisplayEmailInSuggestion = null;
 
+    public static final String ICON = "icon";
+
     private static boolean isForceDisplayEmailInSuggestion() {
         if (forceDisplayEmailInSuggestion == null) {
             forceDisplayEmailInSuggestion = Framework.isBooleanPropertyTrue(FORCE_DISPLAY_EMAIL_IN_SUGGESTION);
         }
         return forceDisplayEmailInSuggestion;
+    }
+
+    /**
+     * @since 5.9.3
+     */
+    public static String[] getDefaultSchemas() {
+        return getSchemas(null);
     }
 
     /**
