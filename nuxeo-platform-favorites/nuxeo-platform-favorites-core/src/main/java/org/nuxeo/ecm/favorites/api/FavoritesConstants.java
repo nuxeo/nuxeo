@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.favorites.api;
 
+import org.nuxeo.ecm.collections.api.CollectionConstants;
+
 /**
  * @since 5.9.4
  */
@@ -23,6 +25,6 @@ public interface FavoritesConstants {
 
     public static final String DEFAULT_FAVORITES_NAME = "Favorites";
     public static final String FAVORITES_TYPE = "Favorites";
-    public static final Object DEFAULT_FAVORITES_TITLE = "%i18nlabel.myFavorites.title";
+    public static final Object DEFAULT_FAVORITES_TITLE = CollectionConstants.I18N_PREFIX + "label.myFavorites.title";
 
 }
