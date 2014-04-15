@@ -14,6 +14,8 @@ package org.nuxeo.ecm.core.opencmis.impl.server;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+import static org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData.REND_STREAM_ICON;
+import static org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData.REND_STREAM_RENDITION_PREFIX;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -129,8 +131,11 @@ import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
+import org.nuxeo.ecm.platform.rendition.Rendition;
+import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -796,41 +801,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             String streamId, BigInteger offset, BigInteger length,
             ExtensionsData extension) {
         // TODO offset, length
-        if (NuxeoObjectData.STREAM_ICON.equals(streamId)) {
-            try {
-                DocumentModel doc = getDocumentModel(objectId);
-                String iconPath;
-                try {
-                    iconPath = (String) doc.getPropertyValue(NuxeoTypeHelper.NX_ICON);
-                } catch (PropertyException e) {
-                    iconPath = null;
-                }
-                InputStream is = NuxeoObjectData.getIconStream(iconPath,
-                        callContext);
-                if (is == null) {
-                    throw new CmisConstraintException(
-                            "No icon content stream: " + objectId);
-                }
-
-                int slash = iconPath.lastIndexOf('/');
-                String filename = slash == -1 ? iconPath
-                        : iconPath.substring(slash + 1);
-
-                SimpleImageInfo info;
-                try {
-                    info = new SimpleImageInfo(is);
-                } catch (IOException e) {
-                    throw new CmisRuntimeException(e.toString(), e);
-                }
-                // refetch now-consumed stream
-                is = NuxeoObjectData.getIconStream(iconPath, callContext);
-                return new ContentStreamImpl(filename,
-                        BigInteger.valueOf(info.getLength()),
-                        info.getMimeType(), is);
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
-            }
-        } else if (streamId == null) {
+        if (streamId == null) {
             DocumentModel doc = getDocumentModel(objectId);
             ContentStream cs = NuxeoPropertyData.getContentStream(doc);
             if (cs != null) {
@@ -838,7 +809,108 @@ public class NuxeoCmisService extends AbstractCmisService {
             }
             throw new CmisConstraintException("No content stream: " + objectId);
         }
+        try {
+            if (REND_STREAM_ICON.equals(streamId)) {
+                return getIconRenditionStream(objectId);
+            }
+            if (streamId.startsWith(REND_STREAM_RENDITION_PREFIX)) {
+                String renditionName = streamId.substring(REND_STREAM_RENDITION_PREFIX.length());
+                ContentStream cs = getRenditionServiceStream(objectId,
+                        renditionName);
+                if (cs != null) {
+                    return cs;
+                }
+            }
+        } catch (ClientException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
         throw new CmisInvalidArgumentException("Invalid stream id: " + streamId);
+    }
+
+    protected ContentStream getIconRenditionStream(String objectId)
+            throws ClientException {
+        DocumentModel doc = getDocumentModel(objectId);
+        String iconPath;
+        try {
+            iconPath = (String) doc.getPropertyValue(NuxeoTypeHelper.NX_ICON);
+        } catch (PropertyException e) {
+            iconPath = null;
+        }
+        InputStream is = NuxeoObjectData.getIconStream(iconPath, callContext);
+        if (is == null) {
+            throw new CmisConstraintException("No icon content stream: "
+                    + objectId);
+        }
+
+        int slash = iconPath.lastIndexOf('/');
+        String filename = slash == -1 ? iconPath
+                : iconPath.substring(slash + 1);
+
+        SimpleImageInfo info;
+        try {
+            info = new SimpleImageInfo(is);
+        } catch (IOException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
+        // refetch now-consumed stream
+        is = NuxeoObjectData.getIconStream(iconPath, callContext);
+        return new ContentStreamImpl(filename,
+                BigInteger.valueOf(info.getLength()), info.getMimeType(), is);
+    }
+
+    protected ContentStream getRenditionServiceStream(String objectId,
+            String renditionName) throws ClientException {
+        RenditionService renditionService = Framework.getLocalService(RenditionService.class);
+        DocumentModel doc = getDocumentModel(objectId);
+        Rendition rendition = renditionService.getRendition(doc, renditionName);
+        if (rendition == null) {
+            return null;
+        }
+        Blob blob = rendition.getBlob();
+        if (blob == null) {
+            return null;
+        }
+        InputStream stream;
+        try {
+            stream = blob.getStream();
+        } catch (IOException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
+        // find the extension from the content type
+        String ext = "bin";
+        MimetypeRegistryService mtr = (MimetypeRegistryService) Framework.getLocalService(MimetypeRegistry.class);
+        MimetypeEntry mte = mtr.getMimetypeEntryByMimeType(blob.getMimeType());
+        if (mte != null) {
+            List<String> exts = mte.getExtensions();
+            if (!exts.isEmpty()) {
+                ext = exts.get(0);
+            }
+        }
+        String filename = filenameWithExt(doc.getTitle(), ext);
+        return new ContentStreamImpl(filename,
+                BigInteger.valueOf(blob.getLength()), blob.getMimeType(),
+                stream);
+    }
+
+    // min size of extension we remove
+    private static final int EXT_SIZE_MIN = 0;
+
+    // max size of extension we remove
+    private static final int EXT_SIZE_MAX = 4;
+
+    /** Change the extension of a filename. */
+    public static String filenameWithExt(String filename, String ext) {
+        int len = filename.length();
+        int p = filename.lastIndexOf('.');
+        if (p != -1 && p <= len - EXT_SIZE_MIN - 1
+                && p >= len - EXT_SIZE_MAX - 1) {
+            String curExt = filename.substring(p + 1);
+            if (curExt.indexOf(' ') == -1) {
+                // remove existing extension
+                filename = filename.substring(0, p);
+            }
+        }
+        return filename + '.' + ext;
     }
 
     @Override

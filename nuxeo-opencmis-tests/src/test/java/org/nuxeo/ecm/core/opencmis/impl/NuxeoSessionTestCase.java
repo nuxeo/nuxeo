@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +50,7 @@ import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.AllowableActions;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
@@ -123,6 +125,10 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.filemanager.api");
         deployBundle("org.nuxeo.ecm.platform.filemanager.core");
         deployBundle("org.nuxeo.ecm.platform.filemanager.core.listener");
+        // Rendition Service
+        deployBundle("org.nuxeo.ecm.platform.rendition.api");
+        deployBundle("org.nuxeo.ecm.platform.rendition.core");
+        deployBundle("org.nuxeo.ecm.automation.core");
         // Audit Service
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.audit.api");
@@ -521,6 +527,13 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         assertEquals(expected, aa.getAllowableActions());
     }
 
+    public static final Comparator<RenditionData> RENDITION_CMP = new Comparator<RenditionData>() {
+        @Override
+        public int compare(RenditionData a, RenditionData b) {
+            return a.getStreamId().compareTo(b.getStreamId());
+        };
+    };
+
     @Test
     public void testRenditions() throws Exception {
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
@@ -543,7 +556,8 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         oc.setRenditionFilterString("*");
         ob = session.getObject(session.createObjectId(ob.getId()), oc);
         renditions = ob.getRenditions();
-        assertEquals(1, renditions.size());
+        assertEquals(2, renditions.size());
+        Collections.sort(renditions, RENDITION_CMP);
         check(renditions.get(0), true);
 
         // get renditions with query
@@ -552,24 +566,27 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         ItemIterable<QueryResult> results = session.query(q, true, oc);
         assertEquals(1, results.getTotalNumItems());
         renditions = results.iterator().next().getRenditions();
-        assertEquals(1, renditions.size());
+        assertEquals(2, renditions.size());
+        Collections.sort(renditions, RENDITION_CMP);
         check(renditions.get(0), false);
         // no rendition stream, Chemistry deficiency (QueryResultImpl
         // constructor call to of.convertRendition with null)
     }
 
+    private static final int TEXT_PNG_ICON_SIZE = 394;
+
     protected void check(Rendition ren, boolean checkStream) {
         assertEquals("cmis:thumbnail", ren.getKind());
-        assertEquals("nx:icon", ren.getStreamId()); // nuxeo
+        assertEquals("nuxeo:icon", ren.getStreamId());
         assertEquals("image/png", ren.getMimeType());
         assertEquals("text.png", ren.getTitle());
-        assertEquals(394, ren.getLength());
+        assertEquals(TEXT_PNG_ICON_SIZE, ren.getLength());
         if (checkStream) {
             // get rendition stream
             ContentStream cs = ren.getContentStream();
             assertEquals("image/png", cs.getMimeType());
             assertEquals("text.png", cs.getFileName());
-            assertEquals(394, cs.getLength());
+            assertEquals(TEXT_PNG_ICON_SIZE, cs.getLength());
         }
     }
 

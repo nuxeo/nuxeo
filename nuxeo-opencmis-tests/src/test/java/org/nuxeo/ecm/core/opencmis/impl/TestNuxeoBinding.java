@@ -49,7 +49,6 @@ import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyString;
-import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.data.RepositoryCapabilities;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
@@ -2679,29 +2678,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ob);
         checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
         checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob); // ...
-    }
-
-    @Test
-    public void testRenditions() throws Exception {
-        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
-
-        // list renditions
-
-        List<RenditionData> renditions = objService.getRenditions(repositoryId,
-                ob.getId(), null, null, null, null);
-        assertEquals(1, renditions.size());
-        RenditionData ren = renditions.get(0);
-        assertEquals("cmis:thumbnail", ren.getKind());
-        assertEquals("nx:icon", ren.getStreamId()); // nuxeo
-        assertEquals("image/png", ren.getMimeType());
-        assertEquals("text.png", ren.getTitle());
-
-        // get rendition stream
-        ContentStream cs = objService.getContentStream(repositoryId,
-                ob.getId(), ren.getStreamId(), null, null, null);
-        assertEquals("image/png", cs.getMimeType());
-        assertEquals("text.png", cs.getFileName());
-        assertEquals(394, cs.getBigLength().longValue());
     }
 
     @Test

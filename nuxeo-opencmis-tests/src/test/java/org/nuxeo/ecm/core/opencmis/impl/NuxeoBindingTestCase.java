@@ -63,6 +63,19 @@ public class NuxeoBindingTestCase {
     public void setUp() throws Exception {
         nuxeotc = new NuxeoTestCase();
         nuxeotc.setUp();
+        deployBundles();
+        nuxeotc.openSession();
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(SessionParameter.BINDING_SPI_CLASS,
+                SessionParameter.LOCAL_FACTORY);
+        params.put(SessionParameter.LOCAL_FACTORY,
+                NuxeoCmisServiceFactory.class.getName());
+
+        init();
+    }
+
+    protected void deployBundles() throws Exception {
         // QueryMaker registration
         nuxeotc.deployBundle("org.nuxeo.ecm.core.opencmis.impl");
         // MyDocType
@@ -89,16 +102,6 @@ public class NuxeoBindingTestCase {
         // types
         nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
                 "OSGI-INF/types-contrib.xml");
-
-        nuxeotc.openSession();
-
-        Map<String, String> params = new HashMap<String, String>();
-        params.put(SessionParameter.BINDING_SPI_CLASS,
-                SessionParameter.LOCAL_FACTORY);
-        params.put(SessionParameter.LOCAL_FACTORY,
-                NuxeoCmisServiceFactory.class.getName());
-
-        init();
     }
 
     /** Init fields from session. */

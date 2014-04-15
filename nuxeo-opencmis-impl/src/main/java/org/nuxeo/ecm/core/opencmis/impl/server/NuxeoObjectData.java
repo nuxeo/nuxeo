@@ -63,6 +63,9 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
+import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
+import org.nuxeo.ecm.platform.rendition.service.RenditionService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Nuxeo implementation of a CMIS {@link ObjectData}, backed by a
@@ -70,7 +73,13 @@ import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
  */
 public class NuxeoObjectData implements ObjectData {
 
-    public static final String STREAM_ICON = "nx:icon";
+    public static final String REND_STREAM_ICON = "nuxeo:icon";
+
+    public static final String REND_KIND_CMIS_THUMBNAIL = "cmis:thumbnail";
+
+    public static final String REND_STREAM_RENDITION_PREFIX = "nuxeo:rendition:";
+
+    public static final String REND_KIND_NUXEO_RENDITION = "nuxeo:rendition";
 
     public NuxeoCmisService service;
 
@@ -309,31 +318,8 @@ public class NuxeoObjectData implements ObjectData {
             BigInteger maxItems, BigInteger skipCount, CallContext callContext) {
         try {
             List<RenditionData> list = new ArrayList<RenditionData>();
-            // first rendition is icon
-            String iconPath;
-            try {
-                iconPath = (String) doc.getPropertyValue(NuxeoTypeHelper.NX_ICON);
-            } catch (PropertyException e) {
-                iconPath = null;
-            }
-            InputStream is = getIconStream(iconPath, callContext);
-            if (is != null) {
-                RenditionDataImpl ren = new RenditionDataImpl();
-                ren.setStreamId(STREAM_ICON);
-                ren.setKind("cmis:thumbnail");
-                int slash = iconPath.lastIndexOf('/');
-                String filename = slash == -1 ? iconPath
-                        : iconPath.substring(slash + 1);
-                ren.setTitle(filename);
-                SimpleImageInfo info = new SimpleImageInfo(is);
-                ren.setBigLength(BigInteger.valueOf(info.getLength()));
-                ren.setBigWidth(BigInteger.valueOf(info.getWidth()));
-                ren.setBigHeight(BigInteger.valueOf(info.getHeight()));
-                ren.setMimeType(info.getMimeType());
-                list.add(ren);
-            }
-
-            // TODO other renditions from blob holder secondary blobs
+            list.addAll(getIconRendition(doc, callContext));
+            list.addAll(getRenditionServiceRenditions(doc, callContext));
             list = ListUtils.batchList(list, maxItems, skipCount, DEFAULT_MAX_RENDITIONS);
             return list;
         } catch (IOException e) {
@@ -341,7 +327,33 @@ public class NuxeoObjectData implements ObjectData {
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
+    }
 
+    protected static List<RenditionData> getIconRendition(DocumentModel doc,
+            CallContext callContext) throws ClientException, IOException {
+        String iconPath;
+        try {
+            iconPath = (String) doc.getPropertyValue(NuxeoTypeHelper.NX_ICON);
+        } catch (PropertyException e) {
+            iconPath = null;
+        }
+        InputStream is = getIconStream(iconPath, callContext);
+        if (is == null) {
+            return Collections.emptyList();
+        }
+        RenditionDataImpl ren = new RenditionDataImpl();
+        ren.setStreamId(REND_STREAM_ICON);
+        ren.setKind(REND_KIND_CMIS_THUMBNAIL);
+        int slash = iconPath.lastIndexOf('/');
+        String filename = slash == -1 ? iconPath
+                : iconPath.substring(slash + 1);
+        ren.setTitle(filename);
+        SimpleImageInfo info = new SimpleImageInfo(is);
+        ren.setBigLength(BigInteger.valueOf(info.getLength()));
+        ren.setBigWidth(BigInteger.valueOf(info.getWidth()));
+        ren.setBigHeight(BigInteger.valueOf(info.getHeight()));
+        ren.setMimeType(info.getMimeType());
+        return Collections.<RenditionData> singletonList(ren);
     }
 
     public static InputStream getIconStream(String iconPath, CallContext context)
@@ -357,6 +369,23 @@ public class NuxeoObjectData implements ObjectData {
             throw new CmisRuntimeException("Cannot get servlet context");
         }
         return servletContext.getResourceAsStream(iconPath);
+    }
+
+    protected static List<RenditionData> getRenditionServiceRenditions(
+            DocumentModel doc, CallContext callContext) throws ClientException,
+            IOException {
+        RenditionService renditionService = Framework.getLocalService(RenditionService.class);
+        List<RenditionDefinition> defs = renditionService.getAvailableRenditionDefinitions(doc);
+        List<RenditionData> list = new ArrayList<RenditionData>(defs.size());
+        for (RenditionDefinition def : defs) {
+            RenditionDataImpl ren = new RenditionDataImpl();
+            ren.setStreamId(REND_STREAM_RENDITION_PREFIX + def.getName());
+            ren.setKind(REND_KIND_NUXEO_RENDITION);
+            ren.setTitle(def.getLabel());
+            ren.setMimeType(def.getContentType());
+            list.add(ren);
+        }
+        return list;
     }
 
     @Override
