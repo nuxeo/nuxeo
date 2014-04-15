@@ -243,4 +243,18 @@ public interface CollectionManager {
             final DocumentModel documentToBeRemoved, final CoreSession session)
             throws ClientException;
 
+    /**
+     * Create a collection with a given name, description and path.
+     *
+     * @param session
+     * @param title
+     * @param description
+     * @param path
+     * @return
+     * @throws ClientException
+     *
+     * @since 5.9.4
+     */
+    DocumentModel createCollection(final CoreSession session, String title,
+            String description, String path) throws ClientException;
 }

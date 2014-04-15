@@ -26,6 +26,17 @@
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>
     </coreQueryPageProvider>
+    
+    <coreQueryPageProvider name="default_content_collection">
+      <property name="maxResults">PAGE_SIZE</property>
+      <pattern>
+        SELECT * FROM Document where ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+        'deleted' AND collectionMember:collectionIds/* = ?
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
 
   </extension>
 

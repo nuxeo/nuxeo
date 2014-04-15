@@ -55,4 +55,5 @@ public class CollectionConstants {
 
     public static final int MAX_COLLECTION_RETURNED = 100;
 
+    public static final String COLLECTION_CONTENT_PAGE_PROVIDER = "default_content_collection";
 }

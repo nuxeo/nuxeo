@@ -19,6 +19,8 @@ package org.nuxeo.ecm.collections.core.adapter;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -27,6 +29,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @since 5.9.3
  */
 public class CollectionMember {
+
+    private static final Log log = LogFactory.getLog(CollectionMember.class);
 
     protected DocumentModel document;
 
@@ -63,7 +67,9 @@ public class CollectionMember {
     public void removeFromCollection(final String documentId)
             throws ClientException {
         List<String> collectionIds = getCollectionIds();
-        collectionIds.remove(documentId);
+        if (!collectionIds.remove(documentId)) {
+            log.warn(String.format("Element '%s' is not present in the specified collection.", documentId));
+        }
         setCollectionIds(collectionIds);
     }
 

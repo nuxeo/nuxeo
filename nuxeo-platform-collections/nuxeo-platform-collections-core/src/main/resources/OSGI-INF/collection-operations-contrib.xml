@@ -4,6 +4,11 @@
              point="operations">
 
     <operation class="org.nuxeo.ecm.collections.core.automation.SuggestCollectionEntry" />
+    <operation class="org.nuxeo.ecm.collections.core.automation.CreateCollectionOperation" />
+    <operation class="org.nuxeo.ecm.collections.core.automation.AddToCollectionOperation" />
+    <operation class="org.nuxeo.ecm.collections.core.automation.RemoveFromCollectionOperation" />
+    <operation class="org.nuxeo.ecm.collections.core.automation.GetCollectionsOperation" />
+    <operation class="org.nuxeo.ecm.collections.core.automation.GetDocumentsFromCollectionOperation" />
 
   </extension>
 </component>

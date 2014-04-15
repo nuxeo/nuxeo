@@ -19,6 +19,7 @@ package org.nuxeo.ecm.collections.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.core.adapter.Collection;
@@ -171,10 +172,10 @@ public class CollectionManagerImpl extends DefaultComponent implements
     }
 
     protected DocumentModel createCollection(final String newTitle,
-            final String newDescription, final DocumentModel documentToBeAdded,
+            final String newDescription, final DocumentModel context,
             final CoreSession session) throws ClientException {
         DocumentModel defaultCollections = getUserDefaultCollections(
-                documentToBeAdded, session);
+                context, session);
         DocumentModel newCollection = session.createDocumentModel(
                 defaultCollections.getPath().toString(), newTitle,
                 CollectionConstants.COLLECTION_TYPE);
@@ -374,6 +375,31 @@ public class CollectionManagerImpl extends DefaultComponent implements
             }
 
         }.runUnrestricted();
+    }
+
+    @Override
+    public DocumentModel createCollection(final CoreSession session,
+            String title, String description, String path)
+            throws ClientException {
+        DocumentModel newCollection = null;
+        // Test if the path is null or empty
+        if (StringUtils.isEmpty(path)) {
+            // A default collection is created with the given name
+            newCollection = createCollection(title, description, null, session);
+        } else {
+            // If the path does not exist, an exception is thrown
+            if (!session.exists(new PathRef(path))) {
+                throw new ClientException(String.format(
+                                "Path \"%s\" specified in parameter not found", path));
+            }
+            // Create a new collection in the given path
+            DocumentModel collectionModel = session.createDocumentModel(path, title,
+                    CollectionConstants.COLLECTION_TYPE);
+            collectionModel.setProperty("dublincore", "title", title);
+            collectionModel.setProperty("dublincore", "description", description);
+            newCollection = session.createDocument(collectionModel);
+        }
+        return newCollection;
     }
 
 }
