@@ -19,12 +19,16 @@ package org.nuxeo.ecm.collections.core.automation;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import javax.servlet.ServletRequest;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -34,7 +38,6 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -69,11 +72,14 @@ public class SuggestCollectionEntry {
     @Context
     protected CollectionManager collectionManager;
 
+    @Param(name = "lang", required = false)
+    protected String lang;
+
     @Param(name = "searchTerm", required = false)
     protected String searchTerm;
 
     @OperationMethod
-    public Blob run() throws ClientException {
+    public Blob run() throws Exception {
         JSONArray result = new JSONArray();
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
@@ -84,12 +90,8 @@ public class SuggestCollectionEntry {
         Long targetPageSize = Long.valueOf(pageSize.longValue());
         Long targetPage = Long.valueOf(currentPageIndex.longValue());
         List<DocumentModel> docs = (DocumentModelList) pps.getPageProvider(
-                CollectionConstants.COLLECTION_PAGE_PROVIDER,
-                null,
-                targetPageSize,
-                targetPage,
-                props,
-                paramaters).getCurrentPage();
+                CollectionConstants.COLLECTION_PAGE_PROVIDER, null,
+                targetPageSize, targetPage, props, paramaters).getCurrentPage();
 
         boolean found = false;
         for (DocumentModel doc : docs) {
@@ -100,7 +102,20 @@ public class SuggestCollectionEntry {
             if (doc.getTitle().equals(searchTerm)) {
                 found = true;
             }
-            obj.element(Select2Common.LABEL, doc.getTitle());
+            if (doc.getTitle().startsWith(CollectionConstants.I18N_PREFIX)) {
+                obj.element(Select2Common.LABEL, I18NUtils.getMessageString(
+                        "messages",
+                        doc.getTitle().substring(
+                                CollectionConstants.I18N_PREFIX.length()),
+                        new Object[0], getLocale()));
+            } else {
+                obj.element(Select2Common.LABEL, doc.getTitle());
+            }
+            if (StringUtils.isNotBlank((String) doc.getProperty("common",
+                    "icon"))) {
+                obj.element(Select2Common.ICON,
+                        doc.getProperty("common", "icon"));
+            }
             obj.element(PATH, doc.getPath().toString());
             result.add(obj);
         }
@@ -108,10 +123,34 @@ public class SuggestCollectionEntry {
         if (!found && StringUtils.isNotBlank(searchTerm)) {
             JSONObject obj = new JSONObject();
             obj.element(Select2Common.LABEL, searchTerm);
-            obj.element(Select2Common.ID, CollectionConstants.MAGIC_PREFIX_ID + searchTerm);
+            obj.element(Select2Common.ID, CollectionConstants.MAGIC_PREFIX_ID
+                    + searchTerm);
             result.add(0, obj);
         }
 
         return new StringBlob(result.toString(), "application/json");
     }
+
+    protected ServletRequest getRequest() {
+        Object request = ctx.get("request");
+        if (request != null && request instanceof ServletRequest) {
+            return (ServletRequest) request;
+        }
+        return null;
+    }
+
+    protected Locale getLocale() {
+        return new Locale(getLang());
+    }
+
+    protected String getLang() {
+        if (lang == null) {
+            lang = (String) ctx.get("lang");
+            if (lang == null) {
+                lang = Select2Common.DEFAULT_LANG;
+            }
+        }
+        return lang;
+    }
+
 }
