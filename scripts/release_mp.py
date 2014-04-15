@@ -110,10 +110,13 @@ class ReleaseMP(object):
                 mp_release.log_summary()
                 mp_release.prepare(dryrun=dryrun)
                 prepared = True
-            except:
+            except Exception, e:
                 stack = traceback.format_exc()
+                if hasattr(e, 'message') and e.message is not None:
+                    stack = e.message + "\n" + stack
                 log("[ERROR] %s" % stack)
                 prepared = False
+                stack = stack.replace("%", "%%")
                 self.mp_config.set(marketplace, "skip", "Failed! %s" % stack)
             self.mp_config.set(marketplace, "prepared", str(prepared))
             self.repo.save_mp_config(self.mp_config)
@@ -165,10 +168,13 @@ class ReleaseMP(object):
                                      other_versions=other_versions)
                 mp_release.perform(dryrun=dryrun)
                 performed = True
-            except:
+            except Exception, e:
                 stack = traceback.format_exc()
+                if hasattr(e, 'message') and e.message is not None:
+                    stack = e.message + "\n" + stack
                 log("[ERROR] %s" % stack)
                 performed = False
+                stack = stack.replace("%", "%%")
                 self.mp_config.set(marketplace, "skip", "Failed! %s" % stack)
             self.mp_config.set(marketplace, "performed", str(performed))
             self.repo.save_mp_config(self.mp_config)
@@ -190,7 +196,7 @@ class ReleaseMP(object):
         """ Upload the given mp_file on the given Connect URL."""
         cmd = ("curl -i -n -F package=@%s %s%s"
                % (mp_file, url, "/site/marketplace/upload?batch=true"))
-        system(cmd, dryrun=dryrun)
+        system(cmd, run=(not dryrun))
 
     def test(self):
         """For current script development purpose."""
