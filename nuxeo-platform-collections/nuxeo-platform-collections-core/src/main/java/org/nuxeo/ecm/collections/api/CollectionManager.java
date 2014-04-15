@@ -185,6 +185,20 @@ public interface CollectionManager {
     boolean isCollection(final DocumentModel document);
 
     /**
+     * Check whether a document is in a given collection.
+     *
+     * @param collection the collection
+     * @param document the document to check
+     * @param session the session
+     * @throws ClientException
+     *
+     * @since 5.9.4
+     */
+    boolean isInCollection(final DocumentModel collection,
+            final DocumentModel document, final CoreSession session)
+            throws ClientException;
+
+    /**
      * Update all documents referenced by a collection to add a reference back
      * the collection. This is used when a creation is created by copy in order
      * to tell the members of a copied collection that they also belongs to the

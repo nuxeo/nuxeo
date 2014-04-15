@@ -302,6 +302,17 @@ public class CollectionManagerImpl extends DefaultComponent implements
     }
 
     @Override
+    public boolean isInCollection(DocumentModel collection,
+            DocumentModel document, CoreSession session) throws ClientException {
+        if (isCollected(document)) {
+            final CollectionMember collectionMemberAdapter = document.getAdapter(CollectionMember.class);
+            return collectionMemberAdapter.getCollectionIds().contains(
+                    collection.getId());
+        }
+        return false;
+    }
+
+    @Override
     public void processCopiedCollection(final DocumentModel collection)
             throws ClientException {
         Collection collectionAdapter = collection.getAdapter(Collection.class);

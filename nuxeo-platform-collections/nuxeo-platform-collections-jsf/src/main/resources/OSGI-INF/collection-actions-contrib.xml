@@ -49,11 +49,7 @@
     <action id="collectionContent" link="/incl/collection_content_listing.xhtml"
       order="-1" label="action.view.content">
       <category>VIEW_ACTION_LIST</category>
-      <filter id="collectionContentFilter">
-        <rule grant="true">
-          <type>Collection</type>
-        </rule>
-      </filter>
+      <filter-id>collectionContentFilter</filter-id>
     </action>
 
     <action id="collectionsCurrentSelectionDelete"
@@ -132,6 +128,12 @@
     </filter>
 
     <filter id="rights" append="true">
+      <rule grant="true">
+        <facet>Collection</facet>
+      </rule>
+    </filter>
+
+    <filter id="collectionContentFilter">
       <rule grant="true">
         <facet>Collection</facet>
       </rule>
