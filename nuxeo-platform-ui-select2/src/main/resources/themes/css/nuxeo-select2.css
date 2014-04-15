@@ -40,6 +40,10 @@ author: lkemen@nuxeo.com
 .select2-results img {
   margin: .1em .4em 0 0 }
 
+.select2-result-unselectable {
+  filter: alpha(opacity=30);
+  opacity: .3 }
+
 .select2-choices .select2-search-choice img {
   margin: 0 .2em -0.3em -0.4em }
 
