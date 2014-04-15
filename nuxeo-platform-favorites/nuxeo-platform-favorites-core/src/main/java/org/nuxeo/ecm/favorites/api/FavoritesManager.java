@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * @since 5.9.3
+ * @since 5.9.4
  */
 public interface FavoritesManager {
 
@@ -30,6 +30,9 @@ public interface FavoritesManager {
 
     boolean canAddToFavorites(final DocumentModel document)
             throws ClientException;
+
+    DocumentModel getFavorites(final DocumentModel context,
+            final CoreSession session) throws ClientException;
 
     boolean isFavorite(final DocumentModel document, final CoreSession session)
             throws ClientException;

@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.favorites.core;
 
 import org.nuxeo.ecm.collections.api.CollectionManager;
-import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -81,7 +80,8 @@ public class FavoritesManagerImpl extends DefaultComponent implements
         return doc;
     }
 
-    protected DocumentModel getFavorites(final DocumentModel context,
+    @Override
+    public DocumentModel getFavorites(final DocumentModel context,
             final CoreSession session) throws ClientException {
         final UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
         final DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(
@@ -117,9 +117,8 @@ public class FavoritesManagerImpl extends DefaultComponent implements
     @Override
     public boolean isFavorite(DocumentModel document, CoreSession session)
             throws ClientException {
-        CollectionMember collectionMemberAdapter = document.getAdapter(CollectionMember.class);
-        return collectionMemberAdapter.getCollectionIds().contains(
-                getFavorites(document, session).getId());
+        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        return collectionManager.isInCollection(getFavorites(document, session), document, session);
     }
 
     @Override
