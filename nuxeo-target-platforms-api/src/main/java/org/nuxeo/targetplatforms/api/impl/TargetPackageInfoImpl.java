@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.nuxeo.targetplatforms.api.TargetPackageInfo;
 
-
 /**
  * Describes a target package
  *
@@ -33,6 +32,7 @@ public class TargetPackageInfoImpl extends TargetInfoImpl implements
 
     protected List<String> dependencies;
 
+    // needed by GWT serialization
     protected TargetPackageInfoImpl() {
     }
 

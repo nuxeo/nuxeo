@@ -20,7 +20,6 @@
     </dependency>
   </dependencies>
 
-  <!-- no dependencies to be easily used by GWT code -->
   <build>
     <!-- gwt compiler needs the java sources to correctly work -->
     <resources>

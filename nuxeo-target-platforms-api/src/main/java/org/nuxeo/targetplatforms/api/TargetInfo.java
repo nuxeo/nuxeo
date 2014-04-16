@@ -88,6 +88,11 @@ public interface TargetInfo extends Serializable {
     boolean isTrial();
 
     /**
+     * Returns true if given target platform is a fast track
+     */
+    boolean isFastTrack();
+
+    /**
      * Returns true if given target information is overridden by directory
      * information.
      */

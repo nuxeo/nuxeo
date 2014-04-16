@@ -27,17 +27,7 @@ import java.util.List;
  */
 public interface TargetPlatform extends Target, Comparable<TargetPlatform> {
 
-    /**
-     * Returns true if given target platform is a fast track
-     */
-    boolean isFastTrack();
-
-    /**
-     * Returns true if given target information is available for trials.
-     */
-    boolean isTrial();
-
-    /**
+   /**
      * Return the list of ids of packages available on this target platform.
      */
     List<String> getAvailablePackagesIds();

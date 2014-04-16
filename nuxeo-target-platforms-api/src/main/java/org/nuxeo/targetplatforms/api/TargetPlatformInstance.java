@@ -29,11 +29,6 @@ import java.util.Map;
 public interface TargetPlatformInstance extends Target {
 
     /**
-     * Returns true if given target platform is a fast track.
-     */
-    boolean isFastTrack();
-
-    /**
      * Return the list of ids of packages enabled on this target platform.
      */
     List<String> getEnabledPackagesIds();

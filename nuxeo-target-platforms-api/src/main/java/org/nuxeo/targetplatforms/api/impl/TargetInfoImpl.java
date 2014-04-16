@@ -48,6 +48,8 @@ public class TargetInfoImpl implements TargetInfo {
 
     protected boolean restricted = false;
 
+    protected boolean fastTrack = false;
+
     protected boolean trial = false;
 
     protected Calendar releaseDate;
@@ -198,6 +200,15 @@ public class TargetInfoImpl implements TargetInfo {
 
     public void setTrial(boolean trial) {
         this.trial = trial;
+    }
+
+    @Override
+    public boolean isFastTrack() {
+        return fastTrack;
+    }
+
+    public void setFastTrack(boolean fastTrack) {
+        this.fastTrack = fastTrack;
     }
 
     public boolean isOverridden() {

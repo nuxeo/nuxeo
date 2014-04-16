@@ -103,6 +103,11 @@ public class TargetInfoExtension implements TargetInfo {
         return origInfo.isTrial();
     }
 
+    @Override
+    public boolean isFastTrack() {
+        return origInfo.isFastTrack();
+    }
+
     public boolean isOverridden() {
         return origInfo.isOverridden();
     }

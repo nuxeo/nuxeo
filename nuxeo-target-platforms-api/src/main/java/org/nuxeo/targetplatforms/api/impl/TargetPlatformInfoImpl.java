@@ -37,14 +37,10 @@ public class TargetPlatformInfoImpl extends TargetInfoImpl implements
 
     private static final long serialVersionUID = 1L;
 
-    protected boolean fastTrack = false;
-
     protected Map<String, TargetPackageInfo> availablePackagesInfo;
 
-    /**
-     * needed by gwt serialization
-     */
-    public TargetPlatformInfoImpl() {
+    // needed by GWT serialization
+    protected TargetPlatformInfoImpl() {
     }
 
     public TargetPlatformInfoImpl(String id, String name, String version,
@@ -87,14 +83,6 @@ public class TargetPlatformInfoImpl extends TargetInfoImpl implements
                 addAvailablePackageInfo(packInfo);
             }
         }
-    }
-
-    public boolean isFastTrack() {
-        return fastTrack;
-    }
-
-    public void setFastTrack(boolean fastTrack) {
-        this.fastTrack = fastTrack;
     }
 
     @Override

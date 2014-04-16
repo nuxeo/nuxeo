@@ -22,9 +22,8 @@ import java.util.List;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import org.nuxeo.targetplatforms.core.descriptors.TargetPackageDescriptor;
 
-
 /**
- * Registry for target platform contributions, handling merge on "enabled"
+ * Registry for target package contributions, handling merge on "enabled"
  * attribute only.
  *
  * @since 5.7.1

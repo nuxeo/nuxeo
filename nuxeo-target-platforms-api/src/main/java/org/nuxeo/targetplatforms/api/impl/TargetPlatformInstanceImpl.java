@@ -37,8 +37,6 @@ public class TargetPlatformInstanceImpl extends TargetImpl implements
 
     protected TargetPlatform parent;
 
-    protected boolean isFastTrack;
-
     protected Map<String, TargetPackage> enabledPackages;
 
     protected TargetPlatformInstanceImpl() {
@@ -52,15 +50,6 @@ public class TargetPlatformInstanceImpl extends TargetImpl implements
     public TargetPlatformInstanceImpl(String id, String name, String version,
             String refVersion, String label) {
         super(id, name, version, refVersion, label);
-    }
-
-    @Override
-    public boolean isFastTrack() {
-        return isFastTrack;
-    }
-
-    public void setFastTrack(boolean isFastTrack) {
-        this.isFastTrack = isFastTrack;
     }
 
     @Override

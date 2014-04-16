@@ -26,19 +26,9 @@ import java.util.List;
 public interface TargetPackage extends Target {
 
     /**
-     * Adds given target package id as a dependency.
-     */
-    void addDependency(String dependency);
-
-    /**
      * Returns the list of target packages that this target package depends on.
      */
     List<String> getDependencies();
-
-    /**
-     * Sets the list of target packages that this target package depends on.
-     */
-    void setDependencies(List<String> dependencies);
 
     /**
      * Returns the parent target package or null if there is no inheritance.

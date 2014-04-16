@@ -42,16 +42,8 @@ public class TargetPackageExtension extends TargetExtension implements
         this.origPackage = orig;
     }
 
-    public void addDependency(String dependency) {
-        origPackage.addDependency(dependency);
-    }
-
     public List<String> getDependencies() {
         return origPackage.getDependencies();
-    }
-
-    public void setDependencies(List<String> dependencies) {
-        origPackage.setDependencies(dependencies);
     }
 
     public TargetPackage getParent() {
