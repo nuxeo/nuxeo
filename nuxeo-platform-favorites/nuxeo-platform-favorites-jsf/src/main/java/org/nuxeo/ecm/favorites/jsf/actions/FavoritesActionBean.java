@@ -22,6 +22,7 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.Messages;
 import org.jboss.seam.international.StatusMessage;
@@ -31,6 +32,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.favorites.api.FavoritesManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -51,7 +53,11 @@ public class FavoritesActionBean {
                     "documentManager", true);
             if (!favoritesManager.isFavorite(currentDocument, session)) {
                 favoritesManager.addToFavorites(currentDocument, session);
+
                 navigationContext.invalidateCurrentDocument();
+
+                Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
+
                 final FacesMessages facesMessages = (FacesMessages) Component.getInstance(
                         "facesMessages", true);
                 facesMessages.add(StatusMessage.Severity.INFO,
@@ -112,7 +118,11 @@ public class FavoritesActionBean {
                     "documentManager", true);
             if (favoritesManager.isFavorite(currentDocument, session)) {
                 favoritesManager.removeFromFavorites(currentDocument, session);
+
                 navigationContext.invalidateCurrentDocument();
+
+                Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED);
+
                 final FacesMessages facesMessages = (FacesMessages) Component.getInstance(
                         "facesMessages", true);
                 facesMessages.add(
