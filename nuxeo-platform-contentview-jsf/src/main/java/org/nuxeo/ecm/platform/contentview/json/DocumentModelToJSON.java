@@ -133,10 +133,13 @@ public class DocumentModelToJSON implements PropertyVisitor {
             return null;
         }
 
+        // convert values if needed
         Serializable value = property.getValue();
         if (value instanceof Calendar) {
             value = dateFormat.format(((Calendar) value).getTime());
-        } else if (property.getParent().isList()) {
+        }
+        // build json
+        if (property.getParent().isList()) {
             ((JSONArray) arg).add(value);
         } else {
             try {
