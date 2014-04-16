@@ -54,9 +54,6 @@ public class ElasticSearchLocalConfig implements Serializable {
     public String getDataPath() {
         if (dataPath == null) {
             File dir = new File(Framework.getRuntime().getHome(), "data/elasticsearch");
-            if (!dir.exists()) {
-                dir.mkdir();
-            }
             dataPath = dir.getPath();
         }
         return dataPath;
@@ -68,7 +65,7 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     public String getLogPath() {
         if (logPath == null) {
-            File dir = new File(Framework.getRuntime().getHome(), "data/elasticsearch/log");
+            File dir = new File(Framework.getRuntime().getHome(), "data/elasticsearch-log");
             if (!dir.exists()) {
                 dir.mkdir();
             }
