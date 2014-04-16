@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         openSession();
         searchDocument = session.createDocumentModel("File");
         searchDocument.setPropertyValue("dc:title", "search keywords");
+        searchDocument.setPropertyValue("dc:modified", getModifiedDate());
 
         currentDocument = session.getRootDocument();
 
@@ -102,6 +104,12 @@ public class TestContentViewState extends SQLRepositoryTestCase {
             facesContext.relieveCurrent();
         }
         super.tearDown();
+    }
+
+    protected Calendar getModifiedDate() {
+        Calendar modified = Calendar.getInstance();
+        modified.setTimeInMillis(1397662663000L);
+        return modified;
     }
 
     @Test
@@ -312,6 +320,8 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         DocumentModel searchDoc = state.getSearchDocumentModel();
         assertNotNull(searchDoc);
         assertEquals("search keywords", searchDoc.getPropertyValue("dc:title"));
+        assertEquals(getModifiedDate(),
+                searchDoc.getPropertyValue("dc:modified"));
         assertNull(searchDoc.getPropertyValue("dc:description"));
         assertNull(state.getSortInfos());
 
@@ -349,6 +359,8 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         DocumentModel searchDoc = state.getSearchDocumentModel();
         assertNotNull(searchDoc);
         assertEquals("search keywords", searchDoc.getPropertyValue("dc:title"));
+        assertEquals(getModifiedDate(),
+                searchDoc.getPropertyValue("dc:modified"));
         assertNull(searchDoc.getPropertyValue("dc:description"));
 
         List<SortInfo> sortInfos = state.getSortInfos();
@@ -424,8 +436,8 @@ public class TestContentViewState extends SQLRepositoryTestCase {
     }
 
     /**
-     * Non regression test for NXP-11419, showing an issue when restoring with a
-     * search doc and a current page > 0
+     * Non regression test for NXP-11419, showing an issue when restoring with
+     * a search doc and a current page > 0
      */
     @Test
     public void testRestoreContentViewWithSearchDocAndCurrentPage()
@@ -501,7 +513,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 + "\"pageSize\":2,"
                 + "\"currentPage\":0,"
                 + "\"queryParameters\":[],"
-                + "\"searchDocument\":{\"type\":\"File\",\"properties\":{\"dc:title\":\"search keywords\",\"files\":[]}},"
+                + "\"searchDocument\":{\"type\":\"File\",\"properties\":{\"dc:modified\":\"2014-04-16T17:37:43+0200\",\"dc:title\":\"search keywords\",\"files\":[]}},"
                 + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":null," + "\"resultColumns\":[\"column_1\"]"
                 + "}";
@@ -509,7 +521,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
         assertEquals(
-                "H4sIAAAAAAAAAD2QTU%2FDMAyG%2FwryuQfgmNuUDrXSGFO3wQFNVZR6IyJNipNoKlX%2FO84qdnPej8dWJtDeRXTx3eB1q3oEAfLYNOvtoS3f5PE1D7KqNyVL7Ud9qNr9etXI6u5CAYO64N78cve5AJ2ImLdjDcRjAT8JadwpYnZECiA%2BTwUEVKS%2FSq9Tz1kQE8RxyLtfjMVMJD8gRYMhe50W0USb%2FaX48I3j1VMXOHrmxo06z8z1FGt39lmYbi%2FpbeodN%2B%2BQJbUKGl1n3AVEpIQzH0UYko0bNfrEJ7lk7b%2B2QDKUvyuP7ROc5j9KEp18PAEAAA%3D%3D",
+                "H4sIAAAAAAAAAD2QUWuDMBSF%2F8q4r7OgrayQt6IdCl1XrN0eRhGJ1y5MExcTihP%2F%2B24q7dvNued855IRuJIGpfkQeN2XLQKD6JRl231exO%2FR6c0NUZLuYpKKzzRPiuN2k0XJYwsedOUFj%2BKPsksPuNWaeAfSgPke%2FFrUw6HUxDaoe2BfZw96LDX%2FjhW3LXmBjWCGznW%2FigYdUasOtRHYu13FWasqUQusyLL0g3Dhh4vgJQ%2FWbLVm4erZX%2Fo%2BxchohGkcaG54%2BsHhqnTV07Im9K1%2BmugApU0qa%2BWE8faKVGNbSckHZHZteo6yEvICzGiLE12vsbeN2ZWDsnS7tE1z12aIg9K%2FurEI4Dz9A2Tpu0RlAQAA",
                 encodedJson);
     }
 
@@ -541,14 +553,14 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 + "\"pageSize\":2,"
                 + "\"currentPage\":0,"
                 + "\"queryParameters\":[],"
-                + "\"searchDocument\":{\"type\":\"File\",\"properties\":{\"dc:title\":\"search keywords\"}},"
+                + "\"searchDocument\":{\"type\":\"File\",\"properties\":{\"dc:modified\":\"2014-04-16T17:37:43+0200\",\"dc:title\":\"search keywords\"}},"
                 + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":null," + "\"resultColumns\":[\"column_1\"]"
                 + "}";
         ContentViewState state = JSONContentViewState.fromJSON(json, false);
         checkContentViewStateWithSearchDoc(state, false, true);
 
-        String encodedJson = "H4sIAAAAAAAAAD2QTU%2FDMAyG%2FwryuYfBMbcpHWqlsU3dBgc0VVFqRkSaFCfRVKr%2BdxwqdnPej8dWJtDeRXTx1eBtp3oEAfLcNJvdqS338vySB1nV25Kl9q0%2BVe1xs25kdXehgEFd8Wh%2BuPtUgE5EzDuwBmJVwHdCGg%2BKmB2RAoj3SwEBFenP0uvUcxbEBHEc8u5nYzETyQ9I0WDIXqdFNNFmfyk%2BfOF489QFmGeGeYq1%2B%2FCZPf29pLepdxy%2FN5fUOmh0nXFXEJESznwJYUg2btXoE9%2FhkrX%2F2gLJUP6jPLaPcJl%2FAbtiVTcxAQAA";
+        String encodedJson = "H4sIAAAAAAAAAD2QUWuDMBSF%2F8q4r7OgrayQt6IdCl1XrN0eRhGJ1y5MExcTihP%2F%2B24q7dvNued855IRuJIGpfkQeN2XLQKD6JRl231exO%2FR6c0NUZLuYpKKzzRPiuN2k0XJYwsedOUFj%2BKPsksPuNWaeAfSgPke%2FFrUw6HUxDaoe2BfZw96LDX%2FjhW3LXmBjWCGznW%2FigYdUasOtRHYu13FWasqUQusyLL0g3Dhh4vgJQ%2FWbLVm4erZX%2Fo%2BxchohGkcaG54%2BsHhqnTV07Im9K1%2BmugApU0qa%2BWE8faKVGNbSckHZHZteo6yEvICzGiLE12vsbeN2ZWDsnS7tE1z12aIg9K%2FurEI4Dz9A2Tpu0RlAQAA";
 
         state = JSONContentViewState.fromJSON(encodedJson, true);
         checkContentViewStateWithSearchDoc(state, false, true);
