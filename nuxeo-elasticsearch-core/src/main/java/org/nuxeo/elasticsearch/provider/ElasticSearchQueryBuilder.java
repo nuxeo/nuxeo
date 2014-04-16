@@ -121,9 +121,9 @@ public class ElasticSearchQueryBuilder {
             }
             String name = predicate.getParameter();
             String operator = predicate.getOperator().toUpperCase();
-            if ("FULLTEXT".equals(operator)) {
+            if ("FULLTEXT".equals(operator) || "FULLTEXT ALL".equals(operator)) {
                 operator = "=";
-                if (! name.startsWith(NXQL.ECM_FULLTEXT)) {
+                if (!name.startsWith(NXQL.ECM_FULLTEXT)) {
                     name = NXQL.ECM_FULLTEXT + "." + name;
                 }
             }
