@@ -52,7 +52,7 @@ public class GetDocumentsFromCollectionOperation {
     @OperationMethod
     public PaginableDocumentModelListImpl run(DocumentModel collection)
             throws Exception {
-        Map<String, Object> vars = new HashMap<String, Object>();
+        Map<String, Object> vars = ctx.getVars();
         vars.put("searchTerm", collection.getId());
         vars.put("providerName",
                 CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER);

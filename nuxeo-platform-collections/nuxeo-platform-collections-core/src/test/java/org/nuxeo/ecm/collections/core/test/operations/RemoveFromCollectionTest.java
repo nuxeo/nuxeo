@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -78,13 +79,14 @@ public class RemoveFromCollectionTest extends CollectionOperationsTestCase {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(listDocs.get(0));
 
-        service.run(ctx, chain);
+        DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
 
         // Test the result of the operation
         assertFalse(collectionAdapter.getCollectedDocumentIds().contains(
                 listDocs.get(0).getId()));
         assertEquals(listDocs.size() - 1,
                 collectionAdapter.getCollectedDocumentIds().size());
+        assertEquals(listDocs.get(0).getId(), resultDoc.getId());
     }
 
     @Test
@@ -100,10 +102,11 @@ public class RemoveFromCollectionTest extends CollectionOperationsTestCase {
         DocumentModelList listDocModel = new DocumentModelListImpl(listDocs);
         ctx.setInput(listDocModel);
 
-        service.run(ctx, chain);
+        DocumentModelList listDocResult = (DocumentModelList) service.run(ctx, chain);
 
         // Test the result of the operation
         assertEquals(0, collectionAdapter.getCollectedDocumentIds().size());
+        assertEquals(listDocs.size(), listDocResult.size());
         for (DocumentModel doc : listDocModel) {
             assertFalse(collectionAdapter.getCollectedDocumentIds().contains(
                     doc.getId()));
@@ -131,6 +134,9 @@ public class RemoveFromCollectionTest extends CollectionOperationsTestCase {
         } catch (Exception e) {
             // Behavior expected
             return;
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
         fail("Document not in collection");
     }

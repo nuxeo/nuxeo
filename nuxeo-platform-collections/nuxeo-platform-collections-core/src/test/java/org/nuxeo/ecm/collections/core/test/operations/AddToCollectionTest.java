@@ -72,12 +72,13 @@ public class AddToCollectionTest extends CollectionOperationsTestCase {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(listDocs.get(0));
 
-        service.run(ctx, chain);
+        DocumentModel resultDoc = (DocumentModel) service.run(ctx, chain);
 
         // Test the result of the operation
         Collection collectionAdapter = collection.getAdapter(Collection.class);
         assertTrue(collectionAdapter.getCollectedDocumentIds().contains(listDocs.get(0).getId()));
         assertEquals(1, collectionAdapter.getCollectedDocumentIds().size());
+        assertEquals(listDocs.get(0).getId(), resultDoc.getId());
     }
 
     @Test
@@ -89,13 +90,15 @@ public class AddToCollectionTest extends CollectionOperationsTestCase {
         DocumentModelList listDocModel = new DocumentModelListImpl(listDocs);
         ctx.setInput(listDocModel);
 
-        service.run(ctx, chain);
+        DocumentModelList listDocResult = (DocumentModelList) service.run(ctx, chain);
 
         // Test the result of the operation
         Collection collectionAdapter = collection.getAdapter(Collection.class);
         assertEquals(listDocs.size(), collectionAdapter.getCollectedDocumentIds().size());
+        assertEquals(listDocs.size(), listDocResult.size());
         for (DocumentModel doc : listDocModel) {
             assertTrue(collectionAdapter.getCollectedDocumentIds().contains(doc.getId()));
+            assertEquals(doc.getId(), listDocResult.get(listDocs.indexOf(doc)).getId());
         }
     }
 
@@ -117,6 +120,9 @@ public class AddToCollectionTest extends CollectionOperationsTestCase {
             fail("File is not a proper file");
         } catch(TraceException e) {
             return;
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
     }
 }

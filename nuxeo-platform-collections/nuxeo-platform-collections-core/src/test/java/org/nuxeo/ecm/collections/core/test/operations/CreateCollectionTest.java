@@ -18,6 +18,7 @@ package org.nuxeo.ecm.collections.core.test.operations;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,10 +29,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.TraceException;
 import org.nuxeo.ecm.collections.core.automation.CreateCollectionOperation;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Class testing the operation "Collection.CreateCollection".
@@ -40,17 +43,11 @@ import org.nuxeo.ecm.core.api.PathRef;
  */
 public class CreateCollectionTest extends CollectionOperationsTestCase {
 
-    private DocumentModel doc;
-
     @Before
     public void setup() throws ClientException {
         testWorkspace = session.createDocumentModel(
                 "/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
-
-        doc = session.createDocumentModel(testWorkspace.getPath().toString(),
-                "test", "File");
-        session.createDocument(doc);
         session.save();
     }
 
@@ -59,13 +56,11 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", COLLECTION_NAME);
         params.put("description", COLLECTION_DESCRIPTION);
-        params.put("path", null);
 
         chain = new OperationChain("test-chain");
         chain.add(CreateCollectionOperation.ID).from(params);
 
         OperationContext ctx = new OperationContext(session);
-        ctx.setInput(session.getRootDocument());
 
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
         assertNotNull(doc);
@@ -79,13 +74,12 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("name", COLLECTION_NAME);
         params.put("description", COLLECTION_DESCRIPTION);
-        params.put("path", testWorkspace.getPathAsString());
 
         chain = new OperationChain("test-chain");
         chain.add(CreateCollectionOperation.ID).from(params);
 
         OperationContext ctx = new OperationContext(session);
-        ctx.setInput(session.getRootDocument());
+        ctx.setInput(testWorkspace);
 
         DocumentModel doc = (DocumentModel) service.run(ctx, chain);
         assertNotNull(doc);
@@ -94,5 +88,34 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
 
         String collectionPath = testWorkspace.getPathAsString() + "/" + COLLECTION_NAME;
         assertTrue(session.exists(new PathRef(collectionPath)));
+    }
+
+    @Test
+    public void testCreateCollectionOnWrongDocument() throws Exception {
+        DocumentModel doc = session.createDocumentModel(testWorkspace.getPath().toString(),
+                "test", "File");
+        session.createDocument(doc);
+        session.save();
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", COLLECTION_NAME);
+        params.put("description", COLLECTION_DESCRIPTION);
+
+        chain = new OperationChain("test-chain");
+        chain.add(CreateCollectionOperation.ID).from(params);
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(doc);
+
+        try {
+            service.run(ctx, chain);
+            // Should fail before
+            fail("Document is not a File");
+        } catch( TraceException e) {
+            return;
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 }

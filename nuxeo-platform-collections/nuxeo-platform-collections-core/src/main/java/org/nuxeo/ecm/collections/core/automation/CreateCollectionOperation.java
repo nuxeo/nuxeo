@@ -49,11 +49,13 @@ public class CreateCollectionOperation {
     @Param(name = "description", required = false)
     protected String description;
 
-    @Param(name = "path", required = false)
-    protected String path;
+    @OperationMethod
+    public DocumentModel run(DocumentModel doc) throws ClientException {
+        return collectionManager.createCollection(session, name, description, doc.getPathAsString());
+    }
 
     @OperationMethod
     public DocumentModel run() throws ClientException {
-        return collectionManager.createCollection(session, name, description, path);
+        return collectionManager.createCollection(session, name, description, null);
     }
 }

@@ -38,7 +38,7 @@ import com.google.inject.Inject;
  * @since 5.9.4
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
+@Features({TransactionalFeature.class, PlatformFeature.class})
 @Deploy({"org.nuxeo.ecm.platform.collections.core",
     "org.nuxeo.ecm.automation.core",
     "org.nuxeo.ecm.automation.features",

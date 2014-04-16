@@ -47,14 +47,18 @@ public class RemoveFromCollectionOperation {
     protected DocumentModel collection;
 
     @OperationMethod
-    public void run(DocumentModelList docs) throws ClientException {
+    public DocumentModelList run(DocumentModelList docs) throws ClientException {
         for (DocumentModel doc : docs) {
             collectionManager.removeFromCollection(collection, doc, session);
         }
+
+        return docs;
     }
 
     @OperationMethod
-    public void run(DocumentModel doc) throws ClientException {
+    public DocumentModel run(DocumentModel doc) throws ClientException {
         collectionManager.removeFromCollection(collection, doc, session);
+
+        return doc;
     }
 }
