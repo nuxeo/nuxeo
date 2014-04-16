@@ -29,23 +29,25 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.9.3
@@ -62,6 +64,9 @@ public class SuggestCollectionEntry {
 
     @Param(name = "pageSize", required = false)
     protected Integer pageSize = 20;
+
+    @Context
+    protected AutomationService service;
 
     @Context
     protected OperationContext ctx;
@@ -84,14 +89,23 @@ public class SuggestCollectionEntry {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
-        PageProviderService pps = Framework.getLocalService(PageProviderService.class);
-        Object[] paramaters = new Object[1];
-        paramaters[0] = searchTerm + (searchTerm.endsWith("%") ? "" : "%");
-        Long targetPageSize = Long.valueOf(pageSize.longValue());
-        Long targetPage = Long.valueOf(currentPageIndex.longValue());
-        List<DocumentModel> docs = (DocumentModelList) pps.getPageProvider(
-                CollectionConstants.COLLECTION_PAGE_PROVIDER, null,
-                targetPageSize, targetPage, props, paramaters).getCurrentPage();
+
+        Map<String, Object> vars = ctx.getVars();
+
+        StringList sl = new StringList();
+        sl.add(searchTerm + (searchTerm.endsWith("%") ? "" : "%"));
+        sl.add(DocumentPageProviderOperation.CURRENT_USERID_PATTERN);
+        vars.put("queryParams", sl);
+        vars.put("providerName", CollectionConstants.COLLECTION_PAGE_PROVIDER);
+        OperationContext subctx = new OperationContext(ctx.getCoreSession(),
+                vars);
+        OperationChain chain = new OperationChain("operation");
+        OperationParameters oparams = new OperationParameters(
+                DocumentPageProviderOperation.ID, vars);
+        chain.add(oparams);
+        @SuppressWarnings("unchecked")
+        List<DocumentModel> docs = (List<DocumentModel>) service.run(subctx,
+                chain);
 
         boolean found = false;
         for (DocumentModel doc : docs) {

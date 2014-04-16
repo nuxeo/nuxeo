@@ -8,9 +8,11 @@
       <property name="maxResults">PAGE_SIZE</property>
       <pattern>
         SELECT * FROM Document WHERE dc:title ILIKE ? AND ecm:mixinType = 'Collection' AND
+        (ecm:primaryType != 'Favorites' OR (ecm:primaryType = 'Favorites' AND dc:creator = ?)) AND
         ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
       </pattern>
+      <parameter>#{currentUser.id}</parameter>
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>
     </coreQueryPageProvider>

@@ -18,6 +18,7 @@
           <fixedPart>
             ecm:mixinType = 'Collection' AND ecm:mixinType !=
             'HiddenInNavigation'
+            AND ecm:primaryType != 'Favorites'
             AND ecm:isCheckedInVersion = 0 AND
             ecm:currentLifeCycleState != 'deleted'
           </fixedPart>
