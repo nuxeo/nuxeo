@@ -4,7 +4,6 @@
     <groupId>org.nuxeo.elasticsearch</groupId>
     <artifactId>nuxeo-elasticsearch-parent</artifactId>
     <version>5.9.3-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.elasticsearch</groupId>
