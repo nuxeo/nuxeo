@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.collections.core.automation;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
