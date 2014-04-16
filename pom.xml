@@ -30,11 +30,6 @@
         <artifactId>elasticsearch</artifactId>
         <version>${elasticsearch.version}</version>
       </dependency>
-     <dependency>
-       <groupId>org.nuxeo.elasticsearch</groupId>
-       <artifactId>nuxeo-elasticsearch-core</artifactId>
-       <version>${nuxeo.features.version}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
