@@ -96,11 +96,6 @@
        <elasticSearchIndex name="nuxeo" type="doc" create="true">
          <settings></settings>
          <mapping></mapping>
-         <fulltext>
-            <field>dc:title</field>
-            <field>dc:description</field>
-            <field>note:note</field>
-         </fulltext>
        </elasticSearchIndex>
       </code>
 
@@ -117,8 +112,6 @@
 
     mapping the Elasticsearch mapping for the type
     @see http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping.html
-
-    fulltext/field a list fo Nuxeo field that should be searched as fulltext.
 
     @Since 5.9.3
     </documentation>

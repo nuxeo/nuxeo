@@ -130,7 +130,6 @@
              "type" : "string"
            },
            "fulltext" : {
-             "boost": 1.5,
              "type": "string",
              "analyzer" : "fulltext"
           }
