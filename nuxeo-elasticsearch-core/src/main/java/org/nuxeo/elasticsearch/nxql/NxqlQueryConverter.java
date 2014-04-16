@@ -278,7 +278,7 @@ public class NxqlQueryConverter {
             }
             query = QueryBuilders.simpleQueryString((String) value)
                     .field(field)
-                    .defaultOperator(SimpleQueryStringBuilder.Operator.AND)
+                    .defaultOperator(SimpleQueryStringBuilder.Operator.OR)
                     .analyzer("fulltext");
             if ("!=".equals(op) || "<>".equals(op) || "NOT LIKE".equals(op)) {
                 filter = FilterBuilders.notFilter(FilterBuilders
