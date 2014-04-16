@@ -28,6 +28,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 
@@ -55,7 +56,10 @@ public class GetCollectionsOperation {
     public PaginableDocumentModelListImpl run() throws Exception {
 
         Map<String, Object> vars = ctx.getVars();
-        vars.put("searchTerm", searchTerm);
+        StringList sl = new StringList();
+        sl.add(searchTerm + (searchTerm.endsWith("%") ? "" : "%"));
+        sl.add(DocumentPageProviderOperation.CURRENT_USERID_PATTERN);
+        vars.put("queryParams", sl);
         vars.put("providerName", CollectionConstants.COLLECTION_PAGE_PROVIDER);
 
         OperationContext subctx = new OperationContext(ctx.getCoreSession(),
