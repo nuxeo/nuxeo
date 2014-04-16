@@ -523,7 +523,7 @@ public class TestPageProvider {
                 "        \"query\" : \"you know for search\",\n" +
                 "        \"fields\" : [ \"_all\" ],\n" +
                 "        \"analyzer\" : \"fulltext\",\n" +
-                "        \"default_operator\" : \"and\"\n" +
+                "        \"default_operator\" : \"or\"\n" +
                 "      }\n" +
                 "    } ]\n" +
                 "  }\n" +
