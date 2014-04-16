@@ -1123,6 +1123,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         boolean ok = false;
         checkConnectionValid();
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("callInTransaction setAutoCommit " + !tx);
+            }
             connection.setAutoCommit(!tx);
         } catch (SQLException e) {
             throw new StorageException("Cannot set auto commit mode onto " + this + "'s connection", e);
@@ -1143,8 +1146,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             if (tx) {
                 try {
                     if (ok) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("callInTransaction commit");
+                        }
                         connection.commit();
                     } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("callInTransaction rollback");
+                        }
                         connection.rollback();
                     }
                 } catch (SQLException e) {
@@ -1156,6 +1165,14 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public Lock getLock(Serializable id) throws StorageException {
+        if (log.isDebugEnabled()) {
+            try {
+                log.debug("getLock " + id + " while autoCommit="
+                        + connection.getAutoCommit());
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
         RowId rowId = new RowId(Model.LOCK_TABLE_NAME, id);
         Row row;
         try {
@@ -1171,6 +1188,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     @Override
     public Lock setLock(final Serializable id, final Lock lock) throws StorageException {
+        if (log.isDebugEnabled()) {
+            log.debug("setLock " + id + " owner=" + lock.getOwner());
+        }
         SetLock call = new SetLock(id, lock);
         return callInTransaction(call, clusteringEnabled);
     }
@@ -1203,6 +1223,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public Lock removeLock(final Serializable id, final String owner, final boolean force)
             throws StorageException {
+        if (log.isDebugEnabled()) {
+            log.debug("setLock " + id + " owner=" + owner + " force=" + force);
+        }
         RemoveLock call = new RemoveLock(id, owner, force);
         return callInTransaction(call, !force);
     }
