@@ -541,7 +541,7 @@ public class TestNxqlConversion {
                 "    \"query\" : \"+foo -bar\",\n" +
                 "    \"fields\" : [ \"_all\" ],\n" +
                 "    \"analyzer\" : \"fulltext\",\n" +
-                "    \"default_operator\" : \"and\"\n" +
+                "    \"default_operator\" : \"or\"\n" +
                 "  }\n" +
                 "}", es);
         es = NxqlQueryConverter.toESQueryBuilder(
@@ -557,7 +557,7 @@ public class TestNxqlConversion {
                 "              \"query\" : \"+foo -bar\",\n" +
                 "              \"fields\" : [ \"dc:title.fulltext\" ],\n" +
                 "              \"analyzer\" : \"fulltext\",\n" +
-                "              \"default_operator\" : \"and\"\n" +
+                "              \"default_operator\" : \"or\"\n" +
                 "            }\n" +
                 "          }\n" +
                 "        }\n" +
