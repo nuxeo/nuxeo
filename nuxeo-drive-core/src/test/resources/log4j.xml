@@ -22,11 +22,6 @@
     </layout>
   </appender>
 
-  <category
-    name="org.nuxeo.runtime.api.ConnectionHelper">
-    <priority value="DEBUG" />
-  </category>
-
   <root>
     <priority value="TRACE" />
     <appender-ref ref="CONSOLE" />
