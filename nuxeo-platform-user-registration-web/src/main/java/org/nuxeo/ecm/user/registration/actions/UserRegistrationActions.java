@@ -409,7 +409,8 @@ public class UserRegistrationActions implements Serializable {
         try {
             userRegistrationService.submitRegistrationRequest(
                     configurationName, userinfo, docinfo,
-                    getAdditionalsParameters(), EMAIL, false, documentManager.getPrincipal().getName());
+                    getAdditionalsParameters(), EMAIL, false,
+                    documentManager.getPrincipal().getName());
 
             facesMessages.add(
                     INFO,

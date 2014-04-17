@@ -168,8 +168,8 @@ public class UserRegistrationComponent extends UserInvitationComponent
 
     public String submitRegistrationRequest(UserRegistrationInfo userInfo,
             Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept, String principalName)
-            throws ClientException {
+            ValidationMethod validationMethod, boolean autoAccept,
+            String principalName) throws ClientException {
         return submitRegistrationRequest(CONFIGURATION_NAME, userInfo,
                 new DocumentRegistrationInfo(), additionnalInfo,
                 validationMethod, autoAccept, principalName);
@@ -179,8 +179,9 @@ public class UserRegistrationComponent extends UserInvitationComponent
     public String submitRegistrationRequest(String configurationName,
             UserRegistrationInfo userInfo, DocumentRegistrationInfo docInfo,
             Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept, String principalName)
-            throws ClientException, UserRegistrationException {
+            ValidationMethod validationMethod, boolean autoAccept,
+            String principalName) throws ClientException,
+            UserRegistrationException {
         RegistrationCreator creator = new RegistrationCreator(
                 configurationName, userInfo, docInfo, additionnalInfo,
                 validationMethod, principalName);
