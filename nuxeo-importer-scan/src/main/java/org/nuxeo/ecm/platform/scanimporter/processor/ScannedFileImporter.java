@@ -156,10 +156,10 @@ public class ScannedFileImporter {
      */
     private ImporterDocumentModelFactory initDocumentModelFactory(
             ImporterConfig config) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        Class<? extends DefaultDocumentModelFactory> factoryClass = Framework.getLocalService(
+        Class<? extends ImporterDocumentModelFactory> factoryClass = Framework.getLocalService(
                 DefaultImporterService.class).getDocModelFactoryClass();
 //        Class<? extends DefaultDocumentModelFactory> factoryClass = ScanedFileFactory.class;
-        Constructor<? extends DefaultDocumentModelFactory> cst = null;
+        Constructor<? extends ImporterDocumentModelFactory> cst = null;
 
         try {
             cst = factoryClass.getConstructor(ImporterConfig.class);

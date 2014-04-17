@@ -24,6 +24,7 @@ import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
 import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
 import org.nuxeo.ecm.platform.importer.executor.DefaultImporterExecutor;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
+import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
@@ -34,11 +35,11 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
     private static Log log = LogFactory.getLog(DefaultImporterServiceImpl.class);
 
-    private Class<? extends DefaultDocumentModelFactory> docModelFactoryClass;
+    private Class<? extends ImporterDocumentModelFactory> docModelFactoryClass;
 
     private Class<? extends SourceNode> sourceNodeClass;
 
-    private DefaultDocumentModelFactory documentModelFactory;
+    private ImporterDocumentModelFactory documentModelFactory;
 
     private String folderishDocType;
 
@@ -116,12 +117,15 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
             String sourcePath, boolean skipRootContainerCreation,
             int batchSize, int noImportingThreads, boolean interactive)
             throws ClientException {
-        DefaultDocumentModelFactory defaultDocModelFactory = getDocumentModelFactory();
+        ImporterDocumentModelFactory docModelFactory = getDocumentModelFactory();
+        if (docModelFactory instanceof DefaultDocumentModelFactory) {
+            DefaultDocumentModelFactory defaultDocModelFactory = (DefaultDocumentModelFactory) docModelFactory;
         defaultDocModelFactory.setLeafType(leafType == null ? getLeafDocType()
                 : leafType);
         defaultDocModelFactory.setFolderishType(folderishType == null ? getFolderishDocType()
                 : folderishType);
-        setDocumentModelFactory(defaultDocModelFactory);
+        }
+        setDocumentModelFactory(docModelFactory);
         String res = importDocuments(executor, destinationPath, sourcePath,
                 skipRootContainerCreation, batchSize, noImportingThreads,
                 interactive);
@@ -132,7 +136,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
     @Override
     public void setDocModelFactoryClass(
-            Class<? extends DefaultDocumentModelFactory> docModelFactoryClass) {
+            Class<? extends ImporterDocumentModelFactory> docModelFactoryClass) {
         this.docModelFactoryClass = docModelFactoryClass;
     }
 
@@ -156,7 +160,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
         return sourceNode;
     }
 
-    protected DefaultDocumentModelFactory getDocumentModelFactory() {
+    protected ImporterDocumentModelFactory getDocumentModelFactory() {
         if (documentModelFactory == null) {
             if (docModelFactoryClass != null
                     && DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
@@ -173,7 +177,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     }
 
     protected void setDocumentModelFactory(
-            DefaultDocumentModelFactory documentModelFactory) {
+            ImporterDocumentModelFactory documentModelFactory) {
         this.documentModelFactory = documentModelFactory;
     }
 
@@ -216,7 +220,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
      * @since 5.7.3
      */
     @Override
-    public Class<? extends DefaultDocumentModelFactory> getDocModelFactoryClass() {
+    public Class<? extends ImporterDocumentModelFactory> getDocModelFactoryClass() {
         return docModelFactoryClass;
     }
 

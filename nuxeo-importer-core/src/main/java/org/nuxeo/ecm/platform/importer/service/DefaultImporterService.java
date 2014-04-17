@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.importer.service;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
+import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 
@@ -110,7 +111,7 @@ public interface DefaultImporterService {
     void setSourceNodeClass(Class<? extends SourceNode> sourceNodeClass);
 
     void setDocModelFactoryClass(
-            Class<? extends DefaultDocumentModelFactory> docModelFactoryClass);
+            Class<? extends ImporterDocumentModelFactory> docModelFactoryClass);
 
     void setLeafDocType(String fileDocType);
 
@@ -130,6 +131,6 @@ public interface DefaultImporterService {
      * @since 5.7.3
      */
     @Deprecated
-    Class<? extends DefaultDocumentModelFactory> getDocModelFactoryClass();
+    Class<? extends ImporterDocumentModelFactory> getDocModelFactoryClass();
 
 }
