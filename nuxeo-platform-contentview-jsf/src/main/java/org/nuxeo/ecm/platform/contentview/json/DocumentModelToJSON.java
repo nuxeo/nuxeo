@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
@@ -136,6 +137,7 @@ public class DocumentModelToJSON implements PropertyVisitor {
         // convert values if needed
         Serializable value = property.getValue();
         if (value instanceof Calendar) {
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             value = dateFormat.format(((Calendar) value).getTime());
         }
         // build json
