@@ -101,9 +101,6 @@
           </fulltext>
 </#if>
         </indexing>
-<#if "${nuxeo.db.type}" == "mssql">
-        <aclOptimizations enabled="true" concurrentUpdate="false"/>
-</#if>
 <#if "${nuxeo.db.type}" != "mysql">
         <usersSeparator key="${nuxeo.db.user_separator_key}" />
 </#if>
