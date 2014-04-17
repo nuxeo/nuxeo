@@ -1172,16 +1172,24 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         } finally {
             if (tx) {
                 try {
-                    if (ok) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("callInTransaction commit");
+                    try {
+                        if (ok) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("callInTransaction commit");
+                            }
+                            connection.commit();
+                        } else {
+                            if (log.isDebugEnabled()) {
+                                log.debug("callInTransaction rollback");
+                            }
+                            connection.rollback();
                         }
-                        connection.commit();
-                    } else {
+                    } finally {
+                        // restore autoCommit=true
                         if (log.isDebugEnabled()) {
-                            log.debug("callInTransaction rollback");
+                            log.debug("callInTransaction restoring autoCommit=true");
                         }
-                        connection.rollback();
+                        connection.setAutoCommit(true);
                     }
                 } catch (SQLException e) {
                     throw new StorageException(e);
@@ -1251,7 +1259,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     public Lock removeLock(final Serializable id, final String owner, final boolean force)
             throws StorageException {
         if (log.isDebugEnabled()) {
-            log.debug("setLock " + id + " owner=" + owner + " force=" + force);
+            log.debug("removeLock " + id + " owner=" + owner + " force=" + force);
         }
         RemoveLock call = new RemoveLock(id, owner, force);
         return callInTransaction(call, !force);
