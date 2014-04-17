@@ -171,8 +171,6 @@ public abstract class Dialect {
 
     protected final boolean aclOptimizationsEnabled;
 
-    protected final boolean aclOptimizationsConcurrentUpdate;
-
     /**
      * @since 5.7
      */
@@ -270,7 +268,6 @@ public abstract class Dialect {
         if (repositoryDescriptor == null) {
             fulltextDisabled = true;
             aclOptimizationsEnabled = false;
-            aclOptimizationsConcurrentUpdate = false;
             readAclMaxSize = 0;
             clusteringEnabled = false;
             softDeleteEnabled = false;
@@ -278,7 +275,6 @@ public abstract class Dialect {
         } else {
             fulltextDisabled = repositoryDescriptor.getFulltextDisabled();
             aclOptimizationsEnabled = repositoryDescriptor.getAclOptimizationsEnabled();
-            aclOptimizationsConcurrentUpdate = repositoryDescriptor.getAclOptimizationsConcurrentUpdate();
             readAclMaxSize = repositoryDescriptor.getReadAclMaxSize();
             clusteringEnabled = repositoryDescriptor.getClusteringEnabled();
             softDeleteEnabled = repositoryDescriptor.getSoftDeleteEnabled();
@@ -1457,14 +1453,6 @@ public abstract class Dialect {
      */
     public boolean supportsReadAcl() {
         return false;
-    }
-
-    /**
-     * Does the dialect support concurrent update of optimized security checks
-     *
-     */
-    public boolean supportsConcurrentUpdateReadAcls() {
-        return aclOptimizationsConcurrentUpdate;
     }
 
     /**

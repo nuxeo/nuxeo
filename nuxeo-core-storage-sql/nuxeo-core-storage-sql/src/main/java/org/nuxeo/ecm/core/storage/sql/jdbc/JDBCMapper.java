@@ -21,7 +21,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +35,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
@@ -1056,8 +1054,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             return;
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format("updateReadAcls: updating (concurrent=%b) ...",
-                    dialect.supportsConcurrentUpdateReadAcls()));
+            log.debug("updateReadAcls: updating");
         }
         Statement st = null;
         try {
@@ -1066,21 +1063,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             if (logger.isLogEnabled()) {
                 logger.log(sql);
             }
-            if (dialect.supportsConcurrentUpdateReadAcls()) {
-                st.execute(sql);
-            } else {
-                // This is not enough to prevent concurrent execution in
-                // cluster mode.
-                if (repository.updateReadAclsLock.tryLock(2, TimeUnit.SECONDS)) {
-                    try {
-                        st.execute(sql);
-                    } finally {
-                        repository.updateReadAclsLock.unlock();
-                    }
-                } else {
-                    log.warn("Skipping updateReadAcls after 2s due to lock");
-                }
-            }
+            st.execute(sql);
             countExecute();
         } catch (Exception e) {
             checkConnectionReset(e);

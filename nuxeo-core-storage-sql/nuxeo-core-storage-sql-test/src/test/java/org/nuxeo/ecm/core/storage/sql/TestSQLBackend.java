@@ -78,25 +78,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     private static final Log log = LogFactory.getLog(TestSQLBackend.class);
 
-    protected Boolean aclOptimizationsConcurrentUpdate;
-
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-backend-core-types-contrib.xml");
-    }
-
-    @Override
-    protected RepositoryDescriptor newDescriptor(long clusteringDelay,
-            boolean fulltextDisabled) {
-        RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay,
-                fulltextDisabled);
-        if (aclOptimizationsConcurrentUpdate != null) {
-            descriptor.setAclOptimizationsConcurrentUpdate(aclOptimizationsConcurrentUpdate.booleanValue());
-        }
-        return descriptor;
     }
 
     @Test
@@ -702,16 +689,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testUpdateReadAclsDeadlock() throws Exception {
-        repository.close();
-        try {
-            aclOptimizationsConcurrentUpdate = Boolean.FALSE;
-            repository = newRepository(-1, false);
-            repository.getConnection().close(); // create repo
-            for (int i = 0; i < ITERATIONS; i++) {
-                multiThreadedUpdateReadAclsJob(i);
-            }
-        } finally {
-            aclOptimizationsConcurrentUpdate = null;
+        repository.getConnection().close(); // create repo
+        for (int i = 0; i < ITERATIONS; i++) {
+            multiThreadedUpdateReadAclsJob(i);
         }
     }
 

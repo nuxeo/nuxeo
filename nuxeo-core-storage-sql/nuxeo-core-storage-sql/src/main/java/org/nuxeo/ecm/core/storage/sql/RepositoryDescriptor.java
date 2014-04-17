@@ -371,18 +371,6 @@ public class RepositoryDescriptor {
         aclOptimizationsEnabled = Boolean.valueOf(enabled);
     }
 
-    /* @since 5.7 */
-    @XNode("aclOptimizations@concurrentUpdate")
-    private Boolean aclOptimizationsConcurrentUpdate;
-
-    public boolean getAclOptimizationsConcurrentUpdate() {
-        return defaultTrue(aclOptimizationsConcurrentUpdate);
-    }
-
-    protected void setAclOptimizationsConcurrentUpdate(boolean allow) {
-        aclOptimizationsConcurrentUpdate = Boolean.valueOf(allow);
-    }
-
     /* @since 5.4.2 */
     @XNode("aclOptimizations@readAclMaxSize")
     private Integer readAclMaxSize;
@@ -447,7 +435,6 @@ public class RepositoryDescriptor {
         pathOptimizationsEnabled = other.pathOptimizationsEnabled;
         pathOptimizationsVersion = other.pathOptimizationsVersion;
         aclOptimizationsEnabled = other.aclOptimizationsEnabled;
-        aclOptimizationsConcurrentUpdate = other.aclOptimizationsConcurrentUpdate;
         readAclMaxSize = other.readAclMaxSize;
         binaryManagerClass = other.binaryManagerClass;
         binaryManagerKey = other.binaryManagerKey;
@@ -555,9 +542,6 @@ public class RepositoryDescriptor {
         }
         if (other.aclOptimizationsEnabled != null) {
             aclOptimizationsEnabled = other.aclOptimizationsEnabled;
-        }
-        if (other.aclOptimizationsConcurrentUpdate != null) {
-            aclOptimizationsConcurrentUpdate = other.aclOptimizationsConcurrentUpdate;
         }
         if (other.readAclMaxSize != null) {
             readAclMaxSize = other.readAclMaxSize;
