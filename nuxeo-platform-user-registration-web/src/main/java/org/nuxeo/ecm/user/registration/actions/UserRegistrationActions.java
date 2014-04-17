@@ -53,8 +53,8 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
+import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -409,7 +409,7 @@ public class UserRegistrationActions implements Serializable {
         try {
             userRegistrationService.submitRegistrationRequest(
                     configurationName, userinfo, docinfo,
-                    getAdditionalsParameters(), EMAIL, false);
+                    getAdditionalsParameters(), EMAIL, false, documentManager.getPrincipal().getName());
 
             facesMessages.add(
                     INFO,

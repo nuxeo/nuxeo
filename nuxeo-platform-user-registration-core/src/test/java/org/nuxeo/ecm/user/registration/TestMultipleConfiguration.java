@@ -62,7 +62,7 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
         String requestId = userRegistrationService.submitRegistrationRequest(
                 DEFAULT_CONFIGURATION_NAME, userInfo, docInfo,
                 new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true);
+                UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
         userRegistrationService.validateRegistration(requestId,
                 new HashMap<String, Serializable>());
 
@@ -70,7 +70,7 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
         userInfo.setLogin("testUser2");
         requestId = userRegistrationService.submitRegistrationRequest("test",
                 userInfo, docInfo, new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true);
+                UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
         userRegistrationService.validateRegistration(requestId,
                 new HashMap<String, Serializable>());
 

@@ -33,6 +33,12 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.invite.RegistrationRules;
@@ -65,6 +71,8 @@ public class UserRegistrationComponent extends UserInvitationComponent
 
         protected String registrationUuid;
 
+        protected String principalName;
+
         protected ValidationMethod validationMethod;
 
         protected UserRegistrationConfiguration configuration;
@@ -77,13 +85,14 @@ public class UserRegistrationComponent extends UserInvitationComponent
                 UserRegistrationInfo userInfo,
                 DocumentRegistrationInfo docInfo,
                 Map<String, Serializable> additionnalInfo,
-                ValidationMethod validationMethod) {
+                ValidationMethod validationMethod, String principalName) {
             super(getTargetRepositoryName());
             this.userInfo = userInfo;
             this.additionnalInfo = additionnalInfo;
             this.validationMethod = validationMethod;
             this.docInfo = docInfo;
             this.configuration = getConfiguration(configurationName);
+            this.principalName = principalName;
         }
 
         @Override
@@ -137,6 +146,17 @@ public class UserRegistrationComponent extends UserInvitationComponent
 
             doc = session.createDocument(doc);
 
+            // Set the ACP for the UserRegistration object
+            ACP acp = new ACPImpl();
+            ACE denyEverything = new ACE(SecurityConstants.EVERYONE,
+                    SecurityConstants.EVERYTHING, false);
+            ACE allowEverything = new ACE(principalName,
+                    SecurityConstants.EVERYTHING, true);
+            ACL acl = new ACLImpl();
+            acl.setACEs(new ACE[] { allowEverything, denyEverything });
+            acp.addACL(acl);
+            doc.setACP(acp, true);
+
             registrationUuid = doc.getId();
 
             sendEvent(session, doc, getNameEventRegistrationSubmitted());
@@ -148,22 +168,22 @@ public class UserRegistrationComponent extends UserInvitationComponent
 
     public String submitRegistrationRequest(UserRegistrationInfo userInfo,
             Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept)
+            ValidationMethod validationMethod, boolean autoAccept, String principalName)
             throws ClientException {
         return submitRegistrationRequest(CONFIGURATION_NAME, userInfo,
                 new DocumentRegistrationInfo(), additionnalInfo,
-                validationMethod, autoAccept);
+                validationMethod, autoAccept, principalName);
     }
 
     @Override
     public String submitRegistrationRequest(String configurationName,
             UserRegistrationInfo userInfo, DocumentRegistrationInfo docInfo,
             Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept)
+            ValidationMethod validationMethod, boolean autoAccept, String principalName)
             throws ClientException, UserRegistrationException {
         RegistrationCreator creator = new RegistrationCreator(
                 configurationName, userInfo, docInfo, additionnalInfo,
-                validationMethod);
+                validationMethod, principalName);
         creator.runUnrestricted();
         String registrationUuid = creator.getRegistrationUuid();
 

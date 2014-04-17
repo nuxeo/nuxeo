@@ -38,7 +38,7 @@ public interface UserRegistrationService extends UserInvitationService {
      */
     String submitRegistrationRequest(UserRegistrationInfo userInfo,
             Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept)
+            ValidationMethod validationMethod, boolean autoAccept, String principalName)
             throws ClientException, UserRegistrationException;
 
     /**
@@ -70,6 +70,6 @@ public interface UserRegistrationService extends UserInvitationService {
     String submitRegistrationRequest(String configurationName,
             UserRegistrationInfo userInfo, DocumentRegistrationInfo docInfo,
             Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept)
+            ValidationMethod validationMethod, boolean autoAccept, String principalName)
             throws ClientException, UserRegistrationException;
 }

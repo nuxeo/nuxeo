@@ -67,7 +67,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
         String requestId = userRegistrationService.submitRegistrationRequest(
                 userInfo, new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true);
+                UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
         userRegistrationService.validateRegistration(requestId,
                 new HashMap<String, Serializable>());
 
@@ -91,7 +91,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
         String requestId = userRegistrationService.submitRegistrationRequest(
                 userInfo, new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true);
+                UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
         Map<String, Serializable> additionnalInfos = new HashMap<String, Serializable>();
         additionnalInfos.put("userinfo:login", newUser);
         userRegistrationService.validateRegistration(requestId,
@@ -127,7 +127,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
         String requestId = userRegistrationService.submitRegistrationRequest(
                 DEFAULT_CONFIGURATION_NAME, userInfo, docInfo,
                 new HashMap<String, Serializable>(),
-                UserRegistrationService.ValidationMethod.NONE, true);
+                UserRegistrationService.ValidationMethod.NONE, true, "adminTest");
         userRegistrationService.validateRegistration(requestId,
                 new HashMap<String, Serializable>());
 
