@@ -513,7 +513,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 + "\"pageSize\":2,"
                 + "\"currentPage\":0,"
                 + "\"queryParameters\":[],"
-                + "\"searchDocument\":{\"type\":\"File\",\"properties\":{\"dc:modified\":\"2014-04-16T17:37:43+0200\",\"dc:title\":\"search keywords\",\"files\":[]}},"
+                + "\"searchDocument\":{\"type\":\"File\",\"properties\":{\"dc:modified\":\"2014-04-16T15:37:43+0000\",\"dc:title\":\"search keywords\",\"files\":[]}},"
                 + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":null," + "\"resultColumns\":[\"column_1\"]"
                 + "}";
@@ -521,7 +521,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
         assertEquals(
-                "H4sIAAAAAAAAAD2QUWuDMBSF%2F8q4r7OgrayQt6IdCl1XrN0eRhGJ1y5MExcTihP%2F%2B24q7dvNued855IRuJIGpfkQeN2XLQKD6JRl231exO%2FR6c0NUZLuYpKKzzRPiuN2k0XJYwsedOUFj%2BKPsksPuNWaeAfSgPke%2FFrUw6HUxDaoe2BfZw96LDX%2FjhW3LXmBjWCGznW%2FigYdUasOtRHYu13FWasqUQusyLL0g3Dhh4vgJQ%2FWbLVm4erZX%2Fo%2BxchohGkcaG54%2BsHhqnTV07Im9K1%2BmugApU0qa%2BWE8faKVGNbSckHZHZteo6yEvICzGiLE12vsbeN2ZWDsnS7tE1z12aIg9K%2FurEI4Dz9A2Tpu0RlAQAA",
+                "H4sIAAAAAAAAAD2Q3WqDQBCFX6XMbQ1oYlvYu6ApCmkajGkvShDRMV2qu3Z%2FCFZ8985Gkr2aPXPmO8OMUElhUJgPjpdd2SEwiI5ZttnlRfweHd9cESXpNiap%2BEzzpDhs1lmU3LvgQV%2Be8cD%2FaHbpQWWVIt6eNGC%2BB78W1bAvFbENKg3s6%2BSBxlJV37GsbEdeYCOYoXfZr7xFR1SyR2U4aterK9bJmjcca7Is%2FSBc%2BOEieM6DJ7Z6YeHq0adHY2Q03LQONCc8%2FOBwkarW1GwIfY2fJlpAKpOKRjphvP4i2dpO0OQdMrvWukJRc3EGZpTFibZXqG1rtuUgLe0ubNvetBnioHRXVxYBnKZ%2F2JEe%2BWUBAAA%3D",
                 encodedJson);
     }
 
