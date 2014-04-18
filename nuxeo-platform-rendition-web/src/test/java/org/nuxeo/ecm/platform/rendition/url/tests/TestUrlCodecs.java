@@ -9,6 +9,7 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
+import org.nuxeo.ecm.platform.rendition.url.DocumentRenditionCodec;
 import org.nuxeo.ecm.platform.rendition.url.RenditionBasedCodec;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -43,6 +44,34 @@ public class TestUrlCodecs {
         assertTrue(url.contains("%A8"));
         url = validateUrl("default", "/some/path", "rendition/name");
         assertTrue(url.contains("%2F"));
+    }
+
+    @Test
+    public void testRenditionUrl() {
+        String renditionName = "My Rendition Name";
+        String docPath = "/some/path";
+        String docId = "dbefd5a0-35ee-4ed2-a023-6817714f32cf";
+
+        DocumentLocation documentLocation = new DocumentLocationImpl("default",
+                new IdRef(docId), new PathRef(docPath));
+        DocumentView docView = new DocumentViewImpl(documentLocation,
+                renditionName);
+        RenditionBasedCodec codec = new DocumentRenditionCodec();
+        String url = codec.getUrlFromDocumentView(docView);
+        assertEquals("nxrendition/default/some/path@My%20Rendition%20Name", url);
+
+        DocumentView docView2 = codec.getDocumentViewFromUrl(url);
+        assertEquals(renditionName, docView2.getViewId());
+
+        // force version to get a URL based on docid
+        docView.addParameter("version", "true");
+        url = codec.getUrlFromDocumentView(docView);
+        assertEquals(
+                "nxrendition/default/dbefd5a0-35ee-4ed2-a023-6817714f32cf/My%20Rendition%20Name?version=true",
+                url);
+
+        docView2 = codec.getDocumentViewFromUrl(url);
+        assertEquals(renditionName, docView2.getViewId());
     }
 
 }
