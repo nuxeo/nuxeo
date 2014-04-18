@@ -4882,6 +4882,15 @@
         <row>
           <widget>email</widget>
         </row>
+        <row>
+          <widget>groups</widget>
+        </row>
+        <row>
+          <widget>groupsValidator</widget>
+        </row>
+        <row>
+          <widget>vgroups</widget>
+        </row>
       </rows>
       <widget name="username" type="text">
         <labels>
@@ -4965,7 +4974,56 @@
           <property name="styleClass">dataInputText</property>
         </properties>
       </widget>
-      
+      <widget name="groups" type="multipleUsersSuggestion">
+        <labels>
+          <label mode="any">label.userManager.userGroups</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="userinfo">groups</field>
+        </fields>
+        <widgetModes>
+          <mode value="edit">
+            #{nxu:test(webActions.checkFilter('usersGroupsManagementAccess'),
+            'edit', 'view')}
+          </mode>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="any">
+          <property name="hideVirtualGroups">true</property>
+          <property name="userSuggestionSearchType">GROUP_TYPE</property>
+        </properties>
+      </widget>
+      <widget name="groupsValidator" type="template">
+        <labels>
+          <label mode="any"></label>
+        </labels>
+        <translated>true</translated>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="editPassword">hidden</mode>
+          <mode value="view">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <!-- XXX: depends on firstPassword and secondPassword widget names -->
+          <property name="template">
+            /widgets/user_groups_validation_widget_template.xhtml
+          </property>
+        </properties>
+      </widget>
+      <widget name="vgroups" type="userVirtualGroups">
+        <labels>
+          <label mode="any">label.userManager.userVirtualGroups</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="userinfo">login</field>
+        </fields>
+        <widgetModes>
+          <mode value="create">hidden</mode>
+          <mode value="editPassword">hidden</mode>
+        </widgetModes>
+      </widget>
     </layout>
     
     <layout name="group">
