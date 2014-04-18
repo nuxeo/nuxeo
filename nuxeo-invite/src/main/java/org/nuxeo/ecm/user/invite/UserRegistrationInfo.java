@@ -32,6 +32,8 @@ public class UserRegistrationInfo {
 
     public static final String COMPANY_FIELD = "userinfo:company";
 
+    public static final String GROUPS_FIELD = "userinfo:groups";
+
     protected String login;
 
     protected String password;
