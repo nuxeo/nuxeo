@@ -3,61 +3,61 @@ nuxeo-elasticsearch
 
 ## About
 
-This project aims at providing Nuxeo Bundles to integrate
-ElasticSearch with Nuxeo Platform.
+This project aims at providing Nuxeo bundles to integrate
+Elasticsearch with the Nuxeo Platform.
 
-The idea is to index/query Nuxeo Document to/from ElasticSearch.
+The idea is to index/query Nuxeo Documents to/from Elasticsearch.
 
 ## Building
 
-To build and run the tests, simply start the maven build:
+To build and run the tests, simply start the Maven build:
 
     mvn clean install
 
-You can also download prebuild packages from our QA server:
+You can also download prebuilt packages from our QA server:
 
 http://qa.nuxeo.org/jenkins/job/addons_nuxeo-elasticsearch-master/lastStableBuild/artifact/target/
 
-Or use the marketplace package:
+Or use the Marketplace package:
 
 https://github.com/nuxeo/marketplace-elasticsearch
 
 ## Limitations
 
-- Don't work with an H2 backend (incompatible lucene versions)
+- Doesn't work with an H2 backend (incompatible Lucene versions).
 
-- Only support a single repository.
+- Only supports a single repository.
 
-- ACL filtering works fine only on simplified ACL, we don't support
+- ACL filtering works fine only on simplified ACL. We don't support
   negative ACE other than `Deny Everyone`. Documents with negative ACL
-  will not be accessible for non administrator account.
+  will not be accessible for non administrator accounts.
 
 - NXQL Limitations:
 
   - Fulltext search on field is supported if the Elasticsearch mapping
-	is properly defined, for instance `ecm:fulltext.dc:title = 'foo*'`
-	works if there is a multi field `dc:title.fulltext`, visit the
+	is properly defined. For instance `ecm:fulltext.dc:title = 'foo*'`
+	works if there is a multi field `dc:title.fulltext`. Visit the
 	[default configuration](https://github.com/nuxeo/nuxeo-elasticsearch/blob/master/nuxeo-elasticsearch-core/src/main/resources/OSGI-INF/elasticsearch-default-index-contrib.xml)
-	to find some example.
-  - The fulltext syntax accepted is different from the default NXQL
-    it is the Elasticsearch
+	to find some examples.
+  - The fulltext syntax accepted is different from the default NXQL.
+    It is the Elasticsearch
     [simple query string syntax](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html#_simple_query_string_syntax).
-  - For now the `ecm:fulltext` match the Elasticsearch `_all` field
-    which is the concatenation of all fields, this is different from
-    the NXQL `ecm:fulltext` which match only some explicit fields.
-    Also there is no support of custom fulltext index
+  - For now the `ecm:fulltext` matches the Elasticsearch `_all` field
+    which is the concatenation of all fields. This is different from
+    the NXQL `ecm:fulltext` which matches only some explicit fields.
+    Also custom fulltext indexes are not supported.
     `ecm:fulltext_someindex` will match the `_all` field.
-  - Fields are case sensitive `ecm:primaryType` vs `ecm:primarytype`
-  - No select clause support, so NO : DISTINCT, COUNT, AVERAGE, MAX,
-    MIN, operators like: + - / *
+  - Fields are case-sensitive: `ecm:primaryType` vs `ecm:primarytype`
+  - No select clause support, so NO: DISTINCT, COUNT, AVERAGE, MAX,
+    MIN, operators like: + - / *.
   - ILIKE will work only with a proper mapping with an analyzer
-    configured to lowercase index
-  - No support of complex list correlation like:
+    configured to lowercase index.
+  - No support of complex list correlations like:
 
         files/*1/file/name LIKE '%.txt' AND files/*1/file/length = 0)
 
 - Content view does not support ORDER BY clause inside fixed part or
-  pattern, you need to use the proper SORT element.
+  pattern. You need to use the proper SORT element.
 
 
 ## Status
