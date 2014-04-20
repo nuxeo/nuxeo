@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -104,11 +103,6 @@ public class SQLComplexProperty extends SQLBaseProperty implements
      */
 
     @Override
-    public boolean isPropertySet(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Property getProperty(String name) throws DocumentException {
         return getSession().makeProperty(node, name, (ComplexType) type,
                 getDocument(), null, null);
@@ -124,51 +118,10 @@ public class SQLComplexProperty extends SQLBaseProperty implements
         return properties;
     }
 
-    @Override
-    public Iterator<Property> getPropertyIterator() throws DocumentException {
-        return getProperties().iterator();
-    }
-
     /*
      * ----- org.nuxeo.ecm.core.model.PropertyContainer -------------------
      * (used for SQLDocument, SQLComplexProperty itself doesn't need it)
      */
-
-    @Override
-    public Map<String, Object> exportFlatMap(String[] schemas)
-            throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map<String, Map<String, Object>> exportMap(String[] schemas)
-            throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map<String, Object> exportMap(String schemaName)
-            throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void importFlatMap(Map<String, Object> map) throws DocumentException {
-        checkWritable();
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void importMap(Map<String, Map<String, Object>> map)
-            throws DocumentException {
-        checkWritable();
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<String> getDirtyFields() {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public Object getPropertyValue(String name) throws DocumentException {
@@ -252,11 +205,6 @@ public class SQLComplexProperty extends SQLBaseProperty implements
 
     @Override
     public void setContent(String name, Blob value) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeProperty(String name) throws DocumentException {
         throw new UnsupportedOperationException();
     }
 

@@ -13,7 +13,6 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Property;
@@ -77,22 +76,12 @@ public abstract class SQLBaseProperty implements Property {
     }
 
     @Override
-    public boolean isPropertySet(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Property getProperty(String name) throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Collection<Property> getProperties() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Iterator<Property> getPropertyIterator() throws DocumentException {
         throw new UnsupportedOperationException();
     }
 

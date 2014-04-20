@@ -120,7 +120,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     private static final Log log = LogFactory.getLog(CoreSession.class);
 
-    private static final long serialVersionUID = 6585443198474361876L;
+    private static final long serialVersionUID = 1L;
 
     private static final Comparator<? super Document> pathComparator = new PathComparator();
 
@@ -181,11 +181,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
         return versioningService;
     }
-
-    /**
-     * Used to resolve core documents based on session.
-     */
-    protected final DocumentResolver documentResolver = new DocumentResolver();
 
     /**
      * Internal method: Gets the current session based on the client session id.
@@ -317,8 +312,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public boolean hasPermission(Principal principal, DocumentRef docRef,
             String permission) throws ClientException {
         try {
-            Session session = getSession();
-            Document doc = DocumentResolver.resolveReference(session, docRef);
+            Document doc = resolveReference(docRef);
             return hasPermission(principal, doc, permission);
         } catch (DocumentException e) {
             throw new ClientException("Failed to resolve document ref: "
@@ -335,8 +329,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public boolean hasPermission(DocumentRef docRef, String permission)
             throws ClientException {
         try {
-            Session session = getSession();
-            Document doc = DocumentResolver.resolveReference(session, docRef);
+            Document doc = resolveReference(docRef);
             return hasPermission(doc, permission);
         } catch (DocumentException e) {
             throw new ClientException("Failed to resolve document ref: "
@@ -356,9 +349,24 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // getPrincipal().getName(), permission);
     }
 
-    protected final Document resolveReference(DocumentRef docRef)
+    protected Document resolveReference(DocumentRef docRef)
             throws DocumentException, ClientException {
-        return DocumentResolver.resolveReference(getSession(), docRef);
+        if (docRef == null) {
+            throw new DocumentException("Invalid reference (null)");
+        }
+        Object ref = docRef.reference();
+        if (ref == null) {
+            throw new DocumentException("Invalid reference (null)");
+        }
+        int type = docRef.type();
+        switch (type) {
+        case DocumentRef.ID:
+            return getSession().getDocumentByUUID((String) ref);
+        case DocumentRef.PATH:
+            return getSession().resolvePath((String) ref);
+        default:
+            throw new IllegalArgumentException("Invalid type: " + type);
+        }
     }
 
     /**

@@ -19,7 +19,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -269,24 +268,6 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public Map<String, Object> exportFlatMap(String[] schemas)
-            throws DocumentException {
-        return null;
-    }
-
-    @Override
-    public Map<String, Object> exportMap(String schemaName)
-            throws DocumentException {
-        return null;
-    }
-
-    @Override
-    public Map<String, Map<String, Object>> exportMap(String[] schemas)
-            throws DocumentException {
-        return null;
-    }
-
-    @Override
     public boolean getBoolean(String name) throws DocumentException {
         return false;
     }
@@ -298,11 +279,6 @@ public class MockDocument implements Document {
 
     @Override
     public Calendar getDate(String name) throws DocumentException {
-        return null;
-    }
-
-    @Override
-    public List<String> getDirtyFields() {
         return null;
     }
 
@@ -327,11 +303,6 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public Iterator<Property> getPropertyIterator() throws DocumentException {
-        return null;
-    }
-
-    @Override
     public Object getPropertyValue(String name) throws DocumentException {
         if (name != null && name.equals("dc:creator")) {
             return creator;
@@ -342,24 +313,6 @@ public class MockDocument implements Document {
     @Override
     public String getString(String name) throws DocumentException {
         return null;
-    }
-
-    @Override
-    public void importFlatMap(Map<String, Object> map) throws DocumentException {
-    }
-
-    @Override
-    public void importMap(Map<String, Map<String, Object>> map)
-            throws DocumentException {
-    }
-
-    @Override
-    public boolean isPropertySet(String path) throws DocumentException {
-        return false;
-    }
-
-    @Override
-    public void removeProperty(String name) throws DocumentException {
     }
 
     @Override

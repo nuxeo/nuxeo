@@ -243,7 +243,7 @@ public class DocumentModelFactory {
      */
     public static DataModel createDataModel(Document doc, Schema schema)
             throws DocumentException {
-        DocumentPart part = new DocumentPartImpl(schema, null);
+        DocumentPart part = new DocumentPartImpl(schema);
         if (doc != null) {
             try {
                 doc.readDocumentPart(part);

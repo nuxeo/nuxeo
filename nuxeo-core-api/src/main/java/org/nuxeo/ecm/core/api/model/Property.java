@@ -293,25 +293,11 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     boolean isReadOnly();
 
     /**
-     * Checks whether this property is validating values when set.
-     *
-     * @return true if validating false otherwise
-     */
-    boolean isValidating();
-
-    /**
      * Sets the read only flag.
      *
      * @param value true to set this property read only false otherwise
      */
     void setReadOnly(boolean value);
-
-    /**
-     * Sets the validating flag.
-     *
-     * @param value true to put validating on false otherwise
-     */
-    void setValidating(boolean value);
 
     /**
      * Tests whether this property is of a map (complex) type.
@@ -734,20 +720,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     boolean validateType(Class<?> type);
 
     /**
-     * Validates the given normalized value.
-     * <p>
-     * Only normalized values can be validated.
-     * <p>
-     * If the value is not validated, returns false.
-     *
-     * @param value the value to validate
-     * @return true if the value is valid, false otherwise
-     *
-     * @see Property#validateType(Class)
-     */
-    boolean validate(Serializable value);
-
-    /**
      * Creates a new and empty instance of a normalized value.
      * <p>
      * Empty is used in the sense of a value that has not been initialized or
@@ -786,55 +758,5 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @return the iterator
      */
     Iterator<Property> getDirtyChildren();
-
-    /**
-     * Sets the application-defined data to associated it with the receiver
-     * property.
-     * <p>
-     * The property data is reserved for the implementation and you must not
-     * directly set it. Data attached with properties must be
-     * {@link Serializable} objects if you want to serialize them along with the
-     * property
-     *
-     * @param value
-     */
-    void setData(Object value);
-
-    /**
-     * Sets the application defined data associated with the receiver under the
-     * given key.
-     * <p>
-     * The property data is reserved for the implementation and you must not
-     * directly set it. Data attached with properties must be
-     * {@link Serializable} objects if you want to serialize them along with the
-     * property.
-     *
-     * @param key
-     * @param value
-     */
-    void setData(String key, Object value);
-
-    /**
-     * Returns the application defined data associated with the receiver, or
-     * null if it has not been set.
-     * <p>
-     * The property data is reserved for the implementation and you must not
-     * directly set it. Data attached with properties must be
-     * {@link Serializable} objects if you want to serialize them along with the
-     * property.
-     */
-    Object getData();
-
-    /**
-     * Returns the application defined data associated with the receiver under
-     * the given key, or null if it has not been set.
-     * <p>
-     * You are free to set any data you want on properties but be aware to use
-     * {@link Serializable} objects if you want to serialize them along with the
-     * property.
-     *
-     * @param key
-     */
-    Object getData(String key);
 
 }

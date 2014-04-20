@@ -41,9 +41,9 @@ import org.nuxeo.ecm.core.schema.types.Field;
 public abstract class ComplexProperty extends AbstractProperty implements
         Map<String, Property> {
 
-    private static final long serialVersionUID = -8189463982083623237L;
+    private static final long serialVersionUID = 1L;
 
-    protected transient Map<String, Property> children;
+    protected Map<String, Property> children;
 
     protected ComplexProperty(Property parent) {
         super(parent);
@@ -116,8 +116,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
     public final Property getChild(Field field) {
         Property property = getNonPhantomChild(field);
         if (property == null) {
-            property = getRoot().createProperty(this, field,
-                    isValidating() ? IS_VALIDATING | IS_PHANTOM : IS_PHANTOM);
+            property = getRoot().createProperty(this, field, IS_PHANTOM);
             children.put(property.getName(), property); // cache it
         }
         return property;

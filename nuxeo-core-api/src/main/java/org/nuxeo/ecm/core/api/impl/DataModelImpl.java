@@ -27,7 +27,10 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.AbstractProperty;
-import org.nuxeo.ecm.core.api.model.impl.DefaultPropertyFactory;
+import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Data model implementation.
@@ -37,7 +40,7 @@ import org.nuxeo.ecm.core.api.model.impl.DefaultPropertyFactory;
  */
 public class DataModelImpl implements DataModel {
 
-    private static final long serialVersionUID = -186670993439802490L;
+    private static final long serialVersionUID = 1L;
 
     private final DocumentPart dp;
 
@@ -56,10 +59,11 @@ public class DataModelImpl implements DataModel {
      * @param schema a schema name.
      * @param data the data (map String&gt;Object) to put in the DataModel.
      */
-    public DataModelImpl(String schema, Map<String, Object> data) {
+    public DataModelImpl(String schemaName, Map<String, Object> data) {
         assert data != null;
-
-        dp = DefaultPropertyFactory.newDocumentPart(schema);
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        Schema schema = schemaManager.getSchema(schemaName);
+        dp = new DocumentPartImpl(schema);
         if (!data.isEmpty()) {
             try {
                 dp.init((Serializable) data);

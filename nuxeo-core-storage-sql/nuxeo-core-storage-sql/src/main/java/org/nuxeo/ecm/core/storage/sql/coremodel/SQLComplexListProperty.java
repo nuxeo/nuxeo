@@ -14,9 +14,7 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -109,55 +107,9 @@ public class SQLComplexListProperty extends SQLBaseProperty implements
                 null, null, -1, -1);
     }
 
-    @Override
-    public Iterator<Property> getPropertyIterator() throws DocumentException {
-        return getProperties().iterator();
-    }
-
-    @Override
-    public boolean isPropertySet(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
     /*
      * ----- PropertyContainer -----
      */
-
-    @Override
-    public Map<String, Object> exportFlatMap(String[] schemas)
-            throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map<String, Map<String, Object>> exportMap(String[] schemas)
-            throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map<String, Object> exportMap(String schemaName)
-            throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void importFlatMap(Map<String, Object> map) throws DocumentException {
-        checkWritable();
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void importMap(Map<String, Map<String, Object>> map)
-            throws DocumentException {
-        checkWritable();
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<String> getDirtyFields() {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public Object getPropertyValue(String name) throws DocumentException {
@@ -232,11 +184,6 @@ public class SQLComplexListProperty extends SQLBaseProperty implements
 
     @Override
     public void setContent(String name, Blob value) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeProperty(String name) throws DocumentException {
         throw new UnsupportedOperationException();
     }
 

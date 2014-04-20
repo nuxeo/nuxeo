@@ -14,25 +14,16 @@
 
 package org.nuxeo.ecm.core.api.model.impl;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Hashtable;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyDiff;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.api.model.PropertyFactory;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -41,21 +32,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
 
-    private static final long serialVersionUID = -2959928612693829263L;
+    private static final long serialVersionUID = 1L;
 
-    protected transient Schema schema;
-
-    protected transient PropertyFactory factory;
-
-
-    public DocumentPartImpl(Schema schema, PropertyFactory factory) {
-        super(null);
-        this.schema = schema;
-        this.factory = factory == null ? DefaultPropertyFactory.getInstance() : factory;
-    }
+    protected Schema schema;
 
     public DocumentPartImpl(Schema schema) {
-        this(schema, null);
+        super(null);
+        this.schema = schema;
     }
 
     @Override
@@ -110,7 +93,7 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
 
     @Override
     public Property createProperty(Property parent, Field field, int flags) {
-        return factory.createProperty(parent, field, flags);
+        return PropertyFactory.createProperty(parent, field, flags);
     }
 
     @Override
@@ -120,151 +103,6 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
 
     @Override
     public void importDiff(PropertyDiff diff) {
-    }
-
-    private void readObject(ObjectInputStream in)
-            throws ClassNotFoundException, IOException {
-        // always perform the default de-serialization first
-        in.defaultReadObject();
-        try {
-            deserialize(in);
-        } catch (PropertyException e) {
-            IOException ee = new IOException(
-                    "failed to deserialize document part " + schema);
-            ee.initCause(e);
-            throw ee;
-        }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
-        try {
-            serialize(out);
-        } catch (PropertyException e) {
-            IOException ee = new IOException(
-                    "failed to serialize document part " + schema);
-            ee.initCause(e);
-            throw ee;
-        }
-    }
-
-    public void serialize(ObjectOutputStream out) throws PropertyException, IOException {
-        // write schema
-        out.writeObject(schema.getName());
-        // write factory
-        if (factory == null || factory == DefaultPropertyFactory.getInstance()) {
-            out.writeObject(null);
-        } else if (factory != null) {
-            out.writeObject(factory);
-        }
-        // write children
-        Collection<Property> props = getNonPhantomChildren();
-        int size = props.size();
-        out.writeInt(size);
-        if (size > 0) {
-            for (Property child : props) {
-                serializeProperty(child, out);
-            }
-        }
-    }
-
-    private static void serializeProperty(Property prop, ObjectOutputStream out)
-            throws PropertyException, IOException {
-        AbstractProperty ap = (AbstractProperty) prop;
-        out.writeObject(prop.getName());
-        out.writeObject(ap.data);
-        out.writeInt(ap.flags);
-        if (!prop.isContainer()) {
-            out.writeObject(prop.getValue());
-            return;
-        }
-        Collection<Property> props = null;
-        if (prop.isList()) {
-            props = prop.getChildren();
-        } else {
-            props = ((ComplexProperty) prop).getNonPhantomChildren();
-        }
-        int size = props.size();
-        out.writeInt(size);
-        if (size > 0) {
-            for (Property child : props) {
-                serializeProperty(child, out);
-            }
-        }
-    }
-
-    public void deserialize(ObjectInputStream in)
-            throws ClassNotFoundException, IOException, PropertyException {
-        // read schema
-        String schemaName = (String) in.readObject();
-        //schema = TypeService.getSchemaManager().getSchema(schemaName);
-        schema = Framework.getLocalService(SchemaManager.class).getSchema(schemaName);
-        // read factory
-        factory = (PropertyFactory) in.readObject();
-        if (factory == null) {
-            factory = DefaultPropertyFactory.getInstance();
-        }
-        // read children
-        deserializeChildren(this, in);
-    }
-
-
-    public void deserializeChildren(ListProperty parent, ObjectInputStream in)
-            throws ClassNotFoundException, IOException, PropertyException {
-        int size = in.readInt();
-        if (size < 1) {
-            return;
-        }
-
-        Field field = parent.getType().getField();
-        for (int i=0; i<size; i++) {
-            // read name
-            in.readObject(); // name is not used for list children
-            Object data = in.readObject();
-            // read flags
-            int flags = in.readInt();
-            Property prop = createProperty(parent, field, flags);
-            ((AbstractProperty) prop).data = data;
-            if (!prop.isContainer()) {
-                prop.init((Serializable) in.readObject());
-            } else if (prop.isList()) {
-                deserializeChildren((ListProperty) prop, in);
-            } else {
-                deserializeChildren((ComplexProperty) prop, in);
-            }
-            // add property to parent
-            parent.children.add(prop);
-        }
-    }
-
-    public void deserializeChildren(ComplexProperty parent, ObjectInputStream in)
-            throws ClassNotFoundException, IOException, PropertyException {
-        // children are transient so we need to create them explicitely
-        parent.children = new Hashtable<String, Property>();
-        // read serialized children
-        int size = in.readInt();
-        if (size < 1) {
-            return;
-        }
-        ComplexType type = parent.getType();
-        for (int i=0; i<size; i++) {
-            // read name
-            String name = (String) in.readObject();
-            Object data = in.readObject();
-            // read flags
-            int flags = in.readInt();
-            Property prop = createProperty(parent, type.getField(name), flags);
-            ((AbstractProperty) prop).data = data;
-            if (!prop.isContainer()) {
-                prop.init((Serializable) in.readObject());
-            } else if (prop.isList()) {
-                deserializeChildren((ListProperty) prop, in);
-            } else {
-                deserializeChildren((ComplexProperty) prop, in);
-            }
-            // add property to parent
-            parent.children.put(prop.getName(), prop);
-        }
     }
 
     public boolean isSameAs(DocumentPart dp) {

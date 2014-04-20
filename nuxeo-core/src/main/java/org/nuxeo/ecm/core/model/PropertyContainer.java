@@ -16,9 +16,6 @@ package org.nuxeo.ecm.core.model;
 
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -27,19 +24,6 @@ import org.nuxeo.ecm.core.api.DocumentException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public interface PropertyContainer {
-
-    /**
-     * Tests whether the property at the given path exists (the property may be
-     * either a scalar or a composite one).
-     *
-     * @param path the path to test
-     * @return true if the property at the given path exists, false otherwise
-     * @throws DocumentException if any error occurs
-     *
-     * @deprecated unused
-     */
-    @Deprecated
-    boolean isPropertySet(String path) throws DocumentException;
 
     /**
      * Gets a property given its name.
@@ -60,17 +44,6 @@ public interface PropertyContainer {
      * @throws DocumentException if any error occurs
      */
     Property getProperty(String name) throws DocumentException;
-
-    /**
-     * Removes the property with the given name.
-     *
-     * @param name the property to remove
-     * @throws DocumentException if any error occurs
-     *
-     * @deprecated unused
-     */
-    @Deprecated
-    void removeProperty(String name) throws DocumentException;
 
     /**
      * Generic method to set a property value.
@@ -235,72 +208,6 @@ public interface PropertyContainer {
     void setContent(String name, Blob value) throws DocumentException;
 
     /**
-     * Exports the properties belonging to the given schemas as a java Map.
-     * <p>
-     * If the given schemas array is null then all schemas will be exported
-     * <p>
-     * The properties are grouped by schemas
-     * <p>
-     * The property tree is recursively traversed and all property in that
-     * schema exported as entry of the Map
-     *
-     * @param schemas
-     * @return the exported properties as a java Map
-     * @throws DocumentException if any error occurs
-     *
-     * @deprecated unused
-     */
-    @Deprecated
-    Map<String, Map<String, Object>> exportMap(String[] schemas)
-            throws DocumentException;
-
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
-    Map<String, Object> exportMap(String schemaName) throws DocumentException;
-
-    /**
-     * Imports the tree properties from the given Java Map.
-     * <p>
-     * The property tree is recursively traversed and all property exported as
-     * entry of the Map.
-     *
-     * @throws DocumentException if any error occurs
-     *
-     * @deprecated unused
-     */
-    @Deprecated
-    void importMap(Map<String, Map<String, Object>> map)
-            throws DocumentException;
-
-    /**
-     * Exports a flat view of properties in this document.
-     * <p>
-     * If the given schemas array is null then all schemas will be exported.
-     *
-     * @param schemas
-     * @return
-     * @throws DocumentException if any error occurs
-     *
-     * @deprecated unused
-     */
-    @Deprecated
-    Map<String, Object> exportFlatMap(String[] schemas)
-            throws DocumentException;
-
-    /**
-     * Imports a flat map of properties into this document.
-     *
-     * @param map
-     * @throws DocumentException if any error occurs
-     *
-     * @deprecated unused
-     */
-    @Deprecated
-    void importFlatMap(Map<String, Object> map) throws DocumentException;
-
-    /**
      * Gets the collection of the sub properties in this container.
      * <p>
      * The returned properties are existing.
@@ -309,28 +216,5 @@ public interface PropertyContainer {
      * @throws DocumentException if any error occurs
      */
     Collection<Property> getProperties() throws DocumentException;
-
-    /**
-     * Gets an iterator over all existing properties in this container.
-     * <p>
-     * The returned properties are existing.
-     *
-     * @return the existing properties in this container
-     * @throws DocumentException if any error occurs
-     *
-     * @deprecated unused
-     */
-    @Deprecated
-    Iterator<Property> getPropertyIterator() throws DocumentException;
-
-    /**
-     * Returns fields that were modified.
-     * <p>
-     * XXX AT: compatibility method for NXP-666
-     *
-     * @deprecated unused
-     */
-    @Deprecated
-    List<String> getDirtyFields();
 
 }

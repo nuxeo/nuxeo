@@ -17,7 +17,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -489,12 +488,6 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
      */
 
     @Override
-    @Deprecated
-    public boolean isPropertySet(String name) throws DocumentException {
-        return target.isPropertySet(name);
-    }
-
-    @Override
     public Property getProperty(String name) throws DocumentException {
         // TODO proxy-specific schemas as well
         if (Model.PROXY_TARGET_PROP.equals(name)
@@ -509,52 +502,6 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     @Override
     public Collection<Property> getProperties() throws DocumentException {
         return target.getProperties();
-    }
-
-    @Override
-    @Deprecated
-    public Iterator<Property> getPropertyIterator() throws DocumentException {
-        return target.getPropertyIterator();
-    }
-
-    @Override
-    @Deprecated
-    public Map<String, Object> exportFlatMap(String[] schemas)
-            throws DocumentException {
-        return target.exportFlatMap(schemas);
-    }
-
-    @Override
-    @Deprecated
-    public Map<String, Map<String, Object>> exportMap(String[] schemas)
-            throws DocumentException {
-        return target.exportMap(schemas);
-    }
-
-    @Override
-    @Deprecated
-    public Map<String, Object> exportMap(String schemaName)
-            throws DocumentException {
-        return target.exportMap(schemaName);
-    }
-
-    @Override
-    @Deprecated
-    public void importFlatMap(Map<String, Object> map) throws DocumentException {
-        target.importFlatMap(map);
-    }
-
-    @Override
-    @Deprecated
-    public void importMap(Map<String, Map<String, Object>> map)
-            throws DocumentException {
-        target.importMap(map);
-    }
-
-    @Override
-    @Deprecated
-    public List<String> getDirtyFields() {
-        return target.getDirtyFields();
     }
 
     @Override
@@ -682,12 +629,6 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
         } else {
             target.setContent(name, value);
         }
-    }
-
-    @Override
-    @Deprecated
-    public void removeProperty(String name) throws DocumentException {
-        target.removeProperty(name);
     }
 
     /*

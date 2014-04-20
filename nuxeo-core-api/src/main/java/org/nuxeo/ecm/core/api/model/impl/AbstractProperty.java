@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,11 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api.model.impl;
 
 import java.io.Serializable;
@@ -19,7 +17,6 @@ import java.util.Iterator;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
-import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -27,34 +24,18 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.schema.types.Schema;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- */
 public abstract class AbstractProperty implements Property {
 
-    private static final long serialVersionUID = -4689902294497020548L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Whether or not this property is read only.
      */
     public static final int IS_READONLY = 32;
 
-    /**
-     * Whether or not this property is validating values when they are set.
-     */
-    public static final int IS_VALIDATING = 64;
-
-    /**
-     * Whether or not the data field contains keyed data.
-     */
-    public static final int KEYED_DATA = 128;
-
-    protected final Property parent;
+    public final Property parent;
 
     protected int flags;
-
-    protected Object data;
 
     protected AbstractProperty(Property parent) {
         this.parent = parent;
@@ -208,11 +189,6 @@ public abstract class AbstractProperty implements Property {
     }
 
     @Override
-    public boolean isValidating() {
-        return areFlagsSet(IS_VALIDATING);
-    }
-
-    @Override
     public boolean isReadOnly() {
         return areFlagsSet(IS_READONLY);
     }
@@ -223,15 +199,6 @@ public abstract class AbstractProperty implements Property {
             setFlags(IS_READONLY);
         } else {
             clearFlags(IS_READONLY);
-        }
-    }
-
-    @Override
-    public void setValidating(boolean value) {
-        if (value) {
-            setFlags(IS_VALIDATING);
-        } else {
-            clearFlags(IS_VALIDATING);
         }
     }
 
@@ -327,13 +294,6 @@ public abstract class AbstractProperty implements Property {
         }
         // 1. normalize the value
         Serializable normalizedValue = normalize(value);
-        // 2. validate if needed
-        if (areFlagsSet(IS_VALIDATING)) {
-            if (!validate(normalizedValue)) {
-                throw new InvalidPropertyValueException(
-                        "validating failed for " + normalizedValue);
-            }
-        }
         // 3. set the normalized value
         internalSetValue(normalizedValue);
         // internalSetValue((Serializable)value);
@@ -472,11 +432,6 @@ public abstract class AbstractProperty implements Property {
     }
 
     @Override
-    public boolean validate(Serializable value) {
-        return true; // TODO XXX FIXME
-    }
-
-    @Override
     public Object newInstance() {
         return null; // TODO XXX FIXME
     }
@@ -484,99 +439,6 @@ public abstract class AbstractProperty implements Property {
     @Override
     public String toString() {
         return getClass().getSimpleName() + '(' + getPath() + ')';
-    }
-
-    // @Override
-    // public boolean equals(Object obj) {
-    // if (obj == this) return true;
-    // if (obj instanceof Property) {
-    // Property p = (Property)obj;
-    // return field.equals(p.getField()) && value.equals(p.value);
-    // }
-    // return false;
-    // }
-
-    /**
-     * application data impl. was copied from eclipse Widget class
-     */
-    @Override
-    public Object getData() {
-        return (flags & KEYED_DATA) != 0 ? ((Object[]) data)[0] : data;
-    }
-
-    @Override
-    public Object getData(String key) {
-        if (key == null) {
-            throw new IllegalArgumentException("Data Key must not be null");
-        }
-        if ((flags & KEYED_DATA) != 0) {
-            Object[] table = (Object[]) data;
-            for (int i = 1; i < table.length; i += 2) {
-                if (key.equals(table[i])) {
-                    return table[i + 1];
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public void setData(Object value) {
-        if ((flags & KEYED_DATA) != 0) {
-            ((Object[]) data)[0] = value;
-        } else {
-            data = value;
-        }
-    }
-
-    @Override
-    public void setData(String key, Object value) {
-        if (key == null) {
-            throw new IllegalArgumentException("Data Key must not be null");
-        }
-        int index = 1;
-        Object[] table = null;
-        if ((flags & KEYED_DATA) != 0) {
-            table = (Object[]) data;
-            while (index < table.length) {
-                if (key.equals(table[index])) {
-                    break;
-                }
-                index += 2;
-            }
-        }
-        if (value != null) {
-            if ((flags & KEYED_DATA) != 0) {
-                if (index == table.length) {
-                    Object[] newTable = new Object[table.length + 2];
-                    System.arraycopy(table, 0, newTable, 0, table.length);
-                    data = table = newTable;
-                }
-            } else {
-                table = new Object[3];
-                table[0] = data;
-                data = table;
-                flags |= KEYED_DATA;
-            }
-            table[index] = key;
-            table[index + 1] = value;
-        } else {
-            if ((flags & KEYED_DATA) != 0) {
-                if (index != table.length) {
-                    int length = table.length - 2;
-                    if (length == 1) {
-                        data = table[0];
-                        flags &= ~KEYED_DATA;
-                    } else {
-                        Object[] newTable = new Object[length];
-                        System.arraycopy(table, 0, newTable, 0, index);
-                        System.arraycopy(table, index + 2, newTable, index,
-                                length - index);
-                        data = newTable;
-                    }
-                }
-            }
-        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,11 +7,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api.model.impl;
 
 import java.io.Serializable;
@@ -34,13 +32,9 @@ import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- */
 public class ListProperty extends AbstractProperty implements List<Property> {
 
-    private static final long serialVersionUID = 2050498811068422820L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The corresponding field.
@@ -214,8 +208,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
                             // list as dirty
         Field lfield = getType().getField();
         for (Serializable obj : list) {
-            Property property = getRoot().createProperty(this, lfield,
-                    isValidating() ? IS_VALIDATING : 0);
+            Property property = getRoot().createProperty(this, lfield, 0);
             property.init(obj);
             children.add(property);
         }
@@ -257,10 +250,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
 
     @Override
     public void clear() {
-        while (!children.isEmpty()) {
-            Property property = children.remove(0);
-            markChildAsRemoved(property);
-        }
+        children.clear();
         setIsModified();
     }
 
@@ -273,8 +263,6 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         if (!children.remove(property)) { // physically remove the property
             return false; // no such item
         }
-        // mark the property as removed using the "@removed" application data
-        markChildAsRemoved(property);
         setIsModified();
         return true;
     }
@@ -282,22 +270,8 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     @Override
     public Property remove(int index) {
         Property property = children.remove(index);
-        // mark the property as removed using the "@removed" application data
-        markChildAsRemoved(property);
         setIsModified();
         return property;
-    }
-
-    @SuppressWarnings("unchecked")
-    private void markChildAsRemoved(Property property) {
-        List<String> removed = (List<String>) getData("@removed");
-        if (removed == null) {
-            removed = new ArrayList<String>();
-            setData("@removed", removed);
-        }
-        // use the key as the property data (this is the internal name of
-        // the list item property)
-        removed.add((String) property.getData());
     }
 
     @Override

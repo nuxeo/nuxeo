@@ -238,16 +238,6 @@ public class SQLDocumentVersion extends SQLDocumentLive {
      */
 
     @Override
-    public void importFlatMap(Map<String, Object> map) {
-        throw new VersionNotModifiableException();
-    }
-
-    @Override
-    public void importMap(Map<String, Map<String, Object>> map) {
-        throw new VersionNotModifiableException();
-    }
-
-    @Override
     public void setPropertyValue(String name, Object value)
             throws DocumentException {
         if (isReadOnlyProperty(name)) {
@@ -292,11 +282,6 @@ public class SQLDocumentVersion extends SQLDocumentLive {
 
     @Override
     public void setContent(String name, Blob value) {
-        throw new VersionNotModifiableException();
-    }
-
-    @Override
-    public void removeProperty(String name) {
         throw new VersionNotModifiableException();
     }
 

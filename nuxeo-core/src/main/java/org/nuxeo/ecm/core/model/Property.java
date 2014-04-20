@@ -93,15 +93,6 @@ public interface Property {
     void setNull() throws DocumentException;
 
     /**
-     * Checks whether this property has child property with the given name.
-     *
-     * @return true if this property has children properties, false otherwise
-     * @throws DocumentException
-     * @throws UnsupportedOperationException if this is not a composite property
-     */
-    boolean isPropertySet(String name) throws DocumentException;
-
-    /**
      * Gets the children property given its name.
      *
      * @param name the property name
@@ -119,14 +110,5 @@ public interface Property {
      * @throws UnsupportedOperationException if this is not a composite property
      */
     Collection<Property> getProperties() throws DocumentException;
-
-    /**
-     * Gets an iterator over the children properties.
-     *
-     * @return an iterator over the children properties
-     * @throws DocumentException
-     * @throws UnsupportedOperationException if this is not a composite property
-     */
-    Iterator<Property> getPropertyIterator() throws DocumentException;
 
 }

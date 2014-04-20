@@ -22,7 +22,7 @@ import java.io.Serializable;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
-import org.nuxeo.ecm.core.api.model.PropertyError;
+import org.nuxeo.ecm.core.api.model.PropertyRuntimeException;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.schema.types.Field;
 
@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
  */
 public class BinaryProperty extends ScalarProperty {
 
-    private static final long serialVersionUID = 1036197257646828836L;
+    private static final long serialVersionUID = 1L;
 
     public BinaryProperty(Property parent, Field field, int flags) {
         super(parent, field, flags);
@@ -74,14 +74,16 @@ public class BinaryProperty extends ScalarProperty {
             try {
                 return (T) FileUtils.read((InputStream) value);
             } catch (IOException e) {
-                throw new PropertyError("Failed to read given input stream", e);
+                throw new PropertyRuntimeException(
+                        "Failed to read given input stream", e);
             }
         }
         if (toType == byte[].class) {
             try {
                 return (T) FileUtils.readBytes((InputStream) value);
             } catch (IOException e) {
-                throw new PropertyError("Failed to read given input stream", e);
+                throw new PropertyRuntimeException(
+                        "Failed to read given input stream", e);
             }
         }
         throw new PropertyConversionException(value.getClass(), toType);
