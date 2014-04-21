@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.favorites.core;
 
+import java.util.Locale;
+import java.util.MissingResourceException;
+
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -31,6 +35,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.favorites.api.FavoritesConstants;
 import org.nuxeo.ecm.favorites.api.FavoritesManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
+import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -62,8 +67,18 @@ public class FavoritesManagerImpl extends DefaultComponent implements
                 userWorkspace.getPath().toString(),
                 FavoritesConstants.DEFAULT_FAVORITES_NAME,
                 FavoritesConstants.FAVORITES_TYPE);
+        String title = null;
+        try {
+            title = I18NUtils.getMessageString("messages",
+                    FavoritesConstants.DEFAULT_FAVORITES_TITLE, new Object[0],
+                    getLocale(session));
+        } catch (MissingResourceException e) {
+            title = FavoritesConstants.DEFAULT_FAVORITES_NAME;
+        }
         doc.setProperty("dublincore", "title",
                 FavoritesConstants.DEFAULT_FAVORITES_TITLE);
+        doc.setProperty("dublincore", "title",
+                title);
         doc.setProperty("dublincore", "description", "");
         doc = session.createDocument(doc);
 
@@ -118,7 +133,8 @@ public class FavoritesManagerImpl extends DefaultComponent implements
     public boolean isFavorite(DocumentModel document, CoreSession session)
             throws ClientException {
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
-        return collectionManager.isInCollection(getFavorites(document, session), document, session);
+        return collectionManager.isInCollection(
+                getFavorites(document, session), document, session);
     }
 
     @Override
@@ -127,6 +143,17 @@ public class FavoritesManagerImpl extends DefaultComponent implements
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         collectionManager.removeFromCollection(getFavorites(document, session),
                 document, session);
+    }
+
+    protected Locale getLocale(final CoreSession session)
+            throws ClientException {
+        Locale locale = null;
+        locale = Framework.getLocalService(LocaleProvider.class).getLocale(
+                session);
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+        return new Locale( Locale.getDefault().getLanguage());
     }
 
 }

@@ -42,7 +42,8 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.favorites.core",
         "org.nuxeo.ecm.platform.collections.core",
         "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.query.api" })
+        "org.nuxeo.ecm.platform.query.api",
+        "org.nuxeo.ecm.platform.web.common"})
 public class FavoritesAddRemoveTest {
 
     protected static final String TEST_FILE_NAME = "testFile";
