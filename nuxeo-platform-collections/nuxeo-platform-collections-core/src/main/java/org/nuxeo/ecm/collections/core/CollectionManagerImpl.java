@@ -18,8 +18,11 @@ package org.nuxeo.ecm.collections.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.core.adapter.Collection;
@@ -49,6 +52,7 @@ import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
+import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -190,8 +194,16 @@ public class CollectionManagerImpl extends DefaultComponent implements
                 userWorkspace.getPath().toString(),
                 CollectionConstants.DEFAULT_COLLECTIONS_NAME,
                 CollectionConstants.COLLECTIONS_TYPE);
+        String title = null;
+        try {
+            title = I18NUtils.getMessageString("messages",
+                    CollectionConstants.DEFAULT_COLLECTIONS_TITLE, new Object[0],
+                    getLocale(session));
+        } catch (MissingResourceException e) {
+            title = CollectionConstants.DEFAULT_COLLECTIONS_TITLE;
+        }
         doc.setProperty("dublincore", "title",
-                CollectionConstants.DEFAULT_COLLECTIONS_TITLE);
+                title);
         doc.setProperty("dublincore", "description", "");
         doc = session.createDocument(doc);
 
@@ -411,6 +423,17 @@ public class CollectionManagerImpl extends DefaultComponent implements
             newCollection = session.createDocument(collectionModel);
         }
         return newCollection;
+    }
+
+    protected Locale getLocale(final CoreSession session)
+            throws ClientException {
+        Locale locale = null;
+        locale = Framework.getLocalService(LocaleProvider.class).getLocale(
+                session);
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+        return new Locale( Locale.getDefault().getLanguage());
     }
 
 }

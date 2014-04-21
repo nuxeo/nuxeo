@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.collections.api;
 
+
 /**
  * @since 5.9.3
  */
@@ -45,7 +46,7 @@ public class CollectionConstants {
 
     public static final String DEFAULT_COLLECTIONS_NAME = "Collections";
 
-    public static final String DEFAULT_COLLECTIONS_TITLE = "%i18nlabel.myCollections.title";
+    public static final String DEFAULT_COLLECTIONS_TITLE = "label.myCollections.title";
 
     public static final String COLLECTIONS_TYPE = "Collections";
 
@@ -56,7 +57,5 @@ public class CollectionConstants {
     public static final int MAX_COLLECTION_RETURNED = 100;
 
     public static final String COLLECTION_CONTENT_PAGE_PROVIDER = "default_content_collection";
-
-    public static final String I18N_PREFIX = "%i18n";
 
 }

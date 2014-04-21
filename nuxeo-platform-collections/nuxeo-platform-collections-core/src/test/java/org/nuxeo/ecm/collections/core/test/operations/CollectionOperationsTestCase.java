@@ -26,7 +26,6 @@ import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -44,7 +43,8 @@ import com.google.inject.Inject;
     "org.nuxeo.ecm.automation.features",
     "org.nuxeo.ecm.platform.query.api",
     "org.nuxeo.ecm.platform.userworkspace.core",
-    "org.nuxeo.ecm.platform.userworkspace.types"})
+    "org.nuxeo.ecm.platform.userworkspace.types",
+    "org.nuxeo.ecm.platform.web.common"})
 public class CollectionOperationsTestCase {
 
     protected static final String TEST_FILE_NAME = "testFile";

@@ -47,7 +47,8 @@ import com.google.inject.Inject;
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.collections.core",
         "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.query.api" })
+        "org.nuxeo.ecm.platform.query.api",
+        "org.nuxeo.ecm.platform.web.common"})
 public class CollectionTestCase {
 
     @Inject
