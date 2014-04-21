@@ -19,8 +19,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.transaction.xa.XAResource;
-
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -30,7 +28,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityException;
 
 /**
@@ -88,20 +85,6 @@ public interface Session {
      */
     IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object... params) throws QueryException;
-
-    /**
-     * Gets the type manager used by the repository.
-     *
-     * @return the type manager
-     */
-    SchemaManager getTypeManager();
-
-    /**
-     * The XAResource corresponding to this session.
-     *
-     * @return the XAResource
-     */
-    XAResource getXAResource();
 
     /**
      * Saves this session.
@@ -287,8 +270,6 @@ public interface Session {
             throws DocumentException;
 
     ACP getMergedACP(Document doc) throws SecurityException;
-
-    ACP getACP(Document doc) throws SecurityException;
 
     void setACP(Document doc, ACP acp, boolean overwrite)
             throws SecurityException;

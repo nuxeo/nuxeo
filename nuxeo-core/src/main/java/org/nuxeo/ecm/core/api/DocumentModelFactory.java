@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,12 +10,9 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api;
 
-import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,11 +25,10 @@ import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.Property;
-import org.nuxeo.ecm.core.model.PropertyContainer;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.Prefetch;
@@ -154,12 +150,7 @@ public class DocumentModelFactory {
                 }
             }
         }
-        SchemaManager schemaManager;
-        try {
-            schemaManager = Framework.getService(SchemaManager.class);
-        } catch (Exception e) {
-            throw new ClientRuntimeException(e);
-        }
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         for (String schemaName : loadSchemas) {
             Schema schema = schemaManager.getSchema(schemaName);
             docModel.addDataModel(createDataModel(doc, schema));
@@ -197,16 +188,11 @@ public class DocumentModelFactory {
      * @since 5.4.2
      */
     public static DocumentModelImpl createDocumentModel(String docType) {
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        DocumentType type = schemaManager.getDocumentType(docType);
         try {
-            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-            if (schemaManager == null) {
-                throw new ClientRuntimeException("SchemaManager is null");
-            }
-            DocumentType type = schemaManager.getDocumentType(docType);
-            return createDocumentModel(type);
-        } catch (ClientRuntimeException e) {
-            throw e;
-        } catch (Exception e) {
+            return createDocumentModel(null, type);
+        } catch (DocumentException e) {
             throw new ClientRuntimeException(e);
         }
     }
@@ -232,11 +218,6 @@ public class DocumentModelFactory {
         return docModel;
     }
 
-    public static DocumentModelImpl createDocumentModel(DocumentType docType)
-            throws DocumentException {
-        return createDocumentModel(null, docType);
-    }
-
     /**
      * Creates a data model from a document and a schema. If the document is
      * null, just creates empty data models.
@@ -247,9 +228,7 @@ public class DocumentModelFactory {
         if (doc != null) {
             try {
                 doc.readDocumentPart(part);
-            } catch (DocumentException e) {
-                throw e;
-            } catch (Exception e) {
+            } catch (PropertyException e) {
                 throw new DocumentException("failed to read document part", e);
             }
         }
@@ -288,16 +267,7 @@ public class DocumentModelFactory {
         for (DataModel dm : docModel.getDataModelsCollection()) { // only loaded
             if (dm.isDirty()) {
                 DocumentPart part = ((DataModelImpl) dm).getDocumentPart();
-                try {
-                    doc.writeDocumentPart(part);
-                } catch (ClientException e) {
-                    throw e;
-                } catch (DocumentException e) {
-                    throw e;
-                } catch (Exception e) {
-                    throw new ClientException("failed to write document part",
-                            e);
-                }
+                doc.writeDocumentPart(part);
                 changed = true;
             }
         }
@@ -366,14 +336,9 @@ public class DocumentModelFactory {
     /**
      * Prefetches from a document.
      */
-    private static Prefetch getPrefetch(Document doc,
+    protected static Prefetch getPrefetch(Document doc,
             PrefetchInfo prefetchInfo, Set<String> docSchemas) {
-        SchemaManager schemaManager;
-        try {
-            schemaManager = Framework.getService(SchemaManager.class);
-        } catch (Exception e) {
-            throw new ClientRuntimeException(e);
-        }
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
 
         // individual fields
         Set<String> fieldNames = new HashSet<String>();
@@ -401,123 +366,22 @@ public class DocumentModelFactory {
 
         // do the prefetch
         Prefetch prefetch = new Prefetch();
-        for (String prefixedName : fieldNames) {
-            prefetchValues((Property) doc, null, prefixedName, prefetch,
-                    docSchemas);
+        for (String schemaName : docSchemas) {
+            Schema schema = schemaManager.getSchema(schemaName);
+            try {
+                doc.readPrefetch(schema, prefetch, fieldNames, docSchemas);
+            } catch (PropertyException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         return prefetch;
     }
 
     /**
-     * Computes the keys and values of a document for a given xpath name.
-     * <p>
-     * There may be several results returned as the name may contain wildcards
-     * for the complex lists indices.
-     * <p>
-     * INTERNAL
-     *
-     * @param property the document or a sub-property container
-     * @param start the xpath that led to this property
-     * @param xpath the canonical xpath with allowed list wildcards
-     * @param prefetch the prefetch to fill
-     * @param docSchemas the available schemas on the document
-     * @return {@code true} if the xpath was valid
-     */
-    public static void prefetchValues(Property property, String start,
-            String xpath, Prefetch prefetch, Set<String> docSchemas) {
-        Property p = property;
-        while (xpath != null) {
-            int i = xpath.indexOf('/');
-            String name;
-            if (i == -1) {
-                name = xpath;
-                xpath = null;
-            } else {
-                name = xpath.substring(0, i);
-                xpath = xpath.substring(i + 1);
-            }
-            start = start == null ? name : start + '/' + name;
-            Type type = p.getType();
-            if (type.isComplexType() || type.isCompositeType()) {
-                // complex type
-                try {
-                    p = ((PropertyContainer) p).getProperty(name);
-                } catch (DocumentException e) {
-                    return;
-                }
-            } else {
-                if (type.isListType()) {
-                    Type listFieldType = ((ListType) type).getFieldType();
-                    if (!listFieldType.isSimpleType()) {
-                        // complex list
-                        try {
-                            if ("*".equals(name)) {
-                                Collection<Property> props = ((PropertyContainer) p).getProperties();
-                                int n = 0;
-                                String startBase = start.substring(0,
-                                        start.length() - 1);
-                                for (Property subProp : props) {
-                                    prefetchValues(subProp, startBase + n++,
-                                            xpath, prefetch, docSchemas);
-                                }
-                                return; // xpath consumed, return now
-                            } else {
-                                p = ((PropertyContainer) p).getProperty(name);
-                            }
-                        } catch (DocumentException e) {
-                            return;
-                        }
-                    } else {
-                        // array
-                        return;
-                    }
-                } else {
-                    // primitive
-                    return;
-                }
-            }
-        }
-
-        // we have a leaf property
-
-        Type type = p.getType();
-        if (type.isComplexType()) {
-            // complex type
-            return;
-        } else {
-            if (type.isListType()) {
-                if (!((ListType) type).getFieldType().isSimpleType()) {
-                    // complex list
-                    return;
-                }
-            }
-        }
-        Serializable value;
-        try {
-            value = (Serializable) p.getValue();
-        } catch (DocumentException e) {
-            log.error(e);
-            return;
-        }
-
-        // we have the value
-
-        // info for lookup by schema + name
-
-        xpath = start;
-
-        String[] returnName = new String[1];
-        String schemaName = DocumentModelImpl.getXPathSchemaName(xpath,
-                docSchemas, returnName);
-        String name = returnName[0]; // call me when java gets tuples
-        prefetch.put(xpath, schemaName, name, value);
-    }
-
-    /**
      * Checks if a field is a primitive type or array.
      */
-    private static boolean isScalarField(Field field) {
+    protected static boolean isScalarField(Field field) {
         Type type = field.getType();
         if (type.isComplexType()) {
             // complex type

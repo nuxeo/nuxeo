@@ -13,12 +13,9 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
@@ -284,22 +281,6 @@ public class Node {
             return new CollectionProperty(name, propertyInfo.propertyType,
                     propertyInfo.readonly, (SimpleFragment) fragment,
                     propertyInfo.fragmentKey);
-        }
-    }
-
-    public BaseProperty getProperty(String name) throws StorageException {
-        BaseProperty property = propertyCache.get(name);
-        if (property != null) {
-            return property;
-        }
-        ModelProperty propertyInfo = getPropertyInfo(name);
-        if (propertyInfo == null) {
-            throw new IllegalArgumentException("Unknown field: " + name);
-        }
-        if (propertyInfo.propertyType.isArray()) {
-            return getCollectionProperty(name);
-        } else {
-            return getSimpleProperty(name);
         }
     }
 

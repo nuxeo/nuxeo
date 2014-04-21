@@ -16,7 +16,6 @@ package org.nuxeo.ecm.core.model;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 
 /**
  * Interface to manage a low-level repository.
@@ -27,8 +26,6 @@ public interface Repository {
 
     Session getSession(NuxeoPrincipal principal, String sessionId)
             throws DocumentException;
-
-    SchemaManager getTypeManager();
 
     void initialize() throws DocumentException;
 

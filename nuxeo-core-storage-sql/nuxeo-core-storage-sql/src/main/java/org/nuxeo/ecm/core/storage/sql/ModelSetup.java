@@ -12,7 +12,6 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.sql.Model.IdType;
 
 /**
@@ -22,10 +21,8 @@ public class ModelSetup {
 
     public RepositoryDescriptor repositoryDescriptor;
 
-    public SchemaManager schemaManager;
-
     public boolean materializeFulltextSyntheticColumn;
-    
+
     public boolean supportsArrayColumns;
 
     public IdType idType;

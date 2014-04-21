@@ -895,10 +895,8 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         try {
             session.saveDocument(ver);
             fail("Should not allow version write");
-        } catch (ClientException e) {
-            Throwable c = e.getCause();
-            assertNotNull(c);
-            assertTrue(c.toString(), c instanceof VersionNotModifiableException);
+        } catch (VersionNotModifiableException e) {
+            // ok
         }
 
         // with proper option, it's allowed

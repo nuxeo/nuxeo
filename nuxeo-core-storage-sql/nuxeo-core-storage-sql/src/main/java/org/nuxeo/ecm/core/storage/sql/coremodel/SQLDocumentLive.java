@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,72 +9,49 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
-import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.Prefetch;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
+import org.nuxeo.runtime.api.Framework;
 
-/**
- * @author Florent Guillaume
- */
-public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
+public class SQLDocumentLive implements SQLDocument {
 
-    private static final Log log = LogFactory.getLog(SQLDocumentLive.class);
+    protected final Node node;
 
-    public static final String DC_ISSUED = "dc:issued";
-
-    public static final String RELATED_TEXT_RESOURCES = "relatedtextresources";
-
-    public static final String RELATED_TEXT_ID = "relatedtextid";
-
-    public static final String RELATED_TEXT = "relatedtext";
-
-    protected static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<String>(
-            Arrays.asList( //
-                    Model.FULLTEXT_JOBID_PROP, //
-                    Model.FULLTEXT_BINARYTEXT_PROP, //
-                    Model.MISC_LIFECYCLE_STATE_PROP, //
-                    Model.LOCK_OWNER_PROP, //
-                    Model.LOCK_CREATED_PROP, //
-                    DC_ISSUED, //
-                    RELATED_TEXT_RESOURCES, //
-                    RELATED_TEXT_ID, //
-                    RELATED_TEXT //
-            ));
+    protected final Type type;
 
     protected SQLSession session;
 
@@ -91,20 +68,17 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     protected SQLDocumentLive(Node node, ComplexType type,
             List<CompositeType> mixinTypes, SQLSession session, boolean readonly) {
-        super(node, type, null);
+        this.node = node;
+        this.type = type;
         this.session = session;
         this.mixinTypes = mixinTypes;
         if (node != null && node.isProxy()) {
-            proxySchemas = session.getTypeManager().getProxySchemas(type.getName());
+            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            proxySchemas = schemaManager.getProxySchemas(type.getName());
         } else {
             proxySchemas = null;
         }
         this.readonly = readonly;
-    }
-
-    @Override
-    public SQLDocument getDocument() {
-        return this;
     }
 
     @Override
@@ -117,36 +91,14 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         return readonly;
     }
 
-    /*
-     * ----- SQLDocument -----
-     */
-
-    // getNode in SQLComplexProperty
-
     @Override
-    public org.nuxeo.ecm.core.model.Property getACLProperty()
-            throws DocumentException {
-        return session.makeACLProperty(getNode(), getDocument());
+    public Node getNode() {
+        return node;
     }
 
     @Override
-    public void checkWritable(String name) throws DocumentException {
-        if (isReadOnlyProperty(name)) {
-            throw new DocumentException("Cannot write property: " + name);
-        }
-    }
-
-    protected boolean isReadOnlyProperty(String name) {
-        return isReadOnly() && !isVersionWritableProperty(name);
-    }
-
-    protected static boolean isVersionWritableProperty(String name) {
-        if (name == null) {
-            return false;
-        }
-        return VERSION_WRITABLE_PROPS.contains(name) //
-                || name.startsWith(Model.FULLTEXT_BINARYTEXT_PROP) //
-                || name.startsWith(Model.FULLTEXT_SIMPLETEXT_PROP);
+    public String getName() {
+        return getNode() == null ? null : getNode().getName();
     }
 
     /*
@@ -187,11 +139,6 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     }
 
     @Override
-    public Calendar getLastModified() {
-        throw new UnsupportedOperationException("unused");
-    }
-
-    @Override
     public boolean isProxy() {
         return false;
     }
@@ -216,17 +163,16 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
      * {@link SQLDocument}.
      */
     @Override
-    public void readDocumentPart(DocumentPart dp) throws Exception {
-        for (Property property : dp) {
-            property.init((Serializable) getPropertyValue(property.getName()));
-        }
+    public void readDocumentPart(DocumentPart dp) throws PropertyException {
+        session.readComplexProperty((ComplexProperty) dp, getNode());
     }
 
     @Override
-    public org.nuxeo.ecm.core.model.Property getProperty(String name)
-            throws DocumentException {
-        return session.makeProperty(getNode(), name, (ComplexType) type,
-                getDocument(), mixinTypes, proxySchemas);
+    public void readPrefetch(ComplexType complexType, Prefetch prefetch,
+            Set<String> fieldNames, Set<String> docSchemas)
+            throws PropertyException {
+        session.readPrefetch(complexType, prefetch, fieldNames, docSchemas,
+                getNode());
     }
 
     /**
@@ -234,54 +180,9 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
      * {@link DocumentPart}.
      */
     @Override
-    public void writeDocumentPart(DocumentPart dp) throws Exception {
-        for (Property property : dp) {
-            String name = property.getName();
-            Serializable value = property.getValueForWrite();
-            try {
-                setPropertyValue(name, value);
-            } catch (VersionNotModifiableException e) {
-                // workaround: only dublincore is allowed to change and
-                // it contains only scalars and arrays
-                // cf also isVersionWritableProperty()
-                if (!name.startsWith("dc:")) {
-                    throw e;
-                }
-                // ignore if value is unchanged
-                Object oldValue = getPropertyValue(name);
-                if (same(value, oldValue)) {
-                    continue;
-                }
-                if (value == null || oldValue == null
-                        || !sameArray(value, oldValue)) {
-                    throw e;
-                }
-            }
-        }
+    public void writeDocumentPart(DocumentPart dp) throws PropertyException {
+        session.writeComplexProperty((ComplexProperty) dp, getNode(), this);
         clearDirtyFlags(dp);
-    }
-
-    protected static boolean same(Object a, Object b) {
-        if (a == null) {
-            return b == null;
-        } else {
-            return a.equals(b);
-        }
-    }
-
-    protected static boolean sameArray(Object a, Object b) {
-        Class<?> acls = a.getClass();
-        Class<?> bcls = b.getClass();
-        if (!acls.isArray() || !bcls.isArray()
-                || Array.getLength(a) != Array.getLength(b)) {
-            return false;
-        }
-        for (int i = 0; i < Array.getLength(a); i++) {
-            if (!same(Array.get(a, i), Array.get(b, i))) {
-                return false;
-            }
-        }
-        return true;
     }
 
     protected static void clearDirtyFlags(Property property) {
@@ -293,6 +194,25 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         property.clearDirtyFlags();
     }
 
+    @Override
+    public Serializable getPropertyValue(String name) throws DocumentException {
+        try {
+            return getNode().getSimpleProperty(name).getValue();
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    @Override
+    public void setPropertyValue(String name, Serializable value)
+            throws DocumentException {
+        try {
+            getNode().setSimpleProperty(name, value);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
     protected static final Map<String, String> systemPropNameMap;
 
     static {
@@ -302,7 +222,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     }
 
     @Override
-    public <T extends Serializable> void setSystemProp(String name, T value)
+    public void setSystemProp(String name, Serializable value)
             throws DocumentException {
         String propertyName;
         if (name.startsWith(SIMPLE_TEXT_SYS_PROP)) {
@@ -317,7 +237,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         if (propertyName == null) {
             throw new DocumentException("Unknown system property: " + name);
         }
-        getProperty(propertyName).setValue(value);
+        setPropertyValue(propertyName, value);
     }
 
     @Override
@@ -328,7 +248,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         if (propertyName == null) {
             throw new DocumentException("Unknown system property: " + name);
         }
-        Object value = getProperty(propertyName).getValue();
+        Serializable value = getPropertyValue(propertyName);
         if (value == null) {
             if (type == Boolean.class) {
                 value = Boolean.FALSE;
@@ -346,7 +266,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     @Override
     public String getLifeCyclePolicy() throws LifeCycleException {
         try {
-            return getString(Model.MISC_LIFECYCLE_POLICY_PROP);
+            return (String) getPropertyValue(Model.MISC_LIFECYCLE_POLICY_PROP);
         } catch (DocumentException e) {
             throw new LifeCycleException("Failed to get policy", e);
         }
@@ -355,7 +275,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     @Override
     public void setLifeCyclePolicy(String policy) throws LifeCycleException {
         try {
-            setString(Model.MISC_LIFECYCLE_POLICY_PROP, policy);
+            setPropertyValue(Model.MISC_LIFECYCLE_POLICY_PROP, policy);
         } catch (DocumentException e) {
             throw new LifeCycleException("Failed to set policy", e);
         }
@@ -364,7 +284,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     @Override
     public String getLifeCycleState() throws LifeCycleException {
         try {
-            return getString(Model.MISC_LIFECYCLE_STATE_PROP);
+            return (String) getPropertyValue(Model.MISC_LIFECYCLE_STATE_PROP);
         } catch (DocumentException e) {
             throw new LifeCycleException("Failed to get state", e);
         }
@@ -374,21 +294,20 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     public void setCurrentLifeCycleState(String state)
             throws LifeCycleException {
         try {
-            setString(Model.MISC_LIFECYCLE_STATE_PROP, state);
+            setPropertyValue(Model.MISC_LIFECYCLE_STATE_PROP, state);
         } catch (DocumentException e) {
             throw new LifeCycleException("Failed to set state", e);
         }
     }
 
     @Override
-    public boolean followTransition(String transition)
+    public void followTransition(String transition)
             throws LifeCycleException {
         LifeCycleService service = NXCore.getLifeCycleService();
         if (service == null) {
             throw new LifeCycleException("LifeCycleService not available");
         }
         service.followTransition(this, transition);
-        return true;
     }
 
     @Override
@@ -469,7 +388,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     @Override
     public boolean isCheckedOut() throws DocumentException {
-        return !getBoolean(Model.MAIN_CHECKED_IN_PROP);
+        return !Boolean.TRUE.equals(getPropertyValue(Model.MAIN_CHECKED_IN_PROP));
     }
 
     @Override
@@ -494,12 +413,12 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     @Override
     public String getVersionLabel() throws DocumentException {
-        return getString(Model.VERSION_LABEL_PROP);
+        return (String) getPropertyValue(Model.VERSION_LABEL_PROP);
     }
 
     @Override
     public String getCheckinComment() throws DocumentException {
-        return getString(Model.VERSION_DESCRIPTION_PROP);
+        return (String) getPropertyValue(Model.VERSION_DESCRIPTION_PROP);
     }
 
     @Override
@@ -509,7 +428,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
 
     @Override
     public Calendar getVersionCreationDate() throws DocumentException {
-        return (Calendar) getProperty(Model.VERSION_CREATED_PROP).getValue();
+        return (Calendar) getPropertyValue(Model.VERSION_CREATED_PROP);
     }
 
     @Override
@@ -551,57 +470,17 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
     }
 
     @Override
-    public boolean hasVersions() throws DocumentException {
-        log.error("hasVersions unimplemented, returning false");
-        return false;
-        // XXX TODO
-        // throw new UnsupportedOperationException();
-    }
-
-    /*
-     * ----- org.nuxeo.ecm.core.model.DocumentContainer -----
-     */
-
-    @Override
-    public Document resolvePath(String path) throws DocumentException {
-        if (path == null) {
-            throw new IllegalArgumentException();
-        }
-        if (path.length() == 0) {
-            return this;
-        }
-        // this API doesn't take absolute paths
-        if (path.startsWith("/")) {
-            // TODO log warning
-            path = path.substring(1);
-        }
-        return session.resolvePath(getNode(), path);
-    }
-
-    @Override
     public Document getChild(String name) throws DocumentException {
         return session.getChild(getNode(), name);
     }
 
     @Override
     public Iterator<Document> getChildren() throws DocumentException {
-        return getChildren(0);
-    }
-
-    @Override
-    public DocumentIterator getChildren(int start) throws DocumentException {
         if (!isFolder()) {
             return EmptyDocumentIterator.INSTANCE;
         }
         List<Document> children = session.getChildren(getNode());
-        if (start < 0) {
-            throw new IllegalArgumentException(String.valueOf(start));
-        }
-        if (start >= children.size()) {
-            return EmptyDocumentIterator.INSTANCE;
-        }
-        return new SQLDocumentListIterator(children.subList(start,
-                children.size()));
+        return new SQLDocumentListIterator(children);
     }
 
     @Override
@@ -693,7 +572,8 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
         try {
             boolean added = session.addMixinType(getNode(), facet);
             if (added) {
-                mixinTypes.add(session.getTypeManager().getFacet(facet));
+                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+                mixinTypes.add(schemaManager.getFacet(facet));
             }
             return added;
         } catch (IllegalArgumentException e) {

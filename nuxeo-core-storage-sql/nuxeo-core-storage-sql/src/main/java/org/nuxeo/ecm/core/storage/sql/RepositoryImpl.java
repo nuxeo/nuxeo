@@ -27,7 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend.MapperKind;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
@@ -53,8 +52,6 @@ public class RepositoryImpl implements Repository {
     private static final Log log = LogFactory.getLog(RepositoryImpl.class);
 
     protected final RepositoryDescriptor repositoryDescriptor;
-
-    protected final SchemaManager schemaManager;
 
     protected final EventService eventService;
 
@@ -102,11 +99,6 @@ public class RepositoryImpl implements Repository {
         eventPropagator = new InvalidationsPropagator("event-" + this);
         repositoryEventQueue = new InvalidationsQueue("repo-"
                 + repositoryDescriptor.name);
-        try {
-            schemaManager = Framework.getService(SchemaManager.class);
-        } catch (Exception e) {
-            throw new StorageException(e);
-        }
         try {
             eventService = Framework.getService(EventService.class);
         } catch (Exception e) {
@@ -301,7 +293,6 @@ public class RepositoryImpl implements Repository {
         log.debug("Initializing");
         ModelSetup modelSetup = new ModelSetup();
         modelSetup.repositoryDescriptor = repositoryDescriptor;
-        modelSetup.schemaManager = schemaManager;
         backend.initializeModelSetup(modelSetup);
         model = new Model(modelSetup);
         backend.initializeModel(model);

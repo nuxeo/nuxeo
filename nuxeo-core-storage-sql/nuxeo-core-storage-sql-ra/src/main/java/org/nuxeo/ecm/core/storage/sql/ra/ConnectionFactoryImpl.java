@@ -23,14 +23,12 @@ import javax.resource.spi.ConnectionManager;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
 
@@ -179,11 +177,6 @@ public class ConnectionFactoryImpl implements Repository,
         } catch (StorageException e) {
             throw new DocumentException(e.getMessage(), e);
         }
-    }
-
-    @Override
-    public SchemaManager getTypeManager() {
-        return Framework.getLocalService(SchemaManager.class);
     }
 
     /*

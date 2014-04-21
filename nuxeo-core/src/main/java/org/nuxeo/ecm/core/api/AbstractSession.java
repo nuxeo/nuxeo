@@ -667,8 +667,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     private DocumentModel createDocumentModelFromTypeName(String typeName,
             Map<String, Serializable> options) throws ClientException {
         try {
-            DocumentType docType = getSession().getTypeManager().getDocumentType(
-                    typeName);
+            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+            DocumentType docType = schemaManager.getDocumentType(typeName);
             if (docType == null) {
                 throw new ClientException(typeName
                         + " is not a registered core type");
@@ -1956,8 +1956,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             // FIXME: the fields are hardcoded. should be moved in versioning
             // component
             // HOW?
-            final Long majorVer = doc.getLong("major_version");
-            final Long minorVer = doc.getLong("minor_version");
+            final Long majorVer = (Long) doc.getPropertyValue("major_version");
+            final Long minorVer = (Long) doc.getPropertyValue("minor_version");
             if (majorVer != null || minorVer != null) {
                 options.put(
                         VersioningDocument.CURRENT_DOCUMENT_MAJOR_VERSION_KEY,
@@ -2468,8 +2468,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      */
     private boolean followTransition(DocumentRef docRef, String transition,
             ScopedMap options) throws ClientException {
-        boolean operationResult;
-
         try {
             Document doc = resolveReference(docRef);
             checkPermission(doc, WRITE_LIFE_CYCLE);
@@ -2479,30 +2477,28 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 doc = resolveReference(docRef);
             }
             String formerStateName = doc.getLifeCycleState();
-            operationResult = doc.followTransition(transition);
+            doc.followTransition(transition);
 
-            if (operationResult) {
-                // Construct a map holding meta information about the event.
-                Map<String, Serializable> eventOptions = new HashMap<String, Serializable>();
-                eventOptions.put(
-                        org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM,
-                        formerStateName);
-                eventOptions.put(
-                        org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TO,
-                        doc.getLifeCycleState());
-                eventOptions.put(
-                        org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION,
-                        transition);
-                String comment = (String) options.getScopedValue("comment");
-                DocumentModel docModel = readModel(doc);
-                notifyEvent(
-                        org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT,
-                        docModel, eventOptions,
-                        DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY,
-                        comment, true, false);
-                if (!docModel.isImmutable()) {
-                    writeModel(doc, docModel);
-                }
+            // Construct a map holding meta information about the event.
+            Map<String, Serializable> eventOptions = new HashMap<String, Serializable>();
+            eventOptions.put(
+                    org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM,
+                    formerStateName);
+            eventOptions.put(
+                    org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TO,
+                    doc.getLifeCycleState());
+            eventOptions.put(
+                    org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION,
+                    transition);
+            String comment = (String) options.getScopedValue("comment");
+            DocumentModel docModel = readModel(doc);
+            notifyEvent(
+                    org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT,
+                    docModel, eventOptions,
+                    DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY, comment,
+                    true, false);
+            if (!docModel.isImmutable()) {
+                writeModel(doc, docModel);
             }
 
         } catch (LifeCycleException e) {
@@ -2514,8 +2510,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         } catch (DocumentException e) {
             throw new ClientException("Failed to get content data " + docRef, e);
         }
-        return operationResult;
-
+        return true; // throws if error
     }
 
     @Override

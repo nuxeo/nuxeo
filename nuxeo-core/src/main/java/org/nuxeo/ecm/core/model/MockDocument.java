@@ -21,13 +21,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.DocumentTypeImpl;
+import org.nuxeo.ecm.core.schema.Prefetch;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -49,7 +51,7 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public String getName() throws DocumentException {
+    public String getName() {
         return uuid;
     }
 
@@ -89,9 +91,7 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public boolean followTransition(String transition)
-            throws LifeCycleException {
-        return false;
+    public void followTransition(String transition) {
     }
 
     @Override
@@ -107,11 +107,6 @@ public class MockDocument implements Document {
 
     @Override
     public String getLifeCycleState() throws LifeCycleException {
-        return null;
-    }
-
-    @Override
-    public Calendar getLastModified() throws DocumentException {
         return null;
     }
 
@@ -159,7 +154,7 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public <T extends Serializable> void setSystemProp(String name, T value)
+    public void setSystemProp(String name, Serializable value)
             throws DocumentException {
     }
 
@@ -199,11 +194,6 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public boolean hasVersions() throws DocumentException {
-        return false;
-    }
-
-    @Override
     public boolean isCheckedOut() throws DocumentException {
         return checkedout;
     }
@@ -239,11 +229,6 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public DocumentIterator getChildren(int start) throws DocumentException {
-        return null;
-    }
-
-    @Override
     public List<String> getChildrenIds() throws DocumentException {
         return null;
     }
@@ -263,47 +248,7 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public Document resolvePath(String relPath) throws DocumentException {
-        return null;
-    }
-
-    @Override
-    public boolean getBoolean(String name) throws DocumentException {
-        return false;
-    }
-
-    @Override
-    public Blob getContent(String name) throws DocumentException {
-        return null;
-    }
-
-    @Override
-    public Calendar getDate(String name) throws DocumentException {
-        return null;
-    }
-
-    @Override
-    public double getDouble(String name) throws DocumentException {
-        return 0;
-    }
-
-    @Override
-    public long getLong(String name) throws DocumentException {
-        return 0;
-    }
-
-    @Override
-    public Collection<Property> getProperties() throws DocumentException {
-        return null;
-    }
-
-    @Override
-    public Property getProperty(String name) throws DocumentException {
-        return null;
-    }
-
-    @Override
-    public Object getPropertyValue(String name) throws DocumentException {
+    public Serializable getPropertyValue(String name) throws DocumentException {
         if (name != null && name.equals("dc:creator")) {
             return creator;
         }
@@ -311,37 +256,8 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public String getString(String name) throws DocumentException {
-        return null;
-    }
-
-    @Override
-    public void setBoolean(String name, boolean value) throws DocumentException {
-    }
-
-    @Override
-    public void setContent(String name, Blob value) throws DocumentException {
-    }
-
-    @Override
-    public void setDate(String name, Calendar value) throws DocumentException {
-    }
-
-    @Override
-    public void setDouble(String name, double value) throws DocumentException {
-    }
-
-    @Override
-    public void setLong(String name, long value) throws DocumentException {
-    }
-
-    @Override
-    public void setPropertyValue(String name, Object value)
+    public void setPropertyValue(String name, Serializable value)
             throws DocumentException {
-    }
-
-    @Override
-    public void setString(String name, String value) throws DocumentException {
     }
 
     @Override
@@ -363,11 +279,17 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public void readDocumentPart(DocumentPart dp) throws Exception {
+    public void readDocumentPart(DocumentPart dp) {
     }
 
     @Override
-    public void writeDocumentPart(DocumentPart dp) throws Exception {
+    public void readPrefetch(ComplexType complexType, Prefetch prefetch,
+            Set<String> fieldNames, Set<String> docSchemas)
+            throws PropertyException {
+    }
+
+    @Override
+    public void writeDocumentPart(DocumentPart dp) {
     }
 
     @Override

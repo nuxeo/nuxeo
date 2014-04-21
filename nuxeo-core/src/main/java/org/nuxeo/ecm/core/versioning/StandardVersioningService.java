@@ -56,10 +56,10 @@ public class StandardVersioningService implements ExtendableVersioningService {
     protected static final String AUTO_CHECKED_OUT = "AUTO_CHECKED_OUT";
 
     /** Key for major version in Document API. */
-    protected static final String MAJOR_VERSION = "major_version";
+    protected static final String MAJOR_VERSION = "ecm:majorVersion";
 
     /** Key for minor version in Document API. */
-    protected static final String MINOR_VERSION = "minor_version";
+    protected static final String MINOR_VERSION = "ecm:minorVersion";
 
     private Map<String, VersioningRuleDescriptor> versioningRules;
 
@@ -129,7 +129,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     protected void incrementMinor(Document doc) throws DocumentException {
-        doc.setPropertyValue("minor_version", Long.valueOf(getMinor(doc) + 1));
+        doc.setPropertyValue(MINOR_VERSION, Long.valueOf(getMinor(doc) + 1));
     }
 
     protected void incrementByOption(Document doc, VersioningOption option)

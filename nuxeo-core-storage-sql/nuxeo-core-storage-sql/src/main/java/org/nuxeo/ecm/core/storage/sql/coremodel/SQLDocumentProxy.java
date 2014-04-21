@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
@@ -19,27 +18,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.DocumentProxy;
-import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * A proxy is a shortcut to a target document (a version or normal document).
- *
- * @author Florent Guillaume
  */
 public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
 
@@ -99,17 +95,6 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
         return ((SQLDocument) proxy).getNode();
     }
 
-    @Override
-    public org.nuxeo.ecm.core.model.Property getACLProperty()
-            throws DocumentException {
-        return ((SQLDocument) proxy).getACLProperty();
-    }
-
-    @Override
-    public void checkWritable(String name) throws DocumentException {
-        ((SQLDocument) target).checkWritable(name);
-    }
-
     /*
      * ----- Document -----
      */
@@ -120,13 +105,13 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public String getName() throws DocumentException {
-        return proxy.getName();
+    public String getUUID() {
+        return proxy.getUUID();
     }
 
     @Override
-    public String getUUID() {
-        return proxy.getUUID();
+    public String getName() {
+        return proxy.getName();
     }
 
     @Override
@@ -175,17 +160,12 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public Calendar getLastModified() throws DocumentException {
-        return target.getLastModified();
-    }
-
-    @Override
     public void save() throws DocumentException {
         target.save();
     }
 
     @Override
-    public void readDocumentPart(DocumentPart dp) throws Exception {
+    public void readDocumentPart(DocumentPart dp) throws PropertyException {
         if (isSchemaForProxy(dp.getName())) {
             proxy.readDocumentPart(dp);
         } else {
@@ -194,7 +174,18 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public void writeDocumentPart(DocumentPart dp) throws Exception {
+    public void readPrefetch(ComplexType complexType, Prefetch prefetch,
+            Set<String> fieldNames, Set<String> docSchemas)
+            throws PropertyException {
+        if (isSchemaForProxy(complexType.getName())) {
+            proxy.readPrefetch(complexType, prefetch, fieldNames, docSchemas);
+        } else {
+            target.readPrefetch(complexType, prefetch, fieldNames, docSchemas);
+        }
+    }
+
+    @Override
+    public void writeDocumentPart(DocumentPart dp) throws PropertyException {
         if (isSchemaForProxy(dp.getName())) {
             proxy.writeDocumentPart(dp);
         } else {
@@ -203,7 +194,7 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public <T extends Serializable> void setSystemProp(String name, T value)
+    public void setSystemProp(String name, Serializable value)
             throws DocumentException {
         target.setSystemProp(name, value);
     }
@@ -265,9 +256,8 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public boolean followTransition(String transition)
-            throws LifeCycleException {
-        return target.followTransition(transition);
+    public void followTransition(String transition) throws LifeCycleException {
+        target.followTransition(transition);
     }
 
     @Override
@@ -275,10 +265,6 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
             throws LifeCycleException {
         return target.getAllowedStateTransitions();
     }
-
-    /*
-     * ----- Lockable -----
-     */
 
     @Override
     public Lock getLock() throws DocumentException {
@@ -294,10 +280,6 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     public Lock removeLock(String owner) throws DocumentException {
         return target.removeLock(owner);
     }
-
-    /*
-     * ----- VersionableDocument -----
-     */
 
     @Override
     public boolean isVersion() {
@@ -402,20 +384,6 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public boolean hasVersions() throws DocumentException {
-        return target.hasVersions();
-    }
-
-    /*
-     * ----- DocumentContainer -----
-     */
-
-    @Override
-    public Document resolvePath(String path) throws DocumentException {
-        return proxy.resolvePath(path);
-    }
-
-    @Override
     public Document getChild(String name) throws DocumentException {
         return proxy.getChild(name);
     }
@@ -423,11 +391,6 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     @Override
     public Iterator<Document> getChildren() throws DocumentException {
         return proxy.getChildren();
-    }
-
-    @Override
-    public DocumentIterator getChildren(int start) throws DocumentException {
-        return proxy.getChildren(start);
     }
 
     @Override
@@ -488,24 +451,7 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
      */
 
     @Override
-    public Property getProperty(String name) throws DocumentException {
-        // TODO proxy-specific schemas as well
-        if (Model.PROXY_TARGET_PROP.equals(name)
-                || Model.PROXY_VERSIONABLE_PROP.equals(name)
-                || isPropertyForProxy(name)) {
-            return proxy.getProperty(name);
-        } else {
-            return target.getProperty(name);
-        }
-    }
-
-    @Override
-    public Collection<Property> getProperties() throws DocumentException {
-        return target.getProperties();
-    }
-
-    @Override
-    public Object getPropertyValue(String name) throws DocumentException {
+    public Serializable getPropertyValue(String name) throws DocumentException {
         if (isPropertyForProxy(name)) {
             return proxy.getPropertyValue(name);
         } else {
@@ -514,145 +460,13 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public String getString(String name) throws DocumentException {
-        if (isPropertyForProxy(name)) {
-            return proxy.getString(name);
-        } else {
-            return target.getString(name);
-        }
-    }
-
-    @Override
-    public boolean getBoolean(String name) throws DocumentException {
-        if (isPropertyForProxy(name)) {
-            return proxy.getBoolean(name);
-        } else {
-            return target.getBoolean(name);
-        }
-    }
-
-    @Override
-    public long getLong(String name) throws DocumentException {
-        if (isPropertyForProxy(name)) {
-            return proxy.getLong(name);
-        } else {
-            return target.getLong(name);
-        }
-    }
-
-    @Override
-    public double getDouble(String name) throws DocumentException {
-        if (isPropertyForProxy(name)) {
-            return proxy.getDouble(name);
-        } else {
-            return target.getDouble(name);
-        }
-    }
-
-    @Override
-    public Calendar getDate(String name) throws DocumentException {
-        if (isPropertyForProxy(name)) {
-            return proxy.getDate(name);
-        } else {
-            return target.getDate(name);
-        }
-    }
-
-    @Override
-    public Blob getContent(String name) throws DocumentException {
-        if (isPropertyForProxy(name)) {
-            return proxy.getContent(name);
-        } else {
-            return target.getContent(name);
-        }
-    }
-
-    @Override
-    public void setPropertyValue(String name, Object value)
+    public void setPropertyValue(String name, Serializable value)
             throws DocumentException {
         if (isPropertyForProxy(name)) {
             proxy.setPropertyValue(name, value);
         } else {
             target.setPropertyValue(name, value);
         }
-    }
-
-    @Override
-    public void setString(String name, String value) throws DocumentException {
-        if (isPropertyForProxy(name)) {
-            proxy.setString(name, value);
-        } else {
-            target.setString(name, value);
-        }
-    }
-
-    @Override
-    public void setBoolean(String name, boolean value) throws DocumentException {
-        if (isPropertyForProxy(name)) {
-            proxy.setBoolean(name, value);
-        } else {
-            target.setBoolean(name, value);
-        }
-    }
-
-    @Override
-    public void setLong(String name, long value) throws DocumentException {
-        if (isPropertyForProxy(name)) {
-            proxy.setLong(name, value);
-        } else {
-            target.setLong(name, value);
-        }
-    }
-
-    @Override
-    public void setDouble(String name, double value) throws DocumentException {
-        if (isPropertyForProxy(name)) {
-            proxy.setDouble(name, value);
-        } else {
-            target.setDouble(name, value);
-        }
-    }
-
-    @Override
-    public void setDate(String name, Calendar value) throws DocumentException {
-        if (isPropertyForProxy(name)) {
-            proxy.setDate(name, value);
-        } else {
-            target.setDate(name, value);
-        }
-    }
-
-    @Override
-    public void setContent(String name, Blob value) throws DocumentException {
-        if (isPropertyForProxy(name)) {
-            proxy.setContent(name, value);
-        } else {
-            target.setContent(name, value);
-        }
-    }
-
-    /*
-     * ----- Property -----
-     */
-
-    @Override
-    public Object getValue() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isNull() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setNull() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setValue(Object value) throws DocumentException {
-        throw new UnsupportedOperationException();
     }
 
     /*

@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * The {@link Model} is the link between high-level types and SQL-level objects
@@ -488,9 +489,9 @@ public class Model {
         initAclModel();
         initMiscModel();
         // models for all document types and mixins
-        initModels(modelSetup.schemaManager);
+        initModels();
         if (!repositoryDescriptor.getFulltextDisabled()) {
-            inferFulltextInfo(modelSetup.schemaManager);
+            inferFulltextInfo();
             inferFulltextInfoByFragment(); // needs mixin schemas
             initFullTextModel();
         }
@@ -769,8 +770,7 @@ public class Model {
     /**
      * Infers fulltext info for all schemas.
      */
-    @SuppressWarnings("unchecked")
-    private void inferFulltextInfo(SchemaManager schemaManager) {
+    private void inferFulltextInfo() {
         List<FulltextIndexDescriptor> descs = repositoryDescriptor.fulltextIndexes;
         if (descs == null) {
             descs = new ArrayList<FulltextIndexDescriptor>(1);
@@ -870,6 +870,7 @@ public class Model {
         }
 
         // Add document types with the NotFulltextIndexable facet
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         for (DocumentType documentType : schemaManager.getDocumentTypes()) {
             if (documentType.hasFacet(FacetNames.NOT_FULLTEXT_INDEXABLE)) {
                 fulltextInfo.excludedTypes.add(documentType.getName());
@@ -1225,8 +1226,8 @@ public class Model {
     /**
      * Creates all the models.
      */
-    private void initModels(SchemaManager schemaManager)
-            throws StorageException {
+    private void initModels() throws StorageException {
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         log.debug("Schemas fields from descriptor: "
                 + repositoryDescriptor.schemaFields);
         // document types

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,17 +9,13 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
@@ -30,9 +26,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 
-/**
- * @author Florent Guillaume
- */
 public class SQLDocumentVersion extends SQLDocumentLive {
 
     private final Node versionableNode;
@@ -54,8 +47,8 @@ public class SQLDocumentVersion extends SQLDocumentLive {
             List<CompositeType> mixinTypes, SQLSession session, boolean readonly)
             throws DocumentException {
         super(node, type, mixinTypes, session, readonly);
-        versionableNode = session.getNodeById((Serializable) getProperty(
-                Model.VERSION_VERSIONABLE_PROP).getValue());
+        Serializable versionSeriesId = getPropertyValue(Model.VERSION_VERSIONABLE_PROP);
+        versionableNode = session.getNodeById(versionSeriesId);
     }
 
     /*
@@ -78,9 +71,8 @@ public class SQLDocumentVersion extends SQLDocumentLive {
             return false;
         }
         try {
-            Boolean b = (Boolean) versionableNode.getSimpleProperty(
-                    Model.MAIN_CHECKED_IN_PROP).getValue();
-            return b == null ? true : !b.booleanValue();
+            return !Boolean.TRUE.equals(versionableNode.getSimpleProperty(
+                    Model.MAIN_CHECKED_IN_PROP).getValue());
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -89,17 +81,17 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     @Override
     public boolean isMajorVersion() throws DocumentException {
         return Long.valueOf(0).equals(
-                getProperty(Model.MAIN_MINOR_VERSION_PROP).getValue());
+                getPropertyValue(Model.MAIN_MINOR_VERSION_PROP));
     }
 
     @Override
     public boolean isLatestVersion() throws DocumentException {
-        return getBoolean(Model.VERSION_IS_LATEST_PROP);
+        return Boolean.TRUE.equals(getPropertyValue(Model.VERSION_IS_LATEST_PROP));
     }
 
     @Override
     public boolean isLatestMajorVersion() throws DocumentException {
-        return getBoolean(Model.VERSION_IS_LATEST_MAJOR_PROP);
+        return Boolean.TRUE.equals(getPropertyValue(Model.VERSION_IS_LATEST_MAJOR_PROP));
     }
 
     @Override
@@ -117,7 +109,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
 
     @Override
     public String getVersionSeriesId() throws DocumentException {
-        Serializable versionSeriesId = (Serializable) getPropertyValue(Model.VERSION_VERSIONABLE_PROP);
+        Serializable versionSeriesId = getPropertyValue(Model.VERSION_VERSIONABLE_PROP);
         return session.idToString(versionSeriesId);
     }
 
@@ -224,11 +216,6 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     }
 
     @Override
-    public boolean hasVersions() {
-        return false;
-    }
-
-    @Override
     public Document getLastVersion() {
         return null;
     }
@@ -238,7 +225,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
      */
 
     @Override
-    public void setPropertyValue(String name, Object value)
+    public void setPropertyValue(String name, Serializable value)
             throws DocumentException {
         if (isReadOnlyProperty(name)) {
             throw new VersionNotModifiableException(String.format(
@@ -248,41 +235,8 @@ public class SQLDocumentVersion extends SQLDocumentLive {
         super.setPropertyValue(name, value);
     }
 
-    @Override
-    public void setString(String name, String value) throws DocumentException {
-        if (isReadOnlyProperty(name)) {
-            throw new VersionNotModifiableException();
-        }
-        super.setString(name, value);
-    }
-
-    @Override
-    public void setBoolean(String name, boolean value) throws DocumentException {
-        if (isReadOnlyProperty(name)) {
-            throw new VersionNotModifiableException();
-        }
-        // import
-        super.setBoolean(name, value);
-    }
-
-    @Override
-    public void setLong(String name, long value) {
-        throw new VersionNotModifiableException();
-    }
-
-    @Override
-    public void setDouble(String name, double value) {
-        throw new VersionNotModifiableException();
-    }
-
-    @Override
-    public void setDate(String name, Calendar value) {
-        throw new VersionNotModifiableException();
-    }
-
-    @Override
-    public void setContent(String name, Blob value) {
-        throw new VersionNotModifiableException();
+    protected boolean isReadOnlyProperty(String name) {
+        return isReadOnly() && !SQLSession.isVersionWritableProperty(name);
     }
 
     /*

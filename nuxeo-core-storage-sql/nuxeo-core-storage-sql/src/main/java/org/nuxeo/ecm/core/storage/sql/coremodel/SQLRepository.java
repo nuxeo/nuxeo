@@ -17,11 +17,9 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * This is the {@link Session} factory when the repository is used outside of a
@@ -41,12 +39,9 @@ public class SQLRepository implements Repository {
 
     public final RepositoryImpl repository;
 
-    private final SchemaManager schemaManager;
-
     private final String name;
 
     public SQLRepository(RepositoryDescriptor descriptor) {
-        schemaManager = Framework.getLocalService(SchemaManager.class);
         try {
             repository = new RepositoryImpl(descriptor);
             name = descriptor.name;
@@ -76,11 +71,6 @@ public class SQLRepository implements Repository {
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
-    }
-
-    @Override
-    public SchemaManager getTypeManager() {
-        return schemaManager;
     }
 
     /*

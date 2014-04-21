@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.IOException;
@@ -34,10 +33,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.resource.ResourceException;
-import javax.transaction.xa.XAResource;
 
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateDocumentException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -46,7 +46,11 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -56,8 +60,6 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
-import org.nuxeo.ecm.core.model.NoSuchPropertyException;
-import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.FilterableQuery;
@@ -69,14 +71,13 @@ import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.query.UnsupportedQueryTypeException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
-import org.nuxeo.ecm.core.schema.TypeProvider;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
-import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
@@ -84,10 +85,10 @@ import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
 import org.nuxeo.ecm.core.storage.sql.Binary;
-import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
-import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.services.streaming.StreamSource;
 
@@ -100,6 +101,41 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
 public class SQLSession implements Session {
 
     protected final Log log = LogFactory.getLog(SQLSession.class);
+
+    public static final String BLOB_NAME = "name";
+
+    public static final String BLOB_MIME_TYPE = "mime-type";
+
+    public static final String BLOB_ENCODING = "encoding";
+
+    public static final String BLOB_DIGEST = "digest";
+
+    public static final String BLOB_LENGTH = "length";
+
+    public static final String BLOB_DATA = "data";
+
+    public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
+
+    public static final String DC_ISSUED = "dc:issued";
+
+    public static final String RELATED_TEXT_RESOURCES = "relatedtextresources";
+
+    public static final String RELATED_TEXT_ID = "relatedtextid";
+
+    public static final String RELATED_TEXT = "relatedtext";
+
+    protected static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<String>(
+            Arrays.asList( //
+                    Model.FULLTEXT_JOBID_PROP, //
+                    Model.FULLTEXT_BINARYTEXT_PROP, //
+                    Model.MISC_LIFECYCLE_STATE_PROP, //
+                    Model.LOCK_OWNER_PROP, //
+                    Model.LOCK_CREATED_PROP, //
+                    DC_ISSUED, //
+                    RELATED_TEXT_RESOURCES, //
+                    RELATED_TEXT_ID, //
+                    RELATED_TEXT //
+            ));
 
     private final Repository repository;
 
@@ -139,12 +175,6 @@ public class SQLSession implements Session {
     @Override
     public Document getNullDocument() {
         return new SQLDocumentLive(null, null, null, this, true);
-    }
-
-    // not called
-    @Override
-    public XAResource getXAResource() {
-        throw new RuntimeException();
     }
 
     @Override
@@ -200,11 +230,6 @@ public class SQLSession implements Session {
     @Override
     public NuxeoPrincipal getPrincipal() {
         return principal;
-    }
-
-    @Override
-    public SchemaManager getTypeManager() {
-        return repository.getTypeManager();
     }
 
     protected String idToString(Serializable id) {
@@ -347,13 +372,13 @@ public class SQLSession implements Session {
             Serializable targetId = targetNode.getId();
             Serializable versionableId;
             if (doc.isVersion()) {
-                versionableId = (Serializable) doc.getProperty(
+                versionableId = targetNode.getSimpleProperty(
                         Model.VERSION_VERSIONABLE_PROP).getValue();
             } else if (doc.isProxy()) {
                 // copy the proxy
-                targetId = (Serializable) doc.getProperty(
+                targetId = targetNode.getSimpleProperty(
                         Model.PROXY_TARGET_PROP).getValue();
-                versionableId = (Serializable) doc.getProperty(
+                versionableId = targetNode.getSimpleProperty(
                         Model.PROXY_VERSIONABLE_PROP).getValue();
             } else {
                 // working copy (live document)
@@ -653,8 +678,8 @@ public class SQLSession implements Session {
                 throw new DocumentException(e);
             }
         }
-        TypeProvider typeProvider = getTypeManager();
-        DocumentType type = typeProvider.getDocumentType(typeName);
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        DocumentType type = schemaManager.getDocumentType(typeName);
         if (type == null) {
             throw new DocumentException("Unknown document type: " + typeName);
         }
@@ -662,7 +687,7 @@ public class SQLSession implements Session {
         List<CompositeType> mixinTypes = new ArrayList<CompositeType>(
                 mixins.length);
         for (String mixin : mixins) {
-            CompositeType mixinType = typeProvider.getFacet(mixin);
+            CompositeType mixinType = schemaManager.getFacet(mixin);
             if (mixinType != null) {
                 mixinTypes.add(mixinType);
             }
@@ -758,6 +783,16 @@ public class SQLSession implements Session {
             throw new NoSuchDocumentException("No such document: " + name);
         }
         return doc;
+    }
+
+    protected Node getChildProperty(Node node, String name, String typeName)
+            throws StorageException {
+        Node childNode = session.getChildNode(node, name, true);
+        if (childNode == null) {
+            // create the needed complex property immediately
+            childNode = session.addChildNode(node, name, null, typeName, true);
+        }
+        return childNode;
     }
 
     // XXX change to iterator?
@@ -972,180 +1007,357 @@ public class SQLSession implements Session {
      * ----- property helpers -----
      */
 
-    protected Property makeACLProperty(Node node, SQLDocument doc)
-            throws DocumentException {
-        CollectionProperty property;
-        try {
-            property = node.getCollectionProperty(Model.ACL_PROP);
-        } catch (StorageException e) {
-            throw new DocumentException(e);
+    /**
+     * Recursively reads a complex property from a node.
+     *
+     * @since 5.9.4
+     */
+    protected void readComplexProperty(ComplexProperty complexProperty, Node node)
+            throws PropertyException {
+        if (complexProperty instanceof BlobProperty) {
+            try {
+                SQLBlob value = readBlob(node);
+                complexProperty.init(value);
+                return;
+            } catch (StorageException e) {
+                throw new PropertyException("Property: "
+                        + complexProperty.getName(), e);
+            }
         }
-        return new SQLCollectionProperty(property, null, doc);
-    }
-
-    /** Make a property. */
-    protected Property makeProperty(Node node, String name,
-            ComplexType parentType, SQLDocument doc,
-            List<CompositeType> mixinTypes, List<Schema> proxySchemas)
-            throws DocumentException {
-        return makeProperties(node, name, parentType, doc, mixinTypes,
-                proxySchemas, 0, 0).get(0);
+        for (org.nuxeo.ecm.core.api.model.Property property : complexProperty) {
+            String name = property.getField().getName().getPrefixedName();
+            Type type = property.getType();
+            try {
+                if (type.isSimpleType()) {
+                    // simple property
+                    Serializable value = node.getSimpleProperty(name).getValue();
+                    property.init(value);
+                } else if (type.isListType()) {
+                    ListType listType = (ListType) type;
+                    if (listType.getFieldType().isSimpleType()) {
+                        // array
+                        Serializable[] value = node.getCollectionProperty(name).getValue();
+                        property.init(value);
+                    } else {
+                        // complex list
+                        List<Node> childNodes;
+                        try {
+                            childNodes = getComplexList(node, name);
+                        } catch (DocumentException e) {
+                            throw new PropertyException("Property: " + name, e);
+                        }
+                        Field listField = listType.getField();
+                        ArrayList<Serializable> value = new ArrayList<Serializable>(
+                                childNodes.size());
+                        for (Node childNode : childNodes) {
+                            ComplexProperty p = (ComplexProperty) complexProperty.getRoot().createProperty(
+                                    property, listField, 0);
+                            readComplexProperty(p, childNode);
+                            value.add(p.getValue());
+                        }
+                        property.init(value);
+                    }
+                } else {
+                    // complex property
+                    Node childNode = getChildProperty(node, name,
+                            type.getName());
+                    readComplexProperty((ComplexProperty) property, childNode);
+                    ((ComplexProperty) property).removePhantomFlag();
+                }
+            } catch (StorageException e) {
+                throw new PropertyException("Property: " + name, e);
+            }
+        }
     }
 
     /**
-     * Make properties, either a single one, or the whole list for complex list
-     * elements.
+     * Recursively reads prefetched properties.
+     *
+     * @since 5.9.4
      */
-    protected List<Property> makeProperties(Node node, String name,
-            Type parentType, SQLDocument doc, List<CompositeType> mixinTypes,
-            List<Schema> proxySchemas, int complexListStart, int complexListEnd)
-            throws DocumentException {
-        boolean complexList = parentType instanceof ListType;
-        Model model;
-        try {
-            model = session.getModel();
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
-        Type type = model.getSpecialPropertyType(name);
-        if (type == null) {
-            Field field;
-            if (complexList) {
-                field = ((ListType) parentType).getField();
-            } else {
-                field = ((ComplexType) parentType).getField(name);
-                if (field == null) {
-                    // check mixin types
-                    for (CompositeType mixinType : mixinTypes) {
-                        field = mixinType.getField(name);
-                        if (field != null) {
-                            break;
-                        }
-                    }
-                }
-                if (field == null && proxySchemas != null) {
-                    // check proxy schemas
-                    for (Schema schema : proxySchemas) {
-                        field = schema.getField(name);
-                        if (field != null) {
-                            break;
-                        }
-                    }
-                }
-                if (field == null) {
-                    throw new NoSuchPropertyException(name);
-                }
-                // qualify if necessary (some callers pass unprefixed names)
-                name = field.getName().getPrefixedName();
-            }
-            type = field.getType();
-        }
+    public void readPrefetch(ComplexType complexType, Prefetch prefetch,
+            Set<String> fieldNames, Set<String> docSchemas, Node node)
+            throws PropertyException {
+        readPrefetch(complexType, prefetch, fieldNames, null, null, docSchemas,
+                node);
+    }
 
-        if (type.isSimpleType()) {
-            SimpleProperty prop;
+    protected void readPrefetch(ComplexType complexType, Prefetch prefetch,
+            Set<String> fieldNames, String xpathGeneric, String xpath,
+            Set<String> docSchemas, Node node) throws PropertyException {
+        if (TypeConstants.isContentType(complexType)) {
+            if (!fieldNames.contains(xpathGeneric)) {
+                return;
+            }
             try {
-                prop = node.getSimpleProperty(name);
+                SQLBlob value = readBlob(node);
+                setPrefetch(prefetch, xpath, docSchemas, value);
+                return;
             } catch (StorageException e) {
-                throw new DocumentException(e);
+                throw new PropertyException("Property: " + xpath, e);
             }
-            Property property = new SQLSimpleProperty(prop, type, doc);
-            return Collections.singletonList(property);
-        } else if (type.isListType()) {
-            Property property;
-            ListType listType = (ListType) type;
-            if (listType.getFieldType().isSimpleType()) {
-                CollectionProperty prop;
-                try {
-                    prop = node.getCollectionProperty(name);
-                } catch (StorageException e) {
-                    throw new DocumentException(e);
-                }
-                property = new SQLCollectionProperty(prop, listType, doc);
-            } else {
-                property = new SQLComplexListProperty(node, listType, name, doc);
-            }
-            return Collections.singletonList(property);
-        } else {
-            // complex type, may be part of a complex list or not
-            List<Node> childNodes;
+        }
+        for (Field field : complexType.getFields()) {
+            String name = field.getName().getPrefixedName();
+            Type type = field.getType();
+            String xpg = xpathGeneric == null ? name : xpathGeneric + '/' + name;
+            String xp = xpath == null ? name : xpath + '/' + name;
             try {
-                if (complexList) {
-                    if (complexListStart == -1) {
-                        // get existing
-                        childNodes = getComplexList(node, name);
+                if (type.isSimpleType()) {
+                    // simple property
+                    if (!fieldNames.contains(xpg)) {
+                        continue;
+                    }
+                    Serializable value = node.getSimpleProperty(name).getValue();
+                    setPrefetch(prefetch, xp, docSchemas, value);
+                } else if (type.isListType()) {
+                    ListType listType = (ListType) type;
+                    if (listType.getFieldType().isSimpleType()) {
+                        // array
+                        if (!fieldNames.contains(xpg)) {
+                            continue;
+                        }
+                        Serializable[] value = node.getCollectionProperty(name).getValue();
+                        setPrefetch(prefetch, xp, docSchemas, listValue(value));
                     } else {
-                        // create with given size (after a remove)
-                        childNodes = new ArrayList<Node>(complexListEnd
-                                - complexListStart);
-                        for (int i = complexListStart; i < complexListEnd; i++) {
-                            Node childNode = session.addChildNode(node, name,
-                                    Long.valueOf(i), type.getName(), true);
-                            childNodes.add(childNode);
+                        // complex list
+                        List<Node> childNodes;
+                        try {
+                            childNodes = getComplexList(node, name);
+                        } catch (DocumentException e) {
+                            throw new PropertyException("Property: " + name, e);
+                        }
+                        Field listField = listType.getField();
+                        xpg += "/*";
+                        int n = 0;
+                        for (Node childNode : childNodes) {
+                            readPrefetch((ComplexType) listField.getType(),
+                                    prefetch, fieldNames, xpg, xp + "/" + n++,
+                                    docSchemas, childNode);
                         }
                     }
                 } else {
-                    Node childNode = session.getChildNode(node, name, true);
-                    if (childNode == null) {
-                        // Create the needed complex property. This could also
-                        // be done lazily when an actual write is done -- this
-                        // would mean refactoring the various SQL*Property
-                        // classes to hold parent information.
-                        childNode = session.addChildNode(node, name, null,
-                                type.getName(), true);
-                    }
-                    childNodes = Collections.singletonList(childNode);
+                    // complex property
+                    Node childNode = getChildProperty(node, name,
+                            type.getName());
+                    readPrefetch((ComplexType) type, prefetch, fieldNames,
+                            xpg, xp, docSchemas, childNode);
                 }
             } catch (StorageException e) {
-                throw new DocumentException(e);
+                throw new PropertyException("Property: " + name, e);
             }
-            List<Property> properties = new ArrayList<Property>(
-                    childNodes.size());
-            for (Node childNode : childNodes) {
-                Property property = newSQLComplexProperty(childNode,
-                        (ComplexType) type, doc);
-                properties.add(property);
-            }
-            return properties;
         }
     }
 
+    protected static Serializable listValue(Serializable[] value) {
+        if (value == null) {
+            return new ArrayList<Serializable>(0);
+        }
+        return (Serializable) PrimitiveArrays.toList(value);
+    }
+
+    protected void setPrefetch(Prefetch prefetch, String xpath,
+            Set<String> docSchemas, Serializable value) {
+        String[] returnName = new String[1];
+        String schemaName = DocumentModelImpl.getXPathSchemaName(xpath,
+                docSchemas, returnName);
+        String name = returnName[0];
+        prefetch.put(xpath, schemaName, name, value);
+    }
+
     /**
-     * Makes a property from a complex list element.
+     * Recursively writes a complex property into a node.
      *
-     * @since 5.5
+     * @since 5.9.4
      */
-    protected Property makeProperty(Node node, String name, Type parentType,
-            SQLDocument doc, int pos) throws DocumentException {
-        Type type = ((ListType) parentType).getField().getType();
-        List<Node> childNodes;
-        try {
-            childNodes = session.getChildren(node, name, true);
-        } catch (StorageException e) {
-            throw new DocumentException(e);
+    protected void writeComplexProperty(ComplexProperty complexProperty,
+            Node node, SQLDocument doc) throws PropertyException {
+        if (complexProperty instanceof BlobProperty) {
+            try {
+                writeBlobProperty((BlobProperty) complexProperty, node, doc);
+            } catch (StorageException e) {
+                throw new PropertyException("Property: "
+                        + complexProperty.getName(), e);
+            }
+            return;
         }
-        if (pos < 0 || pos >= childNodes.size()) {
-            throw new NoSuchPropertyException(name + '/' + pos);
+        for (org.nuxeo.ecm.core.api.model.Property property : complexProperty) {
+            String name = property.getField().getName().getPrefixedName();
+            try {
+                if (checkReadOnlyIgnoredWrite(doc, property, node)) {
+                    continue;
+                }
+                Type type = property.getType();
+                if (type.isSimpleType()) {
+                    // simple property
+                    Serializable value = property.getValueForWrite();
+                    node.getSimpleProperty(name).setValue(value);
+                    // TODO VersionNotModifiableException
+                } else if (type.isListType()) {
+                    ListType listType = (ListType) type;
+                    if (listType.getFieldType().isSimpleType()) {
+                        // array
+                        Serializable value = property.getValueForWrite();
+                        if (value instanceof List) {
+                            value = ((List<?>) value).toArray(new Object[0]);
+                        }
+                        node.getCollectionProperty(name).setValue((Object[]) value);
+                    } else {
+                        // complex list
+                        Collection<org.nuxeo.ecm.core.api.model.Property> childProperties = property.getChildren();
+                        List<Node> childNodes;
+                        try {
+                            childNodes = getComplexList(node, name);
+                        } catch (DocumentException e) {
+                            throw new PropertyException("Property: " + name, e);
+                        }
+
+                        int oldSize = childNodes.size();
+                        int newSize = childProperties.size();
+                        // remove extra list elements
+                        if (oldSize > newSize) {
+                            for (int i = oldSize - 1; i >= newSize; i--) {
+                                try {
+                                    removeProperty(childNodes.remove(i));
+                                } catch (DocumentException e) {
+                                    throw new PropertyException("Property: "
+                                            + name + '[' + i + ']', e);
+                                }
+                            }
+                        }
+                        // add new list elements
+                        if (oldSize < newSize) {
+                            for (int i = oldSize; i < newSize; i++) {
+                                Node childNode = session.addChildNode(node,
+                                        name, Long.valueOf(i),
+                                        listType.getFieldType().getName(), true);
+                                childNodes.add(childNode);
+                            }
+                        }
+
+                        // write values
+                        int i = 0;
+                        for (org.nuxeo.ecm.core.api.model.Property childProperty : childProperties) {
+                            Node childNode = childNodes.get(i++);
+                            writeComplexProperty(
+                                    (ComplexProperty) childProperty, childNode,
+                                    doc);
+                        }
+                    }
+                } else {
+                    // complex property
+                    Node childNode = getChildProperty(node, name,
+                            type.getName());
+                    writeComplexProperty((ComplexProperty) property, childNode,
+                            doc);
+                }
+            } catch (StorageException e) {
+                throw new PropertyException("Property: " + name, e);
+            }
         }
-        Node childNode = childNodes.get(pos);
-        return newSQLComplexProperty(childNode, (ComplexType) type, doc);
     }
 
-    protected Property newSQLComplexProperty(Node childNode, ComplexType type,
-            SQLDocument doc) {
-        // TODO use a better switch
-        if (TypeConstants.isContentType(type)) {
-            return new SQLContentProperty(childNode, type, doc);
-        } else {
-            return new SQLComplexProperty(childNode, type, doc);
+    protected SQLBlob readBlob(Node node) throws StorageException {
+        Binary binary = (Binary) node.getSimpleProperty(BLOB_DATA).getValue();
+        if (binary == null) {
+            return null;
         }
+        String name = node.getSimpleProperty(BLOB_NAME).getString();
+        String mimeType = node.getSimpleProperty(BLOB_MIME_TYPE).getString();
+        String encoding = node.getSimpleProperty(BLOB_ENCODING).getString();
+        String digest = node.getSimpleProperty(BLOB_DIGEST).getString();
+        Long length = node.getSimpleProperty(BLOB_LENGTH).getLong();
+        return new SQLBlob(binary, name, mimeType, encoding, digest,
+                length.longValue());
+    }
+
+    protected void writeBlobProperty(BlobProperty blobProperty, Node node,
+            SQLDocument doc) throws StorageException, PropertyException {
+        Serializable value = blobProperty.getValueForWrite();
+        Binary binary;
+        String name;
+        String mimeType;
+        String encoding;
+        String digest;
+        Long length;
+        if (value == null) {
+            binary = null;
+            name = null;
+            mimeType = null;
+            encoding = null;
+            digest = null;
+            length = null;
+        } else {
+            if (!(value instanceof Blob)) {
+                throw new PropertyException("Setting a non-Blob value: "
+                        + value);
+            }
+            Blob blob = (Blob) value;
+            try {
+                binary = getBinary(blob);
+            } catch (DocumentException e) {
+                throw new PropertyException("Cannot get binary", e);
+            }
+            name = blob.getFilename();
+            mimeType = blob.getMimeType();
+            if (mimeType == null) {
+                mimeType = APPLICATION_OCTET_STREAM;
+            }
+            encoding = blob.getEncoding();
+            digest = blob.getDigest();
+            length = Long.valueOf(blob.getLength());
+        }
+
+        node.getSimpleProperty(BLOB_DATA).setValue(binary);
+        node.getSimpleProperty(BLOB_NAME).setValue(name);
+        node.getSimpleProperty(BLOB_MIME_TYPE).setValue(mimeType);
+        node.getSimpleProperty(BLOB_ENCODING).setValue(encoding);
+        node.getSimpleProperty(BLOB_DIGEST).setValue(digest);
+        node.getSimpleProperty(BLOB_LENGTH).setValue(length);
+    }
+
+    protected static boolean isVersionWritableProperty(String name) {
+        return VERSION_WRITABLE_PROPS.contains(name) //
+                || name.startsWith(Model.FULLTEXT_BINARYTEXT_PROP) //
+                || name.startsWith(Model.FULLTEXT_SIMPLETEXT_PROP);
     }
 
     /**
-     * This method flag the current session, the read ACLs update will be done
-     * automatically at save time.
+     * Checks for ignored writes. May throw.
+     *
+     * @since 5.9.4
      */
-    public void requireReadAclsUpdate() {
-        session.requireReadAclsUpdate();
+    protected boolean checkReadOnlyIgnoredWrite(SQLDocument doc,
+            org.nuxeo.ecm.core.api.model.Property property, Node node)
+            throws PropertyException, StorageException {
+        String name = property.getField().getName().getPrefixedName();
+        if (!doc.isReadOnly() || isVersionWritableProperty(name)) {
+            // do write
+            return false;
+        }
+        if (!doc.isVersion()) {
+            throw new PropertyException("Cannot write readonly property: "
+                    + name);
+        }
+        if (!name.startsWith("dc:")) {
+            throw new VersionNotModifiableException(
+                    "Cannot set property on a version: " + name);
+        }
+        // ignore if value is unchanged (only for dublincore)
+        // dublincore contains only scalars and arrays
+        Serializable value = property.getValueForWrite();
+        Serializable oldValue;
+        if (property.getType().isSimpleType()) {
+            oldValue = node.getSimpleProperty(name).getValue();
+        } else {
+            oldValue = node.getCollectionProperty(name).getValue();
+        }
+        if (!ArrayUtils.isEquals(value, oldValue)) {
+            // do write
+            return false;
+        }
+        // ignore attempt to write identical value
+        return true;
     }
 
     /**
@@ -1179,31 +1391,23 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public ACP getACP(Document doc) throws SecurityException {
-        try {
-            Property property = ((SQLDocument) doc).getACLProperty();
-            return aclRowsToACP((ACLRow[]) property.getValue());
-        } catch (DocumentException e) {
-            throw new SecurityException(e.getMessage(), e);
-        }
-    }
-
-    @Override
     public void setACP(Document doc, ACP acp, boolean overwrite)
             throws SecurityException {
         if (!overwrite && acp == null) {
             return;
         }
         try {
-            Property property = ((SQLDocument) doc).getACLProperty();
+            Node node = ((SQLDocument) doc).getNode();
             ACLRow[] aclrows;
             if (overwrite) {
                 aclrows = acp == null ? null : acpToAclRows(acp);
             } else {
-                aclrows = updateAclRows((ACLRow[]) property.getValue(), acp);
+                aclrows = (ACLRow[]) node.getCollectionProperty(Model.ACL_PROP).getValue();
+                aclrows = updateAclRows(aclrows, acp);
             }
-            property.setValue(aclrows);
-        } catch (DocumentException e) {
+            node.getCollectionProperty(Model.ACL_PROP).setValue(aclrows);
+            session.requireReadAclsUpdate();
+        } catch (StorageException e) {
             throw new SecurityException(e.getMessage(), e);
         }
     }
@@ -1243,6 +1447,17 @@ public class SQLSession implements Session {
     /*
      * ----- internal methods -----
      */
+
+    protected ACP getACP(Document doc) throws SecurityException {
+        try {
+            Node node = ((SQLDocument) doc).getNode();
+            ACLRow[] aclrows = (ACLRow[]) node.getCollectionProperty(
+                    Model.ACL_PROP).getValue();
+            return aclRowsToACP(aclrows);
+        } catch (StorageException e) {
+            throw new SecurityException(e.getMessage(), e);
+        }
+    }
 
     // unit tested
     protected static ACP aclRowsToACP(ACLRow[] acls) {
