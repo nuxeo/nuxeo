@@ -48,8 +48,12 @@ public class DocumentModelToJSON implements PropertyVisitor {
 
     Log log = LogFactory.getLog(DocumentModelToJSON.class);
 
-    private DateFormat dateFormat = new SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm:ssZZ");
+    protected static final DateFormat dateFormat;
+
+    static {
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
 
     protected JSONObject result;
 
@@ -137,7 +141,6 @@ public class DocumentModelToJSON implements PropertyVisitor {
         // convert values if needed
         Serializable value = property.getValue();
         if (value instanceof Calendar) {
-            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             value = dateFormat.format(((Calendar) value).getTime());
         }
         // build json
