@@ -17,18 +17,30 @@
  */
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Finds the domains for a session.
  */
 public class DomainsFinder extends UnrestrictedSessionRunner {
+
+    private static final Log log = LogFactory.getLog(DomainsFinder.class);
+
+    public static final String PUBLISHING_DOMAINS_PROVIDER = "domains_for_publishing";
 
     protected List<DocumentModel> domains;
 
@@ -41,14 +53,22 @@ public class DomainsFinder extends UnrestrictedSessionRunner {
         domains = getDomainsFiltered();
     }
 
+    @SuppressWarnings("unchecked")
     protected List<DocumentModel> getDomainsFiltered() throws ClientException {
-        String query = "SELECT * FROM Document WHERE ecm:primaryType = 'Domain' AND "
-                + NXQL.ECM_PARENTID
-                + " = '%s' AND "
-                + NXQL.ECM_LIFECYCLESTATE
-                + " <> '" + LifeCycleConstants.DELETED_STATE + "'";
-        query = String.format(query, session.getRootDocument().getId());
-        return session.query(query); // should disconnect
+        PageProviderService pps;
+        try {
+            pps = Framework.getService(PageProviderService.class);
+        } catch (Exception e) {
+            log.error("Failed to get PageProviderService", e);
+            return new ArrayList<DocumentModel>();
+        }
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pps.getPageProvider(
+                PUBLISHING_DOMAINS_PROVIDER, null, null, null, props,
+                new Object[] { session.getRootDocument().getId() });
+        return pageProvider.getCurrentPage();
     }
 
     public List<DocumentModel> getDomains() throws ClientException {
