@@ -77,8 +77,7 @@ public class FavoritesManagerImpl extends DefaultComponent implements
         }
         doc.setProperty("dublincore", "title",
                 FavoritesConstants.DEFAULT_FAVORITES_TITLE);
-        doc.setProperty("dublincore", "title",
-                title);
+        doc.setProperty("dublincore", "title", title);
         doc.setProperty("dublincore", "description", "");
         doc = session.createDocument(doc);
 
@@ -129,6 +128,17 @@ public class FavoritesManagerImpl extends DefaultComponent implements
         }
     }
 
+    protected Locale getLocale(final CoreSession session)
+            throws ClientException {
+        Locale locale = null;
+        locale = Framework.getLocalService(LocaleProvider.class).getLocale(
+                session);
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+        return new Locale(Locale.getDefault().getLanguage());
+    }
+
     @Override
     public boolean isFavorite(DocumentModel document, CoreSession session)
             throws ClientException {
@@ -143,17 +153,6 @@ public class FavoritesManagerImpl extends DefaultComponent implements
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         collectionManager.removeFromCollection(getFavorites(document, session),
                 document, session);
-    }
-
-    protected Locale getLocale(final CoreSession session)
-            throws ClientException {
-        Locale locale = null;
-        locale = Framework.getLocalService(LocaleProvider.class).getLocale(
-                session);
-        if (locale == null) {
-            locale = Locale.getDefault();
-        }
-        return new Locale( Locale.getDefault().getLanguage());
     }
 
 }
