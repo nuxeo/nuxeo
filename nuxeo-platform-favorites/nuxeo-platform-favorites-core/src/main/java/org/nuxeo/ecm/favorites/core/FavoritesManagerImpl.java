@@ -75,10 +75,8 @@ public class FavoritesManagerImpl extends DefaultComponent implements
         } catch (MissingResourceException e) {
             title = FavoritesConstants.DEFAULT_FAVORITES_NAME;
         }
-        doc.setProperty("dublincore", "title",
-                FavoritesConstants.DEFAULT_FAVORITES_TITLE);
-        doc.setProperty("dublincore", "title", title);
-        doc.setProperty("dublincore", "description", "");
+        doc.setPropertyValue("dc:title", title);
+        doc.setPropertyValue("dc:description", "");
         doc = session.createDocument(doc);
 
         ACP acp = new ACPImpl();

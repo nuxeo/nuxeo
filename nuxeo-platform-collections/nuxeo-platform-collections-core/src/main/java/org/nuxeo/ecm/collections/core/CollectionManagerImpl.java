@@ -178,13 +178,13 @@ public class CollectionManagerImpl extends DefaultComponent implements
     protected DocumentModel createCollection(final String newTitle,
             final String newDescription, final DocumentModel context,
             final CoreSession session) throws ClientException {
-        DocumentModel defaultCollections = getUserDefaultCollections(
-                context, session);
+        DocumentModel defaultCollections = getUserDefaultCollections(context,
+                session);
         DocumentModel newCollection = session.createDocumentModel(
                 defaultCollections.getPath().toString(), newTitle,
                 CollectionConstants.COLLECTION_TYPE);
-        newCollection.setProperty("dublincore", "title", newTitle);
-        newCollection.setProperty("dublincore", "description", newDescription);
+        newCollection.setPropertyValue("dc:title", newTitle);
+        newCollection.setPropertyValue("dc:description", newDescription);
         return session.createDocument(newCollection);
     }
 
@@ -197,14 +197,13 @@ public class CollectionManagerImpl extends DefaultComponent implements
         String title = null;
         try {
             title = I18NUtils.getMessageString("messages",
-                    CollectionConstants.DEFAULT_COLLECTIONS_TITLE, new Object[0],
-                    getLocale(session));
+                    CollectionConstants.DEFAULT_COLLECTIONS_TITLE,
+                    new Object[0], getLocale(session));
         } catch (MissingResourceException e) {
             title = CollectionConstants.DEFAULT_COLLECTIONS_TITLE;
         }
-        doc.setProperty("dublincore", "title",
-                title);
-        doc.setProperty("dublincore", "description", "");
+        doc.setPropertyValue("dc:title", title);
+        doc.setPropertyValue("dc:description", "");
         doc = session.createDocument(doc);
 
         ACP acp = new ACPImpl();
@@ -413,13 +412,13 @@ public class CollectionManagerImpl extends DefaultComponent implements
             // If the path does not exist, an exception is thrown
             if (!session.exists(new PathRef(path))) {
                 throw new ClientException(String.format(
-                                "Path \"%s\" specified in parameter not found", path));
+                        "Path \"%s\" specified in parameter not found", path));
             }
             // Create a new collection in the given path
-            DocumentModel collectionModel = session.createDocumentModel(path, title,
-                    CollectionConstants.COLLECTION_TYPE);
-            collectionModel.setProperty("dublincore", "title", title);
-            collectionModel.setProperty("dublincore", "description", description);
+            DocumentModel collectionModel = session.createDocumentModel(path,
+                    title, CollectionConstants.COLLECTION_TYPE);
+            collectionModel.setPropertyValue("dc:title", title);
+            collectionModel.setPropertyValue("dc:description", description);
             newCollection = session.createDocument(collectionModel);
         }
         return newCollection;
@@ -433,7 +432,7 @@ public class CollectionManagerImpl extends DefaultComponent implements
         if (locale == null) {
             locale = Locale.getDefault();
         }
-        return new Locale( Locale.getDefault().getLanguage());
+        return new Locale(Locale.getDefault().getLanguage());
     }
 
 }

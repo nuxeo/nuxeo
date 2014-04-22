@@ -7,7 +7,6 @@
     point="permissions">
 
     <permission name="ReadCanCollect">
-      <include>Read</include>
       <include>WriteProperties</include>
     </permission>
 
