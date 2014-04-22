@@ -660,6 +660,8 @@ public class DialectSQLServer extends Dialect {
             case 1205: // Transaction (Process ID ...) was deadlocked on ...
                        // resources with another process and has been chosen as
                        // the deadlock victim. Rerun the transaction
+            case 2627: // Violation of UNIQUE KEY constraint
+                       // Violation of PRIMARY KEY constraint
                 return true;
             }
         }
