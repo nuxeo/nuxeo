@@ -165,10 +165,13 @@ public class ITCollectionsTest extends AbstractTest {
         // Check Collection are stored in Personal Workspace
         List<WebElement> personalWorkspaceRootDocs = contentTabSubPage.getChildDocumentRows();
 
-        assertEquals(1, personalWorkspaceRootDocs.size());
+        assertEquals(2, personalWorkspaceRootDocs.size());
         assertEquals(
                 "My Collections",
                 personalWorkspaceRootDocs.get(0).findElement(By.xpath("td[3]")).getText());
+        assertEquals(
+                "My Favorites",
+                personalWorkspaceRootDocs.get(1).findElement(By.xpath("td[3]")).getText());
 
         contentTabSubPage.swithToDocumentBase();
 
