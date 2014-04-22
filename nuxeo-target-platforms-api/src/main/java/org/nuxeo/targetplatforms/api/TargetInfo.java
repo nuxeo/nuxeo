@@ -17,7 +17,7 @@
 package org.nuxeo.targetplatforms.api;
 
 import java.io.Serializable;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -101,12 +101,12 @@ public interface TargetInfo extends Serializable {
     /**
      * Returns this target release date.
      */
-    Calendar getReleaseDate();
+    Date getReleaseDate();
 
     /**
      * Returns this target end of availability date.
      */
-    Calendar getEndOfAvailability();
+    Date getEndOfAvailability();
 
     /**
      * Returns this target download link.

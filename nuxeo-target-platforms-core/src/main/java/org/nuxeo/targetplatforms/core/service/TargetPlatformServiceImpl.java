@@ -17,7 +17,7 @@
 package org.nuxeo.targetplatforms.core.service;
 
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -185,12 +185,12 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         tp.setDescription(desc.getDescription());
         tp.setDownloadLink(desc.getDownloadLink());
         tp.setEnabled(desc.isEnabled());
-        tp.setEndOfAvailability(toCalendar(desc.getEndOfAvailability()));
+        tp.setEndOfAvailability(toDate(desc.getEndOfAvailability()));
         tp.setFastTrack(desc.isFastTrack());
         tp.setTrial(desc.isTrial());
         tp.setParent(getTargetPlatform(desc.getParent()));
         tp.setRefVersion(desc.getRefVersion());
-        tp.setReleaseDate(toCalendar(desc.getReleaseDate()));
+        tp.setReleaseDate(toDate(desc.getReleaseDate()));
         tp.setRestricted(desc.isRestricted());
         tp.setStatus(desc.getStatus());
         tp.setTestVersions(desc.getTestVersions());
@@ -259,14 +259,12 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         return tps;
     }
 
-    protected Calendar toCalendar(String date) {
+    protected Date toDate(String date) {
         if (StringUtils.isBlank(date)) {
             return null;
         }
-        Calendar calValue = Calendar.getInstance();
         DateTime dt = dateParser.parseDateTime(date);
-        calValue.setTime(dt.toDate());
-        return calValue;
+        return dt.toDate();
     }
 
     @Override
@@ -293,9 +291,9 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         tpi.setStatus(desc.getStatus());
         tpi.setEnabled(desc.isEnabled());
         tpi.setFastTrack(desc.isFastTrack());
-        tpi.setReleaseDate(toCalendar(desc.getReleaseDate()));
+        tpi.setReleaseDate(toDate(desc.getReleaseDate()));
         tpi.setRestricted(desc.isRestricted());
-        tpi.setEndOfAvailability(toCalendar(desc.getEndOfAvailability()));
+        tpi.setEndOfAvailability(toDate(desc.getEndOfAvailability()));
         tpi.setDownloadLink(desc.getDownloadLink());
         tpi.setDeprecated(desc.isDeprecated());
         tpi.setAvailablePackagesInfo(getTargetPackagesInfo(id));
@@ -350,9 +348,9 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         tpi.setDescription(desc.getDescription());
         tpi.setStatus(desc.getStatus());
         tpi.setEnabled(desc.isEnabled());
-        tpi.setReleaseDate(toCalendar(desc.getReleaseDate()));
+        tpi.setReleaseDate(toDate(desc.getReleaseDate()));
         tpi.setRestricted(desc.isRestricted());
-        tpi.setEndOfAvailability(toCalendar(desc.getEndOfAvailability()));
+        tpi.setEndOfAvailability(toDate(desc.getEndOfAvailability()));
         tpi.setDownloadLink(desc.getDownloadLink());
         tpi.setDeprecated(desc.isDeprecated());
         tpi.setDependencies(desc.getDependencies());
@@ -371,10 +369,10 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         tp.setDescription(desc.getDescription());
         tp.setDownloadLink(desc.getDownloadLink());
         tp.setEnabled(desc.isEnabled());
-        tp.setEndOfAvailability(toCalendar(desc.getEndOfAvailability()));
+        tp.setEndOfAvailability(toDate(desc.getEndOfAvailability()));
         tp.setParent(getTargetPackage(desc.getParent()));
         tp.setRefVersion(desc.getRefVersion());
-        tp.setReleaseDate(toCalendar(desc.getReleaseDate()));
+        tp.setReleaseDate(toDate(desc.getReleaseDate()));
         tp.setRestricted(desc.isRestricted());
         tp.setStatus(desc.getStatus());
         tp.setTypes(desc.getTypes());
@@ -398,11 +396,11 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         tpi.setDescription(desc.getDescription());
         tpi.setDownloadLink(desc.getDownloadLink());
         tpi.setEnabled(desc.isEnabled());
-        tpi.setEndOfAvailability(toCalendar(desc.getEndOfAvailability()));
+        tpi.setEndOfAvailability(toDate(desc.getEndOfAvailability()));
         tpi.setFastTrack(desc.isFastTrack());
         tpi.setParent(getTargetPlatform(desc.getParent()));
         tpi.setRefVersion(desc.getRefVersion());
-        tpi.setReleaseDate(toCalendar(desc.getReleaseDate()));
+        tpi.setReleaseDate(toDate(desc.getReleaseDate()));
         tpi.setRestricted(desc.isRestricted());
         tpi.setStatus(desc.getStatus());
         tpi.setTypes(desc.getTypes());

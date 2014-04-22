@@ -38,6 +38,7 @@ public class TargetPlatformInstanceExtension extends TargetExtension implements
 
     // needed by GWT serialization
     protected TargetPlatformInstanceExtension() {
+        super();
     }
 
     public TargetPlatformInstanceExtension(TargetPlatformInstance orig) {

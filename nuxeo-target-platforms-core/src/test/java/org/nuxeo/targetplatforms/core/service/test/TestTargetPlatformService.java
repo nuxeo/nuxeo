@@ -26,8 +26,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -158,7 +158,7 @@ public class TestTargetPlatformService {
         assertNull(tp.getParent());
         assertEquals("5.8", tp.getRefVersion());
         assertNotNull(tp.getReleaseDate());
-        assertEquals("2013-09-23", format.format(tp.getReleaseDate().getTime()));
+        assertEquals("2013-09-23", format.format(tp.getReleaseDate()));
         assertEquals("supported", tp.getStatus());
         testVersions = tp.getTestVersions();
         assertEquals(2, testVersions.size());
@@ -234,9 +234,9 @@ public class TestTargetPlatformService {
         assertEquals(
                 "http://community.nuxeo.com/static/releases/nuxeo-5.9.2/nuxeo-cap-5.9.2-tomcat.zip",
                 tp.getDownloadLink());
-        Calendar date = tp.getEndOfAvailability();
+        Date date = tp.getEndOfAvailability();
         assertNotNull(date);
-        assertEquals("2014-06-18", format.format(date.getTime()));
+        assertEquals("2014-06-18", format.format(date));
         assertEquals("cap-5.9.2", tp.getId());
         assertEquals("Nuxeo Platform", tp.getLabel());
         assertEquals("cap", tp.getName());
@@ -411,7 +411,7 @@ public class TestTargetPlatformService {
         assertEquals("cap", tp.getName());
         assertEquals("5.8", tp.getRefVersion());
         assertNotNull(tp.getReleaseDate());
-        assertEquals("2013-09-23", format.format(tp.getReleaseDate().getTime()));
+        assertEquals("2013-09-23", format.format(tp.getReleaseDate()));
         assertEquals("supported", tp.getStatus());
         assertEquals("5.8", tp.getVersion());
         assertFalse(tp.isDeprecated());
@@ -506,8 +506,7 @@ public class TestTargetPlatformService {
         assertEquals("cap", tpi.getName());
         assertEquals("5.8", tpi.getRefVersion());
         assertNotNull(tpi.getReleaseDate());
-        assertEquals("2013-09-23",
-                format.format(tpi.getReleaseDate().getTime()));
+        assertEquals("2013-09-23", format.format(tpi.getReleaseDate()));
         assertEquals("supported", tpi.getStatus());
         assertEquals(0, tpi.getTypes().size());
         assertEquals("5.8", tpi.getVersion());
@@ -536,8 +535,7 @@ public class TestTargetPlatformService {
         assertEquals("cap", tpi.getName());
         assertEquals("5.8", tpi.getRefVersion());
         assertNotNull(tpi.getReleaseDate());
-        assertEquals("2013-09-23",
-                format.format(tpi.getReleaseDate().getTime()));
+        assertEquals("2013-09-23", format.format(tpi.getReleaseDate()));
         assertEquals("supported", tpi.getStatus());
         assertEquals(0, tpi.getTypes().size());
         assertEquals("5.8", tpi.getVersion());

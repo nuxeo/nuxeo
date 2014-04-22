@@ -17,8 +17,8 @@
 package org.nuxeo.targetplatforms.api.impl;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.nuxeo.targetplatforms.api.TargetInfo;
@@ -52,9 +52,9 @@ public class TargetInfoImpl implements TargetInfo {
 
     protected boolean trial = false;
 
-    protected Calendar releaseDate;
+    protected Date releaseDate;
 
-    protected Calendar endOfAvailability;
+    protected Date endOfAvailability;
 
     protected String downloadLink;
 
@@ -162,19 +162,19 @@ public class TargetInfoImpl implements TargetInfo {
         this.restricted = restricted;
     }
 
-    public Calendar getReleaseDate() {
+    public Date getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(Calendar releaseDate) {
+    public void setReleaseDate(Date releaseDate) {
         this.releaseDate = releaseDate;
     }
 
-    public Calendar getEndOfAvailability() {
+    public Date getEndOfAvailability() {
         return endOfAvailability;
     }
 
-    public void setEndOfAvailability(Calendar endOfAvailability) {
+    public void setEndOfAvailability(Date endOfAvailability) {
         this.endOfAvailability = endOfAvailability;
     }
 
@@ -243,11 +243,17 @@ public class TargetInfoImpl implements TargetInfo {
         return types.contains(type);
     }
 
+    // Class#getSimpleName not supported by GWT
+    protected String getSimpleName() {
+        return getClass().getName().substring(
+                getClass().getName().lastIndexOf('.') + 1);
+    }
+
     @Override
     public String toString() {
         final StringBuilder buf = new StringBuilder();
 
-        buf.append(getClass().getSimpleName());
+        buf.append(getSimpleName());
         buf.append(" {");
         buf.append(" id=");
         buf.append(id);

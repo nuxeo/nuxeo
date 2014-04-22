@@ -16,7 +16,7 @@
  */
 package org.nuxeo.targetplatforms.api.impl;
 
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.nuxeo.targetplatforms.api.TargetInfo;
@@ -83,11 +83,11 @@ public class TargetInfoExtension implements TargetInfo {
         return origInfo.isRestricted();
     }
 
-    public Calendar getReleaseDate() {
+    public Date getReleaseDate() {
         return origInfo.getReleaseDate();
     }
 
-    public Calendar getEndOfAvailability() {
+    public Date getEndOfAvailability() {
         return origInfo.getEndOfAvailability();
     }
 
@@ -122,11 +122,17 @@ public class TargetInfoExtension implements TargetInfo {
         return origInfo.matchesType(type);
     }
 
+    // Class#getSimpleName not supported by GWT
+    protected String getSimpleName() {
+        return getClass().getName().substring(
+                getClass().getName().lastIndexOf('.') + 1);
+    }
+
     @Override
     public String toString() {
         final StringBuilder buf = new StringBuilder();
 
-        buf.append(getClass().getSimpleName());
+        buf.append(getSimpleName());
         buf.append(" {");
         buf.append(" id=");
         buf.append(getId());

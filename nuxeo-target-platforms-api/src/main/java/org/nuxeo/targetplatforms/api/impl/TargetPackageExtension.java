@@ -35,6 +35,7 @@ public class TargetPackageExtension extends TargetExtension implements
 
     // needed by GWT serialization
     protected TargetPackageExtension() {
+        super();
     }
 
     public TargetPackageExtension(TargetPackage orig) {
