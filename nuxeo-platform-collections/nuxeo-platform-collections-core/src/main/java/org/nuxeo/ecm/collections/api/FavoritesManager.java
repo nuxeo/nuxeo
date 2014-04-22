@@ -14,7 +14,7 @@
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
  */
-package org.nuxeo.ecm.favorites.api;
+package org.nuxeo.ecm.collections.api;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;

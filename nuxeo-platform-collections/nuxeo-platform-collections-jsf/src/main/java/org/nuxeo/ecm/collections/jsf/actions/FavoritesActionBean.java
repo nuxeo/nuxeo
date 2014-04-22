@@ -14,7 +14,7 @@
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
  */
-package org.nuxeo.ecm.favorites.jsf.actions;
+package org.nuxeo.ecm.collections.jsf.actions;
 
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
@@ -27,10 +27,10 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.Messages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.collections.api.CollectionManager;
+import org.nuxeo.ecm.collections.api.FavoritesManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.favorites.api.FavoritesManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;

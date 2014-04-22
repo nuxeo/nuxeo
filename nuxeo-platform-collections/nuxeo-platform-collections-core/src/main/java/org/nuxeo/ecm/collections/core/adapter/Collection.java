@@ -19,8 +19,6 @@ package org.nuxeo.ecm.collections.core.adapter;
 import java.io.Serializable;
 import java.util.List;
 
-import jxl.StringFormulaCell;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.collections.api.CollectionConstants;

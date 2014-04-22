@@ -14,8 +14,7 @@
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
  */
-package org.nuxeo.ecm.favorites.api;
-
+package org.nuxeo.ecm.collections.api;
 
 /**
  * @since 5.9.4
@@ -23,7 +22,9 @@ package org.nuxeo.ecm.favorites.api;
 public interface FavoritesConstants {
 
     public static final String DEFAULT_FAVORITES_NAME = "Favorites";
-    public static final String FAVORITES_TYPE = "Favorites";
+
     public static final String DEFAULT_FAVORITES_TITLE = "label.myFavorites.title";
+
+    public static final String FAVORITES_TYPE = "Favorites";
 
 }
