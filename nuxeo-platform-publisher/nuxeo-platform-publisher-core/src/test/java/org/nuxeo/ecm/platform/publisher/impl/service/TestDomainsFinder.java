@@ -38,6 +38,9 @@ public class TestDomainsFinder extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
+        deployBundle("org.nuxeo.ecm.platform.query.api");
+        deployContrib("org.nuxeo.ecm.platform.publisher.core",
+                "OSGI-INF/publisher-pageprovider-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.publisher.test",
                 "OSGI-INF/publisher-lifecycle-contrib.xml");
         deployContrib("org.nuxeo.ecm.platform.publisher.test",
