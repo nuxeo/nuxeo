@@ -1220,6 +1220,10 @@ public class DialectPostgreSQL extends Dialect {
                 // insert or update on table ... violates foreign key constraint
                 return true;
             }
+            if ("23505".equals(sqlState)) {
+                // duplicate key value violates unique constraint
+                return true;
+            }
             if ("40P01".equals(sqlState)) {
                 // deadlock detected
                 return true;

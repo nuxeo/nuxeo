@@ -865,6 +865,7 @@ public class DialectOracle extends Dialect {
             t = t.getCause();
         }
         switch (getOracleErrorCode(t)) {
+        case 1: // ORA-00001: unique constraint violated
         case 60: // ORA-00060: deadlock detected while waiting for resource
         case 2291: // ORA-02291: integrity constraint ... violated - parent key not found
             return true;
