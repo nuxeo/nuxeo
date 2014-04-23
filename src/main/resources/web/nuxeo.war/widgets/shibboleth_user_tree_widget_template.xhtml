@@ -76,10 +76,11 @@
             <f:param name="userSuggestionSearchType" value="#{searchType}" />
             <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
             <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
-            <a4j:support event="onselect"
-              focus="#{widget.id}_suggest"
+	    <!-- TODO Migrate properly this according to JSF2 -->
+            <a4j:ajax event="select"
+              oncomplete="document.getElementById('#{widget.id}_suggest').focus();"
               bypassUpdates="true"
-              reRender="#{widget.id}_listRegion"
+              render="#{widget.id}_listRegion"
               id="#{widget.id}_listRegion_select">
               <f:setPropertyActionListener value="#{result['id']}"
                 target="#{suggestionActions.selectedValue}" />
@@ -88,7 +89,7 @@
               <f:param name="userSuggestionSearchType" value="#{searchType}" />
               <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
               <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
-            </a4j:support>
+            </a4j:ajax>
             <h:column>
               <f:subview rendered="#{result.type == 'USER_TYPE'}" id="#{widget.id}_user_result">
                 <h:graphicImage value="/icons/user.png" alt="user" />
@@ -169,9 +170,10 @@
                 <span>
                   <h:outputText value="#{node.displayedName}" rendered="#{!empty node.childrens}"/>
                   <a4j:commandLink value="#{node.displayedName}" rendered="#{empty node.childrens}">
-                    <a4j:support event="onclick"
+                    <!-- TODO Migrate properly this according to JSF2 -->
+                    <a4j:ajax event="click"
                       bypassUpdates="true"
-                      reRender="#{widget.id}_listRegion"
+                      render="#{widget.id}_listRegion"
                       id="#{widget.id}_tree_select">
                       <f:setPropertyActionListener value="#{node.id}"
                         target="#{suggestionActions.selectedValue}" />
@@ -180,7 +182,7 @@
                       <f:param name="userSuggestionSearchType" value="#{searchType}" />
                       <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
                       <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
-                    </a4j:support>
+                    </a4j:ajax>
                   </a4j:commandLink>
                 </span>
               </div>
