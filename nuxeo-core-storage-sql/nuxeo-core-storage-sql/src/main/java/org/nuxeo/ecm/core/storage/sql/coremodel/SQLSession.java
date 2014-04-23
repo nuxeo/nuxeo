@@ -1305,7 +1305,9 @@ public class SQLSession implements Session {
             }
             encoding = blob.getEncoding();
             digest = blob.getDigest();
-            length = Long.valueOf(blob.getLength());
+            // use binary length now that we know it,
+            // the blob may not have known it (streaming blobs)
+            length = Long.valueOf(binary.getLength());
         }
 
         node.getSimpleProperty(BLOB_DATA).setValue(binary);

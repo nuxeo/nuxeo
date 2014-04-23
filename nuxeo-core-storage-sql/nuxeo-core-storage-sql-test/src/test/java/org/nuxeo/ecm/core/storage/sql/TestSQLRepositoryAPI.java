@@ -22,6 +22,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -33,10 +34,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Before;
@@ -71,6 +70,7 @@ import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -2564,6 +2564,20 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("UTF8", blob.getEncoding());
         assertEquals("java/class", blob.getMimeType());
         assertTrue(Arrays.equals(content, blob.getByteArray()));
+
+        // blob from a stream, with no known length
+        URL url = getClass().getClassLoader().getResource(
+                "META-INF/MANIFEST.MF");
+        blob = new URLBlob(url, "java/manifest", null, "manifest.mf", "YYY");
+        childFile.setPropertyValue("content", (Serializable) blob);
+        session.saveDocument(childFile);
+        childFile = session.getDocument(childFile.getRef());
+        blob = (Blob) childFile.getPropertyValue("content");
+        assertEquals("YYY", blob.getDigest());
+        assertEquals("manifest.mf", blob.getFilename());
+        assertEquals(null, blob.getEncoding());
+        assertEquals("java/manifest", blob.getMimeType());
+        assertEquals(FileUtils.readBytes(url).length, blob.getLength());
     }
 
     @Test
