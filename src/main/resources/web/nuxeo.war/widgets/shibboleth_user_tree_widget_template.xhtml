@@ -108,7 +108,7 @@
           <h:outputText value="#{minChars} #{messages['label.suggestion.help.minChars.end']}" />
           <br/><br/>
           <h:outputText value="#{messages['label.suggestion.custom.user']}" class="rightsAddLabel" /><br/>
-          <a4j:form id="#{widget.id}_userInputForm" ajaxSubmit="true">
+          <h:form id="#{widget.id}_userInputForm" ajaxSubmit="true">
             <h:inputText value="#{shibbUserSuggestionWithGroupTree.shibbUserName}" id="#{widget.id}_sibbInput"/>
             <a4j:commandButton value="#{messages['label.suggestion.custom.addUser']}"
                              reRender="#{widget.id}_listRegion, #{widget.id}_userInputForm" id="#{widget.id}_sibbName">
@@ -117,7 +117,7 @@
               <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
                       <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
             </a4j:commandButton>
-          </a4j:form>
+          </h:form>
         </h:panelGroup>
 
         <h:panelGroup>
