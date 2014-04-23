@@ -56,7 +56,7 @@
 
   <h:panelGroup id="templateUsageListingPanel">
     <div class="foldableBox">
-      <a4j:form>
+      <h:form>
         <c:if test="#{templateActions.showUsageListing}">
           <h3 class="folded">
             <a4j:commandLink
@@ -79,7 +79,7 @@
             </a4j:commandLink>
           </h3>
         </c:if>
-      </a4j:form>
+      </h:form>
       <c:if test="#{templateActions.showUsageListing}">
         <div class="boxBody">
           <h:form>
