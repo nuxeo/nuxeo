@@ -1,9 +1,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:ui="http://java.sun.com/jsf/facelets">
   <f:view contentType="text/html" />
-  <head>
+  <h:head>
     <title>
       <ui:insert name="page title"></ui:insert>
     </title>
@@ -17,6 +18,6 @@
     <ui:insert name="stylesheets"></ui:insert>
     <ui:insert name="header_scripts"></ui:insert>
 
-  </head>
+  </h:head>
   [nxthemes markup]
 </html>
