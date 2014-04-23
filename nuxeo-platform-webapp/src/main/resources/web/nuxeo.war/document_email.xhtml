@@ -37,9 +37,9 @@
     <h:outputText value="#{messages['label.email.search.users']}"
          class="rightsAddLabel" />
       <h:inputText value="#{principalListManager.searchFilter}" class="directoryFilter" style="margin:0px;">
-        <a4j:support
-            event="onkeyup"
-            reRender="suggestedEntries"/>
+        <a4j:ajax
+            event="keyup"
+            render="suggestedEntries"/>
       </h:inputText>
       <h:inputHidden value="#{principalListManager.searchType}">
          <f:attribute name="value" value="USER_TYPE" />

@@ -25,9 +25,9 @@
       immediateUpload="true"
       locale="#{localeSelector.localeString}"
       id="upload">
-      <a4j:support
-        onsubmit="Seam.Component.getInstance('FileManageActions').removeSingleUploadedFile();"
-        event="onclear"/>
+      <a4j:ajax
+        onbeforesubmit="Seam.Component.getInstance('FileManageActions').removeSingleUploadedFile();"
+        event="clear"/>
     </rich:fileUpload>
 
   </div>

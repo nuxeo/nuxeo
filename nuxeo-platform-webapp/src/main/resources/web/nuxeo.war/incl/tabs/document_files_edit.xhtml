@@ -41,10 +41,10 @@
       id="upload"
       locale="#{localeSelector.localeString}"
       immediateUpload="true">
-      <a4j:support event="onclear"
-        onsubmit="processClear(event.memo);"
-        reRender="validateMultiplesUploadDiv" />
-      <a4j:support event="onuploadcomplete"
+      <a4j:ajax event="clear"
+        onbeforesubmit="processClear(event.memo);"
+        render="validateMultiplesUploadDiv" />
+      <a4j:ajax event="uploadcomplete"
         reRender="validateMultiplesUploadDiv" />
     </rich:fileUpload>
 

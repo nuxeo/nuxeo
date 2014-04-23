@@ -44,7 +44,7 @@
       resetCacheOnUpdate="true">
       <nxdir:chainSelectListbox index="0" size="4" directoryName="topic"
         localize="true" id="#{widget.id}_topic" ordering="ordering,label">
-        <a4j:support event="onchange" reRender="#{widget.id}_subtopic"
+        <a4j:ajax event="change" render="#{widget.id}_subtopic"
           immediate="true" />
       </nxdir:chainSelectListbox>
 

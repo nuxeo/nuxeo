@@ -97,11 +97,11 @@
             <h:selectBooleanCheckbox rendered="${columnHeader.id=='c0'}"
               value="#{columnHeader.allSelected}">
 
-              <a4j:support event="onclick"
-                reRender="dataTable_local_rights,security_button_remove"
-                onsubmit="disableCheckBoxesIn('rights_content:dataTable_local_rights')"
+              <a4j:ajax event="click"
+                render="dataTable_local_rights,security_button_remove"
+                onbeforesubmit="disableCheckBoxesIn('rights_content:dataTable_local_rights')"
                 oncomplete="enableCheckBoxesIn('rights_content:dataTable_local_rights')"
-                actionListener="#{securityActions.dataTableModel.selectAllRows}" />
+                listener="#{securityActions.dataTableModel.selectAllRows}" />
             </h:selectBooleanCheckbox>
 
             <h:outputText rendered="${columnHeader.id != 'c0'}"
@@ -110,10 +110,10 @@
         </f:facet>
         <h:selectBooleanCheckbox rendered="${columnHeader.id=='c0'}"
           value="#{securityActions.dataTableModel.currentCellDisplayedValue}">
-          <a4j:support event="onclick" reRender="security_button_remove_script"
-            onsubmit="disableCheckBoxesIn('rights_content:dataTable_local_rights')"
+          <a4j:ajax event="click" render="security_button_remove_script"
+            onbeforesubmit="disableCheckBoxesIn('rights_content:dataTable_local_rights')"
             oncomplete="enableCheckBoxesIn('rights_content:dataTable_local_rights')"
-            actionListener="#{securityActions.dataTableModel.process}" />
+            listener="#{securityActions.dataTableModel.process}" />
         </h:selectBooleanCheckbox>
 
         <!-- Icon -->
