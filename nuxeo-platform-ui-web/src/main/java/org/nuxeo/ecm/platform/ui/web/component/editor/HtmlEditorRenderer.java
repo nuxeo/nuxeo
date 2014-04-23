@@ -107,7 +107,7 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
             // anymore to specify a class to know which one should or should
             // not be initialized
             String scriptContent = String.format(
-                    "initTinyMCE('%s', '%s', '%s', '%s', '%s', '%s')",
+                    "initTinyMCE(%s, %s, '%s', '%s', '%s', '%s')",
                     editorComp.getWidth(), editorComp.getHeight(), clientId,
                     pluginsOptions.get("plugins"), locale.getLanguage(),
                     toolbarPluginsOptions.get("toolbar"));

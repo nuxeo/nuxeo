@@ -27,7 +27,7 @@ function initTinyMCE(width, height, eltId, plugins, lang, toolbar) {
       // register once
       $parentForm.registerPostRestoreCallBacks(function(data) {
         $parentForm.processRestore($parentForm
-            .find("textarea.mceEditor,td.mceIframeContainer>iframe"), data);
+            .find("textarea.mceEditor,div.mce-edit-area>iframe"), data);
       });
     }
   }
@@ -40,17 +40,19 @@ function initTinyMCE(width, height, eltId, plugins, lang, toolbar) {
         height : height,
         mode : "exact",
         theme : "modern",
-        // TODO: upgrade the theme or use the new one "modern"
-        // theme : "advanced",
         elements : eltId,
-        // Upgrade the plugins
-        //plugins : plugins,
+        plugins : ["link image code searchreplace paste visualchars charmap table fullscreen preview nuxeoimageupload nuxeolink"],
         language : lang,
-        theme_advanced_resizing : true,
 
         // Img insertion fixes
         relative_urls : false,
-        remove_script_host : false //,
+        remove_script_host : false,
+
+        toolbar1 : "bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | formatselect fontselect fontsizeselect",
+        toolbar2 : "paste pastetext searchreplace | bullist numlist | outdent indent | undo redo | link unlink anchor image code",
+        toolbar3 : "table | hr removeformat visualchars | subscript superscript | charmap preview | fullscreen nuxeoimageupload nuxeolink",
+        menubar: false,
+        
         // TODO : upgrade the skin "o2k7" with the new version
         /*skin : "o2k7",
         skin_variant : "silver",
@@ -58,12 +60,11 @@ function initTinyMCE(width, height, eltId, plugins, lang, toolbar) {
         theme_advanced_buttons3 : "hr,removeformat,visualaid,|,sub,sup,|,charmap,|",
         theme_advanced_buttons3_add : toolbar, */
         
-        // TODO: fix the error "TypeError: ed.onInit is undefined"
-        /*setup : function(ed) {
-          ed.onInit.add(function(ed) {
+        setup : function(ed) {
+          ed.on('init', function(ed) {
             loaded = true;
           });
-        }*/
+        }
       });
 }
 
@@ -76,17 +77,17 @@ function toggleTinyMCE(id) {
 }
 
 function removeTinyMCE(id) {
-  tinyMCE.execCommand('mceRemoveControl', false, id);
+  tinyMCE.execCommand('mceRemoveEditor', false, id);
 }
 
 function addTinyMCE(id) {
-  tinyMCE.execCommand('mceAddControl', false, id);
+  tinyMCE.execCommand('mceAddEditor', false, id);
 }
 
 function removeAllTinyMCEEditors() {
   for ( var i = 0; i < tinyMCE.editors.length; i++) {
     try {
-      tinyMCE.execCommand('mceRemoveControl', false, tinymce.editors[i].id);
+      tinyMCE.execCommand('mceRemoveEditor', false, tinymce.editors[i].id);
     } finally {
     }
   }
