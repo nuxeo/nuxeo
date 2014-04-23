@@ -90,8 +90,8 @@
                 <h:selectOneMenu
                     value="#{damImportActions.selectedImportOptionId}"
                     id="#{widget.id}" styleClass="langSelect">
-                  <a4j:support event="onchange"
-                      reRender="importLayout_panel" />
+                  <a4j:ajax event="change"
+                      render="importLayout_panel" />
                   <nxu:selectItems
                       var="importOption" value="#{importOptions}"
                       itemValue="#{importOption.id}" itemLabel="#{messages[importOption.label]}" />

@@ -5,10 +5,10 @@
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
   <h:selectBooleanCheckbox id="#{widget.id}" value="#{field_1}">
-    <a4j:support id="#{widget.id}_ajax_onclick" event="onclick"
-      ajaxSingle="true"
-      action="#{documentListingActions.processSelectRow(field_2, contentView.name, contentView.selectionListName, field_1)}"
-      reRender="#{formId}_buttons:ajax_selection_buttons" />
+    <a4j:ajax id="#{widget.id}_ajax_onclick" event="click"
+      execute="@this"
+      listener="#{documentListingActions.processSelectRow(field_2, contentView.name, contentView.selectionListName, field_1)}"
+      render="#{formId}_buttons:ajax_selection_buttons" />
   </h:selectBooleanCheckbox>
 
   <ui:include src="/dam/widgets/title_widget_template.xhtml" />

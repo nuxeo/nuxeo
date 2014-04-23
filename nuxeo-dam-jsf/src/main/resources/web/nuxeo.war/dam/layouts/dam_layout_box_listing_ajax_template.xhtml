@@ -26,10 +26,10 @@
           <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
             title="#{messages[selectAllLabel]}"
             value="#{documents.selected}">
-            <a4j:support event="onclick"
-              action="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
-              onclick="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
-              reRender="#{layout.id}_selectAll_panel, #{formId}_buttons:ajax_selection_buttons" />
+            <a4j:ajax event="click"
+              listener="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
+              onbeforesubmit="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
+              render="#{layout.id}_selectAll_panel, #{formId}_buttons:ajax_selection_buttons" />
           </h:selectBooleanCheckbox>
         </nxu:set>
       </a4j:outputPanel>

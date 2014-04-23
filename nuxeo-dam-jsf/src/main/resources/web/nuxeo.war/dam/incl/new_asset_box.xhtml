@@ -48,8 +48,8 @@
               <td class="fieldColumn">
                   <h:selectOneListbox size="1" value="#{damImportActions.selectedNewAssetType}"
                     id="#{widget.id}_select">
-                    <a4j:support event="onchange" action="#{damImportActions.selectNewAssetType()}"
-                      reRender="newAssetLayout_panel" ajaxSingle="true"/>
+                    <a4j:ajax event="change" listener="#{damImportActions.selectNewAssetType()}"
+                      render="newAssetLayout_panel" execute="@this"/>
                     <nxu:selectItems value="#{damImportActions.allowedImportFolderSubTypes}"
                       var="type"
                       itemValue="#{type.id}"
