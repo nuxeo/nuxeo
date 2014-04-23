@@ -25,14 +25,15 @@
             <nxu:selectItems
               var="flavor" value="#{flavors}"
               itemValue="#{flavor.name}" itemLabel="#{messages[flavor.label]}" />
-            <a4j:support event="onchange"
+            <!-- TODO migrate this properly according to JSF2 -->
+	    <a4j:ajax event="change"
               bypassUpdates="true"
-              actionListener="#{selectionActions.onSelection}"
-              reRender="#{widget.id}_preview"
+              listener="#{selectionActions.onSelection}"
+              render="#{widget.id}_preview"
               id="#{widget.id}_ajax_select">
               <f:param name="selectorId" value="#{widget.id}" />
               <f:param name="valueHolderId" value="#{widget.id}_valueHolder" />
-            </a4j:support>
+            </a4j:ajax>
           </h:selectOneListbox>
         </nxu:set>
         <h:message for="#{widget.id}" id="#{widget.id}_message"

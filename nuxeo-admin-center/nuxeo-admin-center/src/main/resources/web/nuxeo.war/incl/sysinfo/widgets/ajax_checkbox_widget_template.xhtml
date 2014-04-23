@@ -12,10 +12,10 @@
     <nxl:widgetType name="checkbox" value="#{field}"
       mode="#{widget.mode}"
       properties="#{widget.properties}">
-      <a4j:support event="onchange"
-        reRender="#{widgetProperty_reRender}"
+      <a4j:ajax event="change"
+        render="#{widgetProperty_reRender}"
         immediate="#{widgetProperty_immediate}"
-        ajaxSingle="#{widgetProperty_ajaxSingle}" />
+        execute="#{widgetProperty_ajaxSingle ? '@this' : '@form'}" />
     </nxl:widgetType>
 
     <a4j:status>

@@ -27,7 +27,7 @@
           <nxu:selectItems id='greu' value="#{pictureManager.selectItems}" var="item"
             itemValue="#{item.idx}" itemLabel="#{item.title}" />
 
-          <a4j:support ajaxSingle="true" reRender="refresh" event="onclick" />
+          <a4j:ajax execute="@this" render="refresh" event="click" />
         </h:selectOneRadio>
       </div>
 

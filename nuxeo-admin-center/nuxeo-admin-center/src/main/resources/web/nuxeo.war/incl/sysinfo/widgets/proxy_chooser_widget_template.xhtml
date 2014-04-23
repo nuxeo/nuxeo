@@ -12,11 +12,12 @@
       styleClass="#{widgetProperty_styleClass}"
       required="#{widgetProperty_required}">
 
-      <a4j:support event="onchange"
-        reRender="#{widgetProperty_reRender}"
+      <!-- TODO migrate listener according to JSF2 -->
+      <a4j:ajax event="change"
+        render="#{widgetProperty_reRender}"
         immediate="#{widgetProperty_immediate}"
-        ajaxSingle="#{widgetProperty_ajaxSingle}"
-        actionListener="#{setupWizardAction.proxyChange}" />
+        execute="#{widgetProperty_ajaxSingle ? '@this' : '@form'}"
+        listener="#{setupWizardAction.proxyChange}" />
 
       <f:selectItem itemValue="none"
         itemLabel="#{messages['label.setup.nuxeo.httpProxy.none']}" />

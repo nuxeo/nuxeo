@@ -16,9 +16,10 @@
   <f:facet name="controls">
     <h:panelGroup>
       <h:graphicImage value="/icons/delete_red.png"
-        id="hideImgPopup" />
-      <rich:componentControl for="imagingPanel" attachTo="hideImgPopup"
-        operation="hide" event="onclick" />
+        id="hideImgPopup" >
+        <rich:componentControl target="imagingPanel"
+          operation="hide" event="click" />
+      </h:graphicImage>
     </h:panelGroup>
   </f:facet>
 

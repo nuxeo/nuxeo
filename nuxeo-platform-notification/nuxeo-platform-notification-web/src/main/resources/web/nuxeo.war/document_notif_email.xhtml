@@ -37,8 +37,9 @@
     <h:outputText value="#{messages['label.email.search.users']}"
          class="rightsAddLabel" />
       <h:inputText value="#{principalListManager.searchFilter}" class="directoryFilter" style="margin:0px;">
-        <a4j:support event="onkeyup" requestDelay="500" eventsQueue="sendEmailForm"
-          ignoreDupResponses="true" reRender="suggestedEntries" />
+        <a4j:ajax event="keyup" render="suggestedEntries" />
+	  <a4j:attachQueue name="sendEmailForm" requestDelay="500" ignoreDupResponses="true" />
+        </a4j:ajax>
       </h:inputText>
       <a4j:status>
         <f:facet name="start">

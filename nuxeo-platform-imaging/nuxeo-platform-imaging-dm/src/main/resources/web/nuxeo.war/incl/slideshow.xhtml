@@ -32,8 +32,8 @@
       disabled="#{slideShowManager.index == 1}" />
      <h:inputText value="#{slideShowManager.index}" size="7"
       styleClass="indexPicture">
-      <a4j:support event="onkeyup"  reRender="slideshow,slideshowPoll"
-        actionListener="#{slideShowManager.inputValidation}" />
+      <a4j:ajax event="keyup"  render="slideshow,slideshowPoll"
+        listener="#{slideShowManager.inputValidation}" />
     </h:inputText>
     <a4j:commandButton image="icons/control_fastforward_blue.png"
       action="#{slideShowManager.incIndex}"  reRender="slideshow,slideshowPoll"

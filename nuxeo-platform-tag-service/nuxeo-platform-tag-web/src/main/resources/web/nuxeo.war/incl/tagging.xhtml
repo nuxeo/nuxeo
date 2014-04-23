@@ -76,10 +76,10 @@
             fetchValue="#{sugtag.label}"
             nothingLabel="#{messages['label.suggestion.noSearchResults']}"
             minChars="3" frequency="0" requestDelay="100">
-            <a4j:support event="onselect"
+            <a4j:ajax event="select"
               oncomplete="javascript:$('document_view:tagLabelAddButton').click();"
               bypassUpdates="true">
-            </a4j:support>
+            </a4j:ajax>
             <h:column>
               <f:subview>
                 <h:graphicImage value="/icons/tag_blue.png" alt="(tag)" />

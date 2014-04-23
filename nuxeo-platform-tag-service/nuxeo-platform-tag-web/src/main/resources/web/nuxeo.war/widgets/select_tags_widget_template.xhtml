@@ -54,17 +54,18 @@
             nothingLabel="#{messages['label.suggestion.noSearchResults']}"
             minChars="1" frequency="0" requestDelay="100">
           <f:param name="canSelectNewTag" value="#{widgetProperty_canSelectNewTag}" />
-          <a4j:support event="onselect"
+          <!-- TODO migrate this properly according to JSF2 -->
+	  <a4j:ajax event="select"
               focus="#{widget.id}_suggest"
               bypassUpdates="true"
-              reRender="#{widget.id}_listRegion"
+              render="#{widget.id}_listRegion"
               id="#{widget.id}_listRegion_select">
             <f:setPropertyActionListener value="#{sugtag.label}"
                 target="#{suggestionActions.selectedValue}" />
             <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
             <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
             <f:param name="canSelectNewTag" value="#{widgetProperty_canSelectNewTag}" />
-          </a4j:support>
+          </a4j:ajax>
           <h:column>
             <f:subview rendered="#{sugtag.weight eq -1}">
               <span class="tag newTag">

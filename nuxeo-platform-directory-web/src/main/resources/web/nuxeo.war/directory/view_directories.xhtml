@@ -23,10 +23,10 @@
                   <f:selectItem itemLabel="#{messages[dirName]}"
                     itemValue="#{dirName}" />
                 </c:forEach>
-                <a4j:support event="onchange" reRender="selectDirectoryForm,directoryListingPanel"
-                  action="#{directoryUIActions.selectDirectory()}"
-                  ajaxSingle="true">
-                </a4j:support>
+                <a4j:ajax event="valueChange" render="selectDirectoryForm,directoryListingPanel"
+                  listener="#{directoryUIActions.selectDirectory()}"
+                  execute="@this">
+                </a4j:ajax>
               </h:selectOneMenu>
             </td>
             <td class="iconColumn">

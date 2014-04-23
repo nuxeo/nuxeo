@@ -21,10 +21,10 @@
             <h:column>
               <f:facet name="header" />
               <h:selectBooleanCheckbox value="#{versionItemSelection.selected}">
-                <a4j:support id="ajax_onclick_#{versionItemSelection.data.id}"
-                  event="onclick"
-                  action="#{documentListingActions.checkCurrentDocAndProcessVersionSelectRow(versionItemSelection, currentDocument.ref)}"
-                  reRender="version_ajax_selection_buttons" />
+                <a4j:ajax id="ajax_onclick_#{versionItemSelection.data.id}"
+                  event="click"
+                  listener="#{documentListingActions.checkCurrentDocAndProcessVersionSelectRow(versionItemSelection, currentDocument.ref)}"
+                  render="version_ajax_selection_buttons" />
               </h:selectBooleanCheckbox>
             </h:column>
 

@@ -23,8 +23,9 @@
                                var="root"
                                itemValue="#{root.id}"
                                itemLabel="#{root.dublincore.title} (#{adminPublishActions.getDomainNameFor(root)})"/>
-              <a4j:support event="onchange" reRender="sectionTree,sectionList"
-                           ignoreDupResponses="true"/>
+              <a4j:ajax event="change" reRender="sectionTree sectionList" />
+		<a4j:attachQueue ignoreDupResponses="true" />
+              </a4j:ajax>
             </h:selectOneListbox>
           </h:panelGroup>
         </h:panelGrid>
