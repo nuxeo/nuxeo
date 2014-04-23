@@ -1,4 +1,4 @@
-// 4.0.21 (2014-04-01)
+// 4.0.22 (2014-04-16)
 
 /**
  * Compiled inline version. (Library mode)
@@ -314,8 +314,16 @@ define("tinymce/html/Styles", [], function() {
 
 					url = decode(url || url2 || url3);
 
-					if (!settings.allow_script_urls && /(java|vb)script:/i.test(url.replace(/[\s\r\n]+/, ''))) {
-						return "";
+					if (!settings.allow_script_urls) {
+						var scriptUrl = url.replace(/[\s\r\n]+/, '');
+
+						if (/(java|vb)script:/i.test(scriptUrl)) {
+							return "";
+						}
+
+						if (!settings.allow_svg_data_urls && /^data:image\/svg/i.test(scriptUrl)) {
+							return "";
+						}
 					}
 
 					// Convert the URL to relative/absolute depending on config
@@ -340,8 +348,16 @@ define("tinymce/html/Styles", [], function() {
 						name = matches[1].replace(trimRightRegExp, '').toLowerCase();
 						value = matches[2].replace(trimRightRegExp, '');
 
+						// Decode escaped sequences like \65 -> e
+						/*jshint loopfunc:true*/
+						/*eslint no-loop-func:0 */ 
+						value = value.replace(/\\[0-9a-f]+/g, function(e) {
+							return String.fromCharCode(parseInt(e.substr(1), 16));
+						});
+
 						if (name && value.length > 0) {
-							if (!settings.allow_script_urls && (name == "behavior" || /expression\s*\(/.test(value))) {
+							// Don't allow behavior name or expression/comments within the values
+							if (!settings.allow_script_urls && (name == "behavior" || /expression\s*\(|\/\*|\*\//.test(value))) {
 								continue;
 							}
 
@@ -2391,7 +2407,7 @@ define("tinymce/html/Entities", [
 	var makeMap = Tools.makeMap;
 
 	var namedEntities, baseEntities, reverseEntities,
-		attrsCharsRegExp = /[&<>\"\u007E-\uD7FF\uE000-\uFFEF]|[\uD800-\uDBFF][\uDC00-\uDFFF]/g,
+		attrsCharsRegExp = /[&<>\"\u0060\u007E-\uD7FF\uE000-\uFFEF]|[\uD800-\uDBFF][\uDC00-\uDFFF]/g,
 		textCharsRegExp = /[<>&\u007E-\uD7FF\uE000-\uFFEF]|[\uD800-\uDBFF][\uDC00-\uDFFF]/g,
 		rawCharsRegExp = /[<>&\"\']/g,
 		entityRegExp = /&(#x|#)?([\w]+);/g,
@@ -2409,7 +2425,8 @@ define("tinymce/html/Entities", [
 		"'": '&#39;',
 		'<': '&lt;',
 		'>': '&gt;',
-		'&': '&amp;'
+		'&': '&amp;',
+		'\u0060': '&#96;'
 	};
 
 	// Reverse lookup table for raw entities
@@ -4942,7 +4959,7 @@ define("tinymce/dom/DOMUtils", [
 			var contentEditable;
 
 			// Check type
-			if (node.nodeType != 1) {
+			if (!node || node.nodeType != 1) {
 				return null;
 			}
 
@@ -4954,6 +4971,20 @@ define("tinymce/dom/DOMUtils", [
 
 			// Check for real content editable
 			return node.contentEditable !== "inherit" ? node.contentEditable : null;
+		},
+
+		getContentEditableParent: function(node) {
+			var root = this.getRoot(), state = null;
+
+			for (; node && node !== root; node = node.parentNode) {
+				state = this.getContentEditable(node);
+
+				if (state !== null) {
+					break;
+				}
+			}
+
+			return state;
 		},
 
 		/**
@@ -4983,6 +5014,18 @@ define("tinymce/dom/DOMUtils", [
 			}
 
 			self.win = self.doc = self.root = self.events = self.frag = null;
+		},
+
+		isChildOf: function(node, parent) {
+			while (node) {
+				if (parent === node) {
+					return true;
+				}
+
+				node = node.parentNode;
+			}
+
+			return false;
 		},
 
 		// #ifdef debug
@@ -5359,12 +5402,21 @@ define("tinymce/AddOnManager", [
 		 * @param {String} languages Optional comma or space separated list of languages to check if it matches the name.
 		 */
 		requireLangPack: function(name, languages) {
-			if (AddOnManager.language && AddOnManager.languageLoad !== false) {
-				if (languages && new RegExp('([, ]|\\b)' + AddOnManager.language + '([, ]|\\b)').test(languages) === false) {
-					return;
+			var language = AddOnManager.language;
+
+			if (language && AddOnManager.languageLoad !== false) {
+				if (languages) {
+					languages = ',' + languages + ',';
+
+					// Load short form sv.js or long form sv_SE.js
+					if (languages.indexOf(',' + language.substr(0, 2) + ',') != -1) {
+						language = language.substr(0, 2);
+					} else if (languages.indexOf(',' + language + ',') == -1) {
+						return;
+					}
 				}
 
-				ScriptLoader.ScriptLoader.add(this.urls[name] + '/langs/' + AddOnManager.language + '.js');
+				ScriptLoader.ScriptLoader.add(this.urls[name] + '/langs/' + language + '.js');
 			}
 		},
 
@@ -6278,8 +6330,8 @@ define("tinymce/html/Schema", [
 			add("mark rt rp summary bdi", "", phrasingContent);
 			add("canvas", "width height", flowContent);
 			add("video", "src crossorigin poster preload autoplay mediagroup loop " +
-				"muted controls width height", flowContent, "track source");
-			add("audio", "src crossorigin preload autoplay mediagroup loop muted controls", flowContent, "track source");
+				"muted controls width height buffered", flowContent, "track source");
+			add("audio", "src crossorigin preload autoplay mediagroup loop muted controls buffered volume", flowContent, "track source");
 			add("source", "src type media");
 			add("track", "kind src srclang label default");
 			add("datalist", "", phrasingContent, "option");
@@ -6338,7 +6390,7 @@ define("tinymce/html/Schema", [
 			addAttrs("input textarea", "placeholder");
 			addAttrs("a", "download");
 			addAttrs("link script img", "crossorigin");
-			addAttrs("iframe", "srcdoc sandbox seamless allowfullscreen");
+			addAttrs("iframe", "sandbox seamless allowfullscreen"); // Excluded: srcdoc
 		}
 
 		// Special: iframe, ruby, video, audio, label
@@ -6397,7 +6449,7 @@ define("tinymce/html/Schema", [
 				}
 			} else {
 				// Create custom map
-				value = makeMap(value, ',', makeMap(value.toUpperCase(), ' '));
+				value = makeMap(value, /[, ]/, makeMap(value.toUpperCase(), /[, ]/));
 			}
 
 			return value;
@@ -7095,8 +7147,8 @@ define("tinymce/html/SaxParser", [
 			var validate, elementRule, isValidElement, attr, attribsValue, validAttributesMap, validAttributePatterns;
 			var attributesRequired, attributesDefault, attributesForced;
 			var anyAttributesRequired, selfClosing, tokenRegExp, attrRegExp, specialElements, attrValue, idCount = 0;
-			var decode = Entities.decode, fixSelfClosing, filteredUrlAttrs = Tools.makeMap('src,href');
-			var scriptUriRegExp = /(java|vb)script:/i;
+			var decode = Entities.decode, fixSelfClosing, filteredUrlAttrs = Tools.makeMap('src,href,data,background,formaction,poster');
+			var scriptUriRegExp = /((java|vb)script|mhtml):/i, dataUriRegExp = /^data:/i;
 
 			function processEndTag(name) {
 				var pos, i;
@@ -7162,22 +7214,24 @@ define("tinymce/html/SaxParser", [
 					}
 				}
 
-				// Block any javascript: urls
+				// Block any javascript: urls or non image data uris
 				if (filteredUrlAttrs[name] && !settings.allow_script_urls) {
 					var uri = value.replace(trimRegExp, '');
 
 					try {
 						// Might throw malformed URI sequence
 						uri = decodeURIComponent(uri);
-						if (scriptUriRegExp.test(uri)) {
-							return;
-						}
 					} catch (ex) {
 						// Fallback to non UTF-8 decoder
 						uri = unescape(uri);
-						if (scriptUriRegExp.test(uri)) {
-							return;
-						}
+					}
+
+					if (scriptUriRegExp.test(uri)) {
+						return;
+					}
+
+					if (!settings.allow_html_data_urls && dataUriRegExp.test(uri) && !/^data:image\//i.test(uri)) {
+						return;
 					}
 				}
 
@@ -10300,6 +10354,11 @@ define("tinymce/dom/RangeUtils", [
 					// Walk left until we hit a text node we can move to or a block/br/img
 					walker = new TreeWalker(startNode, parentBlockContainer);
 					while ((node = walker[left ? 'prev' : 'next']())) {
+						// Break if we hit a non content editable node
+						if (dom.getContentEditableParent(node) === "false") {
+							return;
+						}
+
 						// Found text node that has a length
 						if (node.nodeType === 3 && node.nodeValue.length > 0) {
 							container = node;
@@ -11981,6 +12040,19 @@ define("tinymce/Formatter", [
 
 		function defaultFormats() {
 			register({
+				
+				valigntop: [
+					{selector: 'td,th', styles: {'verticalAlign': 'top'}}
+				],
+
+				valignmiddle: [
+					{selector: 'td,th', styles: {'verticalAlign': 'middle'}}
+				],
+				
+				valignbottom: [
+					{selector: 'td,th', styles: {'verticalAlign': 'bottom'}}
+				],				
+				
 				alignleft: [
 					{selector: 'figure,p,h1,h2,h3,h4,h5,h6,td,th,tr,div,ul,ol,li', styles: {textAlign: 'left'}, defaultBlock: 'div'},
 					{selector: 'img,table', collapsed: false, styles: {'float': 'left'}}
@@ -14527,12 +14599,12 @@ define("tinymce/UndoManager", [
 					return null;
 				}
 
-				if (editor.fire('BeforeAddUndo', {level: level, originalEvent: event}).isDefaultPrevented()) {
+				lastLevel = data[index];
+				if (editor.fire('BeforeAddUndo', {level: level, lastLevel: lastLevel, originalEvent: event}).isDefaultPrevented()) {
 					return null;
 				}
 
 				// Add undo level if needed
-				lastLevel = data[index];
 				if (lastLevel && lastLevel.content == level.content) {
 					return null;
 				}
@@ -23171,6 +23243,18 @@ define("tinymce/util/Quirks", [
 			editor.contentStyles.push('.mce-content-body {-webkit-touch-callout: none}');
 		}
 
+		/**
+		 * WebKit has a bug where it will allow forms to be submitted if they are inside a contentEditable element.
+		 * For example this: <form><button></form>
+		 */
+		function blockFormSubmitInsideEditor() {
+			editor.on('init', function() {
+				editor.dom.bind(editor.getBody(), 'submit', function(e) {
+					e.preventDefault();
+				});
+			});
+		}
+
 		// All browsers
 		disableBackspaceIntoATable();
 		removeBlockQuoteOnBackSpace();
@@ -23183,6 +23267,7 @@ define("tinymce/util/Quirks", [
 			inputMethodFocus();
 			selectControlElements();
 			setDefaultBlockType();
+			blockFormSubmitInsideEditor();
 
 			// iOS
 			if (Env.iOS) {
@@ -25891,7 +25976,7 @@ define("tinymce/FocusManager", [
 	"tinymce/dom/DOMUtils",
 	"tinymce/Env"
 ], function(DOMUtils, Env) {
-	var selectionChangeHandler, documentFocusInHandler, DOM = DOMUtils.DOM;
+	var selectionChangeHandler, documentFocusInHandler, documentMouseUpHandler, DOM = DOMUtils.DOM;
 
 	/**
 	 * Constructs a new focus manager instance.
@@ -25912,8 +25997,13 @@ define("tinymce/FocusManager", [
 
 		// We can't store a real range on IE 11 since it gets mutated so we need to use a bookmark object
 		// TODO: Move this to a separate range utils class since it's it's logic is present in Selection as well.
-		function createBookmark(rng) {
+		function createBookmark(dom, rng) {
 			if (rng && rng.startContainer) {
+				// Verify that the range is within the root of the editor
+				if (!dom.isChildOf(rng.startContainer, dom.getRoot()) || !dom.isChildOf(rng.endContainer, dom.getRoot())) {
+					return;
+				}
+
 				return {
 					startContainer: rng.startContainer,
 					startOffset: rng.startOffset,
@@ -26044,6 +26134,8 @@ define("tinymce/FocusManager", [
 				}, 0);
 			});
 
+			// Check if focus is moved to an element outside the active editor by checking if the target node
+			// isn't within the body of the activeEditor nor a UI element such as a dialog child control
 			if (!documentFocusInHandler) {
 				documentFocusInHandler = function(e) {
 					var activeEditor = editorManager.activeEditor;
@@ -26051,7 +26143,7 @@ define("tinymce/FocusManager", [
 					if (activeEditor && e.target.ownerDocument == document) {
 						// Check to make sure we have a valid selection
 						if (activeEditor.selection) {
-							activeEditor.selection.lastFocusBookmark = createBookmark(activeEditor.lastRng);
+							activeEditor.selection.lastFocusBookmark = createBookmark(activeEditor.dom, activeEditor.lastRng);
 						}
 
 						// Fire a blur event if the element isn't a UI element
@@ -26062,9 +26154,27 @@ define("tinymce/FocusManager", [
 					}
 				};
 
-				// Check if focus is moved to an element outside the active editor by checking if the target node
-				// isn't within the body of the activeEditor nor a UI element such as a dialog child control
 				DOM.bind(document, 'focusin', documentFocusInHandler);
+			}
+
+			// Handle edge case when user starts the selection inside the editor and releases
+			// the mouse outside the editor producing a new selection. This weird workaround is needed since
+			// Gecko doesn't have the "selectionchange" event we need to do this. Fixes: #6843
+			if (editor.inline && !documentMouseUpHandler) {
+				documentMouseUpHandler = function(e) {
+					var activeEditor = editorManager.activeEditor;
+
+					if (activeEditor.inline && !activeEditor.dom.isChildOf(e.target, activeEditor.getBody())) {
+						var rng = activeEditor.selection.getRng();
+
+						if (!rng.collapsed) {
+							activeEditor.lastRng = activeEditor.selection.getRng();
+							activeEditor.selection.lastFocusBookmark = createBookmark(activeEditor.dom, activeEditor.lastRng);
+						}
+					}
+				};
+
+				DOM.bind(document, 'mouseup', documentMouseUpHandler);
 			}
 		}
 
@@ -26076,7 +26186,8 @@ define("tinymce/FocusManager", [
 			if (!editorManager.activeEditor) {
 				DOM.unbind(document, 'selectionchange', selectionChangeHandler);
 				DOM.unbind(document, 'focusin', documentFocusInHandler);
-				selectionChangeHandler = documentFocusInHandler = null;
+				DOM.unbind(document, 'mouseup', documentMouseUpHandler);
+				selectionChangeHandler = documentFocusInHandler = documentMouseUpHandler = null;
 			}
 		}
 
@@ -26150,7 +26261,7 @@ define("tinymce/EditorManager", [
 		 * @property minorVersion
 		 * @type String
 		 */
-		minorVersion : '0.21',
+		minorVersion : '0.22',
 
 		/**
 		 * Release date of TinyMCE build.
@@ -26158,7 +26269,7 @@ define("tinymce/EditorManager", [
 		 * @property releaseDate
 		 * @type String
 		 */
-		releaseDate: '2014-04-01',
+		releaseDate: '2014-04-16',
 
 		/**
 		 * Collection of editor instances.
@@ -29741,7 +29852,7 @@ define("tinymce/ui/FormatControls", [
 		}
 
 		function createFormats(formats) {
-			formats = formats.split(';');
+			formats = formats.replace(/;$/, '').split(';');
 
 			var i = formats.length;
 			while (i--) {
