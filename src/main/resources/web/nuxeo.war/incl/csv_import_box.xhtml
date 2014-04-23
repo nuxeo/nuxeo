@@ -22,7 +22,7 @@
         <nxu:set var="importRunning" value="#{not empty importStatus and importStatus.isRunning()}">
         <nxu:set var="importComplete" value="#{not empty importStatus and importStatus.isComplete()}">
 
-        <a4j:form id="importCsvRichUploadForm" ajaxSingle="true" enctype="multipart/form-data" disableDoubleClickShield="true">
+        <h:form id="importCsvRichUploadForm" ajaxSingle="true" enctype="multipart/form-data" disableDoubleClickShield="true">
 
           <a4j:outputPanel id="csv_import_form" layout="block">
             <c:if test="#{not importScheduled and not importRunning and not importComplete}">
@@ -143,7 +143,7 @@
                   styleClass="button" />
               </c:if>
             </p>
-        </a4j:form>
+        </h:form>
         </nxu:set>
         </nxu:set>
         </nxu:set>
