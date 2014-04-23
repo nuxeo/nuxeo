@@ -137,6 +137,7 @@
     <nuxeo.richfaces.version>3.3.1.GA-NX9.04-SNAPSHOT</nuxeo.richfaces.version>
 
     <tomcat.version>7.0.42</tomcat.version>
+    <lucene.version>4.7.0</lucene.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
     <gwt.version>2.5.1</gwt.version>
@@ -1575,12 +1576,17 @@
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-core</artifactId>
-        <version>2.3.2</version>
+        <version>${lucene.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-analyzers</artifactId>
-        <version>2.3.2</version>
+        <artifactId>lucene-queryparser</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-analyzers-common</artifactId>
+        <version>${lucene.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
