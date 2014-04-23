@@ -9,7 +9,7 @@
   <a4j:outputPanel id="syncRootsPanel" layout="block">
     <nxu:set var="currentUserSyncRoots" cache="true" value="#{nuxeoDriveActions.synchronizationRoots}">
 
-    <a4j:form id="currentUserSyncRoots"
+    <h:form id="currentUserSyncRoots"
       rendered="#{!empty currentUserSyncRoots}">
 
       <table class="dataOutput">
@@ -30,7 +30,7 @@
         </tbody>
       </table>
 
-    </a4j:form>
+    </h:form>
 
     <h:outputText value="#{messages['user.center.nuxeoDrive.syncRoots.noSyncRoots']}"
       rendered="#{empty currentUserSyncRoots}"/>
