@@ -80,13 +80,15 @@ public class ITContextualActionsTest extends AbstractTest {
 
         // Test contextual actions
         ContextualActions actions = filePage.getContextualActions();
+
+        // Test favorites action
+        actions.clickOnButton(actions.favoritesButton);
+
         // Test lock action
         actions.clickOnButton(actions.lockButton);
         states = filePage.getCurrentStates();
         Assert.assertTrue(states.contains(DOCUMENT_LOCKED));
 
-        // Test follow action
-        actions.clickOnButton(actions.followButton);
         // Test download action
         actions.clickOnButton(actions.downloadButton);
         // Test permalink action
@@ -96,6 +98,11 @@ public class ITContextualActionsTest extends AbstractTest {
         actions.findElementWithTimeout(By.className(actions.permaBoxFocusName),
                 20 * 1000);
         actions.clickOnButton(actions.closePermaBoxButton);
+
+        // Test follow action
+        actions.clickOnButton(actions.moreButton);
+        actions.clickOnButton(actions.followButton);
+
         // Test Add to Worklist action
         actions.clickOnButton(actions.moreButton);
         actions.clickOnButton(actions.addToWorklistButton);
