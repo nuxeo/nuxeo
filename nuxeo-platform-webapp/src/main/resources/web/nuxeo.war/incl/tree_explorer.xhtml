@@ -12,7 +12,7 @@
 <c:if test="#{!empty treeActions.treeRoots}">
 
   <a4j:region renderRegionOnly="true" id="treeExplorerRegion">
-    <a4j:form ajaxSubmit="true" id="treeExplorer">
+    <h:form ajaxSubmit="true" id="treeExplorer">
       <div style="float:right">
         <a4j:commandLink action="#{treeActions.reset()}" reRender="treeNav">
          <h:graphicImage value="/icons/refresh.png"
@@ -65,7 +65,7 @@
           </h:panelGroup>
         </dd>
       </dl>
-    </a4j:form>
+    </h:form>
   </a4j:region>
 
 </c:if>

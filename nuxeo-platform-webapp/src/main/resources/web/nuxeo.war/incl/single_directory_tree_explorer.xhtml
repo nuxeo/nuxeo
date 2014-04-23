@@ -8,7 +8,7 @@
   class="menu">
 
 <a4j:region renderRegionOnly="true">
-  <a4j:form id="directoryTreeForm" rendered="#{directoryTreeManager.initialized}">
+  <h:form id="directoryTreeForm" rendered="#{directoryTreeManager.initialized}">
     <div style="float:right">
         <a4j:commandLink action="#{directoryTreeManager.resetCurrentTree}" reRender="directoryTreeNav">
           <h:graphicImage value="/icons/refresh.png"
@@ -47,7 +47,7 @@
         </rich:treeModelRecursiveAdaptor>
       </rich:tree>
     </h:panelGroup>
-  </a4j:form>
+  </h:form>
 </a4j:region>
 
 </div>
