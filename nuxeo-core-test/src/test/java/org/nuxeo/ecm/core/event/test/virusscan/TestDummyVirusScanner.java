@@ -1,8 +1,12 @@
 package org.nuxeo.ecm.core.event.test.virusscan;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -157,16 +161,17 @@ public class TestDummyVirusScanner {
 
         // System.out.println(DummyVirusScanner.getProcessedFiles());
 
-        Assert.assertTrue(scannedFiles.contains("Test1.txt"));
-        Assert.assertTrue(scannedFiles.contains("Test2.txt"));
-        Assert.assertTrue(scannedFiles.contains("Test3doFail.txt"));
-        Assert.assertTrue(scannedFiles.contains("Test4.txt"));
-
-        for (int i = 0; i < 5; i++) {
-            Assert.assertTrue(scannedFiles.contains("Test4-" + i + ".txt"));
-        }
-
-        Assert.assertTrue(scannedFiles.contains("Test4-b.txt"));
+        assertEquals(new HashSet<String>(Arrays.asList( //
+                "Test1.txt", //
+                "Test2.txt", //
+                "Test3doFail.txt", //
+                "Test4.txt", //
+                "Test4-0.txt", //
+                "Test4-1.txt", //
+                "Test4-2.txt", //
+                "Test4-3.txt", //
+                "Test4-4.txt", //
+                "Test4-b.txt")), new HashSet<String>(scannedFiles));
 
         session.save();
 
