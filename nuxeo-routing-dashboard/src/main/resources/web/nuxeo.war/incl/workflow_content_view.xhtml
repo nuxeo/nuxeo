@@ -75,7 +75,7 @@
             value="#{contentViewRenderId}_resultsPanel, #{contentViewRenderId}_contentViewActionsPanel, ajax_selection_buttons"
             cache="true">
 
-            <a4j:form id="closeFancyBox">
+            <h:form id="closeFancyBox">
               <a4j:jsFunction name="closeFancybox">
                 <f:setPropertyActionListener value="2"
                   target="#{selectionActions.lookupLevelValue}" />
@@ -87,7 +87,7 @@
                 <nxu:actionListenerMethod
                   value="#{selectionActions.onClick}" />
               </a4j:jsFunction>
-            </a4j:form>
+            </h:form>
 
             <c:forEach var="action" items="#{actions}">
               <nxu:set var="fancyboxFormId" value="#{action.id}_fancybox_form">
@@ -109,7 +109,7 @@
                   </script>
                   <div style="display:none;">
                     <div id="#{action.id}_fancybox_box">
-                      <a4j:form id="#{fancyboxFormId}"
+                      <h:form id="#{fancyboxFormId}"
                         ajaxSubmit="true"
                         reRender="#{elementsToReRender}"
                         ignoreDupResponses="true"
@@ -156,7 +156,7 @@
                               value="#{selectionActions.onClick}" />
                           </h:commandButton>
                         </p>
-                      </a4j:form>
+                      </h:form>
                     </div>
                   </div>
                 </c:if>
