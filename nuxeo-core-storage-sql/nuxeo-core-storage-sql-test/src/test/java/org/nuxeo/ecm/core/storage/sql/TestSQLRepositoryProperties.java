@@ -798,6 +798,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.createDocumentModel("/", "doc2", "MyDocType");
 
         doc.setPropertyValue("book:author/pJob", "somejob");
+        doc.setPropertyValue("dc:subjects", new String[] { "bar" });
         StringBlob blob = new StringBlob("foo");
         blob.setFilename("fooname");
         LinkedList<Object> blobs = new LinkedList<Object>();
@@ -808,10 +809,23 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.getDocument(doc.getRef());
 
         assertTrue(doc.isPrefetched("dc:title"));
+        assertTrue(doc.isPrefetched("dc:subjects"));
         // assertTrue(doc.isPrefetched("attachments/0/name"));
         assertTrue(doc.isPrefetched("book:author/pJob"));
         // assertEquals("fooname", doc.getPropertyValue("attachments/0/name"));
         assertEquals("somejob", doc.getPropertyValue("book:author/pJob"));
+
+        Serializable subjects = doc.getPropertyValue("dc:subjects");
+        assertNotNull(subjects);
+        assertTrue(subjects.getClass().getName(), subjects instanceof String[]);
+        String[] array = (String[]) subjects;
+        assertEquals(Arrays.asList("bar"), Arrays.asList(array));
+        // array mutability
+        array[0] = "moo";
+        // different mutable array returned each time
+        subjects = doc.getPropertyValue("dc:subjects");
+        array = (String[]) subjects;
+        assertEquals(Arrays.asList("bar"), Arrays.asList(array));
 
         // set another prop in same schema
         doc.setPropertyValue("book:author/pAge", null);

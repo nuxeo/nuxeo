@@ -189,8 +189,9 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertTrue(strings instanceof String[]);
         assertEquals(Arrays.asList("e", "f"), Arrays.asList((String[]) strings));
         Object participants = child.getProperty("testList", "participants");
-        assertTrue(participants instanceof List);
-        assertEquals(Arrays.asList("c", "d"), participants);
+        assertTrue(participants instanceof String[]);
+        assertEquals(Arrays.asList("c", "d"),
+                Arrays.asList((String[]) participants));
     }
 
     @Test
@@ -402,7 +403,8 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         String title = (String) doc.getProperty("dublincore", "title");
         assertEquals("title2", title);
         Object participants = doc.getProperty("testList", "participants");
-        assertEquals(Arrays.asList("c", "d"), participants);
+        assertEquals(Arrays.asList("c", "d"),
+                Arrays.asList((String[]) participants));
     }
 
     @Test

@@ -81,7 +81,7 @@ public class Prefetch implements Serializable {
     public Serializable get(String xpath) {
         xpath = canonicalXPath(xpath);
         if (values.containsKey(xpath)) {
-            return values.get(xpath);
+            return cloned(values.get(xpath));
         }
         return NULL;
     }
@@ -91,10 +91,18 @@ public class Prefetch implements Serializable {
         if (keysByName != null) {
             String prefixedName = keysByName.get(name);
             if (prefixedName != null && values.containsKey(prefixedName)) {
-                return values.get(prefixedName);
+                return cloned(values.get(prefixedName));
             }
         }
         return NULL;
+    }
+
+    // make sure we return a new array
+    protected Serializable cloned(Serializable value) {
+        if (value instanceof Object[]) {
+            value = ((Object[]) value).clone();
+        }
+        return value;
     }
 
     public boolean isPrefetched(String xpath) {

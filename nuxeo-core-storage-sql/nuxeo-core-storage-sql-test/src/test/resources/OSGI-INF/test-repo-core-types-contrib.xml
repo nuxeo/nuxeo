@@ -26,7 +26,7 @@
       <schema name="dublincore" />
       <schema name="testList" />
       <schema name="book" />
-      <prefetch>uid, common.icon, dc:title
+      <prefetch>uid, common.icon, dc:title dc:subjects
         testList.participants, attachments/0/name, attachments/item[1]/name,
         book:author/pJob, book:author/pName/FirstName
         </prefetch>

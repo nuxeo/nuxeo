@@ -37,7 +37,6 @@ import javax.resource.ResourceException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateDocumentException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -1118,7 +1117,7 @@ public class SQLSession implements Session {
                             continue;
                         }
                         Serializable[] value = node.getCollectionProperty(name).getValue();
-                        setPrefetch(prefetch, xp, docSchemas, listValue(value));
+                        setPrefetch(prefetch, xp, docSchemas, value);
                     } else {
                         // complex list
                         List<Node> childNodes;
@@ -1147,13 +1146,6 @@ public class SQLSession implements Session {
                 throw new PropertyException("Property: " + name, e);
             }
         }
-    }
-
-    protected static Serializable listValue(Serializable[] value) {
-        if (value == null) {
-            return new ArrayList<Serializable>(0);
-        }
-        return (Serializable) PrimitiveArrays.toList(value);
     }
 
     protected void setPrefetch(Prefetch prefetch, String xpath,
