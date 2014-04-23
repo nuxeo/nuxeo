@@ -9,7 +9,7 @@
 
 <a4j:outputPanel id="binariesInfos" layout="block">
 
-  <p><a4j:form id="binariesInfosForm">
+  <p><h:form id="binariesInfosForm">
 
     <a4j:poll interval="1000"
       enabled="#{systemInfo.isBinariesGCInProgress()}"
@@ -32,7 +32,7 @@
       </h:selectBooleanCheckbox> <span><h:outputText
         value="#{messages['adminsubtab.sysinfo.binariesinfo.delete']}" /></span></p>
     </h:panelGroup>
-  </a4j:form></p>
+  </h:form></p>
 
   <div><h:panelGroup
     rendered="#{systemInfo.isBinaryManagerStatusAvailable()}">

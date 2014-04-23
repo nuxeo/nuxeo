@@ -44,7 +44,7 @@
 
               <c:if test="#{connectServerReachable and registredConnectInstance}">
 
-                <a4j:form id="updateStudioSnapshotForm">
+                <h:form id="updateStudioSnapshotForm">
                   <h:commandButton
                     id="updateStudioButton"
                     value="#{messages['admCommand.studio.update']}"
@@ -60,19 +60,19 @@
                     </div>
                   </div>
                   <h:outputText value="#{messages['label.studio.update']}"/>
-                </a4j:form>
+                </h:form>
 
                 <nxu:set var="vstatus"
                   value="#{appsViews.studioSnapshotValidationStatus}"
                   cache="true">
                 <c:if test="#{vstatus != null}">
 
-                  <a4j:form>
+                  <h:form>
                     <a4j:jsFunction name="validation_status_box_closeFancybox">
                       <nxu:actionListenerMethod
                         value="#{appsViews.resetStudioSnapshotValidationStatus()}" />
                     </a4j:jsFunction>
-                  </a4j:form>
+                  </h:form>
 
                   <script>
                     jQuery(document).ready(function() {
@@ -112,7 +112,7 @@
                         </c:if>
 
                         <p class="buttonsGadget">
-                          <a4j:form id="updateStudioSnapshotValidationErrorForm">
+                          <h:form id="updateStudioSnapshotValidationErrorForm">
                             <h:commandButton
                               id="updateStudioAnywayButton"
                               value="#{messages['admCommand.studio.updateAnyway']}"
@@ -125,7 +125,7 @@
                             <a4j:commandButton styleClass="button"
                               value="#{messages['command.cancel']}"
                               oncomplete="jQuery.fancybox.close();" />
-                          </a4j:form>
+                          </h:form>
                         </p>
                       </div>
 
@@ -165,7 +165,7 @@
         </c:if>
 
         <c:if test="#{setupConfigurable}">
-          <a4j:form id="changeDevModeForm" ajaxSumit="true">
+          <h:form id="changeDevModeForm" ajaxSumit="true">
             <c:if test="#{nxDevModeSet}">
               <h:outputText value="#{messages['label.setup.nuxeo.org.nuxeo.dev.modeOn']}"/>
               <a4j:commandButton
@@ -189,7 +189,7 @@
               for="changeDevModeForm"
               id="changeDevModeForm_message"
               styleClass="processMessage completeInfo" errorClass="errorFeedback" />
-          </a4j:form>
+          </h:form>
         </c:if>
       </div>
 

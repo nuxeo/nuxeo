@@ -25,7 +25,7 @@
 
   <nxu:set var="setupLayoutMode" value="#{nxu:test(setupConfigurable, 'edit', 'view')}">
 
-    <a4j:form id="setupForm" ajaxSubmit="true" reRender="setupPanel">
+    <h:form id="setupForm" ajaxSubmit="true" reRender="setupPanel">
 
       <nxl:layout name="admin_setup_main"
         mode="#{setupLayoutMode}" value="#{setupParams}" />
@@ -155,7 +155,7 @@
 
       </nxu:valueHolder>
 
-    </a4j:form>
+    </h:form>
   </nxu:set>
 
 </a4j:outputPanel>

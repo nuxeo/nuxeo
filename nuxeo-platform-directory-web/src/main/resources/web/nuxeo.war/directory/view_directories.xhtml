@@ -7,7 +7,7 @@
   xmlns:a4j="http://richfaces.org/a4j">
 
   <c:if test="#{webActions.checkFilter('directoriesManagementAccess')}">
-    <a4j:form id="selectDirectoryForm">
+    <h:form id="selectDirectoryForm">
     <div class="tabsContent">
       <table class="dataInput">
         <tbody>
@@ -40,7 +40,7 @@
         </tbody>
       </table>
     </div>
-    </a4j:form>
+    </h:form>
 
     <a4j:outputPanel id="directoryListingPanel"
       rendered="#{not empty directoryUIActions.selectedDirectoryName}"

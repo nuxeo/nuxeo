@@ -5,7 +5,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   class="tabsBar">
 
-  <a4j:form ajaxSubmit="true" id="adminSubViewSelector">
+  <h:form ajaxSubmit="true" id="adminSubViewSelector">
     <ul>
       <c:forEach var="adminSubTab" items="#{adminViews.availableSubActions}">
         <li class="#{nxu:test(adminViews.currentSubViewId == adminSubTab.id, 'selected', '')}">
@@ -18,5 +18,5 @@
         </li>
       </c:forEach>
     </ul>
-  </a4j:form>
+  </h:form>
 </div>

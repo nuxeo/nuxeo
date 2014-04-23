@@ -18,7 +18,7 @@
   <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.activeconnection']} #{systemInfo.activeSessionNumber}" /></p>
 
   <p>
-    <a4j:form id="repoInfoForm">
+    <h:form id="repoInfoForm">
 
      <a4j:poll interval="1000" enabled="#{systemInfo.isStatInfoInProgress()}" reRender="repoInfos"/>
 
@@ -31,7 +31,7 @@
         <a4j:commandButton value="#{messages['adminsubtab.sysinfo.repostat.compute.statistics']}"  action="#{systemInfo.startRepoStats()}" reRender="repoInfos" styleClass="button" />
 
      </h:panelGroup>
-    </a4j:form>
+    </h:form>
   </p>
 
   <div>

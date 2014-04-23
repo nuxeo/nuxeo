@@ -9,7 +9,7 @@
   xmlns:rich="http://richfaces.org/rich" class="menu">
 
   <a4j:outputPanel ajaxRendered="false" layout="block">
-    <a4j:form ajaxSubmit="true" id="publishTreeForm">
+    <h:form ajaxSubmit="true" id="publishTreeForm">
 
       <h:outputText value="#{messages['label.sections.not.defined']}"
         rendered="#{empty availablePublicationTrees}" />
@@ -152,6 +152,6 @@
           </h:column>
         </nxu:dataTable>
       </a4j:outputPanel>
-    </a4j:form>
+    </h:form>
   </a4j:outputPanel>
 </div>

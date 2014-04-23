@@ -55,7 +55,7 @@
     <c:if test="#{directoryUIActions.selectedDirectoryEntry != null}">
 
       <div class="vocabularyEntryContent">
-        <a4j:form id="editDirectoryEntry">
+        <h:form id="editDirectoryEntry">
 
           <nxl:layout name="#{currentVoc.layout}" mode="edit"
             value="#{directoryUIActions.selectedDirectoryEntry}" />
@@ -74,14 +74,14 @@
               reRender="viewDirectoryPanel" />
           </div>
 
-        </a4j:form>
+        </h:form>
 
       </div>
 
     </c:if>
     </a4j:outputPanel>
 
-    <a4j:form rendered="#{!empty directoryUIActions.currentDirectoryEntries}"
+    <h:form rendered="#{!empty directoryUIActions.currentDirectoryEntries}"
       id="viewDirectoryEntries">
 
       <table class="dataTable">
@@ -102,7 +102,7 @@
         </c:forEach>
       </table>
 
-    </a4j:form>
+    </h:form>
 
   </div>
 

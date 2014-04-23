@@ -54,11 +54,11 @@
       <h:outputText value="#{messages['label.monitoring.status.action']}" />
       </f:facet>
 
-     <a4j:form>
+     <h:form>
         <a4j:commandButton  value="#{messages['action.monitoring.edit']}" action="#{monitoringAction.editStatus()}" reRender="admStatusPanel" styleClass="button">
             <f:param name="serviceIdentifier" value="#{status.serviceIdentifier}" />
         </a4j:commandButton>
-     </a4j:form>
+     </h:form>
 
     </h:column>
   </h:dataTable>
