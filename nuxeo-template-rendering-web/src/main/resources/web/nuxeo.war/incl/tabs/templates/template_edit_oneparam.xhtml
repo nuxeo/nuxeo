@@ -29,7 +29,7 @@
         <f:selectItem itemLabel="#{messages['label.template.parameter.documentPropertyType']}" itemValue="source"/>
         <f:selectItem itemLabel="#{messages['label.template.parameter.pictureType']}" itemValue="picture"/>
         <f:selectItem itemLabel="#{messages['label.template.parameter.includeType']}" itemValue="content"/>
-        <a4j:support event="onchange" reRender="params_edit" oncomplete="initContentWidgets()"/>
+        <a4j:ajax event="change" render="params_edit" oncomplete="initContentWidgets()"/>
     </h:selectOneMenu>
 </c:if>
 </td>
