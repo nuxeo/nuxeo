@@ -43,10 +43,10 @@
                 styleClass="tipsyShow tipsyGravitySW"
                 title="#{messages['tooltip.content.select.all']}"
                 value="#{documents.selected}">
-                <a4j:support event="onclick"
-                  action="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
+                <a4j:ajax event="click"
+                  listener="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
                   onclick="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
-                  reRender="#{formId}_buttons:ajax_selection_buttons" />
+                  render="#{formId}_buttons:ajax_selection_buttons" />
               </h:selectBooleanCheckbox>
             </c:when>
             <c:when test="#{layoutColumn.properties.isListingSelectionBoxWithCurrentDocument}">
@@ -54,10 +54,10 @@
                 styleClass="tipsyShow tipsyGravitySW"
                 title="#{messages['tooltip.content.select.all']}"
                 value="#{documents.selected}">
-                <a4j:support event="onclick"
+                <a4j:ajax event="click"
                   onclick="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
-                  action="#{documentListingActions.checkCurrentDocAndProcessSelectPage(contentView.name, contentView.selectionListName, documents.selected, currentDocument.ref)}"
-                  reRender="#{formId}_buttons:ajax_selection_buttons" />
+                  listener="#{documentListingActions.checkCurrentDocAndProcessSelectPage(contentView.name, contentView.selectionListName, documents.selected, currentDocument.ref)}"
+                  render="#{formId}_buttons:ajax_selection_buttons" />
               </h:selectBooleanCheckbox>
             </c:when>
             <c:when test="#{layoutColumn.properties.useFirstWidgetLabelAsColumnHeader}">

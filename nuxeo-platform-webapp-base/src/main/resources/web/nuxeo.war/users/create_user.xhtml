@@ -25,9 +25,9 @@
         title="#{messages['label.immediateCreation']}"
         valueChangeListener="#{userManagementActions.changeTypeUserModel}"
         value="#{userManagementActions.immediateCreation}">
-        <a4j:support event="onchange"
-          reRender="usersPanel"
-          ajaxSingle="true" />
+        <a4j:ajax event="change"
+          render="usersPanel"
+          execute="@this" />
       </h:selectBooleanCheckbox>
       <h:outputLabel for="immediate_creation" value="#{messages['label.immediateCreation']}" />
     </a4j:region>

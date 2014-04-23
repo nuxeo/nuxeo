@@ -118,10 +118,11 @@
             <f:param name="userSuggestionSearchType" value="#{searchType}" />
             <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
             <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
-            <a4j:support event="onselect"
-              focus="#{widget.id}_suggest"
+            <!-- TODO: migrate this properly for JSF2 -->
+	    <a4j:ajax event="select"
+              oncomplete="document.getElementById('#{widget.id}_suggest').focus();"
               bypassUpdates="true"
-              reRender="#{widget.id}_listRegion"
+              render="#{widget.id}_listRegion"
               id="#{widget.id}_listRegion_select">
               <f:setPropertyActionListener value="#{info['prefixed_id']}"
                 target="#{suggestionActions.selectedValue}" />
@@ -130,7 +131,7 @@
               <f:param name="userSuggestionSearchType" value="#{searchType}" />
               <f:param name="userSuggestionMaxSearchResults" value="#{maxSearchResults}" />
               <f:param name="hideVirtualGroups" value="#{hideVirtualGroups}" />
-            </a4j:support>
+            </a4j:ajax>
             <h:column>
               <ui:include src="user_group_display_template.xhtml" />
             </h:column>

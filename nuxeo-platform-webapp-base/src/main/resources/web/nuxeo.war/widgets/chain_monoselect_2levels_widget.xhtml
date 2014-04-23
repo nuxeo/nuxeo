@@ -53,11 +53,11 @@
         localize="#{widgetProperty_localize}"
         id="#{widget.id}_parent"
         ordering="#{empty widgetProperty_ordering?'label':widgetProperty_ordering}">
-        <a4j:support event="onchange"
-          reRender="#{widget.id}_child,#{widget.id}_message"
+        <a4j:ajax event="change"
+          render="#{widget.id}_child,#{widget.id}_message"
           immediate="true">
           <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
-        </a4j:support>
+        </a4j:ajax>
       </nxdir:chainSelectListbox>
       <f:subview rendered="#{widgetProperty_on2rows}">
         <br />

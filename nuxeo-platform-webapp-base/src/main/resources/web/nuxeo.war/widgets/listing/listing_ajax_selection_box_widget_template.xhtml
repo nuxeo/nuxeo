@@ -3,8 +3,8 @@
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   id="#{widget.id}"
   value="#{field_0}">
-  <a4j:support id="#{widget.id}_ajax_onclick" event="onclick"
-    ajaxSingle="true"
-    action="#{documentListingActions.processSelectRow(field_1, contentView.name, contentView.selectionListName, field_0)}"
-    reRender="#{formId}_buttons:ajax_selection_buttons" />
+  <a4j:ajax id="#{widget.id}_ajax_onclick" event="click"
+    execute="@this"
+    listener="#{documentListingActions.processSelectRow(field_1, contentView.name, contentView.selectionListName, field_0)}"
+    render="#{formId}_buttons:ajax_selection_buttons" />
 </h:selectBooleanCheckbox>

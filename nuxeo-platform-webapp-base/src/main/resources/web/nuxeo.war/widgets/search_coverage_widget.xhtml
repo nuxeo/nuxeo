@@ -13,7 +13,7 @@
       allowBranchSelection="false">
       <nxdir:chainSelectListbox index="0" size="4" directoryName="continent"
         localize="true" id="#{widget.id}_continent">
-        <a4j:support event="onchange" reRender="#{widget.id}_country" />
+        <a4j:ajax event="change" render="#{widget.id}_country" />
       </nxdir:chainSelectListbox>
       <nxdir:chainSelectListbox id="#{widget.id}_country" size="4" index="1"
         directoryName="country" localize="true" />
