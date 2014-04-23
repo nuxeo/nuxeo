@@ -53,7 +53,7 @@ Needed parameters:
               </h:form>
             </c:if>
             <c:if test="#{not useMultipartForm}">
-              <a4j:form id="#{demoLayout.name}_edit_form"
+              <h:form id="#{demoLayout.name}_edit_form"
                 ajaxSubmit="true"
                 onsubmit="removeAllTinyMCEEditors(); return true;">
                 <nxl:layout value="#{layoutDemoDocument}"
@@ -71,7 +71,7 @@ Needed parameters:
                     </f:facet>
                   </a4j:status>
                 </p>
-              </a4j:form>
+              </h:form>
             </c:if>
           </td>
           <td width="50%" valign="top">
@@ -83,12 +83,12 @@ Needed parameters:
               </h:form>
             </c:if>
             <c:if test="#{not useMultipartForm}">
-              <a4j:form id="#{demoLayout.name}_view_form"
+              <h:form id="#{demoLayout.name}_view_form"
                 ajaxSubmit="true"
                 onsubmit="removeAllTinyMCEEditors(); return true;">
                 <nxl:layout value="#{layoutDemoDocument}" mode="view"
                   name="#{demoLayout.name}" />
-              </a4j:form>
+              </h:form>
             </c:if>
           </td>
         </tr>
@@ -131,7 +131,7 @@ Needed parameters:
               </h:form>
             </c:if>
             <c:if test="#{not useMultipartForm}">
-              <a4j:form id="#{demoLayout.name}_view_form"
+              <h:form id="#{demoLayout.name}_view_form"
                 ajaxSubmit="true"
                 onsubmit="removeAllTinyMCEEditors(); return true;">
                 <table class="dataOutput">
@@ -143,7 +143,7 @@ Needed parameters:
                       value="#{row}" mode="view" />
                   </c:forEach>
                 </table>
-              </a4j:form>
+              </h:form>
             </c:if>
           </td>
         </tr>

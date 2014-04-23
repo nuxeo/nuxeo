@@ -43,7 +43,7 @@ Needed parameters:
             </h:form>
           </c:if>
           <c:if test="#{not useMultipartForm}">
-            <a4j:form id="#{demoLayout.name}_edit_form"
+            <h:form id="#{demoLayout.name}_edit_form"
               ajaxSubmit="true">
               <nxl:layout value="#{layoutDemoDocument}"
                 mode="edit"
@@ -60,7 +60,7 @@ Needed parameters:
                   </f:facet>
                 </a4j:status>
               </p>
-            </a4j:form>
+            </h:form>
           </c:if>
         </td>
         <td width="50%" valign="top">
@@ -72,11 +72,11 @@ Needed parameters:
             </h:form>
           </c:if>
           <c:if test="#{not useMultipartForm}">
-            <a4j:form id="#{demoLayout.name}_view_form"
+            <h:form id="#{demoLayout.name}_view_form"
               ajaxSubmit="true">
               <nxl:layout value="#{layoutDemoDocument}" mode="view"
                 name="#{demoLayout.name}" />
-            </a4j:form>
+            </h:form>
           </c:if>
         </td>
       </tr>
