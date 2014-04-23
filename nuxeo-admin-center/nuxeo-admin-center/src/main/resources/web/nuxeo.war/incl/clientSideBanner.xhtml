@@ -40,7 +40,6 @@
           </div>
 
           <script>
-                    <!--
                       jQuery(document).ready(function() {
                         var script = document.createElement('script');
                         script.type = 'text/javascript';
@@ -51,7 +50,7 @@
                         if (registrationStatus.registered != true) {
                           jQuery(document).ready(
                               function() {
-                                if (registrationStatus.nbPkgs > 0) {
+                                if (registrationStatus.nbPkgs &gt; 0) {
                                   jQuery("#connectHotFixesCount").html(
                                       "" + registrationStatus.nbPkgs);
                                   jQuery("#connectHotFixesCountMsg").css(
@@ -62,8 +61,7 @@
                               });
                         }
                       }
-                      -->
-                    </script>
+          </script>
         </c:if>
 
       </c:when>
@@ -101,7 +99,6 @@
         </div>
 
         <script>
-                <!--
                   jQuery(document).ready(function() {
                     var script = document.createElement('script');
                     script.type = 'text/javascript';
@@ -111,15 +108,14 @@
                   function displayConnectUpdateStatus(nbPkg) {
                     jQuery(document).ready(
                         function() {
-                          if (nbPkg > 0) {
+                          if (nbPkg &gt; 0) {
                             jQuery("#connectHotFixesCount").html("" + nbPkg);
                             jQuery("#connectHotFixesCountMsg").css("display",
                                 "block");
                           }
                         });
                   }
-                  -->
-                </script>
+        </script>
 
 
       </c:otherwise>
