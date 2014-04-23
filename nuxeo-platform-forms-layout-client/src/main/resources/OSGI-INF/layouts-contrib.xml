@@ -2831,7 +2831,7 @@
                 </labels>
                 <helpLabels>
                   <label mode="any">
-                    The textarea width. Defaults to "640".
+                    The textarea width. Defaults to "700".
                   </label>
                 </helpLabels>
                 <fields>
