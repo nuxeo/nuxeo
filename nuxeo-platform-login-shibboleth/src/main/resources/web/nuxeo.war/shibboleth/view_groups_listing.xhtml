@@ -16,9 +16,10 @@
             value="#{shibbGroupManagerActions.searchString}"
             onkeydown="if(event.keyCode == 13 ||event.keyCode == 9 ){return false;}"
             styleClass="directoryFilter">
-            <a4j:support event="onkeyup" reRender="groupsListingPanel"
-              requestDelay="1000" action="#{contentViewActions.refreshAndRewind(contentViewName)}"
-              ignoreDupResponses="true" />
+            <a4j:ajax event="keyup" render="groupsListingPanel"
+              listener="#{contentViewActions.refreshAndRewind(contentViewName)}">
+              <a4j:attachQueue ignoreDupResponses="true" requestDelay="1000" />
+            </a4j:ajax>
           </h:inputText>
           <f:verbatim>&amp;nbsp;</f:verbatim>
           <a4j:commandButton id="searchButton"
