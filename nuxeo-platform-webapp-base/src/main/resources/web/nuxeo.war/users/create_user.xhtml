@@ -13,7 +13,7 @@
     <h:outputText value="#{messages['title.createUser']}" />
   </h3>
 
-  <a4j:form id="createUser" rendered="#{userManagementActions.allowCreateUser and notReadOnly}">
+  <h:form id="createUser" rendered="#{userManagementActions.allowCreateUser and notReadOnly}">
     <script>
       jQuery(document).ready(function() {
         jQuery('#createUserView\\:createUser').focusFirst();
@@ -75,6 +75,6 @@
         </tr>
       </tbody>
     </table>
-  </a4j:form>
+  </h:form>
 
 </div>

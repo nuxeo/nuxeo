@@ -39,7 +39,7 @@ empty:
     styleClass="contentViewQuickFilterForm">
     <a4j:region id="#{quickFilterFormId}_region">
 
-      <a4j:form id="#{quickFilterFormId}" ajaxSubmit="true"
+      <h:form id="#{quickFilterFormId}" ajaxSubmit="true"
         reRender="#{elementsToReRender}"
         ignoreDupResponses="true"
         requestDelay="100"
@@ -62,7 +62,7 @@ empty:
           <nxu:actionListenerMethod
             value="#{selectionActions.onClick}" />
         </h:commandButton>
-      </a4j:form>
+      </h:form>
 
       <div class="action_bar">
         <a4j:status>
@@ -90,7 +90,7 @@ empty:
         <div  style="display:none;">
         <div id="#{filterFormId}_box">
           <h3><h:outputText value="#{messages['label.contentview.filter.title']}" /></h3>
-          <a4j:form id="#{filterFormId}" ajaxSubmit="true"
+          <h:form id="#{filterFormId}" ajaxSubmit="true"
             reRender="#{elementsToReRender}"
             ignoreDupResponses="true"
             requestDelay="100"
@@ -104,7 +104,7 @@ empty:
             <p class="buttonsGadget">
             </p>
 
-          </a4j:form>
+          </h:form>
 
         </div>
         </div>

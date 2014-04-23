@@ -22,7 +22,7 @@
     </p>
   </h:form>
 
-  <a4j:form id="deleteUserForm" rendered="#{userManagementActions.allowDeleteUser and notReadOnly}">
+  <h:form id="deleteUserForm" rendered="#{userManagementActions.allowDeleteUser and notReadOnly}">
     <script type="text/javascript">
     function confirmDeleteUser() {
       return confirm("#{messages['label.userManager.confirmDeleteUser']}");
@@ -42,10 +42,10 @@
       </ul>
     </div>
     <div style="clear: both" />
-  </a4j:form>
+  </h:form>
 
   <div class="tabsBar subtabsBar">
-    <a4j:form>
+    <h:form>
       <ul>
         <li class="#{nxu:test(userManagementActions.detailsMode == 'view', 'selected', '')}">
           <a4j:commandLink action="#{userManagementActions.setDetailsMode('view')}"
@@ -75,19 +75,19 @@
         </f:subview>
 
       </ul>
-    </a4j:form>
+    </h:form>
   </div>
   <div style="clear: both" />
 
   <div class="tabsContent">
     <ui:insert name="view_user_tab_content">
-      <a4j:form id="viewUser" rendered="#{userManagementActions.detailsMode == 'view'}">
+      <h:form id="viewUser" rendered="#{userManagementActions.detailsMode == 'view'}">
         <nxl:layout name="gridUserLayout" mode="view" value="#{userManagementActions.selectedUser}" />
-      </a4j:form>
+      </h:form>
     </ui:insert>
 
     <ui:insert name="edit_user_tab_content">
-      <a4j:form id="editUser" rendered="#{userManagementActions.detailsMode == 'edit' and userManagementActions.allowEditUser and notReadOnly}">
+      <h:form id="editUser" rendered="#{userManagementActions.detailsMode == 'edit' and userManagementActions.allowEditUser and notReadOnly}">
         <script>
          jQuery(document).ready(function() {
            jQuery('#viewUserView\\:editUser').focusFirst();
@@ -109,11 +109,11 @@
             </tr>
           </tbody>
         </table>
-      </a4j:form>
+      </h:form>
     </ui:insert>
 
     <ui:insert name="edit_user_password_tab_content">
-      <a4j:form id="editUserPassword"
+      <h:form id="editUserPassword"
         rendered="#{userManagementActions.detailsMode == 'editPassword' and userManagementActions.allowEditUser and notReadOnly}">
         <script>
          jQuery(document).ready(function() {
@@ -136,7 +136,7 @@
             </tr>
           </tbody>
         </table>
-      </a4j:form>
+      </h:form>
     </ui:insert>
 
   </div>

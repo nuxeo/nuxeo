@@ -1,5 +1,6 @@
 <c:if xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   test="#{contentView != null}">
 
@@ -25,11 +26,11 @@ empty:
   <ui:include src="content_view_page_size_selector.xhtml" />
 
   <span class="contentViewUpperAction">
-    <a4j:form id="contentViewLayoutSelectForm_#{contentViewRenderId}"
+    <h:form id="contentViewLayoutSelectForm_#{contentViewRenderId}"
       ajaxSubmit="true">
       <ui:include src="content_view_result_layout_actions.xhtml" />
       <ui:include src="content_view_special_actions.xhtml" />
-    </a4j:form>
+    </h:form>
   </span>
 
   <ui:include src="content_view_export_actions.xhtml" />

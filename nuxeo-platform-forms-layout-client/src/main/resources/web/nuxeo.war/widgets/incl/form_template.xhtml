@@ -31,14 +31,14 @@ Templating zone to define:
   </c:if>
   <c:if test="#{useAjaxForm}">
     <nxu:set var="defaultEventsId" value="#{formId}_eventsQueue">
-      <a4j:form id="#{formId}" ajaxSubmit="true"
+      <h:form id="#{formId}" ajaxSubmit="true"
         ignoreDupResponses="true"
         eventsQueue="#{nxu:test(empty eventsQueueId, defaultEventsId, eventsQueueId)}"
         reRender="#{reRender}"
         styleClass="#{formStyleClass}"
         onsubmit="removeAllTinyMCEEditors(); return true;">
         <ui:insert name="form_template_content" />
-      </a4j:form>
+      </h:form>
     </nxu:set>
   </c:if>
 </c:if>

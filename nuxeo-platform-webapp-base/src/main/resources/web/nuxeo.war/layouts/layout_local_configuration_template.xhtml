@@ -38,7 +38,7 @@
     <c:set var="titleClass"
       value="#{nxu:test(hasLocalConfigurationFacet, 'unfolded', 'foldedDisabled')}" />
 
-    <a4j:form id="local_configuration_#{layout.id}_form">
+    <h:form id="local_configuration_#{layout.id}_form">
       <div class="foldableBox">
 
         <h3 class="#{titleClass}">
@@ -88,7 +88,7 @@
         </c:if>
 
       </div>
-    </a4j:form>
+    </h:form>
 
   </a4j:outputPanel>
 

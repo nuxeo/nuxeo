@@ -22,7 +22,7 @@
     </p>
   </h:form>
 
-  <a4j:form id="deleteGroupForm" rendered="#{groupManagementActions.allowDeleteGroup and notReadOnly}">
+  <h:form id="deleteGroupForm" rendered="#{groupManagementActions.allowDeleteGroup and notReadOnly}">
     <script type="text/javascript">
     function confirmDeleteGroup() {
       return confirm("#{messages['label.userManager.confirmDeleteGroup']}");
@@ -42,10 +42,10 @@
       </ul>
     </div>
     <div style="clear: both" />
-  </a4j:form>
+  </h:form>
 
   <div class="tabsBar subtabsBar">
-    <a4j:form>
+    <h:form>
       <ul>
         <li class="#{nxu:test(groupManagementActions.detailsMode == 'view', 'selected', '')}">
           <a4j:commandLink action="#{groupManagementActions.setDetailsMode('view')}"
@@ -64,17 +64,17 @@
           </li>
         </f:subview>
       </ul>
-    </a4j:form>
+    </h:form>
   </div>
   <div style="clear: both" />
 
   <div class="tabsContent">
 
-    <a4j:form id="viewGroup" rendered="#{groupManagementActions.detailsMode == 'view'}">
+    <h:form id="viewGroup" rendered="#{groupManagementActions.detailsMode == 'view'}">
       <nxl:layout name="group" mode="view" value="#{groupManagementActions.selectedGroup}" />
-    </a4j:form>
+    </h:form>
 
-    <a4j:form id="editGroup" rendered="#{groupManagementActions.detailsMode == 'edit' and groupManagementActions.allowEditGroup and notReadOnly}">
+    <h:form id="editGroup" rendered="#{groupManagementActions.detailsMode == 'edit' and groupManagementActions.allowEditGroup and notReadOnly}">
       <script>
          jQuery(document).ready(function() {
            jQuery('#viewGroupView\\:editGroup').focusFirst();
@@ -96,7 +96,7 @@
           </tr>
         </tbody>
       </table>
-    </a4j:form>
+    </h:form>
 
   </div>
   </a4j:outputPanel>

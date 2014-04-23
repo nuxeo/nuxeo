@@ -9,7 +9,7 @@
     <ui:define name="users_search_method">
       <a4j:region id="search_users_region">
         <!-- search form -->
-        <a4j:form id="searchForm" ajaxSubmit="true"
+        <h:form id="searchForm" ajaxSubmit="true"
           ignoreDupResponses="true"
           reRender="usersListingPanel,searchForm"
           onsubmit="document.getElementById('usersListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('usersListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');">
@@ -35,7 +35,7 @@
               <h:graphicImage value="/img/standart_waiter.gif" />
             </f:facet>
           </a4j:status>
-        </a4j:form>
+        </h:form>
       </a4j:region>
     </ui:define>
 

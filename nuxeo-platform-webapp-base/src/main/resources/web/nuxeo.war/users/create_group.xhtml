@@ -13,7 +13,7 @@
     <h:outputText value="#{messages['title.createGroup']}" />
   </h3>
 
-  <a4j:form id="createGroup" rendered="#{groupManagementActions.allowCreateGroup and notReadOnly}">
+  <h:form id="createGroup" rendered="#{groupManagementActions.allowCreateGroup and notReadOnly}">
     <script>
       jQuery(document).ready(function() {
         jQuery('#createGroupView\\:createGroup').focusFirst();
@@ -44,6 +44,6 @@
         </tr>
       </tbody>
     </table>
-  </a4j:form>
+  </h:form>
 
 </div>

@@ -53,10 +53,10 @@
         </f:subview>
       </c:if>
       <c:if test="#{useAjaxForm}">
-        <a4j:form id="#{formId}" ajaxSubmit="true"
+        <h:form id="#{formId}" ajaxSubmit="true"
           reRender="#{contentIdToBeReRendered}">
           <ui:include src="documents_layout_table_content.xhtml" />
-        </a4j:form>
+        </h:form>
         <f:subview id="#{formId}_buttons">
           <ui:insert name="buttons" />
         </f:subview>

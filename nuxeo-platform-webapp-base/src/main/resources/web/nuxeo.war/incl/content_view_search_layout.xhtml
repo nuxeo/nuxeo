@@ -42,7 +42,7 @@ empty:
       </a>
 
       <div class="action_bar_message">
-        <a4j:form id="#{cvid}_resetFilterForm"
+        <h:form id="#{cvid}_resetFilterForm"
           ajaxSubmit="true">
           <a4j:commandLink
             value="#{messages['label.contentview.filter.clearFilter']}"
@@ -58,13 +58,13 @@ empty:
             <nxu:actionListenerMethod
               value="#{contentView.resetSearchDocumentModel()}" />
           </a4j:commandLink>
-        </a4j:form>
+        </h:form>
       </div>
     </div>
 
     <div class="boxBody"
       style="#{nxu:test(openBox, '', 'overflow: visible; display: none;')}">
-      <a4j:form id="#{filterFormId}" ajaxSubmit="true"
+      <h:form id="#{filterFormId}" ajaxSubmit="true"
         reRender="#{elementsToReRender}"
         oncomplete="jQuery.fancybox.close();"
         ignoreDupResponses="true"
@@ -95,7 +95,7 @@ empty:
               value="#{contentView.resetSearchDocumentModel()}" />
           </a4j:commandButton>
         </p>
-      </a4j:form>
+      </h:form>
     </div>
 
   </div>
