@@ -23,8 +23,9 @@
               <c:forEach var="renditionDefinition" items="#{renditionDefinitions}">
                 <f:selectItem itemValue="#{renditionDefinition.name}" itemLabel="#{messages[renditionDefinition.label]}"/>
               </c:forEach>
-              <a4j:support event="onchange"
-                 ignoreDupResponses="true"/>
+              <a4j:ajax event="change">
+                <a4j:attachQueue ignoreDupResponses="true" />
+              </a4j:ajax>
             </h:selectOneMenu>
           </h:panelGroup>
         </h:panelGrid>
