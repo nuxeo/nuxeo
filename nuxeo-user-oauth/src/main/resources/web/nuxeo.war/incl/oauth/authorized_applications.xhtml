@@ -14,7 +14,7 @@
       <p><h:outputText value="#{messages['user.center.authorizedApplication.description']}" rendered="#{authorizedApplications.size gt 0}"/></p>
       <p><h:outputText value="#{messages['user.center.noAuthorizedApplication']}" rendered="#{authorizedApplications.size le 0}" /></p>
 
-  <a4j:form id="authorizedApplicationsForm">
+  <h:form id="authorizedApplicationsForm">
   <table class="dataOutput">
     <tbody>
       <nxu:repeat var="application"
@@ -35,7 +35,7 @@
       </nxu:repeat>
     </tbody>
   </table>
-  </a4j:form>
+  </h:form>
 
 
   </nxu:set>

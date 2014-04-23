@@ -6,11 +6,11 @@
 
   <ui:composition template="/users/view_user_template.xhtml">
     <ui:define name="view_user_tab_content">
-      <a4j:form id="viewUser"
+      <h:form id="viewUser"
         rendered="#{userManagementActions.detailsMode == 'view'}">
         <nxl:layout name="gridUserLayout" mode="view"
           value="#{userProfileActions.selectedUserProfile}" />
-      </a4j:form>
+      </h:form>
     </ui:define>
   </ui:composition>
 
