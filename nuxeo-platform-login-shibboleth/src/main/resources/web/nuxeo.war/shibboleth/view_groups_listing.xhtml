@@ -11,7 +11,7 @@
     <ui:define name="groups_search_method">
       <a4j:region id="search_groups_region">
         <!-- search form -->
-        <a4j:form id="searchForm">
+        <h:form id="searchForm">
           <h:inputText id="searchText"
             value="#{shibbGroupManagerActions.searchString}"
             onkeydown="if(event.keyCode == 13 ||event.keyCode == 9 ){return false;}"
@@ -34,7 +34,7 @@
               <h:graphicImage value="/img/standart_waiter.gif" />
             </f:facet>
           </a4j:status>
-        </a4j:form>
+        </h:form>
       </a4j:region>
     </ui:define>
 

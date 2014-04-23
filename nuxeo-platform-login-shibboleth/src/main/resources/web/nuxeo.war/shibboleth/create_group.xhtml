@@ -8,7 +8,7 @@
     <h:outputText value="#{messages['title.createGroup']}" />
   </h3>
 
-  <a4j:form id="createGroup" rendered="#{shibbGroupManagerActions.allowCreateGroup and notReadOnly}">
+  <h:form id="createGroup" rendered="#{shibbGroupManagerActions.allowCreateGroup and notReadOnly}">
     <nxl:layout name="shibbGroup" mode="create" value="#{shibbGroupManagerActions.newGroup}" />
     <table class="dataInput">
       <tbody>
@@ -38,6 +38,6 @@
         </tr>
       </tbody>
     </table>
-  </a4j:form>
+  </h:form>
 
 </div>

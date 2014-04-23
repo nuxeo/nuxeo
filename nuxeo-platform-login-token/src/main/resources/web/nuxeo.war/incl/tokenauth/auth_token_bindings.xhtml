@@ -18,7 +18,7 @@
   <a4j:outputPanel id="authTokenBindingsPanel" layout="block">
     <nxu:set var="currentUserAuthTokenBindings" cache="true" value="#{tokenAuthenticationActions.currentUserAuthTokenBindings}">
 
-    <a4j:form id="currentUserAuthTokenBindings">
+    <h:form id="currentUserAuthTokenBindings">
 
       <c:if test="#{!empty currentUserAuthTokenBindings}">
         <table class="dataOutput">
@@ -59,7 +59,7 @@
         immediate="true"
         reRender="authTokenBindingsPanel" />
       </c:if>
-    </a4j:form>
+    </h:form>
 
     </nxu:set>
   </a4j:outputPanel>

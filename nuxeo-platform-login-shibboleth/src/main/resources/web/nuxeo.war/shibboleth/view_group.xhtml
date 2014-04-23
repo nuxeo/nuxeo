@@ -20,7 +20,7 @@
     </p>
   </h:form>
 
-  <a4j:form id="deleteGroupForm" rendered="#{shibbGroupManagerActions.allowDeleteGroup and notReadOnly}">
+  <h:form id="deleteGroupForm" rendered="#{shibbGroupManagerActions.allowDeleteGroup and notReadOnly}">
     <script type="text/javascript">
     function confirmDeleteGroup() {
       return confirm("#{messages['label.userManager.confirmDeleteGroup']}");
@@ -40,10 +40,10 @@
       </ul>
     </div>
     <div style="clear: both" />
-  </a4j:form>
+  </h:form>
 
   <div class="tabsBar subtabsBar">
-    <a4j:form>
+    <h:form>
       <ul>
         <li class="#{nxu:test(shibbGroupManagerActions.detailsMode == 'view', 'selected', '')}">
           <a4j:commandLink action="#{shibbGroupManagerActions.setDetailsMode('view')}"
@@ -62,17 +62,17 @@
           </li>
         </f:subview>
       </ul>
-    </a4j:form>
+    </h:form>
   </div>
   <div style="clear: both" />
 
   <div class="tabsContent">
 
-    <a4j:form id="viewGroup" rendered="#{shibbGroupManagerActions.detailsMode == 'view'}">
+    <h:form id="viewGroup" rendered="#{shibbGroupManagerActions.detailsMode == 'view'}">
       <nxl:layout name="shibbGroup" mode="view" value="#{shibbGroupManagerActions.selectedGroup}" />
-    </a4j:form>
+    </h:form>
 
-    <a4j:form id="editGroup" rendered="#{shibbGroupManagerActions.detailsMode == 'edit' and shibbGroupManagerActions.allowEditGroup and notReadOnly}">
+    <h:form id="editGroup" rendered="#{shibbGroupManagerActions.detailsMode == 'edit' and shibbGroupManagerActions.allowEditGroup and notReadOnly}">
       <nxl:layout name="shibbGroup" mode="edit" value="#{shibbGroupManagerActions.selectedGroup}" />
       <table class="dataInput">
         <tbody>
@@ -88,7 +88,7 @@
           </tr>
         </tbody>
       </table>
-    </a4j:form>
+    </h:form>
 
   </div>
   </a4j:outputPanel>
