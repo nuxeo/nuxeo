@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,11 +7,15 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
+ *     H2 Group
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.storage.sql.db;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.Constructor;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -21,9 +25,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,16 +38,25 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Hit;
+import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.Scorer;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.util.Version;
 import org.h2.api.CloseListener;
 import org.h2.message.Message;
 import org.h2.store.fs.FileSystem;
@@ -54,11 +67,12 @@ import org.h2.value.DataType;
 
 /**
  * An optimized Lucene-based fulltext indexing trigger and search.
- *
- * @author H2 Group
- * @author Florent Guillaume
  */
 public class H2Fulltext {
+
+    private static final Version LUCENE_VERSION = Version.LUCENE_47;
+
+    private static final Map<String, Analyzer> analyzers = new ConcurrentHashMap<String, Analyzer>();
 
     private static final Map<String, IndexWriter> indexWriters = new ConcurrentHashMap<String, IndexWriter>();
 
@@ -297,7 +311,6 @@ public class H2Fulltext {
      * @param text the search query
      * @return the result set
      */
-    @SuppressWarnings("unchecked")
     public static ResultSet search(Connection conn, String indexName,
             String text) throws SQLException {
         DatabaseMetaData meta = conn.getMetaData();
@@ -315,7 +328,7 @@ public class H2Fulltext {
         }
         String schema = res.getString(1);
         String table = res.getString(2);
-        String analyzer = res.getString(3);
+        String analyzerName = res.getString(3);
         ps.close();
 
         int type = getPrimaryKeyType(meta, schema, table);
@@ -330,24 +343,67 @@ public class H2Fulltext {
         String indexPath = getIndexPath(conn);
         try {
             BooleanQuery query = new BooleanQuery();
-            QueryParser parser = new QueryParser(fieldForIndex(indexName),
-                    getAnalyzer(analyzer));
+            String defaultField = fieldForIndex(indexName);
+            Analyzer analyzer = getAnalyzer(analyzerName);
+            QueryParser parser = new QueryParser(LUCENE_VERSION, defaultField,
+                    analyzer);
             query.add(parser.parse(text), BooleanClause.Occur.MUST);
 
-            getIndexWriter(indexPath, analyzer).flush();
-            Searcher searcher = new IndexSearcher(indexPath);
-            Iterator<Hit> it = searcher.search(query).iterator();
-            for (; it.hasNext();) {
-                Hit hit = it.next();
-                Object key = asObject(hit.get(FIELD_KEY), type);
-                rs.addRow(new Object[] { key });
-            }
-            // TODO keep it open if possible
-            searcher.close();
+            getIndexWriter(indexPath, analyzerName).commit();
+
+            IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(
+                    indexPath)));
+            IndexSearcher searcher = new IndexSearcher(reader);
+            Collector collector = new ResultSetCollector(rs, reader, type);
+            searcher.search(query, collector);
         } catch (Exception e) {
             throw convertException(e);
         }
         return rs;
+    }
+
+    protected static class ResultSetCollector extends Collector {
+        protected final SimpleResultSet rs;
+
+        protected IndexReader reader;
+
+        protected int type;
+
+        protected int docBase;
+
+        public ResultSetCollector(SimpleResultSet rs, IndexReader reader,
+                int type) {
+            this.rs = rs;
+            this.reader = reader;
+            this.type = type;
+        }
+
+        @Override
+        public void setNextReader(AtomicReaderContext context) {
+            this.docBase = context.docBase;
+        }
+
+        @Override
+        public void setScorer(Scorer scorer) {
+        }
+
+        @Override
+        public boolean acceptsDocsOutOfOrder() {
+            return true;
+        }
+
+        @Override
+        public void collect(int docID) throws IOException {
+            docID += docBase;
+            Document doc = reader.document(docID, Collections.singleton(FIELD_KEY));
+            Object key;
+            try {
+                key = asObject(doc.get(FIELD_KEY), type);
+                rs.addRow(new Object[] { key });
+            } catch (SQLException e) {
+                throw new IOException(e);
+            }
+        }
     }
 
     private static int getPrimaryKeyType(DatabaseMetaData meta, String schema,
@@ -379,12 +435,20 @@ public class H2Fulltext {
         return primaryKeyType;
     }
 
-    private static Analyzer getAnalyzer(String analyzer) throws SQLException {
-        try {
-            return (Analyzer) Class.forName(analyzer).newInstance();
-        } catch (Exception e) {
-            throw new SQLException(e.toString());
+    private static Analyzer getAnalyzer(String analyzerName)
+            throws SQLException {
+        Analyzer analyzer = analyzers.get(analyzerName);
+        if (analyzer == null) {
+            try {
+                Class<?> klass = Class.forName(analyzerName);
+                Constructor<?> constructor = klass.getConstructor(Version.class);
+                analyzer = (Analyzer) constructor.newInstance(LUCENE_VERSION);
+            } catch (Exception e) {
+                throw new SQLException(e.toString());
+            }
+            analyzers.put(analyzerName, analyzer);
         }
+        return analyzer;
     }
 
     private static String getIndexPath(Connection conn) throws SQLException {
@@ -407,9 +471,12 @@ public class H2Fulltext {
             synchronized (indexWriters) {
                 if (!indexWriters.containsKey(indexPath)) {
                     try {
-                        boolean recreate = !IndexReader.indexExists(indexPath);
-                        indexWriter = new IndexWriter(indexPath,
-                                getAnalyzer(analyzer), recreate);
+                        Directory dir = FSDirectory.open(new File(indexPath));
+                        Analyzer an = getAnalyzer(analyzer);
+                        IndexWriterConfig iwc = new IndexWriterConfig(
+                                LUCENE_VERSION, an);
+                        iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
+                        indexWriter = new IndexWriter(dir, iwc);
                     } catch (LockObtainFailedException e) {
                         // log.error("Cannot open fulltext index", e);
                         System.err.println("Cannot open fulltext index "
@@ -431,7 +498,7 @@ public class H2Fulltext {
         IndexWriter index = indexWriters.remove(path);
         if (index != null) {
             try {
-                index.flush();
+                index.commit();
                 index.close();
             } catch (IOException e) {
                 throw convertException(e);
@@ -601,7 +668,7 @@ public class H2Fulltext {
             while (rs.next()) {
                 String indexName = rs.getString(1);
                 String columns = rs.getString(2);
-                String analyzer = rs.getString(3);
+                String analyzerName = rs.getString(3);
                 List<String> columnNames = Arrays.asList(columns.split(","));
 
                 // find the columns' indices and types
@@ -616,7 +683,7 @@ public class H2Fulltext {
                 columnTypes.put(indexName, types);
                 columnIndices.put(indexName, indices);
                 // only one call actually needed for this:
-                indexWriter = getIndexWriter(indexPath, analyzer);
+                indexWriter = getIndexWriter(indexPath, analyzerName);
             }
             rs.close();
             ps.close();
@@ -639,7 +706,7 @@ public class H2Fulltext {
             }
             try {
                 // need to flush otherwise some unit tests don't pass
-                indexWriter.flush();
+                indexWriter.commit();
             } catch (IOException e) {
                 throw convertException(e);
             }
@@ -648,8 +715,10 @@ public class H2Fulltext {
         private void insert(Object[] row) throws SQLException {
             Document doc = new Document();
             String key = asString(row[primaryKeyIndex], primaryKeyType);
-            doc.add(new Field(FIELD_KEY, key, Field.Store.YES,
-                    Field.Index.UN_TOKENIZED));
+            // StringField is not tokenized
+            StringField keyField = new StringField(FIELD_KEY, key,
+                    Field.Store.YES);
+            doc.add(keyField);
 
             // add fulltext for all indexes
             for (String indexName : columnTypes.keySet()) {
@@ -663,12 +732,14 @@ public class H2Fulltext {
                     }
                     buf.append(data);
                 }
-                doc.add(new Field(fieldForIndex(indexName), buf.toString(),
-                        Field.Store.NO, Field.Index.TOKENIZED));
+                // TextField is tokenized
+                TextField textField = new TextField(fieldForIndex(indexName),
+                        buf.toString(), Field.Store.NO);
+                doc.add(textField);
             }
 
             try {
-                indexWriter.addDocument(doc);
+                indexWriter.updateDocument(new Term(FIELD_KEY, key), doc);
             } catch (IOException e) {
                 throw convertException(e);
             } catch (org.apache.lucene.store.AlreadyClosedException e) {
@@ -696,7 +767,6 @@ public class H2Fulltext {
         public void close() throws SQLException {
             if (indexWriter != null) {
                 try {
-                    indexWriter.flush();
                     // DEBUG
                     lastIndexWriterClose = new Exception("debug stack trace");
                     lastIndexWriterCloseThread = Thread.currentThread().getName();
