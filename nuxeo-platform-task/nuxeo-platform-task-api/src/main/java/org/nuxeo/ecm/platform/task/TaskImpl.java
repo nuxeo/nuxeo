@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -295,7 +296,11 @@ public class TaskImpl implements Task {
     @SuppressWarnings("unchecked")
     protected <T> T getPropertyValue(String propertyName) {
         try {
-            return (T) doc.getPropertyValue(propertyName);
+            Serializable value = doc.getPropertyValue(propertyName);
+            if (value instanceof Object[]) {
+                value = new ArrayList<Object>(Arrays.asList((Object[]) value));
+            }
+            return (T) value;
         } catch (PropertyException e) {
             throw new ClientRuntimeException(e);
         } catch (ClientException e) {
