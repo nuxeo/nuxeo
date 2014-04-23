@@ -27,7 +27,7 @@
         id="#{widget.id}_editselect" onchange="#{widgetProperty_onchange}">
         <nxdir:chainSelectListbox index="0" size="0" directoryName="continent"
           localize="true" id="#{widget.id}_continent">
-          <a4j:support event="onchange" reRender="#{widget.id}_country" />
+          <a4j:ajax event="change" render="#{widget.id}_country" />
         </nxdir:chainSelectListbox>
 
         <nxdir:chainSelectListbox size="0" index="1" directoryName="country"

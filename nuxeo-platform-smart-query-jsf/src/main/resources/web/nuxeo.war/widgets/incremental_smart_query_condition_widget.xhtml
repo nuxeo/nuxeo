@@ -30,9 +30,10 @@
         <c:set var="opLabel" value="label.smart.query.operator.#{fn:replace(op, ' ', '_')}" />
         <nxu:selectItems var="op" value="#{widgetProperty_availableOperators}"
           itemValue="#{op}" itemLabel="#{messages[opLabel]}"/>
-        <a4j:support event="onchange"
-          reRender="#{widget.id}_subwidgets"
-          ignoreDupResponses="true" />
+        <a4j:ajax event="change"
+          render="#{widget.id}_subwidgets">
+          <a4j:attachQueue ignoreDupResponses="true" />
+        </a4j:ajax>
       </h:selectOneMenu>
       <h:message for="#{widget.id}_conditional_operator" class="errorMessage" />
       <a4j:status>

@@ -51,9 +51,10 @@
           itemLabel="#{messages[item.widgets[0].label]}"
           ordering="label"
           id="#{layout.id}_targetRows" />
-        <a4j:support event="onchange"
-          reRender="#{layout.id}_selectionPanel, #{layout.id}_rowSelectorMessagePanel"
-          ignoreDupResponses="true" />
+        <a4j:ajax event="change"
+          render="#{layout.id}_selectionPanel, #{layout.id}_rowSelectorMessagePanel">
+          <a4j:attachQueue ignoreDupResponses="true" />
+        </a4j:ajax>
       </h:selectOneMenu>
       <a4j:outputPanel id="#{layout.id}_rowSelectorMessagePanel">
         <h:message for="#{layout.id}_rowSelector" class="errorMessage" />

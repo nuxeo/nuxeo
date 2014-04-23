@@ -63,15 +63,14 @@
                 required="#{widget.required and not smartNXQLQueryActions.ajaxRequest}"
                 validator="#{smartNXQLQueryActions.validateQueryPart}"
                 rows="4">
-                <a4j:support event="onchange"
-                  actionListener="#{smartNXQLQueryActions.queryPartChanged}"
-                  reRender="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryUndoPanel"
-                  ignoreDupResponses="true"
+                <a4j:ajax event="change"
+                  listener="#{smartNXQLQueryActions.queryPartChanged}"
+                  render="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryUndoPanel"
                   bypassUpdates="#{widgetProperty_updateQueryPart}"
                   immediate="true">
-                  <a4j:actionparam name="updateQueryPart"
+                </a4j:ajax>
+                <f:attribute name="updateQueryPart"
                     value="#{widgetProperty_updateQueryPart}" />
-                </a4j:support>
               </h:inputTextarea>
               <h:message for="#{widget.id}_smartQueryPart" class="errorMessage" />
             </a4j:outputPanel>
