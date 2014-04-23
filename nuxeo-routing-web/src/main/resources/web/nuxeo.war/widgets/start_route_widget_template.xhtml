@@ -25,14 +25,14 @@
               <nxu:selectItems
                 var="routeModel" value="#{routeModels}"
                 itemValue="#{routeModel.id}" itemLabel="#{messages[routeModel.title]}" />
-              <a4j:support event="onchange"
+              <a4j:ajax event="change"
                 bypassUpdates="true"
-                actionListener="#{selectionActions.onSelection}"
-                reRender="#{widget.id}_preview"
+                listener="#{selectionActions.onSelection}"
+                render="#{widget.id}_preview"
                 id="#{widget.id}_ajax_select">
-                <f:param name="selectorId" value="#{widget.id}" />
-                <f:param name="valueHolderId" value="#{widget.id}_valueHolder" />
-              </a4j:support>
+              </a4j:ajax>
+              <f:param name="selectorId" value="#{widget.id}" />
+              <f:param name="valueHolderId" value="#{widget.id}_valueHolder" />
             </h:selectOneListbox>
             <h:message for="#{widget.id}" id="#{widget.id}_message"
               styleClass="errorStyleClass" />

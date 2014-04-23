@@ -35,9 +35,11 @@
           requestDelay="#{requestDelay}">
           <f:param name="mailboxSuggestionSearchType"
             value="#{widget.properties['mailboxSuggestionSearchType']}" />
-          <a4j:support event="onselect"
-            focus="#{widget.id}_route_suggest" bypassUpdates="true"
-            reRender="#{widget.id}_route_region" id="#{widget.id}_a4jSupport">
+          <!-- TODO Migrate properly this according to JSF2 -->
+          <a4j:ajax event="select"
+            oncomplete="document.getElementById('#{widget.id}_route_suggest').focus();"
+            bypassUpdates="true"
+            render="#{widget.id}_route_region" id="#{widget.id}_a4jSupport">
             <f:param name="mailboxSuggestionSearchType"
               value="#{widget.properties['mailboxSuggestionSearchType']}" />
             <f:setPropertyActionListener value="#{result.id}"
@@ -49,7 +51,7 @@
               value="#{widget.id}_route" />
             <f:param name="suggestionSelectionDeleteId"
               value="#{widget.id}_selection_reset" />
-          </a4j:support>
+          </a4j:ajax>
           <h:column>
             <h:outputText value="#{result.title}" />
           </h:column>

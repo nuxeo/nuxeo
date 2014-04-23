@@ -48,15 +48,16 @@
             fetchValue=""
             nothingLabel="#{messages['label.suggestion.noSearchResultsOrSearchOverflow']}"
             minChars="#{minChars}" frequency="#{frequency}" requestDelay="#{requestDelay}">
-            <a4j:support event="onselect"
-              focus="#{widget.id}_suggest"
+            <!-- TODO Migrate properly this according to JSF2 -->
+            <a4j:ajax event="select"
+              oncomplete="document.getElementById('#{widget.id}_suggest').focus();"
               bypassUpdates="true"
-              reRender="#{widget.id}_listRegion">
+              render="#{widget.id}_listRegion">
               <f:setPropertyActionListener value="#{result.id}"
                     target="#{suggestionActions.selectedValue}" />
               <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
               <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
-            </a4j:support>
+            </a4j:ajax>
             <h:column>
               <h:outputText value="#{nxd:titleOrId(result)}" />
             </h:column>
