@@ -44,7 +44,7 @@
                 <a4j:commandButton
                   styleClass="button"
                   value="Process"
-                  ajaxSingle="true"
+                  execute="@this"
                   ignoreDupResponses="true" requestDelay="100"
                   disabled="#{!action.available}"
                   render="workflow_action_fancybox_content">
