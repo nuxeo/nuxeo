@@ -70,11 +70,11 @@
           ignoreDupResponses="true" zindex="5000"
           styleClass="suggestionBoxResult">
           <f:param name="suggesterGroup" value="searchbox" />
-          <a4j:support event="onselect" id="#{widget.id}_a4jSupport"
-            focus="" bypassUpdates="true"
-            action="#{suggestboxActions.handleSelection(result)}">
-            <f:param name="suggesterGroup" value="searchbox" />
-          </a4j:support>
+          <!-- TODO migrate this properly accorind to JSF2 -->
+          <a4j:ajax event="select" id="#{widget.id}_a4jSupport"
+            bypassUpdates="true"
+            listener="#{suggestboxActions.handleSelection(result)}">
+          </a4j:ajax>
           <h:column>
             <h:graphicImage value="#{result.iconURL}" />
           </h:column>
