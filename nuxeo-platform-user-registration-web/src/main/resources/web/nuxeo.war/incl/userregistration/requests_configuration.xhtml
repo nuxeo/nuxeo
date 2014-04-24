@@ -4,7 +4,7 @@
         xmlns:c="http://java.sun.com/jstl/core"
         xmlns:f="http://java.sun.com/jsf/core"
         xmlns:a4j="http://richfaces.org/a4j">
-  <a4j:form id="workspace_requests_create">
+  <h:form id="workspace_requests_create">
     <h:panelGrid styleClass="dataInput"
             columnClasses="labelColumn, fieldColumn" columns="2">
       <h:panelGroup>
@@ -19,8 +19,8 @@
             <f:selectItem itemLabel="#{confName}"
                     itemValue="#{confName}" />
           </c:forEach>
-          <a4j:support event="onchange" reRender="workspace_requests_create,facesStatusMessagePanel" ajaxSingle="true">
-          </a4j:support>
+          <a4j:ajax event="change" render="workspace_requests_create,facesStatusMessagePanel" execute="@this">
+          </a4j:ajax>
         </h:selectOneMenu>
       </h:panelGroup>
     </h:panelGrid>
@@ -36,5 +36,5 @@
               action="#{userRegistrationConfigurationActions.saveConfiguration}"
               reRender="workspace_requests_create,facesStatusMessagePanel" />
     </p>
-  </a4j:form>
+  </h:form>
 </div>
