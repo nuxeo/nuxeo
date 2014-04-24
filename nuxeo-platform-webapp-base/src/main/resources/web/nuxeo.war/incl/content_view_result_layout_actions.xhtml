@@ -15,7 +15,7 @@ Needed parameters:
       <span class="resultLayoutSelection #{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
         <a4j:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}"
           render="#{contentIdToBeReRendered}, #{contentViewRenderId}_contentViewActionsPanel"
-          ajaxSingle="true">
+          execute="@this">
           <c:set var="iconPath"
             value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />
           <c:set var="title"

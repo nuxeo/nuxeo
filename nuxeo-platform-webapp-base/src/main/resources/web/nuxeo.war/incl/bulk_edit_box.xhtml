@@ -25,7 +25,7 @@
         action="#{bulkEditActions.bulkEditSelection}"
         value="#{messages['command.update']}"/>
       <a4j:commandButton styleClass="button"
-        immediate="true" ajaxSingle="true"
+        immediate="true" execute="@this"
         action="#{bulkEditActions.cancel}"
         value="#{messages['command.cancel']}"
         oncomplete="jQuery.fancybox.close();"/>

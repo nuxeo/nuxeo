@@ -21,7 +21,7 @@
 
                 <li class="#{cssClass}">
                   <a4j:commandLink action="#{userManagementActions.setSelectedLetter(letter)}"
-                    ajaxSingle="true"
+                    execute="@this"
                     render="usersListingPanel">
                     <h:outputText value="#{letter}" />
                   </a4j:commandLink>

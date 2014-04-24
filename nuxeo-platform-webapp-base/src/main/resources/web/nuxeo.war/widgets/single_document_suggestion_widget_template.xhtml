@@ -82,7 +82,7 @@
 
       <a4j:region>
         <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
-          immediate="true" ajaxSingle="true"
+          immediate="true" execute="@this"
           required="#{widgetProperty_required}" var="currentValue">
           <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
             value="#{select2Actions.resolveSingleReference(currentValue, widgetProperty_repository,widgetProperty_initOperationId, widgetProperty_idProperty,widgetProperty_documentSchemas)}" />

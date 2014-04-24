@@ -78,7 +78,7 @@
 
         <a4j:region>
         <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
-          immediate="true" ajaxSingle="true"
+          immediate="true" execute="@this"
           required="#{widgetProperty_required}" var="currentValue">
           <f:converter converterId="select2Converter" />
           <f:attribute name="separator" value="#{widgetProperty_separator}" />

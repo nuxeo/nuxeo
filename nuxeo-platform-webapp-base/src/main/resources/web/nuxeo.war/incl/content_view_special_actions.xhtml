@@ -32,7 +32,7 @@ A templating zone is also available for compatibility:
         <a4j:commandLink action="#{contentView.refreshAndRewindPageProvider()}"
           id="refreshContentViewLink"
           render="#{contentIdToBeReRendered}"
-          ajaxSingle="true">
+          execute="@this">
           <h:graphicImage value="/icons/refresh.png"
            alt="#{messages['label.refresh']}"
            title="#{messages['label.refresh']}"

@@ -71,7 +71,7 @@
                     cache="true">
                     <span class="contentViewHeaderSortTooltip tipsyShow tipsyGravityS" title="#{messages['contentview.setSort.help']}">
                       <c:if test="#{useAjaxForm}">
-                        <a4j:commandLink ajaxSingle="true" immediate="true"
+                        <a4j:commandLink execute="@this" immediate="true"
                           render="#{contentIdToBeReRendered}"
                           action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
                           id="#{layoutColumn.widgets[0].name}_header_sort">
@@ -96,7 +96,7 @@
                     <c:if test="#{ascIndex != -1}">
                       <span class="contentViewHeaderSortTooltip tipsyShow tipsyGravityS" title="#{messages['contentview.setSort.help']}">
                         <c:if test="#{useAjaxForm}">
-                          <a4j:commandLink ajaxSingle="true" immediate="true"
+                          <a4j:commandLink execute="@this" immediate="true"
                             render="#{contentIdToBeReRendered}"
                             action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
                             id="#{layoutColumn.widgets[0].name}_header_sort_desc">
@@ -121,7 +121,7 @@
                     <c:if test="#{descIndex != -1}">
                       <span class="contentViewHeaderSortTooltip tipsyShow tipsyGravityS" title="#{messages['contentview.setSort.help']}">
                         <c:if test="#{useAjaxForm}">
-                          <a4j:commandLink ajaxSingle="true" immediate="true"
+                          <a4j:commandLink execute="@this" immediate="true"
                             render="#{contentIdToBeReRendered}"
                             action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
                             id="#{layoutColumn.widgets[0].name}_header_sort_asc">
@@ -146,7 +146,7 @@
                     <c:if test="#{ascIndex == -1 and descIndex == -1}">
                       <span class="contentViewHeaderSortTooltip tipsyShow tipsyGravityS" title="#{messages['contentview.setSort.help']}">
                         <c:if test="#{useAjaxForm}">
-                          <a4j:commandLink ajaxSingle="true" immediate="true"
+                          <a4j:commandLink execute="@this" immediate="true"
                             render="#{contentIdToBeReRendered}"
                             action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
                             id="#{layoutColumn.widgets[0].name}_header_sort_add">

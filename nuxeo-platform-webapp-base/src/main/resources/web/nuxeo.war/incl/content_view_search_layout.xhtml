@@ -47,7 +47,7 @@ empty:
           <a4j:commandLink
             value="#{messages['label.contentview.filter.clearFilter']}"
             id="resetFilter"
-            ajaxSingle="true"
+            execute="@this"
             rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
             render="#{elementsToReRender}"
             ignoreDupResponses="true"
@@ -83,7 +83,7 @@ empty:
           <a4j:commandButton
             value="#{messages['label.contentview.filter.clearFilterButton']}"
             id="resetFilter"
-            ajaxSingle="true"
+            execute="@this"
             disabled="#{not nxd:isDirty(contentView.searchDocumentModel)}"
             render="#{elementsToReRender}"
             ignoreDupResponses="true"

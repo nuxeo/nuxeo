@@ -68,7 +68,7 @@
       <h3>
         <h:outputText value="#{messages['label.search.popup.title']}"/>
       </h3>
-      <rich:tree ajaxSingle="true" preserveModel="none"
+      <rich:tree execute="@this" preserveModel="none"
         ajaxChildActivationEncodeBehavior="none"
         ajaxNodeSelectionEncodeBehavior="none"
         id="#{widget.id}_treeId"
