@@ -73,7 +73,7 @@
                 <rich:fileUpload id="fileUploadForm" uploadData="#{damImportActions.uploadedFiles}"
                     maxFilesQuantity="10" immediateUpload="true"
                     locale="#{localeSelector.localeString}"
-                    ajaxSingle="true"
+                    execute="@this"
                     onadd="nuxeo.dam.disableBulkImportButton();"
                     onuploadcomplete="nuxeo.dam.enableBulkImportButton();"
                     listWidth="60%" listHeight="150px">

@@ -84,7 +84,7 @@
         action="#{damImportActions.saveNewAsset()}"
         styleClass="button" />
       <a4j:commandButton value="#{messages['command.cancel']}"
-        immediate="true" ajaxSingle="true"
+        immediate="true" execute="@this"
         action="#{damImportActions.cancelNewAsset()}"
         oncomplete="jQuery.fancybox.close()"
         styleClass="button" />
