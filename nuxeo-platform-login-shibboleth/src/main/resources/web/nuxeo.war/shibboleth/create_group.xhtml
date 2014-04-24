@@ -19,7 +19,7 @@
               value="#{messages['command.saveAndCreate']}"
               action="#{shibbGroupManagerActions.createGroup(true)}"
               styleClass="button"
-              reRender="groupsPanel,facesStatusMessagePanel">
+              render="groupsPanel,facesStatusMessagePanel">
               <nxu:actionListenerMethod value="#{editableListBean.resetAllListsCachedModels}" />
             </a4j:commandButton>
             <a4j:commandButton
@@ -27,13 +27,13 @@
               value="#{messages['command.save']}"
               action="#{shibbGroupManagerActions.createGroup}"
               styleClass="button"
-              reRender="groupsPanel,facesStatusMessagePanel">
+              render="groupsPanel,facesStatusMessagePanel">
               <nxu:actionListenerMethod value="#{editableListBean.resetAllListsCachedModels}" />
             </a4j:commandButton>
             <a4j:commandButton
               action="#{shibbGroupManagerActions.toggleShowCreateForm}" immediate="true"
               value="#{messages['command.cancel']}" styleClass="button"
-              reRender="groupsPanel" />
+              render="groupsPanel" />
           </td>
         </tr>
       </tbody>

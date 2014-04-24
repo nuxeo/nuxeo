@@ -47,7 +47,7 @@
         <a4j:commandLink
           value="#{messages['label.deputy.selectUser']}"
           action="#{deputyActions.setNewDeputy(entry['id'])}"
-          reRender="deputy_edit,deputy_search"
+          render="deputy_edit,deputy_search"
           rendered="#{empty searchLocation}" />
       </h:column>
     </h:dataTable>

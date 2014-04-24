@@ -40,7 +40,7 @@
         action="#{tokenAuthenticationActions.deleteAuthTokenBinding(value.id)}"
         onclick="if (!confirmRevokeTokenBinding()) { return false; }"
         immediate="true"
-        reRender="authTokenBindingsPanel" />
+        render="authTokenBindingsPanel" />
     </td>
   </tr>
 </c:if>

@@ -25,11 +25,11 @@
           <a4j:commandButton id="searchButton"
             value="#{messages['command.search']}"
             action="#{contentViewActions.refreshAndRewind(contentViewName)}" styleClass="button"
-            reRender="groupsPanel" />
+            render="groupsPanel" />
           <a4j:commandButton id="clearButton"
             value="#{messages['command.clearSearch']}"
             action="#{shibbGroupManagerActions.clearSearch}" styleClass="button"
-            reRender="groupsPanel" />
+            render="groupsPanel" />
           <a4j:status>
             <f:facet name="start">
               <h:graphicImage value="/img/standart_waiter.gif" />

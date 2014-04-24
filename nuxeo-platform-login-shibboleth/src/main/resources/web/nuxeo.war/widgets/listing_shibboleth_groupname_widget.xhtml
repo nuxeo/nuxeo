@@ -5,7 +5,7 @@
      xmlns:a4j="http://richfaces.org/a4j">
   <a4j:commandLink action="#{shibbGroupManagerActions.setSelectedGroup(field_0)}"
       actionListener="#{shibbGroupManagerActions.toggleShowUserOrGroup}"
-      reRender="groupsPanel">
+      render="groupsPanel">
     <h:outputText value="#{field_0}" />
   </a4j:commandLink>
 </f:subview>

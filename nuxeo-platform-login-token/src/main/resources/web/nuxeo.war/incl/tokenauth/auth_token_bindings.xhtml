@@ -49,7 +49,7 @@
         styleClass="button"
         action="#{tokenAuthenticationActions.refreshAuthTokenBindings}"
         immediate="true"
-        reRender="authTokenBindingsPanel" />
+        render="authTokenBindingsPanel" />
       <c:if test="#{!empty currentUserAuthTokenBindings}">
       <a4j:commandButton value="#{messages['label.tokenauth.revokeAll']}"
         id="#{layout.id}_deleteAllButton"
@@ -57,7 +57,7 @@
         action="#{tokenAuthenticationActions.deleteAllTokenBindings()}"
         onclick="if (!confirmRevokeAllTokenBindings()) { return false; }"
         immediate="true"
-        reRender="authTokenBindingsPanel" />
+        render="authTokenBindingsPanel" />
       </c:if>
     </h:form>
 

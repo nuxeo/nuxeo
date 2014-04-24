@@ -16,7 +16,7 @@
       <a4j:commandLink immediate="true"
         value="#{messages['command.directoryBack']}"
         action="#{shibbGroupManagerActions.toggleShowUserOrGroup}"
-        reRender="groupsPanel" />
+        render="groupsPanel" />
     </p>
   </h:form>
 
@@ -32,7 +32,7 @@
           <a4j:commandLink
             action="#{shibbGroupManagerActions.deleteGroup}"
             onclick="if (!confirmDeleteGroup()) { return false; }"
-            reRender="groupsPanel">
+            render="groupsPanel">
             <h:graphicImage value="/icons/delete.png" />
             <h:outputText value="#{messages['command.delete']}" />
           </a4j:commandLink>
@@ -47,7 +47,7 @@
       <ul>
         <li class="#{nxu:test(shibbGroupManagerActions.detailsMode == 'view', 'selected', '')}">
           <a4j:commandLink action="#{shibbGroupManagerActions.setDetailsMode('view')}"
-            immediate="true" reRender="groupDetailsPanel">
+            immediate="true" render="groupDetailsPanel">
             <h:outputText value="#{messages['label.groupManager.viewGroup']}" />
           </a4j:commandLink>
         </li>
@@ -56,7 +56,7 @@
           <li class="#{nxu:test(shibbGroupManagerActions.detailsMode == 'edit', 'selected', '')}">
             <a4j:commandLink
               action="#{shibbGroupManagerActions.setDetailsMode('edit')}" immediate="true"
-                    reRender="groupDetailsPanel">
+                    render="groupDetailsPanel">
               <h:outputText value="#{messages['label.groupManager.editGroup']}" />
             </a4j:commandLink>
           </li>
@@ -82,7 +82,7 @@
               <a4j:commandButton
                 value="#{messages['command.save']}"
                 action="#{shibbGroupManagerActions.updateGroup}"
-                styleClass="button" reRender="groupDetailsPanel,facesStatusMessagePanel" />
+                styleClass="button" render="groupDetailsPanel,facesStatusMessagePanel" />
             </td>
             <td class="fieldColumn"></td>
           </tr>
