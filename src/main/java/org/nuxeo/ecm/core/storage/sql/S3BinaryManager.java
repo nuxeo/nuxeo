@@ -172,7 +172,7 @@ public class S3BinaryManager extends CachingBinaryManager {
         String keystorePass = Framework.getProperty(KEYSTORE_PASS_KEY);
         String privkeyAlias = Framework.getProperty(PRIVKEY_ALIAS_KEY);
         String privkeyPass = Framework.getProperty(PRIVKEY_PASS_KEY);
-        String enpoint = Framework.getProperty(ENDPOINT_KEY);
+        String endpoint = Framework.getProperty(ENDPOINT_KEY);
 
         // Fallback on default env keys for ID and secret
         if (isBlank(awsID)) {
@@ -278,8 +278,8 @@ public class S3BinaryManager extends CachingBinaryManager {
                     new StaticEncryptionMaterialsProvider(encryptionMaterials),
                     clientConfiguration, cryptoConfiguration);
         }
-        if (isNotBlank(enpoint)) {
-            amazonS3.setEndpoint(enpoint);
+        if (isNotBlank(endpoint)) {
+            amazonS3.setEndpoint(endpoint);
         }
 
         try {
