@@ -400,7 +400,9 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         blobUrlBuilder.append(canonicalXPath);
         blobUrlBuilder.append("/");
         String filename = ((Blob) prop.getValue()).getFilename();
-        blobUrlBuilder.append(URIUtils.quoteURIPathComponent(filename, true));
+        if (filename != null) {
+            blobUrlBuilder.append(URIUtils.quoteURIPathComponent(filename, true));
+        }
         return blobUrlBuilder.toString();
     }
 
