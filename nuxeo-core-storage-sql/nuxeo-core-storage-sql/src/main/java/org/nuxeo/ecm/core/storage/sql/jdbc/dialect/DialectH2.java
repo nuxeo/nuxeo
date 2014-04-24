@@ -298,6 +298,10 @@ public class DialectH2 extends Dialect {
         }
         if (t instanceof SQLException) {
             String sqlState = ((SQLException) t).getSQLState();
+            if ("23001".equals(sqlState)) {
+                // Unique index or primary key violation
+                return true;
+            }
             if ("23002".equals(sqlState)) {
                 // Referential integrity constraint violation
                 return true;
