@@ -33,7 +33,7 @@
               <td class="fieldColumn">
                 <a4j:commandButton value="#{messages['label.smart.query.addToQuery']}"
                   actionListener="#{smartNXQLQueryActions.buildQueryPart}"
-                  reRender="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
+                  render="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
                   styleClass="button">
                   <a4j:actionparam name="queryPartComponentId"
                     value="#{widget.id}_smartQueryPart" />
@@ -77,7 +77,7 @@
             <a4j:outputPanel id="#{widget.id}_smartQueryUndoPanel" layout="inline">
               <a4j:commandButton value="#{messages['label.smart.query.undoChanges']}"
                 actionListener="#{smartNXQLQueryActions.undoQueryPartChanges}"
-                reRender="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
+                render="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
                 immediate="true" styleClass="button"
                 disabled="#{!smartNXQLQueryActions.canUndoQueryPartChanges}">
                 <a4j:actionparam name="queryPartComponentId"
@@ -87,7 +87,7 @@
               </a4j:commandButton>
               <a4j:commandButton value="#{messages['label.smart.query.redoChanges']}"
                 actionListener="#{smartNXQLQueryActions.redoQueryPartChanges}"
-                reRender="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
+                render="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
                 immediate="true" styleClass="button"
                 disabled="#{!smartNXQLQueryActions.canRedoQueryPartChanges}">
                 <a4j:actionparam name="queryPartComponentId"
@@ -98,7 +98,7 @@
             </a4j:outputPanel>
             <a4j:commandButton value="#{messages['label.smart.query.clearQuery']}"
               actionListener="#{smartNXQLQueryActions.clearQueryPart}"
-              reRender="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
+              render="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
               immediate="true"
               styleClass="button">
               <a4j:actionparam name="queryPartComponentId"
