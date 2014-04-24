@@ -36,7 +36,7 @@
 
             <a4j:commandButton value="#{messages['command.search']}"
               action="#{contentViewActions.resetPageProvider(contentViewName)}"
-              styleClass="button" id="searchButton" reRender="content">
+              styleClass="button" id="searchButton" render="content">
               <!-- popupDisplayed flag for preventing relation_search content view execution until search button clicked -->
               <a4j:actionparam value="true"
                 assignTo="#{relationActions.popupDisplayed}" />

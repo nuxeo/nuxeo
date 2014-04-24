@@ -13,7 +13,7 @@
 
     <a4j:poll interval="1000"
       enabled="#{systemInfo.isBinariesGCInProgress()}"
-      reRender="binariesInfos" />
+      render="binariesInfos" />
 
     <h:panelGroup rendered="#{systemInfo.isBinariesGCInProgress()}">
       <div class="processMessage running">
@@ -25,7 +25,7 @@
       <p><a4j:commandButton
         value="#{messages['adminsubtab.sysinfo.binariesinfo.start']}"
         action="#{systemInfo.startBinariesGC()}"
-        reRender="binariesInfos"
+        render="binariesInfos"
         styleClass="button" /></p>
       <p><h:selectBooleanCheckbox
         value="#{systemInfo.binariesGCDelete}">

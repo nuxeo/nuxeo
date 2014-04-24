@@ -43,7 +43,7 @@
           </nxd:restDocumentLink> <a4j:commandLink immediate="true"
             rendered="#{collectionActions.canRemoveFromCollection(collection)}"
             actionListener="#{collectionActions.removeCurrentDocumentFromCollection}"
-            reRender="documentViewPanel" bypassUpdates="true"
+            render="documentViewPanel" bypassUpdates="true"
             ajaxSingle="true">
             <h:graphicImage value="/icons/action_tag_delete.png"
               alt="#{messages['label.addToCollection.multiple.remove']}"
@@ -57,7 +57,7 @@
     <div>
       <a4j:commandLink value="#{messages['label.collection.seeAll']}"
         action="#{currentDocumentCollection.setDisplayAll(true)}"
-        reRender="collections" bypassUpdates="true"
+        render="collections" bypassUpdates="true"
         rendered="#{!currentDocumentCollection.displayAll}"
         ajaxSingle="true" />
     </div>

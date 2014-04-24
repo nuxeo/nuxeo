@@ -21,14 +21,14 @@
 
       <div class="slideShowControl">
     <a4j:poll interval="#{currentDocument.picturebook.timeinterval * 1000}"
-      reRender="slideshow,slideshowPoll" action="#{slideShowManager.incIndex}"
+      render="slideshow,slideshowPoll" action="#{slideShowManager.incIndex}"
       rendered="#{(slideShowManager.childrenSize >slideShowManager.index or slideShowManager.repeat) and !slideShowManager.stopped }" />
 
     <a4j:commandButton image="icons/control_start_blue.png"
-      action="#{slideShowManager.firstPic}" reRender="slideshow,slideshowPoll"
+      action="#{slideShowManager.firstPic}" render="slideshow,slideshowPoll"
       disabled="#{slideShowManager.index == 1}" />
     <a4j:commandButton image="icons/control_rewind_blue.png"
-      action="#{slideShowManager.decIndex}"  reRender="slideshow,slideshowPoll"
+      action="#{slideShowManager.decIndex}"  render="slideshow,slideshowPoll"
       disabled="#{slideShowManager.index == 1}" />
      <h:inputText value="#{slideShowManager.index}" size="7"
       styleClass="indexPicture">
@@ -36,29 +36,29 @@
         listener="#{slideShowManager.inputValidation}" />
     </h:inputText>
     <a4j:commandButton image="icons/control_fastforward_blue.png"
-      action="#{slideShowManager.incIndex}"  reRender="slideshow,slideshowPoll"
+      action="#{slideShowManager.incIndex}"  render="slideshow,slideshowPoll"
       disabled="#{slideShowManager.childrenSize == slideShowManager.index}" />
     <a4j:commandButton image="icons/control_end_blue.png"
-      action="#{slideShowManager.lastPic}"  reRender="slideshow,slideshowPoll"
+      action="#{slideShowManager.lastPic}"  render="slideshow,slideshowPoll"
       disabled="#{slideShowManager.childrenSize  == slideShowManager.index}" />
 
 
       <span>
 
   <a4j:commandButton  image="icons/control_pause_blue.png"
-      action="#{slideShowManager.togglePause}" rendered="#{!slideShowManager.stopped}" reRender="slideshowPoll" />
+      action="#{slideShowManager.togglePause}" rendered="#{!slideShowManager.stopped}" render="slideshowPoll" />
 
    <a4j:commandButton  image="icons/control_play_blue.png"
-      action="#{slideShowManager.start}" rendered="#{slideShowManager.stopped}"  reRender="slideshowPoll" />
+      action="#{slideShowManager.start}" rendered="#{slideShowManager.stopped}"  render="slideshowPoll" />
 
    <a4j:commandButton  image="icons/control_stop_blue.png"
-      action="#{slideShowManager.stop}"  reRender="slideshow,slideshowPoll" />
+      action="#{slideShowManager.stop}"  render="slideshow,slideshowPoll" />
 
    <a4j:commandButton  image="icons/control_repeat_blue.png"
-      action="#{slideShowManager.toggleRepeat}" rendered="#{slideShowManager.repeat}"  reRender="slideshowPoll" />
+      action="#{slideShowManager.toggleRepeat}" rendered="#{slideShowManager.repeat}"  render="slideshowPoll" />
 
    <a4j:commandButton  image="icons/control_repeat_disabled.png"
-      action="#{slideShowManager.toggleRepeat}" rendered="#{!slideShowManager.repeat}"  reRender="slideshowPoll" />
+      action="#{slideShowManager.toggleRepeat}" rendered="#{!slideShowManager.repeat}"  render="slideshowPoll" />
 
         <h:outputText value="#{slideShowManager.index}/#{slideShowManager.childrenSize}" />
       </span>

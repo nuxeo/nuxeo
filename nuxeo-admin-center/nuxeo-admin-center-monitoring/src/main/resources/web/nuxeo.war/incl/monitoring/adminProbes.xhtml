@@ -76,7 +76,7 @@
       <f:facet name="header"><h:outputText value="#{messages['label.monitoring.probe.action']}" />
       </f:facet>
       <h:form>
-        <a4j:commandLink  action="#{monitoringAction.runProbe()}" reRender="probesTable" styleClass="button">
+        <a4j:commandLink  action="#{monitoringAction.runProbe()}" render="probesTable" styleClass="button">
         <h:outputText value="#{messages['action.monitoring.runProbe']}" />
             <f:param name="probeName" value="#{probe.shortcutName}" />
          </a4j:commandLink>

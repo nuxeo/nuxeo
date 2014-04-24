@@ -17,7 +17,7 @@
             itemValue="#{itype.value}" itemLabel="#{messages[itype.label]}" />
         </h:selectOneListbox>
         <div style="display: none;">
-          <a4j:commandButton value="submit" reRender="connectAppListing"
+          <a4j:commandButton value="submit" render="connectAppListing"
             styleClass="button" />
         </div>
       </h:form>
@@ -29,14 +29,14 @@
         </h:selectBooleanCheckbox>
         <h:outputLabel for="platformFilter" value="#{messages['label.appcenter.platform.filter']}" />
         <div style="display: none;">
-          <a4j:commandButton value="submit" reRender="connectAppListing"
+          <a4j:commandButton value="submit" render="connectAppListing"
             styleClass="button" />
         </div>
       </h:form>
       <h:form>
         <a4j:commandButton value="#{messages['admCommand.refresh']}"
           actionListener="#{appsViews.flushCache()}"
-          reRender="connectAppListing" styleClass="button" />
+          render="connectAppListing" styleClass="button" />
       </h:form>
 
     </div>

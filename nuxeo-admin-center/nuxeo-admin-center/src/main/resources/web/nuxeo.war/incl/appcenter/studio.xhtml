@@ -173,7 +173,7 @@
                 value="#{messages['label.setup.nuxeo.org.nuxeo.dev.disableDevMode']}"
                 action="#{appsViews.setDevMode(false)}"
                 styleClass="button"
-                reRender="connectAppListing" />
+                render="connectAppListing" />
             </c:if>
             <c:if test="#{not nxDevModeSet}">
               <h:outputText value="#{messages['label.setup.nuxeo.org.nuxeo.dev.modeOff']}"/>
@@ -182,7 +182,7 @@
                 value="#{messages['label.setup.nuxeo.org.nuxeo.dev.activateDevMode']}"
                 action="#{appsViews.setDevMode(true)}"
                 styleClass="button"
-                reRender="connectAppListing" />
+                render="connectAppListing" />
             </c:if>
             <h:outputText value="#{messages['label.setup.nuxeo.org.nuxeo.dev.restartWarning']}"/>
             <h:message
@@ -210,7 +210,7 @@
         <a4j:commandButton
           value="#{messages['admCommand.studio.refresh']}"
           actionListener="#{appsViews.flushCache()}"
-          reRender="connectAppListing"
+          render="connectAppListing"
           styleClass="button" />
         <h:outputText value="#{messages['label.studio.refresh']}" />
       </h:form>

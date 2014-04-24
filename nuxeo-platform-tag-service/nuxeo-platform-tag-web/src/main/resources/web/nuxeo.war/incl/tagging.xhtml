@@ -33,7 +33,7 @@
 
         <nxu:column>
            <a4j:commandLink id="removeTag" action="#{tagActions.removeTagging(tag.label)}" immediate="true"
-             reRender="tag_message_banner, taggingPanel, MultiTreeView"
+             render="tag_message_banner, taggingPanel, MultiTreeView"
              rendered="#{tagActions.canModifyTag(tag)}">
              <h:graphicImage value="/icons/delete_red.png" />
            </a4j:commandLink>
@@ -43,7 +43,7 @@
 
       <a4j:commandLink id="addTagLink"
         ajaxSingle="true" actionListener="#{tagActions.showAddTag}"
-        reRender="tag_message_banner, taggingPanel">
+        render="tag_message_banner, taggingPanel">
         <h:graphicImage id="toggle_plus" url="/icons/action_add.gif" />
         <h:outputText value="#{messages['command.tag.add.new.tag']} "/>
       </a4j:commandLink>
@@ -60,7 +60,7 @@
           <a4j:commandButton value="#{messages['command.tag.add.new.tag']}"
             id="tagLabelAddButton"
             action="#{tagActions.addTagging}" styleClass="button"
-            reRender="tag_message_banner, taggingPanel, MultiTreeView" />
+            render="tag_message_banner, taggingPanel, MultiTreeView" />
           <a4j:status>
             <f:facet name="start">
               <h:graphicImage value="/img/standart_waiter.gif" />

@@ -55,7 +55,7 @@
       </f:facet>
 
      <h:form>
-        <a4j:commandButton  value="#{messages['action.monitoring.edit']}" action="#{monitoringAction.editStatus()}" reRender="admStatusPanel" styleClass="button">
+        <a4j:commandButton  value="#{messages['action.monitoring.edit']}" action="#{monitoringAction.editStatus()}" render="admStatusPanel" styleClass="button">
             <f:param name="serviceIdentifier" value="#{status.serviceIdentifier}" />
         </a4j:commandButton>
      </h:form>
@@ -111,8 +111,8 @@
         </tr>
       </table>
 
-      <a4j:commandButton  value="#{messages['action.monitoring.save']}" action="#{monitoringAction.saveStatus()}" reRender="admStatusPanel" styleClass="button" />
-      <a4j:commandButton  value="#{messages['action.monitoring.cancel']}" action="#{monitoringAction.cancelEdit()}" reRender="admStatusPanel" styleClass="button" />
+      <a4j:commandButton  value="#{messages['action.monitoring.save']}" action="#{monitoringAction.saveStatus()}" render="admStatusPanel" styleClass="button" />
+      <a4j:commandButton  value="#{messages['action.monitoring.cancel']}" action="#{monitoringAction.cancelEdit()}" render="admStatusPanel" styleClass="button" />
 
     </h:form>
   </h:panelGroup>

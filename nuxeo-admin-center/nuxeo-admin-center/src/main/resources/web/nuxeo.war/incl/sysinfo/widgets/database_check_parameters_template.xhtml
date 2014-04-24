@@ -14,7 +14,7 @@
       <f:attribute name="dbPortInputId" value="#{layout.widgetMap['dbPort'].id}" />
     </h:inputHidden>
     <a4j:commandButton value="#{messages['label.setup.database.check.button']}"
-      reRender="nxw_database_ajax_decorator_subPanel" bypassUpdates="true" styleClass="button" />
+      render="nxw_database_ajax_decorator_subPanel" bypassUpdates="true" styleClass="button" />
     <h:message for="#{widget.id}" styleClass="processMessage completeInfo" errorClass="errorMessage" />
   </c:if>
 

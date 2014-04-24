@@ -21,7 +21,7 @@
           itemStyleClass="#{nxu:test(multiNavTreeManager.selectedNavigationTree == tree.treeId, 'selected', '')}">
           <a4j:commandLink id="virtualNavTreeLink"
             action="#{multiNavTreeManager.setSelectedNavigationTree(tree.treeId)}"
-            reRender="MultiTreeView">
+            render="MultiTreeView">
             <nxu:graphicImage value="/img/#{tree.treeId}.png"
               title="#{messages[tree.treeLabel]}"
               styleClass="smallIcon tipsyShow tipsyGravitySW" />

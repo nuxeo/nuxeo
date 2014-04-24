@@ -50,7 +50,7 @@
               </script>
               <a4j:jsFunction name="a4jLink#{status.index}"
                 action="#{documentListingActions.checkCurrentDocAndProcessSelectRow(row.data.ref, contentView.name, contentView.selectionListName, row.selected, currentDocument.ref)}"
-                reRender="ajax_selection_buttons" />
+                render="ajax_selection_buttons" />
               <div id="docRefDiv:#{row.data.ref}" style="display: none;" >
                 <h:selectBooleanCheckbox value="#{row.selected}"  />
               </div>

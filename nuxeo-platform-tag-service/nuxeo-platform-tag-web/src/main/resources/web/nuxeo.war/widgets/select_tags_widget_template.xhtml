@@ -89,7 +89,7 @@
               <h:outputText value="#{model.rowData}" />
               <a4j:commandLink immediate="true"
                   actionListener="#{editableListBean.performAction}"
-                  id="#{widget.id}_delete" reRender="#{widget.id}_panel"
+                  id="#{widget.id}_delete" render="#{widget.id}_panel"
                   bypassUpdates="true">
                 <h:graphicImage value="/icons/action_tag_delete.png" />
                 <f:param name="for" value="#{widget.id}_list" />

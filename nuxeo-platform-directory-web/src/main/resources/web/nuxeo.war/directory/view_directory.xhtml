@@ -28,7 +28,7 @@
       <h:form id="showHideAddDirectoryEntry">
         <h4>
           <a4j:commandLink
-            action="#{directoryUIActions.toggleShowAddForm}" reRender="addDirectoryEntryPanel">
+            action="#{directoryUIActions.toggleShowAddForm}" render="addDirectoryEntryPanel">
             <h:graphicImage url="/icons/toggle_plus.png"
               rendered="#{!directoryUIActions.showAddForm}" />
             <h:graphicImage url="/icons/toggle_minus.png"
@@ -65,13 +65,13 @@
               id="editDirectoryEntryButton"
               styleClass="button"
               action="#{directoryUIActions.editSelectedDirectoryEntry}"
-              reRender="viewDirectoryPanel" />
+              render="viewDirectoryPanel" />
             <a4j:commandButton value="#{messages['command.cancel']}"
               id="cancelEditingDirectoryEntryButton"
               styleClass="button"
               action="#{directoryUIActions.resetSelectedDirectoryEntry}"
               immediate="true"
-              reRender="viewDirectoryPanel" />
+              render="viewDirectoryPanel" />
           </div>
 
         </h:form>

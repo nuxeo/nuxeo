@@ -81,7 +81,7 @@
               <f:facet name="header">
                 <h:outputText value="#{messages['label.action']}" />
               </f:facet>
-              <a4j:commandLink value="#{messages['label.security.addUsername']}" action="#{principalListManager.addToSelectedUsers(entry['id'])}" reRender="selectedUsersAndGroups"/>
+              <a4j:commandLink value="#{messages['label.security.addUsername']}" action="#{principalListManager.addToSelectedUsers(entry['id'])}" render="selectedUsersAndGroups"/>
             </h:column>
         </h:dataTable>
         <br/>
@@ -110,7 +110,7 @@
           <f:facet name="header">
             <h:outputText value="#{messages['label.action']}" />
           </f:facet>
-          <a4j:commandLink value="#{messages['label.security.delUsername']}" action="#{principalListManager.removeFromSelectedUsers(user)}" reRender="selectedUsersAndGroups"/>
+          <a4j:commandLink value="#{messages['label.security.delUsername']}" action="#{principalListManager.removeFromSelectedUsers(user)}" render="selectedUsersAndGroups"/>
         </h:column>
         </h:dataTable>
         <br/>
@@ -122,7 +122,7 @@
           rendered="#{!principalListManager.selectedUserListEmpty}"
             styleClass="button rightsAddButton"
             action="#{principalListManager.resetSelectedUserList}"
-            reRender="selectedUsersAndGroups"
+            render="selectedUsersAndGroups"
             />
 
     </h:panelGroup>

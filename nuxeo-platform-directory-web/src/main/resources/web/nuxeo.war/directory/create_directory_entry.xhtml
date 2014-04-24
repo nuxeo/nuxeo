@@ -23,12 +23,12 @@
         <a4j:commandButton value="#{messages['command.create']}"
           styleClass="button"
           action="#{directoryUIActions.createDirectoryEntry}"
-          reRender="viewDirectoryPanel" />
+          render="viewDirectoryPanel" />
         <a4j:commandButton value="#{messages['command.cancel']}"
           styleClass="button"
           action="#{directoryUIActions.resetCreateDirectoryEntry}"
           immediate="true"
-          reRender="viewDirectoryPanel" />
+          render="viewDirectoryPanel" />
       </div>
 
     </div>

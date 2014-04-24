@@ -40,7 +40,7 @@
             <a4j:commandLink id="#{widget.id}_removeTag"
               action="#{tagActions.removeTagging(model.rowData.label)}"
               immediate="true"
-              reRender="#{nxl:joinReRender(outputPanelId, ajaxReRender)}"
+              render="#{nxl:joinReRender(outputPanelId, ajaxReRender)}"
               rendered="#{tagActions.canModifyTag(model.rowData)}">
               <h:graphicImage value="/icons/action_tag_delete.png" />
             </a4j:commandLink>

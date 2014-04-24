@@ -20,7 +20,7 @@
   <p>
     <h:form id="repoInfoForm">
 
-     <a4j:poll interval="1000" enabled="#{systemInfo.isStatInfoInProgress()}" reRender="repoInfos"/>
+     <a4j:poll interval="1000" enabled="#{systemInfo.isStatInfoInProgress()}" render="repoInfos"/>
 
      <h:panelGroup rendered="#{systemInfo.isStatInfoInProgress()}">
        <div class="processMessage running"><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.computing']}" /> </div>
@@ -28,7 +28,7 @@
 
      <h:panelGroup rendered="#{!systemInfo.isStatInfoInProgress()}">
 
-        <a4j:commandButton value="#{messages['adminsubtab.sysinfo.repostat.compute.statistics']}"  action="#{systemInfo.startRepoStats()}" reRender="repoInfos" styleClass="button" />
+        <a4j:commandButton value="#{messages['adminsubtab.sysinfo.repostat.compute.statistics']}"  action="#{systemInfo.startRepoStats()}" render="repoInfos" styleClass="button" />
 
      </h:panelGroup>
     </h:form>

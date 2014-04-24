@@ -23,7 +23,7 @@
                                var="root"
                                itemValue="#{root.id}"
                                itemLabel="#{root.dublincore.title} (#{adminPublishActions.getDomainNameFor(root)})"/>
-              <a4j:ajax event="change" reRender="sectionTree sectionList" />
+              <a4j:ajax event="change" render="sectionTree sectionList" />
 		<a4j:attachQueue ignoreDupResponses="true" />
               </a4j:ajax>
             </h:selectOneListbox>
@@ -53,7 +53,7 @@
                       <a4j:commandLink immediate="true"
                                        rendered="#{canAddSection}"
                                        action="#{adminPublishActions.addSection(node.document.id)}"
-                                       reRender="sectionList">
+                                       render="sectionList">
                         <h:graphicImage value="/icons/back.png"/>
                         <h:outputText
                                 value="#{messages['label.publish.add.section']}"/>
@@ -82,7 +82,7 @@
             <nxu:column styleClass="iconColumn">
               <a4j:commandLink immediate="true"
                                action="#{adminPublishActions.removeSection(section.id)}"
-                               reRender="sectionList"
+                               render="sectionList"
                                ignoreDupResponses="true">
                 <h:graphicImage value="/icons/delete.png"/>
               </a4j:commandLink>

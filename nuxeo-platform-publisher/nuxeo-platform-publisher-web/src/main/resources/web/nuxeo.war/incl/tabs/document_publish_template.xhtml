@@ -62,7 +62,7 @@
                     <a4j:commandLink immediate="true"
                       action="#{publishActions.doPublish(node)}"
                       rendered="#{publishActions.canPublishTo(node)}"
-                      reRender="publishingInfoList,facesStatusMessagePanel"
+                      render="publishingInfoList,facesStatusMessagePanel"
                       id="publishCommandLink">
                       <h:graphicImage value="/icons/back.png" />
                       <h:outputText
@@ -142,13 +142,13 @@
               value="#{messages['command.document.unpublish']}"
               action="#{publishActions.unPublish(publishedDocument)}"
               rendered="#{publishActions.canUnpublish(publishedDocument)}"
-              reRender="publishingInfoList" ignoreDupResponses="true">
+              render="publishingInfoList" ignoreDupResponses="true">
             </a4j:commandLink>
             <a4j:commandLink immediate="true" styleClass="button"
               value="#{messages['command.document.republish']}"
               action="#{publishActions.rePublish(publishedDocument)}"
               rendered="#{publishActions.canRepublish(publishedDocument)}"
-              reRender="publishingInfoList" ignoreDupResponses="true">
+              render="publishingInfoList" ignoreDupResponses="true">
             </a4j:commandLink>
           </h:column>
         </nxu:dataTable>

@@ -46,7 +46,7 @@
           styleClass="button"
           action="#{directoryUIActions.selectDirectoryEntry(value.id)}"
           immediate="true"
-          reRender="editDirectoryEntryPanel" />
+          render="editDirectoryEntryPanel" />
       </td>
       <td class="fieldColumn">
         <a4j:commandButton value="#{messages['command.delete']}"
@@ -55,7 +55,7 @@
           action="#{directoryUIActions.deleteDirectoryEntry(value.id)}"
           onclick="if (!confirmDeleteDirectoryEntry()) { return false; }"
           immediate="true"
-          reRender="viewDirectoryPanel" />
+          render="viewDirectoryPanel" />
       </td>
     </c:if>
 
@@ -80,7 +80,7 @@
             styleClass="button"
             action="#{directoryUIActions.selectDirectoryEntry(value.id)}"
             immediate="true"
-            reRender="editDirectoryEntryPanel" />
+            render="editDirectoryEntryPanel" />
         </td>
         <td class="fieldColumn">
           <a4j:commandButton value="#{messages['command.delete']}"
@@ -89,7 +89,7 @@
             action="#{directoryUIActions.deleteDirectoryEntry(value.id)}"
             onclick="if (!confirmDeleteDirectoryEntry()) { return false; }"
             immediate="true"
-            reRender="viewDirectoryPanel" />
+            render="viewDirectoryPanel" />
         </td>
       </c:if>
   </tr>

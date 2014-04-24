@@ -25,7 +25,7 @@
 
   <nxu:set var="setupLayoutMode" value="#{nxu:test(setupConfigurable, 'edit', 'view')}">
 
-    <h:form id="setupForm" ajaxSubmit="true" reRender="setupPanel">
+    <h:form id="setupForm" ajaxSubmit="true" render="setupPanel">
 
       <nxl:layout name="admin_setup_main"
         mode="#{setupLayoutMode}" value="#{setupParams}" />
@@ -49,7 +49,7 @@
             <a4j:commandButton value="#{messages['action.setup.cancel']}"
               action="#{setupWizardAction.resetParameters()}"
               immediate="true"
-              reRender="setupPanel" styleClass="button" />
+              render="setupPanel" styleClass="button" />
             <a4j:status>
               <f:facet name="start">
                 <h:graphicImage value="/img/standart_waiter.gif" />
@@ -70,7 +70,7 @@
             <f:subview>
               <a4j:commandButton
                 value="#{messages['adminsubtab.sysinfo.advancedsetup']}"
-                reRender="advancedParams_panel"
+                render="advancedParams_panel"
                 immediate="true"
                 styleClass="button">
                 <f:setPropertyActionListener
@@ -99,7 +99,7 @@
                 <f:subview>
                   <a4j:commandButton
                     value="#{messages['adminsubtab.sysinfo.advancedsetup.close']}"
-                    reRender="advancedParams_panel"
+                    render="advancedParams_panel"
                     immediate="true"
                     styleClass="button">
                     <f:setPropertyActionListener
@@ -140,7 +140,7 @@
                   <a4j:commandButton value="#{messages['action.setup.cancel']}"
                     action="#{setupWizardAction.resetParameters()}"
                     immediate="true"
-                    reRender="setupPanel" styleClass="button" />
+                    render="setupPanel" styleClass="button" />
                   <a4j:status>
                     <f:facet name="start">
                       <h:graphicImage value="/img/standart_waiter.gif" />

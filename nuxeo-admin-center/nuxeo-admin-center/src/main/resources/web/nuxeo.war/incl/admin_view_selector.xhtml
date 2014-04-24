@@ -12,7 +12,7 @@
       <c:if test="false">
         <a4j:commandLink id="item"
           action="#{adminViews.setCurrentViewId(adminTab.id)}"
-          immediate="true" reRender="admin_divtab">
+          immediate="true" render="admin_divtab">
           <h:outputText value="#{messages[adminTab.label]}" />
         </a4j:commandLink>
       </c:if>

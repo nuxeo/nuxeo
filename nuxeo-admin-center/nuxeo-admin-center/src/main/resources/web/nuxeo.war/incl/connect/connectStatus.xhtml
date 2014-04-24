@@ -57,7 +57,7 @@
                       </script>
 
                       <a4j:form>
-                        <a4j:jsFunction name="registerInstanceCallback" reRender="connectStatusPanel">
+                        <a4j:jsFunction name="registerInstanceCallback" render="connectStatusPanel">
                           <a4j:actionparam name="param1" assignTo="#{connectStatus.token}"  />
                         </a4j:jsFunction>
                       </a4j:form>
@@ -126,7 +126,7 @@
                             value="#{messages['action.connect.register']}"
                             styleClass="button"
                             action="#{connectStatus.localRegister}"
-                            reRender="connectStatusPanel" />
+                            render="connectStatusPanel" />
                       </p>
                     </div>
                   </div>
@@ -177,7 +177,7 @@
                 <a4j:commandButton
                   value="#{messages['action.connect.refreshStatus']}"
                   styleClass="button" action="#{connectStatus.refreshStatus}"
-                  reRender="connectStatusPanel" />
+                  render="connectStatusPanel" />
               </h:form></td>
           </tr>
           <tr>
@@ -199,7 +199,7 @@
                 <a4j:commandButton
                   value="#{messages['action.connect.unregister']}"
                   styleClass="button" action="#{connectStatus.unregister}"
-                  reRender="connectStatusPanel" />
+                  render="connectStatusPanel" />
               </h:form></td>
           </tr>
         </table>
@@ -213,7 +213,7 @@
           <h:outputText value="&#160;" />
           <a4j:commandButton value="#{messages['action.connect.refreshStatus']}"
             styleClass="button" action="#{connectStatus.refreshStatus}"
-            reRender="connectStatusPanel" />
+            render="connectStatusPanel" />
         </h:form>
         <c:if test="#{connectStatus.status.isSecurityError()}">
           <h:outputText value="#{messages['label.nuxeo.connect.securityError']}" />
@@ -230,7 +230,7 @@
           <h:outputText value="&#160;" />
           <a4j:commandButton value="#{messages['action.connect.unregister']}"
             styleClass="button" action="#{connectStatus.unregister}"
-            reRender="connectStatusPanel" />
+            render="connectStatusPanel" />
         </h:form>
       </c:if>
 
