@@ -7,7 +7,7 @@
     <nxu:dataList layout="unorderedList" var="userCenterSubTab" value="#{userCenterViews.availableSubActions}"
       itemStyleClass="#{nxu:test(userCenterViews.currentSubViewId == userCenterSubTab.id, 'selected', '')}">
 
-      <a4j:commandLink action="#{userCenterViews.setCurrentSubViewId(userCenterSubTab.id)}" immediate="true" reRender="user_center_subtab">
+      <a4j:commandLink action="#{userCenterViews.setCurrentSubViewId(userCenterSubTab.id)}" immediate="true" render="user_center_subtab">
         <h:outputText value="#{messages[userCenterSubTab.label]}" />
       </a4j:commandLink>
 

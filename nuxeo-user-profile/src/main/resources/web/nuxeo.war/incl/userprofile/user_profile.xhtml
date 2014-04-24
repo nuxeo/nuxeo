@@ -20,7 +20,7 @@
                         action="#{userProfileActions.setMode('edit')}"
                         immediate="#{action.immediate}"
                         rendered="#{userProfileActions.mode == 'view'}"
-                        reRender="profilePanel">
+                        render="profilePanel">
                         <h:outputText value="#{messages['label.userManager.editUser']}" />
                    </a4j:commandLink>
                  </li>
@@ -29,7 +29,7 @@
                       action="#{userProfileActions.setMode('editPassword')}"
                       immediate="#{action.immediate}"
                       rendered="#{userProfileActions.mode == 'view' and userProfileActions.canEdit}"
-                      reRender="profilePanel">
+                      render="profilePanel">
                       <h:outputText value="#{messages['command.change.password']}" />
                    </a4j:commandLink>
                  </li>
@@ -92,7 +92,7 @@
                   action="#{userManagementActions.changePassword}"
                   styleClass="button"
                   rendered="#{userProfileActions.canEdit}"
-                  reRender="profilePanel"/>
+                  render="profilePanel"/>
                 <h:commandButton
                   value="#{messages['command.cancel']}"
                   actionListener="#{editableListBean.resetAllListsCachedModels}"
@@ -100,7 +100,7 @@
                   immediate="true"
                   styleClass="button" id="viewUserButton"
                   rendered="#{userProfileActions.mode != 'view'}"
-                  reRender="profilePanel" />
+                  render="profilePanel" />
               </td>
             </tr>
           </tbody>

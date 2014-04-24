@@ -9,7 +9,7 @@
       itemStyleClass="#{nxu:test(userCenterViews.currentViewId == userCenterTab.id, 'selected', '')}">
 
       <c:if test="false">
-      <a4j:commandLink action="#{userCenterViews.setCurrentViewId(userCenterTab.id)}" immediate="true" reRender="user_center_divtab">
+      <a4j:commandLink action="#{userCenterViews.setCurrentViewId(userCenterTab.id)}" immediate="true" render="user_center_divtab">
         <h:outputText value="#{messages[userCenterTab.label]}" />
       </a4j:commandLink>
       </c:if>

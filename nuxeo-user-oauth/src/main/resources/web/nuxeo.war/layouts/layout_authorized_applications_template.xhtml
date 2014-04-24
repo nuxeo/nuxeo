@@ -34,7 +34,7 @@
     </nxl:layoutRow>
       <td class="fieldColumn">
         <a4j:commandLink action="#{authorizedApplicationsActions.revokeAccess(value.id)}"
-          immediate="true" reRender="authorizedApplicationsPanel"
+          immediate="true" render="authorizedApplicationsPanel"
           styleClass="action">
           <h:outputText value="#{messages['command.revokeAccess']}"/>
         </a4j:commandLink>
@@ -55,7 +55,7 @@
     </nxl:layoutRow>
       <td class="fieldColumn">
         <a4j:commandLink action="#{authorizedApplicationsActions.revokeAccess(value.id)}"
-          immediate="true" reRender="authorizedApplicationsPanel"
+          immediate="true" render="authorizedApplicationsPanel"
           styleClass="action">
           <h:outputText value="#{messages['command.revokeAccess']}"/>
         </a4j:commandLink>
