@@ -21,13 +21,13 @@
     <a4j:commandButton action="#{provider.rewind}"
                      alt="#{messages['command.navigation.rewind']}"
                      image="/icons/navigation_first.png"
-                     reRender="#{contentIdToBeReRendered}" >
+                     render="#{contentIdToBeReRendered}" >
       <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
     </a4j:commandButton>
     <a4j:commandButton action="#{provider.previous}"
                      alt="#{messages['command.navigation.previous']}"
                      image="/icons/navigation_previous.png"
-                     reRender="#{contentIdToBeReRendered}" >
+                     render="#{contentIdToBeReRendered}" >
       <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
     </a4j:commandButton>
 
@@ -39,14 +39,14 @@
     <a4j:commandButton action="#{provider.next}"
                      alt="#{messages['command.navigation.next']}"
                      image="/icons/navigation_next.png"
-                     reRender="#{contentIdToBeReRendered}" >
+                     render="#{contentIdToBeReRendered}" >
       <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
     </a4j:commandButton>
 
     <a4j:commandButton action="#{provider.last}"
                      alt="#{messages['command.navigation.fastforward']}"
                      image="/icons/navigation_last.png"
-                     reRender="#{contentIdToBeReRendered}" >
+                     render="#{contentIdToBeReRendered}" >
       <f:attribute name="disabled" value="#{not provider.lastPageAvailable}"/>
     </a4j:commandButton>
 

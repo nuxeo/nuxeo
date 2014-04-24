@@ -94,7 +94,7 @@
             <a4j:commandLink immediate="true"
               id="#{widget.id}_linkId"
               actionListener="#{treeWidgetActions.setUIInputValue}"
-              styleClass="treeLink" reRender="#{widget.id}_inputId">
+              styleClass="treeLink" render="#{widget.id}_inputId">
               <f:param name="selectionInputId" value="#{widget.id}_input" />
               <f:param name="selectedPath" value="#{node.path}" />
               <h:outputText value="#{nxd:titleOrId(node.document)}" />

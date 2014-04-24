@@ -34,7 +34,7 @@ Templating zone to define:
       <h:form id="#{formId}" ajaxSubmit="true"
         ignoreDupResponses="true"
         eventsQueue="#{nxu:test(empty eventsQueueId, defaultEventsId, eventsQueueId)}"
-        reRender="#{reRender}"
+        render="#{reRender}"
         styleClass="#{formStyleClass}"
         onsubmit="removeAllTinyMCEEditors(); return true;">
         <ui:insert name="form_template_content" />

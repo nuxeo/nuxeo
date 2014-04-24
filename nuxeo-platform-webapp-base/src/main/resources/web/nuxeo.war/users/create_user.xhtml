@@ -45,13 +45,13 @@
                 value="#{messages['command.saveAndInvite']}"
                 action="#{userManagementActions.inviteUser(true)}"
                 styleClass="button"
-                reRender="usersPanel,facesStatusMessagePanel" />
+                render="usersPanel,facesStatusMessagePanel" />
               <a4j:commandButton
                 id="button_invite"
                 value="#{messages['command.invite']}"
                 action="#{userManagementActions.inviteUser(false)}"
                 styleClass="button"
-                reRender="usersPanel,facesStatusMessagePanel" />
+                render="usersPanel,facesStatusMessagePanel" />
             </c:if>
             <c:if test="#{userManagementActions.immediateCreation}">
               <a4j:commandButton
@@ -59,18 +59,18 @@
                 value="#{messages['command.saveAndCreate']}"
                 action="#{userManagementActions.createUser(true)}"
                 styleClass="button"
-                reRender="usersPanel,facesStatusMessagePanel" />
+                render="usersPanel,facesStatusMessagePanel" />
               <a4j:commandButton
                 id="button_save"
                 value="#{messages['command.save']}"
                 action="#{userManagementActions.createUser}"
                 styleClass="button"
-                reRender="usersPanel,facesStatusMessagePanel" />
+                render="usersPanel,facesStatusMessagePanel" />
             </c:if>
             <a4j:commandButton
               action="#{userManagementActions.toggleShowCreateForm}" immediate="true"
               value="#{messages['command.cancel']}" styleClass="button"
-              reRender="usersPanel" />
+              render="usersPanel" />
           </td>
         </tr>
       </tbody>

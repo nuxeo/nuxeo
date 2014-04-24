@@ -105,7 +105,7 @@
               <a4j:commandLink
                 id="#{widget.id}_header_cancelToggleAction"
                 immediate="true"
-                reRender="#{widget.id}_regionPanel"
+                render="#{widget.id}_regionPanel"
                 styleClass="button smallButton action #{widgetProperty_actionStyleClass}"
                 value="#{cancelActionLabel}">
                 <f:param name="valueHolderId"
@@ -165,7 +165,7 @@
                 id="#{widget.id}_toggledForm"
                 ajaxSubmit="true"
                 ignoreDupResponses="true"
-                reRender="#{widget.id}_regionPanel"
+                render="#{widget.id}_regionPanel"
                 selfRendered="true"
                 onsubmit="onSubmitToggledForm(); return true;"
                 styleClass="safeEditEnabled">

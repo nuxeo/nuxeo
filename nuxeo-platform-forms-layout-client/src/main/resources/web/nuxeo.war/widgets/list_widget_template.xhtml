@@ -221,7 +221,7 @@
     <c:if test="#{isEditMode and not widgetProperty_hideAddButton}">
       <a4j:commandLink immediate="true"
         actionListener="#{editableListBean.performAction}"
-        reRender="#{widget.id}_panel"
+        render="#{widget.id}_panel"
         id="#{widget.id}_add"
         styleClass="button smallButton listWidgetActionAdd">
         <f:param name="for" value="#{widget.id}_input" />

@@ -68,7 +68,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.removeFromSelection}"
                 id="#{layout.id}_removeFormSelection"
-                reRender="#{layout.id}_panel"
+                render="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>
                 <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
@@ -82,7 +82,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.addToSelection}"
                 id="#{layout.id}_addToSelection"
-                reRender="#{layout.id}_panel"
+                render="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>           
                 <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
@@ -96,7 +96,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.addAllToSelection}"
                 id="#{layout.id}_addAllToSelection"
-                reRender="#{layout.id}_panel"
+                render="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>
                 <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
@@ -110,7 +110,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.removeAllFromSelection}"
                 id="#{layout.id}_removeAllFromSelection"
-                reRender="#{layout.id}_panel"
+                render="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="leftSelect" value="#{layout.id}_sourceSelect"/>
                 <f:param name="leftItems" value="#{layout.id}_sourceItems"/>
@@ -149,7 +149,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedFirst}"
                 id="#{layout.id}_shiftSelectedFirst"
-                reRender="#{layout.id}_panel"
+                render="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
@@ -161,7 +161,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedUp}"
                 id="#{layout.id}_shiftSelectedUp"
-                reRender="#{layout.id}_panel"
+                render="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
@@ -173,7 +173,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedDown}"
                 id="#{layout.id}_shiftSelectedDown"
-                reRender="#{layout.id}_panel"
+                render="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>
@@ -185,7 +185,7 @@
               <a4j:commandLink bypassUpdates="true"
                 actionListener="#{selectionActions.shiftSelectedLast}"
                 id="#{layout.id}_shiftSelectedLast"
-                reRender="#{layout.id}_panel"
+                render="#{layout.id}_panel"
                 ignoreDupResponses="true">
                 <f:param name="rightSelect" value="#{layout.id}_targetSelect"/>
                 <f:param name="rightItems" value="#{layout.id}_targetItems"/>

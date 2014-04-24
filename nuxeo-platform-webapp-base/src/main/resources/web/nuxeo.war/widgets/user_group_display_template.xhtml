@@ -60,7 +60,7 @@
   <c:if test="#{displayAction == 'edit'}">
     <a4j:commandLink action="#{userManagementActions.setSelectedUser(info.id)}"
       actionListener="#{userManagementActions.toggleShowUserOrGroup}"
-      reRender="usersPanel">
+      render="usersPanel">
       <ui:include src="/widgets/user_group_output_template.xhtml">
         <ui:param name="hideIcon" value="#{hideIcon}" />
         <ui:param name="displayName" value="#{userDisplayName}" />
@@ -91,7 +91,7 @@
   <c:if test="#{displayAction == 'edit'}">
     <a4j:commandLink action="#{groupManagementActions.setSelectedGroup(info.id)}"
       actionListener="#{groupManagementActions.toggleShowUserOrGroup}"
-      reRender="groupsPanel">
+      render="groupsPanel">
       <ui:include src="/widgets/user_group_output_template.xhtml">
         <ui:param name="hideIcon" value="#{hideIcon}" />
         <ui:param name="displayName" value="#{groupDisplayName}" />

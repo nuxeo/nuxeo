@@ -76,7 +76,7 @@
         id="#{widget.id}_parent"
         ordering="#{empty widgetProperty_ordering?'label':widgetProperty_ordering}">
         <a4j:ajax event="change"
-          reRender="#{widget.id}_child,#{widget.id}_message"
+          render="#{widget.id}_child,#{widget.id}_message"
           immediate="true">
           <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
         </a4j:ajax>
@@ -92,7 +92,7 @@
       <a4j:commandButton value="#{messages['command.add']}"
         styleClass="button" immediate="true"
         actionListener="#{chainSelectActions.add}"
-        reRender="#{widget.id}_status" id="#{widget.id}_add" />
+        render="#{widget.id}_status" id="#{widget.id}_add" />
       <br />
       <nxdir:chainSelectStatus display="value"
         entryCssStyle="background-color: #DDEEFF"
@@ -101,7 +101,7 @@
         <f:facet name="removeButton">
           <a4j:commandButton
             actionListener="#{chainSelectActions.delete}"
-            immediate="true" reRender="#{widget.id}_status"
+            immediate="true" render="#{widget.id}_status"
             image="/icons/toggle_minus.png"
             id="#{widget.id}_delete" />
         </f:facet>

@@ -29,17 +29,17 @@
               value="#{messages['command.saveAndCreate']}"
               action="#{groupManagementActions.createGroup(true)}"
               styleClass="button"
-              reRender="groupsPanel,facesStatusMessagePanel" />
+              render="groupsPanel,facesStatusMessagePanel" />
             <a4j:commandButton
               id="button_save"
               value="#{messages['command.save']}"
               action="#{groupManagementActions.createGroup}"
               styleClass="button"
-              reRender="groupsPanel,facesStatusMessagePanel" />
+              render="groupsPanel,facesStatusMessagePanel" />
             <a4j:commandButton
               action="#{groupManagementActions.toggleShowCreateForm}" immediate="true"
               value="#{messages['command.cancel']}" styleClass="button"
-              reRender="groupsPanel" />
+              render="groupsPanel" />
           </td>
         </tr>
       </tbody>

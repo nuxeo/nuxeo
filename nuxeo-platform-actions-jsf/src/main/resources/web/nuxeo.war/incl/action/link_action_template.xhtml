@@ -62,7 +62,7 @@
         ajaxSingle="#{action.immediate}"
         value="#{messages[action.label]}"
         disabled="#{!action.available}"
-        reRender="#{elementsToReRender}"
+        render="#{elementsToReRender}"
         styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
         accesskey="#{action.accessKey}">
         <ui:include src="/incl/action/action_icon_label_template.xhtml">
@@ -117,7 +117,7 @@
         onclick="#{onclick}"
         ajaxSingle="#{action.immediate}"
         disabled="#{!action.available}"
-        reRender="#{elementsToReRender}"
+        render="#{elementsToReRender}"
         styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
         accesskey="#{action.accessKey}">
         <ui:include src="/incl/action/action_icon_label_template.xhtml" />

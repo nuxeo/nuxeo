@@ -49,7 +49,7 @@ empty:
             id="resetFilter"
             ajaxSingle="true"
             rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
-            reRender="#{elementsToReRender}"
+            render="#{elementsToReRender}"
             ignoreDupResponses="true"
             requestDelay="100"
             styleClass="button warningLink">
@@ -65,7 +65,7 @@ empty:
     <div class="boxBody"
       style="#{nxu:test(openBox, '', 'overflow: visible; display: none;')}">
       <h:form id="#{filterFormId}" ajaxSubmit="true"
-        reRender="#{elementsToReRender}"
+        render="#{elementsToReRender}"
         oncomplete="jQuery.fancybox.close();"
         ignoreDupResponses="true"
         requestDelay="100">
@@ -85,7 +85,7 @@ empty:
             id="resetFilter"
             ajaxSingle="true"
             disabled="#{not nxd:isDirty(contentView.searchDocumentModel)}"
-            reRender="#{elementsToReRender}"
+            render="#{elementsToReRender}"
             ignoreDupResponses="true"
             requestDelay="100"
             styleClass="button">

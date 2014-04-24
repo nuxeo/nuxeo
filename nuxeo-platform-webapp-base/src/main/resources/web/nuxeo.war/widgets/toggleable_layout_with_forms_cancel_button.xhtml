@@ -13,7 +13,7 @@
       <a4j:commandButton
         id="#{widget.id}_#{idPrefix}cancelToggleAction"
         immediate="true"
-        reRender="#{widget.id}_regionPanel"
+        render="#{widget.id}_regionPanel"
         value="#{cancelActionLabel}"
         styleClass="button smallButton #{widgetProperty_actionStyleClass}">
         <f:setPropertyActionListener
@@ -30,7 +30,7 @@
       <a4j:commandLink
         id="#{widget.id}_#{idPrefix}cancelToggleAction"
         immediate="true"
-        reRender="#{widget.id}_regionPanel"
+        render="#{widget.id}_regionPanel"
         styleClass="actionLink #{widgetProperty_actionStyleClass}">
         <nxh:graphicImage value="/icons/delete.png"
           title="#{cancelActionLabel}"
@@ -49,7 +49,7 @@
       <a4j:commandLink
         id="#{widget.id}_#{idPrefix}cancelToggleAction"
         immediate="true"
-        reRender="#{widget.id}_regionPanel"
+        render="#{widget.id}_regionPanel"
         value="#{cancelActionLabel}"
         styleClass="actionLink #{widgetProperty_actionStyleClass}">
         <f:param name="valueHolderId"
@@ -66,7 +66,7 @@
       <a4j:commandLink
         id="#{widget.id}_#{idPrefix}cancelToggleAction"
         immediate="true"
-        reRender="#{widget.id}_regionPanel"
+        render="#{widget.id}_regionPanel"
         styleClass="actionLink #{widgetProperty_actionStyleClass}">
         <nxh:graphicImage value="/icons/delete.png"
           title="#{cancelActionLabel}"

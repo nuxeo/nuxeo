@@ -14,7 +14,7 @@ Needed parameters:
     <c:forEach var="cvLayout" items="#{contentView.resultLayouts}">
       <span class="resultLayoutSelection #{nxu:test(cvLayout.name == contentView.currentResultLayout.name, 'selected', '')}">
         <a4j:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}"
-          reRender="#{contentIdToBeReRendered}, #{contentViewRenderId}_contentViewActionsPanel"
+          render="#{contentIdToBeReRendered}, #{contentViewRenderId}_contentViewActionsPanel"
           ajaxSingle="true">
           <c:set var="iconPath"
             value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />

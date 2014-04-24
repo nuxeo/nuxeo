@@ -40,7 +40,7 @@ empty:
     <a4j:region id="#{quickFilterFormId}_region">
 
       <h:form id="#{quickFilterFormId}" ajaxSubmit="true"
-        reRender="#{elementsToReRender}"
+        render="#{elementsToReRender}"
         ignoreDupResponses="true"
         requestDelay="100"
         styleClass="action_bar">
@@ -91,7 +91,7 @@ empty:
         <div id="#{filterFormId}_box">
           <h3><h:outputText value="#{messages['label.contentview.filter.title']}" /></h3>
           <h:form id="#{filterFormId}" ajaxSubmit="true"
-            reRender="#{elementsToReRender}"
+            render="#{elementsToReRender}"
             ignoreDupResponses="true"
             requestDelay="100"
             oncomplete="jQuery.fancybox.close();">

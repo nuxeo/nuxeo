@@ -71,7 +71,7 @@
           </label>
           <a4j:commandLink immediate="true"
             actionListener="#{editableListBean.performAction}"
-            id="#{widget.id}_delete" reRender="#{widget.id}_listRegion"
+            id="#{widget.id}_delete" render="#{widget.id}_listRegion"
             bypassUpdates="true">
             <img src="#{contextPath}/icons/delete.png" alt="Delete" />
             <f:param name="for" value="#{widget.id}_list" />
@@ -119,7 +119,7 @@
             <a4j:commandLink immediate="true"
               id="#{widget.id}_linkId"
               actionListener="#{treeWidgetActions.addSelectionToList}"
-              styleClass="treeLink" reRender="#{widget.id}_listRegion">
+              styleClass="treeLink" render="#{widget.id}_listRegion">
               <f:param name="selectionListId" value="#{widget.id}_list" />
               <f:param name="selectedPath" value="#{node.path}" />
               <h:outputText value="#{nxd:titleOrId(node.document)}" />

@@ -64,12 +64,12 @@
 
           <c:if test="#{not empty layoutProperty_localConfigurationFacet}">
             <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
-              immediate="true" reRender="#{elementsToReRender}" rendered="#{not hasLocalConfigurationFacet}"
+              immediate="true" render="#{elementsToReRender}" rendered="#{not hasLocalConfigurationFacet}"
               styleClass="action button" id="#{layout.id}_enable">
               <h:outputText value="#{messages['label.local.configuration.enable']}"/>
             </a4j:commandLink>
             <a4j:commandLink action="#{localConfigurationActions.toggleConfigurationForCurrentDocument(layoutProperty_localConfigurationFacet)}"
-              immediate="true" reRender="#{elementsToReRender}" rendered="#{hasLocalConfigurationFacet}"
+              immediate="true" render="#{elementsToReRender}" rendered="#{hasLocalConfigurationFacet}"
               styleClass="action button" id="#{layout.id}_disable">
               <h:outputText value="#{messages['label.local.configuration.disable']}"/>
             </a4j:commandLink>
@@ -83,7 +83,7 @@
             <a4j:commandButton value="#{messages['command.save']}"
               styleClass="button" id="#{layout.id}_save"
               action="#{localConfigurationActions.saveLocalConfiguration}"
-              reRender="local_configuration_#{layout.id}_form,facesStatusMessagePanel"/>
+              render="local_configuration_#{layout.id}_form,facesStatusMessagePanel"/>
           </div>
         </c:if>
 

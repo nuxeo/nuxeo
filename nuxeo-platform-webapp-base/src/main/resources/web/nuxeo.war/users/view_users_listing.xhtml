@@ -11,7 +11,7 @@
         <!-- search form -->
         <h:form id="searchForm" ajaxSubmit="true"
           ignoreDupResponses="true"
-          reRender="usersListingPanel,searchForm"
+          render="usersListingPanel,searchForm"
           onsubmit="document.getElementById('usersListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('usersListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');">
           <script>
             jQuery(document).ready(function() {

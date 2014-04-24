@@ -33,7 +33,7 @@
         <h:panelGrid columns="2">
           <a4j:commandLink immediate="true"
             actionListener="#{editableListBean.performAction}"
-            id="#{layout.id}_delete" reRender="#{layout.id}_panel"
+            id="#{layout.id}_delete" render="#{layout.id}_panel"
             bypassUpdates="true">
             <h:graphicImage value="/icons/delete.png" />
             <f:param name="for" value="#{layout.id}_input" />
@@ -84,7 +84,7 @@
 
     <a4j:commandLink immediate="true"
       actionListener="#{editableListBean.performAction}"
-      reRender="#{layout.id}_panel"
+      render="#{layout.id}_panel"
       id="#{layout.id}_add"
       styleClass="button smallButton">
       <f:param name="for" value="#{layout.id}_input" />

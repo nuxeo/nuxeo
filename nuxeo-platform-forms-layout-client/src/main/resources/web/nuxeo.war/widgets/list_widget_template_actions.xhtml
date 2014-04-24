@@ -16,7 +16,7 @@
   <c:if test="#{not widgetProperty_hideDeleteButton}">
     <a4j:commandLink immediate="true"
       actionListener="#{editableListBean.performAction}"
-      id="#{widget.id}_delete" reRender="#{widget.id}_panel"
+      id="#{widget.id}_delete" render="#{widget.id}_panel"
       bypassUpdates="true">
       <h:graphicImage value="/icons/delete.png" />
       <f:param name="for" value="#{forComponentId}" />
@@ -28,7 +28,7 @@
   <c:if test="#{widgetProperty_orderable}">
     <a4j:commandLink immediate="true"
       actionListener="#{editableListBean.performAction}"
-      id="#{widget.id}_move_down" reRender="#{widget.id}_panel"
+      id="#{widget.id}_move_down" render="#{widget.id}_panel"
       bypassUpdates="true" rendered="#{model.rowIndex != model.rowCount - 1}">
       <h:graphicImage value="/icons/go_down.png" />
       <f:param name="for" value="#{forComponentId}" />
@@ -40,7 +40,7 @@
 
     <a4j:commandLink immediate="true"
       actionListener="#{editableListBean.performAction}"
-      id="#{widget.id}_move_up" reRender="#{widget.id}_panel"
+      id="#{widget.id}_move_up" render="#{widget.id}_panel"
       bypassUpdates="true" rendered="#{model.rowIndex != 0}">
       <h:graphicImage value="/icons/go_up.png" />
       <f:param name="for" value="#{forComponentId}" />

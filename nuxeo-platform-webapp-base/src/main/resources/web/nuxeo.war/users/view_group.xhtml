@@ -15,7 +15,7 @@
       <a4j:commandLink immediate="true"
         action="#{groupManagementActions.toggleShowUserOrGroup}"
         actionListener="#{jsfResetActions.resetComponents}"
-        reRender="groupsPanel">
+        render="groupsPanel">
         <h:graphicImage value="/icons/arrow_left.gif" />
         <h:outputText value="#{messages['command.directoryBack']}" />
       </a4j:commandLink>
@@ -34,7 +34,7 @@
           <a4j:commandLink
             action="#{groupManagementActions.deleteGroup}"
             onclick="if (!confirmDeleteGroup()) { return false; }"
-            reRender="groupsPanel">
+            render="groupsPanel">
             <h:graphicImage value="/icons/delete.png" />
             <h:outputText value="#{messages['command.delete']}" />
           </a4j:commandLink>
@@ -49,7 +49,7 @@
       <ul>
         <li class="#{nxu:test(groupManagementActions.detailsMode == 'view', 'selected', '')}">
           <a4j:commandLink action="#{groupManagementActions.setDetailsMode('view')}"
-            immediate="true" reRender="groupDetailsPanel">
+            immediate="true" render="groupDetailsPanel">
             <h:outputText value="#{messages['label.groupManager.viewGroup']}" />
           </a4j:commandLink>
         </li>
@@ -58,7 +58,7 @@
           <li class="#{nxu:test(groupManagementActions.detailsMode == 'edit', 'selected', '')}">
             <a4j:commandLink
               action="#{groupManagementActions.setDetailsMode('edit')}" immediate="true"
-              reRender="groupDetailsPanel">
+              render="groupDetailsPanel">
               <h:outputText value="#{messages['label.groupManager.editGroup']}" />
             </a4j:commandLink>
           </li>
@@ -90,7 +90,7 @@
                 value="#{messages['command.save']}"
                 action="#{groupManagementActions.updateGroup}"
                 styleClass="button"
-                reRender="groupDetailsPanel,facesStatusMessagePanel" />
+                render="groupDetailsPanel,facesStatusMessagePanel" />
             </td>
             <td class="fieldColumn"></td>
           </tr>

@@ -69,7 +69,7 @@
           id="#{widget.id}"
           action="#{webActions.setCurrentTabIds(tabIds)}"
           accesskey="#{action.accessKey}"
-          reRender="#{elementsToReRender}"
+          render="#{elementsToReRender}"
           onbeforedomupdate="history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');"
           onclick="#{onclick}"
           ignoreDupResponses="true"

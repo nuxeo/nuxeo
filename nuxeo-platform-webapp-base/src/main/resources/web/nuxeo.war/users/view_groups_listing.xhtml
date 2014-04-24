@@ -13,7 +13,7 @@
         <!-- search form -->
         <h:form id="searchForm" ajaxSubmit="true"
           ignoreDupResponses="true"
-          reRender="groupsPanel,searchForm"
+          render="groupsPanel,searchForm"
           onsubmit="document.getElementById('groupsListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('groupsListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');">
           <script>
             jQuery(document).ready(function() {
