@@ -82,6 +82,31 @@
         org.nuxeo.theme.jsf.component.UIRequire
       </component-class>
     </component>
+
+  </extension>
+
+  <extension target="faces-config#RENDERER">
+
+    <renderer>
+      <component-family>javax.faces.Output</component-family>
+      <renderer-type>
+        org.nuxeo.theme.jsf.component.UIResources
+      </renderer-type>
+      <renderer-class>
+        org.nuxeo.theme.jsf.renderer.ResourcesRenderer
+      </renderer-class>
+    </renderer>
+
+    <renderer>
+      <component-family>javax.faces.Output</component-family>
+      <renderer-type>
+        org.nuxeo.theme.jsf.component.UIThemeStyles
+      </renderer-type>
+      <renderer-class>
+        org.nuxeo.theme.jsf.renderer.ThemeStylesRenderer
+      </renderer-class>
+    </renderer>
+
   </extension>
 
 </fragment>

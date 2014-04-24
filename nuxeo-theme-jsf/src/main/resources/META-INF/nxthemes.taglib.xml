@@ -68,6 +68,10 @@
     <tag-name>resources</tag-name>
     <component>
       <component-type>nxthemes.resources</component-type>
+      <renderer-type>org.nuxeo.theme.jsf.component.UIResources</renderer-type>
+      <handler-class>
+        com.sun.faces.facelets.tag.jsf.html.ScriptResourceHandler
+      </handler-class>
     </component>
   </tag>
 
@@ -96,15 +100,19 @@
     <tag-name>themestyles</tag-name>
     <component>
       <component-type>nxthemes.themestyles</component-type>
+      <renderer-type>org.nuxeo.theme.jsf.component.UIThemeStyles</renderer-type>
+      <handler-class>
+        com.sun.faces.facelets.tag.jsf.html.StylesheetResourceHandler
+      </handler-class>
     </component>
   </tag>
-  
+
   <tag>
     <tag-name>require</tag-name>
     <component>
       <component-type>nxthemes.require</component-type>
     </component>
   </tag>
-  
+
 
 </facelet-taglib>
