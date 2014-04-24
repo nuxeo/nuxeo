@@ -10,7 +10,7 @@
 <a4j:region renderRegionOnly="true">
   <h:form id="directoryTreeForm" rendered="#{directoryTreeManager.initialized}">
     <div style="float:right">
-        <a4j:commandLink action="#{directoryTreeManager.resetCurrentTree}" reRender="directoryTreeNav">
+        <a4j:commandLink action="#{directoryTreeManager.resetCurrentTree}" render="directoryTreeNav">
           <h:graphicImage value="/icons/refresh.png"
             alt="#{messages['label.refresh']}"
             title="#{messages['label.refresh']}"

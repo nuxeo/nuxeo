@@ -51,7 +51,7 @@
               onclick="document.NXContextKeeper_#{widget.id}.removeFromKeeper(#{model.rowIndex});"
               oncomplete="document.NXContextKeeper_#{widget.id}.onReturnAnswer();"
               actionListener="#{editableListBean.performAction}"
-              id="#{widget.id}_delete" reRender="#{widget.id}_input"
+              id="#{widget.id}_delete" render="#{widget.id}_input"
               bypassUpdates="true">
               <h:graphicImage value="/icons/delete.png" />
               <f:param name="for" value="#{widget.id}_input" />

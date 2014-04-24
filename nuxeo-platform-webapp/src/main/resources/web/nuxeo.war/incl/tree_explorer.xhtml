@@ -14,7 +14,7 @@
   <a4j:region renderRegionOnly="true" id="treeExplorerRegion">
     <h:form ajaxSubmit="true" id="treeExplorer">
       <div style="float:right">
-        <a4j:commandLink action="#{treeActions.reset()}" reRender="treeNav">
+        <a4j:commandLink action="#{treeActions.reset()}" render="treeNav">
          <h:graphicImage value="/icons/refresh.png"
           alt="#{messages['label.refresh']}"
           title="#{messages['label.refresh']}"

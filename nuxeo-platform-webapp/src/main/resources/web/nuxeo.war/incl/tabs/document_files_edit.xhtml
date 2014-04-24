@@ -12,11 +12,11 @@
 <h:form enctype="multipart/form-data"
   id="document_files_edit" disableDoubleClickShield="true">
 
-  <a4j:jsFunction name="clearUpload" reRender="validateMultiplesUploadDiv" >
+  <a4j:jsFunction name="clearUpload" render="validateMultiplesUploadDiv" >
     <a4j:actionparam name="param1" assignTo="#{FileManageActions.fileToRemove}"  />
     <nxu:actionListenerMethod value="#{FileManageActions.removeOneOrAllUploadedFiles}" />
   </a4j:jsFunction>
-  <a4j:jsFunction name="clearAllUpload" reRender="validateMultiplesUploadDiv">
+  <a4j:jsFunction name="clearAllUpload" render="validateMultiplesUploadDiv">
     <nxu:actionListenerMethod value="#{FileManageActions.removeOneOrAllUploadedFiles}" />
   </a4j:jsFunction>
   <script>
@@ -45,7 +45,7 @@
         onbeforesubmit="processClear(event.memo);"
         render="validateMultiplesUploadDiv" />
       <a4j:ajax event="uploadcomplete"
-        reRender="validateMultiplesUploadDiv" />
+        render="validateMultiplesUploadDiv" />
     </rich:fileUpload>
 
     <a4j:region id="files_region">
@@ -58,7 +58,7 @@
             <a4j:commandLink immediate="true"
               onclick="if( !confirmRemoveFiles('#{nxu:javaScriptEscape(currentDocument.files.files[model.rowIndex].filename)}')) return false;"
               actionListener="#{FileManageActions.performAction}"
-              id="files_delete" reRender="document_files_edit"
+              id="files_delete" render="document_files_edit"
               bypassUpdates="true">
               <h:graphicImage value="/icons/delete.png" alt="#{messages['command.remove.file']}" />
               <f:param name="index" value="#{model.rowIndex}" />
@@ -81,7 +81,7 @@
 
   <a4j:outputPanel id="validateMultiplesUploadDiv">
     <a4j:commandButton
-      rendered="#{not empty FileManageActions.uploadedFiles}" reRender="document_files_edit"
+      rendered="#{not empty FileManageActions.uploadedFiles}" render="document_files_edit"
       value="#{messages['command.add.files']}" styleClass="button"
       action="#{FileManageActions.validateMultiplesUpload}" />
   </a4j:outputPanel>

@@ -54,14 +54,14 @@
       <a4j:commandButton value="#{messages['command.add']}"
         styleClass="button" immediate="true"
         actionListener="#{chainSelectActions.add}"
-        reRender="#{widget.id}_status" id="#{widget.id}_add" />
+        render="#{widget.id}_status" id="#{widget.id}_add" />
       <br />
       <nxdir:chainSelectStatus display="value"
         cssStyleClass="chainSelect"
         id="#{widget.id}_status">
         <f:facet name="removeButton">
           <a4j:commandButton actionListener="#{chainSelectActions.delete}"
-            immediate="true" reRender="#{widget.id}_status"
+            immediate="true" render="#{widget.id}_status"
             image="/icons/delete.png" id="#{widget.id}_delete" />
         </f:facet>
       </nxdir:chainSelectStatus>
