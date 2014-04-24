@@ -103,7 +103,7 @@
                     styleClass="button smallButton"
                     action="#{taskActions.rejectTask(dashboardItem.task)}"
                     rendered="#{taskService.canEndTask(currentUser, dashboardItem.task)}"
-                    reRender="#{widget.id}_panel" />
+                    render="#{widget.id}_panel" />
                 </p>
               </c:if>
             </nxu:set>

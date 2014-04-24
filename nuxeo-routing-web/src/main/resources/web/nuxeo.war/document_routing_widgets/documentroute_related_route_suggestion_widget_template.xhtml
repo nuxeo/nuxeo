@@ -70,7 +70,7 @@
           <a4j:commandLink id="#{widget.id}_selection_reset" immediate="true"
           actionListener="#{suggestionActions.clearSingleSelection}"
           ignoreDupResponses="true" ajaxSingle="true" bypassUpdates="true"
-          reRender="#{widget.id}_route_region"
+          render="#{widget.id}_route_region"
           rendered="#{!empty field_0}">
           <h:graphicImage id="#{widget.id}_delete"
             value="/icons/delete.png" rendered="false" />

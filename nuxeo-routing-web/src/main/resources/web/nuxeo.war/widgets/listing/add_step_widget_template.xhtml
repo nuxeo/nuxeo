@@ -13,7 +13,7 @@
         <c:forEach items="#{actions}" var="action">
           <li><a4j:commandLink id="#{action}"
               onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_1}';#{action.getLink()}"
-              reRender="selectRouteElementsTypeForCreationRegion">
+              render="selectRouteElementsTypeForCreationRegion">
               <nxu:graphicImage value="#{action.icon}"
                 rendered="#{not empty action.icon}" />
               <h:outputText value="#{messages[action.label]}" />
@@ -30,7 +30,7 @@
         <c:forEach items="#{actions}" var="action">
           <li><a4j:commandLink id="#{action}"
               onclick="document.getElementById('selectRouteElementsTypeForCreationForm:hiddenSourceDocId').value = '#{field_1}';#{action.getLink()}"
-              reRender="selectRouteElementsTypeForCreationRegion">
+              render="selectRouteElementsTypeForCreationRegion">
               <h:graphicImage value="#{action.icon}"
                 rendered="#{not empty action.icon}" />
               <h:outputText value="#{messages[action.label]}" />

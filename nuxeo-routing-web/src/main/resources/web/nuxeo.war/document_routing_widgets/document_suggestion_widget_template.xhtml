@@ -85,7 +85,7 @@
                 <h:panelGrid columns="2">
                   <a4j:commandLink immediate="true"
                     actionListener="#{editableListBean.performAction}"
-                    id="#{widget.id}_delete" reRender="#{widget.id}_listRegion"
+                    id="#{widget.id}_delete" render="#{widget.id}_listRegion"
                     bypassUpdates="true">
                     <h:graphicImage value="/icons/delete.png" />
                     <f:param name="for" value="#{widget.id}_list" />

@@ -47,7 +47,7 @@
                   ajaxSingle="true"
                   ignoreDupResponses="true" requestDelay="100"
                   disabled="#{!action.available}"
-                  reRender="workflow_action_fancybox_content">
+                  render="workflow_action_fancybox_content">
                   <f:param name="lookupLevel" value="2" />
                   <f:setPropertyActionListener value="#{action.id}"
                     target="#{selectionActions.selectedValue}" />
@@ -111,7 +111,7 @@
                     <div id="#{action.id}_fancybox_box">
                       <h:form id="#{fancyboxFormId}"
                         ajaxSubmit="true"
-                        reRender="#{elementsToReRender}"
+                        render="#{elementsToReRender}"
                         ignoreDupResponses="true"
                         requestDelay="100"
                         styleClass="action_bar"

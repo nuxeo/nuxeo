@@ -74,7 +74,7 @@
                     styleClass="button smallButton"
                     action="#{taskActions.rejectTask(task)}"
                     rendered="#{taskService.canEndTask(currentUser, task)}"
-                    reRender="#{widget.id}_panel"
+                    render="#{widget.id}_panel"
                     onclick="jQuery.fancybox.close();" />
                 </p>
               </c:if>
