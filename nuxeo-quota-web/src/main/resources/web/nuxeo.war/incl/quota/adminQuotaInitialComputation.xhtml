@@ -15,7 +15,7 @@
     <h:form>
 
       <a4j:poll interval="5000"
-        reRender="quotaStatsAdminPanel" ignoreDupResponses="true"
+        render="quotaStatsAdminPanel" ignoreDupResponses="true"
         enabled="true" />
 
       <table class="dataOutput">
@@ -51,7 +51,7 @@
                     <a4j:commandButton value="#{messages['action.quota.launch.computation']}"
                       action="#{quotaStatsActions.launchInitialComputation(updater.name)}"
                       styleClass="button"
-                      reRender="quotaStatsAdminPanel"/>
+                      render="quotaStatsAdminPanel"/>
                   </c:if>
                 </nxu:set>
               </td>

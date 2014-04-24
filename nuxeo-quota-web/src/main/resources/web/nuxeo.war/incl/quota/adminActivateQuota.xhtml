@@ -34,7 +34,7 @@
  <h:form>
   <a4j:poll id="checkQuotaStatus" interval="5000"
    enabled="true"
-   reRender="setQuotaOnUserWorkspacesPanel, checkQuotaStatus, quotaActivateQueueReg" />
+   render="setQuotaOnUserWorkspacesPanel, checkQuotaStatus, quotaActivateQueueReg" />
  </h:form>
 
   <a4j:outputPanel id="setQuotaOnUserWorkspacesPanel"
@@ -69,7 +69,7 @@
 
   <nxh:commandButton action="#{quotaStatsActions.saveQuotaActivatedOnUsersWorkspaces}"
     id="activate_quota_on_userworkspaces" 
-    value="#{messages['command.save']}" reRender="setQuotaOnUserWorkspacesPanel,checkQuotaStatus"
+    value="#{messages['command.save']}" render="setQuotaOnUserWorkspacesPanel,checkQuotaStatus"
     styleClass="button" />
 
   <h:message styleClass="errorMessage"
