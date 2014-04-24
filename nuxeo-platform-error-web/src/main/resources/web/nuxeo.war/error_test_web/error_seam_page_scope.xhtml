@@ -21,13 +21,13 @@
     </a4j:outputPanel>
 
     <a4j:commandLink action="#{dummySeamBean.dummyAction}"
-      value="DoDummy" reRender="dummyPanel" />
+      value="DoDummy" render="dummyPanel" />
 
     <a4j:outputPanel id="dummyPanel2">
       <h:outputText value="#{dummySeamBean.dummyBoolean}" />
     </a4j:outputPanel>
 
-    <a4j:commandLink value="Refresh" reRender="dummyPanel2" />
+    <a4j:commandLink value="Refresh" render="dummyPanel2" />
 
   </h:form>
 
