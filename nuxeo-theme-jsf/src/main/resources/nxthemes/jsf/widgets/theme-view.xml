@@ -12,12 +12,12 @@
     <ui:insert name="bookmark"></ui:insert>
 
     <nxthemes:head />
-    <nxthemes:resources />
-    <nxthemes:themestyles cache="true" />
 
     <ui:insert name="stylesheets"></ui:insert>
     <ui:insert name="header_scripts"></ui:insert>
 
   </h:head>
+  <nxthemes:resources />
+  <nxthemes:themestyles cache="true" />
   [nxthemes markup]
 </html>
