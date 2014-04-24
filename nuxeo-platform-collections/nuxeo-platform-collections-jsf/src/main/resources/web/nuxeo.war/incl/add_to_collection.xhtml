@@ -90,7 +90,7 @@
                       <a4j:commandLink immediate="true"
                         actionListener="#{collectionActions.removeFromMultipleDocumentToBeAdded}"
                         render="tbas" bypassUpdates="true"
-                        ajaxSingle="true">
+                        execute="@this">
                         <h:graphicImage value="/icons/delete.png"
                           alt="#{messages['label.addToCollection.multiple.remove']}"
                           title="#{messages['label.addToCollection.multiple.remove']}" />

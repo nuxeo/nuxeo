@@ -42,7 +42,7 @@
       </nxu:dataTable>
 
       <a4j:commandLink id="addTagLink"
-        ajaxSingle="true" actionListener="#{tagActions.showAddTag}"
+        execute="@this" actionListener="#{tagActions.showAddTag}"
         render="tag_message_banner, taggingPanel">
         <h:graphicImage id="toggle_plus" url="/icons/action_add.gif" />
         <h:outputText value="#{messages['command.tag.add.new.tag']} "/>

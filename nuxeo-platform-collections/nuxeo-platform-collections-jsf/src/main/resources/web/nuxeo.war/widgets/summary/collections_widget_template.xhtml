@@ -44,7 +44,7 @@
             rendered="#{collectionActions.canRemoveFromCollection(collection)}"
             actionListener="#{collectionActions.removeCurrentDocumentFromCollection}"
             render="documentViewPanel" bypassUpdates="true"
-            ajaxSingle="true">
+            execute="@this">
             <h:graphicImage value="/icons/action_tag_delete.png"
               alt="#{messages['label.addToCollection.multiple.remove']}"
               title="#{messages['label.addToCollection.multiple.remove']}" />
@@ -59,7 +59,7 @@
         action="#{currentDocumentCollection.setDisplayAll(true)}"
         render="collections" bypassUpdates="true"
         rendered="#{!currentDocumentCollection.displayAll}"
-        ajaxSingle="true" />
+        execute="@this" />
     </div>
   </a4j:outputPanel>
 
