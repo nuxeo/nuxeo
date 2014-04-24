@@ -45,7 +45,7 @@
             </c:if>
             <c:if test="#{importScheduled}">
               <a4j:poll interval="2000"
-                reRender="csv_import_panel" ignoreDupResponses="true" />
+                render="csv_import_panel" ignoreDupResponses="true" />
               <h4><h:outputText styleClass="processMessage scheduled" value="#{messages['label.csv.import.scheduled']}" /></h4>
               <h:outputFormat value="#{messages['label.csv.import.scheduled.status']}">
                 <f:param value="#{importStatus.positionInQueue}" />
@@ -54,7 +54,7 @@
             </c:if>
             <c:if test="#{importRunning}">
               <a4j:poll interval="2000"
-                reRender="csv_import_panel" ignoreDupResponses="true" />
+                render="csv_import_panel" ignoreDupResponses="true" />
               <h4>
                 <h:outputText styleClass="processMessage running" value="#{messages['label.csv.import.importing']} #{csvImportActions.importingCSVFilename}" />
               </h4>
@@ -131,7 +131,7 @@
               <c:if test="#{not importScheduled and not importRunning and not importComplete}">
                 <a4j:commandButton value="#{messages['command.csv.process']}"
                   action="#{csvImportActions.importCSVFile}"
-                  reRender="csv_import_panel"
+                  render="csv_import_panel"
                   styleClass="button" />
                 <button class="button" onclick="jQuery.fancybox.close(); return false;">#{messages['command.cancel']}</button>
               </c:if>
@@ -139,7 +139,7 @@
                 <button class="button" onclick="jQuery.fancybox.close(); return false;">#{messages['command.close']}</button>
                 <a4j:commandButton value="#{messages['command.csv.start.new']}"
                   action="#{csvImportActions.resetState()}"
-                  reRender="csv_import_panel"
+                  render="csv_import_panel"
                   styleClass="button" />
               </c:if>
             </p>
