@@ -22,7 +22,7 @@
         <nxu:set var="importRunning" value="#{not empty importStatus and importStatus.isRunning()}">
         <nxu:set var="importComplete" value="#{not empty importStatus and importStatus.isComplete()}">
 
-        <h:form id="importCsvRichUploadForm" ajaxSingle="true" enctype="multipart/form-data" disableDoubleClickShield="true">
+        <h:form id="importCsvRichUploadForm" execute="@this" enctype="multipart/form-data" disableDoubleClickShield="true">
 
           <a4j:outputPanel id="csv_import_form" layout="block">
             <c:if test="#{not importScheduled and not importRunning and not importComplete}">
@@ -33,7 +33,7 @@
                 maxFilesQuantity="1" immediateUpload="true"
                 acceptedTypes="csv"
                 listHeight="60"
-                ajaxSingle="true"
+                execute="@this"
                 locale="#{localeSelector.localeString}"
                 id="csvFileUpload" />
               <h:selectBooleanCheckbox styleClass="dataInputText"
