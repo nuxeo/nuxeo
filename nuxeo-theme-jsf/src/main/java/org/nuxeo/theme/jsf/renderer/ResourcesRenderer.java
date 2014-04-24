@@ -21,6 +21,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.faces.application.ResourceDependencies;
+import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -40,6 +42,9 @@ import com.sun.faces.renderkit.html_basic.ScriptStyleBaseRenderer;
  *
  * @since 5.9.4-JSF2
  */
+@ResourceDependencies({
+        @ResourceDependency(library = "javax.faces", name = "jsf.js"),
+        @ResourceDependency(name = "jquery.js") })
 public class ResourcesRenderer extends ScriptStyleBaseRenderer {
 
     @Override
