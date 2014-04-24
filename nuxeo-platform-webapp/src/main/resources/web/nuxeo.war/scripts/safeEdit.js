@@ -63,7 +63,7 @@
   $.fn.getFormItems = function() {
     return jQuery(this)
         .find(
-            "input:not(.select2-input),select,textarea,td.mceIframeContainer>iframe");
+            "input:not(.select2-input),select,textarea,div.mce-edit-area>iframe");
   }
 
   $.fn.collectFormData = function() {
