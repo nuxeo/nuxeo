@@ -112,7 +112,7 @@
           <h:form id="#{widget.id}_userInputForm" ajaxSubmit="true">
             <h:inputText value="#{shibbUserSuggestionWithGroupTree.shibbUserName}" id="#{widget.id}_sibbInput"/>
             <a4j:commandButton value="#{messages['label.suggestion.custom.addUser']}"
-                             reRender="#{widget.id}_listRegion, #{widget.id}_userInputForm" id="#{widget.id}_sibbName">
+                             render="#{widget.id}_listRegion, #{widget.id}_userInputForm" id="#{widget.id}_sibbName">
               <f:setPropertyActionListener value="#{shibbUserSuggestionWithGroupTree.shibbUserName}"
                         target="#{suggestionActions.selectedValue}" />
               <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
@@ -130,7 +130,7 @@
                 <h:panelGrid columns="2">
                   <a4j:commandLink immediate="true"
                     actionListener="#{editableListBean.performAction}"
-                    id="#{widget.id}_delete" reRender="#{widget.id}_listRegion"
+                    id="#{widget.id}_delete" render="#{widget.id}_listRegion"
                     bypassUpdates="true">
                     <h:graphicImage value="/icons/delete.png" />
                     <f:param name="for" value="#{widget.id}_list" />
