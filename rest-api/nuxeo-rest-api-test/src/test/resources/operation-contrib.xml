@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.automation.rest.test.operationContrib"
+  version="1.0">
+
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+
+    <operation
+      class="org.nuxeo.ecm.automation.test.helpers.TestOperation" />
+
+  </extension>
+
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="testChain">
+
+      <operation id="testOp">
+        <param type="string" name="one">One</param>
+        <param type="long" name="two">2</param>
+      </operation>
+
+      <operation id="testOp">
+        <param type="string" name="one">Two</param>
+        <param type="long" name="two">4</param>
+      </operation>
+
+    </chain>
+  </extension>
+</component>
