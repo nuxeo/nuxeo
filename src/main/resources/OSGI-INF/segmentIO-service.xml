@@ -39,7 +39,17 @@
       class="org.nuxeo.segment.io.SegmentIOProviders" />
   </extension-point>
 
-  <!--  add default configuration for Marketo -->
+  <extension-point name="filters">
+    <documentation>
+      Allows to filter out events associated with particular users
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.segment.io.SegmentIOUserFilter" />
+  </extension-point>
+
+  <!--  add default configuration for Marketo (should move to connect) -->
   <extension target="org.nuxeo.segment.io.SegmentIOComponent"
     point="providers">
     <providersConfig>
@@ -48,5 +58,15 @@
       </providers>
     </providersConfig>
   </extension>
+
+  <!--  add default configuration for Connect (should move to connect) -->
+  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
+    point="filters">
+    <userFilter>
+      <enableAnonymous>false</enableAnonymous>
+      <blackListedUser>RemoteConnectInstance</blackListedUser>
+    </userFilter>
+  </extension>
+
 
 </component>

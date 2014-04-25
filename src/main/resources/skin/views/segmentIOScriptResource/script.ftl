@@ -4,7 +4,11 @@
   window.analytics.page();
 
   function identifyIfNeeded(login, email) {
+    var blackList = ${blackListedLogins};
     if (login) {
+      if (blackList.indexOf(login)>=0) {
+        return;
+      }
       if (document.cookie.indexOf("_nxIdentified="+login)<0) {
         // do the identify
          analytics.identify(login, {
@@ -17,5 +21,3 @@
 <#if principal??>
    identifyIfNeeded('${principal.name}','${principal.email}');
 </#if>
-
-

@@ -23,4 +23,6 @@ public interface SegmentIO {
     void flush();
 
     Providers getProviders();
+
+    SegmentIOUserFilter getUserFilters();
 }

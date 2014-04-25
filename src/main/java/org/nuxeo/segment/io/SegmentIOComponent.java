@@ -58,6 +58,8 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     public final static String PROVIDER_EP = "providers";
 
+    public final static String FILTERS_EP = "filters";
+
     protected boolean debugMode = false;
 
     protected Map<String, SegmentIOMapper> mappers;
@@ -69,6 +71,8 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     protected SegmentIOConfig config;
 
     protected SegmentIOProviders providersConfig;
+
+    protected SegmentIOUserFilter userFilters;
 
     protected Providers providers;
 
@@ -102,6 +106,8 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         } else if (PROVIDER_EP.equalsIgnoreCase(extensionPoint)) {
             providersConfig = (SegmentIOProviders) contribution;
             providers = null;
+        } else if (FILTERS_EP.equalsIgnoreCase(extensionPoint)) {
+            userFilters = (SegmentIOUserFilter) contribution;
         }
     }
 
@@ -163,6 +169,11 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     public void identify(NuxeoPrincipal principal,
             Map<String, Serializable> metadata) {
 
+        if (!mustTrackprincipal(principal)) {
+            log.debug("Skip user " + principal.getName());
+            return;
+        }
+
         SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal,
                 metadata);
 
@@ -201,6 +212,16 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return testData;
     }
 
+    public boolean mustTrackprincipal(NuxeoPrincipal principal) {
+        SegmentIOUserFilter filter = getUserFilters();
+        if (filter==null) {
+            return true;
+        }
+        return filter.canTrack(principal);
+    }
+
+
+
     public void track(NuxeoPrincipal principal, String eventName) {
         track(principal, null);
     }
@@ -208,6 +229,10 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     public void track(NuxeoPrincipal principal, String eventName,
             Map<String, Serializable> metadata) {
 
+        if (!mustTrackprincipal(principal)) {
+            log.debug("Skip user " + principal.getName());
+            return;
+        }
         SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal,
                 metadata);
 
@@ -254,4 +279,9 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     public Map<String, List<SegmentIOMapper>> getAllMappers() {
         return event2Mappers;
     }
+
+    public SegmentIOUserFilter getUserFilters() {
+        return userFilters;
+    }
+
 }

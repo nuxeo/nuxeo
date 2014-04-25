@@ -25,6 +25,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.segment.io.SegmentIO;
 import org.nuxeo.segment.io.SegmentIOComponent;
 import org.nuxeo.segment.io.SegmentIOMapper;
+import org.nuxeo.segment.io.SegmentIOUserFilter;
 
 import com.github.segmentio.models.Providers;
 import com.google.inject.Inject;
@@ -132,7 +133,25 @@ public class TestSegmentIOService {
 
     }
 
+    @Test
+    public void shouldHaveUserFilter() throws Exception {
 
+        SegmentIO sio = Framework.getLocalService(SegmentIO.class);
+        Assert.assertNotNull(sio);
 
+        SegmentIOComponent component = (SegmentIOComponent) Framework.getRuntime().getComponent(SegmentIOComponent.class.getName());
+        Assert.assertNotNull(component);
+
+        SegmentIOUserFilter filters = component.getUserFilters();
+
+        Assert.assertNotNull(filters);
+
+        Assert.assertFalse(filters.isEnableAnonymous());
+
+        Assert.assertTrue(filters.getBlackListedUsers().contains("RemoteConnectInstance"));
+
+        Assert.assertTrue(filters.canTrack(session.getPrincipal()));
+
+    }
 
 }
