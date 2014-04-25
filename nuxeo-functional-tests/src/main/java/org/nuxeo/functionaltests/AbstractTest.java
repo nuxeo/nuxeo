@@ -53,9 +53,11 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
+import org.nuxeo.functionaltests.pages.NoteDocumentBasePage;
 import org.nuxeo.functionaltests.pages.forms.CollectionCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
 import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
+import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.openqa.selenium.By;
@@ -911,6 +913,33 @@ public abstract class AbstractTest {
      */
     protected String getCurrentDocumentId() {
         return (String) ((JavascriptExecutor) driver).executeScript(String.format("return ctx.currentDocument;"));
+    }
+
+    /**
+     * Creates a Note form the {@code currentPage}.
+     *
+     * @param currentPage the current page
+     * @param noteTitle the note title
+     * @param noteDescription the note description
+     * @param defineNote true if the content of the note needs to be defined
+     * @param noteContent the content of the note
+     * @return the created note page.
+     * @throws IOException
+     * @since 5.9.4
+     */
+    protected NoteDocumentBasePage createNote(DocumentBasePage currentPage,
+            String noteTitle, String noteDescription, boolean defineNote,
+            String noteContent) throws IOException {
+
+        // Get the Note creation form
+        NoteCreationFormPage noteCreationPage = currentPage.getContentTab().getDocumentCreatePage(
+                "Note", NoteCreationFormPage.class);
+
+        // Create a Note
+        NoteDocumentBasePage notePage = noteCreationPage.createNoteDocument(
+                noteTitle, noteDescription, defineNote, noteContent);
+
+        return notePage;
     }
 
 }
