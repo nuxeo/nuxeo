@@ -74,7 +74,7 @@ public class CollectionTestCase {
 
     protected static final int MAX_CARDINALITY = 60;
 
-    protected static final int WORK_TIME_OUT_MS = 5000;
+    protected static final int WORK_TIME_OUT_MS = 15000;
 
     public static List<DocumentModel> createTestFiles(CoreSession session, final int nbFile)
             throws ClientException {
