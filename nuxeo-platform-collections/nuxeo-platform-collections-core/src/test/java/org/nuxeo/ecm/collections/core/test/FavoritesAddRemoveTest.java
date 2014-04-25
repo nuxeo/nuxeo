@@ -39,7 +39,6 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({TransactionalFeature.class, PlatformFeature.class})
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.favorites.core",
         "org.nuxeo.ecm.platform.collections.core",
         "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.query.api",
