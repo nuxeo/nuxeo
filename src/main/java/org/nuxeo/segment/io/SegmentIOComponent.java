@@ -18,6 +18,7 @@
 package org.nuxeo.segment.io;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -33,9 +34,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.segment.io.extension.Group;
 import org.osgi.framework.Bundle;
 
 import com.github.segmentio.Analytics;
+import com.github.segmentio.AnalyticsClient;
+import com.github.segmentio.flush.Flusher;
 import com.github.segmentio.models.Context;
 import com.github.segmentio.models.EventProperties;
 import com.github.segmentio.models.Providers;
@@ -77,6 +81,8 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     protected Providers providers;
 
     protected Bundle bundle;
+
+    protected Flusher flusher;
 
     public Bundle getBundle() {
         return bundle;
@@ -146,6 +152,20 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return Framework.getProperty(WRITE_KEY, DEFAULT_DEBUG_KEY);
     }
 
+    protected Flusher getFlusher() {
+        if (flusher==null) {
+            try {
+                AnalyticsClient client = Analytics.getDefaultClient();
+                Field field = client.getClass().getDeclaredField("flusher");
+                field.setAccessible(true);
+                flusher = (Flusher) field.get(client);
+            } catch (Exception e) {
+                log.error("Unable to access SegmentIO Flusher via reflection", e);
+            }
+        }
+        return flusher;
+    }
+
     public void identify(NuxeoPrincipal principal) {
         identify(principal, null);
     }
@@ -190,9 +210,31 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
                 Context ctx = new Context();
                 ctx.setProviders(getProviders());
                 Analytics.identify(wrapper.getUserId(), traits, ctx);
+
+                // automatic grouping
+                if (principal.getCompany()!=null) {
+                    group(principal.getCompany(), wrapper.getUserId(), null, ctx);
+                }
+                if (wrapper.getMetadata().get("client")!=null) {
+                    group((String)wrapper.getMetadata().get("client"), wrapper.getUserId(), null, ctx);
+                }
+                if (wrapper.getMetadata().get("company")!=null) {
+                    group((String)wrapper.getMetadata().get("company"), wrapper.getUserId(), null, ctx);
+                }
             }
         }
     }
+
+    protected void group(String groupId, String userId, Traits traits, Context ctx) {
+        Flusher flusher = getFlusher();
+        if (flusher!=null) {
+            Group grp = new Group(userId, groupId, traits, new DateTime(), ctx);
+            flusher.enqueue(grp);
+        } else {
+            log.warn("Can not use Group API");
+        }
+    }
+
 
     protected void pushForTest(String action, String principalName,
             String eventName, Map<String, Serializable> metadata) {
