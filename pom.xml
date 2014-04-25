@@ -11,7 +11,7 @@
   <groupId>org.nuxeo.addons</groupId>
   <artifactId>nuxeo-segmentio-connector</artifactId>
   <name>nuxeo-segmentio-connector</name>
-  <version>5.7.1-SNAPSHOT</version>
+  <version>5.7.1.1-SNAPSHOT</version>
   <description>
 
   </description>
@@ -74,6 +74,13 @@
       <artifactId>analytics</artifactId>
       <version>0.3.1</version>
     </dependency>
+
+
+<dependency>
+  <groupId>com.googlecode.gmail4j</groupId>
+  <artifactId>gmail4j</artifactId>
+  <version>0.5-SNAPSHOT</version>
+</dependency>
 
 <!-- dependecies for upgrading to segment.io 0.4.x
     <dependency>

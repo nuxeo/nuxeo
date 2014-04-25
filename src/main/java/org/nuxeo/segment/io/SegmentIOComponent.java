@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -35,7 +36,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.Bundle;
 
 import com.github.segmentio.Analytics;
+import com.github.segmentio.models.Context;
 import com.github.segmentio.models.EventProperties;
+import com.github.segmentio.models.Providers;
 import com.github.segmentio.models.Traits;
 
 /**
@@ -53,6 +56,8 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     public final static String MAPPER_EP = "mapper";
 
+    public final static String PROVIDER_EP = "providers";
+
     protected boolean debugMode = false;
 
     protected Map<String, SegmentIOMapper> mappers;
@@ -62,6 +67,10 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     protected List<Map<String, Object>> testData = new LinkedList<>();
 
     protected SegmentIOConfig config;
+
+    protected SegmentIOProviders providersConfig;
+
+    protected Providers providers;
 
     protected Bundle bundle;
 
@@ -90,6 +99,9 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         } else if (MAPPER_EP.equalsIgnoreCase(extensionPoint)) {
             SegmentIOMapper mapper = (SegmentIOMapper) contribution;
             mappers.put(mapper.name, mapper);
+        } else if (PROVIDER_EP.equalsIgnoreCase(extensionPoint)) {
+            providersConfig = (SegmentIOProviders) contribution;
+            providers = null;
         }
     }
 
@@ -132,21 +144,41 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         identify(principal, null);
     }
 
-    public void identify(NuxeoPrincipal principal, Map<String, Serializable> metadata) {
+    public Providers getProviders() {
+        if (providers == null) {
+            providers = new Providers();
+            if (providersConfig != null) {
+                if (!providersConfig.enableDefaults) {
+                    providers.setDefault(false);
+                }
+                for (String name : providersConfig.providers.keySet()) {
+                    providers.setEnabled(name,
+                            providersConfig.providers.get(name));
+                }
+            }
+        }
+        return providers;
+    }
 
-        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal, metadata);
+    public void identify(NuxeoPrincipal principal,
+            Map<String, Serializable> metadata) {
+
+        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal,
+                metadata);
 
         if (Framework.isTestModeSet()) {
             pushForTest("identify", wrapper.getUserId(), null, metadata);
         } else {
             if (debugMode) {
-                log.info("send identify for " + wrapper.getUserId() + " with meta : "
-                        + metadata.toString());
+                log.info("send identify for " + wrapper.getUserId()
+                        + " with meta : " + metadata.toString());
             } else {
                 log.debug("send identify with " + metadata.toString());
                 Traits traits = new Traits();
                 traits.putAll(wrapper.getMetadata());
-                Analytics.identify(wrapper.getUserId(), traits);
+                Context ctx = new Context();
+                ctx.setProviders(getProviders());
+                Analytics.identify(wrapper.getUserId(), traits, ctx);
             }
         }
     }
@@ -176,19 +208,24 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     public void track(NuxeoPrincipal principal, String eventName,
             Map<String, Serializable> metadata) {
 
-        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal, metadata);
+        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal,
+                metadata);
 
         if (Framework.isTestModeSet()) {
             pushForTest("track", wrapper.getUserId(), eventName, metadata);
         } else {
             if (debugMode) {
-                log.info("send track for " + eventName + " user : " + wrapper.getUserId()
-                        + " with meta : " + metadata.toString());
+                log.info("send track for " + eventName + " user : "
+                        + wrapper.getUserId() + " with meta : "
+                        + metadata.toString());
             } else {
                 log.debug("send track with " + metadata.toString());
                 EventProperties eventProperties = new EventProperties();
                 eventProperties.putAll(wrapper.getMetadata());
-                Analytics.track(wrapper.getUserId(), eventName, eventProperties);
+                Context ctx = new Context();
+                ctx.setProviders(getProviders());
+                Analytics.track(wrapper.getUserId(), eventName,
+                        eventProperties, new DateTime(), ctx);
             }
         }
     }

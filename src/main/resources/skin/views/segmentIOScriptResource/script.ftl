@@ -9,7 +9,7 @@
         // do the identify
          analytics.identify(login, {
           email   : email
-         });
+         }, ${providers});
          document.cookie = "_nxIdentified="+login;
       }
     }

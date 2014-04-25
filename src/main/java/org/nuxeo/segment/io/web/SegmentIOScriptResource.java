@@ -13,6 +13,8 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.segment.io.SegmentIO;
 
+import com.github.segmentio.models.Providers;
+
 @WebObject(type = "segmentIOScriptResource")
 @Path("/segmentIO")
 public class SegmentIOScriptResource extends ModuleRoot {
@@ -26,6 +28,20 @@ public class SegmentIOScriptResource extends ModuleRoot {
     @Path("user/{login}")
     public Object signed(@PathParam("login") String login) {
         return buildScript(login);
+    }
+
+    protected String buildJsonProvidersOptions() {
+        SegmentIO segmentIO = Framework.getLocalService(SegmentIO.class);
+        Providers providers = segmentIO.getProviders();
+        StringBuffer json = new StringBuffer("{");
+        for (String pname : providers.keySet()) {
+            json.append(pname);
+            json.append(" : ");
+            json.append(providers.get(pname).toString());
+            json.append(" , ");
+        }
+        json.append("}");
+        return json.toString();
     }
 
     protected Object buildScript(String login) {
@@ -42,6 +58,7 @@ public class SegmentIOScriptResource extends ModuleRoot {
                 ctx.put("principal", principal);
             }
         }
+        ctx.put("providers", buildJsonProvidersOptions());
         return getView("script").args(ctx);
     }
 }
