@@ -900,4 +900,19 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("icon3", ver.getPropertyValue("icon"));
     }
 
+    @Test
+    public void testAllowVersionWriteACL() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        DocumentRef verRef = session.checkIn(doc.getRef(), null, null);
+        DocumentModel ver = session.getDocument(verRef);
+        ACL acl = new ACLImpl("acl1", false);
+        ACE ace = new ACE("princ1", "perm1", true);
+        acl.add(ace);
+        ACP acp = new ACPImpl();
+        acp.addACL(acl);
+        // check that ACP can be set
+        ver.setACP(acp, true);
+    }
+
 }

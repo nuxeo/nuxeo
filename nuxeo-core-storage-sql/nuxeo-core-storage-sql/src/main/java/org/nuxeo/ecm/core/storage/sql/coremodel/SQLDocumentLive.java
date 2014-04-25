@@ -70,6 +70,7 @@ public class SQLDocumentLive extends SQLComplexProperty implements SQLDocument {
                     Model.MISC_LIFECYCLE_STATE_PROP, //
                     Model.LOCK_OWNER_PROP, //
                     Model.LOCK_CREATED_PROP, //
+                    Model.ACL_PROP, //
                     DC_ISSUED, //
                     RELATED_TEXT_RESOURCES, //
                     RELATED_TEXT_ID, //
