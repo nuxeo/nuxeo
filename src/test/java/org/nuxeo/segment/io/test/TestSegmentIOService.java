@@ -150,7 +150,7 @@ public class TestSegmentIOService {
 
         Assert.assertTrue(filters.getBlackListedUsers().contains("RemoteConnectInstance"));
 
-        Assert.assertTrue(filters.canTrack(session.getPrincipal()));
+        Assert.assertTrue(filters.canTrack(session.getPrincipal().getName()));
 
     }
 

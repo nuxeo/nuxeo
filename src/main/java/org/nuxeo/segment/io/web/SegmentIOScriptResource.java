@@ -59,19 +59,13 @@ public class SegmentIOScriptResource extends ModuleRoot {
 
         SegmentIOUserFilter filters = segmentIO.getUserFilters();
         StringBuffer json = new StringBuffer("[");
-        if (filters!=null) {
+        if (filters != null) {
             if (!filters.isEnableAnonymous()) {
-                UserManager um = Framework.getLocalService(UserManager.class);
-                try {
-                    String anonymous = um.getAnonymousUserId();
-                    if (anonymous!=null) {
-                        json.append("'");
-                        json.append(anonymous);
-                        json.append("',");
-                    }
-                } catch (ClientException e) {
-                    json.append("'Guest',");
-                    log.error("Unable to get Anonymous UserId !", e);
+                String anonymous = filters.getAnonymousUserId();
+                if (anonymous != null) {
+                    json.append("'");
+                    json.append(anonymous);
+                    json.append("',");
                 }
             }
             for (String login : filters.getBlackListedUsers()) {

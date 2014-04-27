@@ -189,13 +189,13 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     public void identify(NuxeoPrincipal principal,
             Map<String, Serializable> metadata) {
 
-        if (!mustTrackprincipal(principal)) {
+        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal,
+                metadata);
+
+        if (!mustTrackprincipal(wrapper.getUserId())) {
             log.debug("Skip user " + principal.getName());
             return;
         }
-
-        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal,
-                metadata);
 
         if (Framework.isTestModeSet()) {
             pushForTest("identify", wrapper.getUserId(), null, metadata);
@@ -254,12 +254,12 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return testData;
     }
 
-    public boolean mustTrackprincipal(NuxeoPrincipal principal) {
+    protected boolean mustTrackprincipal(String principalName) {
         SegmentIOUserFilter filter = getUserFilters();
         if (filter==null) {
             return true;
         }
-        return filter.canTrack(principal);
+        return filter.canTrack(principalName);
     }
 
 
@@ -271,12 +271,13 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     public void track(NuxeoPrincipal principal, String eventName,
             Map<String, Serializable> metadata) {
 
-        if (!mustTrackprincipal(principal)) {
+        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal,
+                metadata);
+
+        if (!mustTrackprincipal(wrapper.getUserId())) {
             log.debug("Skip user " + principal.getName());
             return;
         }
-        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal,
-                metadata);
 
         if (Framework.isTestModeSet()) {
             pushForTest("track", wrapper.getUserId(), eventName, metadata);
