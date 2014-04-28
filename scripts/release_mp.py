@@ -26,8 +26,8 @@ from release import Release
 import traceback
 
 from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
-from nxutils import ExitException, Repository, assert_git_config, log, system,\
-    DEFAULT_MP_CONF_URL
+from nxutils import ExitException, Repository, assert_git_config, log, \
+    system, DEFAULT_MP_CONF_URL
 from terminalsize import get_terminal_size
 
 
@@ -35,12 +35,12 @@ CONNECT_TEST_URL = "https://connect-test.nuxeo.com/nuxeo"
 CONNECT_PROD_URL = "https://connect.nuxeo.com/nuxeo"
 
 
-#pylint: disable=R0902
+# pylint: disable=R0902
 class ReleaseMP(object):
     """Nuxeo MP release manager.
 
     See 'self.perpare()', 'self.perform()'."""
-    #pylint: disable=R0913
+    # pylint: disable=R0913
     def __init__(self, alias, restart_from, marketplace_conf=None):
         self.alias = alias
         self.restart_from = restart_from
@@ -66,7 +66,7 @@ class ReleaseMP(object):
         self.repo.clone_mp(self.marketplace_conf)
         os.chdir(cwd)
 
-    #pylint: disable=E1103
+    # pylint: disable=E1103
     def prepare(self, dryrun=False):
         """ Prepare the release."""
         cwd = os.getcwd()
@@ -74,15 +74,20 @@ class ReleaseMP(object):
             self.clone()
         os.chdir(self.repo.mp_dir)
         marketplaces = self.mp_config.sections()
+        marketplaces_skipped = []
         if self.restart_from:
             idx = marketplaces.index(self.restart_from)
             marketplaces = marketplaces[idx:]
         for marketplace in marketplaces:
+            log("")
             if self.mp_config.has_option(marketplace, "skip"):
                 log("[%s]" % marketplace)
                 log("[WARN] Skipped '%s' (%s)" % (marketplace,
                                     self.mp_config.get(marketplace, "skip")))
-                continue
+                marketplaces_skipped.append(marketplace)
+                upgrade_only = True
+            else:
+                upgrade_only = False
             if self.mp_config.getboolean(marketplace, "prepared"):
                 log("[%s]" % marketplace)
                 log("Skipped '%s' (%s)" % (marketplace, "Already prepared"))
@@ -97,7 +102,10 @@ class ReleaseMP(object):
                     log("[%s]" % marketplace)
                 os.chdir(mp_dir)
                 mp_repo = Repository(os.getcwd(), self.alias)
-                log("Prepare release of %s..." % marketplace)
+                if upgrade_only:
+                    log("Upgrade skipped %s..." % marketplace)
+                else:
+                    log("Prepare release of %s..." % marketplace)
                 mp_release = Release(mp_repo,
                         self.mp_config.get(marketplace, "branch"),
                         self.mp_config.get(marketplace, "tag"),
@@ -108,7 +116,7 @@ class ReleaseMP(object):
                                                 marketplace, "other_versions",
                                                 None))
                 mp_release.log_summary()
-                mp_release.prepare(dryrun=dryrun)
+                mp_release.prepare(dryrun=dryrun, upgrade_only=upgrade_only)
                 prepared = True
             except Exception, e:
                 stack = traceback.format_exc()
@@ -120,7 +128,7 @@ class ReleaseMP(object):
                 self.mp_config.set(marketplace, "skip", "Failed! %s" % stack)
             self.mp_config.set(marketplace, "prepared", str(prepared))
             self.repo.save_mp_config(self.mp_config)
-            if (prepared):
+            if prepared and not upgrade_only:
                 # Upload on Connect test
                 for dirpath, _, filenames in os.walk(mp_repo.basedir):
                     for name in filenames:
@@ -134,20 +142,25 @@ class ReleaseMP(object):
                             self.repo.save_mp_config(self.mp_config)
         os.chdir(cwd)
 
-    #pylint: disable=R0914,C0103
+    # pylint: disable=R0914,C0103
     def perform(self, dryrun=False):
         """ Perform the release: push source, deploy artifacts and upload
         packages."""
         cwd = os.getcwd()
         marketplaces = self.mp_config.sections()
+        marketplaces_skipped = []
         if self.restart_from:
             idx = marketplaces.index(self.restart_from)
             marketplaces = marketplaces[idx:]
         for marketplace in marketplaces:
+            log("")
             if self.mp_config.has_option(marketplace, "skip"):
                 log("[WARN] Skipped '%s' (%s)" % (marketplace,
                                     self.mp_config.get(marketplace, "skip")))
-                continue
+                marketplaces_skipped.append(marketplace)
+                upgrade_only = True
+            else:
+                upgrade_only = False
             if not self.mp_config.getboolean(marketplace, "prepared"):
                 log("[WARN] Skipped '%s' (%s)" % (marketplace, "Not prepared"))
                 continue
@@ -155,7 +168,10 @@ class ReleaseMP(object):
                 log("Skipped '%s' (%s)" % (marketplace, "Already performed"))
                 continue
             try:
-                log("Perform %s" % marketplace)
+                if upgrade_only:
+                    log("Upgrade skipped %s..." % marketplace)
+                else:
+                    log("Perform %s" % marketplace)
                 os.chdir(os.path.join(self.repo.mp_dir, marketplace))
                 mp_repo = Repository(os.getcwd(), self.alias)
                 # Perform release
@@ -166,7 +182,7 @@ class ReleaseMP(object):
                                      maintenance_version, is_final=is_final,
                                      skipTests=skipTests,
                                      other_versions=other_versions)
-                mp_release.perform(dryrun=dryrun)
+                mp_release.perform(dryrun=dryrun, upgrade_only=upgrade_only)
                 performed = True
             except Exception, e:
                 stack = traceback.format_exc()
@@ -178,7 +194,7 @@ class ReleaseMP(object):
                 self.mp_config.set(marketplace, "skip", "Failed! %s" % stack)
             self.mp_config.set(marketplace, "performed", str(performed))
             self.repo.save_mp_config(self.mp_config)
-            if performed:
+            if performed and not upgrade_only:
                 # Upload on Connect
                 for dirpath, _, filenames in os.walk(mp_repo.basedir):
                     for name in filenames:
@@ -215,7 +231,7 @@ class ReleaseMP(object):
 #         os.chdir(cwd)
 
 
-#pylint: disable=R0912,R0914,R0915
+# pylint: disable=R0912,R0914,R0915
 def main():
     assert_git_config()
 
