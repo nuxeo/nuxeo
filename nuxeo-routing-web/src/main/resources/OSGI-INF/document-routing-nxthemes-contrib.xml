@@ -26,11 +26,9 @@
   <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
     <resource name="automation.js">
       <path>scripts/automation.js</path>
-      <require>jquery.js</require>
     </resource>
     <resource name="jquery.jsPlumb-1.5.1-min.js">
       <path>scripts/jquery.jsPlumb-1.5.1-min.js</path>
-      <require>jquery.js</require>
     </resource>
     <resource name="documentRoutingGraph.js">
       <path>scripts/documentRoutingGraph.js</path>
