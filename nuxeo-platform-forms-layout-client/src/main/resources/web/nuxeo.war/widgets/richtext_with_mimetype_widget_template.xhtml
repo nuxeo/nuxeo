@@ -1,4 +1,4 @@
-<f:subview xmlns:f="http://java.sun.com/jsf/core"
+<div xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -56,7 +56,7 @@
       var="disableHtmlInit"
       defaultValue="#{field_1 != null and field_1 != 'text/html'}">
       <nxu:set var="disableBinding" value="#{disableHtmlInit}">
-        <a4j:outputPanel id="#{widget.id}_panel">
+        <a4j:outputPanel id="#{widget.id}_panel" layout="block">
           <nxu:editor id="#{widget.id}_editor" value="#{field_0}"
             width="#{width}" cols="#{cols}" height="#{height}"
             rows="#{rows}" editorSelector="#{editorSelector}"
@@ -149,4 +149,4 @@
       </c:otherwise>
     </c:choose>
   </c:if>
-</f:subview>
+</div>
