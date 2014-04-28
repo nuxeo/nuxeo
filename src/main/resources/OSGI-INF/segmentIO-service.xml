@@ -27,6 +27,46 @@
       class="org.nuxeo.segment.io.SegmentIOMapper" />
   </extension-point>
 
+  <extension-point name="providers">
+    <documentation>
+      Allows to configure segment.io providers configuration.
+
+      See https://segment.io/docs/libraries/java/#selecting-providers
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.segment.io.SegmentIOProviders" />
+  </extension-point>
+
+  <extension-point name="filters">
+    <documentation>
+      Allows to filter out events associated with particular users
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+    <object
+      class="org.nuxeo.segment.io.SegmentIOUserFilter" />
+  </extension-point>
+
+  <!--  add default configuration for Marketo (should move to connect) -->
+  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
+    point="providers">
+    <providersConfig>
+      <providers>
+        <provider name="Marketo">true</provider>
+      </providers>
+    </providersConfig>
+  </extension>
+
+  <!--  add default configuration for Connect (should move to connect) -->
+  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
+    point="filters">
+    <userFilter>
+      <enableAnonymous>false</enableAnonymous>
+      <blackListedUser>RemoteConnectInstance</blackListedUser>
+    </userFilter>
+  </extension>
 
 
 </component>

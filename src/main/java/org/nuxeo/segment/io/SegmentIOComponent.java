@@ -18,6 +18,7 @@
 package org.nuxeo.segment.io;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -27,15 +28,21 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.segment.io.extension.Group;
 import org.osgi.framework.Bundle;
 
 import com.github.segmentio.Analytics;
+import com.github.segmentio.AnalyticsClient;
+import com.github.segmentio.flush.Flusher;
+import com.github.segmentio.models.Context;
 import com.github.segmentio.models.EventProperties;
+import com.github.segmentio.models.Providers;
 import com.github.segmentio.models.Traits;
 
 /**
@@ -53,6 +60,10 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     public final static String MAPPER_EP = "mapper";
 
+    public final static String PROVIDER_EP = "providers";
+
+    public final static String FILTERS_EP = "filters";
+
     protected boolean debugMode = false;
 
     protected Map<String, SegmentIOMapper> mappers;
@@ -63,7 +74,15 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     protected SegmentIOConfig config;
 
+    protected SegmentIOProviders providersConfig;
+
+    protected SegmentIOUserFilter userFilters;
+
+    protected Providers providers;
+
     protected Bundle bundle;
+
+    protected Flusher flusher;
 
     public Bundle getBundle() {
         return bundle;
@@ -90,6 +109,11 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         } else if (MAPPER_EP.equalsIgnoreCase(extensionPoint)) {
             SegmentIOMapper mapper = (SegmentIOMapper) contribution;
             mappers.put(mapper.name, mapper);
+        } else if (PROVIDER_EP.equalsIgnoreCase(extensionPoint)) {
+            providersConfig = (SegmentIOProviders) contribution;
+            providers = null;
+        } else if (FILTERS_EP.equalsIgnoreCase(extensionPoint)) {
+            userFilters = (SegmentIOUserFilter) contribution;
         }
     }
 
@@ -128,28 +152,89 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return Framework.getProperty(WRITE_KEY, DEFAULT_DEBUG_KEY);
     }
 
+    protected Flusher getFlusher() {
+        if (flusher==null) {
+            try {
+                AnalyticsClient client = Analytics.getDefaultClient();
+                Field field = client.getClass().getDeclaredField("flusher");
+                field.setAccessible(true);
+                flusher = (Flusher) field.get(client);
+            } catch (Exception e) {
+                log.error("Unable to access SegmentIO Flusher via reflection", e);
+            }
+        }
+        return flusher;
+    }
+
     public void identify(NuxeoPrincipal principal) {
         identify(principal, null);
     }
 
-    public void identify(NuxeoPrincipal principal, Map<String, Serializable> metadata) {
+    public Providers getProviders() {
+        if (providers == null) {
+            providers = new Providers();
+            if (providersConfig != null) {
+                if (!providersConfig.enableDefaults) {
+                    providers.setDefault(false);
+                }
+                for (String name : providersConfig.providers.keySet()) {
+                    providers.setEnabled(name,
+                            providersConfig.providers.get(name));
+                }
+            }
+        }
+        return providers;
+    }
 
-        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal, metadata);
+    public void identify(NuxeoPrincipal principal,
+            Map<String, Serializable> metadata) {
+
+        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal,
+                metadata);
+
+        if (!mustTrackprincipal(wrapper.getUserId())) {
+            log.debug("Skip user " + principal.getName());
+            return;
+        }
 
         if (Framework.isTestModeSet()) {
             pushForTest("identify", wrapper.getUserId(), null, metadata);
         } else {
             if (debugMode) {
-                log.info("send identify for " + wrapper.getUserId() + " with meta : "
-                        + metadata.toString());
+                log.info("send identify for " + wrapper.getUserId()
+                        + " with meta : " + metadata.toString());
             } else {
                 log.debug("send identify with " + metadata.toString());
                 Traits traits = new Traits();
                 traits.putAll(wrapper.getMetadata());
-                Analytics.identify(wrapper.getUserId(), traits);
+                Context ctx = new Context();
+                ctx.setProviders(getProviders());
+                Analytics.identify(wrapper.getUserId(), traits, ctx);
+
+                // automatic grouping
+                if (principal.getCompany()!=null) {
+                    group(principal.getCompany(), wrapper.getUserId(), null, ctx);
+                }
+                if (wrapper.getMetadata().get("client")!=null) {
+                    group((String)wrapper.getMetadata().get("client"), wrapper.getUserId(), null, ctx);
+                }
+                if (wrapper.getMetadata().get("company")!=null) {
+                    group((String)wrapper.getMetadata().get("company"), wrapper.getUserId(), null, ctx);
+                }
             }
         }
     }
+
+    protected void group(String groupId, String userId, Traits traits, Context ctx) {
+        Flusher flusher = getFlusher();
+        if (flusher!=null) {
+            Group grp = new Group(userId, groupId, traits, new DateTime(), ctx);
+            flusher.enqueue(grp);
+        } else {
+            log.warn("Can not use Group API");
+        }
+    }
+
 
     protected void pushForTest(String action, String principalName,
             String eventName, Map<String, Serializable> metadata) {
@@ -169,6 +254,16 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return testData;
     }
 
+    protected boolean mustTrackprincipal(String principalName) {
+        SegmentIOUserFilter filter = getUserFilters();
+        if (filter==null) {
+            return true;
+        }
+        return filter.canTrack(principalName);
+    }
+
+
+
     public void track(NuxeoPrincipal principal, String eventName) {
         track(principal, null);
     }
@@ -176,19 +271,29 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     public void track(NuxeoPrincipal principal, String eventName,
             Map<String, Serializable> metadata) {
 
-        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal, metadata);
+        SegmentIODataWrapper wrapper = new SegmentIODataWrapper(principal,
+                metadata);
+
+        if (!mustTrackprincipal(wrapper.getUserId())) {
+            log.debug("Skip user " + principal.getName());
+            return;
+        }
 
         if (Framework.isTestModeSet()) {
             pushForTest("track", wrapper.getUserId(), eventName, metadata);
         } else {
             if (debugMode) {
-                log.info("send track for " + eventName + " user : " + wrapper.getUserId()
-                        + " with meta : " + metadata.toString());
+                log.info("send track for " + eventName + " user : "
+                        + wrapper.getUserId() + " with meta : "
+                        + metadata.toString());
             } else {
                 log.debug("send track with " + metadata.toString());
                 EventProperties eventProperties = new EventProperties();
                 eventProperties.putAll(wrapper.getMetadata());
-                Analytics.track(wrapper.getUserId(), eventName, eventProperties);
+                Context ctx = new Context();
+                ctx.setProviders(getProviders());
+                Analytics.track(wrapper.getUserId(), eventName,
+                        eventProperties, new DateTime(), ctx);
             }
         }
     }
@@ -217,4 +322,9 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     public Map<String, List<SegmentIOMapper>> getAllMappers() {
         return event2Mappers;
     }
+
+    public SegmentIOUserFilter getUserFilters() {
+        return userFilters;
+    }
+
 }
