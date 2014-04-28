@@ -46,7 +46,6 @@
       <!-- include JS used for D&D and tableSelection -->
       <resource>utils.js</resource>
       <!-- include JS for contextual menu -->
-      <resource>jquery.js</resource>
       <resource>jquery.fancybox.js</resource>
       <resource>jquery.fancybox.style.css</resource>
       <resource>jquery.tools.cookie.js</resource>
@@ -181,7 +180,6 @@
     <!-- Workaround for jQuery and Sarissa library conflict on IE -->
     <resource name="sarissa-ie-workaround.js">
       <path>scripts/sarissa-ie-workaround.js</path>
-      <require>jquery.js</require>
     </resource>
     <!-- Mustache -->
     <resource name="mustache.js">
@@ -214,23 +212,19 @@
     <!-- Double click shield -->
     <resource name="jquery.nuxeo.doubleclickshield.js">
       <path>scripts/jquery.nuxeo.doubleclickshield.js</path>
-      <require>jquery.js</require>
     </resource>
     <!-- jQuery Ambiance -->
     <resource name="jquery.ambiance.js">
       <path>scripts/jquery/jquery.ambiance.js</path>
-      <require>jquery.js</require>
     </resource>
     <resource name="jquery.ambiance.css">
       <path>css/jquery.ambiance.css</path>
     </resource>
     <resource name="jquery.nuxeo.dropdown.js">
       <path>scripts/jquery/jquery.nuxeo.dropdown.js</path>
-      <require>jquery.js</require>
     </resource>
     <resource name="jquery.tipsy.js">
       <path>scripts/jquery/jquery.tipsy.js</path>
-      <require>jquery.js</require>
     </resource>
     <resource name="tipsy.css">
       <path>css/tipsy.css</path>
@@ -241,7 +235,6 @@
     </resource>
     <resource name="jquery.magnific-popup.js">
       <path>scripts/jquery/jquery.magnific-popup.js</path>
-      <require>jquery.js</require>
     </resource>
      <resource name="magnific-popup.css">
       <path>css/magnific-popup.css</path>
