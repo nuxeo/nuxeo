@@ -40,7 +40,6 @@
     </resource>
     <resource name="select2.js">
       <path>scripts/select2/select2.js</path>
-      <require>jquery.js</require>
     </resource>
     <resource name="nuxeo-select2.js">
       <path>scripts/select2/nuxeo-select2.js</path>
