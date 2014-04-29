@@ -57,7 +57,7 @@ Output
 
     ### Number of doc before import
     {"count":0,"_shards":{"total":5,"successful":5,"failed":0}}
-    ### Total doc to import: 
+    ### Total doc to import:
     87039
     ### Import ...
     real    1m19.391s
@@ -67,4 +67,77 @@ Output
     + curl -XGET localhost:9200/nuxeo/doc/_count
     {"count":85950,"_shards":{"total":5,"successful":5,"failed":0}}+ set +x
 
- 
+
+# Script to change the Elasticsearch settings or mapping of an existing instance
+
+
+If you want to change the settings or the mapping you need to reindex
+all the Elasticsearch documents, here is the fast way to achieve this
+without extracting the data from Nuxeo:
+
+## Requirements
+
+- Java 7
+
+- [stream2es](https://github.com/elasticsearch/stream2es/) :
+
+     curl -O download.elasticsearch.org/stream2es/stream2es; chmod +x stream2es
+
+
+## Procedure
+
+Stop your Nuxeo instance.
+
+1. Extract the current configuration of your index (settings and
+  mapping)
+
+     ./es_get_conf.sh localhost:9200/nuxeo
+
+ Output:
+
+     ### Dump settings
+     ### Dump mapping
+     ### Merging conf
+     ### Done
+     /tmp/es-conf.json
+
+  This small script does nothing more to merge the settings and
+  mapping configuration into a single file.
+
+2. Edit with the `/tmp/es-conf.json` and customize your configuration
+
+3. Create a new index with the new configuration
+
+     curl -XPUT localhost:9200/nuxeo-new -d @/tmp/es-conf.json
+
+   Output
+
+	 {"acknowledged":true}
+
+4. Copy the documents to the new index
+
+
+     stream2es es --source http://localhost:9200/nuxeo --target http://localhost:9200/nuxeo-new
+
+   Output
+
+      stream es from http://localhost:9200/nuxeo to http://localhost:9200/nuxeo-new
+      00:00,993 396,8d/s 1042,0K/s 394 394 1059563 0 5f959f21-5e02-4346-acae-a56614224058
+      00:01,276 848,0d/s 1628,8K/s 1082 688 1068667 0 24decc6a-2fb7-4c9d-a64b-4fc1f88c707f
+      00:01,497 1181,0d/s 2085,1K/s 1768 686 1068139 0 cb972a9d-cf6a-45e7-be27-c79c7c5630f0
+      00:01,708 1436,2d/s 2438,4K/s 2453 685 1068381 0 abbec188-9808-4134-861e-78bab63c4e78
+      00:01,931 1626,1d/s 2697,2K/s 3140 687 1068564 0 d3e98084-66cf-442d-a708-4b5e39d86f9b
+      flushing index queue
+      00:02,180 1755,5d/s 2867,6K/s 3827 687 1068080 0 9fec1fbe-7c4b-4a84-b6d7-a774e54916bf
+      00:02,219 1872,9d/s 3042,2K/s 4156 329 511349 0 62c56520-2d26-4778-8292-f91a099f65f8
+      streamed 4156 indexed 4156 bytes xfer 6912743 errors 0
+
+
+5. Update the index name in the `nuxeo.conf` and drop your old index.
+
+
+Note that you can also do this without any downtime using an alias For
+instance if you have an alias `nuxeo` that point to `nuxeo1`, you do
+step 1 to 4 creating a new index `nuxeo2`, then you update the alias
+`nuxeo` to point to `nuxeo2`.
+
