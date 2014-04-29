@@ -36,7 +36,6 @@ import org.nuxeo.connect.update.Version;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.osgi.JarBundleFile;
-import org.nuxeo.osgi.jboss.JBossBundleFile;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RegistrationInfo;
@@ -97,9 +96,6 @@ public class RuntimeInstrospection {
         File jarFile = null;
         if (file instanceof JarBundleFile) {
             JarBundleFile jar = (JarBundleFile) file;
-            jarFile = jar.getFile();
-        } else if (file instanceof JBossBundleFile) {
-            JBossBundleFile jar = (JBossBundleFile) file;
             jarFile = jar.getFile();
         }
         if (jarFile == null || jarFile.isDirectory()) {
