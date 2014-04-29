@@ -740,7 +740,7 @@ public class H2Fulltext {
             }
 
             try {
-                indexWriter.updateDocument(new Term(FIELD_KEY, key), doc);
+                indexWriter.addDocument(doc);
             } catch (IOException e) {
                 throw convertException(e);
             } catch (org.apache.lucene.store.AlreadyClosedException e) {
