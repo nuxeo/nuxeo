@@ -104,9 +104,9 @@ Stop your Nuxeo instance.
   This small script does nothing more to merge the settings and
   mapping configuration into a single file.
 
-2. Edit with the `/tmp/es-conf.json` and customize your configuration
+2. Modify the `/tmp/es-conf.json` file.
 
-3. Create a new index with the new configuration
+3. Create a new index with the new configuration:
 
         curl -XPUT localhost:9200/nuxeo-new -d @/tmp/es-conf.json
 
@@ -114,7 +114,7 @@ Stop your Nuxeo instance.
 
         {"acknowledged":true}
 
-4. Copy the documents to the new index
+4. Copy the documents to the new index:
 
 
         stream2es es --source http://localhost:9200/nuxeo --target http://localhost:9200/nuxeo-new
@@ -133,7 +133,8 @@ Stop your Nuxeo instance.
         streamed 4156 indexed 4156 bytes xfer 6912743 errors 0
 
 
-5. Update the index name in the `nuxeo.conf` and drop your old index.
+5. Update the `elasticsearch.indexName` value in the `nuxeo.conf` and
+   delete your old index if you are happy with the new one.
 
 
 Note that you can also do this without any downtime using an alias For
