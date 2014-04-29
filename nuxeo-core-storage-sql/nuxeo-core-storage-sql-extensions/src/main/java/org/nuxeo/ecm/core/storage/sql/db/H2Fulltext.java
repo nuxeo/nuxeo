@@ -478,11 +478,8 @@ public class H2Fulltext {
                         iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
                         indexWriter = new IndexWriter(dir, iwc);
                     } catch (LockObtainFailedException e) {
-                        // log.error("Cannot open fulltext index", e);
-                        System.err.println("Cannot open fulltext index "
-                                + indexPath);
-                        e.printStackTrace();
-                        throw convertException(e);
+                        throw convertException("Cannot open fulltext index "
+					       + indexPath, e);
                     } catch (IOException e) {
                         throw convertException(e);
                     }
@@ -508,7 +505,11 @@ public class H2Fulltext {
     }
 
     private static SQLException convertException(Exception e) {
-        SQLException e2 = new SQLException("Error while indexing document");
+        return convertException("Error while indexing document", e);
+    }
+
+    private static SQLException convertException(String message, Exception e) {
+        SQLException e2 = new SQLException(message);
         e2.initCause(e);
         return e2;
     }
