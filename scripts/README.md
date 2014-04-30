@@ -89,7 +89,9 @@ without extracting the data from Nuxeo:
 
 ### Procedure
 
-Stop your Nuxeo instance.
+You need an http access to the Elasticsearch, for an embedded instance
+you need to set the `elasticsearch.httpEnabled=true` option in the
+`nuxeo.conf` file.
 
 1. Extract the current configuration of your index (settings and
   mapping)
@@ -137,15 +139,17 @@ Stop your Nuxeo instance.
 
 
 5. Update the `elasticsearch.indexName` value in the `nuxeo.conf` and
-   delete your old index if you are happy with the new one.
+   restart Nuxeo. You can delete your old index if you are happy with
+   the new one.
 
 
 Note that you can also do this without any downtime using an
-alias. For instance if you have an alias `nuxeo` that point to
-`nuxeo1`, you do step 1 to 4 creating a new index `nuxeo2`, then you
-update the alias `nuxeo` to point to `nuxeo2`.
+[alias](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-aliases.html). For
+instance if you have an alias `nuxeo` that point to `nuxeo1`, you do
+step 1 to 4 creating a new index `nuxeo2`, then you update the alias
+`nuxeo` to point to `nuxeo2`.
 
-# Case insensitive search (ILIKE)
+## Case insensitive search (ILIKE)
 
 If you want to do case insensitive search or use an ILIKE operation,
 you need to change the mapping.
