@@ -173,7 +173,7 @@ public class ITCollectionsTest extends AbstractTest {
         final String myFavoritesDocName = personalWorkspaceRootDocs.get(1).findElement(
                 By.xpath("td[3]")).getText();
         assertTrue("My Favorites".equals(myFavoritesDocName)
-                || "Mes Favories".equals(myFavoritesDocName));
+                || "Mes Favoris".equals(myFavoritesDocName));
 
         contentTabSubPage.swithToDocumentBase();
 
