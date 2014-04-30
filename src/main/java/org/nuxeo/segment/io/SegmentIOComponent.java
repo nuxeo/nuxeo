@@ -226,6 +226,9 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
     }
 
     protected void group(String groupId, String userId, Traits traits, Context ctx) {
+        if (groupId==null || groupId.isEmpty()) {
+            return;
+        }
         Flusher flusher = getFlusher();
         if (flusher!=null) {
             Group grp = new Group(userId, groupId, traits, new DateTime(), ctx);
