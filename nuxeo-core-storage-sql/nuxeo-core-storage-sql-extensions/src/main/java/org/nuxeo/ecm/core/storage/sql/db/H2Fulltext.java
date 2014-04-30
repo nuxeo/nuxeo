@@ -495,7 +495,6 @@ public class H2Fulltext {
         IndexWriter index = indexWriters.remove(path);
         if (index != null) {
             try {
-                index.commit();
                 index.close();
             } catch (IOException e) {
                 throw convertException(e);
@@ -704,12 +703,6 @@ public class H2Fulltext {
             }
             if (newRow != null) {
                 insert(newRow);
-            }
-            try {
-                // need to flush otherwise some unit tests don't pass
-                indexWriter.commit();
-            } catch (IOException e) {
-                throw convertException(e);
             }
         }
 
