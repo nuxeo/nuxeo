@@ -166,12 +166,14 @@ public class ITCollectionsTest extends AbstractTest {
         List<WebElement> personalWorkspaceRootDocs = contentTabSubPage.getChildDocumentRows();
 
         assertEquals(2, personalWorkspaceRootDocs.size());
-        assertEquals(
-                "My Collections",
-                personalWorkspaceRootDocs.get(0).findElement(By.xpath("td[3]")).getText());
-        assertEquals(
-                "My Favorites",
-                personalWorkspaceRootDocs.get(1).findElement(By.xpath("td[3]")).getText());
+        final String myCollectionsDocName = personalWorkspaceRootDocs.get(0).findElement(
+                By.xpath("td[3]")).getText();
+        assertTrue("My Collections".equals(myCollectionsDocName)
+                || "Mes Collections".equals(myCollectionsDocName));
+        final String myFavoritesDocName = personalWorkspaceRootDocs.get(1).findElement(
+                By.xpath("td[3]")).getText();
+        assertTrue("My Favorites".equals(myFavoritesDocName)
+                || "Mes Favories".equals(myFavoritesDocName));
 
         contentTabSubPage.swithToDocumentBase();
 
