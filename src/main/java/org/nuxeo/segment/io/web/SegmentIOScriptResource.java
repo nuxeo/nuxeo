@@ -43,14 +43,22 @@ public class SegmentIOScriptResource extends ModuleRoot {
     protected String buildJsonProvidersOptions() {
         SegmentIO segmentIO = Framework.getLocalService(SegmentIO.class);
         Providers providers = segmentIO.getProviders();
-        StringBuffer json = new StringBuffer("{");
+
+        StringBuffer p = new StringBuffer();
         for (String pname : providers.keySet()) {
-            json.append(pname);
-            json.append(" : ");
-            json.append(providers.get(pname).toString());
-            json.append(" , ");
+            p.append("\"" + pname + "\"");
+            p.append(" : ");
+            p.append(providers.get(pname).toString());
+            p.append(" , ");
         }
-        json.append("}");
+
+        StringBuffer json = new StringBuffer("{");
+        json.append(p.toString());
+
+        json.append("\"providers\": {");
+        json.append(p.toString());
+        json.append("} }");
+
         return json.toString();
     }
 
