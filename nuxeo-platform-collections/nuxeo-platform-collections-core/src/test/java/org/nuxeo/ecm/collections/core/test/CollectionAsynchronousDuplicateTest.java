@@ -36,11 +36,8 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
     @Test
     public void testCopyCollectionWithManyItems()
             throws ClientException, InterruptedException {
-        long start = System.currentTimeMillis();
         updateCollectionMemberOnCollectionDuplicated(createTestFiles(session,
                 MAX_CARDINALITY));
-        long stop = System.currentTimeMillis();
-        System.out.println("Test took (ms) " + (stop - start));
     }
 
     @Test
