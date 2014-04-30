@@ -188,4 +188,12 @@ public class TestCompareCoreWithES {
                 "select * from Document where  ecm:mixinType != 'Folderish' order by dc:title",});
     }
 
+    @Test
+    public void testSearchWithLike() throws Exception {
+        // Validate that NXP-14338 is fixed
+        testQueries(new String[] { "SELECT * FROM Document WHERE dc:title LIKE 'nomatch%'",
+                "SELECT * from Document WHERE dc:title LIKE 'File%' ORDER BY dc:title",
+        });
+    }
+
 }

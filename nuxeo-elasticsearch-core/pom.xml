@@ -11,7 +11,7 @@
   <name>Elasticsearch Connector implementation</name>
 
   <properties>
-     <lucene.version>4.7.0</lucene.version>
+     <lucene.version>4.7.2</lucene.version>
   </properties>
 
   <dependencies>
