@@ -1,6 +1,9 @@
-# Script to dump Nuxeo documents and to import them into elasticsearch
+# Misc Scripts to manage Nuxeo Elasticsearch index
 
-## Requirements
+
+## Dump existing Nuxeo documents into Elasticsearch
+
+### Requirements
 
 - A Nuxeo intance with the nuxeo-rest-api addon (>5.9.3)
 
@@ -8,12 +11,12 @@
 
         sudo apt-get install parallel
 
-- ElasticSearch >= 1.0.1
+- ElasticSearch >= 1.1.1
 
-        wget --no-check-certificate https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.0.1.deb && sudo dpkg -i elasticsearch-1.0.1.deb
+        wget --no-check-certificate https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.1.1.deb && sudo dpkg -i elasticsearch-1.1.1.deb
 
 
-## Dump the Nuxeo content
+### Dump the Nuxeo content
 
 
     NXUSER=Administrator NXPASSWORD=secret NXURL=http://localhost:8080/nuxeo ./nx_dump.sh
@@ -33,7 +36,7 @@ Here is the output
     /tmp/dump-nuxeo-doc.tgz
 
 
-## Initialize the elasticsearch index and template
+### Initialize the Elasticsearch index and template
 
     ESHOST=localhost ESPORT=9200 ./init-index.sh
 
@@ -46,7 +49,7 @@ Output
     ### Done
 
 
-## Import content into elasticsearch
+### Import content into elasticsearch
 
 Import the documents dump into elasticsearch:
 
@@ -68,14 +71,14 @@ Output
     {"count":85950,"_shards":{"total":5,"successful":5,"failed":0}}+ set +x
 
 
-# Script to change the Elasticsearch settings or mapping of an existing instance
+## Change the Elasticsearch settings or mapping of an existing instance
 
 
 If you want to change the settings or the mapping you need to reindex
 all the Elasticsearch documents, here is the fast way to achieve this
 without extracting the data from Nuxeo:
 
-## Requirements
+### Requirements
 
 - Java 7
 
@@ -84,7 +87,7 @@ without extracting the data from Nuxeo:
         curl -O download.elasticsearch.org/stream2es/stream2es; chmod +x stream2es
 
 
-## Procedure
+### Procedure
 
 Stop your Nuxeo instance.
 
@@ -137,8 +140,36 @@ Stop your Nuxeo instance.
    delete your old index if you are happy with the new one.
 
 
-Note that you can also do this without any downtime using an alias For
-instance if you have an alias `nuxeo` that point to `nuxeo1`, you do
-step 1 to 4 creating a new index `nuxeo2`, then you update the alias
-`nuxeo` to point to `nuxeo2`.
+Note that you can also do this without any downtime using an
+alias. For instance if you have an alias `nuxeo` that point to
+`nuxeo1`, you do step 1 to 4 creating a new index `nuxeo2`, then you
+update the alias `nuxeo` to point to `nuxeo2`.
+
+# Case insensitive search (ILIKE)
+
+If you want to do case insensitive search or use an ILIKE operation,
+you need to change the mapping.
+
+Follow the previous procedure and edit `es-conf.json` file to add an
+analyzer in the `analyzers` section:
+
+            "lowercase" : {
+              "type" : "custom",
+              "filter" : [ "lowercase", "asciifolding" ],
+              "tokenizer" : "keyword"
+            },
+
+Then add the analyzer to your field in the `mappings` section for
+instance:
+
+          "dc:source" : {
+            "type" : "string",
+            "analyzer" : "lowercase"
+          },
+
+
+Then continue the procedure step 3 and 4.
+
+Now `SELECT * FROM Document WHERE dc:source LIKE 'FoO%'` will match
+`foobar` or `FoObAz`.
 
