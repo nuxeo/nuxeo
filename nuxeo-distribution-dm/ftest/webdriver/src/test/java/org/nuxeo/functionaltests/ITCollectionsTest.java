@@ -31,6 +31,7 @@ import org.nuxeo.functionaltests.pages.CollectionsPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
+import org.nuxeo.functionaltests.pages.NavigationSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
@@ -64,6 +65,14 @@ public class ITCollectionsTest extends AbstractTest {
     private static final String COLLECTION_DESSCRIPTION_2 = "My second collection";
 
     private static final String CAN_COLLECT_RIGHT = "Can Collect";
+
+    public static final String MY_COLLECTIONS_FR_LABEL = "Mes Collections";
+
+    public static final String MY_COLLECTIONS_EN_LABEL = "My Collections";
+
+    public static final String MY_FAVORITES_FR_LABEL = "Mes Favoris";
+
+    public static final String MY_FAVORITES_EN_LABEL = "My Favorites";
 
     @After
     public void tearDown() throws UserNotConnectedException {
@@ -168,12 +177,13 @@ public class ITCollectionsTest extends AbstractTest {
         assertEquals(2, personalWorkspaceRootDocs.size());
         final String myCollectionsDocName = personalWorkspaceRootDocs.get(0).findElement(
                 By.xpath("td[3]")).getText();
-        assertTrue("My Collections".equals(myCollectionsDocName)
-                || "Mes Collections".equals(myCollectionsDocName));
+        boolean isFrench = MY_COLLECTIONS_FR_LABEL.equals(myCollectionsDocName);
+        boolean isEnglish = MY_COLLECTIONS_EN_LABEL.equals(myCollectionsDocName);
+
+        assertTrue(isEnglish || isFrench);
         final String myFavoritesDocName = personalWorkspaceRootDocs.get(1).findElement(
                 By.xpath("td[3]")).getText();
-        assertTrue("My Favorites".equals(myFavoritesDocName)
-                || "Mes Favoris".equals(myFavoritesDocName));
+        assertEquals(isEnglish ? MY_FAVORITES_EN_LABEL : MY_FAVORITES_FR_LABEL, myFavoritesDocName);
 
         contentTabSubPage.swithToDocumentBase();
 
@@ -192,7 +202,7 @@ public class ITCollectionsTest extends AbstractTest {
         // Check copy/paste collection
         contentTabSubPage = collectionContentTabSubPage.swithToPersonalWorkspace().getContentTab();
 
-        contentTabSubPage = contentTabSubPage.goToDocument("My Collections").getContentTab();
+        contentTabSubPage = contentTabSubPage.goToDocument(isEnglish ? MY_COLLECTIONS_EN_LABEL : MY_COLLECTIONS_FR_LABEL).getContentTab();
 
         contentTabSubPage.copyByTitle(COLLECTION_NAME_1);
 
@@ -251,8 +261,14 @@ public class ITCollectionsTest extends AbstractTest {
         addToCollectionForm.setCollection(COLLECTION_NAME_2);
         fileDocumentBasePage = addToCollectionForm.add(FileDocumentBasePage.class);
 
-        documentBasePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(
-                "My Collections");
+        NavigationSubPage navigationSubPage = fileDocumentBasePage.getNavigationSubPage();
+        if (navigationSubPage.canNavigateToDocument(MY_COLLECTIONS_EN_LABEL)) {
+            documentBasePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(
+                    MY_COLLECTIONS_EN_LABEL);
+        } else {
+            documentBasePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(
+                    MY_COLLECTIONS_FR_LABEL);
+        }
 
         documentBasePage = createCollection(workspacePage, COLLECTION_NAME_2,
                 COLLECTION_DESSCRIPTION_2);

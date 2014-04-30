@@ -18,6 +18,7 @@ package org.nuxeo.functionaltests.pages;
 
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -44,6 +45,18 @@ public class NavigationSubPage extends AbstractPage {
         // wait for page load after click
         findElementWithTimeout(By.className("userMenuActions"));
         return asPage(DocumentBasePage.class);
+    }
+
+    /**
+     * @since 5.9.4
+     */
+    public boolean canNavigateToDocument(final String docTitle) {
+        try {
+            navigationTree.findElement(By.linkText(docTitle));
+            return true;
+        } catch(NoSuchElementException e) {
+            return false;
+        }
     }
 
 }
