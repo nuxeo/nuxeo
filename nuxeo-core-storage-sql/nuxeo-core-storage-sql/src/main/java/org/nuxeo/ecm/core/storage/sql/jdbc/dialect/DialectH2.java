@@ -225,7 +225,7 @@ public class DialectH2 extends Dialect {
     public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery,
             String indexName, int nthMatch, Column mainColumn, Model model,
             Database database) {
-        String phftname = database.getTable(model.FULLTEXT_TABLE_NAME).getPhysicalName();
+        String phftname = database.getTable(Model.FULLTEXT_TABLE_NAME).getPhysicalName();
         String fullIndexName = "PUBLIC_" + phftname + "_" + indexName;
         String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
         String tableAlias = "_NXFTTBL" + nthSuffix;
@@ -312,6 +312,11 @@ public class DialectH2 extends Dialect {
             }
             if ("HYT00".equals(sqlState)) {
                 // Timeout trying to lock table
+                return true;
+            }
+            if ("90131".equals(sqlState)) {
+                // Concurrent update in table ...: another transaction has
+                // updated or deleted the same row
                 return true;
             }
         }
