@@ -93,7 +93,7 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
             ComponentConfig config = TagConfigFactory.createComponentConfig(
                     tagConfig, widget.getTagConfigId(), attributes, leaf,
-                    UICalendar.COMPONENT_TYPE, null);
+                    UICalendar.COMPONENT_TYPE, "org.richfaces.CalendarRenderer");
             ComponentHandler input = new InputDateTimeTagHandler(config);
             String styleClass = "inputDate";
             if (widget.getProperty("styleClass") != null) {
