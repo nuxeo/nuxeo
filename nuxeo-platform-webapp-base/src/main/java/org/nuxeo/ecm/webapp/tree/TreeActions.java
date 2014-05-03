@@ -23,6 +23,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.richfaces.component.UITree;
 import org.richfaces.event.CollapsibleSubTableToggleEvent;
+import org.richfaces.event.TreeSelectionChangeEvent;
 
 /**
  * Local interface for the Seam component that manages the tree.
@@ -45,11 +46,16 @@ public interface TreeActions {
      * <p>
      * Used to not interfere with node state when manually changing open nodes.
      */
+    @Deprecated
     void changeExpandListener(CollapsibleSubTableToggleEvent event);
+
+    void toggleListener();
 
     /**
      * Returns true if node should be opened according to current document.
      */
+
+    @Deprecated
     Boolean adviseNodeOpened(UITree tree);
 
     void resetCurrentDocumentData();

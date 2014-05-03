@@ -257,17 +257,20 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
                 : null;
     }
 
-    @Override
+	@Override
 	public boolean isExpanded() {
-		final TreeActionsBean treeActioNBean = (TreeActionsBean) Component
+		// TODO: make sure than calling treeActionBean for each node is costless
+		final TreeActionsBean treeActionBean = (TreeActionsBean) Component
 				.getInstance("treeActions");
-		String currentDocPath = treeActioNBean.getCurrentDocumentPath();
-		if (currentDocPath != null && getPath() != null
-				&& currentDocPath.startsWith(getPath())) {
-			// additional slower check for strict path prefix
-			if ((currentDocPath + '/').startsWith(getPath() + '/')
-					|| "/".equals(getPath())) {
-				expanded = true;
+		if (!treeActionBean.isNodeExpandEvent()) {
+			String currentDocPath = treeActionBean.getCurrentDocumentPath();
+			if (currentDocPath != null && getPath() != null
+					&& currentDocPath.startsWith(getPath())) {
+				// additional slower check for strict path prefix
+				if ((currentDocPath + '/').startsWith(getPath() + '/')
+						|| "/".equals(getPath())) {
+					expanded = true;
+				}
 			}
 		}
 		return expanded;

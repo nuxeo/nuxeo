@@ -54,6 +54,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 import org.richfaces.component.UITree;
 import org.richfaces.event.CollapsibleSubTableToggleEvent;
+import org.richfaces.event.TreeSelectionChangeEvent;
+import org.richfaces.event.TreeToggleEvent;
 
 /**
  * Manages the navigation tree.
@@ -196,7 +198,14 @@ public class TreeActionsBean implements TreeActions, Serializable {
         return trees.get(treeName);
     }
 
+    @Deprecated
     public void changeExpandListener(CollapsibleSubTableToggleEvent event) {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
+        requestMap.put(NODE_SELECTED_MARKER, Boolean.TRUE);
+    }
+
+    public void toggleListener() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         Map<String, Object> requestMap = facesContext.getExternalContext().getRequestMap();
         requestMap.put(NODE_SELECTED_MARKER, Boolean.TRUE);
