@@ -25,19 +25,18 @@
         <dd class="menuForm">
           <h:panelGroup id="treeNav">
             <rich:tree
-              adviseNodeOpened="#{treeActions.adviseNodeOpened}"
-              changeExpandListener="#{treeActions.changeExpandListener}"
+              toggleListener="#{treeActions.toggleListener}"
               iconLeaf="#{nxd:iconPath(node.document)}"
-              icon="#{nxd:iconPath(node.document)}"
-              iconExpanded="/icons/toggle_minus.png"
-              iconCollapsed="/icons/toggle_plus.png"
+              iconExpanded="#{nxd:iconPath(node.document)}"
+              iconCollapsed="#{nxd:iconPath(node.document)}"
               rowKeyVar="rowKey"
-              stateVar="nodeState">
+              stateVar="nodeState"
+              var="node">
               <rich:treeModelRecursiveAdaptor
                 roots="#{treeActions.treeRoots}"
                 nodes="#{node.children}"
-                var="node">
-                <rich:treeNode
+                leaf="#{node.children.size lt 1}">
+                <rich:treeNode expanded="#{node.expanded}"
                   highlightedClass="treeNodeHighlightedClass"
                   selectedClass="treeNodeSelectedClass"
                   oncomplete="jQuery('span.popupTarget').contextMenu('treeExplorer_popupMenu');">
