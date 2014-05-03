@@ -73,6 +73,8 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     protected Map<Object, DocumentTreeNodeImpl> children;
 
+    protected boolean expanded = false;
+
     public DocumentTreeNodeImpl(DocumentModel document, Filter filter,
             Filter leafFilter, Sorter sorter, String pageProviderName) {
         this.document = document;
@@ -254,4 +256,26 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
         return document != null ? document.getAdapter(QuotaStatsNonFolderishCount.class)
                 : null;
     }
+
+    @Override
+	public boolean isExpanded() {
+		final TreeActionsBean treeActioNBean = (TreeActionsBean) Component
+				.getInstance("treeActions");
+		String currentDocPath = treeActioNBean.getCurrentDocumentPath();
+		if (currentDocPath != null && getPath() != null
+				&& currentDocPath.startsWith(getPath())) {
+			// additional slower check for strict path prefix
+			if ((currentDocPath + '/').startsWith(getPath() + '/')
+					|| "/".equals(getPath())) {
+				expanded = true;
+			}
+		}
+		return expanded;
+	}
+
+
+	@Override
+	public void setExpanded(boolean expanded) {
+		this.expanded = expanded;
+	}
 }
