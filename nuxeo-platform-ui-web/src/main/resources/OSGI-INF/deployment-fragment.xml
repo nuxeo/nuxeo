@@ -309,15 +309,6 @@
       </context-param>
     -->
 
-    <!-- Mark this component so that it is always re-rendered on ajax calls
-      (so that it can expose to the context the values it holds) -->
-    <context-param>
-      <param-name>org.ajax4jsf.CONTROL_COMPONENTS</param-name>
-      <param-value>
-        org.nuxeo.ecm.platform.ui.web.binding.alias.UIAliasHolder,org.nuxeo.ecm.platform.ui.web.component.holder.UIValueHolder
-      </param-value>
-    </context-param>
-
     <!-- use NEKO instead of default tidy parser, see NXP-11272 -->
     <context-param>
       <param-name>org.ajax4jsf.xmlparser.ORDER</param-name>

@@ -23,6 +23,8 @@ import javax.faces.FacesException;
 import javax.faces.component.ContextCallback;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIOutput;
+import javax.faces.component.visit.VisitCallback;
+import javax.faces.component.visit.VisitContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.FacesEvent;
 import javax.faces.event.PhaseId;
@@ -50,10 +52,6 @@ public class UIAliasHolder extends UIOutput {
 
     public UIAliasHolder() {
         super();
-        // marked as transient as dynamically created, as per recommendations
-        // for JSF2 state saving strategy, see
-        // http://sfjsf.blogspot.com/2006/03/how-were-going-to-fix-jsf-state-saving.html
-        setTransient(true);
     }
 
     @Override
@@ -239,6 +237,21 @@ public class UIAliasHolder extends UIOutput {
         } finally {
             if (alias != null) {
                 AliasVariableMapper.removeAliasesExposedToRequest(context,
+                        alias.getId());
+            }
+        }
+    }
+
+    @Override
+    public boolean visitTree(VisitContext visitContext, VisitCallback callback) {
+        FacesContext facesContext = visitContext.getFacesContext();
+        AliasVariableMapper alias = getAliasVariableMapper();
+        try {
+            AliasVariableMapper.exposeAliasesToRequest(facesContext, alias);
+            return super.visitTree(visitContext, callback);
+        } finally {
+            if (alias != null) {
+                AliasVariableMapper.removeAliasesExposedToRequest(facesContext,
                         alias.getId());
             }
         }
