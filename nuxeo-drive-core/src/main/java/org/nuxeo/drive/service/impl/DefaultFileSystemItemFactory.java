@@ -49,6 +49,8 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
 
     private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactory.class);
 
+    protected static final String RENDITION_FACET = "Rendition";
+
     protected static final String VERSIONING_DELAY_PARAM = "versioningDelay";
 
     protected static final String VERSIONING_OPTION_PARAM = "versioningOption";
@@ -101,6 +103,13 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
         if (doc.isProxy()) {
             log.debug(String.format(
                     "Document %s is a proxy, it cannot be adapted as a FileSystemItem.",
+                    doc.getId()));
+            return false;
+        }
+        // Check rendition
+        if (doc.hasFacet(RENDITION_FACET)) {
+            log.debug(String.format(
+                    "Document %s is a rendition, it cannot be adapted as a FileSystemItem.",
                     doc.getId()));
             return false;
         }
