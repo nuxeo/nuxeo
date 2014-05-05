@@ -23,7 +23,6 @@
           clusterName="MyCluster"
           nodeName="MyNuxeo"
           pathData="/var/lib/nuxeo/elasticsearch/"
-          pathLogs="/var/log/nuxeo-elasticsearch.log"
           indexStoreType="mmapfs"
           httpEnabled="true"
         />
@@ -36,8 +35,6 @@
      nodeName is the node.name, default to nuxeoNode
 
      pathData is the path.data
-
-     pathLogs is the path.logs
 
      indexStoreType is the index.store_type
 

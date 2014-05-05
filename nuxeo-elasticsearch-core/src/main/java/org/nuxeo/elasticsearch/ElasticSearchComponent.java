@@ -140,8 +140,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected Map<String, ElasticSearchIndexConfig> indexes = new HashMap<String, ElasticSearchIndexConfig>();
 
-    protected List<String> fulltextFields;
-
     protected String docIndexName;
 
     // Metrics
@@ -382,7 +380,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 log.info("Creating a local ES node inJVM");
                 Builder sBuilder = ImmutableSettings.settingsBuilder();
                 sBuilder.put("http.enabled", lConf.httpEnabled())
-                        .put("path.logs", lConf.getLogPath())
                         .put("path.data", lConf.getDataPath())
                         .put("index.number_of_shards", 1)
                         .put("index.number_of_replicas", 1)
@@ -400,6 +397,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 localNode = NodeBuilder.nodeBuilder().local(true)
                         .settings(settings).node();
                 client = localNode.start().client();
+                client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
             } else if (remoteConfig != null) {
                 log.info("Connecting to an ES cluster");
                 Builder builder = ImmutableSettings
@@ -463,9 +461,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             List<SortInfo> builtInSortInfos = NxqlQueryConverter
                     .getSortInfo(nxql);
             if (sortInfos != null) {
-                for (SortInfo si : sortInfos) {
-                    builtInSortInfos.add(si);
-                }
+                Collections.addAll(builtInSortInfos, sortInfos);
             }
             sortInfos = builtInSortInfos.toArray(new SortInfo[builtInSortInfos
                     .size()]);
@@ -673,10 +669,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public boolean isAlreadyScheduledForIndexing(DocumentModel doc) {
-        if (pendingWork.contains(getWorkKey(doc))) {
-            return true;
-        }
-        return false;
+        return pendingWork.contains(getWorkKey(doc));
     }
 
     @Override

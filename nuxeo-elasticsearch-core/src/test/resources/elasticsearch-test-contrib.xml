@@ -14,7 +14,6 @@
           clusterName="nuxeoTestClusterLocalFs"
           nodeName="nuxeoTestNode"
           pathData="/tmp/elasticsearch"
-          pathLogs="/tmp/elastcisearch-log"
           indexStoreType="mmapfs"
           httpEnabled="true"
         />

@@ -42,9 +42,6 @@ public class ElasticSearchLocalConfig implements Serializable {
     @XNode("@pathData")
     protected String dataPath;
 
-    @XNode("@pathLogs")
-    protected String logPath;
-
     @XNode("@indexStoreType")
     protected String indexStoreType;
 
@@ -61,21 +58,6 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     public void setDataPath(String dataPath) {
         this.dataPath = dataPath;
-    }
-
-    public String getLogPath() {
-        if (logPath == null) {
-            File dir = new File(Framework.getRuntime().getHome(), "data/elasticsearch-log");
-            if (!dir.exists()) {
-                dir.mkdir();
-            }
-            logPath = dir.getPath();
-        }
-        return logPath;
-    }
-
-    public void setLogPath(String logPath) {
-        this.logPath = logPath;
     }
 
     public String getIndexStorageType() {
