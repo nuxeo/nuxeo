@@ -7,7 +7,6 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:a4j="http://richfaces.org/a4j"
-
   id="#{layout.id}">
 
 <c:if test="false">
@@ -42,10 +41,11 @@
               <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
                 styleClass="tipsyShow tipsyGravitySW"
                 title="#{messages['tooltip.content.select.all']}"
+                onchange="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
                 value="#{documents.selected}">
-                <a4j:ajax event="click"
+                <f:ajax event="click"
+                  execute="@this"
                   listener="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
-                  onbeforesubmit="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
                   render="#{formId}_buttons:ajax_selection_buttons" />
               </h:selectBooleanCheckbox>
             </c:when>
@@ -53,9 +53,10 @@
               <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
                 styleClass="tipsyShow tipsyGravitySW"
                 title="#{messages['tooltip.content.select.all']}"
+                onchange="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
                 value="#{documents.selected}">
-                <a4j:ajax event="click"
-                  onbeforesubmit="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
+                <f:ajax event="click"
+                  execute="@this"
                   listener="#{documentListingActions.checkCurrentDocAndProcessSelectPage(contentView.name, contentView.selectionListName, documents.selected, currentDocument.ref)}"
                   render="#{formId}_buttons:ajax_selection_buttons" />
               </h:selectBooleanCheckbox>

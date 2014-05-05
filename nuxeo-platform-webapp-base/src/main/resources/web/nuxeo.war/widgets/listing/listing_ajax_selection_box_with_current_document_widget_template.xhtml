@@ -1,9 +1,10 @@
 <h:selectBooleanCheckbox
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:f="http://java.sun.com/jsf/core"
   id="#{widget.id}"
   value="#{field_0}">
-  <a4j:ajax event="click"
+  <f:ajax id="#{widget.id}_ajax_onclick" event="click"
     execute="@this"
     listener="#{documentListingActions.checkCurrentDocAndProcessSelectRow(field_1, contentView.name, contentView.selectionListName, field_0, currentDocument.ref)}"
     render="#{formId}_buttons:ajax_selection_buttons" />
