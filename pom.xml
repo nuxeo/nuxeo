@@ -1156,9 +1156,9 @@
         <version>${nuxeo.javaagent.version}</version>
       </dependency>
 
-      <!-- Nuxeo Box addon -->
+      <!-- Box API -->
       <dependency>
-        <groupId>com.nuxeo.box.api</groupId>
+        <groupId>org.nuxeo.box.api</groupId>
         <artifactId>nuxeo-box-api</artifactId>
         <version>${nuxeo.box.version}</version>
       </dependency>
