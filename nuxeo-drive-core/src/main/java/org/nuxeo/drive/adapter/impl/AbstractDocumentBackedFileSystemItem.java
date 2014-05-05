@@ -123,10 +123,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends
         CoreSession docSession = doc.getCoreSession();
         canRename = docSession.hasPermission(doc.getRef(),
                 SecurityConstants.WRITE_PROPERTIES);
+        DocumentRef parentRef = doc.getParentRef();
         canDelete = docSession.hasPermission(doc.getRef(),
                 SecurityConstants.REMOVE)
-                && docSession.hasPermission(doc.getParentRef(),
-                        SecurityConstants.REMOVE_CHILDREN);
+                && (parentRef == null || docSession.hasPermission(parentRef,
+                        SecurityConstants.REMOVE_CHILDREN));
 
         String parentPath;
         if (parentItem != null) {
