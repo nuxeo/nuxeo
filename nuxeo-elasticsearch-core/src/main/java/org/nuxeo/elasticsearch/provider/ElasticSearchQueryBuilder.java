@@ -17,25 +17,16 @@
 
 package org.nuxeo.elasticsearch.provider;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
-
-import java.security.Principal;
 import java.util.Calendar;
 import java.util.Collection;
 
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermsFilterBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
-import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
@@ -50,12 +41,11 @@ public class ElasticSearchQueryBuilder {
     public static QueryBuilder makeQuery(final String pattern,
             final Object[] params, final boolean quotePatternParameters,
             final boolean escapePatternParameters,
-            final boolean useNativeQuery)
-            throws ClientException {
+            final boolean useNativeQuery) {
         String query = pattern;
-        for (int i = 0; i < params.length; i++) {
+        for (Object param : params) {
             query = query.replaceFirst("\\?",
-                    convertParam(params[i], quotePatternParameters));
+                    convertParam(param, quotePatternParameters));
         }
         if (useNativeQuery) {
             return QueryBuilders.queryString(query);
@@ -78,9 +68,9 @@ public class ElasticSearchQueryBuilder {
                 "AND");
         String fixedPart = whereClause.getFixedPart();
         if (params != null) {
-            for (int i = 0; i < params.length; i++) {
+            for (Object param : params) {
                 fixedPart = fixedPart.replaceFirst("\\?",
-                        convertParam(params[i], true));
+                        convertParam(param, true));
             }
             if (useNativeQuery) {
                 // Fixed part handled as query_string
@@ -133,34 +123,6 @@ public class ElasticSearchQueryBuilder {
         return eb.get();
     }
 
-    protected static TermsFilterBuilder getSecurityFilter(
-            final Principal principal) {
-        if (principal != null) {
-            String[] principals = SecurityService
-                    .getPrincipalsToCheck(principal);
-            if (principals.length > 0) {
-                return FilterBuilders.inFilter(ACL_FIELD, principals);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Append the sort option to the ES builder
-     */
-    protected static void addSortInfo(final SearchRequestBuilder builder,
-            final SortInfo[] sortInfos) {
-        for (SortInfo sortInfo : sortInfos) {
-            builder.addSort(sortInfo.getSortColumn(), sortInfo
-                    .getSortAscending() ? SortOrder.ASC : SortOrder.DESC);
-        }
-
-    }
-
-    protected static String convertFieldName(final String parameter) {
-        return parameter.replace(":", "\\:");
-    }
-
     /**
      * Convert a param for a query_string style
      */
@@ -168,16 +130,12 @@ public class ElasticSearchQueryBuilder {
         String ret;
         if (param == null) {
             ret = "";
-        } else if (param instanceof Boolean) {
-            ret = ((Boolean) param).toString();
         } else if (param instanceof Calendar) {
             ret = DateParser.formatW3CDateTime(((Calendar) param).getTime());
-        } else if (param instanceof Double) {
-            ret = ((Double) param).toString();
-        } else if (param instanceof Integer) {
-            ret = ((Integer) param).toString();
         } else {
             ret = param.toString();
+        }
+        if (param instanceof String) {
             if (quote) {
                 ret = "\"" + ret + "\"";
             }

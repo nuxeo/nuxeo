@@ -86,7 +86,7 @@ public class ElasticSearchManager {
         esi.scheduleIndexing(cmd);
     }
 
-    public void flush() throws Exception {
+    public void flush() {
         esa.flush();
     }
 

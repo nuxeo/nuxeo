@@ -127,7 +127,8 @@ public class NxqlQueryConverter {
         }
 
         public void merge(ExpressionBuilder expr) {
-            if (expr.operator == operator && query == null) {
+            if ((expr.operator != null) && expr.equals(operator) && (query
+                    == null)) {
                 query = expr.query;
             } else {
                 add(new QueryAndFilter(expr.query, null));
@@ -148,9 +149,9 @@ public class NxqlQueryConverter {
 
     }
 
-    private static final String SELECT_ALL = "SELECT * FROM Document";;
+    private static final String SELECT_ALL = "SELECT * FROM Document";
 
-    private static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";;
+    private static final String SELECT_ALL_WHERE = "SELECT * FROM Document WHERE ";
 
     public static QueryBuilder toESQueryBuilder(final String nxql) {
         final LinkedList<ExpressionBuilder> builders = new LinkedList<ExpressionBuilder>();
@@ -316,7 +317,7 @@ public class NxqlQueryConverter {
         } else if ("IN".equals(op)) {
             filter = FilterBuilders.inFilter(name, values);
         } else if ("STARTSWITH".equals(op)) {
-            if (name != null && name.equals(NXQL.ECM_PATH)) {
+            if (name.equals(NXQL.ECM_PATH)) {
                 filter = FilterBuilders.termFilter(name + ".children", value);
             } else {
                 filter = FilterBuilders.prefixFilter(name, (String) value);

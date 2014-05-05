@@ -6,8 +6,7 @@
     <version>5.9.4-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.elasticsearch</groupId>
-  <artifactId>nuxeo-elasticsearch-web</artifactId>
+    <artifactId>nuxeo-elasticsearch-web</artifactId>
   <name>Elasticsearch WebApp integration</name>
 
 

@@ -6,7 +6,6 @@
     <version>5.9.4-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.elasticsearch</groupId>
   <artifactId>nuxeo-elasticsearch-core</artifactId>
   <name>Elasticsearch Connector implementation</name>
 

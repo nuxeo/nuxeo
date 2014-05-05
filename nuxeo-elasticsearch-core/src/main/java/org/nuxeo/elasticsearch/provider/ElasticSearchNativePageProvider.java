@@ -63,7 +63,7 @@ public class ElasticSearchNativePageProvider extends
         QueryBuilder query = makeQueryBuilder();
         SortInfo[] sortArray = null;
         if (sortInfos != null) {
-            sortArray = sortInfos.toArray(new SortInfo[] {});
+            sortArray = sortInfos.toArray(new SortInfo[sortInfos.size()]);
         }
         // Execute the ES query
         ElasticSearchService ess = Framework
