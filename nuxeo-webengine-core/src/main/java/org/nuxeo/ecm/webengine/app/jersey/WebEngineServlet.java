@@ -113,7 +113,8 @@ public class WebEngineServlet extends ApplicationServlet {
         public Enumeration<String> getHeaders(final String name) {
             final String lname = name.toLowerCase();
             if (!headers.containsKey(lname)) {
-                return Collections.emptyEnumeration();
+                List<String> emptyList = Collections.emptyList();
+                return Collections.enumeration(emptyList);
             }
             return new Enumeration<String>() {
                 String[] values = headers.get(lname);
