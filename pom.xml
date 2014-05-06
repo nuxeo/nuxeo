@@ -3,16 +3,20 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-features-parent</artifactId>
-    <version>5.9.3-SNAPSHOT</version>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-addons-parent</artifactId>
+    <version>5.9.4-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo</groupId>
-  <artifactId>easyshare-plugin</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <groupId>org.nuxeo.ecm</groupId>
+  <artifactId>nuxeo-easyshare</artifactId>
   <name>easyshare-plugin</name>
-  <description />
+  <description>Anonymous File Sharing</description>
+
+  <properties>
+    <easyshare.studio.version>1.0.4-593</easyshare.studio.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -58,7 +62,7 @@
     <dependency>
       <groupId>nuxeo-studio</groupId>
       <artifactId>easyshare</artifactId>
-      <version>1.0.4-593</version>
+      <version>${easyshare.studio.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
@@ -69,6 +73,7 @@
       <artifactId>javax.servlet-api</artifactId>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
@@ -85,41 +90,30 @@
           </classpathContainers>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-resource</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>add-resource</goal>
-            </goals>
-            <configuration>
-              <resources>
-                <resource>
-                  <directory>src/main/resources</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>src/main/java</source>
-              </sources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
+
   <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>public-snapshot</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
     <repository>
       <id>nuxeo-studio</id>
       <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url>
@@ -144,4 +138,11 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+  <scm>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-easyshare.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-easyshare.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-easyshare</url>
+  </scm>
+
 </project>
