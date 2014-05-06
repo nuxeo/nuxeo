@@ -71,7 +71,7 @@ public class S3BinaryManager extends CachingBinaryManager {
 
     public static final String BUCKET_NAME_KEY = "nuxeo.s3storage.bucket";
 
-    public static final String BUCKET_NAME_KEY_PREFIX = "nuxeo.s3storage.bucket.prefix";
+    public static final String BUCKET_PREFIX_KEY = "nuxeo.s3storage.bucket.prefix";
 
     public static final String BUCKET_REGION_KEY = "nuxeo.s3storage.region";
 
@@ -153,7 +153,7 @@ public class S3BinaryManager extends CachingBinaryManager {
         // Get settings from the configuration
         bucketName = Framework.getProperty(BUCKET_NAME_KEY);
         bucketNamePrefix = Objects.firstNonNull(Framework.getProperty
-                (BUCKET_NAME_KEY_PREFIX), StringUtils.EMPTY);
+                (BUCKET_PREFIX_KEY), StringUtils.EMPTY);
         String bucketRegion = Framework.getProperty(BUCKET_REGION_KEY);
         if (isBlank(bucketRegion)) {
             bucketRegion = DEFAULT_BUCKET_REGION;
@@ -196,7 +196,7 @@ public class S3BinaryManager extends CachingBinaryManager {
 
         if (!isBlank(bucketNamePrefix) && !bucketNamePrefix.endsWith("/")) {
             log.warn(String.format("%s %s S3 bucket prefix should end by '/' " +
-                    ": added automatically.", BUCKET_NAME_KEY_PREFIX,
+                    ": added automatically.", BUCKET_PREFIX_KEY,
                     bucketNamePrefix));
             bucketNamePrefix += "/";
         }
