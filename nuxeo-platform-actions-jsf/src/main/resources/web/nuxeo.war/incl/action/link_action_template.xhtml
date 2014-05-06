@@ -41,7 +41,7 @@
       <a4j:commandButton
         id="#{widget.id}"
         onclick="#{onclick}"
-        execute="#{action.immediate : '@this' : '@form'}"
+        execute="#{action.immediate ? '@this' : '@form'}"
         value="#{messages[action.label]}"
         disabled="#{!action.available}"
         styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
@@ -59,7 +59,7 @@
       <a4j:commandButton
         id="#{widget.id}"
         onclick="#{onclick}"
-        execute="#{action.immediate : '@this' : '@form'}"
+        execute="#{action.immediate ? '@this' : '@form'}"
         value="#{messages[action.label]}"
         disabled="#{!action.available}"
         render="#{elementsToReRender}"
@@ -100,7 +100,7 @@
       <a4j:commandLink
         id="#{widget.id}"
         onclick="#{onclick}"
-        execute="#{action.immediate : '@this' : '@form'}"
+        execute="#{action.immediate ? '@this' : '@form'}"
         disabled="#{!action.available}"
         styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
         accesskey="#{action.accessKey}">
@@ -115,7 +115,7 @@
       <a4j:commandLink
         id="#{widget.id}"
         onclick="#{onclick}"
-        execute="#{action.immediate : '@this' : '@form'}"
+        execute="#{action.immediate ? '@this' : '@form'}"
         disabled="#{!action.available}"
         render="#{elementsToReRender}"
         styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
