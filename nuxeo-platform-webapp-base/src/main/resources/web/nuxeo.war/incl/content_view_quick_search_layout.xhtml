@@ -54,7 +54,7 @@ empty:
             <f:ajax execute="@form" render="#{elementsToReRender}" event="click" listener="#{contentView.resetPageProvider}"/>
             <f:param value="false" name="selectedValue"/>
             <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
-            <f:ajax execute="@form" render="#{elementsToReRender}" event="click" listener="#{selectionActions.newOnClick}"/>
+            <f:ajax execute="@form" render="#{elementsToReRender}" event="click" listener="#{selectionActions.onClick}"/>
         </h:commandButton>
       </h:form>
 
@@ -65,7 +65,7 @@ empty:
           styleClass="button">
           <f:param value="true" name="selectedValue"/>
           <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
-          <f:ajax execute="@this" render="#{filterFormId}_panel" event="click" listener="#{selectionActions.newOnClick}"/>
+          <f:ajax execute="@this" render="#{filterFormId}_panel" event="click" listener="#{selectionActions.onClick}"/>
         </h:commandLink>
       </h:form>
 
@@ -80,7 +80,7 @@ empty:
           <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{contentView.resetSearchDocumentModel()}"/>
           <f:param value="false" name="selectedValue"/>
           <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
-          <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{selectionActions.newOnClick}"/>
+          <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{selectionActions.onClick}"/>
         </h:commandLink>
       </h:form>
       <div class="action_bar">
@@ -122,7 +122,7 @@ empty:
                 <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{contentView.resetSearchDocumentModel()}"/>
                 <f:param value="false" name="selectedValue"/>
                 <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
-                <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{selectionActions.newOnClick}"/>
+                <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{selectionActions.onClick}"/>
               </h:commandButton>
               <h:commandButton
                 value="#{messages['label.contentview.filter.clearFilterButton']}"
