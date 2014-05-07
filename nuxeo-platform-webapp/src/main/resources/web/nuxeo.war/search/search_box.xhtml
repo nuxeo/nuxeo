@@ -1,4 +1,7 @@
-<span xmlns:h="http://java.sun.com/jsf/html">
+<f:subview
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html">
   <h:inputText
     value="#{documentSearchActions.simpleSearchKeywords}"
     size="15"
@@ -12,4 +15,4 @@
     value="#{messages['command.search']}"
     styleClass="button"
     id="simpleSearchSubmitButton" />
-</span>
+</f:subview>

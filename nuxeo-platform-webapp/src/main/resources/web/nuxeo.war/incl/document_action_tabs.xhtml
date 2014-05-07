@@ -1,11 +1,14 @@
-<div class="tabsBar" xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:a4j="http://richfaces.org/a4j"
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
-<c:if test="false">
+<ui:remove>
   @deprecated since 5.8: use a "tabs" widget instead
-</c:if>
+</ui:remove>
+
+<div class="tabsBar">
   <h:form>
     <nxu:dataList layout="unorderedList" var="tab" value="#{tabsActionsList}"
       itemStyleClass="#{nxu:test(webActions.currentTabId == tab.id, 'selected', '')}">
@@ -16,3 +19,5 @@
     </nxu:dataList>
   </h:form>
 </div>
+
+</ui:composition>

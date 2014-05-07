@@ -1,20 +1,18 @@
-<div xmlns:ui="http://java.sun.com/jsf/facelets"
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:nxu="http://nuxeo.org/nxweb/util" class="dropzone" id="CVDZ" context="ContentView">
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+<div class="dropzone" id="CVDZ" context="ContentView">
 
-<c:if test="false">
+<ui:remove>
  Template rendering content views defined on a document
 
  Parameters:
  - contentViewCategory: the category define on the document, listing available
    content views for this category
 
-</c:if>
+</ui:remove>
 
 <c:forEach var="contentViewHeader"
   items="#{documentContentViewActions.getAvailableContentViewsForCurrentDocument(contentViewCategory)}"
@@ -31,3 +29,4 @@
 </c:forEach>
 
 </div>
+</ui:composition>

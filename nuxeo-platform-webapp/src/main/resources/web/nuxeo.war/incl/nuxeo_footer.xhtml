@@ -1,13 +1,8 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
-     xmlns:c="http://java.sun.com/jstl/core"
-     xmlns:ui="http://java.sun.com/jsf/facelets"
-     xmlns:f="http://java.sun.com/jsf/core">
-
-  <ui:decorate template="/incl/nuxeo_footer_template.xhtml">
-    <c:if test="false">
-      NXP-3151: move language selector to login page
-    </c:if>
-    <ui:define name="language_selector" />
-  </ui:decorate>
-
-</div>
+<ui:decorate template="/incl/nuxeo_footer_template.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+  <ui:remove>
+    NXP-3151: move language selector to login page
+  </ui:remove>
+  <ui:define name="language_selector" />
+</ui:decorate>
