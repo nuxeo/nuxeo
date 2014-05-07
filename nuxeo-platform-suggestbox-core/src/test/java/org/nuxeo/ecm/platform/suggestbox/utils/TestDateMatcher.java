@@ -184,4 +184,10 @@ public class TestDateMatcher {
         assertNull("should not match", matcher.getDateSuggestion());
     }
 
+    @Test
+    public void canParseDateLikeInteger() {
+        DateMatcher matcher = DateMatcher.fromInput("1930121264");
+        assertNull("should not match", matcher.getDateSuggestion());
+    }
+
 }

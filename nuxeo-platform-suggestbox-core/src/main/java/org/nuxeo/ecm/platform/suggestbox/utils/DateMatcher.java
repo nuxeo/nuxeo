@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
+import org.joda.time.IllegalFieldValueException;
 import org.joda.time.chrono.GregorianChronology;
 
 public class DateMatcher {
@@ -176,10 +177,13 @@ public class DateMatcher {
     }
 
     protected static Calendar dateToInstance(int year, int month, int day) {
-        Chronology chrono = GregorianChronology.getInstance();
-        DateTime dt = new DateTime(year, month, day, 12, 0, 0, 0, chrono);
-        Calendar gregorianCalendar = dt.toGregorianCalendar();
-        return gregorianCalendar;
+        try {
+            Chronology chrono = GregorianChronology.getInstance();
+            DateTime dt = new DateTime(year, month, day, 12, 0, 0, 0, chrono);
+            return dt.toGregorianCalendar();
+        } catch (IllegalFieldValueException e) {
+            return null;
+        }
     }
 
 }
