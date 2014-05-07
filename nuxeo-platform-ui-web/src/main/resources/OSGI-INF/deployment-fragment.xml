@@ -232,14 +232,6 @@
       </param-value>
     </context-param>
 
-    <!-- glefter: leave this set to false for now
-      if true, chainSelects are not updated properly - issue NXP-589
-    -->
-    <context-param>
-      <param-name>facelets.DEVELOPMENT</param-name>
-      <param-value>false</param-value>
-    </context-param>
-
     <!-- When a page is requested, what interval in seconds should the compiler
       check for changes. If you don't want the compiler to check for changes
       once the page is compiled, then use a value of -1.
@@ -251,12 +243,12 @@
     -->
     <context-param>
       <param-name>javax.faces.FACELETS_REFRESH_PERIOD</param-name>
-      <param-value>2</param-value>
+      <param-value>${javax.faces.FACELETS_REFRESH_PERIOD:=-1}</param-value>
     </context-param>
 
     <context-param>
       <param-name>javax.faces.PROJECT_STAGE</param-name>
-      <param-value>Development</param-value>
+      <param-value>${javax.faces.PROJECT_STAGE:=Production}</param-value>
     </context-param>
 
     <context-param>
@@ -710,7 +702,9 @@
       <renderer>
         <component-family>javax.faces.Form</component-family>
         <renderer-type>javax.faces.Form</renderer-type>
-        <renderer-class>org.nuxeo.ecm.platformui.web.form.NxFormRenderer</renderer-class>
+        <renderer-class>
+          org.nuxeo.ecm.platformui.web.form.NxFormRenderer
+        </renderer-class>
       </renderer>
     </render-kit>
     <renderer>
