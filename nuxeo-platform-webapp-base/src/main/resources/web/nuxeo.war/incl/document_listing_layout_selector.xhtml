@@ -1,9 +1,10 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  class="listingLayoutSelector">
-
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+<div class="listingLayoutSelector">
   <c:if test="#{currentAvailableListingLayoutNames.size > 1}">
 
     <h:form id="listingLayoutSelectForm">
@@ -20,5 +21,5 @@
     </h:form>
 
   </c:if>
-  
-</div>
+  </div>
+</ui:composition>

@@ -1,5 +1,7 @@
-<div xmlns:ui="http://java.sun.com/jsf/facelets"
- xmlns:c="http://java.sun.com/jstl/core">
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
 
 <c:if test="#{true}">
  <script type="text/javascript" src="#{baseURL}js/?scripts=dnd/jquery.client.js%7Cdnd/jquery.dnd-file-upload.js%7Cautomation.js%7Cdnd/nxdropzone.js%7Cdnd/nxdropout.js%7Cdnd/nxinternaldnd.js">
@@ -60,4 +62,4 @@
     });
   </script>
 
-</div>
+</ui:composition>

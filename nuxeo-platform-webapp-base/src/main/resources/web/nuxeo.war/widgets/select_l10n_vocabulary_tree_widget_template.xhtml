@@ -1,9 +1,13 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:rich="http://richfaces.org/rich"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:a4j="http://richfaces.org/a4j" id="#{widget.id}">
+  xmlns:a4j="http://richfaces.org/a4j">
+<div id="#{widget.id}">
 
 <c:set var="keySeparator" value="#{nxu:test(!empty widgetProperty_keySeparator, widgetProperty_keySeparator, '/')}" />
 
@@ -156,3 +160,4 @@
 </c:if>
 
 </div>
+</ui:composition>

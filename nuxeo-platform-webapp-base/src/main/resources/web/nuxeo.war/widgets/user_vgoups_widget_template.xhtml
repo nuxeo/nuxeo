@@ -1,10 +1,8 @@
-<div xmlns:f="http://java.sun.com/jsf/core"
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxdir="http://nuxeo.org/nxdirectory"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:rich="http://richfaces.org/rich">
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <nxu:methodResult name="vgroups" value="#{userManagementActions.getUserVirtualGroups(field_0)}">
     <h:dataTable value="#{vgroups}"
@@ -16,4 +14,4 @@
     </h:dataTable>
   </nxu:methodResult>
 
-</div>
+</ui:composition>

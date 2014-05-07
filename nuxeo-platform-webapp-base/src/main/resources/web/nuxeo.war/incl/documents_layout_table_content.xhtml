@@ -1,4 +1,6 @@
-<c:if test="true" xmlns:ui="http://java.sun.com/jsf/facelets"
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -9,7 +11,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:a4j="http://richfaces.org/a4j">
 
-  <c:if test="false">
+<ui:remove>
  Template rendering a layout listing with pagination control and selection
  actions.
 
@@ -22,7 +24,7 @@
     optional, defaults to the layout default columns configuration.
   - hideTopPaginationControls: only display the bottom page selectors
     (available since 5.6).
-</c:if>
+</ui:remove>
 
   <ui:insert name="empty_folder_label">
     <h:outputText value="#{messages['label.content.emptyFolder']}"
@@ -129,4 +131,4 @@
 
   <ui:insert name="syndication_buttons" />
 
-</c:if>
+</ui:composition>

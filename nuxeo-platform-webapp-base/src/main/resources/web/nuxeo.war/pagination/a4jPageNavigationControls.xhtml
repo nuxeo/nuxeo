@@ -1,15 +1,18 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="http://richfaces.org/a4j">
 
-<c:if test="false">
+<ui:remove>
  Template rendering pagination control actions using ajax.
 
  Parameters :
   - contentIdToBeReRendered: mandatory id(s) of components to re-render. if
     empty, actions will not be displayed.
-</c:if>
+</ui:remove>
 
 <c:if test="#{not empty contentIdToBeReRendered}">
 
@@ -65,4 +68,4 @@
 </a4j:region>
 </c:if>
 
-</div>
+</ui:composition>

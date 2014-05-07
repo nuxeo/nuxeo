@@ -1,9 +1,11 @@
-<div xmlns:ui="http://java.sun.com/jsf/facelets"
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  id="#{widget.id}"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+<div id="#{widget.id}"
   class="#{widgetProperty_styleClass}">
 
   <nxu:set var="contentViewName"
@@ -21,3 +23,4 @@
   </nxu:set>
 
 </div>
+</ui:composition>
