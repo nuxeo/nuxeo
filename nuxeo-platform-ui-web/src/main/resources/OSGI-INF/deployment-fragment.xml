@@ -252,6 +252,13 @@
     </context-param>
 
     <context-param>
+      <param-name>javax.faces.FACELETS_RESOURCE_RESOLVER</param-name>
+      <param-value>
+        org.nuxeo.theme.jsf.facelets.vendor.NXFaceletsResourceResolver
+      </param-value>
+    </context-param>
+
+    <context-param>
       <param-name>com.sun.faces.responseBufferSize</param-name>
       <param-value>500000</param-value>
     </context-param>
@@ -315,12 +322,6 @@
   </extension>
 
   <extension target="faces-config#APPLICATION">
-    <!-- disabled since JSF2 -->
-    <!--
-      <view-handler>
-      org.nuxeo.theme.jsf.facelets.NXThemesFaceletViewHandler
-      </view-handler>
-    -->
 
     <navigation-handler>
       org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler
