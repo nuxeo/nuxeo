@@ -24,6 +24,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,14 +102,13 @@ public class JSFResetActionsBean {
         if (baseCompId != null) {
             FacesContext ctx = FacesContext.getCurrentInstance();
             // TODO migrate to JSF2
-            // UIComponent target = component.findComponentFor(
-            // component, baseCompId);
-            // if (target != null) {
-            // baseCompId = AjaxRendererUtils.getAbsoluteId(target);
-            // }
-            // UIComponent anchor =
-            // ctx.getViewRoot().findComponent(baseCompId);
-            // resetComponentResursive(anchor);
+            /* UIComponent target = component.findComponent(baseCompId);
+            if (target != null) {
+            baseCompId = AjaxRendererUtils.getAbsoluteId(target);
+            }*/
+            UIComponent anchor =
+            ctx.getViewRoot().findComponent(baseCompId);
+            resetComponentResursive(anchor);
         } else {
             log.error("No base component id given => cannot reset "
                     + "components state.");
@@ -119,7 +119,18 @@ public class JSFResetActionsBean {
      * Looks up the parent naming container for the component source of the
      * action event, and reset components recursively within this container.
      */
+    @Deprecated
     public void resetComponents(ActionEvent event) {
+        UIComponent component = event.getComponent();
+        if (component == null) {
+            return;
+        }
+        // take first anchor and force flush on every resettable component
+        UIComponent anchor = ComponentUtils.getBase(component);
+        resetComponentResursive(anchor);
+    }
+
+    public void resetComponents(AjaxBehaviorEvent event) {
         UIComponent component = event.getComponent();
         if (component == null) {
             return;

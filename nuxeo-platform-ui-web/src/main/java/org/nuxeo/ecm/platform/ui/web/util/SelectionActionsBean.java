@@ -18,13 +18,16 @@
 package org.nuxeo.ecm.platform.ui.web.util;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.UISelectMany;
 import javax.faces.component.ValueHolder;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
@@ -137,6 +140,7 @@ public class SelectionActionsBean implements Serializable {
      *
      * @since 5.5
      */
+    @RequestParameter
     protected String selectedValue;
 
     public String getSelectedValue() {
@@ -416,7 +420,40 @@ public class SelectionActionsBean implements Serializable {
      * @since 5.5
      * @param event
      */
+    @Deprecated
     public void onClick(ActionEvent event) {
+        UIComponent component = event.getComponent();
+        if (component == null) {
+            return;
+        }
+        EditableValueHolder hiddenSelector = null;
+        UIComponent base = ComponentUtils.getBase(component);
+        int lookupLevel = computeLookupLevel();
+        if (lookupLevel > 1) {
+            for (int i = 0; i < (lookupLevel - 1); i++) {
+                base = ComponentUtils.getBase(base);
+            }
+        }
+        if (valueHolderId != null) {
+            hiddenSelector = ComponentUtils.getComponent(base, valueHolderId,
+                    EditableValueHolder.class);
+        }
+        if (hiddenSelector == null) {
+            String selectedValueHolder = getSelectedValueHolder();
+            if (selectedValueHolder != null) {
+                hiddenSelector = ComponentUtils.getComponent(base,
+                        selectedValueHolder, EditableValueHolder.class);
+            }
+        }
+        if (hiddenSelector != null) {
+            String selectedValue = getSelectedValue();
+            if (hiddenSelector != null) {
+                hiddenSelector.setSubmittedValue(selectedValue);
+            }
+        }
+    }
+
+    public void onClick(AjaxBehaviorEvent event) {
         UIComponent component = event.getComponent();
         if (component == null) {
             return;

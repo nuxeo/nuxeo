@@ -25,6 +25,8 @@ import javax.faces.FacesException;
 import javax.faces.component.ContextCallback;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
+import javax.faces.component.visit.VisitCallback;
+import javax.faces.component.visit.VisitContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.FacesEvent;
 import javax.faces.event.PhaseId;
@@ -370,6 +372,21 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
             setLocalValueSet(false);
         }
         setSubmittedValue(null);
+    }
+
+    @Override
+    public boolean visitTree(VisitContext visitContext, VisitCallback callback) {
+        FacesContext facesContext = visitContext.getFacesContext();
+        AliasVariableMapper alias = getAliasVariableMapper(facesContext);
+        try {
+            AliasVariableMapper.exposeAliasesToRequest(facesContext, alias);
+            return super.visitTree(visitContext, callback);
+        } finally {
+            if (alias != null) {
+                AliasVariableMapper.removeAliasesExposedToRequest(facesContext,
+                        alias.getId());
+            }
+        }
     }
 
 }

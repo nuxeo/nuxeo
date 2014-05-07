@@ -1,10 +1,13 @@
-<c:if xmlns:c="http://java.sun.com/jstl/core"
+<c:if
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   test="#{contentView != null}">
 
@@ -31,18 +34,14 @@ empty:
   <nxu:set var="filterFormId" value="#{cvid}_filterForm"
     cache="true">
   <nxu:set var="elementsToReRender"
-    value="#{contentIdToBeReRendered}, #{resetFilterFormId}, #{filterFormId}, #{quickFilterFormId}, #{cvid}_contentViewActionsPanel, #{filterFormId}_panel"
+    value="#{contentIdToBeReRendered} #{resetFilterFormId} #{filterFormId} #{quickFilterFormId} #{cvid}_contentViewActionsPanel #{filterFormId}_panel"
     cache="true">
 
-  <a4j:outputPanel id="#{quickFilterFormId}_panel"
+  <h:panelGroup id="#{quickFilterFormId}_panel"
     layout="block"
     styleClass="contentViewQuickFilterForm">
-    <a4j:region id="#{quickFilterFormId}_region">
 
-      <h:form id="#{quickFilterFormId}" ajaxSubmit="true"
-        render="#{elementsToReRender}"
-        ignoreDupResponses="true"
-        requestDelay="100"
+      <h:form id="#{quickFilterFormId}"
         styleClass="action_bar">
         <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
           value="#{contentView.searchDocumentModel}"
@@ -50,20 +49,40 @@ empty:
         <h:commandButton
           value="#{messages['label.contentview.filter.filterAction']}"
           id="submitFilter"
-          styleClass="button"
-          action="#{contentView.resetPageProvider()}">
-          <nxu:actionListenerMethod
-            value="#{jsfResetActions.resetComponents}" />
-          <f:setPropertyActionListener value="false"
-            target="#{selectionActions.selectedValue}" />
-          <f:setPropertyActionListener
-            value="#{cvid}_showFilterFormBox"
-            target="#{selectionActions.selectedValueHolder}" />
-          <nxu:actionListenerMethod
-            value="#{selectionActions.onClick}" />
+          styleClass="button">
+            <f:ajax execute="@form" render="#{elementsToReRender}" event="click" listener="#{jsfResetActions.resetComponents}"/>
+            <f:ajax execute="@form" render="#{elementsToReRender}" event="click" listener="#{contentView.resetPageProvider}"/>
+            <f:param value="false" name="selectedValue"/>
+            <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
+            <f:ajax execute="@form" render="#{elementsToReRender}" event="click" listener="#{selectionActions.newOnClick}"/>
         </h:commandButton>
       </h:form>
 
+      <h:form id="#{quickFilterFormId}_more"
+        styleClass="action_bar">
+        <h:commandLink value="..."
+          id="moreButton"
+          styleClass="button">
+          <f:param value="true" name="selectedValue"/>
+          <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
+          <f:ajax execute="@this" render="#{filterFormId}_panel" event="click" listener="#{selectionActions.newOnClick}"/>
+        </h:commandLink>
+      </h:form>
+
+      <h:form id="#{resetFilterFormId}"
+        styleClass="action_bar">
+        <h:commandLink
+          value="#{messages['label.contentview.filter.clearFilter']}"
+          id="resetFilter"
+          rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
+          styleClass="button">
+          <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{jsfResetActions.resetComponents}"/>
+          <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{contentView.resetSearchDocumentModel()}"/>
+          <f:param value="false" name="selectedValue"/>
+          <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
+          <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{selectionActions.newOnClick}"/>
+        </h:commandLink>
+      </h:form>
       <div class="action_bar">
         <a4j:status>
           <f:facet name="start">
@@ -72,14 +91,11 @@ empty:
         </a4j:status>
       </div>
 
-    </a4j:region>
-  </a4j:outputPanel>
+  </h:panelGroup>
 
-  <a4j:outputPanel id="#{filterFormId}_panel" layout="block">
-    <a4j:region id="#{filterFormId}_region">
+  <h:panelGroup id="#{filterFormId}_panel" layout="block">
       <nxu:valueHolder id="#{cvid}_showFilterFormBox"
         var="showFilterFormBox" defaultValue="#{nxu:hasMessages(filterFormId)}">
-
         <c:if test="#{showFilterFormBox}">
           <script>
             openFancyBox('##{filterFormId}_box');
@@ -90,11 +106,7 @@ empty:
         <div  style="display:none;">
         <div id="#{filterFormId}_box">
           <h3><h:outputText value="#{messages['label.contentview.filter.title']}" /></h3>
-          <h:form id="#{filterFormId}" ajaxSubmit="true"
-            render="#{elementsToReRender}"
-            ignoreDupResponses="true"
-            requestDelay="100"
-            oncomplete="jQuery.fancybox.close();">
+          <h:form id="#{filterFormId}">
 
             <div class="content">
               <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
@@ -102,6 +114,24 @@ empty:
             </div>
 
             <p class="buttonsGadget">
+              <h:commandButton onclick="jQuery.fancybox.close();"
+                value="#{messages['label.contentview.filter.filterAction']}"
+                id="submitFilter"
+                styleClass="button">
+                <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{jsfResetActions.resetComponents}"/>
+                <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{contentView.resetSearchDocumentModel()}"/>
+                <f:param value="false" name="selectedValue"/>
+                <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
+                <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{selectionActions.newOnClick}"/>
+              </h:commandButton>
+              <h:commandButton
+                value="#{messages['label.contentview.filter.clearFilterButton']}"
+                id="resetFilter"
+                disabled="#{not nxd:isDirty(contentView.searchDocumentModel)}"
+                styleClass="button">
+                <f:ajax execute="@this" render="#{filterFormId}" event="click" listener="#{jsfResetActions.resetComponents}"/>
+                <f:ajax execute="@this" render="#{filterFormId}" event="click" listener="#{contentView.resetSearchDocumentModel()}"/>
+              </h:commandButton>
             </p>
 
           </h:form>
@@ -110,8 +140,7 @@ empty:
         </div>
 
       </nxu:valueHolder>
-    </a4j:region>
-  </a4j:outputPanel>
+  </h:panelGroup>
 
   </nxu:set>
   </nxu:set>
@@ -121,5 +150,4 @@ empty:
 
 </c:if>
 </nxu:set>
-
 </c:if>
