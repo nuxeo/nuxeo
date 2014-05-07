@@ -1,12 +1,16 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
-     xmlns:f="http://java.sun.com/jsf/core"
-     xmlns:c="http://java.sun.com/jstl/core"
-     xmlns:a4j="http://richfaces.org/a4j"
-     xmlns:nxd="http://nuxeo.org/nxweb/document"
-     xmlns:nxh="http://nuxeo.org/nxweb/html"
-     xmlns:nxu="http://nuxeo.org/nxweb/util"
-     xmlns:rich="http://richfaces.org/rich"
-     class="menu">
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich">
+
+<div class="menu">
 
   <a4j:outputPanel ajaxRendered="true" layout="block">
     <h:form ajaxSubmit="true" id="publishTreeForm">
@@ -24,7 +28,7 @@
                                itemValue="#{root.id}"
                                itemLabel="#{root.dublincore.title} (#{adminPublishActions.getDomainNameFor(root)})"/>
               <a4j:ajax event="change" render="sectionTree sectionList" />
-		<a4j:attachQueue ignoreDupResponses="true" />
+                <a4j:attachQueue ignoreDupResponses="true" />
               </a4j:ajax>
             </h:selectOneListbox>
           </h:panelGroup>
@@ -118,4 +122,6 @@
 
     </h:form>
   </a4j:outputPanel>
+
 </div>
+</ui:composition>

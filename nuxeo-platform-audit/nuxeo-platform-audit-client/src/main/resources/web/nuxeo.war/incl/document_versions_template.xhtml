@@ -1,12 +1,15 @@
-<div xmlns:ui="http://java.sun.com/jsf/facelets"
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
-  id="document_versions">
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+<div id="document_versions">
+
 <c:if test="#{nxd:hasPermission(currentDocument, 'ReadVersion')
         and currentDocument.versionable
         and !(currentDocument.version or currentDocument.proxy)}">
@@ -95,3 +98,4 @@
 </c:if>
 
 </div>
+</ui:composition>
