@@ -49,24 +49,4 @@
       class="org.nuxeo.segment.io.SegmentIOUserFilter" />
   </extension-point>
 
-  <!--  add default configuration for Marketo (should move to connect) -->
-  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
-    point="providers">
-    <providersConfig>
-      <providers>
-        <provider name="Marketo">true</provider>
-      </providers>
-    </providersConfig>
-  </extension>
-
-  <!--  add default configuration for Connect (should move to connect) -->
-  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
-    point="filters">
-    <userFilter>
-      <enableAnonymous>false</enableAnonymous>
-      <blackListedUser>RemoteConnectInstance</blackListedUser>
-    </userFilter>
-  </extension>
-
-
 </component>

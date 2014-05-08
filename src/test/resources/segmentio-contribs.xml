@@ -32,4 +32,21 @@
 
   </extension>
 
+  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
+    point="providers">
+    <providersConfig>
+      <providers>
+        <provider name="Marketo">true</provider>
+      </providers>
+    </providersConfig>
+  </extension>
+
+  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
+    point="filters">
+    <userFilter>
+      <enableAnonymous>false</enableAnonymous>
+      <blackListedUser>RemoteConnectInstance</blackListedUser>
+    </userFilter>
+  </extension>
+
 </component>
