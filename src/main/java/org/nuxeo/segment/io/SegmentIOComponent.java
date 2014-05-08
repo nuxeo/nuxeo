@@ -147,27 +147,32 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     public String getWriteKey() {
         if (config != null) {
-            return config.writeKey;
+            if (config.writeKey != null) {
+                return config.writeKey;
+            }
         }
         return Framework.getProperty(WRITE_KEY, DEFAULT_DEBUG_KEY);
     }
 
     public Map<String, String> getGlobalParameters() {
-        if (config!=null) {
-            return config.parameters;
+        if (config != null) {
+            if (config.parameters != null) {
+                return config.parameters;
+            }
         }
         return new HashMap<>();
     }
 
     protected Flusher getFlusher() {
-        if (flusher==null) {
+        if (flusher == null) {
             try {
                 AnalyticsClient client = Analytics.getDefaultClient();
                 Field field = client.getClass().getDeclaredField("flusher");
                 field.setAccessible(true);
                 flusher = (Flusher) field.get(client);
             } catch (Exception e) {
-                log.error("Unable to access SegmentIO Flusher via reflection", e);
+                log.error("Unable to access SegmentIO Flusher via reflection",
+                        e);
             }
         }
         return flusher;
@@ -207,7 +212,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         if (Framework.isTestModeSet()) {
             pushForTest("identify", wrapper.getUserId(), null, metadata);
             Map<String, Serializable> groupMeta = wrapper.getGroupMetadata();
-            if (groupMeta.size()>0 && groupMeta.containsKey("id")) {
+            if (groupMeta.size() > 0 && groupMeta.containsKey("id")) {
                 pushForTest("group", wrapper.getUserId(), "group", groupMeta);
             }
         } else {
@@ -223,36 +228,38 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
                 Analytics.identify(wrapper.getUserId(), traits, ctx);
 
                 Map<String, Serializable> groupMeta = wrapper.getGroupMetadata();
-                if (groupMeta.size()>0 && groupMeta.containsKey("id")) {
+                if (groupMeta.size() > 0 && groupMeta.containsKey("id")) {
                     Traits gtraits = new Traits();
                     gtraits.putAll(groupMeta);
-                    group((String) groupMeta.get("id"), wrapper.getUserId(), gtraits, ctx);
+                    group((String) groupMeta.get("id"), wrapper.getUserId(),
+                            gtraits, ctx);
                 } else {
                     // automatic grouping
-                    if (principal.getCompany()!=null) {
-                        group(principal.getCompany(), wrapper.getUserId(), null, ctx);
-                    } else if (wrapper.getMetadata().get("company")!=null) {
-                        group((String)wrapper.getMetadata().get("company"), wrapper.getUserId(), null, ctx);
+                    if (principal.getCompany() != null) {
+                        group(principal.getCompany(), wrapper.getUserId(),
+                                null, ctx);
+                    } else if (wrapper.getMetadata().get("company") != null) {
+                        group((String) wrapper.getMetadata().get("company"),
+                                wrapper.getUserId(), null, ctx);
                     }
                 }
             }
         }
     }
 
-
-    protected void group(String groupId, String userId, Traits traits, Context ctx) {
-        if (groupId==null || groupId.isEmpty()) {
+    protected void group(String groupId, String userId, Traits traits,
+            Context ctx) {
+        if (groupId == null || groupId.isEmpty()) {
             return;
         }
         Flusher flusher = getFlusher();
-        if (flusher!=null) {
+        if (flusher != null) {
             Group grp = new Group(userId, groupId, traits, new DateTime(), ctx);
             flusher.enqueue(grp);
         } else {
             log.warn("Can not use Group API");
         }
     }
-
 
     protected void pushForTest(String action, String principalName,
             String eventName, Map<String, Serializable> metadata) {
@@ -274,13 +281,11 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
     protected boolean mustTrackprincipal(String principalName) {
         SegmentIOUserFilter filter = getUserFilters();
-        if (filter==null) {
+        if (filter == null) {
             return true;
         }
         return filter.canTrack(principalName);
     }
-
-
 
     public void track(NuxeoPrincipal principal, String eventName) {
         track(principal, null);
