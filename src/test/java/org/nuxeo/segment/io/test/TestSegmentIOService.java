@@ -89,6 +89,11 @@ public class TestSegmentIOService {
         Map<String, Object> data = testData.remove(0);
         Assert.assertEquals("identify", data.get("action"));
         Assert.assertEquals("FakeAuth", data.get("plugin"));
+
+        Map<String, Object> grpdata = testData.remove(0);
+        Assert.assertEquals("group", grpdata.get("action"));
+        Assert.assertEquals("TestGroup", grpdata.get("name"));
+
     }
 
     @Test

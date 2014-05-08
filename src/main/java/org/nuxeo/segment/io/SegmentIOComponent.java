@@ -199,6 +199,10 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
 
         if (Framework.isTestModeSet()) {
             pushForTest("identify", wrapper.getUserId(), null, metadata);
+            Map<String, Serializable> groupMeta = wrapper.getGroupMetadata();
+            if (groupMeta.size()>0 && groupMeta.containsKey("id")) {
+                pushForTest("group", wrapper.getUserId(), "group", groupMeta);
+            }
         } else {
             if (debugMode) {
                 log.info("send identify for " + wrapper.getUserId()
@@ -211,19 +215,23 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
                 ctx.setProviders(getProviders());
                 Analytics.identify(wrapper.getUserId(), traits, ctx);
 
-                // automatic grouping
-                if (principal.getCompany()!=null) {
-                    group(principal.getCompany(), wrapper.getUserId(), null, ctx);
-                }
-                if (wrapper.getMetadata().get("client")!=null) {
-                    group((String)wrapper.getMetadata().get("client"), wrapper.getUserId(), null, ctx);
-                }
-                if (wrapper.getMetadata().get("company")!=null) {
-                    group((String)wrapper.getMetadata().get("company"), wrapper.getUserId(), null, ctx);
+                Map<String, Serializable> groupMeta = wrapper.getGroupMetadata();
+                if (groupMeta.size()>0 && groupMeta.containsKey("id")) {
+                    Traits gtraits = new Traits();
+                    gtraits.putAll(groupMeta);
+                    group((String) groupMeta.get("id"), wrapper.getUserId(), gtraits, ctx);
+                } else {
+                    // automatic grouping
+                    if (principal.getCompany()!=null) {
+                        group(principal.getCompany(), wrapper.getUserId(), null, ctx);
+                    } else if (wrapper.getMetadata().get("company")!=null) {
+                        group((String)wrapper.getMetadata().get("company"), wrapper.getUserId(), null, ctx);
+                    }
                 }
             }
         }
     }
+
 
     protected void group(String groupId, String userId, Traits traits, Context ctx) {
         if (groupId==null || groupId.isEmpty()) {

@@ -18,6 +18,8 @@
       <parameters>
         <parameter name="plugin">eventContext.getProperty("AuthenticationPlugin")</parameter>
         <parameter name="company">principal.getCompany()</parameter>
+        <parameter name="group_id">"testGroup"</parameter>
+        <parameter name="group_name">"TestGroup"</parameter>
       </parameters>
     </mapper>
 

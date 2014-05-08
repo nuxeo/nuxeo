@@ -121,6 +121,14 @@ Will result in this script
       </groovy>
 
 If needed you can directly contribute the groovy script in addition or in replacement of the parameters binding.
+ 
+### About Grouping
+
+The SegmentIO java lib does not expose a group API, but the corresponding REST API does exist.
+
+So, the Nuxeo integration module will try to automatically generate a `group` call uppon `identify` is the mapping contains some meta-data about the groups.
+
+Technically, all meta-data starting with `group_` will be considered as group meta-data, so just adding a `group_id` and `group_name` to the mapping should generate a call to the `group` REST API.
 
 ## Client side integration
 
