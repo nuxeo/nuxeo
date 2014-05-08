@@ -10,7 +10,7 @@
   <groupId>org.nuxeo.addons</groupId>
   <artifactId>nuxeo-segmentio-connector</artifactId>
   <name>nuxeo-segmentio-connector</name>
-  <version>5.7.1.4-SNAPSHOT</version>
+  <version>5.7.1.4</version>
   <description>
 
   </description>
