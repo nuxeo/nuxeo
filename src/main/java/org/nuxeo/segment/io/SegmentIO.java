@@ -11,6 +11,8 @@ public interface SegmentIO {
 
     String getWriteKey();
 
+    Map<String, String> getGlobalParameters();
+
     void identify(NuxeoPrincipal principal);
 
     void identify(NuxeoPrincipal principal, Map<String, Serializable> metadata);

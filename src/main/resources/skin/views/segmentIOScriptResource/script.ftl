@@ -3,6 +3,12 @@
   window.analytics.load("${writeKey}");
   window.analytics.page();
 
+  function marketoUpdate(email, key) {
+    if (Munchkin) {
+       Munchkin.munchkinFunction('associateLead',{Email: email}, key);
+    }
+  }
+
   function identifyIfNeeded(login, email) {
     var blackList = ${blackListedLogins};
     if (login) {
@@ -14,6 +20,12 @@
          analytics.identify(login, {
           email   : email
          }, ${providers});
+         if (jQuery) {
+            // forward to Marketo
+            jQuery.get('${This.path}/marketo/' + email).done(function(key){
+              marketoUpdate(email,key);
+            });
+         }
          document.cookie = "_nxIdentified="+login;
       }
     }

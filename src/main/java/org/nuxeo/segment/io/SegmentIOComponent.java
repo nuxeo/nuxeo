@@ -152,6 +152,13 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return Framework.getProperty(WRITE_KEY, DEFAULT_DEBUG_KEY);
     }
 
+    public Map<String, String> getGlobalParameters() {
+        if (config!=null) {
+            return config.parameters;
+        }
+        return new HashMap<>();
+    }
+
     protected Flusher getFlusher() {
         if (flusher==null) {
             try {

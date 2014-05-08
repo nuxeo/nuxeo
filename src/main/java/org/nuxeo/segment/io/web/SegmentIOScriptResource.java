@@ -6,12 +6,11 @@ import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
@@ -106,5 +105,22 @@ public class SegmentIOScriptResource extends ModuleRoot {
         ctx.put("blackListedLogins", buildJsonBlackListedLogins());
 
         return getView("script").args(ctx);
+    }
+
+    @GET
+    @Path("test")
+    public Object test() {
+        return getView("test");
+    }
+
+    @GET
+    @Path("marketo/{email}")
+    @Produces("text/plain")
+    public String getMarketo(@PathParam("email")
+    String email) {
+        if (email==null || email.isEmpty()) {
+            return "";
+        }
+        return MarketoHelper.getLeadHash(email);
     }
 }
