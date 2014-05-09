@@ -26,8 +26,6 @@ public class WorkSchedulePath implements Serializable {
 
     public static final Log log = LogFactory.getLog(WorkSchedulePath.class);
 
-    public static boolean capturePath = Boolean.parseBoolean(Framework.getProperty("work.schedule.capturePath", "true"));
-
     public static boolean captureStack = Boolean.parseBoolean(Framework.getProperty("work.schedule.captureStack", "false")) ||
             log.isTraceEnabled();
 
@@ -52,38 +50,21 @@ public class WorkSchedulePath implements Serializable {
         }
     }
 
-    public static void toggleCapturePath() {
-        capturePath = !capturePath;
-    }
-
-    public static boolean isCapturePathEnabled() {
-        return capturePath;
-    }
-
     public static void toggleCaptureStack() {
         captureStack = !captureStack;
-        if (captureStack) {
-            capturePath = true;
-        }
     }
 
     public static boolean isCaptureStackEnabled() {
-        return capturePath && captureStack;
+        return captureStack;
     }
 
     public static void newInstance(Work work) {
-        if (!capturePath) {
-            return;
-        }
         Work entered = enteredLocal.get();
         WorkSchedulePath  path = new WorkSchedulePath(entered == null ? EMPTY : entered.getSchedulePath(), work);
         work.setSchedulePath(path);
     }
 
     public static void handleEnter(Work work) {
-        if (!capturePath) {
-            return;
-        }
         if (enteredLocal.get() != null) {
             throw new AssertionError("thread local leak, chain should not be re-rentrant");
         }
@@ -91,9 +72,6 @@ public class WorkSchedulePath implements Serializable {
      }
 
     public static void handleReturn() {
-        if (!capturePath) {
-            return;
-        }
         enteredLocal.remove();
     }
 
@@ -112,6 +90,10 @@ public class WorkSchedulePath implements Serializable {
         parentPath = "";
         name = "";
         scheduleStackTrace = null;
+    }
+
+    public boolean isRoot() {
+        return parentPath.isEmpty();
     }
 
     protected WorkSchedulePath(WorkSchedulePath parent, Work work) {

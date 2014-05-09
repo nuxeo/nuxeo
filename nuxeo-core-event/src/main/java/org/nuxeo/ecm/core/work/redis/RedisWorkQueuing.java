@@ -33,7 +33,7 @@ import java.util.concurrent.BlockingQueue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.redis.RedisService;
-import org.nuxeo.ecm.core.work.WorkHolder;
+import org.nuxeo.ecm.core.work.WorkManagerImpl;
 import org.nuxeo.ecm.core.work.WorkQueueDescriptorRegistry;
 import org.nuxeo.ecm.core.work.WorkQueuing;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -103,6 +103,8 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected static final byte[] STATE_COMPLETED = new byte[] { STATE_COMPLETED_B };
 
+    protected final WorkManagerImpl mgr;
+
     // @GuardedBy("this")
     protected Map<String, BlockingQueue<Runnable>> allScheduled = new HashMap<String, BlockingQueue<Runnable>>();
 
@@ -110,7 +112,8 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected String redisPrefix;
 
-    public RedisWorkQueuing(WorkQueueDescriptorRegistry workQueueDescriptors) {
+    public RedisWorkQueuing(WorkManagerImpl mgr, WorkQueueDescriptorRegistry workQueueDescriptors) {
+        this.mgr = mgr;
     }
 
     @Override

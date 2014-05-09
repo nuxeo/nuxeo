@@ -46,9 +46,7 @@ public interface WorkManager {
          * Any other scheduled work equals to this one is removed from
          * scheduling and canceled first, before this work is scheduled.
          *
-         * @deprecated unused
          */
-        @Deprecated
         CANCEL_SCHEDULED,
         /**
          * If there is a scheduled work equals to this one, then don't schedule

@@ -21,15 +21,6 @@ package org.nuxeo.ecm.core.management.works;
  */
 public interface WorksMonitoringMBean {
 
-    /**
-     * Enable/Disable work schedule path capture
-     */
-    void toggleSchedulePathCapture();
-
-    /**
-     * is work schedule path capture enabled ?
-     */
-    boolean isSchedulePathCaptureEnabled();
 
     /**
      * Enable/disable work schedule stack capture

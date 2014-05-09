@@ -80,19 +80,15 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
         assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
         SleepWork work = new SleepWork(duration, false);
         service.schedule(work, true);
-        assertEquals(1, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
         assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
-        Thread.sleep(duration + 1000);
-        // still scheduled as tx didn't commit
-        assertEquals(1, service.getQueueSize(QUEUE, SCHEDULED));
-        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
-        assertEquals(SCHEDULED, work.getWorkInstanceState());
 
         TransactionHelper.commitOrRollbackTransaction();
+
         Thread.sleep(duration + 1000);
-        // tx commit triggered a release of the scheduled work
         assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
         assertEquals(1, service.getQueueSize(QUEUE, COMPLETED));
+        // tx commit triggered a release of the scheduled work
         assertEquals(COMPLETED, work.getWorkInstanceState());
     }
 
@@ -103,14 +99,8 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
         assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
         SleepWork work = new SleepWork(duration, false);
         service.schedule(work, true);
-        assertEquals(1, service.getQueueSize(QUEUE, SCHEDULED));
+        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
         assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
-        Thread.sleep(duration + 1000);
-        // still scheduled as tx didn't commit
-        assertEquals(1, service.getQueueSize(QUEUE, SCHEDULED));
-        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
-        assertEquals(SCHEDULED, work.getWorkInstanceState());
-
         TransactionHelper.setTransactionRollbackOnly();
         TransactionHelper.commitOrRollbackTransaction();
         // tx rollback cancels the task and removes it

@@ -57,6 +57,7 @@ public interface Work extends Serializable {
      * <p>
      * The following transitions between states are possible:
      * <ul>
+     * <li>UNKNOWN -> SCHEDULED</li> (unknown from the manager point of view)
      * <li>SCHEDULED -> CANCELED (is never scheduled or run)
      * <li>SCHEDULED -> RUNNING
      * <li>RUNNING -> COMPLETED
@@ -65,6 +66,11 @@ public interface Work extends Serializable {
      * </ul>
      */
     enum State {
+        /**
+         * Work instance is not currently referenced in work manager
+         * @since 5.9.4
+         */
+        UNKNOWN,
         /**
          * Work instance is scheduled to run later.
          */

@@ -18,6 +18,7 @@ package org.nuxeo.ecm.core.work.redis;
 
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +50,39 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
     @Override
     public int getQueueSize() {
         return queuing.getScheduledSize(queueId);
+    }
+
+
+    @Override
+    public Runnable take() throws InterruptedException {
+        for (;;) {
+            Runnable r = poll(1, TimeUnit.DAYS);
+            if (r != null) {
+                return r;
+            }
+        }
+    }
+
+    @Override
+    public Runnable poll(long timeout, TimeUnit unit)
+            throws InterruptedException {
+        long nanos = unit.toNanos(timeout);
+        nanos = awaitActivation(nanos);
+        if (nanos <= 0) {
+            return null;
+        }
+        long end = System.currentTimeMillis() + TimeUnit.NANOSECONDS.toMillis(nanos);
+        for (;;) {
+            Runnable r = poll();
+            if (r != null) {
+                return r;
+            }
+            if (timeUntil(end) == 0) {
+                return null;
+            }
+            // TODO replace by wakeup when an element is added
+            Thread.sleep(100);
+        }
     }
 
     @Override

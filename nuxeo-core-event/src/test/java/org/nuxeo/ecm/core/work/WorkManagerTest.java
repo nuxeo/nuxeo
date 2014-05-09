@@ -197,17 +197,17 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
         // disabled IF_NOT_* features
         if (Boolean.FALSE.booleanValue()) {
-        SleepWork work4 = new SleepWork(duration, false, "3"); // id=3
-        service.schedule(work4, Scheduling.IF_NOT_SCHEDULED);
-        assertEquals(CANCELED, work4.getWorkInstanceState());
+            SleepWork work4 = new SleepWork(duration, false, "3"); // id=3
+            service.schedule(work4, Scheduling.IF_NOT_SCHEDULED);
+            assertEquals(CANCELED, work4.getWorkInstanceState());
 
-        SleepWork work5 = new SleepWork(duration, false, "1"); // id=1
-        service.schedule(work5, Scheduling.IF_NOT_RUNNING);
-        assertEquals(CANCELED, work5.getWorkInstanceState());
+            SleepWork work5 = new SleepWork(duration, false, "1"); // id=1
+            service.schedule(work5, Scheduling.IF_NOT_RUNNING);
+            assertEquals(CANCELED, work5.getWorkInstanceState());
 
-        SleepWork work6 = new SleepWork(duration, false, "1"); // id=1
-        service.schedule(work6, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
-        assertEquals(CANCELED, work6.getWorkInstanceState());
+            SleepWork work6 = new SleepWork(duration, false, "1"); // id=1
+            service.schedule(work6, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+            assertEquals(CANCELED, work6.getWorkInstanceState());
         }
 
         SleepWork work7 = new SleepWork(duration, false, "3"); // id=3

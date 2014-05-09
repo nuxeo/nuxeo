@@ -29,23 +29,13 @@ public class WorksMonitoring implements WorksMonitoringMBean {
     }
 
     @Override
-    public void toggleSchedulePathCapture() {
-        WorkSchedulePath.toggleCapturePath();
-    }
-
-    @Override
-    public boolean isSchedulePathCaptureEnabled() {
-        return WorkSchedulePath.capturePath;
-    }
-
-    @Override
     public void toggleScheduleStackCapture() {
         WorkSchedulePath.toggleCaptureStack();
     }
 
     @Override
     public boolean isScheduleStackCapture() {
-        return WorkSchedulePath.capturePath;
+        return WorkSchedulePath.isCaptureStackEnabled();
     }
 
 }

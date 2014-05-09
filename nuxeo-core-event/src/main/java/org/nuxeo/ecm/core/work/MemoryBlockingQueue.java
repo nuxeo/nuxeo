@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.nuxeo.ecm.core.work.api.Work;
@@ -101,10 +102,12 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
         }
     }
 
-    private BlockingQueue<Runnable> queue;
+    protected final MemoryWorkQueuing queuing;
+
+    protected final BlockingQueue<Runnable> queue;
 
     // @GuardedBy("itself")
-    private final Set<String> workIds;
+    protected final Set<String> workIds;
 
     /**
      * Creates a {@link BlockingQueue} with a maximum capacity.
@@ -114,7 +117,8 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
      *
      * @param capacity the capacity, or -1 for unbounded
      */
-    public MemoryBlockingQueue(int capacity) {
+    public MemoryBlockingQueue(MemoryWorkQueuing queuing, int capacity) {
+        this.queuing = queuing;
         queue = new ReentrantLinkedBlockingQueue<Runnable>(capacity);
         workIds = new HashSet<String>();
     }
@@ -171,6 +175,13 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
         return r;
     }
 
+    @Override
+    public Runnable take() throws InterruptedException {
+        Runnable r = queue.take();
+        removeWorkId(r);
+        return r;
+    }
+
     /*
      * We can implement iterator, super doesn't have it.
      */
@@ -203,6 +214,17 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
             it.remove();
             removeWorkId(last);
         }
+    }
+
+    @Override
+    public Runnable poll(long timeout, TimeUnit unit)
+            throws InterruptedException {
+        long nanos = unit.toNanos(timeout);
+        nanos = awaitActivation(nanos);
+        if (nanos <= 0) {
+            return null;
+        }
+        return queue.poll(nanos, TimeUnit.NANOSECONDS);
     }
 
 }

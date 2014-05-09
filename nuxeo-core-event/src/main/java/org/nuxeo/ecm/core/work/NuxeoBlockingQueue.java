@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * An abstract {@link BlockingQueue} suitable for a fixed-sized
@@ -58,7 +60,9 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable>
      * - iterator() : hasNext(), next(), remove() (called by toArray)
      */
 
-    protected Object activeMonitor = new Object();
+    protected final ReentrantLock activationLock = new ReentrantLock();
+
+    protected final Condition activation = activationLock.newCondition();
 
     protected volatile boolean active = true;
 
@@ -74,8 +78,11 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable>
      */
     public void setActive(boolean active) {
         this.active = active;
-        synchronized (activeMonitor) {
-            activeMonitor.notifyAll();
+        activationLock.lock();
+        try {
+            activation.signalAll();
+        } finally {
+            activationLock.unlock();
         }
     }
 
@@ -109,15 +116,6 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable>
         throw new UnsupportedOperationException("not supported");
     }
 
-    @Override
-    public Runnable take() throws InterruptedException {
-        for (;;) {
-            Runnable r = poll(1, TimeUnit.DAYS);
-            if (r != null) {
-                return r;
-            }
-        }
-    }
 
     @Override
     public Runnable poll() {
@@ -135,29 +133,17 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable>
         return timeout;
     }
 
-    @Override
-    public Runnable poll(long timeout, TimeUnit unit)
-            throws InterruptedException {
-        long end = System.currentTimeMillis() + unit.toMillis(timeout);
-        for (;;) {
-            while (!active) {
-                synchronized (activeMonitor) {
-                    activeMonitor.wait(timeUntil(end));
-                }
-                if (timeUntil(end) == 0) {
-                    return null;
-                }
+    protected long awaitActivation(long nanos) throws InterruptedException {
+        activationLock.lock();
+        try {
+            while (nanos > 0 && !active) {
+                nanos = activation.awaitNanos(nanos);
             }
-            Runnable r = poll();
-            if (r != null) {
-                return r;
-            }
-            if (timeUntil(end) == 0) {
-                return null;
-            }
-            // TODO replace by wakeup when an element is added
-            Thread.sleep(100);
+
+        } finally {
+            activationLock.unlock();
         }
+        return nanos;
     }
 
     @Override

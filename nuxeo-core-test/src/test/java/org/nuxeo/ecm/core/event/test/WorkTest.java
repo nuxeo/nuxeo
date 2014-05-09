@@ -26,17 +26,24 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.storage.sql.IgnoreNonPooledCondition;
 import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.ConditionalIgnoreRule;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+@ConditionalIgnoreRule.Ignore(condition=IgnoreNonPooledCondition.class)
 public class WorkTest extends TXSQLRepositoryTestCase {
+
+    @Rule
+    public final ConditionalIgnoreRule ignoreRule = new ConditionalIgnoreRule();
 
     @Before
     public void checkAssumptions() {
@@ -88,6 +95,7 @@ public class WorkTest extends TXSQLRepositoryTestCase {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition=ConditionalIgnoreRule.Ignore14142.class)
     public void testWorkConcurrencyExceptionExplicitSave() throws Exception {
         doTestWorkConcurrencyException(true);
     }

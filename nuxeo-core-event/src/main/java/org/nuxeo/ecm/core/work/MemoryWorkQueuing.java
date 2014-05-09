@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -41,21 +40,25 @@ public class MemoryWorkQueuing implements WorkQueuing {
 
     private static final Log log = LogFactory.getLog(MemoryWorkQueuing.class);
 
+    protected final WorkManagerImpl mgr;
+
     // @GuardedBy("this")
     protected final WorkQueueDescriptorRegistry workQueueDescriptors;
 
     // @GuardedBy("this")
-    protected Map<String, BlockingQueue<Runnable>> allScheduled = new HashMap<String, BlockingQueue<Runnable>>();
+    protected final Map<String, BlockingQueue<Runnable>> allScheduled = new HashMap<String, BlockingQueue<Runnable>>();
 
     // @GuardedBy("this")
     // queueId -> workId -> work
-    protected Map<String, Map<String, Work>> allRunning = new HashMap<String, Map<String, Work>>();
+    protected final Map<String, Map<String, Work>> allRunning = new HashMap<String, Map<String, Work>>();
 
     // @GuardedBy("this")
     // queueId -> workId -> work
-    protected Map<String, Map<String, Work>> allCompleted = new HashMap<String, Map<String, Work>>();
+    protected final Map<String, Map<String, Work>> allCompleted = new HashMap<String, Map<String, Work>>();
 
-    public MemoryWorkQueuing(WorkQueueDescriptorRegistry workQueueDescriptors) {
+
+    public MemoryWorkQueuing(WorkManagerImpl mgr, WorkQueueDescriptorRegistry workQueueDescriptors) {
+        this.mgr = mgr;
         this.workQueueDescriptors = workQueueDescriptors;
     }
 
@@ -112,7 +115,7 @@ public class MemoryWorkQueuing implements WorkQueuing {
         if (capacity <= 0) {
             capacity = -1; // unbounded
         }
-        return new MemoryBlockingQueue(capacity);
+        return new MemoryBlockingQueue(this, capacity);
     }
 
     protected Map<String, Work> newRunningMap() {

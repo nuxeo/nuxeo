@@ -15,8 +15,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.spi.LoggingEvent;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.work.AbstractWork;
@@ -97,21 +95,6 @@ public class WorkErrorsAreTracableTest {
     protected LogCaptureFeature.Result result;
 
     protected boolean beforeCapturePath;
-
-    @Before
-    public void captureStacks() {
-        beforeCapturePath = WorkSchedulePath.capturePath;
-        if (!WorkSchedulePath.isCaptureStackEnabled()) {
-            WorkSchedulePath.toggleCaptureStack();
-        }
-    }
-
-    @After
-    public void resetCaptureStacks() {
-        if (!beforeCapturePath) {
-            WorkSchedulePath.toggleCapturePath();
-        }
-    }
 
     @Test
     public void captureSimple() throws InterruptedException, NoLogCaptureFilterException {
