@@ -36,6 +36,9 @@
       application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
       </sourceMimeType>
       <destinationMimeType>text/plain</destinationMimeType>
+      <parameters>
+       <parameter name="MAX_SIZE">3145728</parameter>
+      </parameters>
     </converter>
 
     <converter name="msoffice2text" class="org.nuxeo.ecm.core.convert.plugins.text.extractors.MSOffice2TextConverter">
