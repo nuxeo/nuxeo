@@ -1,7 +1,5 @@
 package org.nuxeo.dmk.test;
 
-import java.lang.management.ManagementFactory;
-
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -11,6 +9,8 @@ import javax.management.ObjectName;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -18,11 +18,11 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@Deploy("org.nuxeo.dmk-adaptor")
+@Deploy({"org.nuxeo.dmk-adaptor", "org.nuxeo.runtime.management"})
 public class TestDMKAdaptor {
 
 	@Test public void shouldDeploy() throws InstanceNotFoundException, MalformedObjectNameException {
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
         ObjectInstance htmlAdaptor = mbs.getObjectInstance(new ObjectName("org.nuxeo:type=jmx-adaptor,format=html"));
         Assert.assertThat(htmlAdaptor, org.hamcrest.Matchers.notNullValue());
         ObjectInstance httpConnector = mbs.getObjectInstance(new ObjectName("org.nuxeo:type=jmx-connector,protocol=jdmk-http"));
