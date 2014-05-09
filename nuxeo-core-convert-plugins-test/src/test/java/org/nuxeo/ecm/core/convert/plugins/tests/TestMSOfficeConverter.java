@@ -18,38 +18,11 @@
 
 package org.nuxeo.ecm.core.convert.plugins.tests;
 
-import static org.junit.Assert.assertNotNull;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.convert.plugins.text.extractors.UnclosableZipInputStream;
-import org.nuxeo.ecm.core.convert.plugins.text.extractors.Xml2TextHandler;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -87,12 +60,8 @@ public class TestMSOfficeConverter extends SimpleConverterTest {
 
     @Test
     public void testRtfConverter() throws Exception {
-        doTestTextConverter(
-                "application/rtf",
-                "rtf2text", "hello.rtf");
-        doTestTextConverter(
-                "text/rtf",
-                "rtf2text", "hello.rtf");
+        doTestTextConverter("application/rtf", "rtf2text", "hello.rtf");
+        doTestTextConverter("text/rtf", "rtf2text", "hello.rtf");
     }
 
     @Test
