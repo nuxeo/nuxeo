@@ -32,19 +32,20 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
-import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 
-
-public class XLX2TextConverter implements Converter {
+public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements
+        Converter {
 
     private static final Log log = LogFactory.getLog(XLX2TextConverter.class);
 
     private static final String CELL_SEP = "";
+
     private static final String ROW_SEP = "\n";
 
     @Override
@@ -53,8 +54,16 @@ public class XLX2TextConverter implements Converter {
 
         InputStream stream = null;
         StringBuffer sb = new StringBuffer();
+
         try {
-            stream = blobHolder.getBlob().getStream();
+            Blob blob = blobHolder.getBlob();
+
+            if (blob.getLength() > maxSize4POI) {
+                return runFallBackConverter(blobHolder, "xl/");
+            }
+
+            stream = blob.getStream();
+
             OPCPackage p = OPCPackage.open(stream);
             XSSFWorkbook workbook = new XSSFWorkbook(p);
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -98,10 +107,6 @@ public class XLX2TextConverter implements Converter {
         if (cellValue != null && cellValue.length() > 0) {
             sb.append(cellValue).append(CELL_SEP);
         }
-    }
-
-    @Override
-    public void init(ConverterDescriptor descriptor) {
     }
 
 }
