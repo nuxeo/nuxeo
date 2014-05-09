@@ -19,6 +19,8 @@ package org.nuxeo.ecm.restapi.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.util.Arrays;
+
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
@@ -43,8 +45,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.common.base.Joiner;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Test the various ways to query for document lists.
