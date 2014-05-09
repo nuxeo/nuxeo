@@ -22,7 +22,7 @@
          }, ${providers});
          if (jQuery) {
             // forward to Marketo
-            jQuery.get('${This.path}/marketo/' + email).done(function(key){
+            jQuery.get('${This.path}/marketo/' + email,function(key){
               marketoUpdate(email,key);
             });
          }
