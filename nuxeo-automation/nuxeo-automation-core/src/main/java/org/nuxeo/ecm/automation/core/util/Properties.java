@@ -20,9 +20,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.base.Objects;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Inline properties file content. This class exists to have a real type for
@@ -34,6 +37,12 @@ import org.nuxeo.ecm.automation.core.Constants;
 public class Properties extends HashMap<String, String> {
 
     private static final long serialVersionUID = 1L;
+
+    protected static final String PROPERTIES_MULTILINE_ESCAPE = "nuxeo" +
+            ".automation.properties.multiline.escape";
+
+    protected static final String multiLineEscape = Objects.firstNonNull
+            (Framework.getProperty(PROPERTIES_MULTILINE_ESCAPE), "false");
 
     public Properties() {
     }
@@ -107,7 +116,7 @@ public class Properties extends HashMap<String, String> {
                 line = in.readLine();
                 continue;
             }
-            if (line.endsWith("\\")) {
+            if (line.endsWith("\\") && Boolean.valueOf(multiLineEscape)) {
                 line = line.substring(0, line.length() - 1);
                 prevLine = prevLine != null ? prevLine + line : line;
                 line = in.readLine();
