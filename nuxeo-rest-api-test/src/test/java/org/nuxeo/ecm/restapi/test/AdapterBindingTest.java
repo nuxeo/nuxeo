@@ -129,8 +129,7 @@ public class AdapterBindingTest extends BaseTest {
                         + "/BusinessBeanAdapter");
 
         // Then i receive a list of businessBeanAdapter
-        assertEquals("adapters",
-                node.get("entity-type").getValueAsText());
+        assertEquals("adapters", node.get("entity-type").getValueAsText());
         ArrayNode entries = (ArrayNode) node.get("entries");
         DocumentModelList children = session.getChildren(folder.getRef());
         assertEquals(children.size(), entries.size());
@@ -150,6 +149,8 @@ public class AdapterBindingTest extends BaseTest {
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("currentPageIndex", "1");
         queryParams.putSingle("pageSize", "2");
+        queryParams.putSingle("sortBy", "dc:title");
+        queryParams.putSingle("sortOrder", "desc");
 
         // When i adapt the children of the folder with a BusinessBeanAdapter
         JsonNode node = getResponseAsJson(RequestType.GET,
@@ -157,10 +158,15 @@ public class AdapterBindingTest extends BaseTest {
                         + "/BusinessBeanAdapter", queryParams);
 
         // Then i receive a list of businessBeanAdapter
-        assertEquals("adapters",
-                node.get("entity-type").getValueAsText());
+        assertEquals("adapters", node.get("entity-type").getValueAsText());
         assertTrue(node.get("isPaginable").getBooleanValue());
         assertEquals(2, ((ArrayNode) node.get("entries")).size());
+
+        String title1 = ((ArrayNode) node.get("entries")).get(0).get("value").get(
+                "title").toString();
+        String title2 = ((ArrayNode) node.get("entries")).get(1).get("value").get(
+                "title").toString();
+        assertTrue(title1.compareTo(title2) > 0);
 
     }
 }

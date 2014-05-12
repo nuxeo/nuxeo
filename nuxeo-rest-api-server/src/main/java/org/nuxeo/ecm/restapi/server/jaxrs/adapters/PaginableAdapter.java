@@ -28,6 +28,7 @@ import org.nuxeo.ecm.automation.core.util.PaginablePageProvider;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -61,6 +62,16 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
 
     protected String maxResults;
 
+    /**
+     * @since 5.9.4
+     */
+    protected String sortBy;
+
+    /**
+     * @since 5.9.4 'asc' or 'desc'. Default set to 'desc'
+     */
+    protected String sortOrder = "desc";
+
     @Override
     protected void initialize(Object... args) {
         super.initialize(args);
@@ -69,6 +80,8 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
         currentPageIndex = extractLongParam(request, "currentPageIndex", 0L);
         pageSize = extractLongParam(request, "pageSize", 50L);
         maxResults = request.getParameter("maxResults");
+        sortBy = request.getParameter("sortBy");
+        sortOrder = request.getParameter("sortOrder");
     }
 
     @Override
@@ -105,10 +118,14 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) ctx.getCoreSession());
-
-        return getPaginableEntries((PageProvider<T>) pps
-                .getPageProvider("", ppDefinition, getSearchDocument(), null, pageSize, currentPageIndex, props,
-                        getParams()));
+        PageProvider<T> pp = (PageProvider<T>) pps.getPageProvider("",
+                ppDefinition, getSearchDocument(), null, pageSize,
+                currentPageIndex, props, getParams());
+        if (sortBy != null) {
+            boolean sortAscending = "desc".equals(sortOrder) ? false : true;
+            pp.setSortInfo(new SortInfo(sortBy, sortAscending));
+        }
+        return getPaginableEntries(pp);
     }
 
     protected Paginable<T> getPaginableEntries(PageProvider<T> pageProvider) {
