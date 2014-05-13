@@ -46,8 +46,11 @@ import org.elasticsearch.action.admin.cluster.tasks.PendingClusterTasksResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
+import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
+import org.elasticsearch.action.deletebyquery.IndexDeleteByQueryResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -153,6 +156,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected Timer fetchTimer;
 
+    protected Timer deleteTimer;
+
+    protected Timer indexTimer;
+
+    protected Timer bulkIndexTimer;
+
     private ElasticSearchLocalConfig localConfig;
 
     private ElasticSearchRemoteConfig remoteConfig;
@@ -209,98 +218,145 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public void indexNow(List<IndexingCommand> cmds) throws ClientException {
-
         if (!indexInitDone) {
+            log.debug("Delaying indexing commands: Waiting for Index to be initialized.");
             stackedCommands.addAll(cmds);
-            log.debug("Delaying indexing request : waiting for Index to be initialized");
             return;
         }
+        processBulkDeleteCommands(cmds);
+        Context stopWatch = bulkIndexTimer.time();
+        try {
+            processBulkIndexCommands(cmds);
+        } finally {
+            stopWatch.stop();
+        }
+        markCommandExecuted(cmds);
+    }
 
-        BulkRequestBuilder bulkRequest = getClient().prepareBulk();
+    protected void processBulkDeleteCommands(List<IndexingCommand> cmds) {
+        // Can be optimized with a single delete by query
         for (IndexingCommand cmd : cmds) {
-            if (IndexingCommand.DELETE.equals(cmd.getName())) {
-                indexNow(cmd);
-            } else {
-                log.debug("Sending bulk indexing request to ElasticSearch "
-                        + cmd.toString());
-                IndexRequestBuilder idxRequest = buildESIndexingRequest(cmd);
-                bulkRequest.add(idxRequest);
+            if ((cmd.getTargetDocument() != null)
+                    && (IndexingCommand.DELETE.equals(cmd.getName()))) {
+                Context stopWatch = deleteTimer.time();
+                try {
+                    processDeleteCommand(cmd);
+                } finally {
+                    stopWatch.stop();
+                }
             }
         }
-        // execute bulk index if any
+    }
+
+    protected void processBulkIndexCommands(List<IndexingCommand> cmds)
+            throws ClientException {
+        BulkRequestBuilder bulkRequest = getClient().prepareBulk();
+        for (IndexingCommand cmd : cmds) {
+            if ((cmd.getTargetDocument() == null)
+                    || (IndexingCommand.DELETE.equals(cmd.getName()))) {
+                continue;
+            }
+            if (log.isTraceEnabled()) {
+                log.trace("Sending bulk indexing request to Elasticsearch: "
+                        + cmd.toString());
+            }
+            IndexRequestBuilder idxRequest = buildESIndexingRequest(cmd);
+            bulkRequest.add(idxRequest);
+        }
         if (bulkRequest.numberOfActions() > 0) {
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Index bulk request: curl -XPOST 'http://localhost:9200/_bulk' -d '%s'",
                                 bulkRequest.request().requests().toString()));
             }
-            bulkRequest.execute().actionGet();
-        }
-
-        for (IndexingCommand cmd : cmds) {
-            markCommandExecuted(cmd);
+            BulkResponse response = bulkRequest.execute().actionGet();
+            if (response.hasFailures()) {
+                log.error(response.buildFailureMessage());
+            }
         }
     }
 
     @Override
     public void indexNow(IndexingCommand cmd) throws ClientException {
-
+        if (cmd.getTargetDocument() == null) {
+            return;
+        }
         if (!indexInitDone) {
             stackedCommands.add(cmd);
-            log.debug("Delaying indexing request : waiting for Index to be initialized");
+            log.debug("Delaying indexing command: Waiting for Index to be initialized.");
             return;
         }
-
-        DocumentModel doc = cmd.getTargetDocument();
-        if (doc == null) {
-            return;
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("Sending indexing request to ElasticSearch " + cmd.toString());
+        if (log.isTraceEnabled()) {
+            log.trace("Sending indexing request to Elasticsearch "
+                    + cmd.toString());
         }
         if (IndexingCommand.DELETE.equals(cmd.getName())) {
-            DeleteRequestBuilder request = getClient().prepareDelete(
-                    getDocIndex(), DOC_TYPE, doc.getId());
-            if (log.isDebugEnabled()) {
-                log.debug(String
-                        .format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                                getDocIndex(), DOC_TYPE, doc.getId(), request
-                                        .request().toString()));
-            }
-            request.execute().actionGet();
-
-            if (cmd.isRecurse()) {
-                DeleteByQueryRequestBuilder deleteRequest = getClient()
-                        .prepareDeleteByQuery(getDocIndex()).setQuery(
-                                QueryBuilders.constantScoreQuery(FilterBuilders
-                                        .termFilter(CHILDREN_FIELD,
-                                                doc.getPathAsString())));
-                if (log.isDebugEnabled()) {
-                    log.debug(String
-                            .format("Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
-                                    getDocIndex(), DOC_TYPE, request.request()
-                                            .toString()));
-                }
-                deleteRequest.execute().actionGet();
+            Context stopWatch = deleteTimer.time();
+            try {
+                processDeleteCommand(cmd);
+            } finally {
+                stopWatch.stop();
             }
         } else {
-            IndexRequestBuilder request = buildESIndexingRequest(cmd);
-            if (log.isDebugEnabled()) {
-                log.debug(String
-                        .format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                                getDocIndex(), DOC_TYPE, doc.getId(), request
-                                        .request().toString()));
+            Context stopWatch = indexTimer.time();
+            try {
+                processIndexCommand(cmd);
+            } finally {
+                stopWatch.stop();
             }
-            request.execute().actionGet();
         }
         markCommandExecuted(cmd);
     }
 
-    /**
-     * Get the elastic search index name for the documents
-     */
-    protected String getDocIndex() {
-        return docIndexName;
+    protected void processIndexCommand(IndexingCommand cmd)
+            throws ClientException {
+        DocumentModel doc = cmd.getTargetDocument();
+        assert (doc != null);
+        IndexRequestBuilder request = buildESIndexingRequest(cmd);
+        if (log.isDebugEnabled()) {
+            log.debug(String
+                    .format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
+                            getDocIndex(), DOC_TYPE, doc.getId(), request
+                                    .request().toString()));
+        }
+        request.execute().actionGet();
+    }
+
+    protected void processDeleteCommand(IndexingCommand cmd) {
+        DocumentModel doc = cmd.getTargetDocument();
+        assert (doc != null);
+        DeleteRequestBuilder request = getClient().prepareDelete(getDocIndex(),
+                DOC_TYPE, doc.getId());
+        if (log.isDebugEnabled()) {
+            log.debug(String
+                    .format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s' -d '%s'",
+                            getDocIndex(), DOC_TYPE, doc.getId(), request
+                                    .request().toString()));
+        }
+        request.execute().actionGet();
+        if (cmd.isRecurse()) {
+            DeleteByQueryRequestBuilder deleteRequest = getClient()
+                    .prepareDeleteByQuery(getDocIndex()).setQuery(
+                            QueryBuilders.constantScoreQuery(FilterBuilders
+                                    .termFilter(CHILDREN_FIELD,
+                                            doc.getPathAsString())));
+            if (log.isDebugEnabled()) {
+                log.debug(String
+                        .format("Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
+                                getDocIndex(), DOC_TYPE, request.request()
+                                        .toString()));
+            }
+            DeleteByQueryResponse responses = deleteRequest.execute()
+                    .actionGet();
+            for (IndexDeleteByQueryResponse response : responses) {
+                if (response.getFailedShards() > 0) {
+                    log.error(String.format(
+                            "Delete byQuery fails on shard:%d out of %d",
+                            response.getFailedShards(),
+                            response.getTotalShards()));
+                }
+            }
+        }
     }
 
     protected IndexRequestBuilder buildESIndexingRequest(IndexingCommand cmd)
@@ -309,7 +365,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
         try {
             JsonFactory factory = new JsonFactory();
             XContentBuilder builder = jsonBuilder();
-
             JsonGenerator jsonGen = factory.createJsonGenerator(builder
                     .stream());
             JsonESDocumentWriter.writeESDocument(jsonGen, doc,
@@ -320,6 +375,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
             throw new ClientException(
                     "Unable to create index request for Document "
                             + doc.getId(), e);
+        }
+    }
+
+    protected void markCommandExecuted(List<IndexingCommand> cmds) {
+        for (IndexingCommand cmd : cmds) {
+            markCommandExecuted(cmd);
         }
     }
 
@@ -367,6 +428,13 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
+    /**
+     * Get the elastic search index name for the documents
+     */
+    protected String getDocIndex() {
+        return docIndexName;
+    }
+
     @Override
     public void refresh() {
         getClient().admin().indices().prepareRefresh(getDocIndex()).execute()
@@ -404,7 +472,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 localNode = NodeBuilder.nodeBuilder().local(true)
                         .settings(settings).node();
                 client = localNode.start().client();
-                client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
+                client.admin().cluster().prepareHealth()
+                        .setWaitForYellowStatus().execute().actionGet();
             } else if (remoteConfig != null) {
                 log.info("Connecting to an ES cluster");
                 Builder builder = ImmutableSettings
@@ -424,7 +493,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
                                 remoteConfig.isClusterSniff());
                 Settings settings = builder.build();
                 if (log.isDebugEnabled()) {
-                    log.debug("Using settings: " + settings.toDelimitedString(','));
+                    log.debug("Using settings: "
+                            + settings.toDelimitedString(','));
                 }
                 TransportClient tClient = new TransportClient(settings);
                 String[] addresses = remoteConfig.getAddresses();
@@ -448,9 +518,13 @@ public class ElasticSearchComponent extends DefaultComponent implements
             }
             if (client != null) {
                 try {
-                    client.admin().indices().status(new IndicesStatusRequest()).get();
-                } catch (InterruptedException | ExecutionException | NoNodeAvailableException e) {
-                    log.error("Failed to connect to elasticsearch: " + e.getMessage(), e);
+                    client.admin().indices().status(new IndicesStatusRequest())
+                            .get();
+                } catch (InterruptedException | ExecutionException
+                        | NoNodeAvailableException e) {
+                    log.error(
+                            "Failed to connect to elasticsearch: "
+                                    + e.getMessage(), e);
                     client = null;
                 }
             }
@@ -569,6 +643,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 "elasticsearch", "service", "search"));
         fetchTimer = registry.timer(MetricRegistry.name("nuxeo",
                 "elasticsearch", "service", "fetch"));
+        indexTimer = registry.timer(MetricRegistry.name("nuxeo",
+                "elasticsearch", "service", "index"));
+        deleteTimer = registry.timer(MetricRegistry.name("nuxeo",
+                "elasticsearch", "service", "delete"));
+        bulkIndexTimer = registry.timer(MetricRegistry.name("nuxeo",
+                "elasticsearch", "service", "bulkIndex"));
         // init client
         getClient();
         // init indexes if needed
