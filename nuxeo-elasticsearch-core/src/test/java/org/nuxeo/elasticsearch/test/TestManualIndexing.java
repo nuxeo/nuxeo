@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.cluster.routing.allocation.allocator.EvenShardsCountAllocator;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.After;
 import org.junit.Assert;
@@ -141,16 +142,13 @@ public class TestManualIndexing {
                 IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
-
+        int n = esa.getTotalCommandProcessed();
         searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
                 QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
                 60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
-
-        Assert.assertEquals(1, esa.getPendingCommands());
-        Assert.assertEquals(1, esa.getPendingDocs());
 
         // now commit and wait for post commit indexing
         session.save();
@@ -164,6 +162,7 @@ public class TestManualIndexing {
 
         Assert.assertEquals(0, esa.getPendingCommands());
         Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
 
         TransactionHelper.startTransaction();
 
@@ -226,10 +225,7 @@ public class TestManualIndexing {
                 QueryBuilders.matchQuery("ecm:title", "TestMe")).setFrom(0).setSize(
                 60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
-
-        Assert.assertEquals(1, esa.getPendingCommands());
-        Assert.assertEquals(1, esa.getPendingDocs());
-
+        int n = esa.getTotalCommandProcessed();
         // now commit and wait for post commit indexing
         TransactionHelper.commitOrRollbackTransaction();
 
@@ -239,6 +235,7 @@ public class TestManualIndexing {
 
         Assert.assertEquals(0, esa.getPendingCommands());
         Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
 
         esa.refresh();
 

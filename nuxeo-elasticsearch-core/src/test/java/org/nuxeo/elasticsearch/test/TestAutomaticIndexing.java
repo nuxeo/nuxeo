@@ -190,18 +190,17 @@ public class TestAutomaticIndexing {
 
         }
 
+        int n = esa.getTotalCommandProcessed();
         // this should not be needed !
         // session.save();
         TransactionHelper.commitOrRollbackTransaction();
-
-        Assert.assertEquals(10, esa.getPendingCommands());
-        Assert.assertEquals(10, esa.getPendingDocs());
 
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
 
         Assert.assertEquals(0, esa.getPendingCommands());
         Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(10, esa.getTotalCommandProcessed() - n);
 
         TransactionHelper.startTransaction();
 
@@ -297,16 +296,15 @@ public class TestAutomaticIndexing {
 
         // now delete the document
         session.removeDocument(doc.getRef());
+        int n = esa.getTotalCommandProcessed();
 
         TransactionHelper.commitOrRollbackTransaction();
-
-        Assert.assertEquals(1, esa.getPendingCommands());
-        Assert.assertEquals(1, esa.getPendingDocs());
 
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
 
         Assert.assertEquals(0, esa.getPendingCommands());
         Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
 
         TransactionHelper.startTransaction();
 
@@ -340,18 +338,16 @@ public class TestAutomaticIndexing {
             doc = session.createDocument(doc);
 
         }
-
+        int n = esa.getTotalCommandProcessed();
         // this should not be needed !
         TransactionHelper.commitOrRollbackTransaction();
-
-        Assert.assertEquals(10, esa.getPendingCommands());
-        Assert.assertEquals(10, esa.getPendingDocs());
 
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
 
         Assert.assertEquals(0, esa.getPendingCommands());
         Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(10, esa.getTotalCommandProcessed() - n);
 
         TransactionHelper.startTransaction();
 
@@ -365,6 +361,7 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
         int i = 0;
+        n = esa.getTotalCommandProcessed();
         for (SearchHit hit : searchResponse.getHits()) {
             i++;
             if (i> 8) {
@@ -377,13 +374,11 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
 
-        Assert.assertEquals(8, esa.getPendingCommands());
-        Assert.assertEquals(8, esa.getPendingDocs());
-
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
 
         Assert.assertEquals(0, esa.getPendingCommands());
         Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(8, esa.getTotalCommandProcessed() - n);
 
         TransactionHelper.startTransaction();
 

@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -165,6 +166,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
     private ElasticSearchLocalConfig localConfig;
 
     private ElasticSearchRemoteConfig remoteConfig;
+
+    private AtomicInteger totalCommandProcessed = new AtomicInteger(0);
 
     @Override
     public void registerContribution(Object contribution,
@@ -386,7 +389,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected void markCommandExecuted(IndexingCommand cmd) {
         pendingWork.remove(getWorkKey(cmd.getTargetDocument()));
-        pendingCommands.remove(cmd.getId());
+        boolean isRemoved = pendingCommands.remove(cmd.getId());
+        if (isRemoved) {
+            totalCommandProcessed.addAndGet(1);
+        }
     }
 
     @Override
@@ -767,6 +773,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public int getPendingCommands() {
         return pendingCommands.size();
+    }
+
+    @Override public int getTotalCommandProcessed() {
+        return totalCommandProcessed.get();
     }
 
     @Override

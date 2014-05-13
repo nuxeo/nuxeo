@@ -88,13 +88,13 @@ public class TestTreeIndexing {
         // build the tree
         buildTree();
 
-        TransactionHelper.commitOrRollbackTransaction();
+        int n = esa.getTotalCommandProcessed();
 
-        Assert.assertTrue(esa.getPendingCommands() > 1);
-        Assert.assertTrue(esa.getPendingDocs() > 1);
+        TransactionHelper.commitOrRollbackTransaction();
 
         waitForAsyncIndexing();
 
+        Assert.assertEquals(10, esa.getTotalCommandProcessed() - n);
         esa.refresh();
 
         TransactionHelper.startTransaction();
@@ -134,16 +134,15 @@ public class TestTreeIndexing {
 
         DocumentRef ref = new PathRef("/folder0/folder1/folder2");
         Assert.assertTrue(session.exists(ref));
+        int n = esa.getTotalCommandProcessed();
         session.removeDocument(ref);
 
         TransactionHelper.commitOrRollbackTransaction();
 
-        Assert.assertEquals(1, esa.getPendingDocs());
         // async command is not yet scheduled
-        Assert.assertEquals(1, esa.getPendingCommands());
 
         waitForAsyncIndexing();
-
+        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
         esa.refresh();
 
         TransactionHelper.startTransaction();
@@ -167,14 +166,12 @@ public class TestTreeIndexing {
 
         // move in the same folder : rename
         session.move(ref, doc.getParentRef(), "folderA");
-
+        int n = esa.getTotalCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-
-        Assert.assertEquals(1, esa.getPendingDocs());
-        Assert.assertEquals(1, esa.getPendingCommands());
 
         waitForAsyncIndexing();
 
+        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
         esa.refresh();
 
         TransactionHelper.startTransaction();
@@ -252,13 +249,11 @@ public class TestTreeIndexing {
         acl.add(new ACE("toto", SecurityConstants.READ, true));
         acp.addACL(acl);
         session.setACP(ref, acp, true);
-
+        int n = esa.getTotalCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
 
-        Assert.assertEquals(1, esa.getPendingDocs());
-        Assert.assertEquals(1, esa.getPendingCommands());
-
         waitForAsyncIndexing();
+        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
 
         esa.refresh();
 
@@ -281,15 +276,13 @@ public class TestTreeIndexing {
         session.setACP(ref, acp, true);
 
         session.save();
-
+        n = esa.getTotalCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
 
         TransactionHelper.startTransaction();
 
-        Assert.assertEquals(1, esa.getPendingDocs());
-        Assert.assertEquals(1, esa.getPendingCommands());
-
         waitForAsyncIndexing();
+        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
         esa.refresh();
 
         docs = ess.query(restrictedSession, "select * from Document", 10, 0);
@@ -357,14 +350,11 @@ public class TestTreeIndexing {
         DocumentRef ref = new PathRef("/folder0/folder1/folder2");
         Assert.assertTrue(session.exists(ref));
         session.followTransition(ref, "delete");
-
+        int n = esa.getTotalCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
 
-        Assert.assertEquals(1, esa.getPendingDocs());
-        // async command is not yet scheduled
-        Assert.assertEquals(1, esa.getPendingCommands());
-
         waitForAsyncIndexing();
+        Assert.assertEquals(8, esa.getTotalCommandProcessed() - n);
 
         esa.refresh();
 
@@ -376,7 +366,7 @@ public class TestTreeIndexing {
                         20, 0);
 
         for (DocumentModel doc : docs) {
-            System.out.println(doc.getPathAsString());
+            // System.out.println(doc.getPathAsString());
         }
         Assert.assertEquals(2, docs.size());
 

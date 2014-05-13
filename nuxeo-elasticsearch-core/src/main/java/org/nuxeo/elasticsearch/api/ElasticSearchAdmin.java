@@ -73,6 +73,15 @@ public interface ElasticSearchAdmin {
     int getPendingCommands();
 
     /**
+     * Returns the total number of command processed by Elasticsearch.
+     *
+     * Useful for test assertion.
+     *
+     * @since 5.9.4
+     */
+    int getTotalCommandProcessed();
+
+    /**
      * Returns list of {@link PendingClusterTask} not yet processed.
      *
      * @since 5.9.3
