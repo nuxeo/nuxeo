@@ -21,7 +21,6 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
-import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
@@ -44,9 +43,8 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     }
 
     protected SQLDocumentVersion(Node node, ComplexType type,
-            List<CompositeType> mixinTypes, SQLSession session, boolean readonly)
-            throws DocumentException {
-        super(node, type, mixinTypes, session, readonly);
+            SQLSession session, boolean readonly) throws DocumentException {
+        super(node, type, session, readonly);
         Serializable versionSeriesId = getPropertyValue(Model.VERSION_VERSIONABLE_PROP);
         versionableNode = session.getNodeById(versionSeriesId);
     }
@@ -143,11 +141,6 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     @Override
     public boolean isFolder() {
         return false;
-    }
-
-    @Override
-    public void removeChild(String name) throws DocumentException {
-        throw new VersionNotModifiableException();
     }
 
     @Override

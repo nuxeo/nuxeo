@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,12 +42,15 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateDocumentException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelFactory;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
@@ -61,20 +65,14 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.ecm.core.query.FilterableQuery;
-import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
-import org.nuxeo.ecm.core.query.QueryResult;
-import org.nuxeo.ecm.core.query.UnsupportedQueryTypeException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
-import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -138,8 +136,6 @@ public class SQLSession implements Session {
 
     private final Repository repository;
 
-    private final NuxeoPrincipal principal;
-
     private final org.nuxeo.ecm.core.storage.sql.Session session;
 
     private Document root;
@@ -147,11 +143,9 @@ public class SQLSession implements Session {
     private final String sessionId;
 
     public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session,
-            Repository repository, NuxeoPrincipal principal, String sessionId)
-            throws DocumentException {
+            Repository repository, String sessionId) throws DocumentException {
         this.session = session;
         this.repository = repository;
-        this.principal = principal;
         Node rootNode;
         try {
             rootNode = session.getRootNode();
@@ -173,7 +167,7 @@ public class SQLSession implements Session {
 
     @Override
     public Document getNullDocument() {
-        return new SQLDocumentLive(null, null, null, this, true);
+        return new SQLDocumentLive(null, null, this, true);
     }
 
     @Override
@@ -198,12 +192,6 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public void cancel() throws DocumentException {
-        // TODO
-        // throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean isLive() {
         // session can become non-live behind our back
         // through ConnectionAwareXAResource that closes
@@ -224,11 +212,6 @@ public class SQLSession implements Session {
     @Override
     public String getRepositoryName() {
         return repository.getName();
-    }
-
-    @Override
-    public NuxeoPrincipal getPrincipal() {
-        return principal;
     }
 
     protected String idToString(Serializable id) {
@@ -421,12 +404,6 @@ public class SQLSession implements Session {
         }
     }
 
-    @Override
-    public InputStream getDataStream(String key) throws DocumentException {
-        // XXX TODO
-        throw new UnsupportedOperationException();
-    }
-
     // returned document is r/w even if a version or a proxy, so that normal
     // props can be set
     @Override
@@ -517,42 +494,6 @@ public class SQLSession implements Session {
         return importChild(uuid, parentNode, name, pos, typeName, props);
     }
 
-    @Override
-    public Query createQuery(String query, String queryType, String... params)
-            throws QueryException {
-        if (params != null && params.length != 0) {
-            throw new QueryException("Parameters not supported");
-        }
-        try {
-            return new SQLSessionQuery(query, queryType);
-        } catch (QueryParseException e) {
-            throw new QueryException(e.getMessage() + ": " + query, e);
-        }
-    }
-
-    @Override
-    public Query createQuery(String query, Query.Type qType, String... params)
-            throws QueryException {
-        if (qType != Query.Type.NXQL) {
-            throw new UnsupportedQueryTypeException(qType);
-        }
-        if (params != null && params.length != 0) {
-            throw new QueryException("Parameters not supported");
-        }
-        try {
-            return new SQLSessionQuery(query);
-        } catch (QueryParseException e) {
-            throw new QueryException(e.getMessage() + ": " + query, e);
-        }
-    }
-
-    @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, Object... params) throws QueryException {
-        return new SQLSessionQuery(query, queryType).executeAndFetch(
-                queryFilter, params);
-    }
-
     protected static final Pattern ORDER_BY_PATH_ASC = Pattern.compile(
             "(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH + "\\s*$",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -561,89 +502,107 @@ public class SQLSession implements Session {
             "(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH + "\\s+DESC\\s*$",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    protected class SQLSessionQuery implements FilterableQuery {
-
-        protected final String query;
-
-        protected final String queryType;
-
-        public SQLSessionQuery(String query) {
-            this.query = query;
-            queryType = NXQL.NXQL;
-        }
-
-        public SQLSessionQuery(String query, String queryType) {
-            this.query = query;
-            this.queryType = queryType;
-        }
-
-        @Override
-        public QueryResult execute() throws QueryException {
-            return execute(QueryFilter.EMPTY, false);
-        }
-
-        @Override
-        public QueryResult execute(boolean countTotal) throws QueryException {
-            return execute(QueryFilter.EMPTY, countTotal);
-        }
-
-        @Override
-        public QueryResult execute(QueryFilter queryFilter, boolean countTotal)
-                throws QueryException {
-            return execute(queryFilter, countTotal ? -1: 0);
-        }
-
-        @Override
-        public QueryResult execute(QueryFilter queryFilter, long countUpTo)
-                throws QueryException {
-            try {
-                String query = this.query;
-                // do ORDER BY ecm:path by hand in SQLQueryResult as we can't
-                // do it in SQL (and has to do limit/offset as well)
-                Boolean orderByPath;
-                Matcher matcher = ORDER_BY_PATH_ASC.matcher(query);
+    @Override
+    public DocumentModelList query(String query, String queryType,
+            QueryFilter queryFilter, long countUpTo) throws QueryException {
+        try {
+            // do ORDER BY ecm:path by hand in SQLQueryResult as we can't
+            // do it in SQL (and has to do limit/offset as well)
+            Boolean orderByPath;
+            Matcher matcher = ORDER_BY_PATH_ASC.matcher(query);
+            if (matcher.matches()) {
+                orderByPath = Boolean.TRUE; // ASC
+            } else {
+                matcher = ORDER_BY_PATH_DESC.matcher(query);
                 if (matcher.matches()) {
-                    orderByPath = Boolean.TRUE; // ASC
+                    orderByPath = Boolean.FALSE; // DESC
                 } else {
-                    matcher = ORDER_BY_PATH_DESC.matcher(query);
-                    if (matcher.matches()) {
-                        orderByPath = Boolean.FALSE; // DESC
-                    } else {
-                        orderByPath = null;
-                    }
+                    orderByPath = null;
                 }
-                long limit = 0;
-                long offset = 0;
-                if (orderByPath != null) {
-                    query = matcher.group(1);
-                    limit = queryFilter.getLimit();
-                    offset = queryFilter.getOffset();
-                    queryFilter = QueryFilter.withoutLimitOffset(queryFilter);
-                }
-                PartialList<Serializable> list = session.query(query,
-                        queryType, queryFilter, countUpTo);
-                return new SQLQueryResult(SQLSession.this, list, orderByPath,
-                        limit, offset);
-            } catch (StorageException e) {
-                throw new QueryException(e.getMessage(), e);
             }
-        }
+            long limit = 0;
+            long offset = 0;
+            if (orderByPath != null) {
+                query = matcher.group(1);
+                limit = queryFilter.getLimit();
+                offset = queryFilter.getOffset();
+                queryFilter = QueryFilter.withoutLimitOffset(queryFilter);
+            }
+            PartialList<Serializable> pl = session.query(query,
+                    queryType, queryFilter, countUpTo);
+            List<Serializable> ids = pl.list;
 
-        public IterableQueryResult executeAndFetch(QueryFilter queryFilter,
-                Object... params) throws QueryException {
+            // get Documents in bulk
+            List<Document> docs;
             try {
-                return session.queryAndFetch(query, queryType, queryFilter,
-                        params);
-            } catch (StorageException e) {
-                throw new QueryException(e.getMessage(), e);
+                docs = getDocumentsById(ids);
+            } catch (DocumentException e) {
+                log.error("Could not fetch documents for ids: " + ids, e);
+                docs = Collections.emptyList();
             }
+
+            // build DocumentModels from Documents
+            String[] schemas = { "common" };
+            List<DocumentModel> list = new ArrayList<DocumentModel>(ids.size());
+            for (Document doc : docs) {
+                try {
+                    list.add(DocumentModelFactory.createDocumentModel(doc, schemas));
+                } catch (DocumentException e) {
+                    log.error("Could not create document model for doc: " + doc, e);
+                }
+            }
+
+            // order / limit
+            if (orderByPath != null) {
+                Collections.sort(list,
+                        new PathComparator(orderByPath.booleanValue()));
+            }
+            if (limit != 0) {
+                // do limit/offset by hand
+                int size = list.size();
+                list.subList(0, (int) (offset > size ? size : offset)).clear();
+                size = list.size();
+                if (limit < size) {
+                    list.subList((int) limit, size).clear();
+                }
+            }
+            return new DocumentModelListImpl(list, pl.totalSize);
+        } catch (StorageException | QueryParseException e) {
+            throw new QueryException(e.getMessage() + ": " + query, e);
+        }
+    }
+
+    public static class PathComparator implements Comparator<DocumentModel> {
+
+        private final int sign;
+
+        public PathComparator(boolean asc) {
+            this.sign = asc ? 1 : -1;
         }
 
         @Override
-        public QueryResult execute(long countUpTo) throws QueryException {
-            return execute(QueryFilter.EMPTY, countUpTo);
+        public int compare(DocumentModel doc1, DocumentModel doc2) {
+            String p1 = doc1.getPathAsString();
+            String p2 = doc2.getPathAsString();
+            if (p1 == null && p2 == null) {
+                return sign * doc1.getId().compareTo(doc2.getId());
+            } else if (p1 == null) {
+                return sign;
+            } else if (p2 == null) {
+                return -1 * sign;
+            }
+            return sign * p1.compareTo(p2);
         }
+    }
 
+    @Override
+    public IterableQueryResult queryAndFetch(String query, String queryType,
+            QueryFilter queryFilter, Object[] params) throws QueryException {
+        try {
+            return session.queryAndFetch(query, queryType, queryFilter, params);
+        } catch (StorageException e) {
+            throw new QueryException(e.getMessage(), e);
+        }
     }
 
     /*
@@ -682,27 +641,16 @@ public class SQLSession implements Session {
         if (type == null) {
             throw new DocumentException("Unknown document type: " + typeName);
         }
-        String[] mixins = node.getMixinTypes();
-        List<CompositeType> mixinTypes = new ArrayList<CompositeType>(
-                mixins.length);
-        for (String mixin : mixins) {
-            CompositeType mixinType = schemaManager.getFacet(mixin);
-            if (mixinType != null) {
-                mixinTypes.add(mixinType);
-            }
-        }
 
         if (node.isProxy()) {
             // proxy seen as a normal document
-            Document proxy = new SQLDocumentLive(node, type, mixinTypes, this,
-                    false);
+            Document proxy = new SQLDocumentLive(node, type, this, false);
             Document target = newDocument(targetNode, readonly);
             return new SQLDocumentProxy(proxy, target);
         } else if (node.isVersion()) {
-            return new SQLDocumentVersion(node, type, mixinTypes, this,
-                    readonly);
+            return new SQLDocumentVersion(node, type, this, readonly);
         } else {
-            return new SQLDocumentLive(node, type, mixinTypes, this, false);
+            return new SQLDocumentLive(node, type, this, false);
         }
     }
 
@@ -736,21 +684,6 @@ public class SQLSession implements Session {
             throw new DocumentException(e.toString(), e);
         }
         return docs;
-    }
-
-
-
-    /**
-     * Resolves a node given its absolute path, or given an existing node and a
-     * relative path.
-     */
-    protected Document resolvePath(Node node, String path)
-            throws DocumentException {
-        try {
-            return newDocument(session.getNodeByPath(path, node));
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
     }
 
     protected Document getParent(Node node) throws DocumentException {
@@ -1023,7 +956,7 @@ public class SQLSession implements Session {
                         + complexProperty.getName(), e);
             }
         }
-        for (org.nuxeo.ecm.core.api.model.Property property : complexProperty) {
+        for (Property property : complexProperty) {
             String name = property.getField().getName().getPrefixedName();
             Type type = property.getType();
             try {
@@ -1074,23 +1007,24 @@ public class SQLSession implements Session {
      *
      * @since 5.9.4
      */
-    public void readPrefetch(ComplexType complexType, Prefetch prefetch,
-            Set<String> fieldNames, Set<String> docSchemas, Node node)
+    public Map<String, Serializable> readPrefetch(Node node,
+            ComplexType complexType, Set<String> xpaths)
             throws PropertyException {
-        readPrefetch(complexType, prefetch, fieldNames, null, null, docSchemas,
-                node);
+        Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
+        readPrefetch(node, complexType, xpaths, null, null, prefetch);
+        return prefetch;
     }
 
-    protected void readPrefetch(ComplexType complexType, Prefetch prefetch,
-            Set<String> fieldNames, String xpathGeneric, String xpath,
-            Set<String> docSchemas, Node node) throws PropertyException {
+    protected void readPrefetch(Node node, ComplexType complexType,
+            Set<String> xpaths, String xpathGeneric, String xpath,
+            Map<String, Serializable> prefetch) throws PropertyException {
         if (TypeConstants.isContentType(complexType)) {
-            if (!fieldNames.contains(xpathGeneric)) {
+            if (!xpaths.contains(xpathGeneric)) {
                 return;
             }
             try {
                 SQLBlob value = readBlob(node);
-                setPrefetch(prefetch, xpath, docSchemas, value);
+                prefetch.put(xpath, value);
                 return;
             } catch (StorageException e) {
                 throw new PropertyException("Property: " + xpath, e);
@@ -1104,20 +1038,20 @@ public class SQLSession implements Session {
             try {
                 if (type.isSimpleType()) {
                     // simple property
-                    if (!fieldNames.contains(xpg)) {
+                    if (!xpaths.contains(xpg)) {
                         continue;
                     }
                     Serializable value = node.getSimpleProperty(name).getValue();
-                    setPrefetch(prefetch, xp, docSchemas, value);
+                    prefetch.put(xp, value);
                 } else if (type.isListType()) {
                     ListType listType = (ListType) type;
                     if (listType.getFieldType().isSimpleType()) {
                         // array
-                        if (!fieldNames.contains(xpg)) {
+                        if (!xpaths.contains(xpg)) {
                             continue;
                         }
                         Serializable[] value = node.getCollectionProperty(name).getValue();
-                        setPrefetch(prefetch, xp, docSchemas, value);
+                        prefetch.put(xp, value);
                     } else {
                         // complex list
                         List<Node> childNodes;
@@ -1130,31 +1064,22 @@ public class SQLSession implements Session {
                         xpg += "/*";
                         int n = 0;
                         for (Node childNode : childNodes) {
-                            readPrefetch((ComplexType) listField.getType(),
-                                    prefetch, fieldNames, xpg, xp + "/" + n++,
-                                    docSchemas, childNode);
+                            readPrefetch(childNode,
+                                    (ComplexType) listField.getType(),
+                                    xpaths, xpg, xp + "/" + n++, prefetch);
                         }
                     }
                 } else {
                     // complex property
                     Node childNode = getChildProperty(node, name,
                             type.getName());
-                    readPrefetch((ComplexType) type, prefetch, fieldNames,
-                            xpg, xp, docSchemas, childNode);
+                    readPrefetch(childNode, (ComplexType) type, xpaths,
+                            xpg, xp, prefetch);
                 }
             } catch (StorageException e) {
                 throw new PropertyException("Property: " + name, e);
             }
         }
-    }
-
-    protected void setPrefetch(Prefetch prefetch, String xpath,
-            Set<String> docSchemas, Serializable value) {
-        String[] returnName = new String[1];
-        String schemaName = DocumentModelImpl.getXPathSchemaName(xpath,
-                docSchemas, returnName);
-        String name = returnName[0];
-        prefetch.put(xpath, schemaName, name, value);
     }
 
     /**
@@ -1173,7 +1098,7 @@ public class SQLSession implements Session {
             }
             return;
         }
-        for (org.nuxeo.ecm.core.api.model.Property property : complexProperty) {
+        for (Property property : complexProperty) {
             String name = property.getField().getName().getPrefixedName();
             try {
                 if (checkReadOnlyIgnoredWrite(doc, property, node)) {
@@ -1196,7 +1121,7 @@ public class SQLSession implements Session {
                         node.getCollectionProperty(name).setValue((Object[]) value);
                     } else {
                         // complex list
-                        Collection<org.nuxeo.ecm.core.api.model.Property> childProperties = property.getChildren();
+                        Collection<Property> childProperties = property.getChildren();
                         List<Node> childNodes;
                         try {
                             childNodes = getComplexList(node, name);
@@ -1229,7 +1154,7 @@ public class SQLSession implements Session {
 
                         // write values
                         int i = 0;
-                        for (org.nuxeo.ecm.core.api.model.Property childProperty : childProperties) {
+                        for (Property childProperty : childProperties) {
                             Node childNode = childNodes.get(i++);
                             writeComplexProperty(
                                     (ComplexProperty) childProperty, childNode,
@@ -1322,8 +1247,8 @@ public class SQLSession implements Session {
      * @since 5.9.4
      */
     protected boolean checkReadOnlyIgnoredWrite(SQLDocument doc,
-            org.nuxeo.ecm.core.api.model.Property property, Node node)
-            throws PropertyException, StorageException {
+            Property property, Node node) throws PropertyException,
+            StorageException {
         String name = property.getField().getName().getPrefixedName();
         if (!doc.isReadOnly() || isVersionWritableProperty(name)) {
             // do write

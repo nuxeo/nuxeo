@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
@@ -339,7 +340,9 @@ public class SchemaManagerImpl implements SchemaManager {
         schemas.put(schema.getName(), schema);
         Namespace ns = schema.getNamespace();
         uriToSchema.put(ns.uri, schema);
-        prefixToSchema.put(ns.prefix, schema);
+        if (!StringUtils.isBlank(ns.prefix)) {
+            prefixToSchema.put(ns.prefix, schema);
+        }
     }
 
     @Override

@@ -32,7 +32,6 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_SECURITY;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_VERSION;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.security.Principal;
 import java.text.DateFormat;
@@ -76,15 +75,11 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.DocumentProxy;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.PathComparator;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.ecm.core.query.FilterableQuery;
-import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
-import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -1303,49 +1298,29 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         SecurityService securityService = getSecurityService();
         Principal principal = getPrincipal();
         try {
-            Query compiledQuery = getSession().createQuery(query, queryType);
-            QueryResult results;
-            boolean postFilterPermission;
-            boolean postFilterFilter;
-            boolean postFilterPolicies;
-            boolean postFilter;
             String permission = BROWSE;
-            if (compiledQuery instanceof FilterableQuery) {
-                postFilterPermission = false;
-                String repoName = getRepositoryName();
-                postFilterPolicies = !securityService.arePoliciesExpressibleInQuery(repoName);
-                postFilterFilter = filter != null
-                        && !(filter instanceof FacetFilter);
-                postFilter = postFilterPolicies || postFilterFilter;
-                String[] principals;
-                if (isAdministrator()) {
-                    principals = null; // means: no security check needed
-                } else {
-                    principals = SecurityService.getPrincipalsToCheck(principal);
-                }
-                String[] permissions = securityService.getPermissionsToCheck(permission);
-                QueryFilter queryFilter = new QueryFilter(principal,
-                        principals, permissions,
-                        filter instanceof FacetFilter ? (FacetFilter) filter
-                                : null,
-                        securityService.getPoliciesQueryTransformers(repoName),
-                        postFilter ? 0 : limit, postFilter ? 0 : offset);
-                if (postFilter) {
-                    results = ((FilterableQuery) compiledQuery).execute(
-                            queryFilter, -1);
-                } else {
-                    results = ((FilterableQuery) compiledQuery).execute(
-                            queryFilter, countUpTo);
-                }
+            String repoName = getRepositoryName();
+            boolean postFilterPolicies = !securityService.arePoliciesExpressibleInQuery(repoName);
+            boolean postFilterFilter = filter != null
+                    && !(filter instanceof FacetFilter);
+            boolean postFilter = postFilterPolicies || postFilterFilter;
+            String[] principals;
+            if (isAdministrator()) {
+                principals = null; // means: no security check needed
             } else {
-                postFilterPermission = true;
-                postFilterPolicies = securityService.arePoliciesRestrictingPermission(permission);
-                postFilterFilter = filter != null;
-                postFilter = true;
-                results = compiledQuery.execute();
+                principals = SecurityService.getPrincipalsToCheck(principal);
             }
+            String[] permissions = securityService.getPermissionsToCheck(permission);
+            QueryFilter queryFilter = new QueryFilter(
+                    principal,
+                    principals,
+                    permissions,
+                    filter instanceof FacetFilter ? (FacetFilter) filter : null,
+                    securityService.getPoliciesQueryTransformers(repoName),
+                    postFilter ? 0 : limit, postFilter ? 0 : offset);
 
-            DocumentModelList dms = results.getDocumentModels();
+            DocumentModelList dms = getSession().query(query, queryType,
+                    queryFilter, postFilter ? -1 : countUpTo);
 
             if (!postFilter) {
                 // the backend has done all the needed filtering
@@ -1358,7 +1333,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             int n = 0;
             DocumentModelListImpl docs = new DocumentModelListImpl();
             for (DocumentModel model : dms) {
-                if (postFilterPermission || postFilterPolicies) {
+                if (postFilterPolicies) {
                     if (!hasPermission(model.getRef(), permission)) {
                         continue;
                     }
@@ -2294,10 +2269,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         try {
             if (proxies.size() == 1) {
                 for (Document proxy : proxies) {
-                    if (proxy instanceof DocumentProxy) {
-                        ((DocumentProxy) proxy).setTargetDocument(target);
-                        return readModel(proxy);
-                    }
+                    proxy.setTargetDocument(target);
+                    return readModel(proxy);
                 }
             }
         } catch (UnsupportedOperationException e) {
@@ -2344,7 +2317,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             List<String> versions = new ArrayList<String>();
             for (Document child : children) {
                 if (hasPermission(child, READ)) {
-                    Document target = ((DocumentProxy) child).getTargetDocument();
+                    Document target = child.getTargetDocument();
                     if (target.isVersion()) {
                         versions.add(target.getVersionLabel());
                     } else {
@@ -2403,17 +2376,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         } catch (DocumentException e) {
             throw new ClientException("Failed to get data model field "
                     + schema + ':' + field, e);
-        }
-    }
-
-    @Override
-    public SerializableInputStream getContentData(String key)
-            throws ClientException {
-        try {
-            InputStream in = getSession().getDataStream(key);
-            return new SerializableInputStream(in);
-        } catch (Exception e) {
-            throw new ClientException("Failed to get data stream for " + key, e);
         }
     }
 
@@ -2748,7 +2710,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         ACP acp = new ACPImpl();
 
         UserEntry userEntry = new UserEntryImpl(userOrGroupName);
-        userEntry.addPrivilege(READ, true, false);
+        userEntry.addPrivilege(READ);
 
         acp.setRules(new UserEntry[] { userEntry });
 

@@ -26,7 +26,7 @@ public class SQLQuery implements ASTNode {
 
     private String queryString;
 
-    public final SelectClause select;
+    public SelectClause select;
 
     public final FromClause from;
 

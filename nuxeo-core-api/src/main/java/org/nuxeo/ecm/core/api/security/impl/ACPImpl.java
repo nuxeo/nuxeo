@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,18 +7,14 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api.security.impl;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,62 +26,23 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.UserAccess;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 
 /**
  * The ACP implementation uses a cache used when calling getAccess().
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class ACPImpl implements ACP {
 
-    private static final long serialVersionUID = -2640696060701197284L;
-
-    private final ArrayList<String> owners;
+    private static final long serialVersionUID = 1L;
 
     private final List<ACL> acls;
 
     private transient Map<String, Access> cache;
 
     public ACPImpl() {
-        owners = new ArrayList<String>();
         acls = new ArrayList<ACL>();
         cache = new HashMap<String, Access>();
     }
-
-    // Owners.
-
-    @Override
-    public String[] getOwners() {
-        return owners.toArray(new String[owners.size()]);
-    }
-
-    @Override
-    public boolean isOwner(String username) {
-        return owners.contains(username);
-    }
-
-    @Override
-    public void addOwner(String owner) {
-        owners.add(owner);
-        cache.clear();
-    }
-
-    @Override
-    public void removeOwner(String owner) {
-        owners.remove(owner);
-        cache.clear();
-    }
-
-    @Override
-    public void setOwners(String[] owners) {
-        this.owners.clear();
-        this.owners.addAll(Arrays.asList(owners));
-        cache.clear();
-    }
-
-    // ACLs.
 
     /**
      * This method must append the ACL and not insert it since it is used to
@@ -183,7 +140,6 @@ public class ACPImpl implements ACP {
         String key = principal + ':' + permission;
         Access access = cache.get(key);
         if (access == null) {
-            // TODO: process owners
             access = Access.UNKNOWN;
             FOUND_ACE: for (ACL acl : acls) {
                 for (ACE ace : acl) {
@@ -313,14 +269,12 @@ public class ACPImpl implements ACP {
             acl.clear();
         }
         for (UserEntry entry : userEntries) {
-            for (String permission : entry.getPermissions()) {
-                UserAccess userAccess = entry.getAccess(permission);
-                if (userAccess.isReadOnly()) {
-                    continue; // avoid setting read only rules
-                }
-                ACE ace = new ACE(entry.getUserName(), permission,
-                        userAccess.isGranted());
-                acl.add(ace);
+            String username = entry.getUserName();
+            for (String permission : entry.getGrantedPermissions()) {
+                acl.add(new ACE(username, permission, true));
+            }
+            for (String permission : entry.getDeniedPermissions()) {
+                acl.add(new ACE(username, permission, false));
             }
         }
         cache.clear();
@@ -346,21 +300,6 @@ public class ACPImpl implements ACP {
         cache = new HashMap<String, Access>();
     }
 
-    @Override
-    public String[] listUsernamesForPermission(String perm) {
-        List<String> usernames = new ArrayList<String>();
-        ACL merged = getMergedACLs("merged");
-        for (ACE ace : merged.getACEs()) {
-            if (ace.getPermission().equals(perm) && ace.isGranted()) {
-                String username = ace.getUsername();
-                if (!usernames.contains(username)) {
-                    usernames.add(ace.getUsername());
-                }
-            }
-        }
-        return usernames.toArray(new String[usernames.size()]);
-    }
-
     /*
      * NXP-1822 Rux: method for validating in one shot the users allowed to
      * perform an oration. It gets the list of individual permissions which
@@ -381,14 +320,12 @@ public class ACPImpl implements ACP {
         return usernames.toArray(new String[usernames.size()]);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Object clone() {
+    public ACPImpl clone() {
         ACPImpl copy = new ACPImpl();
         for (ACL acl : acls) {
             copy.acls.add((ACL) acl.clone());
         }
-        copy.owners.addAll((Collection<String>) owners.clone());
         return copy;
     }
 

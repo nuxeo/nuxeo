@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -24,10 +25,8 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.DocumentProxy;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -37,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * A proxy is a shortcut to a target document (a version or normal document).
  */
-public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
+public class SQLDocumentProxy implements SQLDocument {
 
     /** The proxy seen as a normal doc ({@link SQLDocument}). */
     private final Document proxy;
@@ -160,11 +159,6 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public void save() throws DocumentException {
-        target.save();
-    }
-
-    @Override
     public void readDocumentPart(DocumentPart dp) throws PropertyException {
         if (isSchemaForProxy(dp.getName())) {
             proxy.readDocumentPart(dp);
@@ -174,13 +168,12 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     }
 
     @Override
-    public void readPrefetch(ComplexType complexType, Prefetch prefetch,
-            Set<String> fieldNames, Set<String> docSchemas)
-            throws PropertyException {
+    public Map<String, Serializable> readPrefetch(ComplexType complexType,
+            Set<String> xpaths) throws PropertyException {
         if (isSchemaForProxy(complexType.getName())) {
-            proxy.readPrefetch(complexType, prefetch, fieldNames, docSchemas);
+            return proxy.readPrefetch(complexType, xpaths);
         } else {
-            target.readPrefetch(complexType, prefetch, fieldNames, docSchemas);
+            return target.readPrefetch(complexType, xpaths);
         }
     }
 
@@ -417,11 +410,6 @@ public class SQLDocumentProxy implements SQLDocument, DocumentProxy {
     @Override
     public void orderBefore(String src, String dest) throws DocumentException {
         proxy.orderBefore(src, dest);
-    }
-
-    @Override
-    public void removeChild(String name) throws DocumentException {
-        proxy.removeChild(name);
     }
 
     /*

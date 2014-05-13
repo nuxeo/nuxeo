@@ -150,7 +150,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
         }
         Session session;
         try {
-            session = repository.getSession(principal, sessionId);
+            session = repository.getSession(sessionId);
         } catch (DocumentException e) {
             throw new ClientRuntimeException("Failed to load repository "
                     + repositoryName + ": " + e.getMessage(), e);

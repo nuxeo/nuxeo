@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,32 +7,27 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.model;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.security.SecurityException;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * Internal Session accessing the low-level storage.
  */
 public interface Session {
 
@@ -54,37 +49,18 @@ public interface Session {
     String getRepositoryName();
 
     /**
-     * Gets the principal that created this session.
+     * Does a query.
      *
-     * @since 5.9.3
-     * @return the principal
+     * @since 5.9.4
      */
-    NuxeoPrincipal getPrincipal();
+    DocumentModelList query(String query, String queryType,
+            QueryFilter queryFilter, long countUpTo) throws QueryException;
 
     /**
-     * Creates a query object given a SQL like query string.
-     *
-     * @param query the SQL like query
-     * @return the query
-     */
-    Query createQuery(String query, String queryType, String... params)
-            throws QueryException;
-
-    /**
-     * Creates a query object given a SQL like query string.
-     *
-     * @param query the SQL like query
-     * @return the query
-     */
-    Query createQuery(String query, Query.Type qType, String... params)
-            throws QueryException;
-
-    /**
-     *
-     * @throws QueryException
+     * Does a query and fetch the individual results as maps.
      */
     IterableQueryResult queryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, Object... params) throws QueryException;
+            QueryFilter queryFilter, Object[] params) throws QueryException;
 
     /**
      * Saves this session.
@@ -92,13 +68,6 @@ public interface Session {
      * @throws DocumentException if any error occurs
      */
     void save() throws DocumentException;
-
-    /**
-     * Cancels changes done in this session.
-     *
-     * @throws DocumentException if any error occurs
-     */
-    void cancel() throws DocumentException;
 
     /**
      * Checks whether the session is alive.
@@ -181,20 +150,6 @@ public interface Session {
      */
     Document move(Document src, Document dst, String name)
             throws DocumentException;
-
-    /**
-     * Gets a blob stream using the given key.
-     * <p>
-     * The implementation may use anything as the key. It may use the property
-     * path or a unique ID of the property.
-     * <p>
-     * This method can be used to lazily fetch blob content.
-     *
-     * @param key the key of the blob data
-     * @return the blob stream
-     * @throws DocumentException if any error occurs
-     */
-    InputStream getDataStream(String key) throws DocumentException;
 
     /**
      * Creates a generic proxy to the given document inside the given folder.

@@ -12,10 +12,13 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -341,10 +344,10 @@ public class DocumentModelFactory {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
 
         // individual fields
-        Set<String> fieldNames = new HashSet<String>();
+        Set<String> xpaths = new HashSet<String>();
         String[] prefetchFields = prefetchInfo.getFields();
         if (prefetchFields != null) {
-            fieldNames.addAll(Arrays.asList(prefetchFields));
+            xpaths.addAll(Arrays.asList(prefetchFields));
         }
 
         // whole schemas (but NOT their complex properties)
@@ -356,7 +359,7 @@ public class DocumentModelFactory {
                     if (schema != null) {
                         for (Field field : schema.getFields()) {
                             if (isScalarField(field)) {
-                                fieldNames.add(field.getName().getPrefixedName());
+                                xpaths.add(field.getName().getPrefixedName());
                             }
                         }
                     }
@@ -368,10 +371,29 @@ public class DocumentModelFactory {
         Prefetch prefetch = new Prefetch();
         for (String schemaName : docSchemas) {
             Schema schema = schemaManager.getSchema(schemaName);
+            // find xpaths for this schema
+            Set<String> schemaXpaths = new HashSet<String>();
+            for (String xpath : xpaths) {
+                String sn = DocumentModelImpl.getXPathSchemaName(xpath,
+                        docSchemas, null);
+                if (schemaName.equals(sn)) {
+                    schemaXpaths.add(xpath);
+                }
+            }
+            Map<String, Serializable> map;
             try {
-                doc.readPrefetch(schema, prefetch, fieldNames, docSchemas);
+                map = doc.readPrefetch(schema, schemaXpaths);
             } catch (PropertyException e) {
-                throw new RuntimeException(e);
+                throw new ClientRuntimeException(e);
+            }
+            for (Entry<String, Serializable> en : map.entrySet()) {
+                String xpath = en.getKey();
+                Serializable value = en.getValue();
+                String[] returnName = new String[1];
+                String sn = DocumentModelImpl.getXPathSchemaName(xpath,
+                        docSchemas, returnName);
+                String name = returnName[0];
+                prefetch.put(xpath, sn, name, value);
             }
         }
 

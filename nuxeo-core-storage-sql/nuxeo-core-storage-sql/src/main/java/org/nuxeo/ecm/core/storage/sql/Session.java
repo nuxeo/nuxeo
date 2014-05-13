@@ -476,20 +476,6 @@ public interface Session extends Connection {
      * @param query the query
      * @param query the query type
      * @param queryFilter the query filter
-     * @param countTotal if {@code true}, also count the total size without
-     *            offset/limit
-     * @return the resulting list with total size included
-     */
-    PartialList<Serializable> query(String query, String queryType,
-            QueryFilter queryFilter, boolean countTotal)
-            throws StorageException;
-
-    /**
-     * Makes a query to the database.
-     *
-     * @param query the query
-     * @param query the query type
-     * @param queryFilter the query filter
      * @param countUpTo if {@code -1}, also count the total size without
      *            offset/limit.<br>
      *            If {@code 0}, don't count the total size.<br>

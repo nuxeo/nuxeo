@@ -56,7 +56,7 @@ public class TestSecurityPolicyService extends SQLRepositoryTestCase {
         }
         UserEntryImpl userEntry = new UserEntryImpl(user);
         for (String perm : perms) {
-            userEntry.addPrivilege(perm, true, false);
+            userEntry.addPrivilege(perm);
         }
         acp.setRules("test", new UserEntry[] { userEntry });
         doc.setACP(acp, true);

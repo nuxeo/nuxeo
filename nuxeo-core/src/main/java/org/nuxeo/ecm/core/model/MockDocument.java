@@ -17,18 +17,18 @@ package org.nuxeo.ecm.core.model;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.DocumentTypeImpl;
-import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 
 /**
@@ -150,10 +150,6 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public void save() throws DocumentException {
-    }
-
-    @Override
     public void setSystemProp(String name, Serializable value)
             throws DocumentException {
     }
@@ -244,10 +240,6 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public void removeChild(String name) throws DocumentException {
-    }
-
-    @Override
     public Serializable getPropertyValue(String name) throws DocumentException {
         if (name != null && name.equals("dc:creator")) {
             return creator;
@@ -283,9 +275,9 @@ public class MockDocument implements Document {
     }
 
     @Override
-    public void readPrefetch(ComplexType complexType, Prefetch prefetch,
-            Set<String> fieldNames, Set<String> docSchemas)
-            throws PropertyException {
+    public Map<String, Serializable> readPrefetch(ComplexType complexType,
+            Set<String> xpaths) {
+        return new HashMap<String, Serializable>();
     }
 
     @Override
@@ -358,6 +350,16 @@ public class MockDocument implements Document {
 
     @Override
     public boolean removeFacet(String facet) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Document getTargetDocument() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setTargetDocument(Document target) throws DocumentException {
         throw new UnsupportedOperationException();
     }
 

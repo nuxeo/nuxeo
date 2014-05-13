@@ -14,7 +14,6 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -63,29 +62,12 @@ public class SQLRepository implements Repository {
      * Called by LocalSession.createSession
      */
     @Override
-    public Session getSession(NuxeoPrincipal principal, String sessionId)
-            throws DocumentException {
+    public Session getSession(String sessionId) throws DocumentException {
         try {
-            return new SQLSession(repository.getConnection(), this, principal,
-                    sessionId);
+            return new SQLSession(repository.getConnection(), this, sessionId);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
-    }
-
-    /*
-     * Used only by unit tests. Shouldn't be in public API.
-     */
-    @Override
-    public void initialize() {
-    }
-
-    /*
-     * Used only by JCR MBean.
-     */
-    @Override
-    public synchronized Session[] getOpenedSessions() {
-        return new Session[0];
     }
 
     @Override
@@ -98,18 +80,8 @@ public class SQLRepository implements Repository {
     }
 
     @Override
-    public int getStartedSessionsCount() {
-        return 0;
-    }
-
-    @Override
-    public int getClosedSessionsCount() {
-        return 0;
-    }
-
-    @Override
     public int getActiveSessionsCount() {
-        return 0;
+        return repository.getActiveSessionsCount();
     }
 
 }

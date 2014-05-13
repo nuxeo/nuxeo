@@ -346,13 +346,6 @@ public class ConnectionImpl implements Session {
 
     @Override
     public PartialList<Serializable> query(String query, String queryType,
-            QueryFilter queryFilter, boolean countTotal)
-            throws StorageException {
-        return getSession().query(query, queryType, queryFilter, countTotal);
-    }
-
-    @Override
-    public PartialList<Serializable> query(String query, String queryType,
             QueryFilter queryFilter, long countUpTo)
             throws StorageException {
         return getSession().query(query, queryType, queryFilter, countUpTo);

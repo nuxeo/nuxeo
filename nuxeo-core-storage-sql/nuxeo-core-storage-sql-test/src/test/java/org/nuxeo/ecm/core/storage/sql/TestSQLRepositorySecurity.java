@@ -102,7 +102,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             acp = new ACPImpl();
         }
         UserEntryImpl userEntry = new UserEntryImpl("anonymous");
-        userEntry.addPrivilege(perm, true, false);
+        userEntry.addPrivilege(perm);
         acp.setRules("test", new UserEntry[] { userEntry });
         doc.setACP(acp, true);
         session.save();
@@ -117,7 +117,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         }
         UserEntryImpl userEntry = new UserEntryImpl(EVERYONE);
         for (String perm : perms) {
-            userEntry.addPrivilege(perm, true, false);
+            userEntry.addPrivilege(perm);
         }
         acp.setRules("test", new UserEntry[] { userEntry });
         doc.setACP(acp, true);

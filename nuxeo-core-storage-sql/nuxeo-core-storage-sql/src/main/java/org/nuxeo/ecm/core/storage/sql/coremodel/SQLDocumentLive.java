@@ -36,10 +36,8 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
-import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -55,9 +53,6 @@ public class SQLDocumentLive implements SQLDocument {
 
     protected SQLSession session;
 
-    /** Mixin types, updated when facets change. */
-    protected final List<CompositeType> mixinTypes;
-
     /** Proxy-induced types. */
     protected final List<Schema> proxySchemas;
 
@@ -66,12 +61,11 @@ public class SQLDocumentLive implements SQLDocument {
      */
     protected boolean readonly;
 
-    protected SQLDocumentLive(Node node, ComplexType type,
-            List<CompositeType> mixinTypes, SQLSession session, boolean readonly) {
+    protected SQLDocumentLive(Node node, ComplexType type, SQLSession session,
+            boolean readonly) {
         this.node = node;
         this.type = type;
         this.session = session;
-        this.mixinTypes = mixinTypes;
         if (node != null && node.isProxy()) {
             SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
             proxySchemas = schemaManager.getProxySchemas(type.getName());
@@ -105,8 +99,6 @@ public class SQLDocumentLive implements SQLDocument {
      * ----- org.nuxeo.ecm.core.model.Document -----
      */
 
-    // public String getName(); from SQLComplexProperty
-    //
     @Override
     public DocumentType getType() {
         return (DocumentType) type;
@@ -153,11 +145,6 @@ public class SQLDocumentLive implements SQLDocument {
         session.remove(getNode());
     }
 
-    @Override
-    public void save() throws DocumentException {
-        session.save();
-    }
-
     /**
      * Reads into the {@link DocumentPart} the values from this
      * {@link SQLDocument}.
@@ -168,11 +155,9 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
     @Override
-    public void readPrefetch(ComplexType complexType, Prefetch prefetch,
-            Set<String> fieldNames, Set<String> docSchemas)
-            throws PropertyException {
-        session.readPrefetch(complexType, prefetch, fieldNames, docSchemas,
-                getNode());
+    public Map<String, Serializable> readPrefetch(ComplexType complexType,
+            Set<String> xpaths) throws PropertyException {
+        return session.readPrefetch(getNode(), complexType, xpaths);
     }
 
     /**
@@ -544,15 +529,6 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
     @Override
-    public void removeChild(String name) throws DocumentException {
-        if (!isFolder()) {
-            return; // ignore non folder documents XXX urgh
-        }
-        Document doc = getChild(name);
-        doc.remove();
-    }
-
-    @Override
     public Set<String> getAllFacets() {
         return getNode().getAllMixinTypes();
     }
@@ -569,30 +545,12 @@ public class SQLDocumentLive implements SQLDocument {
 
     @Override
     public boolean addFacet(String facet) throws DocumentException {
-        try {
-            boolean added = session.addMixinType(getNode(), facet);
-            if (added) {
-                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-                mixinTypes.add(schemaManager.getFacet(facet));
-            }
-            return added;
-        } catch (IllegalArgumentException e) {
-            throw new DocumentException(e);
-        }
+        return session.addMixinType(getNode(), facet);
     }
 
     @Override
     public boolean removeFacet(String facet) throws DocumentException {
-        boolean removed = session.removeMixinType(getNode(), facet);
-        if (removed) {
-            for (Iterator<CompositeType> it = mixinTypes.iterator(); it.hasNext();) {
-                if (it.next().getName().equals(facet)) {
-                    it.remove();
-                    break;
-                }
-            }
-        }
-        return removed;
+        return session.removeMixinType(getNode(), facet);
     }
 
     /*
@@ -630,6 +588,16 @@ public class SQLDocumentLive implements SQLDocument {
     @Override
     public int hashCode() {
         return getNode().hashCode();
+    }
+
+    @Override
+    public Document getTargetDocument() {
+        return null;
+    }
+
+    @Override
+    public void setTargetDocument(Document target) throws DocumentException {
+        throw new DocumentException();
     }
 
 }

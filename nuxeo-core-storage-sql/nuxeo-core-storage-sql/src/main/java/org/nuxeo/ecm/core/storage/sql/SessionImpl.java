@@ -1238,18 +1238,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public PartialList<Serializable> query(String query, String queryType,
-            QueryFilter queryFilter, boolean countTotal)
-            throws StorageException {
-        final Timer.Context timerContext = queryTimer.time();
-        try {
-            return mapper.query(query, queryType, queryFilter, countTotal);
-        } finally  {
-            timerContext.stop();
-        }
-    }
-
-    @Override
-    public PartialList<Serializable> query(String query, String queryType,
             QueryFilter queryFilter, long countUpTo) throws StorageException {
         final Timer.Context timerContext = queryTimer.time();
         try {

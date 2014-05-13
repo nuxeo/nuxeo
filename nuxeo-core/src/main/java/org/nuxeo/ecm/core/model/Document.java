@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -26,7 +27,6 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 
 /**
@@ -120,11 +120,6 @@ public interface Document {
     void remove() throws DocumentException;
 
     /**
-     * Saves any modification done on this document or its children.
-     */
-    void save() throws DocumentException;
-
-    /**
      * Gets the life cycle state of this document.
      *
      * @return the life cycle state
@@ -196,20 +191,27 @@ public interface Document {
 
     /**
      * Loads a {@link DocumentPart} from storage.
+     * <p>
+     * Reading data is done by {@link DocumentPart} because of per-proxy
+     * schemas.
      */
     void readDocumentPart(DocumentPart dp) throws PropertyException;
 
     /**
      * Reads a set of prefetched fields.
+     * <p>
+     * Reading data is done by {@link ComplexType} because of per-proxy schemas.
      *
      * @since 5.9.4
      */
-    void readPrefetch(ComplexType complexType, Prefetch prefetch,
-            Set<String> fieldNames, Set<String> docSchemas)
-            throws PropertyException;
+    Map<String, Serializable> readPrefetch(ComplexType complexType,
+            Set<String> xpaths) throws PropertyException;
 
     /**
      * Writes a {@link DocumentPart} to storage.
+     * <p>
+     * Writing data is done by {@link DocumentPart} because of per-proxy
+     * schemas.
      */
     void writeDocumentPart(DocumentPart dp) throws PropertyException;
 
@@ -355,18 +357,6 @@ public interface Document {
      * @return the newly created document
      */
     Document addChild(String name, String typeName) throws DocumentException;
-
-    /**
-     * Removes the child having the given name
-     * <p>
-     * If this document is not a folder, does nothing.
-     * <p>
-     * Throws {@link NoSuchDocumentException} if the child does not exist
-     *
-     * @param name the child name
-     * @throws NoSuchDocumentException if the child does not exist
-     */
-    void removeChild(String name) throws DocumentException;
 
     /**
      * Orders the given source child before the destination child.
@@ -539,5 +529,15 @@ public interface Document {
      * @return the working copy
      */
     Document getWorkingCopy() throws DocumentException;
+
+    /**
+     * Gets the document (version or live document) to which this proxy points.
+     */
+    Document getTargetDocument();
+
+    /**
+     * Sets the document (version or live document) to which this proxy points.
+     */
+    void setTargetDocument(Document target) throws DocumentException;
 
 }

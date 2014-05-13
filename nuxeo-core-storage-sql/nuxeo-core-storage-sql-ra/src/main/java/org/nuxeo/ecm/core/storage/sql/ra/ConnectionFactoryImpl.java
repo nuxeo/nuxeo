@@ -22,7 +22,6 @@ import javax.resource.cci.ResourceAdapterMetaData;
 import javax.resource.spi.ConnectionManager;
 
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.sql.Repository;
@@ -169,44 +168,18 @@ public class ConnectionFactoryImpl implements Repository,
     }
 
     @Override
-    public org.nuxeo.ecm.core.model.Session getSession(
-            NuxeoPrincipal principal, String sessionId)
+    public org.nuxeo.ecm.core.model.Session getSession(String sessionId)
             throws DocumentException {
         try {
-            return new SQLSession(getConnection(), this, principal, sessionId);
+            return new SQLSession(getConnection(), this, sessionId);
         } catch (StorageException e) {
             throw new DocumentException(e.getMessage(), e);
         }
     }
 
-    /*
-     * Used only by unit tests. Shouldn't be in public API.
-     */
-    @Override
-    public void initialize() {
-    }
-
-    /*
-     * Used only by core MBean.
-     */
-    @Override
-    public synchronized org.nuxeo.ecm.core.model.Session[] getOpenedSessions() {
-        return new org.nuxeo.ecm.core.model.Session[0];
-    }
-
     @Override
     public void shutdown() {
         managedConnectionFactory.shutdown();
-    }
-
-    @Override
-    public int getStartedSessionsCount() {
-        return 0;
-    }
-
-    @Override
-    public int getClosedSessionsCount() {
-        return 0;
     }
 
     /*

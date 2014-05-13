@@ -119,16 +119,6 @@ public interface ACP extends Serializable, Cloneable {
      */
     void setRules(String aclName, UserEntry[] userEntries, boolean overwrite);
 
-    String[] getOwners();
-
-    void setOwners(String[] owners);
-
-    void removeOwner(String owner);
-
-    void addOwner(String owner);
-
-    boolean isOwner(String username);
-
     void addACL(ACL acl);
 
     void addACL(int pos, ACL acl);
@@ -148,16 +138,6 @@ public interface ACP extends Serializable, Cloneable {
     ACL getOrCreateACL();
 
     /**
-     * Returns the usernames having a given permission.
-     *
-     * @deprecated Use the method from UserManager service getUsersForPermission instead
-     * @param perm the permission name.
-     * @return a list of usernames
-     */
-    @Deprecated
-    String[] listUsernamesForPermission(String perm);
-
-    /**
      * Returns the usernames granted to perform an operation based on a list of
      * permissions.
      *
@@ -174,6 +154,6 @@ public interface ACP extends Serializable, Cloneable {
      *
      * @return a copy
      */
-    Object clone();
+    ACP clone();
 
 }

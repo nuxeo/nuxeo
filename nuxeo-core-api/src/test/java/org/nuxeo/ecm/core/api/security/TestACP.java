@@ -14,20 +14,28 @@
 
 package org.nuxeo.ecm.core.api.security;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.api.security.Access.GRANT;
+import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.RESTRICTED_READ;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-
-import static org.nuxeo.ecm.core.api.security.Access.GRANT;
-import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.*;
 
 public class TestACP {
 
@@ -41,27 +49,6 @@ public class TestACP {
     @After
     public void tearDown() {
         acp = null;
-    }
-
-    @Test
-    public void testGetOwners() {
-        String[] owners = acp.getOwners();
-        assertEquals(0, owners.length);
-    }
-
-    @Test
-    public void testAddOwners() {
-        acp.addOwner("joe");
-        String[] owners = acp.getOwners();
-        assertEquals(1, owners.length);
-        assertEquals("joe", owners[0]);
-    }
-
-    @Test
-    public void testSetOwners() {
-        acp.setOwners(new String[] {});
-        String[] owners = acp.getOwners();
-        assertEquals(0, owners.length);
     }
 
     @Test
@@ -125,7 +112,7 @@ public class TestACP {
         assertSame(UNKNOWN, acp.getAccess("joe", RESTRICTED_READ));
         assertSame(UNKNOWN, acp.getAccess("jack", READ));
     }
-    
+
     @Test
     public void testPermissionsAPI() {
         ACL acl = new ACLImpl("acl1");
@@ -141,17 +128,11 @@ public class TestACP {
         acl.add(lisa);
         acp.addACL(acl);
 
-        String[] usernames = acp.listUsernamesForPermission(BROWSE);
-        assertEquals(2, usernames.length);
-
-        usernames = acp.listUsernamesForPermission(EVERYTHING);
-        assertEquals(1, usernames.length);
-
         Set<String> perms = new HashSet<String>(3);
         perms.add(BROWSE);
         perms.add(READ);
         perms.add(WRITE);
-        usernames = acp.listUsernamesForAnyPermission(perms);
+        String[] usernames = acp.listUsernamesForAnyPermission(perms);
         assertEquals(2, usernames.length);
     }
 

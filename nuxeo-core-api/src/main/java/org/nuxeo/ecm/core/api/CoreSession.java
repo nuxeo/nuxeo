@@ -862,21 +862,6 @@ public interface CoreSession extends AutoCloseable {
     DataModel getDataModel(DocumentRef docRef, Schema schema)
             throws ClientException;
 
-    /**
-     * Gets the data input stream given its key.
-     * <p>
-     * The key is implementation-dependent - this can be a property path an ID,
-     * etc.
-     * <p>
-     * This method is used to lazily fetch blob streams.
-     *
-     * @param key
-     * @return
-     * @throws ClientException
-     * @throws SecurityException
-     */
-    SerializableInputStream getContentData(String key) throws ClientException;
-
     // -------- Versioning API ---------------
 
     /**

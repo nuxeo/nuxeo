@@ -15,7 +15,6 @@
 package org.nuxeo.ecm.core.model;
 
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
  * Interface to manage a low-level repository.
@@ -24,20 +23,9 @@ public interface Repository {
 
     String getName();
 
-    Session getSession(NuxeoPrincipal principal, String sessionId)
-            throws DocumentException;
-
-    void initialize() throws DocumentException;
-
-    Session[] getOpenedSessions() throws DocumentException;
+    Session getSession(String sessionId) throws DocumentException;
 
     void shutdown();
-
-    // stats for debug
-
-    int getStartedSessionsCount();
-
-    int getClosedSessionsCount();
 
     int getActiveSessionsCount();
 

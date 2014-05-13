@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,40 +7,52 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.api.security.impl;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.nuxeo.ecm.core.api.security.UserAccess;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- */
 public class UserEntryImpl implements UserEntry {
 
-    private static final long serialVersionUID = -4831432501486395944L;
+    private static final long serialVersionUID = 1L;
 
     private final String username;
 
-    private final Map<String, UserAccess> accessEntries;
+    private final Set<String> granted;
 
+    private final Set<String> denied;
 
     public UserEntryImpl(String username) {
         this.username = username;
-        accessEntries = new HashMap<String, UserAccess>();
+        granted = new HashSet<String>();
+        denied = new HashSet<String>();
     }
 
     @Override
+    public void addPrivilege(String permission) {
+        granted.add(permission);
+        denied.remove(permission);
+    }
+
+    @Override
+    public void addPrivilege(String permission, boolean isGranted) {
+        if (isGranted) {
+            addPrivilege(permission);
+        } else {
+            granted.remove(permission);
+            denied.add(permission);
+        }
+    }
+
+    @Override
+    @Deprecated
     public void addPrivilege(String permission, boolean granted, boolean readOnly) {
-        accessEntries.put(permission, new UserAccess(granted, readOnly));
+        addPrivilege(permission, granted);
     }
 
     @Override
@@ -49,13 +61,13 @@ public class UserEntryImpl implements UserEntry {
     }
 
     @Override
-    public String[] getPermissions() {
-        return accessEntries.keySet().toArray(new String[accessEntries.size()]);
+    public Set<String> getGrantedPermissions() {
+        return granted;
     }
 
     @Override
-    public UserAccess getAccess(String permission) {
-        return accessEntries.get(permission);
+    public Set<String> getDeniedPermissions() {
+        return denied;
     }
 
 }
