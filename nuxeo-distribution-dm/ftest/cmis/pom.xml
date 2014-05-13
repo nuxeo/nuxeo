@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -8,15 +9,10 @@
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.nuxeo.tool</groupId>
-  <artifactId>cmis-utility</artifactId>
-  <version>1.0</version>
+  <artifactId>nuxeo-distribution-dm-cmis-tests</artifactId>
   <packaging>pom</packaging>
-  <name>Utility POM for running CMIS tests</name>
-  <description>
-    This POM uses tools-nuxeo-ftest to run CMIS tests
-    in multiple environments (OS, DB)
-  </description>
+  <name>Nuxeo DM CMIS Tests</name>
+  <description>CMIS tests on Nuxeo DM module</description>
 
   <dependencies>
     <dependency>

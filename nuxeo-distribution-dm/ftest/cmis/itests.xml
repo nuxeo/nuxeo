@@ -21,13 +21,17 @@
       <arg value="runtests.py" />
       <env key="VERBOSITY" value="2" />
     </exec>
-    <fail status="${exitCode}" message="CMIS tests failed - see cmis.log">
-      <condition>
-        <not>
-          <equals arg1="${exitCode}" arg2="0" />
-        </not>
-      </condition>
-    </fail>
+
+    <if>
+      <not>
+        <equals arg1="${exitCode}" arg2="0" />
+      </not>
+      <then>
+        <loadfile property="cmis.log" srcFile="${out.dir}/cmis.log" />
+        <echo level="error" message="${cmis.log}" />
+        <fail status="${exitCode}" message="CMIS tests failed - see cmis.log" />
+      </then>
+    </if>
   </target>
 
 </project>
