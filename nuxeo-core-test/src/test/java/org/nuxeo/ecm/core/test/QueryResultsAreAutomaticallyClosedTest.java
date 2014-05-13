@@ -13,6 +13,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.storage.sql.ra.ConnectionImpl;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
+import org.nuxeo.runtime.test.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
@@ -49,6 +50,9 @@ public class QueryResultsAreAutomaticallyClosedTest {
 
     @Inject
     protected LogCaptureFeature.Result logCaptureResults;
+
+    @Rule
+    public final ConditionalIgnoreRule ignoreRule = new ConditionalIgnoreRule();
 
     @Test
     public void testWithoutTransaction() throws Exception {
