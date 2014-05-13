@@ -9,7 +9,17 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
   <h3>
-    <h:outputText value="#{messages['label.addToCollection.title']}" />
+    <c:if test="#{selection}">
+      <nxu:set var="nbItems"
+        value="#{collectionActions.getMultipleDocumentToBeAdded().size()}">
+        <h:outputText
+          value="#{nxu:translate(nbItems gt 1 ? 'label.addSelectionsToCollection.title' : 'label.addSelectionToCollection.title', nbItems)}" />
+      </nxu:set>
+    </c:if>
+    <c:if test="#{!selection}">
+      <h:outputText
+        value="#{nxu:translate('label.addDocToCollection.title', currentDocument.title)}" />
+    </c:if>
   </h3>
 
   <h:form id="#{fancyboxFormId}">
