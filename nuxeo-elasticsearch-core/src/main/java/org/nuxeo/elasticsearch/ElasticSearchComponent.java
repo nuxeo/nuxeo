@@ -31,9 +31,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang.RandomStringUtils;
@@ -134,9 +135,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     // temporary hack until we are able to list pending indexing jobs cluster
     // wide
-    protected final CopyOnWriteArrayList<String> pendingWork = new CopyOnWriteArrayList<String>();
+    protected final Set<String> pendingWork = Collections
+            .synchronizedSet(new HashSet<String>());
 
-    protected final CopyOnWriteArrayList<String> pendingCommands = new CopyOnWriteArrayList<String>();
+    protected final Set<String> pendingCommands = Collections
+            .synchronizedSet(new HashSet<String>());
 
     protected Map<String, ElasticSearchIndexConfig> indexes = new HashMap<String, ElasticSearchIndexConfig>();
 
@@ -331,23 +334,27 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (doc == null) {
             return;
         }
-        boolean added = pendingCommands.addIfAbsent(cmd.getId());
+        boolean added = pendingCommands.add(cmd.getId());
         if (!added) {
-            log.debug("Skip indexing for " + doc
-                    + " since it is already scheduled");
+            if (log.isDebugEnabled()) {
+                log.debug("Skip indexing for " + doc
+                        + " since it is already scheduled");
+            }
             return;
         }
-
-        added = pendingWork.addIfAbsent(getWorkKey(doc));
+        added = pendingWork.add(getWorkKey(doc));
         if (!added) {
-            log.debug("Skip indexing for " + doc
-                    + " since it is already scheduled");
+            if (log.isDebugEnabled()) {
+                log.debug("Skip indexing for " + doc
+                        + " since it is already scheduled");
+            }
             return;
         }
 
         if (cmd.isSync()) {
             if (log.isDebugEnabled()) {
-                log.debug("Schedule PostCommit indexing request " + cmd.toString());
+                log.debug("Schedule PostCommit indexing request "
+                        + cmd.toString());
             }
             schedulePostCommitIndexing(cmd);
         } else {
