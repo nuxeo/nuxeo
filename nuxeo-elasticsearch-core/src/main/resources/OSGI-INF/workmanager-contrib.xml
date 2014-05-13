@@ -4,10 +4,10 @@
   <extension target="org.nuxeo.ecm.core.work.service" point="queues">
     <queue id="elasticSearchIndexing">
       <name>ElasticSearch Indexing</name>
-      <maxThreads>1</maxThreads>
+      <maxThreads>4</maxThreads>
       <!-- <usePriority>true</usePriority> -->
       <category>elasticSearchIndexing</category>
-      <clearCompletedAfterSeconds>600</clearCompletedAfterSeconds>
+      <clearCompletedAfterSeconds>90</clearCompletedAfterSeconds>
     </queue>
   </extension>
 
