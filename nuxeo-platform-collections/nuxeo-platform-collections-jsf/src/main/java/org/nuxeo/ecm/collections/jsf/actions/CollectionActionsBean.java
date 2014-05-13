@@ -304,10 +304,10 @@ public class CollectionActionsBean implements Serializable {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance(
                 "navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        if (currentDocument == null) {
+        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        if (currentDocument == null || !collectionManager.isCollectable(currentDocument)) {
             return false;
         }
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         if (collectionManager.isCollected(currentDocument)) {
             final CoreSession session = (CoreSession) Component.getInstance(
                     "documentManager", true);
