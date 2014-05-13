@@ -169,11 +169,14 @@ public class LocalSession extends AbstractSession implements Synchronization {
         if (si == null) {
             return;
         }
-        si.session.close();
-        sessionHolder.remove();
-        allSessions.remove(si);
         log.debug("Removing thread " + Thread.currentThread().getName()
-          + " for CoreSession: " + sessionId);
+                + " for CoreSession: " + sessionId);
+        try {
+            si.session.close();
+        } finally {
+            sessionHolder.remove();
+            allSessions.remove(si);
+        }
     }
 
     // explicit close()

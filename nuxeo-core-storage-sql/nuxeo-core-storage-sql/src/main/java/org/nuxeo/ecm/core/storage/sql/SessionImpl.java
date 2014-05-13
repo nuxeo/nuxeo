@@ -257,7 +257,6 @@ public class SessionImpl implements Session, XAResource {
     }
 
     protected void closeSession() throws StorageException {
-        closeStillOpenQueryResults();
         checkLive();
         live = false;
         context.clearCaches();
@@ -884,7 +883,7 @@ public class SessionImpl implements Session, XAResource {
         }
         list.add(mixin);
         String[] mixins = list.toArray(new String[list.size()]);
-        node.hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
+        node.hierFragment.put(Model.MAIN_MIXIN_TYPES_KEY, mixins);
         // immediately create child nodes (for complex properties) in order
         // to avoid concurrency issue later on
         Map<String, String> childrenTypes = model.getMixinComplexChildren(mixin);
@@ -908,7 +907,7 @@ public class SessionImpl implements Session, XAResource {
         if (mixins.length == 0) {
             mixins = null;
         }
-        node.hierFragment.put(model.MAIN_MIXIN_TYPES_KEY, mixins);
+        node.hierFragment.put(Model.MAIN_MIXIN_TYPES_KEY, mixins);
         // remove child nodes
         Map<String, String> childrenTypes = model.getMixinComplexChildren(mixin);
         for (String childName: childrenTypes.keySet()) {
@@ -1256,47 +1255,12 @@ public class SessionImpl implements Session, XAResource {
             QueryFilter queryFilter, Object... params) throws StorageException {
         final Timer.Context timerContext = queryTimer.time();
         try {
-            IterableQueryResult result = mapper.queryAndFetch(query, queryType, queryFilter, params);
-            noteQueryResult(result);
-            return result;
+            return mapper.queryAndFetch(query, queryType, queryFilter, params);
         } finally  {
             timerContext.stop();
         }
     }
 
-    public static class QueryResultContextException extends Exception {
-        private static final long serialVersionUID = 1L;
-
-        public final IterableQueryResult queryResult;
-
-        public QueryResultContextException(IterableQueryResult queryResult) {
-            super("queryAndFetch call context");
-            this.queryResult = queryResult;
-        }
-    }
-
-    protected final Set<QueryResultContextException> queryResults = new HashSet<QueryResultContextException>();
-
-    protected void noteQueryResult(IterableQueryResult result) {
-        queryResults.add(new QueryResultContextException(result));
-    }
-
-    protected void closeStillOpenQueryResults() {
-        for (QueryResultContextException context : queryResults) {
-            if (!context.queryResult.isLife()) {
-                continue;
-            }
-            try {
-                context.queryResult.close();
-            } catch (RuntimeException e) {
-                log.error("Cannot close query result", e);
-            } finally {
-                log.warn(
-                        "Closing a query results for you, check stack trace for allocating point",
-                        context);
-            }
-        }
-    }
 
     @Override
     public Lock getLock(Serializable id) throws StorageException {
@@ -1443,7 +1407,6 @@ public class SessionImpl implements Session, XAResource {
     public void end(Xid xid, int flags) throws XAException {
         boolean failed = true;
         try {
-            closeStillOpenQueryResults();
             if (flags != TMFAIL) {
                 try {
                     flushAndScheduleWork();

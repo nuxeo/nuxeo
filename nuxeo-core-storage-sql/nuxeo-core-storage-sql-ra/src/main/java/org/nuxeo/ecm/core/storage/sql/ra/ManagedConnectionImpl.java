@@ -69,7 +69,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
     /**
      * The wrapped session as a connection-aware xaresource.
      */
-    private final ConnectionAwareXAResource xaresource;
+    private final XAResource xaresource;
 
     /**
      * List of listeners set by the application server which we must notify of
@@ -96,8 +96,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
         listeners = new ListenerList();
         // create the underlying session
         session = managedConnectionFactory.getConnection();
-        xaresource = new ConnectionAwareXAResource(session.getXAResource(),
-                this);
+        xaresource = session.getXAResource();
     }
 
     /*
@@ -271,18 +270,6 @@ public class ManagedConnectionImpl implements ManagedConnection,
     protected void close(ConnectionImpl connection) {
         removeConnection(connection);
         sendClosedEvent(connection);
-    }
-
-    /**
-     * Called by {@link ConnectionAwareXAResource} at the end of a transaction.
-     */
-    protected void closeConnections() {
-        log.debug("closeConnections: " + this);
-        for (ConnectionImpl connection : connections) {
-            connection.disassociate();
-            sendClosedEvent(connection);
-        }
-        connections.clear();
     }
 
     /**

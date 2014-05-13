@@ -4,14 +4,13 @@ import junit.framework.Assert;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.storage.sql.SessionImpl;
+import org.nuxeo.ecm.core.storage.sql.ra.ConnectionImpl;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -35,10 +34,10 @@ public class QueryResultsAreAutomaticallyClosedTest {
             if (!Level.WARN.equals(event.getLevel())) {
                 return false;
             }
-            if (!SessionImpl.class.getName().equals(event.getLoggerName())) {
+            if (!ConnectionImpl.class.getName().equals(event.getLoggerName())) {
                 return false;
             }
-            if (!SessionImpl.QueryResultContextException.class.isAssignableFrom(event.getThrowableInformation().getThrowable().getClass())) {
+            if (!ConnectionImpl.QueryResultContextException.class.isAssignableFrom(event.getThrowableInformation().getThrowable().getClass())) {
                 return false;
             }
             return true;
@@ -62,7 +61,6 @@ public class QueryResultsAreAutomaticallyClosedTest {
     }
 
     // needs a JCA connection for this to work
-    @Ignore
     @Test
     public void testTransactional() throws Exception {
         TransactionHelper.startTransaction();
@@ -72,6 +70,10 @@ public class QueryResultsAreAutomaticallyClosedTest {
             TransactionHelper.commitOrRollbackTransaction();
             logCaptureResults.assertHasEvent();
             Assert.assertFalse(results.isLife());
+        } finally {
+            if (TransactionHelper.isTransactionActive()) {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
         }
     }
 
@@ -95,10 +97,10 @@ public class QueryResultsAreAutomaticallyClosedTest {
         TransactionHelper.startTransaction();
         IterableQueryResult mainResults;
         try (CoreSession main = settings.openSessionAsSystemUser()) {
-            mainResults = main.queryAndFetch(
-                    "SELECT * from Document", "NXQL");
             NestedQueryRunner runner = new NestedQueryRunner(
                     settings.repositoryName);
+            mainResults = main.queryAndFetch(
+                    "SELECT * from Document", "NXQL");
             runner.runUnrestricted();
             Assert.assertFalse(runner.result.isLife());
             Assert.assertTrue(mainResults.isLife());
@@ -107,7 +109,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
-        Assert.assertFalse(mainResults.isLife());
         logCaptureResults.assertHasEvent();
+        Assert.assertFalse(mainResults.isLife());
     }
 }

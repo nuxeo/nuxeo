@@ -201,7 +201,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
                 continue;
             }
             ManagedConnectionImpl managedConnection = (ManagedConnectionImpl) candidate;
-            if (!this.equals(managedConnection.getManagedConnectionFactory())) {
+            if (!equals(managedConnection.getManagedConnectionFactory())) {
                 continue;
             }
             log.debug("matched: " + managedConnection);
@@ -292,15 +292,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     }
 
     public void shutdown() {
-        synchronized (this) {
-            if (repository != null) {
-                try {
-                    repository.close();
-                } catch (StorageException e) {
-                    log.error("Cannot close repository", e);
-                }
-            }
-        }
+        // don't close sessions, already managed by pool cleanup
     }
 
     /**
