@@ -57,6 +57,8 @@ import org.nuxeo.runtime.api.Framework;
 @BypassInterceptors
 public class CollectionActionsBean implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     public static final String COLLECTION_CURRENT_SELECTION = "COLLECTION_CURRENT_SELECTION";
 
     public static final String DOCUMENT_ADDED_TO_COLLECTION_EVENT = "documentAddedToCollection";
@@ -64,8 +66,6 @@ public class CollectionActionsBean implements Serializable {
     public static final String DOCUMENT_REMOVED_FROM_COLLECTION_EVENT = "documentRemovedFromCollection";
 
     private static final Log log = LogFactory.getLog(CollectionActionsBean.class);
-
-    private static final long serialVersionUID = 6091077088147407371L;
 
     protected static void addFacesMessage(StatusMessage.Severity severity,
             String message, String arguments) {

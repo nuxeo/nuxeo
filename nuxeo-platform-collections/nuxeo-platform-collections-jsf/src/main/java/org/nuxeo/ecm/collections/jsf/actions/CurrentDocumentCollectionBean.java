@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.collections.jsf.actions;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.jboss.seam.Component;
@@ -37,7 +38,9 @@ import org.nuxeo.runtime.api.Framework;
 @Name("currentDocumentCollection")
 @Scope(ScopeType.PAGE)
 @BypassInterceptors
-public class CurrentDocumentCollectionBean {
+public class CurrentDocumentCollectionBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     protected boolean hasCurrentDocumentMoreCollectionToDisplay = false;
 
