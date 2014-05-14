@@ -183,6 +183,7 @@ public class LockActionsBean implements LockActions {
     }
 
     public String lockCurrentDocument() throws ClientException {
+        navigationContext.invalidateCurrentDocument();
         return lockDocument(navigationContext.getCurrentDocument());
     }
 
@@ -207,6 +208,7 @@ public class LockActionsBean implements LockActions {
     }
 
     public String unlockCurrentDocument() throws ClientException {
+        navigationContext.invalidateCurrentDocument();
         return unlockDocument(navigationContext.getCurrentDocument());
     }
 
