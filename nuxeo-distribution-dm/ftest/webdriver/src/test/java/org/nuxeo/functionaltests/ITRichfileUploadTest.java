@@ -74,7 +74,7 @@ public class ITRichfileUploadTest extends AbstractTest {
                 false, null, null, null);
 
         // Go to Files tab
-        Locator.findElement(By.id(FILES_TAB_ID)).click();
+        Locator.findElementWithTimeoutAndClick(By.id(FILES_TAB_ID));
 
         // select a file
         final String mockFile1 = getTmpFileToUploadPath("dummy", "test", "txt");
@@ -125,14 +125,14 @@ public class ITRichfileUploadTest extends AbstractTest {
         Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
         Locator.findElementWithTimeout(By.id(RF_FILE_UPLOAD_INPUT_ID + "3")).sendKeys(
                 mockFile5);
-        Locator.findElement(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH)).click();
+        Locator.findElementWithTimeoutAndClick(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
         Locator.waitUntilElementNotPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
         // check we have 2 uploaded files
         List<WebElement> uploadedFiles = driver.findElements(By.xpath(NX_UPLOADED_FILES_XPATH));
         assertEquals(2, uploadedFiles.size());
         // remove the first one
-        driver.findElement(
-                By.id("document_files_edit:files_input:0:files_delete")).click();
+        Locator.findElementWithTimeoutAndClick(
+                By.id("document_files_edit:files_input:0:files_delete"));
         Alert confirmRemove = driver.switchTo().alert();
         confirmRemove.accept();
         // check we have 1 uploaded file
@@ -154,7 +154,7 @@ public class ITRichfileUploadTest extends AbstractTest {
         clearLinks = driver.findElements(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
         assertEquals(1, clearLinks.size());
         // clear all
-        driver.findElement(By.id(RF_CLEAN_ALL_ID_XPATH + "2")).click();
+        Locator.findElementWithTimeoutAndClick(By.id(RF_CLEAN_ALL_ID_XPATH + "2"));
         // check submit disappears
         Locator.waitUntilElementNotPresent(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
         // check we have 0 items

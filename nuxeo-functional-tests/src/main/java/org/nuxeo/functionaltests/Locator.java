@@ -308,6 +308,33 @@ public class Locator {
     }
 
     /**
+     * Finds the first {@link WebElement} using the given method, with a
+     * {@code findElementTimeout}. Then waits until the element is enabled, with
+     * a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     *
+     * @param by the locating mechanism
+     * @param findElementTimeout the find element timeout in milliseconds
+     * @param waitUntilEnabledTimeout the wait until enabled timeout in
+     *            milliseconds
+     * @throws NotFoundException if the element is not found or not enabled
+     *
+     * @since 5.9.4
+     */
+    public static void findElementWithTimeoutAndClick(final By by)
+            throws NotFoundException {
+
+        waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                // Find the element.
+                WebElement element = findElementWithTimeout(by);
+
+                element.click();
+                return true;
+            }
+        }, StaleElementReferenceException.class);
+    }
+
+    /**
      * Fluent wait for an element not to be present, checking every 100 ms.
      *
      * @since 5.7.2
