@@ -13,13 +13,14 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * A scrambler/unscrambler of binaries.
  *
  * @author Florent Guillaume
  */
-public interface BinaryScrambler {
+public interface BinaryScrambler extends Serializable {
 
     /**
      * Scramble a buffer at the given offset for n bytes.

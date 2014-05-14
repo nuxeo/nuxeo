@@ -139,6 +139,8 @@ abstract class AbstractBinaryManager implements BinaryManager {
      * A {@link BinaryScrambler} that does nothing.
      */
     public static class NullBinaryScrambler implements BinaryScrambler {
+        private static final long serialVersionUID = 1L;
+
         public static final BinaryScrambler INSTANCE = new NullBinaryScrambler();
 
         @Override
