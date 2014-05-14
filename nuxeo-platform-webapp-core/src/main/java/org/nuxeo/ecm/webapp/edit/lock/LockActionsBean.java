@@ -183,8 +183,9 @@ public class LockActionsBean implements LockActions {
     }
 
     public String lockCurrentDocument() throws ClientException {
+        String view = lockDocument(navigationContext.getCurrentDocument());
         navigationContext.invalidateCurrentDocument();
-        return lockDocument(navigationContext.getCurrentDocument());
+        return view;
     }
 
     public String lockDocument(DocumentModel document) throws ClientException {
@@ -208,8 +209,9 @@ public class LockActionsBean implements LockActions {
     }
 
     public String unlockCurrentDocument() throws ClientException {
+        String view = unlockDocument(navigationContext.getCurrentDocument());
         navigationContext.invalidateCurrentDocument();
-        return unlockDocument(navigationContext.getCurrentDocument());
+        return view;
     }
 
     // helper inner class to do the unrestricted unlock
