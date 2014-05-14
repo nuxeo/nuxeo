@@ -94,7 +94,7 @@ How to contribute
 -----------------
 
 See this page for practical information:
-<http://doc.nuxeo.com/display/NXDOC/Nuxeo+contributors+welcome+page>
+[NXDOC/Contributing+to+Nuxeo](http://doc.nuxeo.com/x/VIZH)
 
 This presentation will give you more insight about "the Nuxeo way":
 <http://www.slideshare.net/nuxeo/nuxeo-world-session-becoming-a-contributor-how-to-get-started>
