@@ -57,6 +57,7 @@ public class XORBinaryManager extends LocalBinaryManager {
      * A {@link BinaryScrambler} that does an XOR with the given pattern.
      */
     public static class XORBinaryScrambler implements BinaryScrambler {
+        private static final long serialVersionUID = 1L;
 
         protected final byte[] pattern;
 
