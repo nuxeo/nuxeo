@@ -120,7 +120,7 @@ public abstract class AbstractTest {
      */
     public static final String CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME = "chromedriver.exe";
 
-    private static final Log log = LogFactory.getLog(AbstractTest.class);
+    static final Log log = LogFactory.getLog(AbstractTest.class);
 
     public static final String NUXEO_URL = System.getProperty("nuxeoURL",
             "http://localhost:8080/nuxeo").replaceAll("/$", "");
@@ -134,6 +134,8 @@ public abstract class AbstractTest {
     public static final int AJAX_SHORT_TIMEOUT_SECONDS = 2;
 
     public static final int POLLING_FREQUENCY_SECONDS = 1;
+
+    public static final int POLLING_FREQUENCY_MILLISECONDS = 100;
 
     private static final String FIREBUG_XPI = "firebug-1.6.2-fx.xpi";
 

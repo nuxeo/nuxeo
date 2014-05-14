@@ -75,7 +75,7 @@ public class ITVocabularyTest extends AbstractTest {
         // add a vocabulary entry
         Select2WidgetElement subjectsWidget = new Select2WidgetElement(
                 driver,
-                driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_select2']")),
+                By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_select2']"),
                 true);
         subjectsWidget.selectValue(SAMPLE_SUBJECT_ENTRY_LABEL);
         documentBasePage = editTabSubPage.save();
@@ -110,7 +110,7 @@ public class ITVocabularyTest extends AbstractTest {
                 TEST_FILE_NAME).getEditTab();
         subjectsWidget = new Select2WidgetElement(
                 driver,
-                driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_select2']")),
+                By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_select2']"),
                 true);
         List<WebElement> selectedEntries = subjectsWidget.getSelectedValues();
         assertEquals(1, selectedEntries.size());
@@ -129,7 +129,7 @@ public class ITVocabularyTest extends AbstractTest {
         editTabSubPage = documentBasePage.getEditTab();
         subjectsWidget = new Select2WidgetElement(
                 driver,
-                driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_select2']")),
+                By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_select2']"),
                 true);
         assertEquals(0, subjectsWidget.getSelectedValues().size());
 

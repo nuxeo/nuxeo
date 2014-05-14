@@ -16,13 +16,12 @@
  */
 package org.nuxeo.functionaltests.forms;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
-
+import org.nuxeo.functionaltests.Locator;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
