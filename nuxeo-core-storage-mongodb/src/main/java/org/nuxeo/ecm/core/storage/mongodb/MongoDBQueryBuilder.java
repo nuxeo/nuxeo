@@ -283,8 +283,8 @@ public class MongoDBQueryBuilder {
         }
         // TODO check list fields
         String like = walkStringLiteral((StringLiteral) rvalue);
-        // escape with slash except alphabetic and percent
-        String regex = like.replaceAll("([^a-zA-Z%])", "\\\\$1");
+        // escape with slash except alphanumeric and percent
+        String regex = like.replaceAll("([^a-zA-Z0-9%])", "\\\\$1");
         // replace percent with regexp
         regex = regex.replaceAll("%", ".*");
 

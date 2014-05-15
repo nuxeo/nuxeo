@@ -95,6 +95,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         cal.set(Calendar.HOUR_OF_DAY, hours);
         cal.set(Calendar.MINUTE, minutes);
         cal.set(Calendar.SECOND, seconds);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal;
     }
 
@@ -291,10 +292,10 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         assertEquals(5, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:title NOT ILIKE 'foo%'");
-        assertEquals(5, dml.size());
+        assertEquals(notMatchesNull() ? 7 : 5, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:title NOT ILIKE 'Foo%'");
-        assertEquals(5, dml.size());
+        assertEquals(notMatchesNull() ? 7 : 5, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:subjects ILIKE '%oo'");
         assertEquals(1, dml.size());

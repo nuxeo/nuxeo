@@ -49,6 +49,14 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
 
     protected int initialSingleConnections;
 
+    /**
+     * Query of NOT (something) matches docs where (something) did not match
+     * because the field was null. field.
+     */
+    public boolean notMatchesNull() {
+        return true;
+    }
+
     @Override
     @Before
     public void setUp() throws Exception {

@@ -378,12 +378,11 @@ public class MongoDBRepository implements DBSRepository {
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(
             Expression expression, DBSExpressionEvaluator evaluator,
-            OrderByClause orderByClause, int limit, int offset,
+            OrderByClause orderByClause, int limit, int offset, int countUpTo,
             boolean deepCopy, Set<String> ignored) {
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder();
         DBObject query = builder.walkExpression(expression);
         List<Map<String, Serializable>> list;
-        int totalSize;
         System.err.println(query); // XXX
         DBCursor cursor = coll.find(query).skip(offset).limit(limit);
         if (orderByClause != null) {
@@ -398,12 +397,33 @@ public class MongoDBRepository implements DBSRepository {
             }
             cursor = cursor.sort(orderBy);
         }
+        long totalSize;
         try {
             list = new ArrayList<>();
             for (DBObject ob : cursor) {
                 list.add(bsonToState(ob));
             }
-            totalSize = cursor.count();
+            if (countUpTo == -1) {
+                // count full size
+                if (limit == 0) {
+                    totalSize = list.size();
+                } else {
+                    totalSize = cursor.count();
+                }
+            } else if (countUpTo == 0) {
+                // no count
+                totalSize = -1; // not counted
+            } else {
+                // count only if less than countUpTo
+                if (limit == 0) {
+                    totalSize = list.size();
+                } else {
+                    totalSize = cursor.copy().limit(countUpTo + 1).count();
+                }
+                if (totalSize > countUpTo) {
+                    totalSize = -2; // truncated
+                }
+            }
         } finally {
             cursor.close();
         }
