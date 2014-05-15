@@ -20,6 +20,7 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -58,7 +59,10 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         jg.writeStringField("ecm:title", doc.getTitle());
         jg.writeStringField("ecm:path", doc.getPathAsString());
         jg.writeStringField("ecm:primaryType", doc.getType());
-        jg.writeStringField("ecm:parentId", doc.getParentRef().toString());
+        DocumentRef parentRef = doc.getParentRef();
+        if (parentRef != null) {
+            jg.writeStringField("ecm:parentId", parentRef.toString());
+        }
         jg.writeStringField("ecm:currentLifeCycleState",
                 doc.getCurrentLifeCycleState());
         jg.writeStringField("ecm:versionLabel", doc.getVersionLabel());
