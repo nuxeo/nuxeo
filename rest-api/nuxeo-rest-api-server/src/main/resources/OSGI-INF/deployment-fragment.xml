@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>Nuxeo API Forward servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.restapi.server.APIServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo API Forward servlet</servlet-name>
+      <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+</fragment>
