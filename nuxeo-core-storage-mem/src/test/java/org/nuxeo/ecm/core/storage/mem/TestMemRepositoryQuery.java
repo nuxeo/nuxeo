@@ -1203,7 +1203,7 @@ public class TestMemRepositoryQuery extends MemRepositoryTestCase {
         assertEquals(7, dml.totalSize());
 
         // now add a security policy hiding docs of type File
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", contrib);
+        deployContrib("org.nuxeo.ecm.core.storage.mem.tests", contrib);
 
         dml = session.query("SELECT * FROM Document");
         assertEquals(4, dml.size());
@@ -1757,7 +1757,7 @@ public class TestMemRepositoryQuery extends MemRepositoryTestCase {
         res.close();
 
         // NoFile2SecurityPolicy
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.storage.mem.tests",
                 "OSGI-INF/security-policy2-contrib.xml");
 
         res = session.queryAndFetch("SELECT * FROM Document", "NXQL");

@@ -1196,9 +1196,10 @@ public class DBSSession implements Session {
             sqlQuery.select.add(new Reference(NXQL.ECM_UUID));
         }
 
-        MultiExpression predicate = new QueryOptimizer().getOptimizedQuery(
+        MultiExpression expression = new QueryOptimizer().getOptimizedQuery(
                 sqlQuery, queryFilter.getFacetFilter());
-        DBSExpressionEvaluator matcher = new DBSExpressionEvaluator(predicate);
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(
+                expression);
 
         // query in-memory in saved state
         List<Map<String, Serializable>> states = new ArrayList<>();
@@ -1210,14 +1211,14 @@ public class DBSSession implements Session {
                 // deleted
                 continue;
             }
-            if (matcher.matches(state)) {
+            if (evaluator.matches(state)) {
                 states.add(state.getMap());
             }
         }
         boolean onlyRepo = states.isEmpty();
 
-        long limit = queryFilter.getLimit();
-        long offset = queryFilter.getOffset();
+        int limit = (int) queryFilter.getLimit();
+        int offset = (int) queryFilter.getOffset();
         if (offset < 0) {
             offset = 0;
         }
@@ -1225,8 +1226,8 @@ public class DBSSession implements Session {
             limit = 0;
         }
 
-        long repoLimit;
-        long repoOffset;
+        int repoLimit;
+        int repoOffset;
         OrderByClause orderBy;
         if (onlyRepo) {
             // fast case, we can use the repository query directly
@@ -1244,7 +1245,8 @@ public class DBSSession implements Session {
         // query the repository
         boolean deepCopy = !onlyId;
         PartialList<Map<String, Serializable>> pl = repository.queryAndFetch(
-                matcher, orderBy, repoLimit, repoOffset, deepCopy, done);
+                expression, evaluator, orderBy, repoLimit, repoOffset,
+                deepCopy, done);
 
         long totalSize = states.size() + pl.totalSize;
         if (onlyRepo) {
@@ -1253,8 +1255,8 @@ public class DBSSession implements Session {
             states.addAll(pl.list);
             // ORDER BY
             if (orderBy != null) {
-                Collections.sort(states,
-                        new OrderByComparator(orderBy, matcher));
+                Collections.sort(states, new OrderByComparator(orderBy,
+                        evaluator));
             }
             // LIMIT / OFFSET
             if (limit != 0) {

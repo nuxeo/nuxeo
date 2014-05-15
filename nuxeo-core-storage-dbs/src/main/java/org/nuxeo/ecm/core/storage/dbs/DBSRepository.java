@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
@@ -60,6 +61,8 @@ public interface DBSRepository extends Repository {
 
     /**
      * Reads the states of several documents.
+     * <p>
+     * The returned states may be in a different order than the ids.
      *
      * @param ids the document ids
      * @return the document states, an element by be {@code null} if not found
@@ -123,16 +126,17 @@ public interface DBSRepository extends Repository {
     /**
      * Queries the repository for documents matching a query.
      *
-     * @param evaluator the evaluator
-     * @param orderBy an ORDER BY clause
+     * @param expression the query expression
+     * @param evaluator the map-based evaluator for the query
+     * @param orderByClause an ORDER BY clause
      * @param limit the limit on the number of documents to return
      * @param offset the offset in the list of documents to return
      * @param deepCopy whether returned state should be a copy
      * @param ignored a set of document ids that should not be considered
      * @return
      */
-    PartialList<Map<String, Serializable>> queryAndFetch(
-            DBSExpressionEvaluator evaluator, OrderByClause orderBy,
-            long limit, long offset, boolean deepCopy, Set<String> ignored);
+    PartialList<Map<String, Serializable>> queryAndFetch(Expression expression,
+            DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
+            int limit, int offset, boolean deepCopy, Set<String> ignored);
 
 }

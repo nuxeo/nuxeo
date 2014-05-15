@@ -21,6 +21,7 @@ import static java.lang.Boolean.TRUE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -45,144 +46,6 @@ import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
  * @since 5.9.4
  */
 public abstract class ExpressionEvaluator {
-
-    protected Boolean bool(Object value) {
-        if (value == null) {
-            return null;
-        }
-        if (!(value instanceof Boolean)) {
-            throw new RuntimeException("Not a boolean: " + value);
-        }
-        return (Boolean) value;
-    }
-
-    // ternary logic
-    protected Boolean not(Boolean value) {
-        if (value == null) {
-            return null;
-        }
-        return !value;
-    }
-
-    // ternary logic
-    protected Boolean and(Boolean left, Boolean right) {
-        if (TRUE.equals(left)) {
-            return right;
-        } else {
-            return left;
-        }
-    }
-
-    // ternary logic
-    protected Boolean or(Boolean left, Boolean right) {
-        if (TRUE.equals(left)) {
-            return left;
-        } else {
-            return right;
-        }
-    }
-
-    // ternary logic
-    protected Boolean eq(Object left, Object right) {
-        if (left == null || right == null) {
-            return null;
-        }
-        return left.equals(right);
-    }
-
-    // ternary logic
-    protected Boolean in(Object left, List<Object> right) {
-        if (left == null) {
-            return null;
-        }
-        boolean hasNull = false;
-        for (Object r : right) {
-            if (r == null) {
-                hasNull = true;
-            } else if (left.equals(r)) {
-                return TRUE;
-            }
-        }
-        return hasNull ? null : FALSE;
-    }
-
-    // ternary logic
-    protected Integer cmp(Object left, Object right) {
-        if (left == null || right == null) {
-            return null;
-        }
-        if (!(left instanceof Comparable)) {
-            throw new RuntimeException("Not a comparable: " + left);
-        }
-        return ((Comparable<Object>) left).compareTo(right);
-    }
-
-    // ternary logic
-    protected Boolean like(Object left, String right, boolean caseInsensitive) {
-        if (left == null || right == null) {
-            return null;
-        }
-        if (!(left instanceof String)) {
-            throw new RuntimeException("Invalid LIKE lhs: " + left);
-        }
-        String value = (String) left;
-        if (caseInsensitive) {
-            value = value.toLowerCase();
-            right = right.toLowerCase();
-        }
-        // escape with slash except alphabetic and percent
-        String regex = right.replaceAll("([^a-zA-Z%])", "\\\\$1");
-        // replace percent with regexp
-        regex = regex.replaceAll("%", ".*");
-        boolean match = Pattern.compile(regex).matcher(value).matches();
-        return match;
-    }
-
-    // if list, use EXIST (SELECT 1 FROM left WHERE left.item = right)
-    protected Boolean eqMaybeList(Object left, Object right) {
-        if (left instanceof Object[]) {
-            for (Object l : ((Object[]) left)) {
-                Boolean eq = eq(l, right);
-                if (TRUE.equals(eq)) {
-                    return TRUE;
-                }
-            }
-            return FALSE;
-        } else {
-            return eq(left, right);
-        }
-    }
-
-    // if list, use EXIST (SELECT 1 FROM left WHERE left.item IN right)
-    protected Boolean inMaybeList(Object left, List<Object> right) {
-        if (left instanceof Object[]) {
-            for (Object l : ((Object[]) left)) {
-                Boolean in = in(l, right);
-                if (TRUE.equals(in)) {
-                    return TRUE;
-                }
-            }
-            return FALSE;
-        } else {
-            return in(left, right);
-        }
-    }
-
-    protected Boolean likeMaybeList(Object left, String right,
-            boolean positive, boolean caseInsensitive) {
-        if (left instanceof Object[]) {
-            for (Object l : ((Object[]) left)) {
-                Boolean like = like(l, right, caseInsensitive);
-                if (TRUE.equals(like)) {
-                    return Boolean.valueOf(positive);
-                }
-            }
-            return Boolean.valueOf(!positive);
-        } else {
-            Boolean like = like(left, right, caseInsensitive);
-            return positive ? like : not(like);
-        }
-    }
 
     public Object walkExpression(Expression expr) {
         Operator op = expr.operator;
@@ -292,12 +155,6 @@ public abstract class ExpressionEvaluator {
         return not(walkEq(lvalue, rvalue));
     }
 
-    protected Integer cmp(Operand lvalue, Operand rvalue) {
-        Object left = walkOperand(lvalue);
-        Object right = walkOperand(rvalue);
-        return cmp(left, right);
-    }
-
     public Boolean walkLt(Operand lvalue, Operand rvalue) {
         Integer cmp = cmp(lvalue, rvalue);
         return cmp == null ? null : cmp < 0;
@@ -360,28 +217,28 @@ public abstract class ExpressionEvaluator {
         }
     }
 
-    public Object walkBooleanLiteral(BooleanLiteral lit) {
+    public Boolean walkBooleanLiteral(BooleanLiteral lit) {
         return Boolean.valueOf(lit.value);
     }
 
-    public Object walkDateLiteral(DateLiteral lit) {
+    public Calendar walkDateLiteral(DateLiteral lit) {
         return lit.toCalendar(); // TODO onlyDate
     }
 
-    public Object walkDoubleLiteral(DoubleLiteral lit) {
+    public Double walkDoubleLiteral(DoubleLiteral lit) {
         return Double.valueOf(lit.value);
     }
 
-    public Object walkIntegerLiteral(IntegerLiteral lit) {
+    public Long walkIntegerLiteral(IntegerLiteral lit) {
         return Long.valueOf(lit.value);
     }
 
-    public Object walkStringLiteral(StringLiteral lit) {
+    public String walkStringLiteral(StringLiteral lit) {
         return lit.value;
     }
 
-    public Object walkLiteralList(LiteralList litList) {
-        ArrayList<Object> list = new ArrayList<Object>(litList.size());
+    public List<Object> walkLiteralList(LiteralList litList) {
+        List<Object> list = new ArrayList<Object>(litList.size());
         for (Literal lit : litList) {
             list.add(walkLiteral(lit));
         }
@@ -417,5 +274,149 @@ public abstract class ExpressionEvaluator {
      */
     public abstract Object evaluateReference(Reference ref,
             Map<String, Serializable> map);
+
+    protected Boolean bool(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (!(value instanceof Boolean)) {
+            throw new RuntimeException("Not a boolean: " + value);
+        }
+        return (Boolean) value;
+    }
+
+    // ternary logic
+    protected Boolean not(Boolean value) {
+        if (value == null) {
+            return null;
+        }
+        return !value;
+    }
+
+    // ternary logic
+    protected Boolean and(Boolean left, Boolean right) {
+        if (TRUE.equals(left)) {
+            return right;
+        } else {
+            return left;
+        }
+    }
+
+    // ternary logic
+    protected Boolean or(Boolean left, Boolean right) {
+        if (TRUE.equals(left)) {
+            return left;
+        } else {
+            return right;
+        }
+    }
+
+    // ternary logic
+    protected Boolean eq(Object left, Object right) {
+        if (left == null || right == null) {
+            return null;
+        }
+        return left.equals(right);
+    }
+
+    // ternary logic
+    protected Boolean in(Object left, List<Object> right) {
+        if (left == null) {
+            return null;
+        }
+        boolean hasNull = false;
+        for (Object r : right) {
+            if (r == null) {
+                hasNull = true;
+            } else if (left.equals(r)) {
+                return TRUE;
+            }
+        }
+        return hasNull ? null : FALSE;
+    }
+
+    protected Integer cmp(Operand lvalue, Operand rvalue) {
+        Object left = walkOperand(lvalue);
+        Object right = walkOperand(rvalue);
+        return cmp(left, right);
+    }
+
+    // ternary logic
+    protected Integer cmp(Object left, Object right) {
+        if (left == null || right == null) {
+            return null;
+        }
+        if (!(left instanceof Comparable)) {
+            throw new RuntimeException("Not a comparable: " + left);
+        }
+        return ((Comparable<Object>) left).compareTo(right);
+    }
+
+    // ternary logic
+    protected Boolean like(Object left, String right, boolean caseInsensitive) {
+        if (left == null || right == null) {
+            return null;
+        }
+        if (!(left instanceof String)) {
+            throw new RuntimeException("Invalid LIKE lhs: " + left);
+        }
+        String value = (String) left;
+        if (caseInsensitive) {
+            value = value.toLowerCase();
+            right = right.toLowerCase();
+        }
+        // escape with slash except alphabetic and percent
+        String regex = right.replaceAll("([^a-zA-Z%])", "\\\\$1");
+        // replace percent with regexp
+        regex = regex.replaceAll("%", ".*");
+        boolean match = Pattern.compile(regex).matcher(value).matches();
+        return match;
+    }
+
+    // if list, use EXIST (SELECT 1 FROM left WHERE left.item = right)
+    protected Boolean eqMaybeList(Object left, Object right) {
+        if (left instanceof Object[]) {
+            for (Object l : ((Object[]) left)) {
+                Boolean eq = eq(l, right);
+                if (TRUE.equals(eq)) {
+                    return TRUE;
+                }
+            }
+            return FALSE;
+        } else {
+            return eq(left, right);
+        }
+    }
+
+    // if list, use EXIST (SELECT 1 FROM left WHERE left.item IN right)
+    protected Boolean inMaybeList(Object left, List<Object> right) {
+        if (left instanceof Object[]) {
+            for (Object l : ((Object[]) left)) {
+                Boolean in = in(l, right);
+                if (TRUE.equals(in)) {
+                    return TRUE;
+                }
+            }
+            return FALSE;
+        } else {
+            return in(left, right);
+        }
+    }
+
+    protected Boolean likeMaybeList(Object left, String right,
+            boolean positive, boolean caseInsensitive) {
+        if (left instanceof Object[]) {
+            for (Object l : ((Object[]) left)) {
+                Boolean like = like(l, right, caseInsensitive);
+                if (TRUE.equals(like)) {
+                    return Boolean.valueOf(positive);
+                }
+            }
+            return Boolean.valueOf(!positive);
+        } else {
+            Boolean like = like(left, right, caseInsensitive);
+            return positive ? like : not(like);
+        }
+    }
 
 }

@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.CopyHelper;
 import org.nuxeo.ecm.core.storage.PartialList;
@@ -258,8 +259,9 @@ public class MemRepository implements DBSRepository {
 
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(
-            DBSExpressionEvaluator evaluator, OrderByClause orderBy,
-            long limit, long offset, boolean deepCopy, Set<String> ignored) {
+            Expression expression, DBSExpressionEvaluator evaluator,
+            OrderByClause orderByClause, int limit, int offset,
+            boolean deepCopy, Set<String> ignored) {
         List<Map<String, Serializable>> maps = new ArrayList<>();
         for (Entry<String, Map<String, Serializable>> en : states.entrySet()) {
             String id = en.getKey();
@@ -275,16 +277,17 @@ public class MemRepository implements DBSRepository {
             }
         }
         // ORDER BY
-        if (orderBy != null) {
-            Collections.sort(maps, new OrderByComparator(orderBy, evaluator));
+        if (orderByClause != null) {
+            Collections.sort(maps, new OrderByComparator(orderByClause,
+                    evaluator));
         }
         // LIMIT / OFFSET
         int totalSize = maps.size();
         if (limit != 0) {
-            maps.subList(0, (int) (offset > totalSize ? totalSize : offset)).clear();
+            maps.subList(0, offset > totalSize ? totalSize : offset).clear();
             int size = maps.size();
             if (limit < size) {
-                maps.subList((int) limit, size).clear();
+                maps.subList(limit, size).clear();
             }
         }
         // TODO DISTINCT

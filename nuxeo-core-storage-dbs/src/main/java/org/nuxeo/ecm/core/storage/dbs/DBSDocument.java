@@ -1007,7 +1007,7 @@ public class DBSDocument implements Document {
         }
         Object[] mixins = (Object[]) state.get(KEY_MIXIN_TYPES);
         if (mixins == null) {
-            mixins = new String[] { facet };
+            mixins = new Object[] { facet };
         } else {
             List<Object> list = Arrays.asList(mixins);
             if (list.contains(facet)) {

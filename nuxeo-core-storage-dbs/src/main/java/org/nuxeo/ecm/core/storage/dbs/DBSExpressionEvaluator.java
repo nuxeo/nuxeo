@@ -68,11 +68,9 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
     @Override
     public Object walkExpression(Expression expr) {
-        // Operator op = expr.operator;
         Operand lvalue = expr.lvalue;
-        // Operand rvalue = expr.rvalue;
         Reference ref = lvalue instanceof Reference ? (Reference) lvalue : null;
-        String name = ref != null ? ref.name : null;
+        String name = ref == null ? null : ref.name;
         if (NXQL.ECM_ISPROXY.equals(name)) {
             return walkExpressionIsProxy(expr);
         } else {
@@ -162,20 +160,20 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
     public static class OrderByComparator implements
             Comparator<Map<String, Serializable>> {
 
-        protected final OrderByClause orderBy;
+        protected final OrderByClause orderByClause;
 
         protected ExpressionEvaluator matcher;
 
-        public OrderByComparator(OrderByClause orderBy,
+        public OrderByComparator(OrderByClause orderByClause,
                 ExpressionEvaluator matcher) {
-            this.orderBy = orderBy;
+            this.orderByClause = orderByClause;
             this.matcher = matcher;
         }
 
         @Override
         public int compare(Map<String, Serializable> m1,
                 Map<String, Serializable> m2) {
-            for (OrderByExpr ob : orderBy.elements) {
+            for (OrderByExpr ob : orderByClause.elements) {
                 Reference ref = ob.reference;
                 boolean desc = ob.isDescending;
                 int sign = desc ? -1 : 1;
