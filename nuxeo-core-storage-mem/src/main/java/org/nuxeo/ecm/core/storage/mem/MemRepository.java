@@ -260,7 +260,7 @@ public class MemRepository implements DBSRepository {
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(
             Expression expression, DBSExpressionEvaluator evaluator,
-            OrderByClause orderByClause, int limit, int offset,
+            OrderByClause orderByClause, int limit, int offset, int countUpTo,
             boolean deepCopy, Set<String> ignored) {
         List<Map<String, Serializable>> maps = new ArrayList<>();
         for (Entry<String, Map<String, Serializable>> en : states.entrySet()) {
@@ -283,9 +283,21 @@ public class MemRepository implements DBSRepository {
         }
         // LIMIT / OFFSET
         int totalSize = maps.size();
+        if (countUpTo == -1) {
+            // count full size
+        } else if (countUpTo == 0) {
+            // no count
+            totalSize = -1; // not counted
+        } else {
+            // count only if less than countUpTo
+            if (totalSize > countUpTo) {
+                totalSize = -2; // truncated
+            }
+        }
         if (limit != 0) {
-            maps.subList(0, offset > totalSize ? totalSize : offset).clear();
             int size = maps.size();
+            maps.subList(0, offset > size ? size : offset).clear();
+            size = maps.size();
             if (limit < size) {
                 maps.subList(limit, size).clear();
             }

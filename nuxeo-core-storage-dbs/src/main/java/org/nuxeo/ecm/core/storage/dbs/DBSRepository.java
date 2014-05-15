@@ -131,12 +131,20 @@ public interface DBSRepository extends Repository {
      * @param orderByClause an ORDER BY clause
      * @param limit the limit on the number of documents to return
      * @param offset the offset in the list of documents to return
+     * @param countUpTo if {@code -1}, count the total size without
+     *            offset/limit.<br>
+     *            If {@code 0}, don't count the total size, set it to {@code -1}
+     *            .<br>
+     *            If {@code n}, count the total number if there are less than n
+     *            documents otherwise set the total size to {@code -2}.
      * @param deepCopy whether returned state should be a copy
      * @param ignored a set of document ids that should not be considered
-     * @return
+     * @return a partial list containing the limited documents required, and the
+     *         total size according to countUpTo
      */
     PartialList<Map<String, Serializable>> queryAndFetch(Expression expression,
             DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
-            int limit, int offset, boolean deepCopy, Set<String> ignored);
+            int limit, int offset, int countUpTo, boolean deepCopy,
+            Set<String> ignored);
 
 }

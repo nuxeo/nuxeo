@@ -1134,7 +1134,7 @@ public class DBSSession implements Session {
             QueryFilter queryFilter, long countUpTo) throws QueryException {
         // query
         PartialList<String> pl = doQuery(query, queryType, queryFilter,
-                countUpTo);
+                (int) countUpTo);
 
         // get Documents in bulk
         List<Document> docs;
@@ -1159,9 +1159,9 @@ public class DBSSession implements Session {
     }
 
     protected PartialList<String> doQuery(String query, String queryType,
-            QueryFilter queryFilter, long countUpTo) throws QueryException {
+            QueryFilter queryFilter, int countUpTo) throws QueryException {
         PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query,
-                queryType, queryFilter, true);
+                queryType, queryFilter, countUpTo, true);
         List<String> ids = new ArrayList<String>(pl.list.size());
         for (Map<String, Serializable> map : pl.list) {
             String id = (String) map.get(NXQL.ECM_UUID);
@@ -1172,13 +1172,13 @@ public class DBSSession implements Session {
 
     protected PartialList<Map<String, Serializable>> doQueryAndFetch(
             String query, String queryType, QueryFilter queryFilter,
-            long countUpTo) throws QueryException {
-        return doQueryAndFetch(query, queryType, queryFilter, false);
+            int countUpTo) throws QueryException {
+        return doQueryAndFetch(query, queryType, queryFilter, countUpTo, false);
     }
 
     protected PartialList<Map<String, Serializable>> doQueryAndFetch(
             String query, String queryType, QueryFilter queryFilter,
-            boolean onlyId) throws QueryException {
+            int countUpTo, boolean onlyId) throws QueryException {
         if (!NXQL.NXQL.equals(queryType)) {
             throw new QueryException("No QueryMaker accepts query type: "
                     + queryType);
@@ -1246,9 +1246,25 @@ public class DBSSession implements Session {
         boolean deepCopy = !onlyId;
         PartialList<Map<String, Serializable>> pl = repository.queryAndFetch(
                 expression, evaluator, orderBy, repoLimit, repoOffset,
-                deepCopy, done);
+                countUpTo, deepCopy, done);
 
-        long totalSize = states.size() + pl.totalSize;
+        long totalSize;
+        if (pl.totalSize < 0) {
+            totalSize = pl.totalSize;
+        } else {
+            totalSize = states.size() + pl.totalSize;
+            if (countUpTo == -1) {
+                // count full size
+            } else if (countUpTo == 0) {
+                // no count
+                totalSize = -1; // not counted
+            } else {
+                // count only if less than countUpTo
+                if (totalSize > countUpTo) {
+                    totalSize = -2; // truncated
+                }
+            }
+        }
         if (onlyRepo) {
             states = pl.list;
         } else {
@@ -1322,7 +1338,7 @@ public class DBSSession implements Session {
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object[] params) throws QueryException {
         // query
-        long countUpTo = -1;
+        int countUpTo = -1;
         PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query,
                 queryType, queryFilter, countUpTo);
 
