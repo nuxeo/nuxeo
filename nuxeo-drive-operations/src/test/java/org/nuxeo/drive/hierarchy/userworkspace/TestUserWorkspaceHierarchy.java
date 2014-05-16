@@ -86,7 +86,6 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
         "org.nuxeo.drive.core", "org.nuxeo.drive.operations",
         "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-userworkspace-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
