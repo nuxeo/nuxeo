@@ -23,13 +23,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.Set;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.operations.test.NuxeoDriveSetActiveFactories;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -56,20 +54,9 @@ public class TestActivateFactories {
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
     @Inject
-    protected HttpAutomationClient automationClient;
-
     protected Session clientSession;
 
-    protected ObjectMapper mapper;
-
-    @Before
-    public void init() throws Exception {
-
-        // Get an Automation client session as Administrator
-        clientSession = automationClient.getSession("Administrator",
-                "Administrator");
-        mapper = new ObjectMapper();
-    }
+    protected ObjectMapper mapper = new ObjectMapper();
 
     @Test
     public void testSetActiveFactories() throws Exception {
