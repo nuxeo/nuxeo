@@ -745,7 +745,12 @@ public class ChainSelect extends UIInput implements ResettableComponent {
     }
 
     public String getDefaultRootKey() {
-        return defaultRootKey;
+        ValueExpression ve = getValueExpression("defaultRootKey");
+        if (ve != null) {
+            return (String) ve.getValue(FacesContext.getCurrentInstance().getELContext());
+        } else {
+            return defaultRootKey;
+        }
     }
 
     public void setDefaultRootKey(String defaultRootKey) {
