@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepository;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
+import org.nuxeo.ecm.core.storage.mongodb.MongoDBQueryBuilder.FieldInfo;
 import org.nuxeo.ecm.core.storage.sql.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.DefaultBinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -371,9 +372,9 @@ public class MongoDBRepository implements DBSRepository {
         }
     }
 
-    private static final Integer ONE = Integer.valueOf(1);
+    private static final Long ONE = Long.valueOf(1);
 
-    private static final Integer MINUS_ONE = Integer.valueOf(-1);
+    private static final Long MINUS_ONE = Long.valueOf(-1);
 
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(
@@ -390,9 +391,9 @@ public class MongoDBRepository implements DBSRepository {
             for (OrderByExpr ob : orderByClause.elements) {
                 Reference ref = ob.reference;
                 boolean desc = ob.isDescending;
-                String name = builder.walkReference(ref);
-                if (!orderBy.containsField(name)) {
-                    orderBy.put(name, desc ? MINUS_ONE : ONE);
+                String field = builder.walkReference(ref).field;
+                if (!orderBy.containsField(field)) {
+                    orderBy.put(field, desc ? MINUS_ONE : ONE);
                 }
             }
             cursor = cursor.sort(orderBy);

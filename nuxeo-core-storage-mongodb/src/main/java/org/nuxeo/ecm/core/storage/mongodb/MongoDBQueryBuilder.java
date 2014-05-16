@@ -41,6 +41,8 @@ import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
 
@@ -183,12 +185,12 @@ public class MongoDBQueryBuilder {
     }
 
     public DBObject walkIsNull(Operand value) {
-        String field = walkReference(value);
+        String field = walkReference(value).field;
         return new BasicDBObject(field, null);
     }
 
     public DBObject walkIsNotNull(Operand value) {
-        String field = walkReference(value);
+        String field = walkReference(value).field;
         return new BasicDBObject(field, new BasicDBObject(QueryOperators.NE,
                 null));
     }
@@ -217,51 +219,65 @@ public class MongoDBQueryBuilder {
         return new BasicDBObject(QueryOperators.OR, list);
     }
 
+    private static final Long ONE = Long.valueOf(1);
+
+    protected Object checkBoolean(FieldInfo fieldInfo, Object right) {
+        if (fieldInfo.isBoolean) {
+            // convert 0 / 1 to actual booleans
+            if (right instanceof Long) {
+                right = Boolean.valueOf(ONE.equals(right));
+            }
+        }
+        return right;
+    }
+
     public DBObject walkEq(Operand lvalue, Operand rvalue) {
-        String field = walkReference(lvalue);
+        FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
+        right = checkBoolean(fieldInfo, right);
         // TODO check list fields
-        return new BasicDBObject(field, right);
+        return new BasicDBObject(fieldInfo.field, right);
     }
 
     public DBObject walkNotEq(Operand lvalue, Operand rvalue) {
-        String field = walkReference(lvalue);
+        FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
+        right = checkBoolean(fieldInfo, right);
         // TODO check list fields
-        return new BasicDBObject(field, new BasicDBObject(QueryOperators.NE,
-                right));
+        return new BasicDBObject(fieldInfo.field, new BasicDBObject(
+                QueryOperators.NE, right));
     }
 
     public DBObject walkLt(Operand lvalue, Operand rvalue) {
-        String field = walkReference(lvalue);
+        String field = walkReference(lvalue).field;
         Object right = walkOperand(rvalue);
         return new BasicDBObject(field, new BasicDBObject(QueryOperators.LT,
                 right));
     }
 
     public DBObject walkGt(Operand lvalue, Operand rvalue) {
-        String field = walkReference(lvalue);
+        String field = walkReference(lvalue).field;
         Object right = walkOperand(rvalue);
         return new BasicDBObject(field, new BasicDBObject(QueryOperators.GT,
                 right));
     }
 
     public DBObject walkLtEq(Operand lvalue, Operand rvalue) {
-        String field = walkReference(lvalue);
+        String field = walkReference(lvalue).field;
         Object right = walkOperand(rvalue);
         return new BasicDBObject(field, new BasicDBObject(QueryOperators.LTE,
                 right));
     }
 
     public DBObject walkGtEq(Operand lvalue, Operand rvalue) {
-        String field = walkReference(lvalue);
+        String field = walkReference(lvalue).field;
         Object right = walkOperand(rvalue);
         return new BasicDBObject(field, new BasicDBObject(QueryOperators.GTE,
                 right));
     }
 
     public DBObject walkIn(Operand lvalue, Operand rvalue, boolean positive) {
-        String field = walkReference(lvalue);
+        String field = walkReference(lvalue).field;
         Object right = walkOperand(rvalue);
         if (!(right instanceof List)) {
             throw new RuntimeException(
@@ -275,7 +291,7 @@ public class MongoDBQueryBuilder {
 
     public DBObject walkLike(Operand lvalue, Operand rvalue, boolean positive,
             boolean caseInsensitive) {
-        String field = walkReference(lvalue);
+        String field = walkReference(lvalue).field;
         if (!(rvalue instanceof StringLiteral)) {
             throw new RuntimeException(
                     "Invalid LIKE/ILIKE, right hand side must be a string: "
@@ -371,7 +387,7 @@ public class MongoDBQueryBuilder {
         throw new UnsupportedOperationException("Function");
     }
 
-    protected String walkReference(Operand value) {
+    protected FieldInfo walkReference(Operand value) {
         if (!(value instanceof Reference)) {
             throw new RuntimeException(
                     "Invalid query, left hand side must be a property: "
@@ -380,16 +396,27 @@ public class MongoDBQueryBuilder {
         return walkReference((Reference) value);
     }
 
+    protected static class FieldInfo {
+        protected String field;
+
+        protected boolean isBoolean;
+
+        protected FieldInfo(String field, boolean isBoolean) {
+            this.field = field;
+            this.isBoolean = isBoolean;
+        }
+    }
+
     /**
      * Returns the MongoDB field for this reference.
      */
-    public String walkReference(Reference ref) {
+    public FieldInfo walkReference(Reference ref) {
         String name = ref.name;
         String[] split = StringUtils.split(name, '/');
         if (name.startsWith(NXQL.ECM_PREFIX)) {
             String prop = DBSSession.convToInternal(name);
-            // isArray = DBSSession.isArray(prop);
-            return prop;
+            boolean isBoolean = DBSSession.isBoolean(name);
+            return new FieldInfo(prop, isBoolean);
         } else {
             String prop = split[0];
             Field field = schemaManager.getField(prop);
@@ -421,7 +448,8 @@ public class MongoDBQueryBuilder {
             name = StringUtils.join(split, '.');
             // isArray = field.getType() instanceof ListType
             // && ((ListType) field.getType()).isArray();
-            return name;
+            boolean isBoolean = field.getType() instanceof BooleanType;
+            return new FieldInfo(name, isBoolean);
         }
     }
 
