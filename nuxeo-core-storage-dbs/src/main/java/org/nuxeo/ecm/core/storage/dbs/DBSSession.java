@@ -1530,4 +1530,16 @@ public class DBSSession implements Session {
         return false;
     }
 
+    public static boolean isBoolean(String name) {
+        switch (name) {
+        case KEY_IS_VERSION:
+        case KEY_IS_CHECKED_IN:
+        case KEY_IS_LATEST_VERSION:
+        case KEY_IS_LATEST_MAJOR_VERSION:
+        case KEY_ACP:
+            return true;
+        }
+        return false;
+    }
+
 }

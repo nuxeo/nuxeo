@@ -46,6 +46,10 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
+    private static final Long ZERO = Long.valueOf(0);
+
+    private static final Long ONE = Long.valueOf(1);
+
     protected final Expression expr;
 
     protected final SchemaManager schemaManager;
@@ -153,6 +157,10 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
         if (value == null && isArray) {
             // don't use null, as list-based matches don't use ternary logic
             value = new Object[0];
+        }
+        if (value instanceof Boolean) {
+            // boolean evaluation is like 0 / 1
+            value = ((Boolean) value).booleanValue() ? ONE : ZERO;
         }
         return value;
     }
