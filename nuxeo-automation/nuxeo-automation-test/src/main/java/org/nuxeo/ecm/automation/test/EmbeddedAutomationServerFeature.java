@@ -61,8 +61,8 @@ public class EmbeddedAutomationServerFeature extends SimpleFeature {
                 new Provider<HttpAutomationClient>() {
                     @Override
                     public HttpAutomationClient get() {
-                        if (client ==null) {
-                            client = new HttpAutomationClient("http://localhost:18080/automation");
+                        if (client == null) {
+                            client = getHttpAutomationClient();
                         }
                         return client;
                     }
@@ -71,7 +71,7 @@ public class EmbeddedAutomationServerFeature extends SimpleFeature {
             @Override
             public Session get() {
                 if (client == null) {
-                     client = new HttpAutomationClient("http://localhost:18080/automation");
+                    client = getHttpAutomationClient();
                 }
                 if (session == null) {
                     session = client.getSession("Administrator", "Administrator");
@@ -79,6 +79,15 @@ public class EmbeddedAutomationServerFeature extends SimpleFeature {
                 return session;
             }
         }).in(Scopes.SINGLETON);
+    }
+
+    protected HttpAutomationClient getHttpAutomationClient() {
+        HttpAutomationClient client = new HttpAutomationClient(
+                "http://localhost:18080/automation");
+        // Deactivate global operation registry cache to allow tests using this
+        // feature in a test suite to deploy different set of operations
+        client.setSharedRegistryExpirationDelay(0);
+        return client;
     }
 
 }
