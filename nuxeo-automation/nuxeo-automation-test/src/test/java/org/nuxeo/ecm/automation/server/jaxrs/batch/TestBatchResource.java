@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.automation.client.model.DocRef;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -89,7 +90,7 @@ public class TestBatchResource {
 
         // Get blob from document and check its content
         Blob blob = (Blob) clientSession.newRequest(GetDocumentBlob.ID).setInput(
-                file.getPathAsString()).execute();
+                new DocRef(file.getPathAsString())).execute();
         assertNotNull(blob);
         String blobString = new String(IOUtils.toByteArray(blob.getStream()));
         assertEquals("This is the content of a new file.", blobString);
@@ -115,13 +116,19 @@ public class TestBatchResource {
             conn.setRequestProperty("Content-Length", fileSize);
             // Write bytes
             conn.setDoOutput(true);
-            try (OutputStream os = conn.getOutputStream()) {
+            OutputStream os = conn.getOutputStream();
+            try {
                 IOUtils.write(content, os);
+            } finally {
+                os.close();
             }
             // Consume response and return true if OK
-            try (InputStream is = conn.getInputStream()) {
+            InputStream is = conn.getInputStream();
+            try {
                 IOUtils.toByteArray(is);
                 return conn.getResponseCode() == HttpURLConnection.HTTP_OK;
+            } finally {
+                is.close();
             }
         } finally {
             conn.disconnect();
@@ -145,13 +152,19 @@ public class TestBatchResource {
             String JSONData = String.format(
                     "{\"params\": {\"operationId\": \"%s\", \"batchId\": \"%s\", \"fileIdx\": \"%s\", \"document\": \"%s\"}}",
                     "Blob.Attach", batchId, fileIndex, docPath);
-            try (OutputStream os = conn.getOutputStream()) {
+            OutputStream os = conn.getOutputStream();
+            try {
                 IOUtils.write(JSONData, os);
+            } finally {
+                os.close();
             }
             // Consume response and return true if OK
-            try (InputStream is = conn.getInputStream()) {
+            InputStream is = conn.getInputStream();
+            try {
                 IOUtils.toByteArray(is);
                 return conn.getResponseCode() == HttpURLConnection.HTTP_OK;
+            } finally {
+                is.close();
             }
         } finally {
             conn.disconnect();
