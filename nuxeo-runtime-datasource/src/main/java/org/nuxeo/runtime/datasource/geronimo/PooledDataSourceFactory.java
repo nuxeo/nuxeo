@@ -2,7 +2,10 @@ package org.nuxeo.runtime.datasource.geronimo;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Hashtable;
+import java.util.logging.Logger;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.Name;
@@ -54,6 +57,11 @@ public class PooledDataSourceFactory implements
             } finally {
                 wrapper.exitNoSharing();
             }
+        }
+
+        @Override
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            throw new SQLFeatureNotSupportedException("not yet available");
         }
     }
 
