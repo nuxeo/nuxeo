@@ -36,12 +36,34 @@ import java.util.Hashtable;
  */
 public class URLStreamHandlerFactoryInstaller {
 
-    private static final FactoryStack factoryStack = new FactoryStack();
+    private static final FactoryStackHolder factoryStackHolder = new FactoryStackHolder();
+
+    private static final FactoryStack stack = new FactoryStack();
+
+    private static class FactoryStackHolder extends
+            InheritableThreadLocal<FactoryStack> implements URLStreamHandlerFactory {
+
+        @Override
+        public FactoryStack initialValue() {
+            return stack;
+        }
+
+        @Override
+        public void remove() {
+            super.remove();
+        }
+
+        @Override
+        public URLStreamHandler createURLStreamHandler(String protocol) {
+            return get().createURLStreamHandler(protocol);
+        }
+    }
 
     private URLStreamHandlerFactoryInstaller() {
     }
 
     public static void installURLStreamHandlerFactory(URLStreamHandlerFactory shf) {
+        FactoryStack factoryStack = factoryStackHolder.get();
         Field factoryField = getStaticField(URL.class, URLStreamHandlerFactory.class);
         if (factoryField == null) {
             throw new IllegalArgumentException(
@@ -54,17 +76,14 @@ public class URLStreamHandlerFactoryInstaller {
                 URLStreamHandlerFactory factory = (URLStreamHandlerFactory) factoryField.get(null);
                 if (factory == null) { // not installed - install it
                     factoryStack.push(shf); // push the new factory
-                } else if (factory != factoryStack) { // another factory is
+                } else if (factory != factoryStackHolder) { // another factory is
                                                       // installed
                     factoryStack.push(factory);
                     factoryStack.push(shf); // push the new factory
                 } else { // already installed
                     factoryStack.push(shf); // push the new factory
                 }
-                // install it
-                factoryField.set(null, null);
-                resetURLStreamHandlers();
-                URL.setURLStreamHandlerFactory(factoryStack);
+                flush(factoryField);
             } catch (IllegalAccessException e) {
                 throw new IllegalArgumentException(e);
             }
@@ -72,13 +91,24 @@ public class URLStreamHandlerFactoryInstaller {
     }
 
     public static void uninstallURLStreamHandlerFactory() {
+        factoryStackHolder.remove();
         try {
            Field factoryField = getStaticField(URL.class, URLStreamHandlerFactory.class);
             if (factoryField == null) {
                 return; // oh well, we tried
             }
-            factoryField.set(null, null);
-            resetURLStreamHandlers();
+            Object lock = getURLStreamHandlerFactoryLock();
+            synchronized (lock) {
+                URLStreamHandlerFactory factory = (URLStreamHandlerFactory) factoryField.get(null);
+                if (factory == null) {
+                    return;
+                }
+                if (factory != factoryStackHolder) {
+                    return;
+                }
+                factoryField.set(null, null);
+                resetURLStreamHandlers();
+            }
         } catch (IllegalArgumentException e) {
             // ignore and continue closing the framework
         } catch (IllegalAccessException e) {
@@ -98,18 +128,17 @@ public class URLStreamHandlerFactoryInstaller {
                 if (factory == null) {
                     return;
                 }
-                if (factory != factoryStack) {
+                if (factory != factoryStackHolder) {
                     return;
                 }
+                FactoryStack factoryStack = factoryStackHolder.get();
                 if (shf == null) {
                     factoryStack.pop();
                 } else {
                     factoryStack.remove(shf);
                 }
                 // reinstall factory (to flush cache)
-                factoryField.set(null, null);
-                resetURLStreamHandlers();
-                URL.setURLStreamHandlerFactory(factoryStack);
+                flush(factoryField);
             }
         } catch (IllegalArgumentException e) {
             // ignore and continue closing the framework
@@ -117,6 +146,13 @@ public class URLStreamHandlerFactoryInstaller {
            // ignore and continue closing the framework
         }
 
+    }
+
+    protected static void flush(Field factoryField)
+            throws IllegalArgumentException, IllegalAccessException {
+        factoryField.set(null, null);
+        resetURLStreamHandlers();
+        URL.setURLStreamHandlerFactory(factoryStackHolder);
     }
 
     private static Field getStaticField(Class<?> clazz, Class<?> type) {
@@ -169,13 +205,15 @@ public class URLStreamHandlerFactoryInstaller {
      * that class.
      */
     public static FactoryStack getStack() {
-        return factoryStack;
+        return factoryStackHolder.get();
     }
+
 
     public static class FactoryStack implements URLStreamHandlerFactory {
 
         final ArrayList<URLStreamHandlerFactory> factories = new ArrayList<URLStreamHandlerFactory>();
 
+        @Override
         public URLStreamHandler createURLStreamHandler(String protocol) {
             for (int i = factories.size() - 1; i >= 0; i--) {
                 URLStreamHandler h = factories.get(i).createURLStreamHandler(protocol);
