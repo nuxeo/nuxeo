@@ -34,17 +34,17 @@ import com.google.inject.Scopes;
  * @since 5.7
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Deploy({ "org.nuxeo.ecm.automation.core",
-    "org.nuxeo.ecm.automation.io","org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features",
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io",
+        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.automation.features",
         "org.nuxeo.ecm.platform.query.api" })
-@Features({WebEngineFeature.class})
+@Features({ WebEngineFeature.class })
 public class EmbeddedAutomationServerFeature extends SimpleFeature {
 
-    protected HttpAutomationClient client ;
+    protected HttpAutomationClient client;
 
     protected Session session;
 
-     @Override
+    @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
         if (client != null) {
             client.shutdown();
@@ -74,7 +74,8 @@ public class EmbeddedAutomationServerFeature extends SimpleFeature {
                     client = getHttpAutomationClient();
                 }
                 if (session == null) {
-                    session = client.getSession("Administrator", "Administrator");
+                    session = client.getSession("Administrator",
+                            "Administrator");
                 }
                 return session;
             }
