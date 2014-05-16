@@ -255,7 +255,7 @@ public class TestPermissionHierarchy {
             TransactionHelper.commitOrRollbackTransaction();
         }
 
-        // Get an Automation client session for each user
+        // Get an Automation client session for user1
         clientSession1 = automationClient.getSession("user1", "user1");
 
         mapper = new ObjectMapper();

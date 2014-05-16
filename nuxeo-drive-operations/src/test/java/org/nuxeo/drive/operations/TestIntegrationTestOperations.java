@@ -85,11 +85,12 @@ public class TestIntegrationTestOperations {
     @Inject
     protected HttpAutomationClient automationClient;
 
+    @Inject
+    protected Session clientSession;
+
     protected String testWorkspacePath;
 
     protected String userWorkspaceParentPath;
-
-    protected Session clientSession;
 
     protected ObjectMapper mapper;
 
@@ -101,9 +102,6 @@ public class TestIntegrationTestOperations {
         userWorkspaceParentPath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session)
                 + "/" + USER_WORKSPACE_PARENT_NAME;
 
-        // Get an Automation client session as Administrator
-        clientSession = automationClient.getSession("Administrator",
-                "Administrator");
         mapper = new ObjectMapper();
     }
 

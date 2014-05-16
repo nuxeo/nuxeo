@@ -34,7 +34,6 @@ import org.nuxeo.drive.service.MockChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.FileSystemChangeSummaryImpl;
 import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -76,7 +75,7 @@ public class TestGetChangeSummaryMultiRepo {
     protected NuxeoDriveManager nuxeoDriveManager;
 
     @Inject
-    protected HttpAutomationClient automationClient;
+    protected Session clientSession;
 
     protected CoreSession otherSession;
 
@@ -89,8 +88,6 @@ public class TestGetChangeSummaryMultiRepo {
     protected DocumentModel folder2;
 
     protected DocumentModel folder3;
-
-    protected Session clientSession;
 
     protected ObjectMapper mapper;
 
@@ -116,8 +113,6 @@ public class TestGetChangeSummaryMultiRepo {
         folder3 = otherSession.createDocument(otherSession.createDocumentModel(
                 "/", "folder3", "Folder"));
 
-        clientSession = automationClient.getSession("Administrator",
-                "Administrator");
         mapper = new ObjectMapper();
     }
 

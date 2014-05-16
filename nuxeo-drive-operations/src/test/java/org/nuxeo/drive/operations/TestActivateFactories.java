@@ -22,13 +22,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.operations.test.NuxeoDriveSetActiveFactories;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -54,17 +52,7 @@ public class TestActivateFactories {
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
     @Inject
-    protected HttpAutomationClient automationClient;
-
     protected Session clientSession;
-
-    @Before
-    public void init() throws Exception {
-
-        // Get an Automation client session as Administrator
-        clientSession = automationClient.getSession("Administrator",
-                "Administrator");
-    }
 
     @Test
     public void testSetActiveFactories() throws Exception {

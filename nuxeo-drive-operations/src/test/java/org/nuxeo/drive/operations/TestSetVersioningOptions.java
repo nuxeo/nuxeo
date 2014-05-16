@@ -27,7 +27,6 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -52,21 +51,15 @@ public class TestSetVersioningOptions {
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
     @Inject
-    protected HttpAutomationClient automationClient;
+    protected Session clientSession;
 
     protected VersioningFileSystemItemFactory defaultFileSystemItemFactory;
-
-    protected Session clientSession;
 
     @Before
     public void init() throws Exception {
 
         defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");
         assertNotNull(defaultFileSystemItemFactory);
-
-        // Get an Automation client session as Administrator
-        clientSession = automationClient.getSession("Administrator",
-                "Administrator");
     }
 
     @Test
