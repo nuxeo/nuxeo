@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -47,8 +46,6 @@ import com.google.inject.Inject;
 public class TestGetClientUpdateInfo {
 
     @Inject
-    protected HttpAutomationClient automationClient;
-
     protected Session clientSession;
 
     protected ObjectMapper mapper;
@@ -56,9 +53,6 @@ public class TestGetClientUpdateInfo {
     @Before
     public void init() throws Exception {
 
-        // Get an Automation client session as Administrator
-        clientSession = automationClient.getSession("Administrator",
-                "Administrator");
         mapper = new ObjectMapper();
 
         // Set Framework properties required for the client update

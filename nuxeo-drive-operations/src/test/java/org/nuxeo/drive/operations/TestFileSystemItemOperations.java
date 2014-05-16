@@ -107,6 +107,9 @@ public class TestFileSystemItemOperations {
     @Inject
     protected HttpAutomationClient automationClient;
 
+    @Inject
+    protected Session clientSession;
+
     protected DocumentModel syncRoot1;
 
     protected DocumentModel syncRoot2;
@@ -120,8 +123,6 @@ public class TestFileSystemItemOperations {
     protected DocumentModel file4;
 
     protected DocumentModel subFolder1;
-
-    protected Session clientSession;
 
     protected ObjectMapper mapper;
 
@@ -196,9 +197,6 @@ public class TestFileSystemItemOperations {
             TransactionHelper.commitOrRollbackTransaction();
         }
 
-        // Get an Automation client session
-        clientSession = automationClient.getSession("Administrator",
-                "Administrator");
         mapper = new ObjectMapper();
     }
 
@@ -736,10 +734,9 @@ public class TestFileSystemItemOperations {
             TransactionHelper.commitOrRollbackTransaction();
         }
 
-        clientSession = automationClient.getSession("joe", "joe");
-        canMoveFSItemJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveCanMove.ID).set("srcId",
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
+        Session joeSession = automationClient.getSession("joe", "joe");
+        canMoveFSItemJSON = (Blob) joeSession.newRequest(NuxeoDriveCanMove.ID).set(
+                "srcId", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
                 "destId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
         assertNotNull(canMoveFSItemJSON);
 
@@ -751,9 +748,8 @@ public class TestFileSystemItemOperations {
         // No ADD_CHILDREN permission on the destination backing doc => false
         // -------------------------------------------------------------------
         setPermission(syncRoot1, "joe", SecurityConstants.WRITE, true);
-        canMoveFSItemJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveCanMove.ID).set("srcId",
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
+        canMoveFSItemJSON = (Blob) joeSession.newRequest(NuxeoDriveCanMove.ID).set(
+                "srcId", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
                 "destId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
         assertNotNull(canMoveFSItemJSON);
 
@@ -775,9 +771,8 @@ public class TestFileSystemItemOperations {
             TransactionHelper.commitOrRollbackTransaction();
         }
 
-        canMoveFSItemJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveCanMove.ID).set("srcId",
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
+        canMoveFSItemJSON = (Blob) joeSession.newRequest(NuxeoDriveCanMove.ID).set(
+                "srcId", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
                 "destId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
         assertNotNull(canMoveFSItemJSON);
 
@@ -795,9 +790,8 @@ public class TestFileSystemItemOperations {
             TransactionHelper.commitOrRollbackTransaction();
         }
 
-        canMoveFSItemJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveCanMove.ID).set("srcId",
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
+        canMoveFSItemJSON = (Blob) joeSession.newRequest(NuxeoDriveCanMove.ID).set(
+                "srcId", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
                 "destId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
         assertNotNull(canMoveFSItemJSON);
         canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(),
@@ -913,8 +907,8 @@ public class TestFileSystemItemOperations {
         // Test with a user that has a firstname and a lastname
         // Joe Strummer likes conflicting files
         createUser("joe", "joe", "Joe", "Strummer");
-        clientSession = automationClient.getSession("joe", "joe");
-        jsonOut = (Blob) clientSession.newRequest(
+        Session joeSession = automationClient.getSession("joe", "joe");
+        jsonOut = (Blob) joeSession.newRequest(
                 NuxeoDriveGenerateConflictedItemName.ID).set("name",
                 "The Clashing File.xls").execute();
         assertNotNull(jsonOut);
