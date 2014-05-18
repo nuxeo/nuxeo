@@ -47,6 +47,8 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
     private ImporterLogger importerLogger;
 
+    private int transactionTimeout = 0;
+
     @Override
     public void importDocuments(String destinationPath, String sourcePath,
             boolean skipRootContainerCreation, int batchSize,
@@ -62,6 +64,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
         DefaultImporterExecutor executor = new DefaultImporterExecutor();
         executor.setFactory(getDocumentModelFactory());
+        executor.setTransactionTimeout(transactionTimeout);
         try {
             executor.run(sourceNode, destinationPath,
                     skipRootContainerCreation, batchSize, noImportingThreads,
@@ -99,6 +102,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
             log.error(e1);
             throw new ClientException(e1);
         }
+        runner.setTransactionTimeout(transactionTimeout);
         ImporterFilter filter = new EventServiceConfiguratorFilter(false,
                 false, false, true);
         runner.addFilter(filter);
@@ -126,6 +130,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
                 : folderishType);
         }
         setDocumentModelFactory(docModelFactory);
+        executor.setTransactionTimeout(transactionTimeout);
         String res = importDocuments(executor, destinationPath, sourcePath,
                 skipRootContainerCreation, batchSize, noImportingThreads,
                 interactive);
@@ -206,6 +211,14 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     @Override
     public void setImporterLogger(ImporterLogger importerLogger) {
         this.importerLogger = importerLogger;
+    }
+
+    /*
+     * @since 5.9.4
+     */
+    @Override
+    public void setTransactionTimeout(int transactionTimeout) {
+        this.transactionTimeout = transactionTimeout;
     }
 
     /*

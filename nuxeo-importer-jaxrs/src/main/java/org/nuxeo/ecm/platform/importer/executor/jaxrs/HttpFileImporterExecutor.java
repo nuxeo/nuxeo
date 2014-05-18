@@ -37,7 +37,8 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
             @QueryParam("skipRootContainerCreation") Boolean skipRootContainerCreation,
             @QueryParam("batchSize") Integer batchSize,
             @QueryParam("nbThreads") Integer nbThreads,
-            @QueryParam("interactive") Boolean interactive) throws Exception {
+            @QueryParam("interactive") Boolean interactive,
+            @QueryParam("transactionTimeout") Integer transactionTimeout) throws Exception {
 
         if (inputPath == null || targetPath == null) {
             return "Can not import, missing "
@@ -55,6 +56,11 @@ public class HttpFileImporterExecutor extends AbstractJaxRSImporterExecutor {
         if (interactive == null) {
             interactive = false;
         }
+        if (transactionTimeout == null) {
+            transactionTimeout = 0;
+        }
+
+        getImporterService().setTransactionTimeout(transactionTimeout);
 
         if (leafType != null || folderishType != null) {
             log.info("Importing with the specified doc types");

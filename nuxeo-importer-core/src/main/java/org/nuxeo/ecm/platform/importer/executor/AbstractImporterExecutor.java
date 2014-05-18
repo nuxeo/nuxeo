@@ -49,6 +49,8 @@ public abstract class AbstractImporterExecutor {
 
     protected ImporterDocumentModelFactory factory;
 
+    protected int transactionTimeout = 0;
+
     public ImporterLogger getLogger() {
         if (log == null) {
             log = new BasicLogger(getJavaLogger());
@@ -131,6 +133,24 @@ public abstract class AbstractImporterExecutor {
 
     public void setFactory(ImporterDocumentModelFactory factory) {
         this.factory = factory;
+    }
+
+    /**
+     *
+     * @since 5.9.4
+     *
+     */
+    public int getTransactionTimeout() {
+        return transactionTimeout;
+    }
+
+    /**
+     *
+     * @since 5.9.4
+     *
+     */
+    public void setTransactionTimeout(int transactionTimeout) {
+        this.transactionTimeout = transactionTimeout;
     }
 
     /***

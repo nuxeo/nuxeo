@@ -401,6 +401,13 @@ $(document).ready(function() {
    </div>
 
    <div>
+     <label for="transactionTimeout">Timeout (seconds) of the transaction: </label>
+     <input type="number" name="transactionTimeout" placeholder="0" value="0">
+     <p><span class="explain">0 means "use the default value defined in the importer"</span></p>
+     <p></p>
+   </div>
+
+   <div>
      <label for="leafType">Leaf type:</label>
      <input type="text" name="leafType"  style="width:20em">
      <p><span class="explain">Used by the DocumentModelFactory for the import</span></p>

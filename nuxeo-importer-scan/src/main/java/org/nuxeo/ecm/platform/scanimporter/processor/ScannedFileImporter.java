@@ -139,6 +139,7 @@ public class ScannedFileImporter {
 
         ImporterDocumentModelFactory factory = initDocumentModelFactory(config);
         importer.setFactory(factory);
+        importer.setTransactionTimeout(config.getTransactionTimeout());
         importer.run();
 
         log.info("Fininish moving files");

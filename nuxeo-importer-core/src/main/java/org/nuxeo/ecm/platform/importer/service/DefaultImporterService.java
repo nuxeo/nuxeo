@@ -120,6 +120,11 @@ public interface DefaultImporterService {
     void setImporterLogger(ImporterLogger importerLogger);
 
     /**
+     * @since 5.9.4
+     */
+    void setTransactionTimeout(int transactionTimeout);
+
+    /**
      * Added waiting the importer refactoring. Only used by Scan Importer.
      * @since 5.7.3
      */
