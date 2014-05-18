@@ -48,6 +48,9 @@ public class ImporterConfig implements Serializable {
     @XNode("batchSize")
     protected Integer batchSize = 10;
 
+    @XNode("transactionTimeout")
+    protected Integer transactionTimeout = 0;
+
     @XNode("targetPath")
     protected String targetPath = "/";
 
@@ -80,6 +83,15 @@ public class ImporterConfig implements Serializable {
 
     public Integer getBatchSize() {
         return batchSize;
+    }
+
+    /**
+     *
+     * @since 5.9.4
+     *
+     */
+    public Integer getTransactionTimeout() {
+        return transactionTimeout;
     }
 
     public String getTargetPath() {
@@ -128,6 +140,15 @@ public class ImporterConfig implements Serializable {
     public void setBatchSize(Integer batchSize) {
         this.batchSize = batchSize;
     }
+
+    /**
+    *
+    * @since 5.9.4
+    *
+    */
+   public void setTransactionTimeout(Integer transactionTimeout) {
+       this.transactionTimeout = transactionTimeout;
+   }
 
     public void setTargetPath(String tagetPath) {
         this.targetPath = tagetPath;

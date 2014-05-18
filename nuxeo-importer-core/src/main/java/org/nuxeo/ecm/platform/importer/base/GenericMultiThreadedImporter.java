@@ -74,6 +74,8 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
     protected Integer nbThreads = 5;
 
+    protected Integer transactionTimeout = 0;
+
     protected ImporterLogger log;
 
     protected CoreSession session;
@@ -258,6 +260,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         }
         rootImportTask.addListeners(listeners);
         rootImportTask.addImportingDocumentFilters(importingDocumentFilters);
+        rootImportTask.setTransactionTimeout(transactionTimeout);
         return rootImportTask;
     }
 
@@ -421,6 +424,13 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
     public void setFactory(ImporterDocumentModelFactory factory) {
         this.factory = factory;
+    }
+
+    /**
+     * @since 5.9.4
+     */
+    public void setTransactionTimeout(int transactionTimeout) {
+        this.transactionTimeout = transactionTimeout;
     }
 
     public void setEnablePerfLogging(boolean enablePerfLogging) {

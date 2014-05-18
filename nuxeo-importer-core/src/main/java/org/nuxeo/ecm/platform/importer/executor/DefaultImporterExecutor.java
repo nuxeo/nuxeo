@@ -67,6 +67,7 @@ public class DefaultImporterExecutor extends AbstractImporterExecutor {
                 skipRootContainerCreation, batchSize, nbTheards, getLogger());
         importer.setFactory(getFactory());
         importer.setThreadPolicy(getThreadPolicy());
+        importer.setTransactionTimeout( getTransactionTimeout() );
         return doRun(importer, interactive);
     }
 

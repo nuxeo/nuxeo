@@ -77,7 +77,8 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected TxHelper txHelper = new TxHelper();
 
-    protected static final int TX_TIMEOUT = 600;
+    public static final int TX_TIMEOUT = 600;
+    protected int transactionTimeout = TX_TIMEOUT;
 
     protected ImporterThreadingPolicy threadPolicy;
 
@@ -157,7 +158,7 @@ public class GenericThreadedImportTask implements Runnable {
                     true);
             session.save();
             txHelper.commitOrRollbackTransaction();
-            txHelper.beginNewTransaction(TX_TIMEOUT);
+            txHelper.beginNewTransaction(transactionTimeout);
             split.stop();
         }
     }
@@ -291,6 +292,7 @@ public class GenericThreadedImportTask implements Runnable {
             }
             newTask.setBatchSize(getBatchSize());
             newTask.setSkipContainerCreation(true);
+            newTask.setTransactionTimeout(transactionTimeout);
             return newTask;
         } else {
             return null;
@@ -361,7 +363,7 @@ public class GenericThreadedImportTask implements Runnable {
     }
 
     public synchronized void run() {
-        txHelper.beginNewTransaction(TX_TIMEOUT);
+        txHelper.beginNewTransaction(transactionTimeout);
         synchronized (this) {
             if (isRunning) {
                 throw new IllegalStateException("Task already running");
@@ -456,6 +458,10 @@ public class GenericThreadedImportTask implements Runnable {
 
     public void addListeners(Collection<ImporterListener> listeners) {
         this.listeners.addAll(listeners);
+    }
+
+    public void setTransactionTimeout(int transactionTimeout) {
+        this.transactionTimeout = transactionTimeout < 1 ? TX_TIMEOUT : transactionTimeout;
     }
 
     protected void notifyImportError() throws Exception {
