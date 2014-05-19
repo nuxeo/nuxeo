@@ -21,6 +21,7 @@ import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,7 +60,7 @@ public class ComponentManagerImpl implements ComponentManager {
         reg = new ComponentRegistry();
         pendingExtensions = new HashMap<ComponentName, Set<Extension>>();
         listeners = new ListenerList();
-        services = new Hashtable<String, RegistrationInfoImpl>();
+        services = new ConcurrentHashMap<String, RegistrationInfoImpl>();
         blacklist = new HashSet<String>();
     }
 
@@ -205,28 +206,29 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     @Override
-    public synchronized ComponentInstance getComponentProvidingService(
+    public ComponentInstance getComponentProvidingService(
             Class<?> serviceClass) {
-        try {
-            RegistrationInfoImpl ri = services.get(serviceClass.getName());
-            if (ri != null) {
-                if (!ri.isActivated()) {
-                    if (ri.isResolved()) {
-                        ri.activate(); // activate the component if not yet
-                                       // activated
-                    } else {
-                        // Hack to avoid messages during TypeService activation
-                        if (!serviceClass.getSimpleName().equals("TypeProvider")) {
-                            log.debug("The component exposing the service "
-                                    + serviceClass + " is not resolved");
-                        }
-                        return null;
-                    }
-                }
-                return ri.getComponent();
-            }
-        } catch (Exception e) {
-            log.error("Failed to get service: " + serviceClass);
+        RegistrationInfoImpl ri = services.get(serviceClass.getName());
+        if (ri != null && ri.isActivated()) {
+            return ri.getComponent();
+        }
+        synchronized(this) {
+	    if (ri != null && !ri.isActivated()) {
+		if (ri.isResolved()) {
+		    try {
+			ri.activate();
+			return ri.getComponent();
+		    } catch (Exception e) {
+			log.error("Failed to get service: " + serviceClass + ", " + e.getMessage());
+		    }
+		} else {
+		    // Hack to avoid messages during TypeService activation
+		    if (!serviceClass.getSimpleName().equals("TypeProvider")) {
+			log.debug("The component exposing the service "
+				  + serviceClass + " is not resolved");
+		    }
+		}
+	    }
         }
         return null;
     }
