@@ -243,18 +243,56 @@ public class MemRepository implements DBSRepository {
         return readChildState(parentId, name, ignored) != null;
     }
 
-    // TODO XXX add ignored set
     @Override
-    public List<Map<String, Serializable>> readKeyValuedStates(String key,
-            String value) {
+    public List<Map<String, Serializable>> queryKeyValue(String key,
+            String value, Set<String> ignored) {
         List<Map<String, Serializable>> list = new ArrayList<>();
         for (Map<String, Serializable> state : states.values()) {
+            String id = (String) state.get(KEY_ID);
+            if (ignored.contains(id)) {
+                continue;
+            }
             if (!value.equals(state.get(key))) {
                 continue;
             }
             list.add(state);
         }
         return list;
+    }
+
+    @Override
+    public void queryKeyValueArray(String key, Object value, Set<String> ids,
+            Set<String> ignored) {
+        STATE: for (Map<String, Serializable> state : states.values()) {
+            Object[] array = (Object[]) state.get(key);
+            String id = (String) state.get(KEY_ID);
+            if (ignored.contains(id)) {
+                continue;
+            }
+            if (array != null) {
+                for (Object v : array) {
+                    if (value.equals(v)) {
+                        ids.add(id);
+                        continue STATE;
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean queryKeyValuePresence(String key, String value,
+            Set<String> ignored) {
+        for (Map<String, Serializable> state : states.values()) {
+            String id = (String) state.get(KEY_ID);
+            if (ignored.contains(id)) {
+                continue;
+            }
+            if (value.equals(state.get(key))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

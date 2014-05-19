@@ -119,9 +119,34 @@ public interface DBSRepository extends Repository {
      *
      * @param key the key
      * @param value the value
+     * @param ignored a set of document ids that should not be considered
      * @return the document states matching the query
      */
-    List<Map<String, Serializable>> readKeyValuedStates(String key, String value);
+    List<Map<String, Serializable>> queryKeyValue(String key, String value,
+            Set<String> ignored);
+
+    /**
+     * Queries the repository for document ids having value in key (an array).
+     *
+     * @param key the key
+     * @param value the value
+     * @param ids the set which receives the documents
+     * @param ignored a set of document ids that should not be considered
+     */
+    void queryKeyValueArray(String key, Object value, Set<String> ids,
+            Set<String> ignored);
+
+    /**
+     * Queries the repository to check if there are documents having key =
+     * value.
+     *
+     * @param key the key
+     * @param value the value
+     * @param ignored a set of document ids that should not be considered
+     * @return {@code true} if the query matches at least one document,
+     *         {@code false} if the query matches nothing
+     */
+    boolean queryKeyValuePresence(String key, String value, Set<String> ignored);
 
     /**
      * Queries the repository for documents matching a query.

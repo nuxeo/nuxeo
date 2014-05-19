@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BASE_VERSION_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_CHECKED_IN;
@@ -62,6 +63,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -70,6 +72,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -104,6 +107,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityException;
+import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.QueryOptimizer;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
@@ -224,6 +228,47 @@ public class DBSSession implements Session {
         return getDocument(state);
     }
 
+    protected String getDocumentIdByPath(String path) {
+        // TODO move checks and normalize higher in call stack
+        if (path == null) {
+            throw new IllegalArgumentException("Null path");
+        }
+        int len = path.length();
+        if (len == 0) {
+            throw new IllegalArgumentException("Empty path");
+        }
+        if (path.charAt(0) != '/') {
+            throw new IllegalArgumentException("Relative path: " + path);
+        }
+        if (len > 1 && path.charAt(len - 1) == '/') {
+            // remove final slash
+            path = path.substring(0, len - 1);
+            len--;
+        }
+        path = Normalizer.normalize(path, Normalizer.Form.NFKC);
+
+        if (len == 1) {
+            return getRootId();
+        }
+        DBSDocumentState state = null;
+        String parentId = getRootId();
+        String[] names = path.split("/", -1);
+        for (int i = 1; i < names.length; i++) {
+            String name = names[i];
+            if (name.length() == 0) {
+                throw new IllegalArgumentException(
+                        "Path with empty component: " + path);
+            }
+            // TODO XXX add getChildId method
+            state = transaction.getChildState(parentId, name);
+            if (state == null) {
+                return null;
+            }
+            parentId = state.getId();
+        }
+        return state.getId();
+    }
+
     protected Document getChild(String parentId, String name)
             throws DocumentException {
         DBSDocumentState state = transaction.getChildState(parentId, name);
@@ -251,7 +296,19 @@ public class DBSSession implements Session {
     }
 
     protected List<String> getChildrenIds(String parentId) {
-        return transaction.getChildrenIds(parentId);
+        if (isOrderable(parentId)) {
+            // TODO get only id and pos, not full state
+            // TODO state not for update
+            List<DBSDocumentState> states = transaction.getChildrenStates(parentId);
+            Collections.sort(states, POS_COMPARATOR);
+            List<String> children = new ArrayList<String>(states.size());
+            for (DBSDocumentState state : states) {
+                children.add(state.getId());
+            }
+            return children;
+        } else {
+            return transaction.getChildrenIds(parentId);
+        }
     }
 
     protected boolean hasChildren(String parentId) {
@@ -318,7 +375,7 @@ public class DBSSession implements Session {
 
     protected List<Document> getDocuments(List<String> ids)
             throws DocumentException {
-        List<DBSDocumentState> states = transaction.getStates(ids);
+        List<DBSDocumentState> states = transaction.getStatesForUpdate(ids);
         List<Document> docs = new ArrayList<Document>(ids.size());
         for (DBSDocumentState state : states) {
             docs.add(getDocument(state, true));
@@ -328,7 +385,7 @@ public class DBSSession implements Session {
 
     protected Document getDocument(String id, boolean readonly)
             throws DocumentException {
-        DBSDocumentState state = transaction.getState(id);
+        DBSDocumentState state = transaction.getStateForUpdate(id);
         return getDocument(state, readonly);
     }
 
@@ -355,7 +412,7 @@ public class DBSSession implements Session {
             if (targetId == null) {
                 throw new DocumentException("Proxy has null target");
             }
-            targetState = transaction.getState(targetId);
+            targetState = transaction.getStateForUpdate(targetId);
             if (targetState == null) {
                 throw new DocumentException("Proxy has null target data");
             }
@@ -405,7 +462,7 @@ public class DBSSession implements Session {
     }
 
     protected boolean isOrderable(String id) {
-        DBSDocumentState state = transaction.getState(id);
+        Map<String, Serializable> state = transaction.getStateForRead(id);
         String typeName = (String) state.get(KEY_PRIMARY_TYPE);
         if (TYPE_PROXY.equals(typeName)) {
             return false;
@@ -481,7 +538,7 @@ public class DBSSession implements Session {
     }
 
     protected void checkOut(String id) throws DocumentException {
-        DBSDocumentState state = transaction.getState(id);
+        DBSDocumentState state = transaction.getStateForUpdate(id);
         if (!TRUE.equals(state.get(KEY_IS_CHECKED_IN))) {
             throw new DocumentException("Already checked out");
         }
@@ -491,7 +548,7 @@ public class DBSSession implements Session {
     protected Document checkIn(String id, String label, String checkinComment)
             throws DocumentException {
         transaction.save();
-        DBSDocumentState state = transaction.getState(id);
+        DBSDocumentState state = transaction.getStateForUpdate(id);
         if (TRUE.equals(state.get(KEY_IS_CHECKED_IN))) {
             throw new DocumentException("Already checked in");
         }
@@ -506,8 +563,11 @@ public class DBSSession implements Session {
             }
         }
 
-        DBSDocumentState verState = transaction.getCopy(id);
+        // copy into a version
+        DBSDocumentState verState = transaction.copy(id);
+        String verId = verState.getId();
         verState.put(KEY_PARENT_ID, null);
+        verState.put(KEY_ANCESTOR_IDS, null);
         verState.put(KEY_IS_VERSION, TRUE);
         verState.put(KEY_VERSION_SERIES_ID, id);
         verState.put(KEY_VERSION_CREATED, new GregorianCalendar()); // now
@@ -520,14 +580,14 @@ public class DBSSession implements Session {
                 verState.get(KEY_MINOR_VERSION));
         verState.put(KEY_IS_LATEST_MAJOR_VERSION, Boolean.valueOf(isMajor));
 
-        // update the original node to reflect that it's checked in
+        // update the doc to mark it checked in
         state.put(KEY_IS_CHECKED_IN, TRUE);
-        state.put(KEY_BASE_VERSION_ID, verState.getId());
+        state.put(KEY_BASE_VERSION_ID, verId);
 
         recomputeVersionSeries(id);
         transaction.save();
 
-        return getDocument(verState, true);
+        return getDocument(verId);
     }
 
     /**
@@ -559,16 +619,17 @@ public class DBSSession implements Session {
         String docId = doc.getUUID();
         String versionId = version.getUUID();
 
-        DBSDocumentState state = transaction.getState(docId);
-        DBSDocumentState versionState = transaction.getState(versionId);
+        DBSDocumentState state = transaction.getStateForUpdate(docId);
+        Map<String, Serializable> versionState = transaction.getStateForRead(versionId);
 
-        for (Entry<String, Serializable> en : versionState.getMap().entrySet()) {
+        for (Entry<String, Serializable> en : versionState.entrySet()) {
             String key = en.getKey();
             // keys we don't copy from version when restoring
             switch (key) {
             // these are location- or identity-specific
             case KEY_ID:
             case KEY_PARENT_ID:
+            case KEY_ANCESTOR_IDS:
             case KEY_NAME:
             case KEY_POS:
             case KEY_PRIMARY_TYPE:
@@ -603,14 +664,28 @@ public class DBSSession implements Session {
         name = findFreeName(parent, name);
         String sourceId = source.getUUID();
         String parentId = parent.getUUID();
-        DBSDocumentState sourceState = transaction.getState(sourceId);
+        Map<String, Serializable> sourceState = transaction.getStateForRead(sourceId);
+        Map<String, Serializable> parentState = transaction.getStateForRead(parentId);
         String oldParentId = (String) sourceState.get(KEY_PARENT_ID);
+        Object[] parentAncestorIds = (Object[]) parentState.get(KEY_ANCESTOR_IDS);
+        LinkedList<String> ancestorIds = new LinkedList<String>();
+        if (parentAncestorIds != null) {
+            for (Object id : parentAncestorIds) {
+                ancestorIds.add((String) id);
+            }
+        }
+        ancestorIds.add(parentId);
         if (oldParentId != null && !oldParentId.equals(parentId)) {
-            checkNotUnder(parentId, sourceId, "copy");
+            if (ancestorIds.contains(sourceId)) {
+                throw new DocumentException("Cannot copy a node under itself: "
+                        + parentId + " is under " + sourceId);
+
+            }
+            // checkNotUnder(parentId, sourceId, "copy");
         }
         // do the copy
-        String copyId = copyRecurse(sourceId, parentId, name);
-        DBSDocumentState copyState = transaction.getState(copyId);
+        String copyId = copyRecurse(sourceId, parentId, ancestorIds, name);
+        DBSDocumentState copyState = transaction.getStateForUpdate(copyId);
         // version copy fixup
         if (source.isVersion()) {
             copyState.put(KEY_IS_VERSION, null);
@@ -618,17 +693,26 @@ public class DBSSession implements Session {
         return getDocument(copyState);
     }
 
-    protected String copyRecurse(String sourceId, String parentId, String name) {
-        String newId = copy(sourceId, parentId, name);
+    protected String copyRecurse(String sourceId, String parentId,
+            LinkedList<String> ancestorIds, String name) {
+        String copyId = copy(sourceId, parentId, ancestorIds, name);
+        ancestorIds.addLast(copyId);
         for (String childId : getChildrenIds(sourceId)) {
-            copyRecurse(childId, newId, null);
+            copyRecurse(childId, copyId, ancestorIds, null);
         }
-        return newId;
+        ancestorIds.removeLast();
+        return copyId;
     }
 
-    protected String copy(String sourceId, String parentId, String name) {
-        DBSDocumentState copy = transaction.getCopy(sourceId);
+    /**
+     * Copy source under parent, and set its ancestors.
+     */
+    protected String copy(String sourceId, String parentId,
+            List<String> ancestorIds, String name) {
+        DBSDocumentState copy = transaction.copy(sourceId);
         copy.put(KEY_PARENT_ID, parentId);
+        copy.put(KEY_ANCESTOR_IDS,
+                ancestorIds.toArray(new Object[ancestorIds.size()]));
         if (name != null) {
             copy.put(KEY_NAME, name);
         }
@@ -655,6 +739,7 @@ public class DBSSession implements Session {
     /** Checks that we don't move/copy under ourselves. */
     protected void checkNotUnder(String parentId, String id, String op)
             throws DocumentException {
+        // TODO use ancestors
         String pid = parentId;
         do {
             if (pid.equals(id)) {
@@ -662,7 +747,7 @@ public class DBSSession implements Session {
                         + " a node under itself: " + parentId + " is under "
                         + id);
             }
-            DBSDocumentState state = transaction.getState(pid);
+            Map<String, Serializable> state = transaction.getStateForRead(pid);
             if (state == null) {
                 // cannot happen
                 throw new DocumentException("No parent: " + pid);
@@ -674,37 +759,88 @@ public class DBSSession implements Session {
     @Override
     public Document move(Document source, Document parent, String name)
             throws DocumentException {
+        String oldName = (String) source.getName();
         if (name == null) {
-            name = source.getName();
+            name = oldName;
         }
         String sourceId = source.getUUID();
         String parentId = parent.getUUID();
-        DBSDocumentState sourceState = transaction.getState(sourceId);
+        DBSDocumentState sourceState = transaction.getStateForUpdate(sourceId);
         String oldParentId = (String) sourceState.get(KEY_PARENT_ID);
-        String oldName = (String) source.getName();
-        if (!parentId.equals(oldParentId)) {
+
+        // simple case of a rename
+        if (ObjectUtils.equals(oldParentId, parentId)) {
+            if (!oldName.equals(name)) {
+                if (hasChild(parentId, name)) {
+                    throw new DocumentException(
+                            "Destination name already exists: " + name);
+                }
+                // do the move
+                sourceState.put(KEY_NAME, name);
+                // no ancestors to change
+            }
+            return source;
+        } else {
             // if not just a simple rename, flush
             transaction.save();
-            // check move under itself
-            checkNotUnder(parentId, sourceId, "move");
-        } else if (oldName.equals(name)) {
-            // rename to itself
-            return source;
+            if (hasChild(parentId, name)) {
+                throw new DocumentException("Destination name already exists: "
+                        + name);
+            }
         }
-        if (hasChild(parentId, name)) {
-            throw new DocumentException("Destination name already exists: "
-                    + name);
+
+        Map<String, Serializable> parentState = transaction.getStateForRead(parentId);
+        Object[] parentAncestorIds = (Object[]) parentState.get(KEY_ANCESTOR_IDS);
+        List<String> ancestorIdsList = new ArrayList<String>();
+        if (parentAncestorIds != null) {
+            for (Object id : parentAncestorIds) {
+                ancestorIdsList.add((String) id);
+            }
         }
+        ancestorIdsList.add(parentId);
+        Object[] ancestorIds = ancestorIdsList.toArray(new Object[ancestorIdsList.size()]);
+
+        // checkNotUnder(parentId, sourceId, "move");
+        if (ancestorIdsList.contains(sourceId)) {
+            throw new DocumentException("Cannot move a node under itself: "
+                    + parentId + " is under " + sourceId);
+
+        }
+
         // do the move
-        DBSDocumentState state = transaction.getState(sourceId);
-        state.put(KEY_NAME, name);
-        state.put(KEY_PARENT_ID, parentId);
+        sourceState.put(KEY_NAME, name);
+        sourceState.put(KEY_PARENT_ID, parentId);
+
+        // find all sub-children to update their ancestors
+        Object[] oldAncestorIds = (Object[]) sourceState.get(KEY_ANCESTOR_IDS);
+        int ndel = oldAncestorIds == null ? 0 : oldAncestorIds.length;
+        transaction.updateAncestors(sourceId, ndel, ancestorIds);
+
         return source;
     }
 
     protected void remove(String id) {
         transaction.save();
-        transaction.removeState(id);
+
+        Map<String, Serializable> state = transaction.getStateForRead(id);
+        String versionSeriesId;
+        if (TRUE.equals(state.get(KEY_IS_VERSION))) {
+            versionSeriesId = (String) state.get(KEY_VERSION_SERIES_ID);
+        } else {
+            versionSeriesId = null;
+        }
+
+        Set<String> ids = transaction.getSubTree(id);
+        ids.add(id);
+        for (String cid : ids) {
+            transaction.removeState(cid);
+        }
+
+        // recompute version series if needed
+        // only done for root of deletion as versions are not fileable
+        if (versionSeriesId != null) {
+            recomputeVersionSeries(versionSeriesId);
+        }
     }
 
     @Override
@@ -718,7 +854,7 @@ public class DBSSession implements Session {
             versionSeriesId = doc.getVersionSeriesId();
         } else if (doc.isProxy()) {
             // copy the proxy
-            DBSDocumentState state = transaction.getState(docId);
+            Map<String, Serializable> state = transaction.getStateForRead(docId);
             targetId = (String) state.get(KEY_PROXY_TARGET_ID);
             versionSeriesId = (String) state.get(KEY_PROXY_VERSION_SERIES_ID);
         } else {
@@ -744,7 +880,7 @@ public class DBSSession implements Session {
         } else {
             String versionSeriesId;
             if (doc.isProxy()) {
-                DBSDocumentState state = transaction.getState(docId);
+                Map<String, Serializable> state = transaction.getStateForRead(docId);
                 versionSeriesId = (String) state.get(KEY_PROXY_VERSION_SERIES_ID);
             } else {
                 versionSeriesId = docId;
@@ -768,7 +904,7 @@ public class DBSSession implements Session {
     @Override
     public void setProxyTarget(Document proxy, Document target)
             throws DocumentException {
-        DBSDocumentState state = transaction.getState(proxy.getUUID());
+        DBSDocumentState state = transaction.getStateForUpdate(proxy.getUUID());
         state.put(KEY_PROXY_TARGET_ID, target.getUUID());
     }
 
@@ -1011,7 +1147,7 @@ public class DBSSession implements Session {
     }
 
     protected ACP getACP(Document doc) throws SecurityException {
-        DBSDocumentState state = transaction.getState(doc.getUUID());
+        Map<String, Serializable> state = transaction.getStateForRead(doc.getUUID());
         return memToAcp(state.get(KEY_ACP));
     }
 
@@ -1025,7 +1161,7 @@ public class DBSSession implements Session {
             // merge with existing
             acp = updateACP(getACP(doc), acp);
         }
-        DBSDocumentState state = transaction.getState(doc.getUUID());
+        DBSDocumentState state = transaction.getStateForUpdate(doc.getUUID());
         state.put(KEY_ACP, acpToMem(acp));
     }
 
@@ -1198,7 +1334,7 @@ public class DBSSession implements Session {
 
         MultiExpression expression = new QueryOptimizer().getOptimizedQuery(
                 sqlQuery, queryFilter.getFacetFilter());
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this,
                 expression);
 
         // query in-memory in saved state
@@ -1466,6 +1602,8 @@ public class DBSSession implements Session {
             return KEY_VERSION_DESCRIPTION;
         case NXQL.ECM_VERSION_VERSIONABLEID:
             return KEY_VERSION_SERIES_ID;
+        case ExpressionEvaluator.NXQL_ECM_ANCESTOR_IDS:
+            return KEY_ANCESTOR_IDS;
         }
         throw new RuntimeException("Unknown property: " + name);
     }
@@ -1525,6 +1663,7 @@ public class DBSSession implements Session {
     public static boolean isArray(String name) {
         switch (name) {
         case KEY_MIXIN_TYPES:
+        case KEY_ANCESTOR_IDS:
             return true;
         }
         return false;
@@ -1536,7 +1675,6 @@ public class DBSSession implements Session {
         case KEY_IS_CHECKED_IN:
         case KEY_IS_LATEST_VERSION:
         case KEY_IS_LATEST_MAJOR_VERSION:
-        case KEY_ACP:
             return true;
         }
         return false;

@@ -45,13 +45,15 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.storage.PartialList;
+import org.nuxeo.ecm.core.storage.binary.BinaryManager;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerService;
+import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepository;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.ecm.core.storage.mongodb.MongoDBQueryBuilder.FieldInfo;
-import org.nuxeo.ecm.core.storage.sql.BinaryManager;
-import org.nuxeo.ecm.core.storage.sql.DefaultBinaryManager;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -130,13 +132,15 @@ public class MongoDBRepository implements DBSRepository {
 
     protected BinaryManager newBinaryManager() {
         BinaryManager binaryManager = new DefaultBinaryManager();
-        RepositoryDescriptor repositoryDescriptor = new RepositoryDescriptor();
+        BinaryManagerDescriptor binaryManagerDescriptor = new BinaryManagerDescriptor();
         try {
             File dir = File.createTempFile("memBinaryManager", "");
             dir.delete();
-            repositoryDescriptor.name = "mem";
-            repositoryDescriptor.binaryStorePath = dir.getPath();
-            binaryManager.initialize(repositoryDescriptor);
+            binaryManagerDescriptor.repositoryName = "mem";
+            binaryManagerDescriptor.storePath = dir.getPath();
+            binaryManager.initialize(binaryManagerDescriptor);
+            BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
+            bms.addBinaryManager(binaryManagerDescriptor.repositoryName, binaryManager);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

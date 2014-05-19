@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DoubleLiteral;
@@ -46,6 +47,28 @@ import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
  * @since 5.9.4
  */
 public abstract class ExpressionEvaluator {
+
+    /** pseudo NXQL to resolve ancestor ids. */
+    public static final String NXQL_ECM_ANCESTOR_IDS = "ecm:ancestorIds";
+
+    /**
+     * Interface for a class that knows how to resolve a path into an id.
+     */
+    public interface PathResolver {
+        /**
+         * Returns the id for a given path.
+         *
+         * @param path the path
+         * @return the id, or {@code null} if not found
+         */
+        String getIdForPath(String path);
+    }
+
+    public final PathResolver pathResolver;
+
+    public ExpressionEvaluator(PathResolver pathResolver) {
+        this.pathResolver = pathResolver;
+    }
 
     public Object walkExpression(Expression expr) {
         Operator op = expr.operator;
@@ -102,7 +125,7 @@ public abstract class ExpressionEvaluator {
         } else if (op == Operator.NOTBETWEEN) {
             throw new UnsupportedOperationException("NOT BETWEEN");
         } else if (op == Operator.STARTSWITH) {
-            throw new UnsupportedOperationException("STARTSWITH");
+            return walkStartsWith(lvalue, rvalue);
         } else {
             throw new RuntimeException("Unknown operator: " + op);
         }
@@ -257,6 +280,63 @@ public abstract class ExpressionEvaluator {
 
     public Object walkFunction(Function func) {
         throw new UnsupportedOperationException("Function");
+    }
+
+    public Boolean walkStartsWith(Operand lvalue, Operand rvalue) {
+        if (!(lvalue instanceof Reference)) {
+            throw new RuntimeException(
+                    "Invalid STARTSWITH query, left hand side must be a property: "
+                            + lvalue);
+        }
+        String name = ((Reference) lvalue).name;
+        if (!(rvalue instanceof StringLiteral)) {
+            throw new RuntimeException(
+                    "Invalid STARTSWITH query, right hand side must be a literal path: "
+                            + rvalue);
+        }
+        String path = ((StringLiteral) rvalue).value;
+        if (path.length() > 1 && path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+
+        if (NXQL.ECM_PATH.equals(name)) {
+            return walkStartsWithPath(path);
+        } else {
+            return walkStartsWithNonPath(lvalue, path);
+        }
+    }
+
+    protected Boolean walkStartsWithPath(String path) {
+        // resolve path
+        String ancestorId = pathResolver.getIdForPath(path);
+        if (ancestorId == null) {
+            // no such path
+            return FALSE;
+        }
+        Object[] ancestorIds = (Object[]) walkReference(new Reference(
+                NXQL_ECM_ANCESTOR_IDS));
+        if (ancestorIds == null) {
+            // placeless
+            return FALSE;
+        }
+        for (Object id : ancestorIds) {
+            if (ancestorId.equals(id)) {
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+
+    protected Boolean walkStartsWithNonPath(Operand lvalue, String path) {
+        Object left = walkReference((Reference) lvalue);
+        // exact match
+        Boolean bool = eqMaybeList(left, path);
+        if (TRUE.equals(bool)) {
+            return TRUE;
+        }
+        // prefix match TODO escape % chars
+        String pattern = path + "/%";
+        return likeMaybeList(left, pattern, true, false);
     }
 
     /**

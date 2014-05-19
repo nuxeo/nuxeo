@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 import java.io.Serializable;
@@ -50,15 +51,32 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
     private static final Long ONE = Long.valueOf(1);
 
+    protected final DBSSession session;
+
     protected final Expression expr;
 
     protected final SchemaManager schemaManager;
 
     protected Map<String, Serializable> map;
 
-    public DBSExpressionEvaluator(Expression expr) {
+    public DBSExpressionEvaluator(DBSSession session, Expression expr) {
+        super(new DBSPathResolver(session));
+        this.session = session;
         this.expr = expr;
         schemaManager = Framework.getLocalService(SchemaManager.class);
+    }
+
+    protected static class DBSPathResolver implements PathResolver {
+        protected final DBSSession session;
+
+        public DBSPathResolver(DBSSession session) {
+            this.session = session;
+        }
+
+        @Override
+        public String getIdForPath(String path) {
+            return session.getDocumentIdByPath(path);
+        }
     }
 
     public boolean matches(Map<String, Serializable> map) {

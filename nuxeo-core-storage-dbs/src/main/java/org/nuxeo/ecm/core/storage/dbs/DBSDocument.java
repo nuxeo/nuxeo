@@ -102,6 +102,8 @@ public class DBSDocument implements Document {
 
     public static final String KEY_PARENT_ID = "ecm:parentId";
 
+    public static final String KEY_ANCESTOR_IDS = "ecm:ancestorIds";
+
     public static final String KEY_PRIMARY_TYPE = "ecm:primaryType";
 
     public static final String KEY_MIXIN_TYPES = "ecm:mixinTypes";
@@ -235,22 +237,22 @@ public class DBSDocument implements Document {
 
     @Override
     public String getPath() throws DocumentException {
+        String name = getName();
         Document doc = getParent();
         if (doc == null) {
-            if (getUUID().equals(session.getRootId())) {
-                return "/";
+            if ("".equals(name)) {
+                return "/"; // root
             } else {
-                return getName();
+                return name; // placeless, no slash
             }
         }
-        LinkedList<String> components = new LinkedList<String>();
-        components.addFirst(getName());
+        LinkedList<String> list = new LinkedList<String>();
+        list.addFirst(name);
         while (doc != null) {
-            components.addFirst(doc.getName());
+            list.addFirst(doc.getName());
             doc = doc.getParent();
         }
-        components.addFirst("");
-        return StringUtils.join(components, '/');
+        return StringUtils.join(list, '/');
     }
 
     @Override
