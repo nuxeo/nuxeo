@@ -55,12 +55,4 @@ public class NuxeoWebappClassLoader extends WebappClassLoader implements Mutable
         return this;
     }
 
-    @Override
-    // synchronized to avoid some race conditions
-    // see https://issues.apache.org/bugzilla/show_bug.cgi?id=44041
-    public synchronized Class<?> loadClass(String name, boolean resolve)
-            throws ClassNotFoundException {
-        return super.loadClass(name, resolve);
-    }
-
 }
