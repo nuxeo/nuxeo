@@ -374,16 +374,14 @@ public class PublishActionsBean extends AbstractPublishActions implements
     public String rePublish(PublishedDocument publishedDocument)
             throws ClientException {
         PublicationTree tree = getCurrentPublicationTreeForPublishing();
-        if (tree != null) {
-            for (PublicationNode node : tree.getChildrenNodes()) {
-                if (node.getPath().equals(publishedDocument.getParentPath())) {
-                    return doPublish(tree, node);
-                }
-            }
+        if (tree == null) {
+            log.error("Publication tree is null - cannot republish");
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    messages.get("error.document_republished"));
+            return null;
         }
-        facesMessages.add(StatusMessage.Severity.ERROR,
-                messages.get("error.document_republished"));
-        return null;
+        PublicationNode node = tree.getNodeByPath(publishedDocument.getParentPath());
+        return doPublish(tree, node);
     }
 
     public boolean canPublishTo(PublicationNode publicationNode)
