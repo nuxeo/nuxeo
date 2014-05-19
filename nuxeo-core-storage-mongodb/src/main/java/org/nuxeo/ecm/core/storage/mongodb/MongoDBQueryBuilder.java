@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGO_ID;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -43,6 +47,8 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
+import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
 
@@ -57,10 +63,13 @@ import com.mongodb.QueryOperators;
  */
 public class MongoDBQueryBuilder {
 
-    protected SchemaManager schemaManager;
+    protected final SchemaManager schemaManager;
 
-    public MongoDBQueryBuilder() {
+    protected final PathResolver pathResolver;
+
+    public MongoDBQueryBuilder(PathResolver pathResolver) {
         schemaManager = Framework.getLocalService(SchemaManager.class);
+        this.pathResolver = pathResolver;
     }
 
     public DBObject walkExpression(Expression expr) {
@@ -118,7 +127,7 @@ public class MongoDBQueryBuilder {
         } else if (op == Operator.NOTBETWEEN) {
             throw new UnsupportedOperationException("NOT BETWEEN");
         } else if (op == Operator.STARTSWITH) {
-            throw new UnsupportedOperationException("STARTSWITH");
+            return walkStartsWith(lvalue, rvalue);
         } else {
             throw new RuntimeException("Unknown operator: " + op);
         }
@@ -385,6 +394,51 @@ public class MongoDBQueryBuilder {
 
     public Object walkFunction(Function func) {
         throw new UnsupportedOperationException("Function");
+    }
+
+    public DBObject walkStartsWith(Operand lvalue, Operand rvalue) {
+        if (!(lvalue instanceof Reference)) {
+            throw new RuntimeException(
+                    "Invalid STARTSWITH query, left hand side must be a property: "
+                            + lvalue);
+        }
+        String name = ((Reference) lvalue).name;
+        if (!(rvalue instanceof StringLiteral)) {
+            throw new RuntimeException(
+                    "Invalid STARTSWITH query, right hand side must be a literal path: "
+                            + rvalue);
+        }
+        String path = ((StringLiteral) rvalue).value;
+        if (path.length() > 1 && path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+
+        if (NXQL.ECM_PATH.equals(name)) {
+            return walkStartsWithPath(path);
+        } else {
+            return walkStartsWithNonPath(lvalue, path);
+        }
+    }
+
+    protected DBObject walkStartsWithPath(String path) {
+        // resolve path
+        String ancestorId = pathResolver.getIdForPath(path);
+        if (ancestorId == null) {
+            // no such path
+            // TODO XXX do better
+            return new BasicDBObject(MONGO_ID, "__nosuchid__");
+        }
+        return new BasicDBObject(DBSDocument.KEY_ANCESTOR_IDS, ancestorId);
+    }
+
+    protected DBObject walkStartsWithNonPath(Operand lvalue, String path) {
+        String field = walkReference(lvalue).field;
+        DBObject eq = new BasicDBObject(field, path);
+        // escape except alphanumeric and others not needing escaping
+        String regex = path.replaceAll("([^a-zA-Z0-9 /])", "\\\\$1");
+        Pattern pattern = Pattern.compile(regex + "/.*");
+        DBObject like = new BasicDBObject(field, pattern);
+        return new BasicDBObject(QueryOperators.OR, Arrays.asList(eq, like));
     }
 
     protected FieldInfo walkReference(Operand value) {

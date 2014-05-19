@@ -73,7 +73,15 @@ public class MongoDBRepository implements DBSRepository {
 
     private static final Log log = LogFactory.getLog(MongoDBRepository.class);
 
+    private static final Long ZERO = Long.valueOf(0);
+
+    private static final Long ONE = Long.valueOf(1);
+
+    private static final Long MINUS_ONE = Long.valueOf(-1);
+
     public static final String DB_NAME = "nuxeo";
+
+    public static final String MONGO_ID = "_id";
 
     // change to have deterministic pseudo-UUID generation for debugging
     private final boolean DEBUG_UUIDS = true;
@@ -225,6 +233,9 @@ public class MongoDBRepository implements DBSRepository {
     }
 
     protected Map<String, Serializable> bsonToState(DBObject ob) {
+        if (ob == null) {
+            return null;
+        }
         Map<String, Serializable> state = new HashMap<>();
         for (String key : ob.keySet()) {
             Object val = ob.get(key);
@@ -252,7 +263,7 @@ public class MongoDBRepository implements DBSRepository {
             } else if (val instanceof DBObject) {
                 value = (Serializable) bsonToState((DBObject) val);
             } else {
-                if ("_id".equals(key)) {
+                if (MONGO_ID.equals(key)) {
                     // skip ObjectId
                     continue;
                 }
@@ -322,44 +333,59 @@ public class MongoDBRepository implements DBSRepository {
     @Override
     public Map<String, Serializable> readChildState(String parentId,
             String name, Set<String> ignored) {
-        DBObject query = new BasicDBObject();
-        query.put(KEY_PARENT_ID, parentId);
-        query.put(KEY_NAME, name);
-        if (!ignored.isEmpty()) {
-            DBObject notInIds = new BasicDBObject(QueryOperators.NIN,
-                    new ArrayList<String>(ignored));
-            query.put(KEY_ID, notInIds);
-        }
+        DBObject query = getChildQuery(parentId, name, ignored);
         return findOne(query);
     }
 
     @Override
     public boolean hasChild(String parentId, String name, Set<String> ignored) {
-        return readChildState(parentId, name, ignored) != null;
+        DBObject query = getChildQuery(parentId, name, ignored);
+        return coll.findOne(query, justPresenceField()) != null;
     }
 
-    // TODO XXX add ignored set
+    protected DBObject getChildQuery(String parentId, String name,
+            Set<String> ignored) {
+        DBObject query = new BasicDBObject();
+        query.put(KEY_PARENT_ID, parentId);
+        query.put(KEY_NAME, name);
+        addIgnoredIds(query, ignored);
+        return query;
+    }
+
+    protected void addIgnoredIds(DBObject query, Set<String> ignored) {
+        if (!ignored.isEmpty()) {
+            DBObject notInIds = new BasicDBObject(QueryOperators.NIN,
+                    new ArrayList<String>(ignored));
+            query.put(KEY_ID, notInIds);
+        }
+    }
+
     @Override
-    public List<Map<String, Serializable>> readKeyValuedStates(String key,
-            String value) {
+    public List<Map<String, Serializable>> queryKeyValue(String key,
+            String value, Set<String> ignored) {
         DBObject query = new BasicDBObject(key, value);
-        // TODO ignored
+        addIgnoredIds(query, ignored);
         return findAll(query, 0);
     }
 
+    @Override
+    public void queryKeyValueArray(String key, Object value, Set<String> ids,
+            Set<String> ignored) {
+        DBObject query = new BasicDBObject(key, value);
+        addIgnoredIds(query, ignored);
+        findAllIds(query, ids);
+    }
+
+    @Override
+    public boolean queryKeyValuePresence(String key, String value,
+            Set<String> ignored) {
+        DBObject query = new BasicDBObject(key, value);
+        addIgnoredIds(query, ignored);
+        return coll.findOne(query, justPresenceField()) != null;
+    }
+
     protected Map<String, Serializable> findOne(DBObject query) {
-        DBCursor cursor = coll.find(query).limit(2);
-        try {
-            List<DBObject> ar = cursor.toArray();
-            if (ar.isEmpty()) {
-                return null;
-            } else if (ar.size() > 1) {
-                log.error("More than one document returned for query: " + query);
-            }
-            return bsonToState(ar.get(0));
-        } finally {
-            cursor.close();
-        }
+        return bsonToState(coll.findOne(query));
     }
 
     protected List<Map<String, Serializable>> findAll(DBObject query,
@@ -376,17 +402,37 @@ public class MongoDBRepository implements DBSRepository {
         }
     }
 
-    private static final Long ONE = Long.valueOf(1);
+    protected void findAllIds(DBObject query, Set<String> ids) {
+        DBCursor cursor = coll.find(query, justIdField());
+        try {
+            for (DBObject ob : cursor) {
+                ids.add((String) ob.get(KEY_ID));
+            }
+        } finally {
+            cursor.close();
+        }
+    }
 
-    private static final Long MINUS_ONE = Long.valueOf(-1);
+    protected DBObject justPresenceField() {
+        return new BasicDBObject(MONGO_ID, ONE);
+    }
+
+    protected DBObject justIdField() {
+        DBObject fields = new BasicDBObject();
+        fields.put(MONGO_ID, ZERO);
+        fields.put(KEY_ID, ONE);
+        return fields;
+    }
 
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(
             Expression expression, DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, int limit, int offset, int countUpTo,
             boolean deepCopy, Set<String> ignored) {
-        MongoDBQueryBuilder builder = new MongoDBQueryBuilder();
+        MongoDBQueryBuilder builder = new MongoDBQueryBuilder(
+                evaluator.pathResolver);
         DBObject query = builder.walkExpression(expression);
+        addIgnoredIds(query, ignored);
         List<Map<String, Serializable>> list;
         System.err.println(query); // XXX
         DBCursor cursor = coll.find(query).skip(offset).limit(limit);
