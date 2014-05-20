@@ -277,6 +277,7 @@ body {
 .footer {
   color: #d6d6d6;
   font-size: .65em;
+  height:35px;
   <%=footerStyle%>
 }
 
