@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Puts on the pipe execution context the values retrieved from the new messages
@@ -73,10 +74,14 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
 
     private String bodyContent;
 
+    public static final String COPY_MESSAGE = "org.nuxeo.mail.imap.copy";    
+    
     @Override
     public boolean execute(ExecutionContext context) throws Exception {
         bodyContent = "";
 
+        boolean copyMessage = Boolean.parseBoolean(Framework.getProperty(COPY_MESSAGE, "false"));        
+        
         try {
             Message originalMessage = context.getMessage();
             if (log.isDebugEnabled()) {
@@ -88,7 +93,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             // override most of server bugs, see
             // http://java.sun.com/products/javamail/FAQ.html#imapserverbug
             Message message;
-            if (originalMessage instanceof MimeMessage) {
+            if (originalMessage instanceof MimeMessage && copyMessage) {
                 message = new MimeMessage((MimeMessage) originalMessage);
                 if (log.isDebugEnabled()) {
                     log.debug("Transforming message after full load: "
@@ -200,6 +205,9 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
             List<Blob> blobs = new ArrayList<Blob>();
             context.put(ATTACHMENTS_KEY, blobs);
 
+            
+            //String[] cte = message.getHeader("Content-Transfer-Encoding");
+            
             // process content
             getAttachmentParts(message, subject, mimeService, context);
 
@@ -330,7 +338,7 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
 
         return null;
     }
-
+    
     /**
      * Interprets the body accordingly to the charset used. It relies on the
      * content type being ****;charset={charset};******
@@ -339,8 +347,31 @@ public class ExtractMessageInformationAction extends AbstractMailAction {
      */
     protected static String decodeMailBody(Part part)
             throws MessagingException, IOException {
-        String encoding = MimeUtility.getEncoding(part.getDataHandler());
-        InputStream is = MimeUtility.decode(part.getInputStream(), encoding);
+        
+        String encoding =null;
+        
+        // try to get encoding from header rather than from Stream !
+        // unfortunately, this does not seem to be reliable ...
+        /*
+        String[] cteHeader = part.getHeader("Content-Transfer-Encoding");        
+        if (cteHeader!=null && cteHeader.length>0) {
+            encoding =  cteHeader[0].toLowerCase();    
+        }*/
+        
+        // fall back to default sniffing
+        // that will actually read the stream from server 
+        if (encoding==null)  {
+            encoding = MimeUtility.getEncoding(part.getDataHandler());    
+        }          
+               
+        InputStream is = null;
+        try {
+            is = MimeUtility.decode(part.getInputStream(), encoding);
+        } catch (IOException ex) {
+            log.error("Unable to read content", ex);
+            return "";
+        }
+        
         String contType = part.getContentType();
         final String charsetIdentifier = "charset=";
         final String ISO88591 = "iso-8859-1";

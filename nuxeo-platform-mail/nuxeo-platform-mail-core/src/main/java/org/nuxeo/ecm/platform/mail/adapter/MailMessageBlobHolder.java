@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.platform.mail.utils.MailCoreConstants;
 
 /**
  * BlobHolder for MailMessage documents. The blob returned is a StringBlob with
@@ -47,21 +48,28 @@ public class MailMessageBlobHolder extends DocumentBlobHolder {
     @Override
     public Blob getBlob() throws ClientException {
         String htmlTextProperty = (String) doc.getPropertyValue(xPath);
+        Blob blob = null;
         if (htmlTextProperty != null && xPathFilename != null
                 && htmlTextProperty.length() != 0) {
-            Blob blob = new StringBlob(htmlTextProperty);
+            blob = new StringBlob(htmlTextProperty);
             Matcher m = isHtmlPattern.matcher(htmlTextProperty);
             if (m.matches()) {
                 blob.setMimeType("text/html");
             } else {
                 blob.setMimeType("text/plain");
             }
+        } else {
+            String txt = (String) doc.getPropertyValue(MailCoreConstants.TEXT_PROPERTY_NAME);
+            if (txt == null) {
+                txt = "";
+            }
+            blob = new StringBlob(txt, "text/plain");
+        }
+        if (blob != null) {
             blob.setFilename(xPathFilename);
             // set dummy digest to avoid comparison error
             blob.setDigest("notInBinaryStore");
-            return blob;
-        } else {
-            return null;
         }
+        return blob;
     }
 }

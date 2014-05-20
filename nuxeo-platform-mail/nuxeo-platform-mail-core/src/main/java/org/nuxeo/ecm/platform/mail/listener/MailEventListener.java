@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.platform.mail.listener;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import javax.mail.AuthenticationFailedException;
 
 import org.apache.commons.logging.Log;
@@ -50,12 +53,28 @@ public class MailEventListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(MailEventListener.class);
 
+    protected Lock lock = new ReentrantLock();
+    
     public void handleEvent(Event event) {
         String eventId = event.getName();
 
         if (!EVENT_NAME.equals(eventId)) {
             return;
         }
+        
+        if (lock.tryLock()) {
+            try {
+                doHandleEvent(event);
+            } finally {
+                lock.unlock();        
+            }
+        } else {
+            log.info("Skip email check since it is already running");
+        }
+
+    }
+    
+    public void doHandleEvent(Event event) {
 
         try (CoreSession coreSession = CoreInstance.openCoreSession(null)) {
             StringBuilder query = new StringBuilder();
@@ -80,5 +99,5 @@ public class MailEventListener implements EventListener {
             log.error("MailEventListener error...", e);
         }
     }
-
+    
 }

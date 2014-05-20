@@ -22,9 +22,6 @@
       <action>
         org.nuxeo.ecm.platform.mail.listener.action.CreateDocumentsAction
       </action>
-      <action>
-        org.nuxeo.ecm.platform.mail.listener.action.EndAction
-      </action>
     </pipe>
 
   </extension>

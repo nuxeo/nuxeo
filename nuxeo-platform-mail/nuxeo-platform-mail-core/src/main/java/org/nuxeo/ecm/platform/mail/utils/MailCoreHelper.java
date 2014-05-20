@@ -41,6 +41,8 @@ import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.LEAVE_ON_SERVE
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.mail.FetchProfile;
 import javax.mail.Flags;
@@ -63,6 +65,9 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.mail.listener.MailEventListener;
 import org.nuxeo.runtime.api.Framework;
 
+import com.sun.mail.imap.IMAPFolder;
+import com.sun.mail.imap.IMAPMessage;
+
 /**
  * Helper for Mail Core.
  *
@@ -84,6 +89,10 @@ public final class MailCoreHelper {
 
     private static MimetypeRegistry mimeService;
 
+    public static final String IMAP_DEBUG = "org.nuxeo.mail.imap.debug";
+    
+    protected static final CopyOnWriteArrayList<String> processingMailBoxes = new CopyOnWriteArrayList<String>();
+    
     private MailCoreHelper() {
     }
 
@@ -111,12 +120,27 @@ public final class MailCoreHelper {
         return mimeService;
     }
 
+    
     /**
      * Creates MailMessage documents for every unread mail found in the INBOX.
      * The parameters needed to connect to the email INBOX are retrieved from
      * the MailFolder document passed as a parameter.
-     */
+     */    
     public static void checkMail(DocumentModel currentMailFolder,
+            CoreSession coreSession) throws Exception {        
+                
+        if (processingMailBoxes.addIfAbsent(currentMailFolder.getId())) {
+            try {
+                doCheckMail(currentMailFolder, coreSession);
+            } finally {
+                processingMailBoxes.remove(currentMailFolder.getId());
+            }
+        } else {
+            log.info("Mailbox " + currentMailFolder.getPathAsString() + " is already being processed");
+        }            
+    }
+
+    protected static void doCheckMail(DocumentModel currentMailFolder,
             CoreSession coreSession) throws Exception {
         String email = (String) currentMailFolder.getPropertyValue(EMAIL_PROPERTY_NAME);
         String password = (String) currentMailFolder.getPropertyValue(PASSWORD_PROPERTY_NAME);
@@ -142,6 +166,7 @@ public final class MailCoreHelper {
             initialExecutionContext.put(LEAVE_ON_SERVER_KEY, Boolean.TRUE); // TODO should be an attribute in 'protocol' schema
 
             Folder rootFolder = null;
+            Store store = null;
             try {
                 String protocolType = (String) currentMailFolder.getPropertyValue(PROTOCOL_TYPE_PROPERTY_NAME);
                 initialExecutionContext.put(PROTOCOL_TYPE_KEY, protocolType);
@@ -156,7 +181,9 @@ public final class MailCoreHelper {
                 Long emailsLimit = (Long) currentMailFolder.getPropertyValue(EMAILS_LIMIT_PROPERTY_NAME);
                 long emailsLimitLongValue = emailsLimit == null ? EMAILS_LIMIT_DEFAULT
                         : emailsLimit.longValue();
-
+                
+                String imapDebug = Framework.getProperty(IMAP_DEBUG, "false");
+                
                 Properties properties = new Properties();
                 properties.put("mail.store.protocol", protocolType);
 //                properties.put("mail.host", host);
@@ -166,7 +193,8 @@ public final class MailCoreHelper {
                     properties.put("mail.imap.port", port);
                     properties.put("mail.imap.starttls.enable",
                             starttlsEnable.toString());
-                    properties.put("mail.imap.debug","true");
+                    properties.put("mail.imap.debug",imapDebug);
+                    properties.put("mail.imap.partialfetch","false");
                 } else if (IMAPS.equals(protocolType)) {
                     properties.put("mail.imaps.host", host);
                     properties.put("mail.imaps.port", port);
@@ -179,6 +207,8 @@ public final class MailCoreHelper {
                             socketFactoryFallback.toString());
                     properties.put("mail.imaps.socketFactory.port",
                             socketFactoryPort);
+                    properties.put("mail.imap.partialfetch","false");
+                    properties.put("mail.imaps.partialfetch","false");
                 } else if (POP3S.equals(protocolType)) {
                     properties.put("mail.pop3s.host", host);
                     properties.put("mail.pop3s.port", port);
@@ -200,12 +230,13 @@ public final class MailCoreHelper {
 
                 Session session = Session.getInstance(properties);
 
-                Store store = session.getStore();
+                store = session.getStore();
                 store.connect(email, password);
 
                 String folderName = INBOX; // TODO should be an attribute in 'protocol' schema
                 rootFolder = store.getFolder(folderName);
 
+                // need RW access to update message flags 
                 rootFolder.open(Folder.READ_WRITE);
 
                 Message[] allMessages = rootFolder.getMessages();
@@ -214,7 +245,16 @@ public final class MailCoreHelper {
 
                 FetchProfile fetchProfile = new FetchProfile();
                 fetchProfile.add(FetchProfile.Item.FLAGS);
+                fetchProfile.add(FetchProfile.Item.ENVELOPE);
+                fetchProfile.add(FetchProfile.Item.CONTENT_INFO);
+                fetchProfile.add("Message-ID");
+                fetchProfile.add("Content-Transfer-Encoding");                
+                
                 rootFolder.fetch(allMessages, fetchProfile);
+
+                if (rootFolder instanceof IMAPFolder) {                    
+                    //((IMAPFolder)rootFolder).doCommand(FetchProfile)
+                }
 
                 List<Message> unreadMessagesList = new ArrayList<Message>();
                 for (Message message : allMessages) {
@@ -228,13 +268,30 @@ public final class MailCoreHelper {
                     }
                 }
 
+                Message[] unreadMessagesArray =unreadMessagesList.toArray(new Message[unreadMessagesList.size()]); 
+
                 // perform email import
-                visitor.visit(
-                        unreadMessagesList.toArray(new Message[unreadMessagesList.size()]),
-                        initialExecutionContext);
+                visitor.visit(unreadMessagesArray,
+                        initialExecutionContext);                
+                
+                // perform flag update globally 
+                Flags flags = new Flags();
+                flags.add(Flag.SEEN);
+                
+                boolean leaveOnServer = (Boolean) initialExecutionContext.get(LEAVE_ON_SERVER_KEY);                
+                if ((IMAP.equals(protocolType) || IMAPS.equals(protocolType)) && leaveOnServer) {
+                    flags.add(Flag.SEEN);                    
+                } else {
+                    flags.add(Flag.DELETED);
+                }
+                rootFolder.setFlags(unreadMessagesArray, flags, true);
+                
             } finally {
                 if (rootFolder != null && rootFolder.isOpen()) {
                     rootFolder.close(true);
+                }
+                if (store!=null) {
+                    store.close();
                 }
             }
         }
