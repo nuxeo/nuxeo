@@ -58,6 +58,11 @@ author: lkemen@nuxeo.com
 .content_block .actionsColumn {
   width: 20% }
 
+.content_block .fieldColumn,
+.tabsContent .radioColumn ~ .fieldColumn {
+  max-width: 10em;
+  word-wrap: break-word }
+
 .textBlock,
 .note_content_block {
   background-color: #fff;
