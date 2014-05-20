@@ -100,7 +100,7 @@ public class LockManager {
             throws StorageException {
         this.mapper = mapper;
         this.clusteringEnabled = clusteringEnabled;
-        serializationLock = new ReentrantLock(true); // fair
+        serializationLock = new ReentrantLock();
         caching = !clusteringEnabled;
         lockCache = caching ? new LRUCache<Serializable, Lock>(CACHE_SIZE)
                 : null;
