@@ -1,4 +1,6 @@
 <h:graphicImage value="/icons/lock.gif"
    xmlns:h="http://java.sun.com/jsf/html"
    id="#{widget.id}"
-   rendered="#{not empty field}"/>
+   rendered="#{not empty field}"
+   styleClass="tipsyShow"
+   title="#{messages['label.summary.by']} #{nxu:userFullName(field.owner)}, #{messages['label.summary.the']} #{field.created.time}" />
