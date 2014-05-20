@@ -800,7 +800,6 @@
             </ul>
           </p>
         </description>
-        <demo id="listing_livedit_linkWidget" />
         <fields>
           <list>false</list>
           <complex>false</complex>
