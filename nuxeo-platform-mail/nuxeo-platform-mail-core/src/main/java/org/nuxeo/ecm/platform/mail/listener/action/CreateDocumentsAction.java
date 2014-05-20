@@ -119,15 +119,18 @@ public class CreateDocumentsAction extends AbstractMailAction {
         documentModel.setPropertyValue(CC_RECIPIENTS_PROPERTY_NAME,
                 ccRecipients);
 
-        StringBlob sb = new StringBlob(text);
-        BlobHolder simpleBlobHolder = new SimpleBlobHolder(sb);
-        ConversionService conversionService = Framework.getService(ConversionService.class);
-        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
-        parameters.put("tagFilter", "body");
-        BlobHolder simpleTextBH = conversionService.convert("html2text", simpleBlobHolder, parameters);
-        String simpleText = simpleTextBH.getBlob().getString();
-        documentModel.setPropertyValue(TEXT_PROPERTY_NAME, simpleText);
         documentModel.setPropertyValue(HTML_TEXT_PROPERTY_NAME, text);
+        if (text != null && !text.isEmpty()) {
+            StringBlob sb = new StringBlob(text);
+            BlobHolder simpleBlobHolder = new SimpleBlobHolder(sb);
+            ConversionService conversionService = Framework.getService(ConversionService.class);
+            Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+            parameters.put("tagFilter", "body");
+            BlobHolder simpleTextBH = conversionService.convert("html2text", simpleBlobHolder, parameters);
+            String simpleText = simpleTextBH.getBlob().getString();
+            documentModel.setPropertyValue(TEXT_PROPERTY_NAME, simpleText);            
+        }
+        
         UnrestrictedCreateDocument unrestrictedCreateDocument = new UnrestrictedCreateDocument(
                 documentModel, session);
         unrestrictedCreateDocument.runUnrestricted();

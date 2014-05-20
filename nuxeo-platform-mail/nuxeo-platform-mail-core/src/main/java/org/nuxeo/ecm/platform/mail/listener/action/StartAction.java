@@ -40,10 +40,6 @@ public class StartAction extends AbstractMailAction {
         if (flags != null && flags.contains(Flag.SEEN)) {
             return false;
         }
-        // mark message as seen
-        message.setFlag(Flag.SEEN, true);
-        // flag it in case it is not treated correctly
-        message.setFlag(Flag.FLAGGED, true);
         return true;
     }
 

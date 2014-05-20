@@ -53,6 +53,7 @@ public class EndAction extends AbstractMailAction {
 //            log.debug(LEAVE_ON_SERVER_KEY + ": " + leaveOnServer);
             if ((IMAP.equals(protocolType) || IMAPS.equals(protocolType)) && leaveOnServer) {
                 message.setFlag(Flag.SEEN, true);
+                
             } else {
                 message.setFlag(Flag.DELETED, true);
             }
