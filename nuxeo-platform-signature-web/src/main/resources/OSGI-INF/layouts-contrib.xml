@@ -13,7 +13,7 @@
       </rows>
       <widget name="certWidget" type="text">
         <labels>
-          <label mode="any">Details</label>
+          <label mode="any">label.cert.details</label>
         </labels>
         <translated>true</translated>
         <fields>
