@@ -28,10 +28,12 @@ import javax.faces.validator.ValidatorException;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
  * Handles search parameters needed for simple and advanced and administrator
@@ -134,6 +136,19 @@ public class DocumentSearchActions implements Serializable {
     public void resetSearches() {
         simpleSearchKeywords = "";
         nxqlQuery = "";
+    }
+
+    /**
+     * Resets cached selected columns/sort infos on hot reload when dev mode is
+     * set.
+     *
+     * @since 5.9.4
+     */
+    @Observer(value = { EventNames.FLUSH_EVENT }, create = false)
+    @BypassInterceptors
+    public void onHotReloadFlush() {
+        selectedLayoutColumns = null;
+        searchSortInfos = null;
     }
 
 }
