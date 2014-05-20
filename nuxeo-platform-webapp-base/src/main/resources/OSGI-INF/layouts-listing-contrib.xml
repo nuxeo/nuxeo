@@ -650,6 +650,7 @@
           <list>false</list>
           <complex>false</complex>
           <defaultConfiguration>
+            <field>data.lock</field>
             <field>data.lockInfo</field>
           </defaultConfiguration>
         </fields>
@@ -1096,6 +1097,7 @@
         <label mode="any"></label>
       </labels>
       <fields>
+        <field>data.lock</field>
         <field>data.lockInfo</field>
       </fields>
     </widget>
