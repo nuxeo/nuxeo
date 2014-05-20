@@ -63,10 +63,15 @@ a.linkedin .footerLabel {
   text-align: left;
   padding: .9em 1.4em .6em }
 
+.bannerMessage a {
+  background-color: #009aea;
+  border-radius: 3px;
+  padding: 0.07em 0.3em;}
+
 .links a:link,
 .links a:visited,
 .bannerBottom .links a {
-  background-color: #ff452a;
+  background-color: #009aea;
   border-radius: 5px;
   color: #fff;
   cursor: pointer;
@@ -76,25 +81,23 @@ a.linkedin .footerLabel {
   text-decoration: none;
   text-transform: uppercase }
 
-.bannerBottom .links a:hover {
-  background-color: #e71d00;
+.bannerBottom .links a:hover,
+.bannerMessage a:hover {
+  background-color: #00c168;
   color:#fff;
   text-decoration: none }
 
 .bannerMessage {
   padding: .1em }
 
-.bannerMessage a {
-  color: #fff }
-
 .unregistered {
-  background-color: #00adff;
-  color: #02316c }
+  background-color: #02316c;
+  color: #fff }
 
 .unregistered .bannerMessage {
   float: left;
-  width: 68% }
+  width: 68%; }
 
 .unregistered .links {
   float: right;
-  width: 31% }
+  width: 31%; }
