@@ -97,6 +97,11 @@ public class SetTagHandler extends AliasTagHandler {
         FaceletHandler nextHandler = this.nextHandler;
         VariableMapper orig = ctx.getVariableMapper();
         AliasVariableMapper target = new AliasVariableMapper();
+        // generate id before applying (and before generating next handler, in
+        // case of merge of variables, as parent aliases will be exposed to
+        // request then).
+        target.setId(ctx.generateUniqueId(this.tagId));
+
         VariableMapper vm = target.getVariableMapperForBuild(orig);
         ctx.setVariableMapper(vm);
         try {

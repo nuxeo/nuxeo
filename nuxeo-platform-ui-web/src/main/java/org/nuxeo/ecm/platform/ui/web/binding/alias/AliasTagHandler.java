@@ -31,6 +31,9 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
@@ -61,6 +64,8 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * @since 5.4
  */
 public class AliasTagHandler extends MetaTagHandler {
+
+    private static final Log log = LogFactory.getLog(AliasTagHandler.class);
 
     protected final TagAttribute cache;
 
@@ -116,15 +121,15 @@ public class AliasTagHandler extends MetaTagHandler {
             }
         }
 
+        // generate id before applying
+        target.setId(ctx.generateUniqueId(this.tagId));
         apply(ctx, parent, target, this.nextHandler);
     }
 
     protected void apply(FaceletContext ctx, UIComponent parent,
             AliasVariableMapper alias, FaceletHandler nextHandler)
             throws IOException, FacesException, FaceletException, ELException {
-        // our id
-        String id = ctx.generateUniqueId(this.tagId);
-        alias.setId(id);
+        String id = alias.getId();
 
         VariableMapper orig = ctx.getVariableMapper();
         VariableMapper vm = alias.getVariableMapperForBuild(orig);

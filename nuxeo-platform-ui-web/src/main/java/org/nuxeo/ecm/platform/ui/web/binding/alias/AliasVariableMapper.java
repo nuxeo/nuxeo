@@ -136,6 +136,9 @@ public class AliasVariableMapper extends VariableMapper {
             return;
         }
         String id = vm.getId();
+        if (id == null && log.isDebugEnabled()) {
+            log.debug("Encountered alias variable mapper with null id");
+        }
         ExternalContext ec = facesContext.getExternalContext();
         Map<String, AliasVariableMapper> mappers = (Map) ec.getRequestMap().get(
                 AliasVariableMapper.REQUEST_MARKER);
