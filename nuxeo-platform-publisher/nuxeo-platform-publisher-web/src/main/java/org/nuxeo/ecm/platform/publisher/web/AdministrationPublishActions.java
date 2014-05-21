@@ -18,7 +18,9 @@
 package org.nuxeo.ecm.platform.publisher.web;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +35,10 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.Sorter;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
+import org.nuxeo.ecm.platform.publisher.api.PublicationTreeNotAvailable;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
@@ -109,6 +115,25 @@ public class AdministrationPublishActions extends AbstractPublishActions
 
     public void setCurrentSectionRootId(String currentSectionRootId) {
         this.currentSectionRootId = currentSectionRootId;
+    }
+
+    public String getDomainNameFor(final DocumentModel sectionRoot)
+            throws ClientException {
+        final List<String> domainName = new ArrayList<>();
+        new UnrestrictedSessionRunner(documentManager) {
+            @Override
+            public void run() throws ClientException {
+                DocumentModel parent = session.getParentDocument(sectionRoot.getRef());
+                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+                while (parent != null && !"/".equals(parent.getPathAsString())) {
+                    if (schemaManager.hasSuperType(parent.getType(), "Domain")) {
+                        domainName.add(parent.getTitle());
+                        return;
+                    }
+                }
+            }
+        }.runUnrestricted();
+        return domainName.isEmpty() ? null : domainName.get(0);
     }
 
     protected DocumentTreeNode getDocumentTreeNode(DocumentModel documentModel) {
