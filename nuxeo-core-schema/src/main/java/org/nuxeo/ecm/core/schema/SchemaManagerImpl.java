@@ -596,6 +596,15 @@ public class SchemaManagerImpl implements SchemaManager {
         return documentTypes.size();
     }
 
+    @Override
+    public boolean hasSuperType(String docType, String superType) {
+        if (docType == null || superType == null) {
+            return false;
+        }
+        Set<String> types = getDocumentTypeNamesExtending(superType);
+        return types != null && types.contains(docType);
+    }
+
     /*
      * ===== Proxies =====
      */
