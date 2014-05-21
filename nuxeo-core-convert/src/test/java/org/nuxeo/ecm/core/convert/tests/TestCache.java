@@ -21,9 +21,11 @@ import static org.junit.Assert.*;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheGCManager;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheHolder;
@@ -89,6 +91,36 @@ public class TestCache extends NXRuntimeTestCase {
 
         int cacheSize3 = ConversionCacheHolder.getNbCacheEntries();
         assertEquals(0, cacheSize3);
+    }
+
+    @Test
+    public void conversionCacheShouldKeepMainBlobInfo() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.convert.tests", "OSGI-INF/converters-test-contrib3.xml");
+        ConversionService cs = Framework.getLocalService(ConversionService.class);
+
+        Converter cv = ConversionServiceImpl.getConverter("identity");
+        assertNotNull(cv);
+
+        File file = FileUtils.getResourceFileFromContext("test-data/hello.doc");
+        assertNotNull(file);
+        assertTrue(file.length() > 0);
+
+        Blob blob = new FileBlob(file);
+        blob.setFilename("hello.doc");
+        blob.setMimeType("application/msword");
+
+        BlobHolder bh = new SimpleBlobHolder(blob);
+
+        BlobHolder result = cs.convert("identity", bh, null);
+        assertNotNull(result);
+        Blob convertedBlob = result.getBlob();
+        assertEquals("hello.doc", convertedBlob.getFilename());
+        assertEquals("application/msword", convertedBlob.getMimeType());
+
+        result = cs.convert("identity", bh, null);
+        convertedBlob = result.getBlob();
+        assertEquals("hello.doc", convertedBlob.getFilename());
+        assertEquals("application/msword", convertedBlob.getMimeType());
     }
 
 }

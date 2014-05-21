@@ -15,6 +15,10 @@ package org.nuxeo.ecm.core.convert.cache;
 import java.io.File;
 import java.util.Date;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 
@@ -27,9 +31,19 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
  */
 public class ConversionCacheEntry {
 
+    private static final Log log = LogFactory.getLog(ConversionCacheEntry.class);
+
     protected Date lastAccessTime;
 
     protected BlobHolder bh;
+
+    protected String mainBlobFilename;
+
+    protected String mainBlobMimeType;
+
+    protected String mainBlobEncoding;
+
+    protected String mainBlobDigest;
 
     protected boolean persisted = false;
 
@@ -39,6 +53,7 @@ public class ConversionCacheEntry {
 
     public ConversionCacheEntry(BlobHolder bh) {
         this.bh = bh;
+        saveMainBlobInfo(bh);
         updateAccessTime();
     }
 
@@ -70,9 +85,44 @@ public class ConversionCacheEntry {
         if (persisted && persistPath != null) {
             CachableBlobHolder holder = new SimpleCachableBlobHolder();
             holder.load(persistPath);
+            restoreMainBlobInfo(holder);
             return holder;
         } else {
             return null;
+        }
+    }
+
+    protected void saveMainBlobInfo(BlobHolder bh) {
+        try {
+            Blob blob = bh.getBlob();
+            mainBlobDigest = blob.getDigest();
+            mainBlobFilename = blob.getFilename();
+            mainBlobMimeType = blob.getMimeType();
+            mainBlobEncoding = blob.getEncoding();
+        } catch (ClientException e) {
+            log.error(e, e);
+        }
+    }
+
+    protected void restoreMainBlobInfo(BlobHolder bh) {
+        try {
+            Blob blob = bh.getBlob();
+            if (blob != null) {
+                if (mainBlobDigest != null) {
+                    blob.setDigest(mainBlobDigest);
+                }
+                if (mainBlobFilename != null) {
+                    blob.setFilename(mainBlobFilename);
+                }
+                if (mainBlobMimeType != null) {
+                    blob.setMimeType(mainBlobMimeType);
+                }
+                if (mainBlobEncoding != null) {
+                    blob.setEncoding(mainBlobEncoding);
+                }
+            }
+        } catch (ClientException e) {
+            log.error(e, e);
         }
     }
 
