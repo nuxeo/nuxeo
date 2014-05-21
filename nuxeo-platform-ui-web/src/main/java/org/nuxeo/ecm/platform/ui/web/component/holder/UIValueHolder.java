@@ -113,16 +113,24 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
     }
 
     @Override
-    public void encodeChildren(final FacesContext context) throws IOException {
+    public void encodeBegin(FacesContext context) throws IOException {
         AliasVariableMapper alias = getAliasVariableMapper(context);
-        try {
-            AliasVariableMapper.exposeAliasesToRequest(context, alias);
-            processFacetsAndChildren(context, PhaseId.RENDER_RESPONSE);
-        } finally {
-            if (alias != null) {
-                AliasVariableMapper.removeAliasesExposedToRequest(context,
-                        alias.getId());
-            }
+        AliasVariableMapper.exposeAliasesToRequest(context, alias);
+        super.encodeBegin(context);
+    }
+
+    @Override
+    public void encodeChildren(final FacesContext context) throws IOException {
+        // no need to expose variables: already done in #encodeBegin
+        processFacetsAndChildren(context, PhaseId.RENDER_RESPONSE);
+    }
+
+    @Override
+    public void encodeEnd(FacesContext context) throws IOException {
+        AliasVariableMapper alias = getAliasVariableMapper(context);
+        if (alias != null) {
+            AliasVariableMapper.removeAliasesExposedToRequest(context,
+                    alias.getId());
         }
     }
 

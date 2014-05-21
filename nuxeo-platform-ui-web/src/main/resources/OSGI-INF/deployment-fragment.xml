@@ -319,7 +319,7 @@
     <context-param>
       <param-name>org.ajax4jsf.CONTROL_COMPONENTS</param-name>
       <param-value>
-        org.nuxeo.ecm.platform.ui.web.binding.alias.UIAliasHolder
+        org.nuxeo.ecm.platform.ui.web.binding.alias.UIAliasHolder,org.nuxeo.ecm.platform.ui.web.component.holder.UIValueHolder
       </param-value>
     </context-param>
 
