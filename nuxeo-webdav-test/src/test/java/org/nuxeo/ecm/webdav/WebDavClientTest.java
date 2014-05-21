@@ -19,6 +19,7 @@ package org.nuxeo.ecm.webdav;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -272,9 +273,7 @@ public class WebDavClientTest extends AbstractServerTest {
         // check using Nuxeo Core APIs
         session.save(); // process invalidations
         PathRef pathRef = new PathRef("/workspaces/workspace/" + name);
-        assertTrue(session.exists(pathRef)); // in trash
-        DocumentModel doc = session.getDocument(pathRef);
-        assertEquals("deleted", doc.getCurrentLifeCycleState());
+        assertFalse(session.exists(pathRef)); // in trash with different name
 
         // recreate it, for other tests using the same repo
         byte[] bytes = "Hello, world!".getBytes("UTF-8");
