@@ -128,8 +128,8 @@ public class TestImportedModelRendering {
         String text = textBH.getBlob().getString();
 
         // check TOC
-        assertTrue(text.contains("1   Overview"));
-        assertTrue(text.contains("1.1   Introduction"));
+        assertTrue(text.contains("1 Overview"));
+        assertTrue(text.contains("1.1 Introduction"));
 
         // check include
         assertTrue(text.contains("This set of plugins provides a way to associate a Nuxeo Document with a Template."));
