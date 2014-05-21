@@ -127,6 +127,7 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
 
     @Override
     public void encodeEnd(FacesContext context) throws IOException {
+        super.encodeEnd(context);
         AliasVariableMapper alias = getAliasVariableMapper(context);
         if (alias != null) {
             AliasVariableMapper.removeAliasesExposedToRequest(context,
