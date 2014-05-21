@@ -22,7 +22,7 @@
               <nxu:selectItems value="#{defaultPublishingRoots}"
                                var="root"
                                itemValue="#{root.id}"
-                               itemLabel="#{root.dublincore.title}"/>
+                               itemLabel="#{root.dublincore.title} (#{adminPublishActions.getDomainNameFor(root)})"/>
               <a4j:support event="onchange" reRender="sectionTree,sectionList"
                            ignoreDupResponses="true"/>
             </h:selectOneListbox>
