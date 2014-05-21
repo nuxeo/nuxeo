@@ -28,9 +28,13 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 public class ConversionCacheEntry {
 
     protected Date lastAccessTime;
+
     protected BlobHolder bh;
+
     protected boolean persisted = false;
+
     protected String persistPath;
+
     protected long sizeInKB = 0;
 
     public ConversionCacheEntry(BlobHolder bh) {
