@@ -14,9 +14,6 @@
   <description>Anonymous File Sharing</description>
 
   <properties>
-    <!-- IMPORTANT
-         If you change this version number,
-         you MUST upload the new artifact into Nexus -->
     <easyshare.studio.version>1.0.4-593</easyshare.studio.version>
   </properties>
 
