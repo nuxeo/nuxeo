@@ -18,6 +18,7 @@
 package org.nuxeo.wss.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -34,7 +35,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -276,12 +276,8 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         backend.removeItem("/nuxeo/workspaces/ws1/testMe3");
         backend.saveChanges(); // for cache invalidation
         // session.save(); // for cache invalidation
-        assertTrue(session.exists(new PathRef(
+        assertFalse(session.exists(new PathRef(
                 "/default-domain/workspaces/ws1/testMe3")));
-        DocumentModel trashModel = session.getDocument(new PathRef(
-                "/default-domain/workspaces/ws1/testMe3"));
-        assertEquals(LifeCycleConstants.DELETED_STATE,
-                trashModel.getCurrentLifeCycleState());
     }
 
     @Test
@@ -417,11 +413,7 @@ public class TestSimpleBackend extends SQLRepositoryTestCase {
         backend.removeItem("/nuxeo/ws2/testMe3");
         backend.saveChanges(); // for cache invalidation
         // session.save(); // for cache invalidation
-        assertTrue(session.exists(new PathRef(
+        assertFalse(session.exists(new PathRef(
                 "/default-domain/workspaces/ws1/folder/ws2/testMe3")));
-        DocumentModel trashModel = session.getDocument(new PathRef(
-                "/default-domain/workspaces/ws1/folder/ws2/testMe3"));
-        assertEquals(LifeCycleConstants.DELETED_STATE,
-                trashModel.getCurrentLifeCycleState());
     }
 }
