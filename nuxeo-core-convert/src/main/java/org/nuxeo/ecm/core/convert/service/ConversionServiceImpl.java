@@ -251,10 +251,12 @@ public class ConversionServiceImpl extends DefaultComponent implements
         } else if (converter instanceof ChainedConverter) {
             ChainedConverter chainedConverter = (ChainedConverter) converter;
             result = new ConverterCheckResult();
-            for (String subConverterName : chainedConverter.getSubConverters()) {
-                result = isConverterAvailable(subConverterName, refresh);
-                if (!result.isAvailable()) {
-                    break;
+            if (chainedConverter.isSubConvertersBased()) {
+                for (String subConverterName : chainedConverter.getSubConverters()) {
+                    result = isConverterAvailable(subConverterName, refresh);
+                    if (!result.isAvailable()) {
+                        break;
+                    }
                 }
             }
         } else {

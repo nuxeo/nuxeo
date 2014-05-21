@@ -151,4 +151,13 @@ public class ChainedConverter implements Converter {
     public List<String> getSubConverters() {
         return subConverters;
     }
+
+    /**
+     * Returns true if this chained converter is sub converters based, false otherwise.
+     *
+     * @since 5.9.4
+     */
+    public boolean isSubConvertersBased() {
+        return subConvertersBased;
+    }
 }
