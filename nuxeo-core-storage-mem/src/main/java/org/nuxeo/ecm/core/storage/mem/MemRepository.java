@@ -11,9 +11,13 @@
  */
 package org.nuxeo.ecm.core.storage.mem;
 
+import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSSession.TYPE_ROOT;
 
 import java.io.File;
@@ -262,7 +266,8 @@ public class MemRepository implements DBSRepository {
 
     @Override
     public void queryKeyValueArray(String key, Object value, Set<String> ids,
-            Set<String> ignored) {
+            Map<String, String> proxyTargets,
+            Map<String, Object[]> targetProxies, Set<String> ignored) {
         STATE: for (Map<String, Serializable> state : states.values()) {
             Object[] array = (Object[]) state.get(key);
             String id = (String) state.get(KEY_ID);
@@ -273,6 +278,17 @@ public class MemRepository implements DBSRepository {
                 for (Object v : array) {
                     if (value.equals(v)) {
                         ids.add(id);
+                        if (proxyTargets != null
+                                && TRUE.equals(state.get(KEY_IS_PROXY))) {
+                            String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
+                            proxyTargets.put(id, targetId);
+                        }
+                        if (targetProxies != null) {
+                            Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
+                            if (proxyIds != null) {
+                                targetProxies.put(id, proxyIds);
+                            }
+                        }
                         continue STATE;
                     }
                 }

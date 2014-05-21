@@ -16,12 +16,21 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BASE_VERSION_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_POS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIES_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,11 +41,13 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.storage.CopyHelper;
 
 /**
  * Transactional state for a session: data that has been modified in the
@@ -434,8 +445,7 @@ public class DBSTransactionState {
     }
 
     /**
-     * Copies the document into a newly-created object, and updates some of its
-     * values.
+     * Copies the document into a newly-created object.
      * <p>
      * Doesn't check transient (assumes save is done). The copy is automatically
      * saved.
@@ -460,7 +470,7 @@ public class DBSTransactionState {
      * automatically saved.
      */
     public void updateAncestors(String id, int ndel, Object[] ancestorIds) {
-        Set<String> ids = getSubTree(id);
+        Set<String> ids = getSubTree(id, null, null);
         ids.add(id);
         for (String cid : ids) {
             int nadd = ancestorIds.length;
@@ -483,8 +493,16 @@ public class DBSTransactionState {
      * Gets all the ids under a given one, recursively.
      * <p>
      * Doesn't check transient (assumes save is done).
+     *
+     * @param id the root of the tree (not included in results)
+     * @param proxyTargets returns a map of proxy to target among the documents
+     *            found
+     * @param targetProxies returns a map of target to proxies among the
+     *            document found
      */
-    protected Set<String> getSubTree(String id) {
+    protected Set<String> getSubTree(String id,
+            Map<String, String> proxyTargets,
+            Map<String, Object[]> targetProxies) {
         Set<String> ids = new HashSet<String>();
         Set<String> seen = new HashSet<String>();
         DOC: for (DBSDocumentState state : savedStates.values()) {
@@ -495,13 +513,25 @@ public class DBSTransactionState {
                 for (Object aid : ancestors) {
                     if (id.equals(aid)) {
                         ids.add(oid);
+                        if (proxyTargets != null
+                                && TRUE.equals(state.get(KEY_IS_PROXY))) {
+                            String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
+                            proxyTargets.put(oid, targetId);
+                        }
+                        if (targetProxies != null) {
+                            Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
+                            if (proxyIds != null) {
+                                targetProxies.put(oid, proxyIds);
+                            }
+                        }
                         continue DOC;
                     }
                 }
             }
         }
         // check repository as well
-        repository.queryKeyValueArray(KEY_ANCESTOR_IDS, id, ids, seen);
+        repository.queryKeyValueArray(KEY_ANCESTOR_IDS, id, ids, proxyTargets,
+                targetProxies, seen);
         return ids;
     }
 
@@ -549,6 +579,7 @@ public class DBSTransactionState {
      * may be references to them.
      */
     public void save() {
+        updateProxies();
         for (String id : transientCreated) { // ordered
             DBSDocumentState state = transientStates.get(id);
             state.setNotDirty();
@@ -566,6 +597,85 @@ public class DBSTransactionState {
             }
         }
         transientCreated.clear();
+    }
+
+    /**
+     * Checks if the changed documents are proxy targets, and updates the
+     * proxies if that's the case.
+     */
+    protected void updateProxies() {
+        for (String id : transientCreated) { // ordered
+            DBSDocumentState state = transientStates.get(id);
+            Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
+            if (proxyIds != null) {
+                for (Object proxyId : proxyIds) {
+                    updateProxy(state, (String) proxyId);
+                }
+            }
+        }
+        // copy as we may modify proxies
+        for (String id : transientStates.keySet().toArray(new String[0])) {
+            DBSDocumentState state = transientStates.get(id);
+            if (transientCreated.contains(id)) {
+                continue; // already done
+            }
+            if (state.isDirty()) {
+                Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
+                if (proxyIds != null) {
+                    for (Object proxyId : proxyIds) {
+                        updateProxy(state, (String) proxyId);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates the state of a proxy based on its target.
+     */
+    protected void updateProxy(DBSDocumentState target, String proxyId) {
+        DBSDocumentState proxy = getStateForUpdate(proxyId);
+        if (proxy == null) {
+            throw new NullPointerException();
+        }
+        // clear all proxy data
+        for (String key : proxy.getMap().keySet().toArray(new String[0])) {
+            if (!proxySpecific(key)) {
+                proxy.put(key, null);
+            }
+        }
+        // copy from target
+        for (Entry<String, Serializable> en : target.getMap().entrySet()) {
+            String key = en.getKey();
+            if (!proxySpecific(key)) {
+                proxy.put(key, CopyHelper.deepCopy(en.getValue()));
+            }
+        }
+    }
+
+    /**
+     * Things that we don't touch on a proxy.
+     */
+    protected boolean proxySpecific(String key) {
+        switch (key) {
+        // these are placeful stuff
+        case KEY_ID:
+        case KEY_PARENT_ID:
+        case KEY_ANCESTOR_IDS:
+        case KEY_NAME:
+        case KEY_POS:
+        case KEY_ACP:
+            // these are proxy-specific
+        case KEY_IS_PROXY:
+        case KEY_PROXY_TARGET_ID:
+        case KEY_PROXY_VERSION_SERIES_ID:
+        case KEY_IS_VERSION:
+        case KEY_BASE_VERSION_ID:
+        case KEY_VERSION_SERIES_ID:
+        case KEY_PROXY_IDS:
+            return true;
+        }
+        return false;
     }
 
     /**

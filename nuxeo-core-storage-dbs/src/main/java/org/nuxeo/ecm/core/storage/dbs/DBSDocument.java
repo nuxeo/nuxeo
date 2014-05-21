@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import static java.lang.Boolean.TRUE;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -57,6 +59,7 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
@@ -95,6 +98,8 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  * @since 5.9.4
  */
 public class DBSDocument implements Document {
+
+    private static final Long ZERO = Long.valueOf(0);
 
     public static final String KEY_PREFIX = "ecm:";
 
@@ -146,9 +151,13 @@ public class DBSDocument implements Document {
 
     public static final String KEY_BASE_VERSION_ID = "ecm:baseVersionId";
 
+    public static final String KEY_IS_PROXY = "ecm:isProxy";
+
     public static final String KEY_PROXY_TARGET_ID = "ecm:proxyTargetId";
 
     public static final String KEY_PROXY_VERSION_SERIES_ID = "ecm:proxyVersionSeriesId";
+
+    public static final String KEY_PROXY_IDS = "ecm:proxyIds";
 
     public static final String KEY_LIFECYCLE_POLICY = "ecm:lifeCyclePolicy";
 
@@ -227,12 +236,12 @@ public class DBSDocument implements Document {
 
     @Override
     public boolean isProxy() {
-        return false;
+        return TRUE.equals(state.get(KEY_IS_PROXY));
     }
 
     @Override
     public boolean isVersion() {
-        return Boolean.TRUE.equals(state.get(KEY_IS_VERSION));
+        return TRUE.equals(state.get(KEY_IS_VERSION));
     }
 
     @Override
@@ -325,6 +334,7 @@ public class DBSDocument implements Document {
     // simple property only
     @Override
     public Serializable getPropertyValue(String name) throws DocumentException {
+        DBSDocumentState state = getStateMaybeProxyTarget(name);
         return state.get(name);
     }
 
@@ -332,25 +342,30 @@ public class DBSDocument implements Document {
     @Override
     public void setPropertyValue(String name, Serializable value)
             throws DocumentException {
+        DBSDocumentState state = getStateMaybeProxyTarget(name);
         state.put(name, value);
     }
 
     @Override
     public Document checkIn(String label, String checkinComment)
             throws DocumentException {
-        if (!isVersion()) {
-            return session.checkIn(id, label, checkinComment);
-        } else {
+        if (isProxy()) {
+            throw new DocumentException("Proxies cannot be checked in");
+        } else if (isVersion()) {
             throw new VersionNotModifiableException();
+        } else {
+            return session.checkIn(id, label, checkinComment);
         }
     }
 
     @Override
     public void checkOut() throws DocumentException {
-        if (!isVersion()) {
-            session.checkOut(id);
-        } else {
+        if (isProxy()) {
+            throw new DocumentException("Proxies cannot be checked out");
+        } else if (isVersion()) {
             throw new VersionNotModifiableException();
+        } else {
+            session.checkOut(id);
         }
     }
 
@@ -372,10 +387,12 @@ public class DBSDocument implements Document {
 
     @Override
     public Document getSourceDocument() throws DocumentException {
-        if (!isVersion()) {
-            return this;
-        } else {
+        if (isProxy()) {
+            return getTargetDocument();
+        } else if (isVersion()) {
             return getWorkingCopy();
+        } else {
+            return this;
         }
     }
 
@@ -396,37 +413,39 @@ public class DBSDocument implements Document {
 
     @Override
     public Document getBaseVersion() throws DocumentException {
-        if (!isVersion()) {
-            if (!isCheckedOut()) {
+        if (isProxy() || isVersion()) {
+            return null;
+        } else {
+            if (isCheckedOut()) {
+                return null;
+            } else {
                 String id = (String) state.get(KEY_BASE_VERSION_ID);
                 if (id == null) {
                     // shouldn't happen
                     return null;
                 }
                 return session.getDocument(id);
-            } else {
-                return null;
             }
-        } else {
-            return null;
         }
     }
 
     @Override
     public boolean isCheckedOut() throws DocumentException {
-        if (!isVersion()) {
-            return !Boolean.TRUE.equals(state.get(KEY_IS_CHECKED_IN));
-        } else {
+        if (isVersion()) {
             return false;
+        } else { // also if isProxy()
+            return !TRUE.equals(state.get(KEY_IS_CHECKED_IN));
         }
     }
 
     @Override
     public String getVersionSeriesId() throws DocumentException {
-        if (!isVersion()) {
-            return getUUID();
-        } else {
+        if (isProxy()) {
+            return (String) state.get(KEY_PROXY_VERSION_SERIES_ID);
+        } else if (isVersion()) {
             return (String) state.get(KEY_VERSION_SERIES_ID);
+        } else {
+            return getUUID();
         }
     }
 
@@ -447,54 +466,49 @@ public class DBSDocument implements Document {
 
     @Override
     public boolean isLatestVersion() throws DocumentException {
-        if (!isVersion()) {
-            return false;
+        if (isProxy() || isVersion()) {
+            return TRUE.equals(state.get(KEY_IS_LATEST_VERSION));
         } else {
-            return Boolean.TRUE.equals(state.get(KEY_IS_LATEST_VERSION));
+            return false;
         }
     }
 
     @Override
     public boolean isMajorVersion() throws DocumentException {
-        if (!isVersion()) {
-            return false;
+        if (isProxy() || isVersion()) {
+            return ZERO.equals(state.get(KEY_MINOR_VERSION));
         } else {
-            return Long.valueOf(0).equals(state.get(KEY_MINOR_VERSION));
+            return false;
         }
     }
 
     @Override
     public boolean isLatestMajorVersion() throws DocumentException {
-        if (!isVersion()) {
-            return false;
+        if (isProxy() || isVersion()) {
+            return TRUE.equals(state.get(KEY_IS_LATEST_MAJOR_VERSION));
         } else {
-            return Boolean.TRUE.equals(state.get(KEY_IS_LATEST_MAJOR_VERSION));
+            return false;
         }
     }
 
     @Override
     public boolean isVersionSeriesCheckedOut() throws DocumentException {
-        if (!isVersion()) {
-            return isCheckedOut();
-        } else {
+        if (isProxy() || isVersion()) {
             Document workingCopy = getWorkingCopy();
-            if (workingCopy == null) {
-                return false;
-            }
-            return workingCopy.isCheckedOut();
+            return workingCopy == null ? false : workingCopy.isCheckedOut();
+        } else {
+            return isCheckedOut();
         }
     }
 
     @Override
     public Document getWorkingCopy() throws DocumentException {
-        if (!isVersion()) {
-            return this;
-        } else {
+        if (isProxy() || isVersion()) {
             String versionSeriesId = getVersionSeriesId();
-            if (versionSeriesId == null) {
-                return null;
-            }
-            return session.getDocument(versionSeriesId);
+            return versionSeriesId == null ? null
+                    : session.getDocument(versionSeriesId);
+        } else {
+            return this;
         }
     }
 
@@ -615,8 +629,56 @@ public class DBSDocument implements Document {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Checks if the given schema should be resolved on the proxy or the target.
+     */
+    protected DBSDocumentState getStateMaybeProxyTarget(Type type)
+            throws PropertyException {
+        if (isProxy() && !isSchemaForProxy(type.getName())) {
+            try {
+                return ((DBSDocument) getTargetDocument()).state;
+            } catch (DocumentException e) {
+                throw new PropertyException(e.getMessage(), e);
+            }
+        } else {
+            return state;
+        }
+    }
+
+    protected DBSDocumentState getStateMaybeProxyTarget(String xpath)
+            throws DocumentException {
+        if (isProxy() && !isSchemaForProxy(getSchema(xpath))) {
+            return ((DBSDocument) getTargetDocument()).state;
+        } else {
+            return state;
+        }
+    }
+
+    protected boolean isSchemaForProxy(String schema) {
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        return schemaManager.isProxySchema(schema, getType().getName());
+    }
+
+    protected String getSchema(String xpath) throws DocumentException {
+        int p = xpath.indexOf(':');
+        if (p == -1) {
+            throw new DocumentException("Schema not specified: " + xpath);
+        }
+        String prefix = xpath.substring(0, p);
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        Schema schema = schemaManager.getSchemaFromPrefix(prefix);
+        if (schema == null) {
+            schema = schemaManager.getSchema(prefix);
+            if (schema == null) {
+                throw new DocumentException("No schema for prefix: " + xpath);
+            }
+        }
+        return schema.getName();
+    }
+
     @Override
     public void readDocumentPart(DocumentPart dp) throws PropertyException {
+        DBSDocumentState state = getStateMaybeProxyTarget(dp.getType());
         readComplexProperty((ComplexProperty) dp, state.getMap());
     }
 
@@ -830,6 +892,7 @@ public class DBSDocument implements Document {
     @Override
     public Map<String, Serializable> readPrefetch(ComplexType complexType,
             Set<String> xpaths) throws PropertyException {
+        DBSDocumentState state = getStateMaybeProxyTarget(complexType);
         Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
         for (String xpath : xpaths) {
             try {
@@ -902,6 +965,7 @@ public class DBSDocument implements Document {
 
     @Override
     public void writeDocumentPart(DocumentPart dp) throws PropertyException {
+        DBSDocumentState state = getStateMaybeProxyTarget(dp.getType());
         writeComplexProperty((ComplexProperty) dp, state.getMap(),
                 state.getDirty());
         clearDirtyFlags(dp);
@@ -1051,13 +1115,29 @@ public class DBSDocument implements Document {
     }
 
     @Override
-    public Document getTargetDocument() {
-        return null;
+    public Document getTargetDocument() throws DocumentException {
+        if (isProxy()) {
+            String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
+            return session.getDocument(targetId);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public void setTargetDocument(Document target) throws DocumentException {
-        throw new DocumentException();
+        if (isProxy()) {
+            if (isReadOnly()) {
+                throw new DocumentException("Cannot write proxy: " + this);
+            }
+            if (!target.getVersionSeriesId().equals(getVersionSeriesId())) {
+                throw new DocumentException(
+                        "Cannot set proxy target to different version series");
+            }
+            session.setProxyTarget(this, target);
+        } else {
+            throw new DocumentException("Cannot set proxy target on non-proxy");
+        }
     }
 
     @Override

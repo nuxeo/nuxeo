@@ -130,11 +130,16 @@ public interface DBSRepository extends Repository {
      *
      * @param key the key
      * @param value the value
-     * @param ids the set which receives the documents
+     * @param ids the set which receives the documents ids
+     * @param proxyTargets returns a map of proxy to target among the documents
+     *            found
+     * @param targetProxies returns a map of target to proxies among the
+     *            document found
      * @param ignored a set of document ids that should not be considered
      */
     void queryKeyValueArray(String key, Object value, Set<String> ids,
-            Set<String> ignored);
+            Map<String, String> proxyTargets,
+            Map<String, Object[]> targetProxies, Set<String> ignored);
 
     /**
      * Queries the repository to check if there are documents having key =

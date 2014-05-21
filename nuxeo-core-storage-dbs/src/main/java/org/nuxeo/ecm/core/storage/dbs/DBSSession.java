@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
-import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_GRANT;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_PERMISSION;
@@ -30,6 +29,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_CHECKED_IN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_MAJOR_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_VERSION;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LIFECYCLE_POLICY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LIFECYCLE_STATE;
@@ -43,6 +43,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_POS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PREFIX;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIES_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_CREATED;
@@ -55,6 +56,7 @@ import java.text.DateFormat;
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -107,6 +109,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityException;
+import org.nuxeo.ecm.core.storage.CopyHelper;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.QueryOptimizer;
@@ -125,8 +128,6 @@ public class DBSSession implements Session {
     private static final Log log = LogFactory.getLog(DBSSession.class);
 
     public static final String TYPE_ROOT = "Root";
-
-    public static final String TYPE_PROXY = "ecm:proxy";
 
     protected final DBSRepository repository;
 
@@ -399,37 +400,16 @@ public class DBSSession implements Session {
         if (state == null) {
             return null;
         }
-        String typeName = state.getPrimaryType();
         boolean isVersion = TRUE.equals(state.get(KEY_IS_VERSION));
-        boolean isProxy = TYPE_PROXY.equals(typeName);
-        String targetId;
-        DBSDocumentState targetState;
-        if (!isProxy) {
-            targetId = null;
-            targetState = null;
-        } else {
-            targetId = (String) state.get(KEY_PROXY_TARGET_ID);
-            if (targetId == null) {
-                throw new DocumentException("Proxy has null target");
-            }
-            targetState = transaction.getStateForUpdate(targetId);
-            if (targetState == null) {
-                throw new DocumentException("Proxy has null target data");
-            }
-            typeName = targetState.getPrimaryType();
-        }
 
+        String typeName = state.getPrimaryType();
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         DocumentType type = schemaManager.getDocumentType(typeName);
         if (type == null) {
             throw new DocumentException("Unknown document type: " + typeName);
         }
 
-        if (isProxy) {
-            Document proxy = new DBSDocument(state, type, this, false);
-            Document target = getDocument(targetState, readonly);
-            return new DBSDocumentProxy(proxy, target);
-        } else if (isVersion) {
+        if (isVersion) {
             return new DBSDocument(state, type, this, readonly);
         } else {
             return new DBSDocument(state, type, this, false);
@@ -464,9 +444,6 @@ public class DBSSession implements Session {
     protected boolean isOrderable(String id) {
         Map<String, Serializable> state = transaction.getStateForRead(id);
         String typeName = (String) state.get(KEY_PRIMARY_TYPE);
-        if (TYPE_PROXY.equals(typeName)) {
-            return false;
-        }
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         return schemaManager.getDocumentType(typeName).getFacets().contains(
                 FacetNames.ORDERABLE);
@@ -542,7 +519,7 @@ public class DBSSession implements Session {
         if (!TRUE.equals(state.get(KEY_IS_CHECKED_IN))) {
             throw new DocumentException("Already checked out");
         }
-        state.put(KEY_IS_CHECKED_IN, FALSE);
+        state.put(KEY_IS_CHECKED_IN, null);
     }
 
     protected Document checkIn(String id, String label, String checkinComment)
@@ -578,7 +555,7 @@ public class DBSSession implements Session {
         verState.put(KEY_BASE_VERSION_ID, null);
         boolean isMajor = Long.valueOf(0).equals(
                 verState.get(KEY_MINOR_VERSION));
-        verState.put(KEY_IS_LATEST_MAJOR_VERSION, Boolean.valueOf(isMajor));
+        verState.put(KEY_IS_LATEST_MAJOR_VERSION, isMajor ? TRUE : null);
 
         // update the doc to mark it checked in
         state.put(KEY_IS_CHECKED_IN, TRUE);
@@ -602,13 +579,13 @@ public class DBSSession implements Session {
         boolean isLatestMajor = true;
         for (DBSDocumentState state : states) {
             // isLatestVersion
-            state.put(KEY_IS_LATEST_VERSION, Boolean.valueOf(isLatest));
+            state.put(KEY_IS_LATEST_VERSION, isLatest ? TRUE : null);
             isLatest = false;
             // isLatestMajorVersion
             boolean isMajor = Long.valueOf(0).equals(
                     state.get(KEY_MINOR_VERSION));
             state.put(KEY_IS_LATEST_MAJOR_VERSION,
-                    Boolean.valueOf(isMajor && isLatestMajor));
+                    isMajor && isLatestMajor ? TRUE : null);
             if (isMajor) {
                 isLatestMajor = false;
             }
@@ -624,34 +601,40 @@ public class DBSSession implements Session {
 
         for (Entry<String, Serializable> en : versionState.entrySet()) {
             String key = en.getKey();
-            // keys we don't copy from version when restoring
-            switch (key) {
-            // these are location- or identity-specific
-            case KEY_ID:
-            case KEY_PARENT_ID:
-            case KEY_ANCESTOR_IDS:
-            case KEY_NAME:
-            case KEY_POS:
-            case KEY_PRIMARY_TYPE:
-            case KEY_ACP:
-                // these are version-specific
-            case KEY_VERSION_CREATED:
-            case KEY_VERSION_DESCRIPTION:
-            case KEY_VERSION_LABEL:
-            case KEY_VERSION_SERIES_ID:
-            case KEY_IS_LATEST_VERSION:
-            case KEY_IS_LATEST_MAJOR_VERSION:
-                // these will be updated below
-            case KEY_BASE_VERSION_ID:
-            case KEY_IS_CHECKED_IN:
-            case KEY_IS_VERSION:
-                continue;
+            if (!keepWhenRestore(key)) {
+                state.put(key, CopyHelper.deepCopy(en.getValue()));
             }
-            state.put(key, en.getValue());
         }
-        state.put(KEY_BASE_VERSION_ID, versionId);
-        state.put(KEY_IS_CHECKED_IN, TRUE);
         state.put(KEY_IS_VERSION, null);
+        state.put(KEY_IS_CHECKED_IN, TRUE);
+        state.put(KEY_BASE_VERSION_ID, versionId);
+    }
+
+    // keys we don't copy from version when restoring
+    protected boolean keepWhenRestore(String key) {
+        switch (key) {
+        // these are placeful stuff
+        case KEY_ID:
+        case KEY_PARENT_ID:
+        case KEY_ANCESTOR_IDS:
+        case KEY_NAME:
+        case KEY_POS:
+        case KEY_PRIMARY_TYPE:
+        case KEY_ACP:
+            // these are version-specific
+        case KEY_VERSION_CREATED:
+        case KEY_VERSION_DESCRIPTION:
+        case KEY_VERSION_LABEL:
+        case KEY_VERSION_SERIES_ID:
+        case KEY_IS_LATEST_VERSION:
+        case KEY_IS_LATEST_MAJOR_VERSION:
+            // these will be updated after restore
+        case KEY_IS_VERSION:
+        case KEY_IS_CHECKED_IN:
+        case KEY_BASE_VERSION_ID:
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -819,7 +802,18 @@ public class DBSSession implements Session {
         return source;
     }
 
-    protected void remove(String id) {
+    /**
+     * Removes a document.
+     * <p>
+     * We also have to update everything impacted by "relations":
+     * <ul>
+     * <li>parent-child relations: delete all subchildren recursively,
+     * <li>proxy-target relations: if a proxy is removed, update the target's
+     * PROXY_IDS; and if a target is removed, raise an error if a proxy still
+     * exists for that target.
+     * </ul>
+     */
+    protected void remove(String id) throws DocumentException {
         transaction.save();
 
         Map<String, Serializable> state = transaction.getStateForRead(id);
@@ -829,11 +823,53 @@ public class DBSSession implements Session {
         } else {
             versionSeriesId = null;
         }
+        // find all sub-docs and whether they're proxies
+        Map<String, String> proxyTargets = new HashMap<>();
+        Map<String, Object[]> targetProxies = new HashMap<>();
+        Set<String> removedIds = transaction.getSubTree(id, proxyTargets,
+                targetProxies);
 
-        Set<String> ids = transaction.getSubTree(id);
-        ids.add(id);
-        for (String cid : ids) {
+        // add this node
+        removedIds.add(id);
+        if (TRUE.equals(KEY_IS_PROXY)) {
+            String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
+            proxyTargets.put(id, targetId);
+        }
+        Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
+        if (proxyIds != null) {
+            targetProxies.put(id, proxyIds);
+        }
+
+        // if a proxy target is removed, check that all proxies to it
+        // are removed
+        for (Entry<String, Object[]> en : targetProxies.entrySet()) {
+            String targetId = en.getKey();
+            if (!removedIds.contains(targetId)) {
+                continue;
+            }
+            for (Object proxyId : en.getValue()) {
+                if (!removedIds.contains(proxyId)) {
+                    throw new DocumentException("Cannot remove " + id
+                            + ", subdocument " + targetId
+                            + " is the target of proxy " + proxyId);
+                }
+            }
+        }
+
+        // remove all docs
+        for (String cid : removedIds) {
             transaction.removeState(cid);
+        }
+
+        // fix proxies back-pointers on proxy targets
+        Set<String> targetIds = new HashSet<>(proxyTargets.values());
+        for (String targetId : targetIds) {
+            if (removedIds.contains(targetId)) {
+                // the target was also removed, skip
+                continue;
+            }
+            DBSDocumentState target = transaction.getStateForUpdate(targetId);
+            removeBackProxyIds(target, removedIds);
         }
 
         // recompute version series if needed
@@ -846,28 +882,79 @@ public class DBSSession implements Session {
     @Override
     public Document createProxy(Document doc, Document folder)
             throws DocumentException {
-        String docId = doc.getUUID();
+        String id = doc.getUUID();
         String targetId;
         String versionSeriesId;
         if (doc.isVersion()) {
-            targetId = docId;
+            targetId = id;
             versionSeriesId = doc.getVersionSeriesId();
         } else if (doc.isProxy()) {
             // copy the proxy
-            Map<String, Serializable> state = transaction.getStateForRead(docId);
+            Map<String, Serializable> state = transaction.getStateForRead(id);
             targetId = (String) state.get(KEY_PROXY_TARGET_ID);
             versionSeriesId = (String) state.get(KEY_PROXY_VERSION_SERIES_ID);
         } else {
             // working copy (live document)
-            targetId = docId;
+            targetId = id;
             versionSeriesId = targetId;
         }
+
+        DBSDocumentState target = transaction.getStateForUpdate(targetId);
+        String parentId = folder.getUUID();
         String name = findFreeName(folder, doc.getName());
-        DBSDocumentState state = transaction.createChild(null,
-                folder.getUUID(), name, null, TYPE_PROXY);
-        state.put(KEY_PROXY_TARGET_ID, targetId);
-        state.put(KEY_PROXY_VERSION_SERIES_ID, versionSeriesId);
-        return getDocument(state);
+        Long pos = parentId == null ? null : getNextPos(parentId);
+        String typeName = (String) target.get(KEY_PRIMARY_TYPE);
+
+        DBSDocumentState proxy = transaction.createChild(null, parentId, name,
+                pos, typeName);
+        String proxyId = proxy.getId();
+        proxy.put(KEY_IS_PROXY, TRUE);
+        proxy.put(KEY_PROXY_TARGET_ID, targetId);
+        proxy.put(KEY_PROXY_VERSION_SERIES_ID, versionSeriesId);
+        proxy.put(KEY_IS_VERSION, null);
+        proxy.put(KEY_BASE_VERSION_ID, null);
+        proxy.put(KEY_VERSION_SERIES_ID, versionSeriesId);
+
+        // copy target state to proxy
+        transaction.updateProxy(target, proxyId);
+
+        // add back-reference to proxy on target
+        addBackProxyId(target, proxyId);
+
+        return getDocument(proxyId);
+    }
+
+    protected void addBackProxyId(DBSDocumentState state, String id) {
+        Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
+        Object[] newProxyIds;
+        if (proxyIds == null) {
+            newProxyIds = new Object[] { id };
+        } else {
+            newProxyIds = new Object[proxyIds.length + 1];
+            System.arraycopy(proxyIds, 0, newProxyIds, 0, proxyIds.length);
+            newProxyIds[proxyIds.length] = id;
+        }
+        state.put(KEY_PROXY_IDS, newProxyIds);
+    }
+
+    protected void removeBackProxyId(DBSDocumentState state, String id) {
+        removeBackProxyIds(state, Collections.singleton(id));
+    }
+
+    protected void removeBackProxyIds(DBSDocumentState state, Set<String> ids) {
+        Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
+        if (proxyIds == null) {
+            return;
+        }
+        List<Object> keepIds = new ArrayList<>(proxyIds.length);
+        for (Object pid : proxyIds) {
+            if (!ids.contains(pid)) {
+                keepIds.add(pid);
+            }
+        }
+        Object[] newProxyIds = keepIds.isEmpty() ? null
+                : keepIds.toArray(new Object[keepIds.size()]);
+        state.put(KEY_PROXY_IDS, newProxyIds);
     }
 
     @Override
@@ -904,8 +991,19 @@ public class DBSSession implements Session {
     @Override
     public void setProxyTarget(Document proxy, Document target)
             throws DocumentException {
-        DBSDocumentState state = transaction.getStateForUpdate(proxy.getUUID());
-        state.put(KEY_PROXY_TARGET_ID, target.getUUID());
+        String proxyId = proxy.getUUID();
+        String targetId = target.getUUID();
+        DBSDocumentState proxyState = transaction.getStateForUpdate(proxyId);
+        String oldTargetId = (String) proxyState.get(KEY_PROXY_TARGET_ID);
+
+        // update old target's back-pointers: remove proxy id
+        DBSDocumentState oldTargetState = transaction.getStateForUpdate(oldTargetId);
+        removeBackProxyId(oldTargetState, proxyId);
+        // update new target's back-pointers: add proxy id
+        DBSDocumentState targetState = transaction.getStateForUpdate(targetId);
+        addBackProxyId(targetState, proxyId);
+        // set new target
+        proxyState.put(KEY_PROXY_TARGET_ID, targetId);
     }
 
     @Override
@@ -954,7 +1052,7 @@ public class DBSSession implements Session {
             props.put(KEY_MINOR_VERSION,
                     properties.get(CoreSession.IMPORT_VERSION_MINOR));
             props.put(KEY_IS_VERSION,
-                    properties.get(CoreSession.IMPORT_IS_VERSION));
+                    trueOrNull(properties.get(CoreSession.IMPORT_IS_VERSION)));
         }
         if (parent == null) {
             // version
@@ -966,10 +1064,12 @@ public class DBSSession implements Session {
                     properties.get(CoreSession.IMPORT_VERSION_LABEL));
             props.put(KEY_VERSION_DESCRIPTION,
                     properties.get(CoreSession.IMPORT_VERSION_DESCRIPTION));
-            props.put(KEY_IS_LATEST_VERSION,
-                    properties.get(CoreSession.IMPORT_VERSION_IS_LATEST));
-            props.put(KEY_IS_LATEST_MAJOR_VERSION,
-                    properties.get(CoreSession.IMPORT_VERSION_IS_LATEST_MAJOR));
+            props.put(
+                    KEY_IS_LATEST_VERSION,
+                    trueOrNull(properties.get(CoreSession.IMPORT_VERSION_IS_LATEST)));
+            props.put(
+                    KEY_IS_LATEST_MAJOR_VERSION,
+                    trueOrNull(properties.get(CoreSession.IMPORT_VERSION_IS_LATEST_MAJOR)));
         } else {
             if (isProxy) {
                 // proxy
@@ -981,8 +1081,9 @@ public class DBSSession implements Session {
                 // live document
                 props.put(KEY_BASE_VERSION_ID,
                         properties.get(CoreSession.IMPORT_BASE_VERSION_ID));
-                props.put(KEY_IS_CHECKED_IN,
-                        properties.get(CoreSession.IMPORT_CHECKED_IN));
+                props.put(
+                        KEY_IS_CHECKED_IN,
+                        trueOrNull(properties.get(CoreSession.IMPORT_CHECKED_IN)));
             }
         }
         String parentId = parent == null ? null : parent.getUUID();
@@ -992,6 +1093,10 @@ public class DBSSession implements Session {
             state.put(entry.getKey(), entry.getValue());
         }
         return getDocument(state, false); // not readonly
+    }
+
+    protected static Boolean trueOrNull(Object value) {
+        return TRUE.equals(value) ? TRUE : null;
     }
 
     @Override
@@ -1570,7 +1675,7 @@ public class DBSSession implements Session {
         case NXQL.ECM_PRIMARYTYPE:
             return KEY_PRIMARY_TYPE;
         case NXQL.ECM_ISPROXY:
-            throw new UnsupportedOperationException(name);
+            return KEY_IS_PROXY;
         case NXQL.ECM_ISVERSION:
         case NXQL.ECM_ISVERSION_OLD:
             return KEY_IS_VERSION;
@@ -1622,6 +1727,8 @@ public class DBSSession implements Session {
             return NXQL.ECM_MIXINTYPE;
         case KEY_PRIMARY_TYPE:
             return NXQL.ECM_PRIMARYTYPE;
+        case KEY_IS_PROXY:
+            return NXQL.ECM_ISPROXY;
         case KEY_IS_VERSION:
             return NXQL.ECM_ISVERSION;
         case KEY_LIFECYCLE_STATE:
@@ -1664,6 +1771,7 @@ public class DBSSession implements Session {
         switch (name) {
         case KEY_MIXIN_TYPES:
         case KEY_ANCESTOR_IDS:
+        case KEY_PROXY_IDS:
             return true;
         }
         return false;
@@ -1675,6 +1783,7 @@ public class DBSSession implements Session {
         case KEY_IS_CHECKED_IN:
         case KEY_IS_LATEST_VERSION:
         case KEY_IS_LATEST_MAJOR_VERSION:
+        case KEY_IS_PROXY:
             return true;
         }
         return false;

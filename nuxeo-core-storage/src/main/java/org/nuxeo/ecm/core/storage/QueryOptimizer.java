@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.core.storage;
 
-import static java.lang.Boolean.TRUE;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,7 +27,6 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.FromList;
-import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
@@ -61,17 +58,8 @@ public class QueryOptimizer {
 
     protected final LinkedList<Operand> toplevelOperands;
 
-    /** Do we match only relations (and therefore no proxies). */
+    /** Do we match only relations? */
     protected boolean onlyRelations;
-
-    /**
-     * Whether the query must match only proxies (TRUE), no proxies (FALSE), or
-     * not specified (null).
-     */
-    protected Boolean proxyClause;
-
-    /** The reason why proxyClause was set to non-null. */
-    protected String proxyClauseReason;
 
     public QueryOptimizer() {
         schemaManager = Framework.getLocalService(SchemaManager.class);
@@ -162,7 +150,7 @@ public class QueryOptimizer {
     }
 
     /**
-     * Process special toplevel ANDed operands: ecm:isProxy
+     * Expand toplevel ANDed operands into simple list.
      */
     protected void analyzeToplevelOperands(Operand node) {
         if (node instanceof Expression) {
@@ -173,52 +161,8 @@ public class QueryOptimizer {
                 analyzeToplevelOperands(expr.rvalue);
                 return;
             }
-            if (op == Operator.EQ || op == Operator.NOTEQ) {
-                // put reference on the left side
-                if (expr.rvalue instanceof Reference) {
-                    expr = new Expression(expr.rvalue, op, expr.lvalue);
-                }
-                if (expr.lvalue instanceof Reference) {
-                    String name = ((Reference) expr.lvalue).name;
-                    if (NXQL.ECM_ISPROXY.equals(name)) {
-                        analyzeToplevelIsProxy(expr);
-                        return;
-                    } else if (NXQL.ECM_PROXY_TARGETID.equals(name)
-                            || NXQL.ECM_PROXY_VERSIONABLEID.equals(name)) {
-                        analyzeToplevelProxyProperty(expr);
-                        // no return, we want the node
-                    }
-                }
-            }
         }
         toplevelOperands.add(node);
-    }
-
-    protected void analyzeToplevelIsProxy(Expression expr) {
-        if (!(expr.rvalue instanceof IntegerLiteral)) {
-            throw new RuntimeException(NXQL.ECM_ISPROXY
-                    + " requires literal 0 or 1 as right argument");
-        }
-        long v = ((IntegerLiteral) expr.rvalue).value;
-        if (v != 0 && v != 1) {
-            throw new RuntimeException(NXQL.ECM_ISPROXY
-                    + " requires literal 0 or 1 as right argument");
-        }
-        boolean isEq = expr.operator == Operator.EQ;
-        updateProxyClause(Boolean.valueOf((v == 1) == isEq), expr);
-    }
-
-    protected void analyzeToplevelProxyProperty(Expression expr) {
-        // proxies required
-        updateProxyClause(TRUE, expr);
-    }
-
-    protected void updateProxyClause(Boolean value, Expression expr) {
-        if (proxyClause != null && proxyClause != value) {
-            throw new RuntimeException("Query cannot match");
-        }
-        proxyClause = value;
-        proxyClauseReason = expr.toString();
     }
 
     /**
