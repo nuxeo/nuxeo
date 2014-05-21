@@ -149,6 +149,7 @@
     <chemistry.opencmis.version>0.10.0</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
     <apache.httpcomponents.version>4.2.4</apache.httpcomponents.version>
+    <apache.poi.version>3.10-FINAL</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0</jxls.version>
     <xdocreport.version>1.0.0</xdocreport.version>
@@ -1602,26 +1603,26 @@
       <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi</artifactId>
-        <version>3.5-beta6</version>
+        <version>${apache.poi.version}</version>
         <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi-scratchpad</artifactId>
-        <version>3.5-beta6</version>
+        <version>${apache.poi.version}</version>
         <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>
         <artifactId>poi-ooxml</artifactId>
-        <version>3.5-beta6</version>
+        <version>${apache.poi.version}</version>
         <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.poi</groupId>
-        <artifactId>poi</artifactId>
-        <version>3.5-beta6</version>
-        <classifier>shaded</classifier>
+        <artifactId>poi-ooxml-schemas</artifactId>
+        <version>${apache.poi.version}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlbeans</groupId>
@@ -1633,12 +1634,6 @@
             <artifactId>stax-api</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.poi</groupId>
-        <artifactId>ooxml-schemas</artifactId>
-        <version>1.0</version>
-        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
