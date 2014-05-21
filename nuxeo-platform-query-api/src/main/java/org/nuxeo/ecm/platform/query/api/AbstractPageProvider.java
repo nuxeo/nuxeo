@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.query.api;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -828,6 +829,11 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             }
             for (int i = 0; i < oldParams.length; i++) {
                 if (oldParams[i] == null && newParams[i] == null) {
+                    continue;
+                } else if (newParams[i] instanceof String[]
+                        && oldParams[i] instanceof String[]
+                                && Arrays.equals((String[]) oldParams[i],
+                                        (String[]) newParams[i])) {
                     continue;
                 } else if (oldParams[i] != null
                         && !oldParams[i].equals(newParams[i])) {
