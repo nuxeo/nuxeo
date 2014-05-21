@@ -33,14 +33,19 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.jaxrs.views.TemplateView;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
+import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class DebugResource {
+@WebObject(type = "debug")
+public class DebugResource extends AbstractResource<ResourceTypeImpl> {
 
     private static final Log log = LogFactory.getLog(DebugResource.class);
 
@@ -60,12 +65,12 @@ public class DebugResource {
     @GET
     @Produces("text/html")
     public Object doGet() {
-        return new TemplateView(this, "index.ftl.html");
+        return getView("index");
     }
 
     @GET
     @Produces("text/plain")
-    @Path("doc")
+    @Path("/doc")
     public Object doGetText() throws Exception {
         return getOperationsListAsJson();
     }
@@ -75,7 +80,7 @@ public class DebugResource {
      */
     @GET
     @Produces("text/plain")
-    @Path("studioDoc")
+    @Path("/studioDoc")
     public Object doGetStudioDoc() throws Exception {
         return JsonWriter.exportOperations(true);
     }

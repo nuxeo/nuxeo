@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     vpasquier <vpasquier@nuxeo.com>
  *
  */
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
@@ -50,6 +51,9 @@ import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
+import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -59,7 +63,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author Antoine Taillefer
  *
  */
-public class BatchResource {
+@WebObject(type = "batch")
+public class BatchResource extends AbstractResource<ResourceTypeImpl> {
 
     private static final String REQUEST_BATCH_ID = "batchId";
 
@@ -113,7 +118,7 @@ public class BatchResource {
     }
 
     @POST
-    @Path("upload")
+    @Path("/upload")
     public Object doPost(@Context
     HttpServletRequest request) throws Exception {
 
@@ -165,7 +170,7 @@ public class BatchResource {
 
     @POST
     @Produces("application/json")
-    @Path("execute")
+    @Path("/execute")
     public Object exec(@Context
     HttpServletRequest request, ExecutionRequest xreq) throws Exception {
 
@@ -215,7 +220,7 @@ public class BatchResource {
     }
 
     @GET
-    @Path("files/{batchId}")
+    @Path("/files/{batchId}")
     public Object getFilesBatch(@PathParam(REQUEST_BATCH_ID)
     String batchId) throws Exception {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
@@ -236,7 +241,7 @@ public class BatchResource {
     }
 
     @GET
-    @Path("drop/{batchId}")
+    @Path("/drop/{batchId}")
     public Object dropBatch(@PathParam(REQUEST_BATCH_ID)
     String batchId) throws Exception {
         BatchManager bm = Framework.getLocalService(BatchManager.class);

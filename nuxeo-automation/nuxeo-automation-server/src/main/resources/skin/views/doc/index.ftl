@@ -317,7 +317,7 @@
             <div class="signature">
               <ul>
                 <#list operation.getOperations() as operation>
-                <li><a href="?id=${operation.getId()}">${operation.getId()}</a></li>
+                <li><a href="${This.path}?id=${operation.getId()}">${operation.getId()}</a></li>
                 </#list>
               </ul>
             </div>
@@ -330,22 +330,22 @@
             </div>
 
             <h3>Links</h3>
-            <div><a href="${operation.id}">JSON definition</a></div>
+            <div><a href="${Root.path}/${operation.id}">JSON definition</a></div>
 
             <h3>Traces</h3>
             <#if This.isTraceEnabled()>
-              Traces are enabled : <A href="doc/toggleTraces"> Click here to disable</A><br/>
-              <A target="traces"  href="doc/traces?opId=${operation.id}"> Get traces </A>
+              Traces are enabled : <A href="${This.path}/toggleTraces"> Click here to disable</A><br/>
+              <A target="traces"  href="${This.path}/traces?opId=${operation.id}"> Get traces </A>
             <#else>
-              Traces are disabled : <A href="doc/toggleTraces"> Click here to enable</A><br/>
-              <A target="traces"  href="doc/traces?opId=${operation.id}"> Get light traces </A>
+              Traces are disabled : <A href="${This.path}/toggleTraces"> Click here to enable</A><br/>
+              <A target="traces"  href="${This.path}/traces?opId=${operation.id}"> Get light traces </A>
             </#if>
 
           <#else>
             <h2>Operations list</h2>
             <ul>
             <#list operations as item>
-              <li><a href="?id=${item.id}">${item.label}</a></li>
+              <li><a href="${This.path}?id=${item.id}">${item.label}</a></li>
             </#list>
             </ul>
           </#if>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     bstefanescu
+ *     vpasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.ecm.automation.server.jaxrs.doc;
 
@@ -34,15 +35,21 @@ import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
-import org.nuxeo.ecm.webengine.jaxrs.views.TemplateView;
+import org.nuxeo.ecm.webengine.model.Template;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
+import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class DocResource {
+@WebObject(type = "doc")
+@Produces("text/html;charset=UTF-8")
+public class DocResource extends AbstractResource<ResourceTypeImpl> {
 
     private final Log log = LogFactory.getLog(DocResource.class);
 
@@ -50,22 +57,24 @@ public class DocResource {
 
     protected List<OperationDocumentation> ops;
 
-    public DocResource() {
+    @Override
+    public void initialize(Object... args) {
         try {
-            service = Framework.getService(AutomationService.class);
+            service = Framework.getLocalService(AutomationService.class);
             ops = service.getDocumentation();
         } catch (Exception e) {
             log.error("Failed to get automation service", e);
-            throw new WebApplicationException(e, 500);
+            throw WebException.wrap(e);
         }
     }
 
-    protected TemplateView getTemplate() {
-        return getTemplate("index.ftl");
+    protected Template getTemplate() {
+        return getTemplateView("index");
     }
 
-    protected TemplateView getTemplate(String name) {
-        Map<String, List<OperationDocumentation>> cats = new LinkedHashMap<String, List<OperationDocumentation>>();
+    protected Template getTemplateView(String name) {
+        Map<String, List<OperationDocumentation>> cats = new
+                LinkedHashMap<String, List<OperationDocumentation>>();
         for (OperationDocumentation op : ops) {
             List<OperationDocumentation> list = cats.get(op.getCategory());
             if (list == null) {
@@ -74,14 +83,12 @@ public class DocResource {
             }
             list.add(op);
         }
-        return new TemplateView(this, name).arg("categories", cats).arg(
+        return getView(name).arg("categories", cats).arg(
                 "operations", ops);
     }
 
     @GET
-    @Produces("text/html")
-    public Object doGet(@QueryParam("id")
-            String id) {
+    public Object doGet(@QueryParam("id") String id) {
         if (id == null) {
             return getTemplate();
         } else {
@@ -95,7 +102,7 @@ public class DocResource {
             if (opDoc == null) {
                 throw new WebApplicationException(Response.status(404).build());
             }
-            TemplateView tpl = getTemplate();
+            Template tpl = getTemplate();
             tpl.arg("operation", opDoc);
             return tpl;
         }
@@ -106,10 +113,9 @@ public class DocResource {
     }
 
     @GET
-    @Path("wiki")
-    @Produces("text/html")
+    @Path("/wiki")
     public Object doGetWiki() {
-        return getTemplate("wiki.ftl");
+        return getTemplateView("wiki");
     }
 
     public boolean isTraceEnabled() {
@@ -118,8 +124,7 @@ public class DocResource {
     }
 
     @GET
-    @Path("toggleTraces")
-    @Produces("text/html")
+    @Path("/toggleTraces")
     public Object toggleTraces() throws Exception {
         if (!canManageTraces()) {
             return "You can not manage traces";
@@ -132,7 +137,7 @@ public class DocResource {
     }
 
     @GET
-    @Path("traces")
+    @Path("/traces")
     @Produces("text/plain")
     public String doGetTrace(@QueryParam("opId") String opId) {
         if (!canManageTraces()) {

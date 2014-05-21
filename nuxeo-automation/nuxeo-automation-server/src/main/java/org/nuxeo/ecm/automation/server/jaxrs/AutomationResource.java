@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -8,6 +8,7 @@
  *
  * Contributors:
  *     bstefanescu
+ *     vpasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.ecm.automation.server.jaxrs;
 
@@ -30,9 +31,6 @@ import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.AutomationInfo;
-import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource;
-import org.nuxeo.ecm.automation.server.jaxrs.debug.DebugResource;
-import org.nuxeo.ecm.automation.server.jaxrs.doc.DocResource;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,28 +38,32 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Path("automation")
-public class AutomationResource {
+@Path("/automation")
+@WebObject(type = "automation")
+public class AutomationResource extends ModuleRoot {
 
     protected AutomationService service;
 
-    public AutomationResource() throws Exception {
-        service = Framework.getService(AutomationService.class);
+    @Override
+    public void initialize(Object... args) {
+        service = Framework.getLocalService(AutomationService.class);
     }
 
-    @Path("doc")
+    @Path("/doc")
     public Object getDocPage() {
-        return new DocResource();
+        return newObject("doc");
     }
 
-    @Path("debug")
+    @Path("/debug")
     public Object getDebugPage() {
-        return new DebugResource();
+        return newObject("debug");
     }
 
     /**
@@ -70,7 +72,7 @@ public class AutomationResource {
      */
     @SuppressWarnings("unchecked")
     @GET
-    @Path("files/{uid}")
+    @Path("/files/{uid}")
     public Object getFile(@Context
     HttpServletRequest request, @PathParam("uid")
     String uid, @QueryParam("path")
@@ -111,7 +113,7 @@ public class AutomationResource {
     }
 
     @POST
-    @Path("login")
+    @Path("/login")
     public Object login(@Context
     HttpServletRequest request) {
         Principal p = request.getUserPrincipal();
@@ -125,7 +127,7 @@ public class AutomationResource {
         }
     }
 
-    @Path("{oid}")
+    @Path("/{oid}")
     public Object getExecutable(@PathParam("oid")
     String oid) {
         if (oid.startsWith("Chain.")) {
@@ -142,9 +144,9 @@ public class AutomationResource {
         }
     }
 
-    @Path("batch")
+    @Path("/batch")
     public Object getBatchManager() {
-        return new BatchResource();
+        return newObject("batch");
     }
 
 }

@@ -22,10 +22,10 @@
     <h3>Export operation (JSON format)</h3>
     <ul>
       <li>
-        <a href="doc">Export all operations</a>
+        <a href="${This.path}/doc">Export all operations</a>
       </li>
       <li>
-        <a href="studioDoc">Export operations exposed in Studio</a>
+        <a href="${This.path}/studioDoc">Export operations exposed in Studio</a>
       </li>
     </ul>
   </body>
