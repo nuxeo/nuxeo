@@ -157,6 +157,7 @@
     <google.client.version>1.12.0-beta</google.client.version>
     <selenium.version>2.39.0</selenium.version>
     <cxf.version>2.6.8</cxf.version>
+    <pdfbox.version>1.8.5</pdfbox.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.deployers>2.0.7.GA</version.org.jboss.deployers>
@@ -2514,17 +2515,17 @@
       <dependency>
         <groupId>org.apache.pdfbox</groupId>
         <artifactId>pdfbox</artifactId>
-        <version>1.6.0</version>
+        <version>${pdfbox.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.pdfbox</groupId>
         <artifactId>fontbox</artifactId>
-        <version>1.6.0</version>
+        <version>${pdfbox.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.pdfbox</groupId>
         <artifactId>jempbox</artifactId>
-        <version>1.6.0</version>
+        <version>${pdfbox.version}</version>
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
