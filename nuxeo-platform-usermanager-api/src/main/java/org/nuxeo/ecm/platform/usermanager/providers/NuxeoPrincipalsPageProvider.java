@@ -38,20 +38,37 @@ public class NuxeoPrincipalsPageProvider extends
 
     private static final Log log = LogFactory.getLog(NuxeoPrincipalsPageProvider.class);
 
+    protected List<NuxeoPrincipal> pagePrincipals;
+
     @Override
     public List<NuxeoPrincipal> getCurrentPage() {
-        List<DocumentModel> users = computeCurrentPage();
-        List<NuxeoPrincipal> principals = new ArrayList<>();
-        UserManager userManager = Framework.getLocalService(UserManager.class);
-        for (DocumentModel user : users) {
-            try {
-                NuxeoPrincipal principal = userManager.getPrincipal(user.getProperty(
-                        userManager.getUserIdField()).getValue(String.class));
-                principals.add(principal);
-            } catch (ClientException e) {
-                log.error(e, e);
+        if (pagePrincipals == null) {
+            List<DocumentModel> users = computeCurrentPage();
+            pagePrincipals = new ArrayList<>();
+            UserManager userManager = Framework.getLocalService(UserManager.class);
+            for (DocumentModel user : users) {
+                try {
+                    NuxeoPrincipal principal = userManager.getPrincipal(user.getProperty(
+                            userManager.getUserIdField()).getValue(String.class));
+                    pagePrincipals.add(principal);
+                } catch (ClientException e) {
+                    log.error(e, e);
+                }
             }
         }
-        return principals;
+
+        return pagePrincipals;
+    }
+
+    @Override
+    protected void pageChanged() {
+        pagePrincipals = null;
+        super.pageChanged();
+    }
+
+    @Override
+    public void refresh() {
+        pagePrincipals = null;
+        super.refresh();
     }
 }
