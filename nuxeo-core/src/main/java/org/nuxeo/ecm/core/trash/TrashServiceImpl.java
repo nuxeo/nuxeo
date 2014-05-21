@@ -364,7 +364,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
      * Matches names of documents in the trash, created by
      * {@link #trashDocument}.
      */
-    protected static final Pattern TRASHED_PATTERN = Pattern.compile("(.*)\\._[0-9]{19,}_\\.trashed");
+    protected static final Pattern TRASHED_PATTERN = Pattern.compile("(.*)\\._[0-9]{13,}_\\.trashed");
 
     /**
      * Matches names resulting from a collision, suffixed with a time in
@@ -375,7 +375,8 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
 
     protected void trashDocument(CoreSession session, DocumentModel doc)
             throws ClientException {
-        String name = doc.getName() + "._" + System.nanoTime() + "_.trashed";
+        String name = doc.getName() + "._" + System.currentTimeMillis()
+                + "_.trashed";
         session.move(doc.getRef(), doc.getParentRef(), name);
         session.followTransition(doc, LifeCycleConstants.DELETE_TRANSITION);
     }
