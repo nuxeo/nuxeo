@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webapp.edit.lock;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -78,26 +77,6 @@ public interface LockActions extends Serializable {
     String unlockDocument(DocumentModel document) throws ClientException;
 
     /**
-     * Gets the locks of the documents from the list.
-     *
-     * @param documents the list with the documents of which locks are to be
-     *            taken
-     *
-     * @throws ClientException
-     */
-    void lockDocuments(List<DocumentModel> documents) throws ClientException;
-
-    /**
-     * Releases the locks of the documents from the list.
-     *
-     * @param documents the list with the documents of which locks are to be
-     *            released
-     *
-     * @throws ClientException
-     */
-    void unlockDocuments(List<DocumentModel> documents) throws ClientException;
-
-    /**
      * Tests if the user can get the lock of a document.
      *
      * @return true if the user has this right, false otherwise
@@ -153,15 +132,6 @@ public interface LockActions extends Serializable {
      * @throws ClientException
      */
     Map<String, Serializable> getCurrentDocLockDetails() throws ClientException;
-
-    /**
-     * This method is used to test whether the live-edit link should appear on a
-     * document.
-     *
-     * @return true if the link can appear,
-     *         false otherwise
-     */
-    Boolean isCurrentDocumentLiveEditable();
 
     void resetLockState();
 

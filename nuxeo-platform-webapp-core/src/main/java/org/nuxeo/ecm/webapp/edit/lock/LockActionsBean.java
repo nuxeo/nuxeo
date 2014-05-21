@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -37,6 +38,7 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
@@ -80,8 +82,6 @@ public class LockActionsBean implements LockActions {
 
     private static final String EDIT_ACTIONS = "EDIT_ACTIONS";
 
-    public static final String DEFAULT_VIEW_ID = "view_documents";
-
     @In
     private transient NavigationContext navigationContext;
 
@@ -100,33 +100,31 @@ public class LockActionsBean implements LockActions {
     // cache lock details states to reduce costly core session remote calls
     private Map<String, Serializable> lockDetails;
 
-    private Boolean canLock;
-
-    private Boolean canUnlock;
-
-    private Boolean isLiveEditable;
+    private String documentId;
 
     public Boolean getCanLockDoc(DocumentModel document) {
-        if (canLock == null) {
-            if (document == null) {
-                log.warn("Can't evaluate lock action : currentDocument is null");
+        boolean canLock;
+        if (document == null) {
+            log.warn("Can't evaluate lock action : currentDocument is null");
+            canLock = false;
+        } else if (document.isProxy()) {
+            canLock = false;
+        } else {
+            try {
+                NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
+                Lock lock = documentManager.getLockInfo(document.getRef());
+                canLock = lock == null
+                        && (userName.isAdministrator() || documentManager.hasPermission(
+                                document.getRef(),
+                                WRITE_PROPERTIES))
+                        && !document.isVersion();
+            } catch (Exception e) {
+                log.debug("evaluation of document lock "
+                        + document.getName()
+                        + " failed ("
+                        + e.getMessage()
+                        + ": returning false");
                 canLock = false;
-            } else if (document.isProxy()) {
-                canLock = false;
-            } else {
-                try {
-                    NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
-                    Lock lock = documentManager.getLockInfo(document.getRef());
-                    canLock = lock == null
-                            && (userName.isAdministrator() || documentManager.hasPermission(
-                                    document.getRef(), WRITE_PROPERTIES))
-                            && !document.isVersion();
-                } catch (Exception e) {
-                    log.debug("evaluation of document lock "
-                            + document.getName() + " failed (" + e.getMessage()
-                            + ": returning false");
-                    canLock = false;
-                }
             }
         }
         return canLock;
@@ -138,7 +136,9 @@ public class LockActionsBean implements LockActions {
         return getCanLockDoc(currentDocument);
     }
 
-    protected void resetEventContext() {
+    @Observer(value = {EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create = false)
+    @BypassInterceptors
+    public void resetEventContext() {
         Context evtCtx = Contexts.getEventContext();
         if (evtCtx != null) {
             evtCtx.remove("currentDocumentCanBeLocked");
@@ -148,29 +148,33 @@ public class LockActionsBean implements LockActions {
     }
 
     public Boolean getCanUnlockDoc(DocumentModel document) {
-        if (canUnlock == null) {
-            if (document == null) {
-                canUnlock = false;
-            } else {
-                try {
-                    NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
-                    Map<String, Serializable> lockDetails = getLockDetails(document);
-                    if (lockDetails.isEmpty() || document.isProxy()) {
-                        canUnlock = false;
-                    } else {
-                        canUnlock = ((userName.isAdministrator() || documentManager.hasPermission(
-                                document.getRef(), EVERYTHING)) ? true
-                                : (userName.getName().equals(
-                                        lockDetails.get(LOCKER)) && documentManager.hasPermission(
-                                        document.getRef(), WRITE_PROPERTIES)))
-                                && !document.isVersion();
-                    }
-                } catch (Exception e) {
-                    log.debug("evaluation of document lock "
-                            + document.getName() + " failed (" + e.getMessage()
-                            + ": returning false");
+        boolean canUnlock = false;
+        if (document == null) {
+            canUnlock = false;
+        } else {
+            try {
+                NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
+                Map<String, Serializable> lockDetails = getLockDetails(document);
+                if (lockDetails.isEmpty()
+                        || document.isProxy()) {
                     canUnlock = false;
+                } else {
+                    canUnlock = ((userName.isAdministrator() || documentManager.hasPermission(
+                            document.getRef(),
+                            EVERYTHING)) ? true
+                            : (userName.getName().equals(
+                                    lockDetails.get(LOCKER)) && documentManager.hasPermission(
+                                    document.getRef(),
+                                    WRITE_PROPERTIES)))
+                            && !document.isVersion();
                 }
+            } catch (Exception e) {
+                log.debug("evaluation of document lock "
+                        + document.getName()
+                        + " failed ("
+                        + e.getMessage()
+                        + ": returning false");
+                canUnlock = false;
             }
         }
         return canUnlock;
@@ -205,7 +209,7 @@ public class LockActionsBean implements LockActions {
                 resourcesAccessor.getMessages().get(message));
         resetLockState();
         webActions.resetTabList();
-        return DEFAULT_VIEW_ID;
+        return null;
     }
 
     public String unlockCurrentDocument() throws ClientException {
@@ -283,15 +287,7 @@ public class LockActionsBean implements LockActions {
                 resourcesAccessor.getMessages().get(message));
         resetLockState();
         webActions.resetTabList();
-        return DEFAULT_VIEW_ID;
-    }
-
-    public void lockDocuments(List<DocumentModel> documents) {
-        // TODO Auto-generated method stub
-    }
-
-    public void unlockDocuments(List<DocumentModel> documents) {
-        // TODO Auto-generated method stub
+        return null;
     }
 
     public Action getLockOrUnlockAction() {
@@ -316,8 +312,9 @@ public class LockActionsBean implements LockActions {
 
     public Map<String, Serializable> getLockDetails(DocumentModel document)
             throws ClientException {
-        if (lockDetails == null) {
+        if (lockDetails == null || !StringUtils.equals(documentId, document.getId())) {
             lockDetails = new HashMap<String, Serializable>();
+            documentId = document.getId();
             Lock lock = documentManager.getLockInfo(document.getRef());
             if (lock == null) {
                 return lockDetails;
@@ -332,44 +329,10 @@ public class LockActionsBean implements LockActions {
         return lockDetails;
     }
 
-    /**
-     * @deprecated use LiveEditBootstrapHelper.isCurrentDocumentLiveEditable()
-     *             instead
-     */
-    @Deprecated
-    public Boolean isCurrentDocumentLiveEditable() {
-        if (isLiveEditable == null) {
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            try {
-                NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
-                Lock lock = documentManager.getLockInfo(currentDocument.getRef());
-                if (lock == null) {
-                    isLiveEditable = (userName.isAdministrator() || documentManager.hasPermission(
-                            currentDocument.getRef(), WRITE_PROPERTIES))
-                            && !currentDocument.isVersion();
-                } else {
-                    isLiveEditable = (userName.isAdministrator() ? true
-                            : (userName.getName().equals(
-                                    getLockDetails(currentDocument).get(LOCKER)) && documentManager.hasPermission(
-                                    currentDocument.getRef(), WRITE_PROPERTIES)))
-                            && !currentDocument.isVersion();
-                }
-            } catch (Exception e) {
-                log.debug("evaluation of edit on line option for document "
-                        + currentDocument.getName() + " failed ("
-                        + e.getMessage() + ": returning false");
-                isLiveEditable = false;
-            }
-        }
-        return isLiveEditable;
-    }
-
     @BypassInterceptors
     public void resetLockState() {
         lockDetails = null;
-        canLock = null;
-        canUnlock = null;
-        isLiveEditable = null;
+        documentId = null;
     }
 
 }
