@@ -17,16 +17,18 @@
  */
 package org.nuxeo.ecm.core.trash.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -112,7 +114,12 @@ public class TestTrashService extends SQLRepositoryTestCase {
     @Test
     public void testTrashPurgeUndelete() throws Exception {
         createDocuments();
-        trashService.trashDocuments(Arrays.asList(fold, doc1));
+        // file with name from collision
+        DocumentModel doc4 = session.createDocumentModel("/", "doc4.1400676936345", "Note");
+        doc4 = session.createDocument(doc4);
+        String doc4origname = doc4.getName();
+
+        trashService.trashDocuments(Arrays.asList(fold, doc1, doc3, doc4));
         waitForEventsDispatched();
         session.save(); // fetch invalidations from async sessions
 
@@ -120,26 +127,59 @@ public class TestTrashService extends SQLRepositoryTestCase {
         fold = session.getDocument(new IdRef(fold.getId()));
         doc1 = session.getDocument(new IdRef(doc1.getId()));
         doc2 = session.getDocument(new IdRef(doc2.getId()));
+        doc3 = session.getDocument(new IdRef(doc3.getId()));
+        doc4 = session.getDocument(new IdRef(doc4.getId()));
         assertEquals("deleted", fold.getCurrentLifeCycleState());
         assertEquals("deleted", doc1.getCurrentLifeCycleState());
+        assertEquals("deleted", doc3.getCurrentLifeCycleState());
+        assertEquals("deleted", doc4.getCurrentLifeCycleState());
         // doc2 done by async BulkLifeCycleChangeListener
         assertEquals("deleted", doc2.getCurrentLifeCycleState());
+        // check names changed
+        assertFalse("fold".equals(fold.getName()));
+        assertFalse("doc1".equals(doc1.getName()));
+        String doc3delname = doc3.getName();
+        assertFalse("doc3".equals(doc3.getName()));
+        assertFalse(doc4origname.equals(doc4.getName()));
+        assertFalse("doc4".equals(doc4.getName()));
+        // when recursing, don't change name
+        assertEquals("doc2", doc2.getName());
 
-        assertTrue(trashService.canPurgeOrUndelete(Arrays.asList(fold, doc1,
-                doc2), principal));
+        assertTrue(trashService.canPurgeOrUndelete(
+                Arrays.asList(fold, doc1, doc2, doc3, doc4), principal));
 
         // purge doc1
         trashService.purgeDocuments(session,
                 Collections.singletonList(doc1.getRef()));
         assertFalse(session.exists(doc1.getRef()));
 
-        // undelete doc2
-        trashService.undeleteDocuments(Collections.singletonList(doc2));
+        // undelete doc2 and doc4
+        trashService.undeleteDocuments(Arrays.asList(doc2, doc4));
         fold = session.getDocument(new IdRef(fold.getId()));
         doc2 = session.getDocument(new IdRef(doc2.getId()));
+        doc4 = session.getDocument(new IdRef(doc4.getId()));
         assertEquals("project", doc2.getCurrentLifeCycleState());
+        assertEquals("project", doc4.getCurrentLifeCycleState());
         // fold also undeleted
         assertEquals("project", fold.getCurrentLifeCycleState());
+        // check name restored
+        assertEquals("fold", fold.getName());
+        // name still unchanged
+        assertEquals("doc2", doc2.getName());
+        // doc4 was restored with a pristine name
+        assertEquals("doc4", doc4.getName());
+
+        // create a new file with same name as old doc3
+        DocumentModel doc3bis = session.createDocumentModel("/", "doc3", "Note");
+        doc3bis = session.createDocument(doc3bis);
+        assertEquals("doc3", doc3bis.getName());
+        // undelete doc3
+        trashService.undeleteDocuments(Collections.singletonList(doc3));
+        doc3 = session.getDocument(new IdRef(doc3.getId()));
+        assertEquals("project", doc3.getCurrentLifeCycleState());
+        // check it was renamed again during undelete
+        assertFalse("doc3".equals(doc3.getName()));
+        assertFalse(doc3delname.equals(doc3.getName()));
     }
 
     @Test

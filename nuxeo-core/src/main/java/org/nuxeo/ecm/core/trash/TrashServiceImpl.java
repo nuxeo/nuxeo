@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -249,8 +252,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
                                     + " does not have the permission to remove the document "
                                     + doc.getId() + " (" + doc.getPath() + ")");
                 }
-                session.followTransition(docRef,
-                        LifeCycleConstants.DELETE_TRANSITION);
+                trashDocument(session, doc);
             } else {
                 log.warn("Document " + doc.getId() + " of type "
                         + doc.getType() + " in state "
@@ -329,8 +331,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
             DocumentRef docRef = doc.getRef();
             if (session.getAllowedStateTransitions(docRef).contains(
                     LifeCycleConstants.UNDELETE_TRANSITION)) {
-                session.followTransition(docRef,
-                        LifeCycleConstants.UNDELETE_TRANSITION);
+                undeleteDocument(session, doc);
                 undeleted.add(docRef);
             } else {
                 log.debug("Impossible to undelete document " + docRef
@@ -350,13 +351,56 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         for (DocumentRef ancestorRef : session.getParentDocumentRefs(docRef)) {
             if (session.getAllowedStateTransitions(ancestorRef).contains(
                     LifeCycleConstants.UNDELETE_TRANSITION)) {
-                session.followTransition(ancestorRef,
-                        LifeCycleConstants.UNDELETE_TRANSITION);
+                DocumentModel ancestor = session.getDocument(ancestorRef);
+                undeleteDocument(session, ancestor);
                 undeleted.add(ancestorRef);
             } else {
                 break;
             }
         }
+    }
+
+    /**
+     * Matches names of documents in the trash, created by
+     * {@link #trashDocument}.
+     */
+    protected static final Pattern TRASHED_PATTERN = Pattern.compile("(.*)\\._[0-9]{19,}_\\.trashed");
+
+    /**
+     * Matches names resulting from a collision, suffixed with a time in
+     * milliseconds, created by DuplicatedNameFixer. We also attempt to remove
+     * this when getting a doc out of the trash.
+     */
+    protected static final Pattern COLLISION_PATTERN = Pattern.compile("(.*)\\.[0-9]{13,}");
+
+    protected void trashDocument(CoreSession session, DocumentModel doc)
+            throws ClientException {
+        String name = doc.getName() + "._" + System.nanoTime() + "_.trashed";
+        session.move(doc.getRef(), doc.getParentRef(), name);
+        session.followTransition(doc, LifeCycleConstants.DELETE_TRANSITION);
+    }
+
+    protected void undeleteDocument(CoreSession session, DocumentModel doc)
+            throws ClientException {
+        String name = doc.getName();
+        Matcher matcher = TRASHED_PATTERN.matcher(name);
+        if (matcher.matches() && matcher.group(1).length() > 0) {
+            name = matcher.group(1);
+            matcher = COLLISION_PATTERN.matcher(name);
+            if (matcher.matches() && matcher.group(1).length() > 0) {
+                String orig = matcher.group(1);
+                String parentPath = session.getDocument(doc.getParentRef()).getPathAsString();
+                if (parentPath.equals("/")) {
+                    parentPath = ""; // root
+                }
+                String newPath = parentPath + "/" + orig;
+                if (!session.exists(new PathRef(newPath))) {
+                    name = orig;
+                }
+            }
+            session.move(doc.getRef(), doc.getParentRef(), name);
+        }
+        session.followTransition(doc, LifeCycleConstants.UNDELETE_TRANSITION);
     }
 
 }
