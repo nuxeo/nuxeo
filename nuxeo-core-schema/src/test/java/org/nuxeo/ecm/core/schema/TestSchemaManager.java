@@ -15,6 +15,7 @@
 package org.nuxeo.ecm.core.schema;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -373,6 +374,20 @@ public class TestSchemaManager extends NXRuntimeTestCase {
 
         assertEquals(6, schema.getFieldsCount());
 
+    }
+
+    @Test
+    public void testHasSuperType() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.schema.tests",
+                "OSGI-INF/CoreTestExtensions.xml");
+
+        assertTrue(schemaManager.hasSuperType("Document", "Document"));
+        assertTrue(schemaManager.hasSuperType("myDoc", "Document"));
+        assertTrue(schemaManager.hasSuperType("myDoc3", "myDoc2"));
+
+        assertFalse(schemaManager.hasSuperType("myDoc", null));
+        assertFalse(schemaManager.hasSuperType(null, "Document"));
+        assertFalse(schemaManager.hasSuperType("myDoc4", "myDoc2"));
     }
 
 }

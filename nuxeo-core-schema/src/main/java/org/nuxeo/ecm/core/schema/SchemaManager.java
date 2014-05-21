@@ -54,4 +54,12 @@ public interface SchemaManager extends TypeProvider {
 
     int getDocumentTypesCount();
 
+    /**
+     * Returns true if {@code docType} is or extends {@code superType}, false
+     * otherwise.
+     *
+     * @since 5.9.4
+     */
+    boolean hasSuperType(String docType, String superType);
+
 }
