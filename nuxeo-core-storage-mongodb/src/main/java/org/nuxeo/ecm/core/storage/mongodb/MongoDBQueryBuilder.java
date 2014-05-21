@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
@@ -62,6 +61,10 @@ import com.mongodb.QueryOperators;
  * @since 5.9.4
  */
 public class MongoDBQueryBuilder {
+
+    private static final Long ZERO = Long.valueOf(0);
+
+    private static final Long ONE = Long.valueOf(1);
 
     protected final SchemaManager schemaManager;
 
@@ -228,13 +231,17 @@ public class MongoDBQueryBuilder {
         return new BasicDBObject(QueryOperators.OR, list);
     }
 
-    private static final Long ONE = Long.valueOf(1);
-
     protected Object checkBoolean(FieldInfo fieldInfo, Object right) {
         if (fieldInfo.isBoolean) {
             // convert 0 / 1 to actual booleans
             if (right instanceof Long) {
-                right = Boolean.valueOf(ONE.equals(right));
+                if (ZERO.equals(right)) {
+                    right = fieldInfo.isTrueOrNullBoolean ? null : FALSE;
+                } else if (ONE.equals(right)) {
+                    right = TRUE;
+                } else {
+                    throw new RuntimeException("Invalid boolean: " + right);
+                }
             }
         }
         return right;
@@ -455,9 +462,17 @@ public class MongoDBQueryBuilder {
 
         protected boolean isBoolean;
 
-        protected FieldInfo(String field, boolean isBoolean) {
+        /**
+         * Boolean system properties only use TRUE or NULL, not FALSE, so
+         * queries must be updated accordingly.
+         */
+        protected boolean isTrueOrNullBoolean;
+
+        protected FieldInfo(String field, boolean isBoolean,
+                boolean isTrueOrNullBoolean) {
             this.field = field;
             this.isBoolean = isBoolean;
+            this.isTrueOrNullBoolean = isTrueOrNullBoolean;
         }
     }
 
@@ -469,8 +484,8 @@ public class MongoDBQueryBuilder {
         String[] split = StringUtils.split(name, '/');
         if (name.startsWith(NXQL.ECM_PREFIX)) {
             String prop = DBSSession.convToInternal(name);
-            boolean isBoolean = DBSSession.isBoolean(name);
-            return new FieldInfo(prop, isBoolean);
+            boolean isBoolean = DBSSession.isBoolean(prop);
+            return new FieldInfo(prop, isBoolean, true);
         } else {
             String prop = split[0];
             Field field = schemaManager.getField(prop);
@@ -503,7 +518,7 @@ public class MongoDBQueryBuilder {
             // isArray = field.getType() instanceof ListType
             // && ((ListType) field.getType()).isArray();
             boolean isBoolean = field.getType() instanceof BooleanType;
-            return new FieldInfo(name, isBoolean);
+            return new FieldInfo(name, isBoolean, false);
         }
     }
 

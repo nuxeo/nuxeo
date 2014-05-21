@@ -11,9 +11,13 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
+import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSSession.TYPE_ROOT;
 
 import java.io.File;
@@ -52,7 +56,6 @@ import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepository;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
-import org.nuxeo.ecm.core.storage.mongodb.MongoDBQueryBuilder.FieldInfo;
 import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.BasicDBObject;
@@ -370,10 +373,35 @@ public class MongoDBRepository implements DBSRepository {
 
     @Override
     public void queryKeyValueArray(String key, Object value, Set<String> ids,
-            Set<String> ignored) {
+            Map<String, String> proxyTargets,
+            Map<String, Object[]> targetProxies, Set<String> ignored) {
         DBObject query = new BasicDBObject(key, value);
         addIgnoredIds(query, ignored);
-        findAllIds(query, ids);
+        DBObject fields = new BasicDBObject();
+        fields.put(MONGO_ID, ZERO);
+        fields.put(KEY_ID, ONE);
+        fields.put(KEY_IS_PROXY, ONE);
+        fields.put(KEY_PROXY_TARGET_ID, ONE);
+        fields.put(KEY_PROXY_IDS, ONE);
+        DBCursor cursor = coll.find(query, fields);
+        try {
+            for (DBObject ob : cursor) {
+                String id = (String) ob.get(KEY_ID);
+                ids.add(id);
+                if (proxyTargets != null && TRUE.equals(ob.get(KEY_IS_PROXY))) {
+                    String targetId = (String) ob.get(KEY_PROXY_TARGET_ID);
+                    proxyTargets.put(id, targetId);
+                }
+                if (targetProxies != null) {
+                    Object[] proxyIds = (Object[]) ob.get(KEY_PROXY_IDS);
+                    if (proxyIds != null) {
+                        targetProxies.put(id, proxyIds);
+                    }
+                }
+            }
+        } finally {
+            cursor.close();
+        }
     }
 
     @Override
@@ -402,26 +430,8 @@ public class MongoDBRepository implements DBSRepository {
         }
     }
 
-    protected void findAllIds(DBObject query, Set<String> ids) {
-        DBCursor cursor = coll.find(query, justIdField());
-        try {
-            for (DBObject ob : cursor) {
-                ids.add((String) ob.get(KEY_ID));
-            }
-        } finally {
-            cursor.close();
-        }
-    }
-
     protected DBObject justPresenceField() {
         return new BasicDBObject(MONGO_ID, ONE);
-    }
-
-    protected DBObject justIdField() {
-        DBObject fields = new BasicDBObject();
-        fields.put(MONGO_ID, ZERO);
-        fields.put(KEY_ID, ONE);
-        return fields;
     }
 
     @Override

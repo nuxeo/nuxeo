@@ -3203,7 +3203,7 @@ public class TestMongoDBRepository extends MongoDBRepositoryTestCase {
 
         // modify proxy
         proxy.setProperty("dublincore", "title", "the title again");
-        doc = session.saveDocument(proxy);
+        proxy = session.saveDocument(proxy);
         session.save();
 
         // check visible from live doc
