@@ -168,6 +168,7 @@ public class OperationBindingTest extends BaseTest {
         assertTrue(trace.getOutput() instanceof Blob);
     }
 
+    //TODO Should be reactivated: NXP-14481
     @Ignore
     @Test
     public void automationResourceIsAlsoAvailableBehindAPIRoot()
