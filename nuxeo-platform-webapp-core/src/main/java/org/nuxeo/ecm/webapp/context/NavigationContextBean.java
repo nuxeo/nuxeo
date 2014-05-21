@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -538,37 +539,10 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         parents = null;
     }
 
-    private SchemaManager getSchemaManager() throws Exception {
-        if (schemaManager == null) {
-            schemaManager = Framework.getService(SchemaManager.class);
-            if (schemaManager == null) {
-                throw new ClientException(
-                        "Could not find SchemaManager service");
-            }
-        }
-        return schemaManager;
-    }
-
     private boolean hasSuperType(String targetDocType, String superType)
             throws ClientException {
-        if (targetDocType == null) {
-            return false;
-        }
-        try {
-            Set<String> typeNames = getSchemaManager().getDocumentTypeNamesExtending(
-                    superType);
-            if (typeNames != null) {
-                for (String type : typeNames) {
-                    if (type.equals(targetDocType)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        } catch (Exception e) {
-            throw new ClientException(
-                    "Could not resolve if document has a supertype", e);
-        }
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        return schemaManager.hasSuperType(targetDocType, superType);
     }
 
     public void resetCurrentContext() {
