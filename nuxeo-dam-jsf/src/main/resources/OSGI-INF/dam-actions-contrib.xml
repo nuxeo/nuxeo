@@ -71,6 +71,7 @@
       <filter-id>can_lock</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">damPanelRight</property>
       </properties>
     </action>
 
@@ -81,6 +82,7 @@
       <filter-id>can_unlock</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">damPanelRight</property>
       </properties>
     </action>
 
@@ -155,6 +157,7 @@
       <filter-id>userNotLiked</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">damPanelRight</property>
       </properties>
     </action>
 
@@ -167,6 +170,7 @@
       <filter-id>userLiked</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">damPanelRight</property>
       </properties>
     </action>
 
