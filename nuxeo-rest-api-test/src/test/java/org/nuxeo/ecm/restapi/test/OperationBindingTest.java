@@ -26,6 +26,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -167,6 +168,7 @@ public class OperationBindingTest extends BaseTest {
         assertTrue(trace.getOutput() instanceof Blob);
     }
 
+    @Ignore
     @Test
     public void automationResourceIsAlsoAvailableBehindAPIRoot()
             throws Exception {
