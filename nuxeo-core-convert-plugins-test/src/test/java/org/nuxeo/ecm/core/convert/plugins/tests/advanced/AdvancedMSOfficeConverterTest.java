@@ -50,7 +50,7 @@ public class AdvancedMSOfficeConverterTest extends SimpleConverterTest {
             // Get blob string with Unix end of line characters
             String expectedContent = blob.getString().replace("\r\n", "\n");
 
-            assertEquals(expectedContent, textContent);
+            assertEquals(expectedContent.trim(), textContent.trim());
         } catch (IOException ioe) {
             fail(ioe.getMessage());
         }
