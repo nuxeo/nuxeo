@@ -328,6 +328,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected void processDeleteCommand(IndexingCommand cmd) {
         DocumentModel doc = cmd.getTargetDocument();
         assert (doc != null);
+
         DeleteRequestBuilder request = getClient().prepareDelete(getDocIndex(),
                 DOC_TYPE, doc.getId());
         if (log.isDebugEnabled()) {
@@ -443,14 +444,21 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public void refresh() {
+        if (log.isDebugEnabled()) {
+            log.debug("Refreshing index");
+        }
         getClient().admin().indices().prepareRefresh(getDocIndex()).execute()
                 .actionGet();
     }
 
     @Override
     public void flush() {
+        log.info("Flushing index");
         getClient().admin().indices().prepareFlush(getDocIndex()).execute()
                 .actionGet();
+        if (log.isDebugEnabled()) {
+            log.debug("Flushing index done");
+        }
     }
 
     @Override

@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.elasticsearch.action.admin.cluster.node.stats.NodesStatsResponse;
@@ -48,6 +50,9 @@ import org.nuxeo.runtime.api.Framework;
 @Name("esAdmin")
 @Scope(EVENT)
 public class ElasticSearchManager {
+
+    private static final Log log = LogFactory
+            .getLog(ElasticSearchManager.class);
 
     @In(create = true)
     protected ElasticSearchAdmin esa;
@@ -81,6 +86,7 @@ public class ElasticSearchManager {
     }
 
     public void startReindex() throws Exception {
+        log.warn("Start re-indexing repository");
         IndexingCommand cmd = new IndexingCommand(
                 documentManager.getRootDocument(), false, true);
         esi.scheduleIndexing(cmd);

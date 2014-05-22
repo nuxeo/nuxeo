@@ -46,7 +46,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(BareElasticSearchFeature.class)
 @Deploy({})
-public class TestElasticSearchController {
+public class TestElasticSearchClient {
 
     @Inject
     protected Node elasticSearchNode;
