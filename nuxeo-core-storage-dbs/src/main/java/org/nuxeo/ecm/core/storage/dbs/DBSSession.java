@@ -127,8 +127,6 @@ public class DBSSession implements Session {
 
     private static final Log log = LogFactory.getLog(DBSSession.class);
 
-    public static final String TYPE_ROOT = "Root";
-
     protected final DBSRepository repository;
 
     protected final String sessionId;
