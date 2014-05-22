@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.osgi;
@@ -169,11 +168,9 @@ public class BundleImpl implements Bundle {
         return (PackageAdmin) sysctx.getService(ref);
     }
 
-
     protected static class CompoundEnumerationBuilder {
 
-        protected final ArrayList<Enumeration<URL>> collected =
-                new ArrayList<Enumeration<URL>>();
+        protected final ArrayList<Enumeration<URL>> collected = new ArrayList<>();
 
         public CompoundEnumerationBuilder add(Enumeration<URL> e) {
             collected.add(e);
@@ -181,16 +178,17 @@ public class BundleImpl implements Bundle {
         }
 
         public Enumeration<URL> build() {
-            return new CompoundEnumeration<URL>(collected.toArray(new Enumeration[collected.size()]));
+            return new CompoundEnumeration<>(
+                    collected.toArray(new Enumeration[collected.size()]));
         }
 
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Enumeration<URL> findEntries(String path, String filePattern,
             boolean recurse) {
-        Enumeration<URL> hostEntries = file.findEntries(path, filePattern, recurse);
+        Enumeration<URL> hostEntries = file.findEntries(path, filePattern,
+                recurse);
         Bundle[] fragments = osgi.getRegistry().getFragments(symbolicName);
         if (fragments.length == 0) {
             return hostEntries;
@@ -201,8 +199,9 @@ public class BundleImpl implements Bundle {
             builder.add(hostEntries);
         }
 
-        for (Bundle fragment:fragments) {
-            Enumeration<URL> fragmentEntries = fragment.findEntries(path, filePattern, recurse);
+        for (Bundle fragment : fragments) {
+            Enumeration<URL> fragmentEntries = fragment.findEntries(path,
+                    filePattern, recurse);
             builder.add(fragmentEntries);
         }
 
@@ -348,7 +347,8 @@ public class BundleImpl implements Bundle {
         try {
             file.close(osgi);
         } catch (IOException e) {
-            throw new BundleException("Cannot close underlying file resources " + symbolicName, e);
+            throw new BundleException("Cannot close underlying file resources "
+                    + symbolicName, e);
         }
     }
 
@@ -459,11 +459,12 @@ public class BundleImpl implements Bundle {
         return symbolicName;
     }
 
+    @Override
     public Map getSignerCertificates(int signersType) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("not yet implemented");
     }
 
+    @Override
     public Version getVersion() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("not yet implemented");
