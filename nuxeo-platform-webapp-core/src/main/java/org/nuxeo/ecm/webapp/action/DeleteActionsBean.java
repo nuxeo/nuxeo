@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.actions.Action;
@@ -260,6 +261,12 @@ public class DeleteActionsBean extends InputController implements
         }
 
         // Update context if needed
+        if (op == OP_UNDELETE) {
+            // undelete is problematic because it may change undeleted
+            // parent's paths... so we refetch the new context
+            targetContext = documentManager.getDocument(new IdRef(
+                    targetContext.getId()));
+        }
         navigationContext.setCurrentDocument(targetContext);
 
         // Notify parents
