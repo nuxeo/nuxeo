@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.admin.runtime;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +30,9 @@ import java.util.PropertyResourceBundle;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.connect.update.Version;
 import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.osgi.JarBundleFile;
@@ -44,6 +48,8 @@ import org.osgi.framework.Bundle;
  * @author tiry
  */
 public class RuntimeInstrospection {
+
+    protected static final Log log = LogFactory.getLog(RuntimeInstrospection.class);
 
     protected static SimplifiedServerInfo info;
 
@@ -83,43 +89,62 @@ public class RuntimeInstrospection {
     }
 
     protected static SimplifiedBundleInfo getBundleSimplifiedInfo(Bundle bundle) {
+        if (!(bundle instanceof BundleImpl)) {
+            return null;
+        }
+        BundleImpl nxBundle = (BundleImpl) bundle;
+        BundleFile file = nxBundle.getBundleFile();
+        File jarFile = null;
+        if (file instanceof JarBundleFile) {
+            JarBundleFile jar = (JarBundleFile) file;
+            jarFile = jar.getFile();
+        } else if (file instanceof JBossBundleFile) {
+            JBossBundleFile jar = (JBossBundleFile) file;
+            jarFile = jar.getFile();
+        }
+        if (jarFile == null || jarFile.isDirectory()) {
+            return null;
+        }
         SimplifiedBundleInfo result = null;
-        if (bundle instanceof BundleImpl) {
-            BundleImpl nxBundle = (BundleImpl) bundle;
-            BundleFile file = nxBundle.getBundleFile();
-            File jarFile = null;
-            if (file instanceof JarBundleFile) {
-                JarBundleFile jar = (JarBundleFile) file;
-                jarFile = jar.getFile();
-            } else if (file instanceof JBossBundleFile) {
-                JBossBundleFile jar = (JBossBundleFile) file;
-                jarFile = jar.getFile();
-            }
-            if (jarFile != null) {
-                if (jarFile.isDirectory()) {
-                    // XXX
-                } else {
-                    try {
-                        ZipFile zFile = new ZipFile(jarFile);
-                        Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zFile.entries();
-                        while (entries.hasMoreElements()) {
-                            ZipEntry entry = entries.nextElement();
-                            if (entry.getName().endsWith("pom.properties")) {
-                                InputStream pomStream = zFile.getInputStream(entry);
-                                PropertyResourceBundle prb = new PropertyResourceBundle(
-                                        pomStream);
-                                String version = prb.getString("version");
-                                result = new SimplifiedBundleInfo(
-                                        bundle.getSymbolicName(), version);
-                                pomStream.close();
-                                break;
-                            }
-                        }
-                    } catch (Exception e) {
-                        // NOP
+        try (ZipFile zFile = new ZipFile(jarFile)) {
+            // Look for a pom.properties to extract its Maven version
+            Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if (entry.getName().endsWith("pom.properties")) {
+                    try (InputStream pomStream = zFile.getInputStream(entry)) {
+                        PropertyResourceBundle prb = new PropertyResourceBundle(
+                                pomStream);
+                        String version = prb.getString("version");
+                        result = new SimplifiedBundleInfo(
+                                bundle.getSymbolicName(), version);
                     }
-
+                    break;
                 }
+            }
+        } catch (IOException e) {
+            log.debug(e.getMessage(), e);
+        }
+        if (result == null) {
+            // Fall back on the filename to extract a version
+            try {
+                Version version = new Version(jarFile.getName());
+                result = new SimplifiedBundleInfo(bundle.getSymbolicName(),
+                        version.toString());
+            } catch (NumberFormatException e) {
+                log.debug(e.getMessage());
+            }
+        }
+        if (result == null) {
+            // Fall back on the MANIFEST Bundle-Version
+            try {
+                org.osgi.framework.Version version = bundle.getVersion();
+                result = new SimplifiedBundleInfo(bundle.getSymbolicName(),
+                        version.toString());
+            } catch (RuntimeException e) {
+                log.debug(e.getMessage());
+                result = new SimplifiedBundleInfo(bundle.getSymbolicName(),
+                        "unknown");
             }
         }
         return result;
