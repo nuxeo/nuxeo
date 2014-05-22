@@ -30,6 +30,9 @@ cmdargs=( "$@" )
 for ((i=0; i<$#; i++)); do
   if [ "${cmdargs[$i]}" = "nogui" ]; then
     cmdargs[$i]="--gui=false"
+  elif [ "${cmdargs[$i]}" = "--debug-launcher" ]; then
+    LAUNCHER_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=8788,server=y,suspend=y"
+    unset cmdargs[$i]
   fi
 done
 set -- "${cmdargs[@]}"
@@ -179,8 +182,6 @@ echo "[`date`] Command: $0 $@" >> "$LOG_DIR"/nuxeoctl.log
 
 [ -d "$TMP_DIR" ] || mkdir -p "$TMP_DIR"
 
-#LAUNCHER_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=8788,server=y,suspend=y"
-
 while true; do
   while true; do
     TMPLAUNCHER="$TMP_DIR/nuxeo-launcher-$RANDOM.jar"
@@ -189,7 +190,8 @@ while true; do
     fi
   done
   cp "$NUXEO_LAUNCHER" "$TMPLAUNCHER"
-  [[ "x$@" =~ " -d" || "x$@" =~ " --debug" ]] && echo Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $TMPLAUNCHER $@
+  [[ "x $@" =~ " -d" || "x $@" =~ " --debug" || -n "$LAUNCHER_DEBUG" ]] && \
+           echo Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $TMPLAUNCHER "$@"
   echo [`date`] Launcher command: $JAVA $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar $TMPLAUNCHER "$@" >> "$LOG_DIR"/nuxeoctl.log
   "$JAVA" $LAUNCHER_DEBUG -Dlauncher.java.opts="$JAVA_OPTS" -Dnuxeo.home="$NUXEO_HOME" -Dnuxeo.conf="$NUXEO_CONF" -Dnuxeo.log.dir="$LOG_DIR" -jar "$TMPLAUNCHER" "$@"
   exitcode=$?
