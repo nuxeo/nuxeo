@@ -18,10 +18,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
-import static org.nuxeo.ecm.core.storage.dbs.DBSSession.TYPE_ROOT;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -32,31 +29,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
-import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.storage.PartialList;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerService;
-import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
-import org.nuxeo.ecm.core.storage.dbs.DBSRepository;
-import org.nuxeo.ecm.core.storage.dbs.DBSSession;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -72,7 +56,7 @@ import com.mongodb.WriteResult;
  *
  * @since 5.9.4
  */
-public class MongoDBRepository implements DBSRepository {
+public class MongoDBRepository extends DBSRepositoryBase {
 
     private static final Log log = LogFactory.getLog(MongoDBRepository.class);
 
@@ -86,16 +70,6 @@ public class MongoDBRepository implements DBSRepository {
 
     public static final String MONGO_ID = "_id";
 
-    // change to have deterministic pseudo-UUID generation for debugging
-    private final boolean DEBUG_UUIDS = true;
-
-    // for debug
-    private final AtomicLong temporaryIdCounter = new AtomicLong(0);
-
-    protected final String repositoryName;
-
-    protected final BinaryManager binaryManager;
-
     protected MongoClient mongoClient;
 
     protected DB db;
@@ -103,8 +77,7 @@ public class MongoDBRepository implements DBSRepository {
     protected DBCollection coll;
 
     public MongoDBRepository(String repositoryName) {
-        this.repositoryName = repositoryName;
-        binaryManager = newBinaryManager();
+        super(repositoryName);
         try {
             // TODO host, port, sharding options
             mongoClient = new MongoClient();
@@ -116,89 +89,12 @@ public class MongoDBRepository implements DBSRepository {
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
-        initRootACP();
-    }
-
-    // TODO factor out
-    protected void initRootACP() {
-        try {
-            DBSSession session = getSession(null);
-            Document root = session.addChild(getRootId(), null, "", null,
-                    TYPE_ROOT);
-            ACLImpl acl = new ACLImpl();
-            acl.add(new ACE(SecurityConstants.ADMINISTRATORS,
-                    SecurityConstants.EVERYTHING, true));
-            acl.add(new ACE(SecurityConstants.ADMINISTRATOR,
-                    SecurityConstants.EVERYTHING, true));
-            acl.add(new ACE(SecurityConstants.MEMBERS, SecurityConstants.READ,
-                    true));
-            ACPImpl acp = new ACPImpl();
-            acp.addACL(acl);
-            session.setACP(root, acp, true);
-            session.commit();
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    protected BinaryManager newBinaryManager() {
-        BinaryManager binaryManager = new DefaultBinaryManager();
-        BinaryManagerDescriptor binaryManagerDescriptor = new BinaryManagerDescriptor();
-        try {
-            File dir = File.createTempFile("memBinaryManager", "");
-            dir.delete();
-            binaryManagerDescriptor.repositoryName = "mem";
-            binaryManagerDescriptor.storePath = dir.getPath();
-            binaryManager.initialize(binaryManagerDescriptor);
-            BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
-            bms.addBinaryManager(binaryManagerDescriptor.repositoryName, binaryManager);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return binaryManager;
-    }
-
-    @Override
-    public String getName() {
-        return repositoryName;
+        initRoot();
     }
 
     @Override
     public void shutdown() {
         mongoClient.close();
-    }
-
-    @Override
-    public int getActiveSessionsCount() {
-        return 0;
-    }
-
-    @Override
-    public DBSSession getSession(String sessionId) throws DocumentException {
-        return new DBSSession(this, sessionId);
-    }
-
-    @Override
-    public BinaryManager getBinaryManager() {
-        return binaryManager;
-    }
-
-    @Override
-    public String getRootId() {
-        if (DEBUG_UUIDS) {
-            return "UUID_0";
-        } else {
-            return "00000000-0000-0000-0000-000000000000";
-        }
-    }
-
-    @Override
-    public String generateNewId() {
-        if (DEBUG_UUIDS) {
-            return "UUID_" + temporaryIdCounter.incrementAndGet();
-        } else {
-            return UUID.randomUUID().toString();
-        }
     }
 
     protected DBObject stateToBson(Map<String, Serializable> state,

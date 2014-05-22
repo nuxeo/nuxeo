@@ -69,7 +69,12 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests",
                 "OSGI-INF/test-repo-types.xml");
         initRepository();
+        setUpTx();
         openSession();
+    }
+
+    protected void setUpTx() throws Exception {
+        // to be subclassed
     }
 
     @Override
