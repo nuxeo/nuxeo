@@ -466,8 +466,7 @@ public class BundleImpl implements Bundle {
 
     @Override
     public Version getVersion() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("not yet implemented");
+        return Version.parseVersion(headers.get(Constants.BUNDLE_VERSION));
     }
 
 }
