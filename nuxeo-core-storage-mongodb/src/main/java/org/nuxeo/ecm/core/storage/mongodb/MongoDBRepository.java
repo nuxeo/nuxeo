@@ -49,6 +49,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.QueryOperators;
+import com.mongodb.ServerAddress;
 import com.mongodb.WriteResult;
 
 /**
@@ -72,20 +73,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected MongoClient mongoClient;
 
-    protected DB db;
-
     protected DBCollection coll;
 
-    public MongoDBRepository(String repositoryName) {
-        super(repositoryName);
+    public MongoDBRepository(MongoDBRepositoryDescriptor descriptor) {
+        super(descriptor.name);
         try {
-            // TODO host, port, sharding options
-            mongoClient = new MongoClient();
-            // TODO mongoClient.setWriteConcern
-            // TODO configure db name
-            // TODO authentication
-            db = mongoClient.getDB(DB_NAME);
-            coll = db.getCollection(repositoryName);
+            mongoClient = newMongoClient(descriptor);
+            coll = getCollection(descriptor, mongoClient);
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
@@ -95,6 +89,24 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public void shutdown() {
         mongoClient.close();
+    }
+
+    // used also by unit tests
+    public static MongoClient newMongoClient(
+            MongoDBRepositoryDescriptor descriptor) throws UnknownHostException {
+        ServerAddress addr = new ServerAddress(descriptor.server);
+        // TODO sharding options
+        // TODO mongoClient.setWriteConcern
+        return new MongoClient(addr);
+    }
+
+    // used also by unit tests
+    public static DBCollection getCollection(
+            MongoDBRepositoryDescriptor descriptor, MongoClient mongoClient) {
+        // TODO configure db name
+        // TODO authentication
+        DB db = mongoClient.getDB(DB_NAME);
+        return db.getCollection(descriptor.name);
     }
 
     protected DBObject stateToBson(Map<String, Serializable> state,

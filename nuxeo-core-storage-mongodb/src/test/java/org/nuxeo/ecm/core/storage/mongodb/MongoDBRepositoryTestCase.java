@@ -24,16 +24,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 
@@ -42,6 +38,8 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
     private static final Log log = LogFactory.getLog(MongoDBRepositoryTestCase.class);
 
     protected String repositoryName = "test";
+
+    protected MongoDBRepositoryDescriptor descriptor;
 
     protected CoreSession session;
 
@@ -66,6 +64,7 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.event");
+        deployBundle("org.nuxeo.ecm.core.storage.mongodb");
         deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests",
                 "OSGI-INF/test-repo-types.xml");
         initRepository();
@@ -91,25 +90,20 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
     }
 
     protected void initRepository() throws Exception {
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        RepositoryFactory repositoryFactory = new MongoDBRepositoryFactory();
-        repositoryFactory.init(repositoryName);
-        Repository repository = new Repository(repositoryName, repositoryName,
-                null, repositoryFactory);
-        repositoryManager.addRepository(repository);
+        descriptor = new MongoDBRepositoryDescriptor();
+        descriptor.name = repositoryName;
+        descriptor.server = null; // use defaults
+        MongoDBRepositoryService repositoryService = Framework.getLocalService(MongoDBRepositoryService.class);
+        repositoryService.addContribution(descriptor);
 
-        // clear repo
         clearMongoDb();
     }
 
     protected void clearMongoDb() throws UnknownHostException {
-        MongoClient mongoClient = new MongoClient();
+        MongoClient mongoClient = MongoDBRepository.newMongoClient(descriptor);
         try {
-            // TODO mongoClient.setWriteConcern
-            // TODO configure db name
-            // TODO authentication
-            DB db = mongoClient.getDB(MongoDBRepository.DB_NAME);
-            DBCollection coll = db.getCollection(repositoryName);
+            DBCollection coll = MongoDBRepository.getCollection(descriptor,
+                    mongoClient);
             coll.remove(new BasicDBObject());
         } finally {
             mongoClient.close();
@@ -117,8 +111,8 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
     }
 
     protected void closeRepository() {
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        repositoryManager.removeRepository(repositoryName);
+        MongoDBRepositoryService repositoryService = Framework.getLocalService(MongoDBRepositoryService.class);
+        repositoryService.removeContribution(descriptor);
     }
 
     protected void initCheckLeaks() {

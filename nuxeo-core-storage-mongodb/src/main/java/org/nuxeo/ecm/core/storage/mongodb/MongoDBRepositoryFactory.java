@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.storage.mongodb;
 
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * MongoDB implementation of a {@link RepositoryFactory}, creating a
@@ -30,7 +31,13 @@ public class MongoDBRepositoryFactory implements RepositoryFactory {
 
     @Override
     public Object call() {
-        return new MongoDBRepository(repositoryName);
+        MongoDBRepositoryService repositoryService = Framework.getLocalService(MongoDBRepositoryService.class);
+        MongoDBRepositoryDescriptor descriptor = repositoryService.getRepositoryDescriptor(repositoryName);
+        if (descriptor == null) {
+            throw new IllegalStateException("No descriptor registered for: "
+                    + repositoryName);
+        }
+        return new MongoDBRepository(descriptor);
     }
 
 }
