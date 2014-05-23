@@ -44,6 +44,12 @@ import org.jclouds.domain.Location;
 import org.jclouds.domain.LocationBuilder;
 import org.jclouds.domain.LocationScope;
 import org.nuxeo.common.utils.SizeUtils;
+import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerRootDescriptor;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.storage.binary.CachingBinaryManager;
+import org.nuxeo.ecm.core.storage.binary.FileStorage;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -96,12 +102,12 @@ public class JCloudsBinaryManager extends CachingBinaryManager  {
     protected BlobMap storeMap;
 
     @Override
-    public void initialize(RepositoryDescriptor repositoryDescriptor)
+    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
             throws IOException {
-        repositoryName = repositoryDescriptor.name;
-        descriptor = new BinaryManagerDescriptor();
+        repositoryName = binaryManagerDescriptor.repositoryName;
+        descriptor = new BinaryManagerRootDescriptor();
         descriptor.digest = MD5; // matches ETag computation
-        log.info("Repository '" + repositoryDescriptor.name + "' using "
+        log.info("Repository '" + repositoryName + "' using "
                 + getClass().getSimpleName());
 
         // Get settings from the configuration
