@@ -64,6 +64,7 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.event");
+        deployBundle("org.nuxeo.ecm.core.storage");
         deployBundle("org.nuxeo.ecm.core.storage.mongodb");
         deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests",
                 "OSGI-INF/test-repo-types.xml");

@@ -51,6 +51,7 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.event");
+        deployBundle("org.nuxeo.ecm.core.storage");
         deployContrib("org.nuxeo.ecm.core.storage.mem.tests",
                 "OSGI-INF/test-repo-types.xml");
         initRepository();
