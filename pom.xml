@@ -24,7 +24,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-sql</artifactId>
+      <artifactId>nuxeo-core-storage</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -59,6 +59,6 @@
        <enabled>true</enabled>
      </snapshots>
    </repository>
- </repositories> 
+ </repositories>
 
 </project>

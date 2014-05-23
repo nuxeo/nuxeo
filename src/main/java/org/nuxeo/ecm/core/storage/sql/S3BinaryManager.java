@@ -33,10 +33,17 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Objects;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.SizeUtils;
+import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerRootDescriptor;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.storage.binary.CachingBinaryManager;
+import org.nuxeo.ecm.core.storage.binary.FileStorage;
 import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonClientException;
@@ -141,13 +148,13 @@ public class S3BinaryManager extends CachingBinaryManager {
     protected AmazonS3 amazonS3;
 
     @Override
-    public void initialize(RepositoryDescriptor repositoryDescriptor)
+    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
             throws IOException {
 
-        repositoryName = repositoryDescriptor.name;
-        descriptor = new BinaryManagerDescriptor();
+        repositoryName = binaryManagerDescriptor.repositoryName;
+        descriptor = new BinaryManagerRootDescriptor();
         descriptor.digest = MD5; // matches ETag computation
-        log.info("Repository '" + repositoryDescriptor.name + "' using "
+        log.info("Repository '" + repositoryName + "' using "
                 + getClass().getSimpleName());
 
         // Get settings from the configuration

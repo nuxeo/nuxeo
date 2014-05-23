@@ -36,6 +36,11 @@ import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.junit.Test;
+import org.nuxeo.ecm.core.storage.binary.Binary;
+import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.storage.binary.LazyBinary;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -88,7 +93,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         DISABLED = "CHANGETHIS".equals(Framework.getProperty(S3BinaryManager.BUCKET_NAME_KEY));
         if (!DISABLED) {
             binaryManager = new S3BinaryManager();
-            binaryManager.initialize(new RepositoryDescriptor());
+            binaryManager.initialize(new BinaryManagerDescriptor());
             removeObjects();
         }
     }
@@ -248,7 +253,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         assertNotNull(binary2);
         assertEquals(bytes.length, binary2.getLength());
         // check that S3 bucked was not called for no valid reason
-        assertEquals(binary2.digest, Framework.getProperty("cachedBinary"));
+        assertEquals(binary2.getDigest(), Framework.getProperty("cachedBinary"));
     }
 
     @Test
@@ -261,7 +266,7 @@ public class TestS3BinaryManager extends NXRuntimeTestCase {
         props.put(S3BinaryManager.CONNECTION_RETRY_KEY, "0");
         props.put(S3BinaryManager.CONNECTION_TIMEOUT_KEY, "5000"); // 5s
         binaryManager = new S3BinaryManager();
-        binaryManager.initialize(new RepositoryDescriptor());
+        binaryManager.initialize(new BinaryManagerDescriptor());
 
         // store binary
         byte[] bytes = CONTENT.getBytes("UTF-8");
