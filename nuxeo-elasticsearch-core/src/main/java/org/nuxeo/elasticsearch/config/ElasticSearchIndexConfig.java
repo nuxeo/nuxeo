@@ -32,6 +32,9 @@ public class ElasticSearchIndexConfig {
     @XNode("@name")
     protected String name;
 
+    @XNode("@repository")
+    protected String repositoryName = "default";
+
     @XNode("@type")
     protected String type = "doc";
 
@@ -64,6 +67,9 @@ public class ElasticSearchIndexConfig {
         return create;
     }
 
+    public String getRepositoryName() {
+        return repositoryName;
+    }
     /**
      * Uses settings, mapping fields if not defined.
      */

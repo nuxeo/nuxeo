@@ -34,11 +34,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
@@ -137,6 +139,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
     // indexing command that where received before the index initialization
     protected List<IndexingCommand> stackedCommands = new ArrayList<>();
 
+    protected final Map<String, String> indexNames = new HashMap<String, String>();
+
     // temporary hack until we are able to list pending indexing jobs cluster
     // wide
     protected final Set<String> pendingWork = Collections
@@ -146,8 +150,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
             .synchronizedSet(new HashSet<String>());
 
     protected Map<String, ElasticSearchIndexConfig> indexes = new HashMap<String, ElasticSearchIndexConfig>();
-
-    protected String docIndexName;
 
     // Metrics
     protected final MetricRegistry registry = SharedMetricRegistries
@@ -186,7 +188,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
             ElasticSearchIndexConfig previous = indexes.put(idx.getType(), idx);
             idx.merge(previous);
             if (DOC_TYPE.equals(idx.getType())) {
-                docIndexName = idx.getName();
+                log.info("Associate index " + idx.getName()
+                        + " with repository: " + idx.getRepositoryName());
+                indexNames.put(idx.getRepositoryName(), idx.getName());
             }
         }
     }
@@ -319,7 +323,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (log.isDebugEnabled()) {
             log.debug(String
                     .format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                            getDocIndex(), DOC_TYPE, doc.getId(), request
+                            getRepositoryIndex(doc.getRepositoryName()), DOC_TYPE, doc.getId(), request
                                     .request().toString()));
         }
         request.execute().actionGet();
@@ -328,26 +332,26 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected void processDeleteCommand(IndexingCommand cmd) {
         DocumentModel doc = cmd.getTargetDocument();
         assert (doc != null);
-
-        DeleteRequestBuilder request = getClient().prepareDelete(getDocIndex(),
+        String indexName = getRepositoryIndex(doc.getRepositoryName());
+        DeleteRequestBuilder request = getClient().prepareDelete(indexName,
                 DOC_TYPE, doc.getId());
         if (log.isDebugEnabled()) {
             log.debug(String
                     .format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                            getDocIndex(), DOC_TYPE, doc.getId(), request
+                            indexName, DOC_TYPE, doc.getId(), request
                                     .request().toString()));
         }
         request.execute().actionGet();
         if (cmd.isRecurse()) {
             DeleteByQueryRequestBuilder deleteRequest = getClient()
-                    .prepareDeleteByQuery(getDocIndex()).setQuery(
+                    .prepareDeleteByQuery(indexName).setQuery(
                             QueryBuilders.constantScoreQuery(FilterBuilders
                                     .termFilter(CHILDREN_FIELD,
                                             doc.getPathAsString())));
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
-                                getDocIndex(), DOC_TYPE, request.request()
+                                indexName, DOC_TYPE, request.request()
                                         .toString()));
             }
             DeleteByQueryResponse responses = deleteRequest.execute()
@@ -373,8 +377,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     .stream());
             JsonESDocumentWriter.writeESDocument(jsonGen, doc,
                     cmd.getSchemas(), null);
-            return getClient().prepareIndex(getDocIndex(), DOC_TYPE,
-                    doc.getId()).setSource(builder);
+            return getClient().prepareIndex(
+                    getRepositoryIndex(doc.getRepositoryName()),
+                    DOC_TYPE, doc.getId()).setSource(builder);
         } catch (Exception e) {
             throw new ClientException(
                     "Unable to create index request for Document "
@@ -436,28 +441,61 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     /**
-     * Get the elastic search index name for the documents
+     * Get the elastic search index for a repository
      */
-    protected String getDocIndex() {
-        return docIndexName;
+    protected String getRepositoryIndex(String repositoryName) {
+        String ret = indexNames.get(repositoryName);
+        if (ret == null) {
+            throw new NoSuchElementException("No index defined for repository: "
+                    + repositoryName);
+        }
+        return ret;
+    }
+
+    /**
+     * Get the elastic search indexes for searches
+     */
+    protected String[] getSearchIndexes() {
+        return indexNames.values().toArray(new String[0]);
+    }
+
+    private String getSearchIndexesAsString() {
+        return StringUtils.join(indexNames.values(), ',');
+    }
+
+    @Override public void refreshRepositoryIndex(String repositoryName) {
+        if (log.isDebugEnabled()) {
+            log.debug("Refreshing index associated with repo: " + repositoryName);
+        }
+         getClient().admin().indices().prepareRefresh(
+                getRepositoryIndex(repositoryName)).execute()
+                .actionGet();
+        if (log.isDebugEnabled()) {
+            log.debug("Refreshing index done");
+        }
+    }
+
+    @Override public void flushRepositoryIndex(String repositoryName) {
+        log.info("Flushing index associated with repo: " + repositoryName);
+        getClient().admin().indices().prepareFlush(getRepositoryIndex(
+                repositoryName)).execute()
+                .actionGet();
+        if (log.isDebugEnabled()) {
+            log.debug("Flushing index done");
+        }
     }
 
     @Override
     public void refresh() {
-        if (log.isDebugEnabled()) {
-            log.debug("Refreshing index");
+        for (String RepositoryName: indexNames.keySet()) {
+            refreshRepositoryIndex(RepositoryName);
         }
-        getClient().admin().indices().prepareRefresh(getDocIndex()).execute()
-                .actionGet();
     }
 
     @Override
     public void flush() {
-        log.info("Flushing index");
-        getClient().admin().indices().prepareFlush(getDocIndex()).execute()
-                .actionGet();
-        if (log.isDebugEnabled()) {
-            log.debug("Flushing index done");
+        for (String RepositoryName: indexNames.keySet()) {
+            flushRepositoryIndex(RepositoryName);
         }
     }
 
@@ -574,7 +612,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         try {
             // Initialize request
             SearchRequestBuilder request = getClient()
-                    .prepareSearch(getDocIndex()).setTypes(DOC_TYPE)
+                    .prepareSearch(getSearchIndexes()).setTypes(DOC_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .addField(ID_FIELD).setFrom(offset).setSize(limit);
             // Add security filter
@@ -611,7 +649,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
-                                getDocIndex(), DOC_TYPE, request.toString()));
+                                getSearchIndexesAsString(), DOC_TYPE,
+                                request.toString()));
             }
             SearchResponse response = request.execute().actionGet();
             if (log.isDebugEnabled()) {
@@ -762,6 +801,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
         client = null;
         localNode = null;
+        indexNames.clear();
     }
 
     protected String getWorkKey(DocumentModel doc) {

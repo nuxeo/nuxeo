@@ -17,7 +17,6 @@
 
 package org.nuxeo.elasticsearch.test.nxql;
 
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.SystemUtils;
@@ -31,7 +30,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.elasticsearch.ElasticSearchComponent;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;

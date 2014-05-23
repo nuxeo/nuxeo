@@ -26,9 +26,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.elasticsearch.ElasticSearchComponent;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -56,9 +54,6 @@ public class TestTreeIndexing {
     @Inject
     protected ElasticSearchAdmin esa;
 
-    @Inject
-    protected ElasticSearchIndexing esi;
-
     protected void buildTree() throws ClientException {
         String root = "/";
         for (int i = 0; i < 10; i++) {
@@ -66,7 +61,7 @@ public class TestTreeIndexing {
             DocumentModel doc = session.createDocumentModel(root, name,
                     "Folder");
             doc.setPropertyValue("dc:title", "Folder" + i);
-            doc = session.createDocument(doc);
+            session.createDocument(doc);
             root = root + name + "/";
         }
     }
@@ -222,8 +217,8 @@ public class TestTreeIndexing {
         RepositoryManager rm = Framework
                 .getLocalService(RepositoryManager.class);
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
-        ctx.put("principal", new UserPrincipal("toto", null, false, false));
-        return rm.getDefaultRepository().open(ctx);
+        ctx.put("principal", new UserPrincipal(userName, null, false, false));
+        return CoreInstance.openCoreSession(rm.getDefaultRepositoryName(), ctx);
     }
 
     @Test
@@ -288,7 +283,7 @@ public class TestTreeIndexing {
         docs = ess.query(restrictedSession, "select * from Document", 10, 0);
         Assert.assertEquals(3, docs.size());
 
-        CoreInstance.getInstance().close(restrictedSession);
+        restrictedSession.close();
     }
 
     @Test
@@ -339,7 +334,7 @@ public class TestTreeIndexing {
         // can view folder2, folder3 and folder4
         Assert.assertEquals(3, docs.size());
 
-        CoreInstance.getInstance().close(restrictedSession);
+        restrictedSession.close();
     }
 
     @Test
@@ -365,9 +360,9 @@ public class TestTreeIndexing {
                         "select * from Document where ecm:currentLifeCycleState != 'deleted'",
                         20, 0);
 
-        for (DocumentModel doc : docs) {
+        // for (DocumentModel doc : docs) {
             // System.out.println(doc.getPathAsString());
-        }
+        // }
         Assert.assertEquals(2, docs.size());
 
     }

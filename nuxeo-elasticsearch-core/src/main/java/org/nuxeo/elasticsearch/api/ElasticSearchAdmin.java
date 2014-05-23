@@ -89,8 +89,8 @@ public interface ElasticSearchAdmin {
     List<PendingClusterTask> getPendingTasks();
 
     /**
-     * Refresh document index, immediately after the operation occurs, so that
-     * the updated document appears in search results immediately.
+     * Refresh all document indexes, immediately after the operation occurs,
+     * so that the updated document appears in search results immediately.
      *
      * There is no fsync thus doesn't guarantee durability.
      *
@@ -99,10 +99,30 @@ public interface ElasticSearchAdmin {
     void refresh();
 
     /**
-     * Elasticsearch flush on document index, triggers a lucene commit, empties
-     * the transaction log. Data is flushed to disk.
+     * Refresh document index for the specific repository, immediately after
+     * the operation occurs, so that the updated document appears in search
+     * results immediately.
+     *
+     * There is no fsync thus doesn't guarantee durability.
+     *
+     * @since 5.9.4
+     */
+    void refreshRepositoryIndex(String repositoryName);
+
+    /**
+     * Elasticsearch flush on all document indexes, triggers a lucene commit,
+     * empties the transaction log. Data is flushed to disk.
      *
      * @since 5.9.3
      */
     void flush();
+
+    /**
+     * Elasticsearch flush on document index for a specific repository,
+     * triggers a lucene commit, empties the transaction log. Data is flushed
+     * to disk.
+     *
+     * @since 5.9.4
+     */
+    void flushRepositoryIndex(String repositoryName);
 }

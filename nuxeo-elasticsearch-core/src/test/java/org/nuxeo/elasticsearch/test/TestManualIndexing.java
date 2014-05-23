@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.cluster.routing.allocation.allocator.EvenShardsCountAllocator;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.After;
 import org.junit.Assert;
