@@ -20,6 +20,7 @@
       </writer>
       <writer>org.nuxeo.ecm.automation.jaxrs.io.operations.JsonOperationWriter
       </writer>
+      <writer>org.nuxeo.ecm.automation.jaxrs.io.operations.JsonHtmlOperationWriter</writer>
       <reader>org.nuxeo.ecm.automation.jaxrs.io.operations.UrlEncodedFormRequestReader
       </reader>
       <writer>org.nuxeo.ecm.automation.jaxrs.io.JsonTreeWriter</writer>

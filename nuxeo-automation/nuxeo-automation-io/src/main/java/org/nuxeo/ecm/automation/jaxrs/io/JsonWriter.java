@@ -29,6 +29,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.core.OperationChainContribution;
 import org.nuxeo.ecm.automation.io.services.JsonFactoryManager;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodec;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
@@ -148,16 +149,44 @@ public class JsonWriter {
 
     public static void writeOperation(OutputStream out,
             OperationDocumentation op) throws IOException {
-        writeOperation(createGenerator(out), op, op.url);
+        writeOperation(out, op, false);
+    }
+
+    /**
+     * @since 5.9.4
+     */
+    public static void writeOperation(OutputStream out,
+            OperationDocumentation op, boolean prettyPrint) throws IOException {
+        writeOperation(createGenerator(out), op, prettyPrint);
     }
 
     public static void writeOperation(JsonGenerator jg,
             OperationDocumentation op) throws IOException {
-        writeOperation(jg, op, op.url);
+        writeOperation(jg, op, false);
+    }
+
+    /**
+     * @since 5.9.4
+     */
+    public static void writeOperation(JsonGenerator jg,
+            OperationDocumentation op, boolean prettyPrint) throws IOException {
+        writeOperation(jg, op, op.url, prettyPrint);
     }
 
     public static void writeOperation(JsonGenerator jg,
             OperationDocumentation op, String url) throws IOException {
+        writeOperation(jg, op, url, false);
+    }
+
+    /**
+     * @since 5.9.4
+     */
+    public static void writeOperation(JsonGenerator jg,
+            OperationDocumentation op, String url, boolean prettyPrint)
+            throws IOException {
+        if (prettyPrint) {
+            jg.useDefaultPrettyPrinter();
+        }
         jg.writeStartObject();
         jg.writeStringField("id", op.id);
         jg.writeStringField("label", op.label);

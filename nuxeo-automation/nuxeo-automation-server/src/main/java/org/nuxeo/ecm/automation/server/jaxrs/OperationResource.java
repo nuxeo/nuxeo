@@ -12,15 +12,12 @@
 package org.nuxeo.ecm.automation.server.jaxrs;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
-
-import java.util.HashMap;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -35,7 +32,6 @@ public class OperationResource extends ExecutableResource {
     }
 
     @GET
-    @Produces("application/json")
     public Object doGet() throws OperationException {
         return type.getDocumentation();
     }

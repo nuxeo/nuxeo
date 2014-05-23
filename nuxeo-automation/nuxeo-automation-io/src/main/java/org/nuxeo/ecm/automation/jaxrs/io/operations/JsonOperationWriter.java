@@ -16,8 +16,10 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -31,7 +33,11 @@ import org.nuxeo.ecm.automation.jaxrs.io.JsonWriter;
  */
 @Provider
 @Produces("application/json")
-public class JsonOperationWriter implements MessageBodyWriter<OperationDocumentation> {
+public class JsonOperationWriter implements
+        MessageBodyWriter<OperationDocumentation> {
+
+    @Context
+    protected HttpServletRequest request;
 
     @Override
     public long getSize(OperationDocumentation arg0, Class<?> arg1, Type arg2,
@@ -46,10 +52,12 @@ public class JsonOperationWriter implements MessageBodyWriter<OperationDocumenta
     }
 
     @Override
-    public void writeTo(OperationDocumentation op, Class<?> arg1, Type arg2, Annotation[] arg3,
-            MediaType arg4, MultivaluedMap<String, Object> arg5, OutputStream out)
+    public void writeTo(OperationDocumentation op, Class<?> arg1, Type arg2,
+            Annotation[] arg3, MediaType arg4,
+            MultivaluedMap<String, Object> arg5, OutputStream out)
             throws IOException, WebApplicationException {
-        JsonWriter.writeOperation(out, op);
+        boolean pretty = Boolean.parseBoolean(request.getParameter("pretty"));
+        JsonWriter.writeOperation(out, op, pretty);
     }
 
 }
