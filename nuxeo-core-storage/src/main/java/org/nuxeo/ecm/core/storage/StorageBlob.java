@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,8 +9,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-
-package org.nuxeo.ecm.core.storage.sql.coremodel;
+package org.nuxeo.ecm.core.storage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,15 +17,13 @@ import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.DefaultStreamBlob;
-import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.ecm.core.storage.binary.Binary;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 
 /**
  * A {@link Blob} wrapping a {@link Binary} value.
- *
- * @author Florent Guillaume
- * @author Bogdan Stefanescu
  */
-public class SQLBlob extends DefaultStreamBlob implements Serializable {
+public class StorageBlob extends DefaultStreamBlob implements SQLBlob {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,7 +31,7 @@ public class SQLBlob extends DefaultStreamBlob implements Serializable {
 
     protected final long length;
 
-    public SQLBlob(Binary binary, String filename, String mimeType,
+    public StorageBlob(Binary binary, String filename, String mimeType,
             String encoding, String digest, long length) {
         this.binary = binary;
         this.length = length;

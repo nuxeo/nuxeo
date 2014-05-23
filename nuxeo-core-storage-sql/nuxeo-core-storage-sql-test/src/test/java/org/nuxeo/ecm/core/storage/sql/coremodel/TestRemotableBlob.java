@@ -20,9 +20,11 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
-import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.ecm.core.storage.StorageBlob;
+import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -39,7 +41,8 @@ public class TestRemotableBlob extends NXRuntimeTestCase {
         out.write("the content".getBytes("UTF-8"));
         out.close();
         Binary binary = new Binary(file, "abc");
-        return new SQLBlob(binary, "test.txt", "text/plain", "UTF-8", "abc", file.length());
+        return new StorageBlob(binary, "test.txt", "text/plain", "UTF-8",
+                "abc", file.length());
     }
 
     @Test

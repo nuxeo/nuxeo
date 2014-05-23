@@ -27,6 +27,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
+import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 
 /**

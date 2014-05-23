@@ -45,8 +45,8 @@ import com.google.inject.Binder;
 @Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.query",
         "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.event",
         "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.convert",
-        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.core.storage.sql",
-        "org.nuxeo.ecm.core.storage.sql.test" })
+        "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.core.storage",
+        "org.nuxeo.ecm.core.storage.sql", "org.nuxeo.ecm.core.storage.sql.test" })
 @Features(RuntimeFeature.class)
 public class CoreFeature extends SimpleFeature {
 

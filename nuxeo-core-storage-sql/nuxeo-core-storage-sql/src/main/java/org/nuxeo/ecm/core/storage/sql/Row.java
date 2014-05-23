@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.nuxeo.ecm.core.storage.binary.Binary;
+
 /**
  * The data of a single row in a table (keys/values form a map), or of multiple
  * rows with the same id (values is an array of Serializable).

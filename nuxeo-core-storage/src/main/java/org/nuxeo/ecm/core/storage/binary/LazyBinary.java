@@ -9,12 +9,13 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.binary;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.services.streaming.StreamSource;
 
@@ -42,7 +43,8 @@ public class LazyBinary extends Binary {
                 throw new UnsupportedOperationException(
                         "Cannot find binary manager, no repository name");
             }
-            cbm = (CachingBinaryManager) RepositoryResolver.getBinaryManager(repoName);
+            BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
+            cbm = (CachingBinaryManager) bms.getBinaryManager(repoName);
         }
         return cbm;
     }

@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.repository.RepositoryService;
+import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 import org.nuxeo.runtime.api.Framework;
 
@@ -72,6 +73,10 @@ public class RepositoryResolver {
         }
     }
 
+    /**
+     * @deprecated since 5.9.4, use BinaryManagerService instead
+     */
+    @Deprecated
     public static BinaryManager getBinaryManager(String repositoryName) {
         return getRepositoryImpl(getRepository(repositoryName)).getBinaryManager();
     }

@@ -14,7 +14,7 @@
  * Contributors:
  *     matic
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.binary;
 
 import java.io.IOException;
 

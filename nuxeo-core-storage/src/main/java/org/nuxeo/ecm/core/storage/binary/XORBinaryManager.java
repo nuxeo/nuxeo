@@ -10,7 +10,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.binary;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import java.io.IOException;
  * A simple binary manager that "hides" binaries on the filesystem by scrambling
  * them on write and unscrambling them on read using XOR.
  * <p>
- * The {@link RepositoryDescriptor} holds a key that can be used to drive the
+ * The {@link BinaryManagerDescriptor} holds a key that can be used to drive the
  * scrambling/unscrambling.
  * <p>
  * This is to prevent casual reading of the files, but of course the algorithm
@@ -31,10 +31,10 @@ public class XORBinaryManager extends LocalBinaryManager {
     protected byte[] pattern;
 
     @Override
-    public void initialize(RepositoryDescriptor repositoryDescriptor)
+    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
             throws IOException {
-        super.initialize(repositoryDescriptor);
-        String key = repositoryDescriptor.binaryManagerKey;
+        super.initialize(binaryManagerDescriptor);
+        String key = binaryManagerDescriptor.key;
         if (key == null || key.length() == 0) {
             key = "U"; // 0x55
         }

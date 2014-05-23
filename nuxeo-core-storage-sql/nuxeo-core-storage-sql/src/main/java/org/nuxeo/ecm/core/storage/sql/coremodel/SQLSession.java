@@ -79,9 +79,10 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.PartialList;
+import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
-import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
@@ -1184,7 +1185,7 @@ public class SQLSession implements Session {
         String encoding = node.getSimpleProperty(BLOB_ENCODING).getString();
         String digest = node.getSimpleProperty(BLOB_DIGEST).getString();
         Long length = node.getSimpleProperty(BLOB_LENGTH).getLong();
-        return new SQLBlob(binary, name, mimeType, encoding, digest,
+        return new StorageBlob(binary, name, mimeType, encoding, digest,
                 length.longValue());
     }
 
@@ -1286,7 +1287,7 @@ public class SQLSession implements Session {
      */
     public Binary getBinary(Blob blob) throws DocumentException {
         if (blob instanceof SQLBlob) {
-            return ((SQLBlob) blob).binary;
+            return ((SQLBlob) blob).getBinary();
         }
         StreamSource source;
         try {

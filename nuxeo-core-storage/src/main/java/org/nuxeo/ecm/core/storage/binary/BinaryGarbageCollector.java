@@ -14,7 +14,8 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.binary;
+
 
 /**
  * A Garbage Collector for a {@link BinaryManager}.

@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import java.io.BufferedInputStream;
@@ -22,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
+import org.nuxeo.ecm.core.storage.binary.Binary;
+import org.nuxeo.ecm.core.storage.binary.XORBinaryManager;
 import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**

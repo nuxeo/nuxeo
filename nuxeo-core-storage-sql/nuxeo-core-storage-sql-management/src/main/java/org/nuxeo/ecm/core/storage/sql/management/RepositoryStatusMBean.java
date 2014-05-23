@@ -12,7 +12,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.management;
 
-import org.nuxeo.ecm.core.storage.sql.BinaryManagerStatus;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
 
 /**
  * @author Florent Guillaume

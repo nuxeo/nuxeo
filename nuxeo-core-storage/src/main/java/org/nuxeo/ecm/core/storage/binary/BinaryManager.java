@@ -10,7 +10,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.binary;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,8 +23,7 @@ public interface BinaryManager {
     /**
      * Initializer.
      */
-    void initialize(RepositoryDescriptor repositoryDescriptor)
-            throws IOException;
+    void initialize(BinaryManagerDescriptor descriptor) throws IOException;
 
     /**
      * Saves the given input stream into a {@link Binary}.

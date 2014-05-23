@@ -10,7 +10,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.binary;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,12 +33,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Descriptor for the configuration of a binaries storage.
- *
- * @author Florent Guillaume
+ * Descriptor for the configuration of an on-disk binaries storage.
  */
-@XObject(value = BinaryManagerDescriptor.BINARY_STORE)
-public class BinaryManagerDescriptor {
+@XObject(value = BinaryManagerRootDescriptor.BINARY_STORE)
+public class BinaryManagerRootDescriptor {
 
     public static final String BINARY_STORE = "binary-store";
 
@@ -64,7 +62,7 @@ public class BinaryManagerDescriptor {
      * @param out the output file to use
      * @throws IOException
      */
-    protected void write(File out) throws IOException {
+    public void write(File out) throws IOException {
         DocumentBuilder parser;
         try {
             parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();

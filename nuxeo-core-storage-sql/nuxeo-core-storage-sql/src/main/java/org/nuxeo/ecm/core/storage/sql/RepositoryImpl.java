@@ -28,6 +28,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.storage.binary.BinaryManager;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerService;
+import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend.MapperKind;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
@@ -180,7 +185,14 @@ public class RepositoryImpl implements Repository {
                 klass = DefaultBinaryManager.class;
             }
             BinaryManager binaryManager = klass.newInstance();
-            binaryManager.initialize(repositoryDescriptor);
+            BinaryManagerDescriptor binaryManagerDescriptor = new BinaryManagerDescriptor();
+            binaryManagerDescriptor.repositoryName = repositoryDescriptor.name;
+            binaryManagerDescriptor.klass = klass;
+            binaryManagerDescriptor.key = repositoryDescriptor.binaryManagerKey;
+            binaryManagerDescriptor.storePath = repositoryDescriptor.binaryStorePath;
+            binaryManager.initialize(binaryManagerDescriptor);
+            BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
+            bms.addBinaryManager(repositoryDescriptor.name, binaryManager);
             return binaryManager;
         } catch (Exception e) {
             throw new StorageException(e);
@@ -380,10 +392,11 @@ public class RepositoryImpl implements Repository {
     @Override
     public synchronized void close() throws StorageException {
         closeAllSessions();
-
         model = null;
-
         backend.shutdown();
+        BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
+        bms.removeBinaryManager(repositoryDescriptor.name);
+
         registry.remove(MetricRegistry.name(RepositoryImpl.class, getName(),
                 "cache-size"));
         registry.remove(MetricRegistry.name(PersistenceContext.class,

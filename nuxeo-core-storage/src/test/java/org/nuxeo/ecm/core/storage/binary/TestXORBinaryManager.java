@@ -14,7 +14,7 @@
  * Contributors:
  *     Mathieu Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.binary;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,6 +25,9 @@ import java.io.File;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.nuxeo.ecm.core.storage.binary.Binary;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
+import org.nuxeo.ecm.core.storage.binary.XORBinaryManager;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestXORBinaryManager extends NXRuntimeTestCase {
@@ -38,7 +41,7 @@ public class TestXORBinaryManager extends NXRuntimeTestCase {
     @Test
     public void testXORBinaryManagerWithInputStream() throws Exception {
         XORBinaryManager binaryManager = new XORBinaryManager();
-        binaryManager.initialize(new RepositoryDescriptor());
+        binaryManager.initialize(new BinaryManagerDescriptor());
         assertEquals(0, countFiles(binaryManager.getStorageDir()));
 
         Binary binary = binaryManager.getBinary(CONTENT_MD5);

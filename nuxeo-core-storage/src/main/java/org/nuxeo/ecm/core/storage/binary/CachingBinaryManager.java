@@ -15,7 +15,7 @@
  *     Stephane Lacoin
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.binary;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,7 +44,7 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
 
     protected static final String LEN_DIGEST_SUFFIX = "-len";
 
-    protected FileCache fileCache;
+    public FileCache fileCache;
 
     protected FileStorage fileStorage;
 

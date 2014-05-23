@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.common.Environment;
@@ -35,7 +36,14 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
+import org.nuxeo.ecm.core.storage.StorageBlob;
+import org.nuxeo.ecm.core.storage.binary.Binary;
+import org.nuxeo.ecm.core.storage.binary.BinaryManager;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerService;
+import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
+import org.nuxeo.ecm.core.storage.binary.LocalBinaryManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
 /**
@@ -101,13 +109,13 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
          * 2. Later, create and use the blob for this digest.
          */
         BinaryManager binaryManager = new DefaultBinaryManager();
-        binaryManager.initialize(new RepositoryDescriptor());
+        binaryManager.initialize(new BinaryManagerDescriptor());
         Binary binary = binaryManager.getBinary(digest);
         if (binary == null) {
             throw new RuntimeException("Missing file for digest: " + digest);
         }
         String filename = "doc.txt";
-        Blob blob = new SQLBlob(binary, filename, "text/plain", "utf-8",
+        Blob blob = new StorageBlob(binary, filename, "text/plain", "utf-8",
                 binary.getDigest(), binary.getLength());
         file.setProperty("file", "filename", filename);
         file.setProperty("file", "content", blob);
@@ -148,7 +156,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
         // filesystem
         String digest = createFile();
         BinaryManager binaryManager = new DefaultBinaryManager();
-        binaryManager.initialize(new RepositoryDescriptor());
+        binaryManager.initialize(new BinaryManagerDescriptor());
         Binary binary = binaryManager.getBinary(digest);
         if (binary == null) {
             throw new RuntimeException("Missing file for digest: " + digest);
@@ -198,7 +206,8 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
 
     @Test
     public void testBinaryManagerTmpFileMoveNotCopy() throws Exception {
-        LocalBinaryManager binaryManager = (LocalBinaryManager) RepositoryResolver.getBinaryManager(session.getRepositoryName());
+        BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
+        LocalBinaryManager binaryManager = (LocalBinaryManager) bms.getBinaryManager(session.getRepositoryName());
 
         // tmp file in binary manager filesystem (not in tmp but still works)
         File file = File.createTempFile("test-", ".data",

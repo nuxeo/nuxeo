@@ -14,7 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.binary;
 
 /**
  * Status of a BinaryManager, including files that may have just been deleted by

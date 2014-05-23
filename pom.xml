@@ -24,6 +24,7 @@
     <module>nuxeo-core-query</module>
     <module>nuxeo-core-schema</module>
     <module>nuxeo-core-io</module>
+    <module>nuxeo-core-storage</module>
     <module>nuxeo-core-storage-sql</module>
     <module>nuxeo-core-convert-api</module>
     <module>nuxeo-core-convert</module>

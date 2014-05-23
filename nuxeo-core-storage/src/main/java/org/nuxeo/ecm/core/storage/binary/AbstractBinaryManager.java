@@ -10,7 +10,7 @@
  *     Florent Guillaume, jcarsique
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.binary;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,7 +29,7 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  *
  * @author Florent Guillaume
  */
-abstract class AbstractBinaryManager implements BinaryManager {
+public abstract class AbstractBinaryManager implements BinaryManager {
 
     public static final String DEFAULT_DIGEST = "MD5"; // "SHA-256"
 
@@ -37,12 +37,12 @@ abstract class AbstractBinaryManager implements BinaryManager {
 
     protected String repositoryName;
 
-    protected BinaryManagerDescriptor descriptor;
+    protected BinaryManagerRootDescriptor descriptor;
 
     protected BinaryGarbageCollector garbageCollector;
 
     @Override
-    abstract public void initialize(RepositoryDescriptor repositoryDescriptor)
+    abstract public void initialize(BinaryManagerDescriptor descriptor)
             throws IOException;
 
     @Override
@@ -51,24 +51,23 @@ abstract class AbstractBinaryManager implements BinaryManager {
     @Override
     abstract public Binary getBinary(String digest);
 
-
     /**
      * Gets existing descriptor or creates a default one.
      */
-    protected BinaryManagerDescriptor getDescriptor(File configFile)
+    protected BinaryManagerRootDescriptor getDescriptor(File configFile)
             throws IOException {
-        BinaryManagerDescriptor desc;
+        BinaryManagerRootDescriptor desc;
         if (configFile.exists()) {
             XMap xmap = new XMap();
-            xmap.register(BinaryManagerDescriptor.class);
+            xmap.register(BinaryManagerRootDescriptor.class);
             try {
-                desc = (BinaryManagerDescriptor) xmap.load(new FileInputStream(
+                desc = (BinaryManagerRootDescriptor) xmap.load(new FileInputStream(
                         configFile));
             } catch (Exception e) {
                 throw (IOException) new IOException().initCause(e);
             }
         } else {
-            desc = new BinaryManagerDescriptor();
+            desc = new BinaryManagerRootDescriptor();
             // TODO fetch from repo descriptor
             desc.digest = DEFAULT_DIGEST;
             desc.depth = DEFAULT_DEPTH;
@@ -282,6 +281,5 @@ abstract class AbstractBinaryManager implements BinaryManager {
             is.close();
         }
     }
-
 
 }

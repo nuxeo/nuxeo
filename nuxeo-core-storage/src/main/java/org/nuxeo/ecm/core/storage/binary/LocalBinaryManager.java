@@ -10,7 +10,7 @@
  *     Florent Guillaume, Mathieu Guillaume, jcarsique
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.binary;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,9 +63,9 @@ public class LocalBinaryManager extends AbstractBinaryManager {
     protected File tmpDir;
 
     @Override
-    public void initialize(RepositoryDescriptor repositoryDescriptor)
+    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
             throws IOException {
-        String path = repositoryDescriptor.binaryStorePath;
+        String path = binaryManagerDescriptor.storePath;
         if (path == null || path.trim().length() == 0) {
             path = DEFAULT_PATH;
         }
@@ -92,11 +92,11 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         }
 
         log.info("Repository '"
-                + repositoryDescriptor.name
+                + binaryManagerDescriptor.repositoryName
                 + "' using "
                 + (this.getClass().equals(LocalBinaryManager.class) ? ""
                         : (this.getClass().getSimpleName() + " and "))
-                        + "binary store: " + base);
+                + "binary store: " + base);
         storageDir = new File(base, DATA);
         tmpDir = new File(base, TMP);
         storageDir.mkdirs();
@@ -247,7 +247,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
     }
 
     public static class DefaultBinaryGarbageCollector implements
-    BinaryGarbageCollector {
+            BinaryGarbageCollector {
 
         /**
          * Windows FAT filesystems have a time resolution of 2s. Other common

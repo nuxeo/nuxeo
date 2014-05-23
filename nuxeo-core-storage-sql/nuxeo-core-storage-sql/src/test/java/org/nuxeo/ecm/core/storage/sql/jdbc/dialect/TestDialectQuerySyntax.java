@@ -23,13 +23,13 @@ import org.jmock.Mockery;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
-
 import org.junit.runner.RunWith;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
-import org.nuxeo.ecm.core.storage.sql.BinaryManager;
+import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;

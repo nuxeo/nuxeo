@@ -15,8 +15,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.storage.sql.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.sql.BinaryManagerStatus;
+import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.RepositoryResolver;
 
