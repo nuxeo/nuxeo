@@ -132,6 +132,8 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
         DocumentModel doc1 = new MockDocumentModel("1");
         DocumentModel doc2 = new MockDocumentModel("2");
 
+        System.out.println("Mockup documents are unable to generate events" +
+                            " expecting error logs");
         stackCommand(doc1, DocumentEventTypes.BEFORE_DOC_UPDATE, false);
         stackCommand(doc1, DocumentEventTypes.BEFORE_DOC_UPDATE, true);
 

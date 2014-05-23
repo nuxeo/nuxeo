@@ -93,7 +93,7 @@ public class TestManualIndexing {
         SearchResponse searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
-        System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
+        // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
         searchResponse = esa.getClient().prepareSearch(
@@ -169,7 +169,7 @@ public class TestManualIndexing {
         searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
-        System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
+        // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
         searchResponse = esa.getClient().prepareSearch(
@@ -244,7 +244,7 @@ public class TestManualIndexing {
         searchResponse = esa.getClient().prepareSearch(
                 IDX_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
-        System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
+        // System.out.println(searchResponse.getHits().getAt(0).sourceAsString());
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
         searchResponse = esa.getClient().prepareSearch(

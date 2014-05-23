@@ -103,8 +103,6 @@ public class TestAutomaticIndexing {
             doc = session.saveDocument(doc);
         }
 
-        // this should not be needed !
-        // session.save();
         TransactionHelper.commitOrRollbackTransaction();
 
         int nbTry = 0;
@@ -145,9 +143,9 @@ public class TestAutomaticIndexing {
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc.getContextData().put(EventConstants.ES_SYNC_INDEXING_FLAG, true);
             doc = session.createDocument(doc);
-
         }
-
+        // Save session to prevent NXP-14494
+        session.save();
         TransactionHelper.setTransactionRollbackOnly();
         TransactionHelper.commitOrRollbackTransaction();
 
@@ -166,7 +164,6 @@ public class TestAutomaticIndexing {
                 IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
-
     }
 
     @Test
@@ -191,8 +188,7 @@ public class TestAutomaticIndexing {
         }
 
         int n = esa.getTotalCommandProcessed();
-        // this should not be needed !
-        // session.save();
+
         TransactionHelper.commitOrRollbackTransaction();
 
         WorkManager wm = Framework.getLocalService(WorkManager.class);
@@ -234,7 +230,8 @@ public class TestAutomaticIndexing {
             doc = session.createDocument(doc);
 
         }
-
+        // Save session to prevent NXP-14494
+        session.save();
         TransactionHelper.setTransactionRollbackOnly();
         TransactionHelper.commitOrRollbackTransaction();
 
@@ -273,7 +270,6 @@ public class TestAutomaticIndexing {
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:title", "TestMe");
         doc = session.createDocument(doc);
-
         TransactionHelper.commitOrRollbackTransaction();
 
         Assert.assertEquals(1, esa.getPendingCommands());
@@ -297,7 +293,6 @@ public class TestAutomaticIndexing {
         // now delete the document
         session.removeDocument(doc.getRef());
         int n = esa.getTotalCommandProcessed();
-
         TransactionHelper.commitOrRollbackTransaction();
 
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
