@@ -17,8 +17,6 @@
 
 package org.nuxeo.elasticsearch.test;
 
-import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -42,9 +40,9 @@ public class RepositoryElasticSearchFeature extends SimpleFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        // Use derby because H2 comes with an old lucene dep which conflict with
-        // ES
-        DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
+        super.initialize(runner);
+        // Uncomment to use Derby when h2 lucene lib is not aligned with ES
+        // DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
     }
 
 }

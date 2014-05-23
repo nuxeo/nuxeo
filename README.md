@@ -24,8 +24,6 @@ https://github.com/nuxeo/marketplace-elasticsearch
 
 ## Limitations
 
-- Doesn't work with an H2 backend (incompatible Lucene versions).
-
 - Only supports a single repository.
 
 - ACL filtering works fine only on simplified ACL. We don't support
