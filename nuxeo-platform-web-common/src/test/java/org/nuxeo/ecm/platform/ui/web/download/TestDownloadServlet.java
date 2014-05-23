@@ -20,7 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.ecm.core.storage.StorageBlob;
+import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.platform.ui.web.download.DownloadServlet.ByteRange;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
@@ -198,8 +199,8 @@ public class TestDownloadServlet {
         Binary binary = mock(Binary.class);
         final byte[] bytes = stringValue.getBytes();
         InputStream in = new ByteArrayInputStream(bytes);
-        SQLBlob blob = new SQLBlob(binary, "myFile.txt", "text/plain", "UTF-8",
-                digest,bytes.length);
+        SQLBlob blob = new StorageBlob(binary, "myFile.txt", "text/plain",
+                "UTF-8", digest, bytes.length);
         when(binary.getStream()).thenReturn(in);
         when(binary.getDigest()).thenReturn(digest);
         when(binary.getLength()).thenReturn((long) bytes.length);
