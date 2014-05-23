@@ -150,7 +150,7 @@ public class AdapterBindingTest extends BaseTest {
         queryParams.putSingle("currentPageIndex", "1");
         queryParams.putSingle("pageSize", "2");
         queryParams.putSingle("sortBy", "dc:title");
-        queryParams.putSingle("sortOrder", "desc");
+        queryParams.putSingle("sortOrder", "DESC");
 
         // When i adapt the children of the folder with a BusinessBeanAdapter
         JsonNode node = getResponseAsJson(RequestType.GET,
@@ -162,11 +162,29 @@ public class AdapterBindingTest extends BaseTest {
         assertTrue(node.get("isPaginable").getBooleanValue());
         assertEquals(2, ((ArrayNode) node.get("entries")).size());
 
-        String title1 = ((ArrayNode) node.get("entries")).get(0).get("value").get(
-                "title").toString();
-        String title2 = ((ArrayNode) node.get("entries")).get(1).get("value").get(
-                "title").toString();
+        JsonNode node1 = ((ArrayNode) node.get("entries")).get(0);
+        JsonNode node2 = ((ArrayNode) node.get("entries")).get(1);
+        String title1 = node1.get("value").get("title").getValueAsText();
+        String title2 = node2.get("value").get("title").getValueAsText();
         assertTrue(title1.compareTo(title2) > 0);
 
+        // same with multiple sorts
+        queryParams.putSingle("sortBy", "dc:description,dc:title");
+        queryParams.putSingle("sortOrder", "asc,desc");
+
+        node = getResponseAsJson(RequestType.GET, "/id/" + folder.getId()
+                + "/@children/@" + BOAdapter.NAME + "/BusinessBeanAdapter",
+                queryParams);
+
+        // Then i receive a list of businessBeanAdapter
+        assertEquals("adapters", node.get("entity-type").getValueAsText());
+        assertTrue(node.get("isPaginable").getBooleanValue());
+        assertEquals(2, ((ArrayNode) node.get("entries")).size());
+
+        node1 = ((ArrayNode) node.get("entries")).get(0);
+        node2 = ((ArrayNode) node.get("entries")).get(1);
+        title1 = node1.get("value").get("title").getValueAsText();
+        title2 = node2.get("value").get("title").getValueAsText();
+        assertTrue(title1.compareTo(title2) > 0);
     }
 }

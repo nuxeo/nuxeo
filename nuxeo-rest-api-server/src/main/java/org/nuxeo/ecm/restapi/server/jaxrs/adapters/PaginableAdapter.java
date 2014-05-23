@@ -23,12 +23,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.automation.core.util.PaginablePageProvider;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -63,14 +63,23 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
     protected String maxResults;
 
     /**
+     * Sort by parameters (can be a list of sorts, separated by commas).
+     * <p>
+     * Exp: dc:title,dc:modified.
+     *
      * @since 5.9.4
      */
     protected String sortBy;
 
     /**
-     * @since 5.9.4 'asc' or 'desc'. Default set to 'desc'
+     * Sort order parameters (can be a list of sorts orders, separated by
+     * commas, matched by index to corresponding sort by parameters).
+     * <p>
+     * Exp: asc,desc, or ASC,DESC. When empty, defaults to 'desc'.
+     *
+     * @since 5.9.4
      */
-    protected String sortOrder = "desc";
+    protected String sortOrder;
 
     @Override
     protected void initialize(Object... args) {
@@ -121,9 +130,23 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
         PageProvider<T> pp = (PageProvider<T>) pps.getPageProvider("",
                 ppDefinition, getSearchDocument(), null, pageSize,
                 currentPageIndex, props, getParams());
-        if (sortBy != null) {
-            boolean sortAscending = "desc".equals(sortOrder) ? false : true;
-            pp.setSortInfo(new SortInfo(sortBy, sortAscending));
+        if (!StringUtils.isBlank(sortBy)) {
+            String[] sorts = sortBy.split(",");
+            String[] orders = null;
+            if (!StringUtils.isBlank(sortOrder)) {
+                orders = sortOrder.split(",");
+            }
+            if (sorts != null) {
+                // clear potential default sort infos first
+                pp.setSortInfos(null);
+                for (int i = 0; i < sorts.length; i++) {
+                    String sort = sorts[i];
+                    boolean sortAscending = (orders != null
+                            && orders.length > i && "asc".equals(orders[i].toLowerCase())) ? true
+                            : false;
+                    pp.addSortInfo(sort, sortAscending);
+                }
+            }
         }
         return getPaginableEntries(pp);
     }
