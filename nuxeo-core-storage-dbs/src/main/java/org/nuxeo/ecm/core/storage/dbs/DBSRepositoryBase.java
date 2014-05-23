@@ -190,13 +190,13 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
         protected final DBSSession baseSession;
 
-        protected final Set<DBSSessionInvoker> invokers;
+        protected final Set<Session> proxies;
 
         public TransactionContext(Transaction transaction,
                 DBSSession baseSession) {
             this.transaction = transaction;
             this.baseSession = baseSession;
-            invokers = new HashSet<>();
+            proxies = new HashSet<>();
         }
 
         public void init() {
@@ -214,16 +214,16 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             DBSSessionInvoker invoker = new DBSSessionInvoker(this, sessionId);
             Session proxy = (Session) Proxy.newProxyInstance(cl,
                     new Class[] { Session.class }, invoker);
-            add(invoker);
+            add(proxy);
             return proxy;
         }
 
-        public void add(DBSSessionInvoker invoker) {
-            invokers.add(invoker);
+        public void add(Session proxy) {
+            proxies.add(proxy);
         }
 
-        public boolean remove(Object invoker) {
-            return invokers.remove(invoker);
+        public boolean remove(Object proxy) {
+            return proxies.remove(proxy);
         }
 
         @Override
@@ -238,7 +238,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         @Override
         public void afterCompletion(int status) {
             baseSession.close();
-            for (Session proxy : invokers.toArray(new Session[0])) {
+            for (Session proxy : proxies.toArray(new Session[0])) {
                 proxy.close();
             }
             transactionContexts.remove(transaction);
@@ -249,6 +249,10 @@ public abstract class DBSRepositoryBase implements DBSRepository {
      * An indirection to a {@link DBSSession} that has a different sessionId.
      */
     public static class DBSSessionInvoker implements InvocationHandler {
+
+        private static final String METHOD_HASHCODE = "hashCode";
+
+        private static final String METHOD_EQUALS = "equals";
 
         private static final String METHOD_GETSESSIONID = "getSessionId";
 
@@ -270,20 +274,23 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args)
                 throws Throwable {
-            if (method.getName().equals(METHOD_GETSESSIONID)) {
-                return sessionId;
+            String methodName = method.getName();
+            if (methodName.equals(METHOD_HASHCODE)) {
+                return doHashCode();
             }
-            if (method.getName().equals(METHOD_CLOSE)) {
-                closed = true;
-                context.remove(this);
-                return null;
+            if (methodName.equals(METHOD_EQUALS)) {
+                return doEquals(args);
             }
-            if (method.getName().equals(METHOD_ISLIVE)) {
-                if (closed) {
-                    return FALSE;
-                }
-                // else fall through
+            if (methodName.equals(METHOD_GETSESSIONID)) {
+                return doGetSessionId();
             }
+            if (methodName.equals(METHOD_CLOSE)) {
+                return doClose(proxy);
+            }
+            if (methodName.equals(METHOD_ISLIVE)) {
+                return doIsLive();
+            }
+
             if (closed) {
                 throw new DocumentException(
                         "Cannot use closed connection handle: " + sessionId);
@@ -303,6 +310,40 @@ public abstract class DBSRepositoryBase implements DBSRepository {
                     Thread.currentThread().interrupt();
                 }
                 throw t;
+            }
+        }
+
+        protected Integer doHashCode() {
+            return Integer.valueOf(this.hashCode());
+        }
+
+        protected Boolean doEquals(Object[] args) {
+            if (args.length != 1 || args[0] == null) {
+                return FALSE;
+            }
+            Object other = args[0];
+            if (!(Proxy.isProxyClass(other.getClass()))) {
+                return FALSE;
+            }
+            InvocationHandler otherInvoker = Proxy.getInvocationHandler(other);
+            return Boolean.valueOf(this.equals(otherInvoker));
+        }
+
+        protected String doGetSessionId() {
+            return sessionId;
+        }
+
+        protected Object doClose(Object proxy) {
+            closed = true;
+            context.remove(proxy);
+            return null;
+        }
+
+        protected Boolean doIsLive() {
+            if (closed) {
+                return FALSE;
+            } else {
+                return Boolean.valueOf(context.baseSession.isLive());
             }
         }
     }
