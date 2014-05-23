@@ -4581,7 +4581,6 @@
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
                 <banSnapshots>true</banSnapshots>
-                <!-- to comment when NXP-13880 is fixed -->
                 <!--<unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin,org.nuxeo.build:nuxeo-distribution-tools</unCheckedPluginList>-->
               </requirePluginVersions>
               <requireReleaseDeps>
