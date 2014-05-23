@@ -32,10 +32,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.io.DocumentXMLExporter;
-import org.nuxeo.ecm.core.storage.sql.Binary;
-import org.nuxeo.ecm.core.storage.sql.BinaryManager;
-import org.nuxeo.ecm.core.storage.sql.DefaultBinaryManager;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.binary.Binary;
+import org.nuxeo.ecm.core.storage.binary.BinaryManager;
+import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
+import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.diff.DiffTestCase;
@@ -86,7 +86,7 @@ public class TestDocumentDiff extends DiffTestCase {
     public void setUp() throws ClientException {
         binaryManager = new DefaultBinaryManager();
         try {
-            binaryManager.initialize(new RepositoryDescriptor());
+            binaryManager.initialize(new BinaryManagerDescriptor());
         } catch (IOException ioe) {
             throw new ClientException(
                     "Error while initializing binary manager", ioe);
