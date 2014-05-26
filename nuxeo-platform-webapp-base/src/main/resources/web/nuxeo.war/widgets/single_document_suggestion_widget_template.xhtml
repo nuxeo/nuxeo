@@ -23,37 +23,33 @@
     </h:outputText>
   </c:if>
   <c:if test="#{widget.mode == 'pdf'}">
-    <c:if test="#{not empty field}">
+    <h:outputText rendered="#{not empty field}">
       <nxu:set var="canSee"
-        value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(field)}"
-        cache="true">
+        value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(field)}">
         <nxp:html>
-        <c:if test="#{canSee}">
+        <h:outputText rendered="#{canSee}">
           <nxu:set var="doc"
             value="#{docSuggestionActions.getDocumentWithId(field)}">
             <nxu:graphicImage value="#{nxd:iconPath(doc)}"
               rendered="#{!empty nxd:iconPath(doc)}" />
             <h:outputText value="#{nxd:titleOrId(doc)}" />
           </nxu:set>
-        </c:if>
-        <c:if test="#{not canSee}">
-          <h:outputText
-            value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{field})" />
-        </c:if>
+        </h:outputText>
+        <h:outputText
+          value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{field})"
+          rendered="#{not canSee}" />
         </nxp:html>
       </nxu:set>
-    </c:if>
+    </h:outputText>
   </c:if>
   <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
-    <c:if test="#{not empty field}">
+    <h:outputText rendered="#{not empty field}">
       <nxu:set var="canSee"
-        value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(field)}"
-        cache="true">
-        <c:if test="#{canSee}">
+        value="#{docSuggestionActions.getDocumentExistsAndIsVisibleWithId(field)}">
+        <h:outputText rendered="#{canSee}">
           <nxu:set var="doc"
-            value="#{docSuggestionActions.getDocumentWithId(field)}"
-            cache="true">
+            value="#{docSuggestionActions.getDocumentWithId(field)}">
             <nxu:graphicImage value="#{nxd:iconPath(doc)}"
               rendered="#{!empty nxd:iconPath(doc)}"
               style="vertical-align:middle" styleClass="smallIcon" />
@@ -68,13 +64,12 @@
                 title="#{messages['permalink.newTab']}" />
             </nxd:restDocumentLink>
           </nxu:set>
-        </c:if>
-        <c:if test="#{not canSee}">
-          <h:outputText
-            value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{field})" />
-        </c:if>
+        </h:outputText>
+        <h:outputText
+          value="#{messages['label.documentSuggestion.docNotFoundOrNotVisible']} (#{field})"
+          rendered="#{not canSee}" />
       </nxu:set>
-    </c:if>
+    </h:outputText>
 
   </c:if>
   <c:if test="#{widget.mode == 'edit'}">
