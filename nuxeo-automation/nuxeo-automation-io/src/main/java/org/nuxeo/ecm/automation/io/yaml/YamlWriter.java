@@ -30,7 +30,7 @@ import org.yaml.snakeyaml.Yaml;
 /**
  * Operation to YAML converter
  *
- * @since 19
+ * @since 5.9.4
  */
 public class YamlWriter {
 
