@@ -16,7 +16,18 @@ package org.nuxeo.ecm.automation.core;
  */
 public class Constants {
 
+    /**
+     * A chain id prefix used in mysterious situations (old rest api it seems).
+     * <p>
+     * Hardcoded here to better track usage now that chains are registered as
+     * operations on the service?
+     *
+     * @since 5.9.4
+     */
+    public static final String CHAIN_ID_PREFIX = "Chain.";
+
     // Known input/output types
+
     public static final String O_DOCUMENT = "document";
 
     public static final String O_DOCUMENTS = "documents";
@@ -26,57 +37,46 @@ public class Constants {
     public static final String O_BLOBS = "blobs";
 
     // Parameter types
-    public static final String T_STRING = "string"; // injectable as String
 
-    public static final String T_BOOLEAN = "boolean"; // injectable as
+    // injectable as String
+    public static final String T_STRING = "string";
 
-    // Boolean
+    // injectable as Boolean
+    public static final String T_BOOLEAN = "boolean";
 
-    public static final String T_DATE = "date"; // W3C string injectable as
+    // W3C string injectable as Date
+    public static final String T_DATE = "date";
 
-    // Date
-
-    public static final String T_INTEGER = "integer"; // integer number
-
-    public static final String T_LONG = "long"; // long number
+    // injectable as Integer
+    public static final String T_INTEGER = "integer";
 
     // injectable as Long
+    public static final String T_LONG = "long";
 
-    public static final String T_FLOAT = "float"; // float number injectable
-
-    // as Double
-
-    public static final String T_RESOURCE = "resource"; // resource url
+    // injectable as Double
+    public static final String T_FLOAT = "float";
 
     // injectable as URL
+    public static final String T_RESOURCE = "resource";
 
-    public static final String T_DOCUMENT = "document"; // Document injectable
+    // injectable as DocumentRef or DocumentModel
+    public static final String T_DOCUMENT = "document";
 
-    // as DocumentRef /
-    // DocumentModel
-
-    public static final String T_DOCUMENTS = "documents"; // Document
+    // injectable as DocumentRefList / DocumentModelList
+    public static final String T_DOCUMENTS = "documents";
 
     public static final String T_BLOB = "blob";
 
     public static final String T_BLOBS = "bloblist";
 
-    // injectable as
-    // DocumentRefList
-    // /
-    // DocumentModelList
+    // inline MVEL injectable script as Script
+    public static final String T_SCRIPT = "script";
 
-    public static final String T_SCRIPT = "script"; // inline MVEL injectable
-
-    // script as Script
-
-    public static final String T_PROPERTIES = "properties"; // Java properties
-
-    // content
-    // injectable as
-    // Properties
+    // Java properties content injectable as Properties
+    public static final String T_PROPERTIES = "properties";
 
     // Category names
+
     public static final String CAT_FETCH = "Fetch";
 
     public static final String CAT_SCRIPTING = "Scripting";
@@ -110,6 +110,11 @@ public class Constants {
     public static final String WORKFLOW_CONTEXT = "Workflow";
 
     public static final String CAT_BUSINESS = "Business";
+
+    /**
+     * @since 5.9.4
+     */
+    public static final String CAT_CHAIN = "Chain";
 
     // Widget types
 

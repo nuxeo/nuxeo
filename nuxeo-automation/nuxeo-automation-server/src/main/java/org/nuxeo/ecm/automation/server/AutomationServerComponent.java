@@ -24,6 +24,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.codehaus.jackson.JsonFactory;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.io.services.IOComponent;
 import org.nuxeo.ecm.automation.io.services.JsonFactoryManager;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -39,9 +40,9 @@ public class AutomationServerComponent extends DefaultComponent implements
         AutomationServer {
 
     /**
-     * Was used to get the JsonFactory, but since 5.7.3 use either:
-     *   * <code>{@link JsonFactoryManager#getJsonFactory()}</code>
-     *   * Context annotation in JAX-RS object (providers or resources)
+     * Was used to get the JsonFactory, but since 5.7.3 use either: *
+     * <code>{@link JsonFactoryManager#getJsonFactory()}</code> * Context
+     * annotation in JAX-RS object (providers or resources)
      */
     @Deprecated
     public static AutomationServerComponent me;
@@ -61,8 +62,8 @@ public class AutomationServerComponent extends DefaultComponent implements
     protected volatile Map<String, RestBinding> lookup;
 
     protected List<Class<? extends MessageBodyWriter<?>>> writers;
-    protected List<Class<? extends MessageBodyReader<?>>> readers;
 
+    protected List<Class<? extends MessageBodyReader<?>>> readers;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -94,7 +95,7 @@ public class AutomationServerComponent extends DefaultComponent implements
         } else if (XP_CODECS.equals(extensionPoint)) {
             ioComponent.registerContribution(contribution, extensionPoint,
                     contributor);
-    }
+        }
     }
 
     @Override
@@ -123,7 +124,6 @@ public class AutomationServerComponent extends DefaultComponent implements
         super.applicationStarted(context);
     }
 
-
     /**
      * Since 5.7.3, use {@link JsonFactoryManager#getJsonFactory()}
      */
@@ -139,7 +139,7 @@ public class AutomationServerComponent extends DefaultComponent implements
 
     @Override
     public RestBinding getChainBinding(String name) {
-        return lookup().get("Chain." + name);
+        return lookup().get(Constants.CHAIN_ID_PREFIX + name);
     }
 
     @Override
@@ -149,8 +149,8 @@ public class AutomationServerComponent extends DefaultComponent implements
     }
 
     protected String getBindingKey(RestBinding binding) {
-        return binding.isChain() ? "Chain." + binding.getName()
-                : binding.getName();
+        return binding.isChain() ? Constants.CHAIN_ID_PREFIX
+                + binding.getName() : binding.getName();
     }
 
     @Override

@@ -29,7 +29,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.core.OperationChainContribution;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.io.services.JsonFactoryManager;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodec;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
@@ -116,7 +116,7 @@ public class JsonWriter {
         jg.writeArrayFieldStart("operations");
         for (OperationDocumentation op : ops) {
             if (filterNotInStudio) {
-                if (op.addToStudio && !"chain".equals(op.category)) {
+                if (op.addToStudio && !Constants.CAT_CHAIN.equals(op.category)) {
                     writeOperation(jg, op);
                 }
             } else {
@@ -142,7 +142,7 @@ public class JsonWriter {
             throws IOException {
         jg.writeArrayFieldStart("chains");
         for (OperationDocumentation op : info.getChains()) {
-            writeOperation(jg, op, "Chain." + op.id);
+            writeOperation(jg, op, Constants.CHAIN_ID_PREFIX + op.id);
         }
         jg.writeEndArray();
     }

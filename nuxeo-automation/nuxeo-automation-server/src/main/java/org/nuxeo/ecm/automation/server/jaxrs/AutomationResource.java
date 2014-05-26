@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.AutomationInfo;
@@ -129,7 +130,7 @@ public class AutomationResource extends ModuleRoot {
     @Path("/{oid}")
     public Object getExecutable(@PathParam("oid")
     String oid) {
-        if (oid.startsWith("Chain.")) {
+        if (oid.startsWith(Constants.CHAIN_ID_PREFIX)) {
             oid = oid.substring(6);
             return new ChainResource(service, oid);
         } else {

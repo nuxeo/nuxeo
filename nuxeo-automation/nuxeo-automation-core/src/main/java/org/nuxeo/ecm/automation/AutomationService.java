@@ -127,26 +127,28 @@ public interface AutomationService {
     Object run(OperationContext ctx, String id, Map<String, Object> params)
             throws OperationException, InvalidChainException, Exception;
 
-    /**
+/**
      * Registers a parametrized operation chain. This chain can be executed
      * later by calling <code>run</code> and passing the chain ID. If a chain
      * having the same ID exists an exception is thrown
      *
-     * @deprecated no chain registry existence since chain. became an operation
-     *             - use #putOperation method instead.
+     * @deprecated no specific chain registry anymore: chains are now
+     *             operations, use {@link #putOperation(OperationType, boolean)
+     *             method instead.
      * @since 5.7.2
      */
     @Deprecated
     void putOperationChain(OperationChain chain) throws OperationException;
 
-    /**
+/**
      * Registers a parametrized operation chain. This chain can be executed
      * later by calling <code>run</code> and passing the chain ID. If the
      * replace attribute is true then any chain already registered under the
      * same id will be replaced otherwise an exception is thrown.
      *
-     * @deprecated no chain registry existence since chain. became an operation
-     *             - use #putOperation method instead.
+     * @deprecated no specific chain registry anymore: chains are now
+     *             operations, use {@link #putOperation(OperationType, boolean)
+     *             method instead.
      * @since 5.7.2
      */
     @Deprecated
@@ -157,8 +159,9 @@ public interface AutomationService {
      * Removes a registered operation chain given its ID. Do nothing if the
      * chain was not registered.
      *
-     * @deprecated no chain registry existence since chain. became an operation
-     *             - use #removeOperation method instead.
+     * @deprecated no specific chain registry anymore: chains are now
+     *             operations, use {@link #removeOperation(OperationType)}
+     *             method instead.
      * @since 5.7.2
      */
     @Deprecated
@@ -167,8 +170,9 @@ public interface AutomationService {
     /**
      * Gets a registered operation chain.
      *
-     * @deprecated no chain registry existence since chain. became an operation
-     *             - use #removeOperation method instead.
+     * @deprecated no specific chain registry anymore: chains are now
+     *             operations, use {@link #getOperation(String)} method
+     *             instead.
      * @since 5.7.2
      */
     @Deprecated
@@ -178,8 +182,8 @@ public interface AutomationService {
     /**
      * Gets a list of all registered chains
      *
-     * @deprecated no chain registry existence since chain. became an operation
-     *             - use #removeOperation method instead.
+     * @deprecated no specific chain registry anymore: chains are now
+     *             operations, use {@link #getOperations()} method instead.
      * @since 5.7.2
      * @return the list or an empty list if no registered chains exists
      */

@@ -249,7 +249,7 @@ public class OperationChainContribution {
     }
 
     public String getCategory() {
-        return "chain";
+        return Constants.CAT_CHAIN;
     }
 
     public String getSince() {

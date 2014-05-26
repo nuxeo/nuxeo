@@ -20,6 +20,7 @@ import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+// Seems useless
 public class ChainResource extends ExecutableResource {
 
     protected final String chainId;

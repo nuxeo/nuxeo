@@ -17,6 +17,7 @@ import java.util.Arrays;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.OperationChainContribution;
 
 /**
@@ -195,6 +196,14 @@ public class OperationDocumentation implements
      */
     public String getImplementationClass() {
         return implementationClass;
+    }
+
+    /**
+     * @since 5.9.4
+     */
+    public boolean isChain() {
+        return (id != null && id.startsWith(Constants.CHAIN_ID_PREFIX))
+                || Constants.CAT_CHAIN.equals(category);
     }
 
     public String[] getSignature() {
