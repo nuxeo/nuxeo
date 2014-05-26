@@ -34,7 +34,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- * @since 19
+ * @since 5.9.4
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
