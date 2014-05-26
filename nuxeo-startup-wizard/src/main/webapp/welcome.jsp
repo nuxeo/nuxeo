@@ -1,6 +1,6 @@
 <%@ include file="includes/header.jsp"%>
 <script src="<%=contextPath%>/scripts/browserInternetAccess.js"></script>
-<script src="http://www.nuxeo.com/var/storage/wizard/networkCheck.js?ts=<%=System.currentTimeMillis()%>"></script>
+<script src="http://static.nuxeo.com/javascript/networkCheck.js?ts=<%=System.currentTimeMillis()%>"></script>
 
 <h1><fmt:message key="label.welcome" /></h1>
 <form id="wizardform" action="<%=contextPath%>/<%=currentPage.getAction()%>" method="POST">
