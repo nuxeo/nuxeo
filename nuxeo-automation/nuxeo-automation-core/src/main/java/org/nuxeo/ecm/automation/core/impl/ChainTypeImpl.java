@@ -163,7 +163,7 @@ public class ChainTypeImpl implements OperationType {
         if (doc.label.length() == 0) {
             doc.label = doc.id;
         }
-        id: doc.description = contribution.getDescription();
+        doc.description = contribution.getDescription();
         doc.params = contribution.getParams();
         // load signature
         if (operations.length != 0) {
@@ -266,9 +266,11 @@ public class ChainTypeImpl implements OperationType {
 
     protected InvokableMethod runMethod() {
         try {
-            return new InvokableMethod(this, CompiledChainImpl.class.getMethod("run"));
+            return new InvokableMethod(this,
+                    CompiledChainImpl.class.getMethod("run"));
         } catch (NoSuchMethodException | SecurityException e) {
-            throw new UnsupportedOperationException("Cannot use reflection for run method", e);
+            throw new UnsupportedOperationException(
+                    "Cannot use reflection for run method", e);
         }
     }
 

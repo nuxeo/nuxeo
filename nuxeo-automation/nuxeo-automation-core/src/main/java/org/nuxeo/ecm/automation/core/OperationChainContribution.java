@@ -257,6 +257,6 @@ public class OperationChainContribution {
     }
 
     public String getDescription() {
-        return "";
+        return description;
     }
 }
