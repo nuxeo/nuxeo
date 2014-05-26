@@ -14,6 +14,8 @@ package org.nuxeo.ecm.automation.server.jaxrs.doc;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +45,6 @@ import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -68,13 +69,12 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
         }
     }
 
-    protected Template getTemplate() {
-        return getTemplateView("index");
+    protected Template getTemplateFor(String browse) {
+        return getTemplateView("index").arg("browse", browse);
     }
 
     protected Template getTemplateView(String name) {
-        Map<String, List<OperationDocumentation>> cats = new
-                LinkedHashMap<String, List<OperationDocumentation>>();
+        Map<String, List<OperationDocumentation>> cats = new HashMap<String, List<OperationDocumentation>>();
         for (OperationDocumentation op : ops) {
             List<OperationDocumentation> list = cats.get(op.getCategory());
             if (list == null) {
@@ -83,14 +83,23 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
             }
             list.add(op);
         }
-        return getView(name).arg("categories", cats).arg(
-                "operations", ops);
+        // sort categories
+        List<String> catNames = new ArrayList<>();
+        catNames.addAll(cats.keySet());
+        Collections.sort(catNames);
+        Map<String, List<OperationDocumentation>> scats = new LinkedHashMap<String, List<OperationDocumentation>>();
+        for (String catName : catNames) {
+            scats.put(catName, cats.get(catName));
+        }
+        return getView(name).arg("categories", scats).arg("operations", ops);
     }
 
     @GET
-    public Object doGet(@QueryParam("id") String id) {
+    public Object doGet(@QueryParam("id")
+    String id, @QueryParam("browse")
+    String browse) {
         if (id == null) {
-            return getTemplate();
+            return getTemplateFor(browse);
         } else {
             OperationDocumentation opDoc = null;
             for (OperationDocumentation op : ops) {
@@ -102,14 +111,14 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
             if (opDoc == null) {
                 throw new WebApplicationException(Response.status(404).build());
             }
-            Template tpl = getTemplate();
+            Template tpl = getTemplateFor(browse);
             tpl.arg("operation", opDoc);
             return tpl;
         }
     }
 
     protected boolean canManageTraces() {
-        return ((NuxeoPrincipal)WebEngine.getActiveContext().getPrincipal()).isAdministrator();
+        return ((NuxeoPrincipal) WebEngine.getActiveContext().getPrincipal()).isAdministrator();
     }
 
     @GET
@@ -139,13 +148,14 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
     @GET
     @Path("/traces")
     @Produces("text/plain")
-    public String doGetTrace(@QueryParam("opId") String opId) {
+    public String doGetTrace(@QueryParam("opId")
+    String opId) {
         if (!canManageTraces()) {
             return "You can not manage traces";
         }
         TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
         Trace trace = tracerFactory.getTrace(opId);
-        if (trace!=null) {
+        if (trace != null) {
             return tracerFactory.getTrace(opId).getFormattedText();
         } else {
             return "no trace";
