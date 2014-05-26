@@ -9,10 +9,6 @@
   <artifactId>nuxeo-elasticsearch-core</artifactId>
   <name>Elasticsearch Connector implementation</name>
 
-  <properties>
-     <lucene.version>4.7.2</lucene.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -35,13 +31,7 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-test</artifactId>
       <scope>compile</scope>
-       <exclusions>
-        <exclusion>
-          <groupId>org.apache.lucene</groupId>
-          <artifactId>lucene-analyzers</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+   </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
@@ -81,33 +71,16 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-sql-test</artifactId>
       <scope>compile</scope>
-       <exclusions>
-        <exclusion>
-          <groupId>org.apache.lucene</groupId>
-          <artifactId>lucene-analyzers</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+   </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
-       <exclusions>
-        <exclusion>
-          <groupId>org.apache.lucene</groupId>
-          <artifactId>lucene-analyzers</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>org.elasticsearch</groupId>
       <artifactId>elasticsearch</artifactId>
     </dependency>
-
-    <!--dependency>
-      <groupId>com.yakaz.elasticsearch.plugins</groupId>
-      <artifactId>elasticsearch-action-updatebyquery</artifactId>
-    </dependency-->
 
     <dependency>
       <groupId>javax.transaction</groupId>
@@ -127,25 +100,21 @@
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
-      <version>${lucene.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-analyzers-common</artifactId>
-      <version>${lucene.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-codecs</artifactId>
-      <version>${lucene.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-queries</artifactId>
-      <version>${lucene.version}</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -157,19 +126,16 @@
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-memory</artifactId>
-      <version>${lucene.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-highlighter</artifactId>
-      <version>${lucene.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-queryparser</artifactId>
-      <version>${lucene.version}</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -181,19 +147,16 @@
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-suggest</artifactId>
-      <version>${lucene.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-join</artifactId>
-      <version>${lucene.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-spatial</artifactId>
-      <version>${lucene.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
