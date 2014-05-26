@@ -91,14 +91,18 @@ public class OperationDocumentation implements
         @XNode("@type")
         public String type; // the data type
 
+        // is this useful (?)
         public String widget; // the widget type
 
-        @XNodeList(value = "values", type = String[].class, componentType = String.class)
+        // is this useful (?)
+        @XNodeList(value = "value", type = String[].class, componentType = String.class)
         public String[] values; // the default values
 
+        // is this useful (?)
         @XNode("@order")
         public int order;
 
+        // is this useful (?)
         @XNode("@required")
         public boolean isRequired;
 
