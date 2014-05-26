@@ -49,6 +49,9 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkQueuingImplDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -98,6 +101,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected WorkQueuing queuing;
 
+    private ShutdownListener shutdownListener;
+
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
@@ -106,10 +111,13 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             queuing = newWorkQueuingDefault();
         }
         init();
+        shutdownListener = new ShutdownListener();
+        Framework.addListener(shutdownListener);
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        Framework.removeListener(shutdownListener);
         closeQueuing();
         queuing = null;
         workQueueDescriptors = null;
@@ -393,6 +401,16 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         executors.clear();
 
         return shutdownExecutors(executorList, timeout, unit);
+    }
+
+    protected class ShutdownListener implements RuntimeServiceListener {
+        @Override
+        public void handleEvent(RuntimeServiceEvent event) {
+            if (RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP != event.id) {
+                return;
+            }
+            closeQueuing();
+        }
     }
 
     /**
