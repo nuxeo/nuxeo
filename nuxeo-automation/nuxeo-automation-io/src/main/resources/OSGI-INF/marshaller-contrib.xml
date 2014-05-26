@@ -31,6 +31,7 @@
       </reader>
       <writer>org.nuxeo.ecm.automation.jaxrs.io.audit.LogEntryWriter</writer>
       <writer>org.nuxeo.ecm.automation.jaxrs.io.audit.LogEntryListWriter</writer>
+      <writer>org.nuxeo.ecm.automation.io.yaml.YamlOperationDocumentationWriter</writer>
     </marshaller>
   </extension>
 

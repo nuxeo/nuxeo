@@ -45,6 +45,13 @@
   </div>
 </#if>
 
+<#if operation.isChain()>
+  <h3>YAML Representation</h3>
+  <div>
+    <pre>${yaml}</pre>
+  </div>
+</#if>
+
 <#if This.hasOperation(operation)>
 <h3>Operations</h3>
 <div class="signature">

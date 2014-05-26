@@ -12,6 +12,8 @@
 package org.nuxeo.ecm.automation.server.jaxrs;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -33,6 +35,13 @@ public class OperationResource extends ExecutableResource {
 
     @GET
     public Object doGet() throws OperationException {
+        return type.getDocumentation();
+    }
+
+    @GET
+    @Path("yaml")
+    @Produces("application/yaml")
+    public Object doGetYaml() throws OperationException {
         return type.getDocumentation();
     }
 

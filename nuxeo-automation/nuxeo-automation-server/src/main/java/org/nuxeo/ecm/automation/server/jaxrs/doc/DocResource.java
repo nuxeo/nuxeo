@@ -12,6 +12,8 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.doc;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +37,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.ecm.automation.io.yaml.YamlWriter;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
@@ -113,6 +116,15 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
             }
             Template tpl = getTemplateFor(browse);
             tpl.arg("operation", opDoc);
+            try {
+                // add yaml format -- chains are exposing their operations so
+                // this information should be restricted to administrators.
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                YamlWriter.toYaml(out, opDoc);
+                tpl.arg("yaml", out.toString());
+            } catch (IOException e) {
+                throw WebException.wrap(e);
+            }
             return tpl;
         }
     }
