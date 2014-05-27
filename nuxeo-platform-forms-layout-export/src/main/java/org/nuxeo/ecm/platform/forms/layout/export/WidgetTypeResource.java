@@ -33,7 +33,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.nuxeo.common.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeDefinitionComparator;
@@ -222,9 +222,9 @@ public class WidgetTypeResource {
 
     protected List<String> getNuxeoVersions() {
         if ("jsf".equals(category)) {
-            return Arrays.asList("5.6", "5.8", "5.9.2");
+            return Arrays.asList("5.6", "5.8", "5.9.4");
         } else if ("jsfAction".equals(category)) {
-            return Arrays.asList("5.8", "5.9.2");
+            return Arrays.asList("5.8", "5.9.4");
         }
         return Collections.emptyList();
     }
