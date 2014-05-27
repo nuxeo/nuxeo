@@ -25,6 +25,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 
@@ -54,18 +55,19 @@ public class AuditLog {
     @OperationMethod
     public DocumentModel run(DocumentModel doc) {
         Principal principal = ctx.getPrincipal();
-        LogEntry entry = newEntry(doc, principal != null ? principal.getName()
-                : null, new Date());
+        String uname = getPrincipalName(principal);
+        LogEntry entry = newEntry(doc, uname, new Date());
         logger.addLogEntries(Collections.singletonList(entry));
         return doc;
     }
+
 
     @OperationMethod
     public DocumentModelList run(DocumentModelList docs) {
         List<LogEntry> entries = new ArrayList<LogEntry>();
         Date date = new Date();
         Principal principal = ctx.getPrincipal();
-        String uname = principal != null ? principal.getName() : null;
+        String uname = getPrincipalName(principal);
         for (DocumentModel doc : docs) {
             entries.add(newEntry(doc, uname, date));
         }
@@ -90,6 +92,14 @@ public class AuditLog {
             // ignore error
         }
         return entry;
+    }
+
+    private String getPrincipalName(Principal principal) {
+        String uname = principal != null ? principal.getName() : null;
+        if (principal instanceof SystemPrincipal) {
+            uname = ((SystemPrincipal) principal).getOriginatingUser();
+        }
+        return uname;
     }
 
 }
