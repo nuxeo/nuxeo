@@ -167,18 +167,18 @@ public class ConverterBasedHtmlPreviewAdapter extends
      */
     private Blob getBlob2preview(BlobHolder blobHolder2preview)
             throws PreviewException {
+        Blob blob2Preview;
         try {
-            Blob blob2Preview = blobHolder2preview.getBlob();
-            if (blob2Preview == null) {
-                throw new NothingToPreviewException(
-                        "Can not preview a document without blob");
-            } else {
-                return blob2Preview;
-            }
+            blob2Preview = blobHolder2preview.getBlob();
         } catch (ClientException e) {
             throw new PreviewException("Error while getting blob", e);
         }
-
+        if (blob2Preview == null) {
+            throw new NothingToPreviewException(
+                    "Can not preview a document without blob");
+        } else {
+            return blob2Preview;
+        }
     }
 
     /**
@@ -244,8 +244,12 @@ public class ConverterBasedHtmlPreviewAdapter extends
     @Override
     public boolean hasBlobToPreview() throws PreviewException {
         String xpath = getDefaultPreviewFieldXPath();
-
-        Blob blob2Preview = getBlob2preview(getBlobHolder2preview(xpath));
+        Blob blob2Preview;
+        try {
+            blob2Preview = getBlob2preview(getBlobHolder2preview(xpath));
+        } catch (NothingToPreviewException e) {
+            return false;
+        }
         if (blob2Preview == null) {
             return false;
         }
