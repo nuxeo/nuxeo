@@ -45,7 +45,7 @@ public class NuxeoStateManager extends StateManager {
 
 	protected LRUMap<String, StateManager> stateManagerPerConversationMap;
 
-	protected int maxCapacity = 4;
+	protected int maxCapacity = DEFAULT_NUMBER_OF_CONVERSATIONS_IN_SESSION;
 
 	protected StateManager stateManager;
 
