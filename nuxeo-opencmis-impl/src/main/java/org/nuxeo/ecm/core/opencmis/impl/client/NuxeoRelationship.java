@@ -16,7 +16,6 @@ import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Relationship;
-import org.apache.chemistry.opencmis.client.api.TransientRelationship;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
@@ -28,11 +27,6 @@ public class NuxeoRelationship extends NuxeoObject implements Relationship {
     public NuxeoRelationship(NuxeoSession session, NuxeoObjectData data,
             ObjectType type) {
         super(session, data, type);
-    }
-
-    @Override
-    public TransientRelationship getTransientRelationship() {
-        return (TransientRelationship) getAdapter(TransientRelationship.class);
     }
 
     @Override

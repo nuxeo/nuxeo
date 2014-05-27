@@ -438,6 +438,10 @@ public class NuxeoTypeHelper {
                 PropertyIds.CONTENT_STREAM_ID, "Content Stream ID",
                 PropertyType.ID, Cardinality.SINGLE, Updatability.READONLY,
                 false, false, false, false));
+        t.addPropertyDefinition(newPropertyDefinition(
+                PropertyIds.CONTENT_STREAM_HASH, "Content Stream Hashes",
+                PropertyType.STRING, Cardinality.MULTI, Updatability.READONLY,
+                false, false, false, false));
         // Nuxeo system properties
         // TODO: make digest queryable at some point
         t.addPropertyDefinition(newPropertyDefinition(NX_DIGEST,

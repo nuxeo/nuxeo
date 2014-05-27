@@ -13,11 +13,13 @@ package org.nuxeo.ecm.core.opencmis.impl.client;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.chemistry.opencmis.client.api.ChangeEvent;
 import org.apache.chemistry.opencmis.client.api.ChangeEvents;
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
@@ -46,9 +48,11 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectList;
 import org.apache.chemistry.opencmis.commons.data.Properties;
+import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
+import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
@@ -302,6 +306,20 @@ public class NuxeoSession implements Session {
     }
 
     @Override
+    public ItemIterable<ChangeEvent> getContentChanges(String changeLogToken,
+            boolean includeProperties) {
+        return getContentChanges(changeLogToken, includeProperties,
+                getDefaultContext());
+    };
+
+    @Override
+    public ItemIterable<ChangeEvent> getContentChanges(String changeLogToken,
+            boolean includeProperties, OperationContext context) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    };
+
+    @Override
     public Locale getLocale() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
@@ -433,7 +451,7 @@ public class NuxeoSession implements Session {
                         Boolean.valueOf(context.isIncludeAllowableActions()),
                         context.getIncludeRelationships(),
                         context.getRenditionFilterString(),
-                        BigInteger.valueOf(this.maxNumItems),
+                        BigInteger.valueOf(maxNumItems),
                         BigInteger.valueOf(skipCount), null);
                 // convert objects
                 List<QueryResult> page = new ArrayList<QueryResult>();
@@ -449,6 +467,7 @@ public class NuxeoSession implements Session {
         return new CollectionIterable<QueryResult>(pageFetcher);
     }
 
+    @Override
     public ItemIterable<CmisObject> queryObjects(String typeId, String where,
             boolean searchAllVersions, OperationContext context) {
         // TODO Auto-generated method stub
@@ -458,6 +477,15 @@ public class NuxeoSession implements Session {
     @Override
     public QueryStatement createQueryStatement(String statement) {
         return new QueryStatementImpl(this, statement);
+    }
+
+    @Override
+    public QueryStatement createQueryStatement(
+            Collection<String> selectPropertyIds,
+            Map<String, String> fromTypes, String whereClause,
+            List<String> orderByPropertyIds) {
+        return new QueryStatementImpl(this, selectPropertyIds, fromTypes,
+                whereClause, orderByPropertyIds);
     }
 
     @Override
@@ -474,7 +502,7 @@ public class NuxeoSession implements Session {
                         repositoryId, objectId.getId(),
                         Boolean.valueOf(includeSubRelationshipTypes),
                         relationshipDirection, typeId, null, null,
-                        BigInteger.valueOf(this.maxNumItems),
+                        BigInteger.valueOf(maxNumItems),
                         BigInteger.valueOf(skipCount), null);
                 // convert objects
                 List<Relationship> page = new ArrayList<Relationship>();
@@ -589,6 +617,114 @@ public class NuxeoSession implements Session {
         return service.bulkUpdateProperties(repositoryId, idts,
                 convertProperties(properties), addSecondaryTypeIds,
                 removeSecondaryTypeIds, null);
+    }
+
+    @Override
+    public Document getLatestDocumentVersion(ObjectId objectId) {
+        return getLatestDocumentVersion(objectId, false, getDefaultContext());
+    }
+
+    @Override
+    public Document getLatestDocumentVersion(String objectId, OperationContext context) {
+        if (objectId == null) {
+            throw new IllegalArgumentException("Object ID must be set!");
+        }
+        return getLatestDocumentVersion(createObjectId(objectId), false, context);
+    }
+
+    @Override
+    public Document getLatestDocumentVersion(String objectId, boolean major, OperationContext context) {
+        if (objectId == null) {
+            throw new IllegalArgumentException("Object ID must be set!");
+        }
+        return getLatestDocumentVersion(createObjectId(objectId), major, context);
+    }
+
+    @Override
+    public Document getLatestDocumentVersion(String objectId) {
+        if (objectId == null) {
+            throw new IllegalArgumentException("Object ID must be set!");
+        }
+        return getLatestDocumentVersion(createObjectId(objectId), false, getDefaultContext());
+    }
+
+    @Override
+    public Document getLatestDocumentVersion(ObjectId objectId, OperationContext context) {
+        return getLatestDocumentVersion(objectId, false, context);
+    }
+
+    @Override
+    /**
+     * @See org.apache.chemistry.opencmis.client.runtime.SessionImpl
+     */
+    public Document getLatestDocumentVersion(ObjectId objectId, boolean major, OperationContext context) {
+        if (objectId == null || objectId.getId() == null) {
+            throw new IllegalArgumentException("Object ID must be set!");
+        }
+
+        if (context == null) {
+            throw new IllegalArgumentException("Operation context must be set!");
+        }
+
+        CmisObject result = null;
+
+        String versionSeriesId = null;
+
+        // first attempt: if we got a Document object, try getting the version
+        // series ID from it
+        if (objectId instanceof Document) {
+            versionSeriesId = ((Document) objectId).getVersionSeriesId();
+        }
+
+        // third attempt (Web Services only): get the version series ID from the
+        // repository
+        // (the AtomPub and Browser binding don't need the version series ID ->
+        // avoid roundtrip)
+        if (versionSeriesId == null) {
+            BindingType bindingType = getBinding().getBindingType();
+            if (bindingType == BindingType.WEBSERVICES || bindingType == BindingType.CUSTOM) {
+
+                // get the document to find the version series ID
+                ObjectData sourceObjectData = binding.getObjectService().getObject(getRepositoryId(), objectId.getId(),
+                        PropertyIds.OBJECT_ID + "," + PropertyIds.VERSION_SERIES_ID, false, IncludeRelationships.NONE,
+                        "cmis:none", false, false, null);
+
+                if (sourceObjectData.getProperties() != null
+                        && sourceObjectData.getProperties().getProperties() != null) {
+                    PropertyData<?> verionsSeriesIdProp = sourceObjectData.getProperties().getProperties()
+                            .get(PropertyIds.VERSION_SERIES_ID);
+                    if (verionsSeriesIdProp != null && verionsSeriesIdProp.getFirstValue() instanceof String) {
+                        versionSeriesId = (String) verionsSeriesIdProp.getFirstValue();
+                    }
+                }
+
+                // the Web Services binding needs the version series ID -> fail
+                if (versionSeriesId == null) {
+                    throw new IllegalArgumentException("Object is not a document or not versionable!");
+                }
+            }
+        }
+
+        // get the object
+        ObjectData objectData = binding.getVersioningService().getObjectOfLatestVersion(getRepositoryId(),
+                objectId.getId(), versionSeriesId, major, context.getFilterString(),
+                context.isIncludeAllowableActions(), context.getIncludeRelationships(),
+                context.getRenditionFilterString(), context.isIncludePolicies(), context.isIncludeAcls(), null);
+
+        result = getObjectFactory().convertObject(objectData, context);
+
+        // check result
+        if (!(result instanceof Document)) {
+            throw new IllegalArgumentException("Latest version is not a document!");
+        }
+
+        return (Document) result;
+    }
+
+    @Override
+    public String getLatestChangeLogToken() {
+        return getBinding().getRepositoryService().getRepositoryInfo(
+                getRepositoryId(), null).getLatestChangeLogToken();
     }
 
 }

@@ -45,6 +45,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExists
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedException;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamHashImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -196,6 +197,18 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         } else if (NuxeoTypeHelper.NX_DIGEST.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataContentStreamDigest(
                     (PropertyDefinition<String>) pd, doc);
+        } else if (PropertyIds.CONTENT_STREAM_HASH.equals(name)) {
+            String digest = new NuxeoPropertyDataContentStreamDigest(
+                    (PropertyDefinition<String>) pd, doc).getFirstValue();
+            List<String> hashes;
+            if (digest == null) {
+                hashes = new ArrayList<String>();
+            } else {
+                hashes = Arrays.asList(new ContentStreamHashImpl(
+                        ContentStreamHashImpl.ALGORITHM_MD5, digest).getPropertyValue());
+            }
+            return (PropertyData<U>) new NuxeoPropertyDataContentStreamHash(
+                    (PropertyDefinition<String>) pd, hashes);
         } else if (PropertyIds.CONTENT_STREAM_MIME_TYPE.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataContentStreamMimeType(
                     (PropertyDefinition<String>) pd, doc);
@@ -710,6 +723,18 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                 return sqlBlob.getBinary().getDigest();
             }
             return null;
+        }
+    }
+
+    /**
+     * Property for cmis:contentStreamHash.
+     */
+    public static class NuxeoPropertyDataContentStreamHash extends
+            NuxeoPropertyMultiDataFixed<String> {
+
+        protected NuxeoPropertyDataContentStreamHash(
+                PropertyDefinition<String> propertyDefinition, List<String> hashes) {
+            super(propertyDefinition, hashes);
         }
     }
 

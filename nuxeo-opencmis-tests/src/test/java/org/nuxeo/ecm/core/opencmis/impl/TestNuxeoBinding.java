@@ -514,6 +514,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                         "Downloadable", "HasRelatedText", "Publishable",
                         "Versionable")), new HashSet<String>(facets));
         assertEquals(null, getString(data, NuxeoTypeHelper.NX_DIGEST));
+        @SuppressWarnings("unchecked")
+        List<String> hashes = (List<String>) getValues(data,
+                PropertyIds.CONTENT_STREAM_HASH);
+        assertEquals(0, hashes.size());
 
         // creation of a cmis:document (helps simple clients)
 
@@ -621,6 +625,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("doc1.txt", getString(data, PropertyIds.NAME));
         assertEquals("bde9eb59c76cb432a0f8d02057a19923",
                 getString(data, NuxeoTypeHelper.NX_DIGEST));
+        @SuppressWarnings("unchecked")
+        List<String> hashes = (List<String>) getValues(data,
+                PropertyIds.CONTENT_STREAM_HASH);
+        assertEquals("{md5}bde9eb59c76cb432a0f8d02057a19923", hashes.get(0));
         cs = objService.getContentStream(repositoryId, id, null, null, null,
                 null);
         assertNotNull(cs);
@@ -701,6 +709,10 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals("testfile1_Title", getString(ob, PropertyIds.NAME));
         assertEquals("bde9eb59c76cb432a0f8d02057a19923",
                 getString(ob, NuxeoTypeHelper.NX_DIGEST));
+        @SuppressWarnings("unchecked")
+        List<String> hashes = (List<String>) getValues(ob,
+                PropertyIds.CONTENT_STREAM_HASH);
+        assertEquals("{md5}bde9eb59c76cb432a0f8d02057a19923", hashes.get(0));
 
         // get stream
         ContentStream cs = objService.getContentStream(repositoryId,
@@ -1385,6 +1397,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         checkReturnedValue(NuxeoTypeHelper.NX_FACETS, NOT_NULL);
         checkReturnedValue(NuxeoTypeHelper.NX_LIFECYCLE_STATE, "project");
         checkReturnedValue(NuxeoTypeHelper.NX_DIGEST, NOT_NULL);
+        checkReturnedValue(PropertyIds.CONTENT_STREAM_HASH, NOT_NULL);
         checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, NOT_NULL);
         checkReturnedValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME);
         checkReturnedValue(PropertyIds.CHECKIN_COMMENT, null);
