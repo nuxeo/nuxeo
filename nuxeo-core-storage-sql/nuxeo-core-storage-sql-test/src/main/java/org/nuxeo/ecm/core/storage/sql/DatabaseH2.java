@@ -92,6 +92,17 @@ public class DatabaseH2 extends DatabaseHelper {
         dir.mkdirs();
         h2Path = new File(dir, getId()).getAbsolutePath();
         setProperties();
+        checkDatabaseLive();
+    }
+
+    protected void checkDatabaseLive() throws SQLException {
+        try (Connection connection = DriverManager.getConnection(url,
+                System.getProperty(USER_PROPERTY),
+                System.getProperty(PASSWORD_PROPERTY))) {
+            try (Statement st = connection.createStatement()) {
+                st.execute("SELECT 1");
+            }
+        }
     }
 
     public void setUp2() throws Exception {
