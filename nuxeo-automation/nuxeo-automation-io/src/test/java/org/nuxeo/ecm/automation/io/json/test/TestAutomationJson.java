@@ -54,7 +54,9 @@ public class TestAutomationJson {
 
     protected void checkEquals(String expected, String actual) throws Exception {
         // System.err.println(actual);
-        assertEquals(expected, actual);
+        // remove lines when comparing to avoid failure under windows.
+        assertEquals(expected.replaceAll("\r?\n", ""),
+                actual.replaceAll("\r?\n", ""));
     }
 
     @Test
