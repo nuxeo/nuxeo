@@ -554,6 +554,12 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         if (document.isImmutable()) {
             return false;
         }
+        // NXP-14476: Testing lifecycle state is part of the "mutable_document"
+        // filter
+        if (document.getCurrentLifeCycleState().equals(
+                LifeCycleConstants.DELETED_STATE)) {
+            return false;
+        }
         if (blob == null) {
             return false;
         }
