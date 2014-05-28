@@ -210,7 +210,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
                 Function<WebElement, Boolean> s2WaitFunction = new Select2Wait(isDEBUGNXP13875);
                 wait.until(s2WaitFunction);
                 if (isDEBUGNXP13875) {
-                    log.warn(String.format("returning : %d item(s) see %s", getSuggestedEntries().size()));
+                    log.warn(String.format("returning : %d item(s)", getSuggestedEntries().size()));
                 }
             } catch (TimeoutException e) {
                 if (i == (value.length() - 1)) {
