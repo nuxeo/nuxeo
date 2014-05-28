@@ -22,8 +22,8 @@ import org.nuxeo.ecm.automation.OperationParameters;
  * To be used on an operation field to inject operation parameters from the
  * current context. If the parameter to inject cannot be found in the operation
  * parameters map (or it is set to null) then if required is true then an error
- * is thrown otherwise the injection will not be done (and any default value set
- * in the code will be preserved). The default is true - i.e. do not allow
+ * is thrown otherwise the injection will not be done (and any default value
+ * set in the code will be preserved). The default is true - i.e. do not allow
  * missing entries in operation parameter map.
  *
  * @see OperationParameters
@@ -39,8 +39,7 @@ public @interface Param {
     String name();
 
     /**
-     * @since 5.7.3
-     * The parameter description to explicit its purpose.
+     * @since 5.7.3 The parameter description to explicit its purpose.
      */
     String description() default "";
 
@@ -67,10 +66,14 @@ public @interface Param {
      * Optional attribute - useful to generate operation documentation. Provide
      * default values for the parameter widget. If the parameter is rendered
      * using a ListBox or ComboBox then this attribute can be used to hold the
-     * choices available in the list. If the widget is not a list then this can
-     * be used to specify the default value for the widget.
+     * choices available in the list.
+     * <p>
+     * Since 5.9.4, use {@link #defaultValue()} to specify a default value for
+     * the parameter.
      */
     String[] values() default {};
+
+    String defaultValue() default "";
 
     /**
      * Optional attribute to set a parameter order, used for ordering them when

@@ -141,6 +141,14 @@ public class OperationChainContribution {
         OperationChain chain = new OperationChain(id);
         chain.setDescription(description);
         chain.setPublic(isPublic);
+        if (params != null) {
+            Map<String, Object> chainParams = new HashMap<>();
+            for (OperationDocumentation.Param param : params) {
+                param.getValues();
+                chainParams.put(param.getName(), param.getDefaultValue());
+            }
+            chain.addChainParameters(chainParams);
+        }
         for (Operation op : ops) {
             OperationParameters params = chain.add(op.id);
             for (Param param : op.params) {

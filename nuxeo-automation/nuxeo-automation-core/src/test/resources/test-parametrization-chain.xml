@@ -12,6 +12,7 @@
 
   <extension point="chains"
     target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+
     <chain id="contributedchain">
       <operation id="contributedchainLeaf" />
       <param type="string" name="messageChain" />
@@ -25,6 +26,7 @@
         <param type="string" name="message">expr:@{ChainParameters['messageChain']}</param>
       </operation>
     </chain>
+
     <chain id="contributedchain2">
       <param type="string" name="messageChain" />
       <operation id="o1">
@@ -36,6 +38,7 @@
       <operation id="oChainFlowCtx">
       </operation>
     </chain>
+
     <chain id="contributedchainLeaf">
       <operation id="o1">
         <param type="string" name="message">Hello 1!</param>
@@ -44,6 +47,19 @@
         <param type="string" name="message">Hello 2!</param>
       </operation>
     </chain>
+
+    <chain id="contributedChainWithDefaultParam">
+      <param type="string" name="messageChain">Hello i'm a chain!</param>
+      <operation id="oChainCtx">
+        <param type="string" name="message">
+          expr:@{ChainParameters['messageChain']}
+        </param>
+        <param type="string" name="foo">
+          expr:@{ChainParameters['foo']}
+        </param>
+      </operation>
+    </chain>
+
   </extension>
 
 </component>

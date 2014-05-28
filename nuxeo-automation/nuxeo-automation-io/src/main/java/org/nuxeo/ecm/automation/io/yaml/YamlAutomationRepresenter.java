@@ -123,8 +123,8 @@ public class YamlAutomationRepresenter extends Representer {
             if (p.getDescription() != null) {
                 subs.put("description", p.getDescription());
             }
-            if (p.getValues() != null && p.getValues().length != 0) {
-                subs.put("values", p.getValues());
+            if (p.getDefaultValue() != null) {
+                subs.put("defaultValue", p.getDefaultValue());
             }
             mapping.put(p.getName(), subs);
             return representMapping(tag, mapping, null);

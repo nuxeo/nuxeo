@@ -126,19 +126,26 @@ public class OperationServiceImpl implements AutomationService {
             Map<String, Object> params) throws Exception {
         Boolean mainChain = true;
         CompiledChainImpl chain;
-        if (params == null) {
-            params = new HashMap<String, Object>();
+        Map<String, Object> finalParams = new HashMap<>();
+        if (operationType instanceof ChainTypeImpl) {
+            Map<String, Object> chainParams = ((ChainTypeImpl) operationType).getChainParameters();
+            if (chainParams != null && !chainParams.isEmpty()) {
+                // fill default values if any
+                finalParams.putAll(chainParams);
+            }
         }
-        ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
+        if (params != null) {
+            finalParams.putAll(params);
+        }
+        ctx.put(Constants.VAR_RUNTIME_CHAIN, finalParams);
         // Put Chain parameters into the context - even for cached chains
-        if (params != null && !params.isEmpty()) {
-            ctx.put(Constants.VAR_RUNTIME_CHAIN, params);
+        if (finalParams != null && !finalParams.isEmpty()) {
+            ctx.put(Constants.VAR_RUNTIME_CHAIN, finalParams);
         }
         OperationCallback tracer;
         TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
         if (ctx.getChainCallback() == null) {
-            tracer = tracerFactory.newTracer(
-                    operationType.getId());
+            tracer = tracerFactory.newTracer(operationType.getId());
             ctx.addChainCallback(tracer);
         } else {
             // Not logging at output if success for a child chain
@@ -155,7 +162,7 @@ public class OperationServiceImpl implements AutomationService {
                 chain = compiledChains.get(cacheKey);
                 if (chain == null) {
                     chain = (CompiledChainImpl) operationType.newInstance(ctx,
-                            params);
+                            finalParams);
                     // Registered Chains are the only ones that can be cached
                     // Runtime ones can update their operations, model...
                     if (hasOperation(operationType.getId())) {
@@ -263,7 +270,6 @@ public class OperationServiceImpl implements AutomationService {
         return operationParameters;
     }
 
-
     @Override
     public synchronized void putOperationChain(OperationChain chain)
             throws OperationException {
@@ -276,7 +282,6 @@ public class OperationServiceImpl implements AutomationService {
         OperationType docChainType = new ChainTypeImpl(this, chain);
         this.putOperation(docChainType, replace);
     }
-
 
     @Override
     public synchronized void removeOperationChain(String id) {
@@ -291,7 +296,6 @@ public class OperationServiceImpl implements AutomationService {
         ChainTypeImpl chain = (ChainTypeImpl) getOperation(id);
         return chain.getChain();
     }
-
 
     @Override
     public List<OperationChain> getOperationChains() {

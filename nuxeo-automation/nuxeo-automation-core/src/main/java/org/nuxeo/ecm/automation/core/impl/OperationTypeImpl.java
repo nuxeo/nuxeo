@@ -299,6 +299,7 @@ public class OperationTypeImpl implements OperationType {
             }
             param.order = p.order();
             param.values = p.values();
+            param.defaultValue = p.description();
             param.isRequired = p.required();
             paramsAccumulator.add(param);
         }

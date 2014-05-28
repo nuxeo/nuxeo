@@ -14,6 +14,8 @@ package org.nuxeo.ecm.automation;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -94,9 +96,16 @@ public class OperationDocumentation implements
         // is this useful (?)
         public String widget; // the widget type
 
-        // is this useful (?)
+        /**
+         * @deprecated since 5.9.4, never used, see {@link #defaultValue}
+         *             instead.
+         */
+        @Deprecated
         @XNodeList(value = "value", type = String[].class, componentType = String.class)
         public String[] values; // the default values
+
+        @XContent
+        public String defaultValue; // the default value
 
         // is this useful (?)
         @XNode("@order")
@@ -128,8 +137,27 @@ public class OperationDocumentation implements
             return widget;
         }
 
+        /**
+         * @deprecated since 5.9.4, use {@link #getDefaultValue()} instead.
+         */
+        @Deprecated
         public String[] getValues() {
             return values;
+        }
+
+        /**
+         * @since 5.9.4
+         */
+        public String getDefaultValue() {
+            if (StringUtils.isBlank(defaultValue)) {
+                return null;
+            }
+            if (defaultValue != null) {
+                String result = defaultValue.trim();
+                result = result.replace("\n", "");
+                return result;
+            }
+            return defaultValue;
         }
 
         public boolean isRequired() {

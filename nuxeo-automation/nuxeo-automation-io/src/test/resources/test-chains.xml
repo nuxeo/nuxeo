@@ -53,9 +53,7 @@
 
     <chain id="chain_with_params">
       <description>This is an awesome chain!</description>
-      <param type="string" name="foo">
-        <value>bar</value>
-      </param>
+      <param type="string" name="foo">bar</param>
       <param type="boolean" name="foo2" description="yop" />
       <operation id="Context.FetchDocument" />
       <operation id="Document.Create">

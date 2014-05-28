@@ -115,6 +115,20 @@ public class TestOperationChainParametrization {
     }
 
     /**
+     * Check if default value for chain parameter is taken into account.
+     */
+    @Test
+    public void testExecutionWithDefaultParamValue() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+        Map<String, Object> params = new HashMap<String, Object>();
+        //params.put("messageChain", "Hello i'm a chain!");
+        DocumentModel doc = (DocumentModel) service.run(ctx,
+                "contributedChainWithDefaultParam", params);
+        Assert.assertNotNull(doc);
+    }
+
+    /**
      * Check if using new chain parameters in an execution flow operation is
      * working
      */

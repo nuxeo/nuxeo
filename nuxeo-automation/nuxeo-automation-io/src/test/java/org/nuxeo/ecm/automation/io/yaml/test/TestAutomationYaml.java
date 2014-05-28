@@ -109,8 +109,7 @@ public class TestAutomationYaml {
         res.append("params:\n");
         res.append("- foo:\n");
         res.append("    type: string\n");
-        res.append("    values:\n");
-        res.append("    - bar\n");
+        res.append("    defaultValue: bar\n");
         res.append("- foo2:\n");
         res.append("    type: boolean\n");
         res.append("    description: yop\n");
