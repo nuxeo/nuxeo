@@ -217,7 +217,7 @@ public class H2Fulltext {
     private static void indexExistingRows(Connection conn, String schema,
             String table) throws SQLException {
         Trigger trigger = new Trigger();
-        trigger.init(conn, schema, null, table, false, Trigger.INSERT);
+        trigger.init(conn, schema, null, table, false, org.h2.api.Trigger.INSERT);
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery("SELECT * FROM "
                 + StringUtils.quoteIdentifier(schema) + '.'
@@ -340,7 +340,19 @@ public class H2Fulltext {
             return rs;
         }
 
-        String indexPath = getIndexPath(conn);
+        final String indexPath = getIndexPath(conn);
+
+        // flush changes
+        final IndexWriter writer = getIndexWriter(indexPath, analyzerName);
+        if (writer.hasUncommittedChanges()) {
+            try {
+                writer.commit();
+            } catch (IOException cause) {
+                throw convertException(cause);
+            }
+        }
+
+        // search index
         try {
             BooleanQuery query = new BooleanQuery();
             String defaultField = fieldForIndex(indexName);
@@ -349,13 +361,13 @@ public class H2Fulltext {
                     analyzer);
             query.add(parser.parse(text), BooleanClause.Occur.MUST);
 
-            getIndexWriter(indexPath, analyzerName).commit();
 
-            IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(
-                    indexPath)));
-            IndexSearcher searcher = new IndexSearcher(reader);
-            Collector collector = new ResultSetCollector(rs, reader, type);
-            searcher.search(query, collector);
+            try (IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(
+                    indexPath)))) {
+                IndexSearcher searcher = new IndexSearcher(reader);
+                Collector collector = new ResultSetCollector(rs, reader, type);
+                searcher.search(query, collector);
+            }
         } catch (Exception e) {
             throw convertException(e);
         }
@@ -380,7 +392,7 @@ public class H2Fulltext {
 
         @Override
         public void setNextReader(AtomicReaderContext context) {
-            this.docBase = context.docBase;
+            docBase = context.docBase;
         }
 
         @Override
@@ -410,29 +422,27 @@ public class H2Fulltext {
             String table) throws SQLException {
         // find primary key name
         String primaryKeyName = null;
-        ResultSet rs = meta.getPrimaryKeys(null, schema, table);
-        while (rs.next()) {
-            if (primaryKeyName != null) {
-                throw new SQLException(
-                        "Can only index primary keys on one column for "
-                                + schema + '.' + table);
+        try (ResultSet rs = meta.getPrimaryKeys(null, schema, table)) {
+            while (rs.next()) {
+                if (primaryKeyName != null) {
+                    throw new SQLException(
+                            "Can only index primary keys on one column for "
+                                    + schema + '.' + table);
+                }
+                primaryKeyName = rs.getString("COLUMN_NAME");
             }
-            primaryKeyName = rs.getString("COLUMN_NAME");
+            if (primaryKeyName == null) {
+                throw new SQLException("No primary key for " + schema + '.'
+                        + table);
+            }
         }
-        if (primaryKeyName == null) {
-            throw new SQLException("No primary key for " + schema + '.' + table);
-        }
-        rs.close();
-
         // find primary key type
-        rs = meta.getColumns(null, schema, table, primaryKeyName);
-        if (!rs.next()) {
-            throw new SQLException("Could not find primary key");
+        try (ResultSet rs = meta.getColumns(null, schema, table, primaryKeyName)) {
+            if (!rs.next()) {
+                throw new SQLException("Could not find primary key");
+            }
+            return rs.getInt("DATA_TYPE");
         }
-        int primaryKeyType = rs.getInt("DATA_TYPE");
-        rs.close();
-
-        return primaryKeyType;
     }
 
     private static Analyzer getAnalyzer(String analyzerName)
@@ -452,16 +462,18 @@ public class H2Fulltext {
     }
 
     private static String getIndexPath(Connection conn) throws SQLException {
-        Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery("CALL DATABASE_PATH()");
-        rs.next();
-        String path = rs.getString(1);
-        if (path == null) {
-            throw new SQLException(
-                    "Fulltext search for in-memory databases is not supported.");
+        try (Statement st = conn.createStatement()) {
+            try (ResultSet rs = st.executeQuery("CALL DATABASE_PATH()")) {
+                rs.next();
+                String path = rs.getString(1);
+                if (path == null) {
+                    throw new SQLException(
+                            "Fulltext search for in-memory databases is not supported.");
+                }
+                return path + ".lucene";
+            }
         }
-        st.close();
-        return path + ".lucene";
+
     }
 
     private static IndexWriter getIndexWriter(String indexPath, String analyzer)
@@ -492,15 +504,18 @@ public class H2Fulltext {
 
     private static void removeIndexFiles(Connection conn) throws SQLException {
         String path = getIndexPath(conn);
-        IndexWriter index = indexWriters.remove(path);
-        if (index != null) {
-            try {
-                index.close();
-            } catch (IOException e) {
-                throw convertException(e);
+        try {
+            IndexWriter index = indexWriters.remove(path);
+            if (index != null) {
+                try {
+                    index.close();
+                } catch (IOException e) {
+                    throw convertException(e);
+                }
             }
+        } finally {
+            FileSystem.getInstance(path).deleteRecursive(path);
         }
-        FileSystem.getInstance(path).deleteRecursive(path);
     }
 
     private static SQLException convertException(Exception e) {
@@ -619,74 +634,76 @@ public class H2Fulltext {
 
             // find primary key name
             String primaryKeyName = null;
-            ResultSet rs = meta.getPrimaryKeys(null, schema, table);
-            while (rs.next()) {
-                if (primaryKeyName != null) {
-                    throw new SQLException(
-                            "Can only index primary keys on one column for: "
-                                    + schema + '.' + table);
+            try (ResultSet rs = meta.getPrimaryKeys(null, schema, table)) {
+                while (rs.next()) {
+                    if (primaryKeyName != null) {
+                        throw new SQLException(
+                                "Can only index primary keys on one column for: "
+                                        + schema + '.' + table);
+                    }
+                    primaryKeyName = rs.getString("COLUMN_NAME");
                 }
-                primaryKeyName = rs.getString("COLUMN_NAME");
+                if (primaryKeyName == null) {
+                    throw new SQLException("No primary key for " + schema + '.'
+                            + table);
+                }
             }
-            if (primaryKeyName == null) {
-                throw new SQLException("No primary key for " + schema + '.'
-                        + table);
-            }
-            rs.close();
 
             // find primary key type
-            rs = meta.getColumns(null, schema, table, primaryKeyName);
-            if (!rs.next()) {
-                throw new SQLException("No primary key for: " + schema + '.'
-                        + table);
+            try (ResultSet rs = meta.getColumns(null, schema, table,
+                    primaryKeyName)) {
+                if (!rs.next()) {
+                    throw new SQLException("No primary key for: " + schema
+                            + '.' + table);
+                }
+                primaryKeyType = rs.getInt("DATA_TYPE");
+                primaryKeyIndex = rs.getInt("ORDINAL_POSITION") - 1;
             }
-            primaryKeyType = rs.getInt("DATA_TYPE");
-            primaryKeyIndex = rs.getInt("ORDINAL_POSITION") - 1;
-            rs.close();
 
             // find all columns info
             Map<String, Integer> allColumnTypes = new HashMap<String, Integer>();
             Map<String, Integer> allColumnIndices = new HashMap<String, Integer>();
-            rs = meta.getColumns(null, schema, table, null);
-            while (rs.next()) {
-                String name = rs.getString("COLUMN_NAME");
-                int type = rs.getInt("DATA_TYPE");
-                int index = rs.getInt("ORDINAL_POSITION") - 1;
-                allColumnTypes.put(name, Integer.valueOf(type));
-                allColumnIndices.put(name, Integer.valueOf(index));
+            try (ResultSet rs = meta.getColumns(null, schema, table, null)) {
+                while (rs.next()) {
+                    String name = rs.getString("COLUMN_NAME");
+                    int type = rs.getInt("DATA_TYPE");
+                    int index = rs.getInt("ORDINAL_POSITION") - 1;
+                    allColumnTypes.put(name, Integer.valueOf(type));
+                    allColumnIndices.put(name, Integer.valueOf(index));
+                }
             }
-            rs.close();
 
             // find columns configured for indexing
-            PreparedStatement ps = conn.prepareStatement("SELECT NAME, COLUMNS, ANALYZER FROM "
-                    + FT_TABLE + " WHERE SCHEMA = ? AND TABLE = ?");
-            ps.setString(1, schema);
-            ps.setString(2, table);
-            rs = ps.executeQuery();
-            columnTypes = new HashMap<String, int[]>();
-            columnIndices = new HashMap<String, int[]>();
-            while (rs.next()) {
-                String indexName = rs.getString(1);
-                String columns = rs.getString(2);
-                String analyzerName = rs.getString(3);
-                List<String> columnNames = Arrays.asList(columns.split(","));
+            try (PreparedStatement ps = conn.prepareStatement("SELECT NAME, COLUMNS, ANALYZER FROM "
+                    + FT_TABLE + " WHERE SCHEMA = ? AND TABLE = ?")) {
+                ps.setString(1, schema);
+                ps.setString(2, table);
+                try (ResultSet rs = ps.executeQuery()) {
+                    columnTypes = new HashMap<String, int[]>();
+                    columnIndices = new HashMap<String, int[]>();
+                    while (rs.next()) {
+                        String indexName = rs.getString(1);
+                        String columns = rs.getString(2);
+                        String analyzerName = rs.getString(3);
+                        List<String> columnNames = Arrays.asList(columns.split(","));
 
-                // find the columns' indices and types
-                int[] types = new int[columnNames.size()];
-                int[] indices = new int[columnNames.size()];
-                int i = 0;
-                for (String columnName : columnNames) {
-                    types[i] = allColumnTypes.get(columnName).intValue();
-                    indices[i] = allColumnIndices.get(columnName).intValue();
-                    i++;
+                        // find the columns' indices and types
+                        int[] types = new int[columnNames.size()];
+                        int[] indices = new int[columnNames.size()];
+                        int i = 0;
+                        for (String columnName : columnNames) {
+                            types[i] = allColumnTypes.get(columnName).intValue();
+                            indices[i] = allColumnIndices.get(columnName).intValue();
+                            i++;
+                        }
+                        columnTypes.put(indexName, types);
+                        columnIndices.put(indexName, indices);
+                        // only one call actually needed for this:
+                        indexWriter = getIndexWriter(indexPath, analyzerName);
+                    }
+
                 }
-                columnTypes.put(indexName, types);
-                columnIndices.put(indexName, indices);
-                // only one call actually needed for this:
-                indexWriter = getIndexWriter(indexPath, analyzerName);
             }
-            rs.close();
-            ps.close();
         }
 
         /**
@@ -766,9 +783,10 @@ public class H2Fulltext {
                     lastIndexWriterCloseThread = Thread.currentThread().getName();
                     indexWriter.close();
                     indexWriter = null;
-                    indexWriters.remove(indexPath);
                 } catch (Exception e) {
                     throw convertException(e);
+                } finally {
+                    indexWriters.remove(indexPath);
                 }
             }
         }
