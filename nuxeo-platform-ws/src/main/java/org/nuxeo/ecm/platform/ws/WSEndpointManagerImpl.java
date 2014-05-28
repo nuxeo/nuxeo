@@ -78,6 +78,7 @@ public class WSEndpointManagerImpl extends DefaultComponent implements
                 stopIfExists(desc.name);
 
                 Endpoint ep = desc.toEndpoint();
+
                 ep.publish(desc.address);
                 desc.configurePostPublishing(ep);
 

@@ -22,7 +22,9 @@ import javax.xml.ws.soap.SOAPBinding;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.ws.WSEndpointManager;
 import org.nuxeo.ecm.platform.ws.WSEndpointManagerImpl;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
@@ -30,6 +32,9 @@ import org.nuxeo.ecm.platform.ws.WSEndpointManagerImpl;
  */
 @XObject("endpoint")
 public class WSEndpointDescriptor {
+
+    private static final String NUXEO_URL = "nuxeo.url";
+
     @XNode("@name")
     public String name;
 
@@ -57,12 +62,16 @@ public class WSEndpointDescriptor {
     @XNode("enable-mtom")
     public boolean mtom;
 
+    @XNode("publishedEndpointUrl")
+    public String publishedEndpointUrl;
+
     public Object getImplementorInstance() throws IllegalAccessException,
             InstantiationException {
         return clazz != null ? clazz.newInstance() : null;
     }
 
-    public Endpoint toEndpoint() throws IOException, IllegalAccessException, InstantiationException {
+    public Endpoint toEndpoint() throws IOException, IllegalAccessException,
+            InstantiationException {
         Endpoint ep = Endpoint.create(getImplementorInstance());
         List<Source> metadata = new ArrayList<>();
         Map<String, Object> properties = new HashMap<>();
@@ -75,7 +84,8 @@ public class WSEndpointDescriptor {
         }
 
         if (!isBlank(wsdl)) {
-            URL wsdlURL = WSEndpointManagerImpl.class.getClassLoader().getResource(wsdl);
+            URL wsdlURL = WSEndpointManagerImpl.class.getClassLoader().getResource(
+                    wsdl);
             if (wsdlURL == null) {
                 throw new FileNotFoundException("WSDL: " + wsdl);
             }
@@ -84,15 +94,23 @@ public class WSEndpointDescriptor {
             metadata.add(src);
         }
 
+        if (isBlank(publishedEndpointUrl)) {
+            publishedEndpointUrl = String.format("%s%s%s",
+                    Framework.getProperty(NUXEO_URL),
+                    WSEndpointManager.WS_SERVLET, address);
+        }
+        properties.put("publishedEndpointUrl", publishedEndpointUrl);
+
         ep.setMetadata(metadata);
         ep.setProperties(properties);
         return ep;
     }
 
-    public void configurePostPublishing(Endpoint ep) throws IllegalAccessException, InstantiationException {
+    public void configurePostPublishing(Endpoint ep)
+            throws IllegalAccessException, InstantiationException {
         if (handlers != null) {
             List<Handler> handlerChain = ep.getBinding().getHandlerChain();
-            for(Class<? extends Handler> handler : handlers) {
+            for (Class<? extends Handler> handler : handlers) {
                 handlerChain.add(handler.newInstance());
             }
             ep.getBinding().setHandlerChain(handlerChain);
