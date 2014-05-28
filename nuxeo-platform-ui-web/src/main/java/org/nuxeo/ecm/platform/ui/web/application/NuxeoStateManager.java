@@ -37,7 +37,7 @@ import com.sun.faces.util.LRUMap;
 /**
  * Custom State Manager to handle one StateManager per Conversation.
  *
- * @since 5.9.4
+ * @since 5.9.4-JSF2
  */
 public class NuxeoStateManager extends StateManager {
 
