@@ -38,10 +38,12 @@ import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.automation.io.yaml.YamlWriter;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
@@ -116,14 +118,17 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
             }
             Template tpl = getTemplateFor(browse);
             tpl.arg("operation", opDoc);
-            try {
-                // add yaml format -- chains are exposing their operations so
-                // this information should be restricted to administrators.
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                YamlWriter.toYaml(out, opDoc);
-                tpl.arg("yaml", out.toString());
-            } catch (IOException e) {
-                throw WebException.wrap(e);
+            CoreSession session = SessionFactory.getSession();
+            if (((NuxeoPrincipal) session.getPrincipal()).isAdministrator()) {
+                // add yaml format - chains are exposing their operations
+                // so this information should be restricted to administrators.
+                try {
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    YamlWriter.toYaml(out, opDoc);
+                    tpl.arg("yaml", out.toString());
+                } catch (IOException e) {
+                    throw WebException.wrap(e);
+                }
             }
             return tpl;
         }

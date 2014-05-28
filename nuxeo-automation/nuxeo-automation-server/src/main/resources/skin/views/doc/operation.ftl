@@ -45,7 +45,7 @@
   </div>
 </#if>
 
-<#if operation.isChain()>
+<#if operation.isChain() && yaml?has_content>
   <h3>YAML Representation</h3>
   <div>
     <pre>${yaml}</pre>
