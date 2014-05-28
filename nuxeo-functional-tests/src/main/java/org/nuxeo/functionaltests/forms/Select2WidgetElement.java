@@ -16,7 +16,6 @@
  */
 package org.nuxeo.functionaltests.forms;
 
-import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -211,8 +210,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
                 Function<WebElement, Boolean> s2WaitFunction = new Select2Wait(isDEBUGNXP13875);
                 wait.until(s2WaitFunction);
                 if (isDEBUGNXP13875) {
-                    File f = screenshotTaker.takeScreenshot(driver, "DEBUG-NXP-13875-value");
-                    log.warn(String.format("returning : %d item(s) see %s", getSuggestedEntries().size(), f.getAbsolutePath()));
+                    log.warn(String.format("returning : %d item(s) see %s", getSuggestedEntries().size()));
                 }
             } catch (TimeoutException e) {
                 if (i == (value.length() - 1)) {
