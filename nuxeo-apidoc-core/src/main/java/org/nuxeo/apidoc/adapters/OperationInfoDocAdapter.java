@@ -119,6 +119,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
                 p.type = (String) map.get(PROP_PARAM_TYPE);
                 p.widget = (String) map.get(PROP_PARAM_WIDGET);
                 p.values = ((List<String>) map.get(PROP_PARAM_VALUES)).toArray(new String[0]);
+                p.defaultValue = (String) map.get(PROP_PARAM_DEFAULT_VALUE);
                 Long order = (Long) map.get(PROP_PARAM_ORDER);
                 p.order = order == null ? 0 : order.intValue();
                 Boolean required = (Boolean) map.get(PROP_PARAM_REQUIRED);
@@ -171,6 +172,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
             map.put(PROP_PARAM_TYPE, p.getType());
             map.put(PROP_PARAM_WIDGET, p.getWidget());
             map.put(PROP_PARAM_VALUES, p.getValues());
+            map.put(PROP_PARAM_DEFAULT_VALUE, p.getDefaultValue());
             map.put(PROP_PARAM_REQUIRED, Boolean.valueOf(p.isRequired()));
             map.put(PROP_PARAM_ORDER, Long.valueOf(p.getOrder()));
             params.add(map);
@@ -183,8 +185,8 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter
         }
         return new OperationInfoDocAdapter(doc);
     }
-    
-    
+
+
     @Override
     public String getOperationClass() {
         return safeGet(PROP_OP_CLASS);
