@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
@@ -529,6 +530,11 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         if (document.isImmutable()) {
             return false;
         }
+        // NXP-14476: Testing lifecycle state is part of the "mutable_document" filter
+        if (document.getCurrentLifeCycleState().equals(
+                LifeCycleConstants.DELETED_STATE)) {
+            return false;
+        }
         if (blob == null) {
             return false;
         }
@@ -637,6 +643,12 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             String propertyName) throws ClientException {
         if (documentModel == null) {
             log.warn("cannot check live editable state of null DocumentModel");
+            return false;
+        }
+
+        // NXP-14476: Testing lifecycle state is part of the "mutable_document" filter
+        if (documentModel.getCurrentLifeCycleState().equals(
+                LifeCycleConstants.DELETED_STATE)) {
             return false;
         }
 
