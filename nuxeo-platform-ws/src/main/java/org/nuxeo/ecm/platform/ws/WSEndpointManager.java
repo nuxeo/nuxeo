@@ -13,6 +13,8 @@ import org.nuxeo.ecm.platform.api.ws.WSEndpointDescriptor;
  */
 public interface WSEndpointManager {
 
+    public static final String WS_SERVLET = "/webservices";
+
     void publishEndpoints();
 
     Collection<WSEndpointDescriptor> getDescriptors();
