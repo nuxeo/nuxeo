@@ -59,28 +59,25 @@ public class PictureViewsGenerationWork extends AbstractWork {
         setStatus("Extracting");
         try {
             initSession();
-            workingDocument = session.getDocument(new IdRef(docId));
-            if (workingDocument != null) {
-                workingDocument.detach(true);
+            if (!session.exists(new IdRef(docId))) {
+                setStatus("Nothing to process");
+                return;
             }
+            workingDocument = session.getDocument(new IdRef(docId));
+            workingDocument.detach(true);
             commitOrRollbackTransaction();
         } finally {
             cleanUp(true, null);
         }
 
-        if (workingDocument != null) {
-            setStatus("Generating views");
-            Property fileProp = workingDocument.getProperty(xpath);
-            ArrayList<Map<String, Object>> pictureTemplates = null;
-            PictureResourceAdapter picture = workingDocument.getAdapter(PictureResourceAdapter.class);
-            Blob blob = (Blob) fileProp.getValue();
-            String filename = blob == null ? null : blob.getFilename();
-            String title = workingDocument.getTitle();
-            picture.fillPictureViews(blob, filename, title, pictureTemplates);
-        } else {
-            setStatus("Nothing to process");
-            return;
-        }
+        setStatus("Generating views");
+        Property fileProp = workingDocument.getProperty(xpath);
+        ArrayList<Map<String, Object>> pictureTemplates = null;
+        PictureResourceAdapter picture = workingDocument.getAdapter(PictureResourceAdapter.class);
+        Blob blob = (Blob) fileProp.getValue();
+        String filename = blob == null ? null : blob.getFilename();
+        String title = workingDocument.getTitle();
+        picture.fillPictureViews(blob, filename, title, pictureTemplates);
 
         startTransaction();
         setStatus("Saving");
