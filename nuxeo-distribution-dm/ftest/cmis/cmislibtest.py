@@ -155,21 +155,21 @@ class QueryTest(CmisTestBase):
     def testSimpleSelect(self):
         '''Execute simple select star from cmis:document'''
         querySimpleSelect = "SELECT * FROM cmis:document"
-        resultSet = self._repo.query(querySimpleSelect)
+        resultSet = self._repo.query(querySimpleSelect, searchAllVersions='true')
         self.assertTrue(isInResultSet(resultSet, self._testContent))
 
     def testWildcardPropertyMatch(self):
         '''Find content w/wildcard match on cmis:name property'''
         name = self._testContent.getProperties()['cmis:name']
         querySimpleSelect = "SELECT * FROM cmis:document where cmis:name like '" + name[:7] + "%'"
-        resultSet = self._repo.query(querySimpleSelect)
+        resultSet = self._repo.query(querySimpleSelect, searchAllVersions='true')
         self.assertTrue(isInResultSet(resultSet, self._testContent))
 
     def testPropertyMatch(self):
         '''Find content matching cmis:name property'''
         name = self._testContent2.getProperties()['cmis:name']
         querySimpleSelect = "SELECT * FROM cmis:document where cmis:name = '" + name + "'"
-        resultSet = self._repo.query(querySimpleSelect)
+        resultSet = self._repo.query(querySimpleSelect, searchAllVersions='true')
         self.assertTrue(isInResultSet(resultSet, self._testContent2))
 
     def testFullText(self):
@@ -181,7 +181,7 @@ class QueryTest(CmisTestBase):
         found = False
         maxTries = self._maxFullTextTries
         while not found and (maxTries > 0):
-            resultSet = self._repo.query(queryFullText)
+            resultSet = self._repo.query(queryFullText, searchAllVersions='true')
             found = isInResultSet(resultSet, self._testContent2)
             if not found:
                 maxTries -= 1
@@ -200,7 +200,7 @@ class QueryTest(CmisTestBase):
         found = False
         maxTries = self._maxFullTextTries
         while not found and (maxTries > 0):
-            resultSet = self._repo.query(queryScore)
+            resultSet = self._repo.query(queryScore, searchAllVersions='true')
             found = isInResultSet(resultSet, self._testContent2)
             if not found:
                 maxTries -= 1
