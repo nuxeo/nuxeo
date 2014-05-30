@@ -53,7 +53,7 @@ cmislibtest.DocumentTest.testSetContentStreamDoc
 cmislibtest.DocumentTest.testUpdateProperties
 
 #cmislibtest.FolderTest.testAllowableActions
-cmislibtest.FolderTest.testBadParentFolder
+#cmislibtest.FolderTest.testBadParentFolder // NXP-14438 print an error in server.log
 cmislibtest.FolderTest.testDeleteEmptyFolder
 cmislibtest.FolderTest.testDeleteNonEmptyFolder
 cmislibtest.FolderTest.testGetChildren
