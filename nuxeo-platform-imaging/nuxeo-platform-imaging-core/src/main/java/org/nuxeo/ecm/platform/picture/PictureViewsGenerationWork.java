@@ -80,6 +80,10 @@ public class PictureViewsGenerationWork extends AbstractWork {
         picture.fillPictureViews(blob, filename, title, pictureTemplates);
 
         startTransaction();
+        if (!session.exists(new IdRef(docId))) {
+            setStatus("Nothing to process");
+            return;
+        }
         setStatus("Saving");
         initSession();
         if (workingDocument.isVersion()) {
