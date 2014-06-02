@@ -17,7 +17,9 @@
     <ui:insert name="header_scripts"></ui:insert>
 
   </h:head>
-  <nxthemes:resources />
-  <nxthemes:themestyles cache="false" inline="true" />
+  <nxthemes:resources
+    id="theme_view_resources" name="theme_view_resources" />
+  <nxthemes:themestyles cache="false" inline="true"
+    id="theme_view_styles" name="theme_view_styles" />
   [nxthemes markup]
 </html>
