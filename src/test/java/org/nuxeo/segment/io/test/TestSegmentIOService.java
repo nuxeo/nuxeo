@@ -9,6 +9,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mvel2.ast.AssertNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -24,7 +25,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.segment.io.SegmentIO;
 import org.nuxeo.segment.io.SegmentIOComponent;
 import org.nuxeo.segment.io.SegmentIOMapper;
+import org.nuxeo.segment.io.SegmentIOUserFilter;
 
+import com.github.segmentio.models.Providers;
 import com.google.inject.Inject;
 
 @Deploy({ "org.nuxeo.segmentio.connector"})
@@ -86,6 +89,11 @@ public class TestSegmentIOService {
         Map<String, Object> data = testData.remove(0);
         Assert.assertEquals("identify", data.get("action"));
         Assert.assertEquals("FakeAuth", data.get("plugin"));
+
+        Map<String, Object> grpdata = testData.remove(0);
+        Assert.assertEquals("group", grpdata.get("action"));
+        Assert.assertEquals("TestGroup", grpdata.get("name"));
+
     }
 
     @Test
@@ -115,7 +123,40 @@ public class TestSegmentIOService {
 
 
 
+    @Test
+    public void shouldHaveDefaultProvidersConfig() throws Exception {
 
+        SegmentIO sio = Framework.getLocalService(SegmentIO.class);
+        Assert.assertNotNull(sio);
 
+        Providers providers = sio.getProviders();
+
+        Assert.assertNotNull(providers);
+
+        Assert.assertTrue(providers.containsKey("Marketo"));
+        Assert.assertTrue((Boolean)providers.get("Marketo"));
+
+    }
+
+    @Test
+    public void shouldHaveUserFilter() throws Exception {
+
+        SegmentIO sio = Framework.getLocalService(SegmentIO.class);
+        Assert.assertNotNull(sio);
+
+        SegmentIOComponent component = (SegmentIOComponent) Framework.getRuntime().getComponent(SegmentIOComponent.class.getName());
+        Assert.assertNotNull(component);
+
+        SegmentIOUserFilter filters = component.getUserFilters();
+
+        Assert.assertNotNull(filters);
+
+        Assert.assertFalse(filters.isEnableAnonymous());
+
+        Assert.assertTrue(filters.getBlackListedUsers().contains("RemoteConnectInstance"));
+
+        Assert.assertTrue(filters.canTrack(session.getPrincipal().getName()));
+
+    }
 
 }

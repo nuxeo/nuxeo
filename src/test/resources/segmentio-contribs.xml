@@ -18,6 +18,8 @@
       <parameters>
         <parameter name="plugin">eventContext.getProperty("AuthenticationPlugin")</parameter>
         <parameter name="company">principal.getCompany()</parameter>
+        <parameter name="group_id">"testGroup"</parameter>
+        <parameter name="group_name">"TestGroup"</parameter>
       </parameters>
     </mapper>
 
@@ -30,6 +32,23 @@
       </parameters>
     </mapper>
 
+  </extension>
+
+  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
+    point="providers">
+    <providersConfig>
+      <providers>
+        <provider name="Marketo">true</provider>
+      </providers>
+    </providersConfig>
+  </extension>
+
+  <extension target="org.nuxeo.segment.io.SegmentIOComponent"
+    point="filters">
+    <userFilter>
+      <enableAnonymous>false</enableAnonymous>
+      <blackListedUser>RemoteConnectInstance</blackListedUser>
+    </userFilter>
   </extension>
 
 </component>

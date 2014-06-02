@@ -20,6 +20,8 @@ public class SegmentIODataWrapper {
 
     public static final String PRINCIPAL_KEY = "principal";
 
+    public static final String GROUP_KEY_PREFIX = "group_";
+
     protected static final Log log = LogFactory.getLog(SegmentIODataWrapper.class);
 
     protected String userId;
@@ -87,18 +89,41 @@ public class SegmentIODataWrapper {
     public Map<String, Serializable> getMetadata() {
         Map<String, Serializable> map = new HashMap<>();
         for (String key : metadata.keySet()) {
-            Serializable value = metadata.get(key);
-            if (value!=null) {
-                if ( isAllowed(value)) {
-                    map.put(key, value);
+            if (!key.startsWith(GROUP_KEY_PREFIX)) {
+                Serializable value = metadata.get(key);
+                if (value!=null) {
+                    if ( isAllowed(value)) {
+                        map.put(key, value);
+                    } else {
+                        map.put(key, value.toString());
+                    }
                 } else {
-                    map.put(key, value.toString());
+                    log.debug("Skip null value for key " + key);
                 }
-            } else {
-                log.debug("Skip null value for key " + key);
             }
         }
         return map;
     }
+
+    public Map<String, Serializable> getGroupMetadata() {
+        Map<String, Serializable> map = new HashMap<>();
+        for (String key : metadata.keySet()) {
+            if (key.startsWith(GROUP_KEY_PREFIX)) {
+                String gKey = key.substring(GROUP_KEY_PREFIX.length());
+                Serializable value = metadata.get(key);
+                if (value!=null) {
+                    if ( isAllowed(value)) {
+                        map.put(gKey, value);
+                    } else {
+                        map.put(gKey, value.toString());
+                    }
+                } else {
+                    log.debug("Skip null value for key " + key);
+                }
+            }
+        }
+        return map;
+    }
+
 
 }

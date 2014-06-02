@@ -5,9 +5,13 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
+import com.github.segmentio.models.Providers;
+
 public interface SegmentIO {
 
     String getWriteKey();
+
+    Map<String, String> getGlobalParameters();
 
     void identify(NuxeoPrincipal principal);
 
@@ -19,4 +23,8 @@ public interface SegmentIO {
             Map<String, Serializable> metadata);
 
     void flush();
+
+    Providers getProviders();
+
+    SegmentIOUserFilter getUserFilters();
 }
