@@ -283,6 +283,17 @@
       This class should implement org.nuxeo.ecm.directory.ldap.LdapExceptionProcessor and return
       a RecoverableClientException for any exception that should be displayed to the user.
 
+
+      By default, referrals will be automatically resolved, if you don't want that behavior (since 5.9.4) you can use the followReferrals tag
+      
+      <code>
+        <directory name="groupDirectory">
+           ....
+           <followReferrals>false</followReferrals>
+           ...
+        </directory>
+      </code>
+      
     </documentation>
 
     <object

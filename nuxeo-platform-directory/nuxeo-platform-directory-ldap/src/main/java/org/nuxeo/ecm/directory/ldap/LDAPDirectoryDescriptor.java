@@ -126,7 +126,14 @@ public class LDAPDirectoryDescriptor {
 
     @XNode("queryTimeLimit")
     private int queryTimeLimit = 0; // default to wait indefinitely
-
+    
+    // Add attribute to allow to ignore referrals resolution
+    /**
+     * Since 5.9.4
+     */
+    @XNode("followReferrals")
+    protected boolean followReferrals = true; // default to true
+    
     protected EntryAdaptor entryAdaptor;
 
     @XObject(value = "entryAdaptor")

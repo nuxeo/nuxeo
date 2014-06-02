@@ -178,7 +178,14 @@ public class LDAPDirectory extends AbstractDirectory {
                             + config.getName());
         }
         props.put(Context.PROVIDER_URL, ldapUrls);
-        props.put(Context.REFERRAL, "follow");
+        
+        // define how referrals are handled 
+        if (!getConfig().followReferrals) {
+            props.put(Context.REFERRAL, "ignore");
+        } else {
+            // this is the default mode
+            props.put(Context.REFERRAL, "follow");
+        }
 
         /*
          * SSL Connections do not work with connection timeout property
