@@ -36,7 +36,7 @@ import org.junit.Test;
 
 /**
  * @author jcarsique
- * 
+ *
  */
 public class JBossConfiguratorTest extends AbstractConfigurationTest {
 
@@ -46,6 +46,7 @@ public class JBossConfiguratorTest extends AbstractConfigurationTest {
 
     String propertyToGenerate2;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

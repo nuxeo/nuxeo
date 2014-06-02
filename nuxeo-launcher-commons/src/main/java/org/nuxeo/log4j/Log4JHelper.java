@@ -67,8 +67,7 @@ public class Log4JHelper {
     public static ArrayList<String> getFileAppendersFiles(
             LoggerRepository loggerRepository) {
         ArrayList<String> logFiles = new ArrayList<String>();
-        for (@SuppressWarnings("unchecked")
-        Enumeration<Appender> appenders = loggerRepository.getRootLogger().getAllAppenders(); appenders.hasMoreElements();) {
+        for (Enumeration<Appender> appenders = loggerRepository.getRootLogger().getAllAppenders(); appenders.hasMoreElements();) {
             Appender appender = appenders.nextElement();
             if (appender instanceof FileAppender) {
                 FileAppender fileAppender = (FileAppender) appender;
@@ -148,8 +147,7 @@ public class Log4JHelper {
                     + logger.getName());
         }
         if (includeChildren) { // Also change children categories' level
-            for (@SuppressWarnings("unchecked")
-            Enumeration<Logger> loggers = LogManager.getCurrentLoggers(); loggers.hasMoreElements();) {
+            for (Enumeration<Logger> loggers = LogManager.getCurrentLoggers(); loggers.hasMoreElements();) {
                 Logger logger = loggers.nextElement();
                 if (logger.getLevel() == newLevel) {
                     continue;

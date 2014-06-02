@@ -226,7 +226,6 @@ public class TextTemplate {
         os.write(text.getBytes("UTF-8"));
     }
 
-    @SuppressWarnings("unchecked")
     public void initFreeMarker() {
         // Initialize FreeMarker
         freemarkerConfiguration = new Configuration();

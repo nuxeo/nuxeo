@@ -349,8 +349,7 @@ public abstract class ServerConfigurator {
         File badInstanceClid = new File(generator.getNuxeoHome(),
                 getDefaultDataDir() + File.separator + "instance.clid");
         if (badInstanceClid.exists()
-                && !getDataDir().equals(
-                        new File(generator.getNuxeoHome(), getDefaultDataDir()))) {
+                && !getDataDir().equals(badInstanceClid.getParentFile())) {
             log.warn("Moving " + badInstanceClid + " to " + getDataDir() + ".");
             try {
                 FileUtils.moveFileToDirectory(badInstanceClid, getDataDir(),
@@ -546,14 +545,12 @@ public abstract class ServerConfigurator {
      */
     public Properties filterSystemProperties(Properties properties) {
         Properties dumpedProperties = new Properties();
-        for (@SuppressWarnings("unchecked")
-        Enumeration<String> propertyNames = (Enumeration<String>) properties.propertyNames(); propertyNames.hasMoreElements();) {
+        for (Enumeration<String> propertyNames = (Enumeration<String>) properties.propertyNames(); propertyNames.hasMoreElements();) {
             String key = propertyNames.nextElement();
             dumpedProperties.setProperty(key, properties.getProperty(key));
         }
         // Remove System properties except Nuxeo's System properties
-        for (@SuppressWarnings("unchecked")
-        Enumeration<String> propertyNames = (Enumeration<String>) System.getProperties().propertyNames(); propertyNames.hasMoreElements();) {
+        for (Enumeration<String> propertyNames = (Enumeration<String>) System.getProperties().propertyNames(); propertyNames.hasMoreElements();) {
             String key = propertyNames.nextElement();
             if (!NUXEO_SYSTEM_PROPERTIES.contains(key)) {
                 dumpedProperties.remove(key);
