@@ -117,33 +117,36 @@ public class H2Fulltext {
      * @param conn
      */
     public static void init(Connection conn) throws SQLException {
-        Statement st = conn.createStatement();
-        st.execute("CREATE SCHEMA IF NOT EXISTS " + FT_SCHEMA);
-        st.execute("CREATE TABLE IF NOT EXISTS "
-                + FT_TABLE
-                + "(NAME VARCHAR, SCHEMA VARCHAR, TABLE VARCHAR, COLUMNS VARCHAR, "
-                + "ANALYZER VARCHAR, PRIMARY KEY(NAME))");
+        try (Statement st = conn.createStatement()) {
+            st.execute("CREATE SCHEMA IF NOT EXISTS " + FT_SCHEMA);
+            st.execute("CREATE TABLE IF NOT EXISTS "
+                    + FT_TABLE
+                    + "(NAME VARCHAR, SCHEMA VARCHAR, TABLE VARCHAR, COLUMNS VARCHAR, "
+                    + "ANALYZER VARCHAR, PRIMARY KEY(NAME))");
         // BBB migrate old table without the "NAME" column
-        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE "
-                + "TABLE_SCHEMA = '"
-                + FT_SCHEMA
-                + "' AND TABLE_NAME = 'INDEXES' AND COLUMN_NAME = 'NAME'");
-        if (!rs.next()) {
-            // BBB no NAME column, alter table to create it
-            st.execute("ALTER TABLE " + FT_TABLE + " ADD COLUMN NAME VARCHAR");
-            st.execute("UPDATE " + FT_TABLE + " SET NAME = '"
-                    + DEFAULT_INDEX_NAME + "'");
-        }
+            try (ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE "
+                    + "TABLE_SCHEMA = '"
+                    + FT_SCHEMA
+                    + "' AND TABLE_NAME = 'INDEXES' AND COLUMN_NAME = 'NAME'")) {
+                if (!rs.next()) {
+                    // BBB no NAME column, alter table to create it
+                    st.execute("ALTER TABLE " + FT_TABLE
+                            + " ADD COLUMN NAME VARCHAR");
+                    st.execute("UPDATE " + FT_TABLE + " SET NAME = '"
+                            + DEFAULT_INDEX_NAME + "'");
+                }
+            }
 
-        String className = H2Fulltext.class.getName();
-        st.execute("CREATE ALIAS IF NOT EXISTS " + PREFIX
-                + "CREATE_INDEX FOR \"" + className + ".createIndex\"");
-        st.execute("CREATE ALIAS IF NOT EXISTS " + PREFIX + "REINDEX FOR \""
-                + className + ".reindex\"");
-        st.execute("CREATE ALIAS IF NOT EXISTS " + PREFIX + "DROP_ALL FOR \""
-                + className + ".dropAll\"");
-        st.execute("CREATE ALIAS IF NOT EXISTS " + PREFIX + "SEARCH FOR \""
-                + className + ".search\"");
+            String className = H2Fulltext.class.getName();
+            st.execute("CREATE ALIAS IF NOT EXISTS " + PREFIX
+                    + "CREATE_INDEX FOR \"" + className + ".createIndex\"");
+            st.execute("CREATE ALIAS IF NOT EXISTS " + PREFIX
+                    + "REINDEX FOR \"" + className + ".reindex\"");
+            st.execute("CREATE ALIAS IF NOT EXISTS " + PREFIX
+                    + "DROP_ALL FOR \"" + className + ".dropAll\"");
+            st.execute("CREATE ALIAS IF NOT EXISTS " + PREFIX + "SEARCH FOR \""
+                    + className + ".search\"");
+        }
     }
 
     // ----- static methods called directly to initialize fulltext -----
@@ -175,20 +178,21 @@ public class H2Fulltext {
             indexName = DEFAULT_INDEX_NAME;
         }
         columns = columns.replace("(", "").replace(")", "").replace(" ", "");
-        PreparedStatement ps = conn.prepareStatement("DELETE FROM " + FT_TABLE
-                + " WHERE NAME = ?");
-        ps.setString(1, indexName);
-        ps.execute();
-        ps = conn.prepareStatement("INSERT INTO "
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM "
+                + FT_TABLE + " WHERE NAME = ?")) {
+            ps.setString(1, indexName);
+            ps.execute();
+        }
+        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO "
                 + FT_TABLE
-                + "(NAME, SCHEMA, TABLE, COLUMNS, ANALYZER) VALUES(?, ?, ?, ?, ?)");
-        ps.setString(1, indexName);
-        ps.setString(2, schema);
-        ps.setString(3, table);
-        ps.setString(4, columns);
-        ps.setString(5, analyzer);
-        ps.execute();
-        ps.close();
+                + "(NAME, SCHEMA, TABLE, COLUMNS, ANALYZER) VALUES(?, ?, ?, ?, ?)")) {
+            ps.setString(1, indexName);
+            ps.setString(2, schema);
+            ps.setString(3, table);
+            ps.setString(4, columns);
+            ps.setString(5, analyzer);
+            ps.execute();
+        }
         createTrigger(conn, schema, table);
     }
 
@@ -198,39 +202,41 @@ public class H2Fulltext {
     public static void reindex(Connection conn) throws SQLException {
         removeAllTriggers(conn);
         removeIndexFiles(conn);
-        Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery("SELECT * FROM " + FT_TABLE);
-        Set<String> done = new HashSet<String>();
-        while (rs.next()) {
-            String schema = rs.getString("SCHEMA");
-            String table = rs.getString("TABLE");
-            String key = schema + '.' + table;
-            if (!done.add(key)) {
-                continue;
+        try (Statement st = conn.createStatement()) {
+            try (ResultSet rs = st.executeQuery("SELECT * FROM " + FT_TABLE)) {
+                Set<String> done = new HashSet<String>();
+                while (rs.next()) {
+                    String schema = rs.getString("SCHEMA");
+                    String table = rs.getString("TABLE");
+                    String key = schema + '.' + table;
+                    if (!done.add(key)) {
+                        continue;
+                    }
+                    createTrigger(conn, schema, table);
+                    indexExistingRows(conn, schema, table);
+                }
             }
-            createTrigger(conn, schema, table);
-            indexExistingRows(conn, schema, table);
         }
-        st.close();
     }
 
     private static void indexExistingRows(Connection conn, String schema,
             String table) throws SQLException {
         Trigger trigger = new Trigger();
         trigger.init(conn, schema, null, table, false, org.h2.api.Trigger.INSERT);
-        Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery("SELECT * FROM "
-                + StringUtils.quoteIdentifier(schema) + '.'
-                + StringUtils.quoteIdentifier(table));
-        int n = rs.getMetaData().getColumnCount();
-        while (rs.next()) {
-            Object[] row = new Object[n];
-            for (int i = 0; i < n; i++) {
-                row[i] = rs.getObject(i + 1);
+        try (Statement st = conn.createStatement()) {
+            try (ResultSet rs = st.executeQuery("SELECT * FROM "
+                    + StringUtils.quoteIdentifier(schema) + '.'
+                    + StringUtils.quoteIdentifier(table))) {
+                int n = rs.getMetaData().getColumnCount();
+                while (rs.next()) {
+                    Object[] row = new Object[n];
+                    for (int i = 0; i < n; i++) {
+                        row[i] = rs.getObject(i + 1);
+                    }
+                    trigger.fire(conn, null, row);
+                }
             }
-            trigger.fire(conn, null, row);
         }
-        st.close();
     }
 
     /**
@@ -248,42 +254,43 @@ public class H2Fulltext {
      */
     private static void createTrigger(Connection conn, String schema,
             String table) throws SQLException {
-        Statement st = conn.createStatement();
-        schema = StringUtils.quoteIdentifier(schema);
-        String trigger = schema + '.'
-                + StringUtils.quoteIdentifier(PREFIX + table);
-        st.execute("DROP TRIGGER IF EXISTS " + trigger);
-        st.execute(String.format("CREATE TRIGGER %s "
-                + "AFTER INSERT, UPDATE, DELETE ON %s.%s "
-                + "FOR EACH ROW CALL \"%s\"", trigger, schema,
-                StringUtils.quoteIdentifier(table),
-                H2Fulltext.Trigger.class.getName()));
-        st.close();
+        try (Statement st = conn.createStatement()) {
+            schema = StringUtils.quoteIdentifier(schema);
+            String trigger = schema + '.'
+                    + StringUtils.quoteIdentifier(PREFIX + table);
+            st.execute("DROP TRIGGER IF EXISTS " + trigger);
+            st.execute(String.format("CREATE TRIGGER %s "
+                    + "AFTER INSERT, UPDATE, DELETE ON %s.%s "
+                    + "FOR EACH ROW CALL \"%s\"", trigger, schema,
+                    StringUtils.quoteIdentifier(table),
+                    H2Fulltext.Trigger.class.getName()));
+        }
     }
 
     private static void removeAllTriggers(Connection conn) throws SQLException {
-        Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.TRIGGERS");
-        Statement st2 = conn.createStatement();
-        while (rs.next()) {
-            String trigger = rs.getString("TRIGGER_NAME");
-            if (trigger.startsWith(PREFIX)) {
-                st2.execute("DROP TRIGGER "
-                        + StringUtils.quoteIdentifier(rs.getString("TRIGGER_SCHEMA"))
-                        + "." + trigger);
+        try (Statement st = conn.createStatement()) {
+            try (ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.TRIGGERS")) {
+                try (Statement st2 = conn.createStatement()) {
+                    while (rs.next()) {
+                        String trigger = rs.getString("TRIGGER_NAME");
+                        if (trigger.startsWith(PREFIX)) {
+                            st2.execute("DROP TRIGGER "
+                                    + StringUtils.quoteIdentifier(rs.getString("TRIGGER_SCHEMA"))
+                                    + "." + trigger);
+                        }
+                    }
+                }
             }
         }
-        st.close();
-        st2.close();
     }
 
     /**
      * Drops all fulltext indexes from the database.
      */
     public static void dropAll(Connection conn) throws SQLException {
-        Statement st = conn.createStatement();
-        st.execute("DROP SCHEMA IF EXISTS " + FT_SCHEMA);
-        st.close();
+        try (Statement st = conn.createStatement()) {
+            st.execute("DROP SCHEMA IF EXISTS " + FT_SCHEMA);
+        }
         removeAllTriggers(conn);
         removeIndexFiles(conn);
     }
@@ -318,18 +325,23 @@ public class H2Fulltext {
             indexName = DEFAULT_INDEX_NAME;
         }
 
+        String schema;
+        String table;
+        String analyzerName;
+
         // find schema, table and analyzer
-        PreparedStatement ps = conn.prepareStatement("SELECT SCHEMA, TABLE, ANALYZER FROM "
-                + FT_TABLE + " WHERE NAME = ?");
-        ps.setString(1, indexName);
-        ResultSet res = ps.executeQuery();
-        if (!res.next()) {
-            throw new SQLException("No such index: " + indexName);
+        try (PreparedStatement ps = conn.prepareStatement("SELECT SCHEMA, TABLE, ANALYZER FROM "
+                + FT_TABLE + " WHERE NAME = ?")) {
+            ps.setString(1, indexName);
+            try (ResultSet res = ps.executeQuery()) {
+                if (!res.next()) {
+                    throw new SQLException("No such index: " + indexName);
+                }
+                schema = res.getString(1);
+                table = res.getString(2);
+                analyzerName = res.getString(3);
+            }
         }
-        String schema = res.getString(1);
-        String table = res.getString(2);
-        String analyzerName = res.getString(3);
-        ps.close();
 
         int type = getPrimaryKeyType(meta, schema, table);
         SimpleResultSet rs = new SimpleResultSet();
