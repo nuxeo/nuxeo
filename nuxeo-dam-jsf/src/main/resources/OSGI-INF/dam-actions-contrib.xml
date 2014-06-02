@@ -86,8 +86,8 @@
       </properties>
     </action>
 
-    <action id="damDownloadAction" link="#{operationActionBean.doOperation('downloadFilesZip')}"
-      order="30" label="label.document.download" type="link"
+    <action id="damDownloadAction" link="#{damActions.getDownloadURL()}"
+      order="30" label="label.document.download" type="bare_link"
       icon="/icons/contextual_menu/download.png">
       <category>DAM_ASSET_VIEW_ACTIONS</category>
       <filter-id>documentHasBlobs</filter-id>

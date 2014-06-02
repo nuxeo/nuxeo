@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.webapp.action.MainTabsActions;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
 import org.nuxeo.runtime.api.Framework;
@@ -166,5 +167,15 @@ public class DamActions implements Serializable {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns the download URL for the current document.
+     *
+     * @since 5.9.4
+     */
+    public String getDownloadURL() {
+        return DocumentModelFunctions.bigFileUrl(
+                navigationContext.getCurrentDocument(), "blobholder:0", "");
     }
 }
