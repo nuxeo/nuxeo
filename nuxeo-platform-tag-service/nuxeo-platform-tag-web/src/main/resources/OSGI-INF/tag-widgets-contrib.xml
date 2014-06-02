@@ -37,7 +37,7 @@
                   <widget>canSelectNewTag</widget>
                 </row>
               </rows>
-              <widget name="canSelectNewTag" type="string">
+              <widget name="canSelectNewTag" type="checkbox">
                 <labels>
                   <label mode="any">Can Select New Tag</label>
                 </labels>
