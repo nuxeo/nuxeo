@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.impl.Base64;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
+import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -408,23 +410,31 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     public void testContentStream() throws Exception {
         Document file = (Document) session.getObjectByPath("/testfolder1/testfile1");
 
-        // check ETag header
+        // check Cache Response Headers (eTag and Last-Modified)
         if (isAtomPub || isBrowser) {
             RepositoryInfo ri = session.getRepositoryInfo();
             String uri = ri.getThinClientUri() + ri.getId() + "/";
             uri += isAtomPub ? "content?id=" : "root?objectId=";
             uri += file.getId();
             String eTag = file.getPropertyValue("nuxeo:contentStreamDigest");
+            GregorianCalendar lastModifiedCalendar = file.getPropertyValue("dc:modified");
+            String lastModified = DateUtil.formatDate(lastModifiedCalendar.getTime());
             String encoding = Base64.encodeBytes(
                     new String(USERNAME + ":" + PASSWORD).getBytes());
             DefaultHttpClient client = new DefaultHttpClient();
             HttpGet request = new HttpGet(uri);
+            HttpResponse response = null;
             request.setHeader("Authorization", "Basic " + encoding);
-            request.setHeader("If-None-Match", eTag);
             try {
-                HttpResponse response = client.execute(request);
+                request.setHeader("If-None-Match", eTag);
+                response = client.execute(request);
                 assertEquals(HttpServletResponse.SC_NOT_MODIFIED,
-                response.getStatusLine().getStatusCode());
+                        response.getStatusLine().getStatusCode());
+                request.removeHeaders("If-None-Match");
+                request.setHeader("If-Modified-Since", lastModified);
+                response = client.execute(request);
+                assertEquals(HttpServletResponse.SC_NOT_MODIFIED,
+                        response.getStatusLine().getStatusCode());
             } finally {
                 client.getConnectionManager().shutdown();
             }

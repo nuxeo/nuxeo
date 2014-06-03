@@ -304,12 +304,17 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             throw new CmisStreamNotSupportedException();
         }
         Blob blob;
+        GregorianCalendar lastModified;
         try {
             blob = blobHolder.getBlob();
+            if (blob == null) {
+                return null;
+            }
+            lastModified = (GregorianCalendar) doc.getPropertyValue("dc:modified");
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
-        return blob == null ? null : new NuxeoContentStream(blob);
+        return new NuxeoContentStream(blob, lastModified);
     }
 
     public static void setContentStream(DocumentModel doc,
