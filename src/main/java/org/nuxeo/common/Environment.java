@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,15 +59,50 @@ public class Environment {
 
     public static final String NUXEO_DATA_DIR = "nuxeo.data.dir";
 
+    /**
+     * @since 5.9.4
+     */
+    public static final String DEFAULT_DATA_DIR = "data";
+
     public static final String NUXEO_LOG_DIR = "nuxeo.log.dir";
+
+    /**
+     * @since 5.9.4
+     */
+    public static final String DEFAULT_LOG_DIR = "log";
 
     public static final String NUXEO_PID_DIR = "nuxeo.pid.dir";
 
     public static final String NUXEO_TMP_DIR = "nuxeo.tmp.dir";
 
+    /**
+     * @since 5.9.4
+     */
+    public static final String DEFAULT_TMP_DIR = "tmp";
+
     public static final String NUXEO_CONFIG_DIR = "nuxeo.config.dir";
 
+    /**
+     * @since 5.9.4
+     */
+    public static final String DEFAULT_CONFIG_DIR = "config";
+
     public static final String NUXEO_WEB_DIR = "nuxeo.web.dir";
+
+    /**
+     * @since 5.9.4
+     */
+    public static final String DEFAULT_WEB_DIR = "web";
+
+    /**
+     * @since 5.9.4
+     */
+    public static final String NUXEO_MP_DIR = "nuxeo.mp.dir";
+
+    /**
+     * @since 5.9.4
+     */
+    public static final String DEFAULT_MP_DIR = "packages";
 
     /**
      * @since 5.6
@@ -222,7 +257,7 @@ public class Environment {
 
     public File getTemp() {
         if (temp == null) {
-            temp = new File(home, "tmp");
+            temp = new File(home, DEFAULT_TMP_DIR);
         }
         return temp;
     }
@@ -234,7 +269,7 @@ public class Environment {
 
     public File getConfig() {
         if (config == null) {
-            config = new File(home, "config");
+            config = new File(home, DEFAULT_CONFIG_DIR);
         }
         return config;
     }
@@ -246,7 +281,7 @@ public class Environment {
 
     public File getLog() {
         if (log == null) {
-            log = new File(home, "log");
+            log = new File(home, DEFAULT_LOG_DIR);
         }
         return log;
     }
@@ -258,7 +293,7 @@ public class Environment {
 
     public File getData() {
         if (data == null) {
-            data = new File(home, "data");
+            data = new File(home, DEFAULT_DATA_DIR);
         }
         return data;
     }
@@ -270,7 +305,7 @@ public class Environment {
 
     public File getWeb() {
         if (web == null) {
-            web = new File(home, "web");
+            web = new File(home, DEFAULT_WEB_DIR);
         }
         return web;
     }
@@ -350,6 +385,7 @@ public class Environment {
         String configDir = System.getProperty(NUXEO_CONFIG_DIR);
         String logDir = System.getProperty(NUXEO_LOG_DIR);
         String tmpDir = System.getProperty(NUXEO_TMP_DIR);
+        String mpDir = System.getProperty(NUXEO_MP_DIR);
 
         initServerHome();
         initRuntimeHome();
@@ -364,6 +400,9 @@ public class Environment {
         }
         if (StringUtils.isNotEmpty(tmpDir)) {
             setTemp(new File(tmpDir));
+        }
+        if (StringUtils.isNotEmpty(mpDir)) {
+            properties.put(NUXEO_MP_DIR, mpDir);
         }
     }
 
