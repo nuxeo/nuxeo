@@ -520,6 +520,7 @@ public class ConfigurationGenerator {
             setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
             setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_PID_DIR);
             setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_TMP_DIR);
+            setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_MP_DIR);
         } catch (NullPointerException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (FileNotFoundException e) {
@@ -1234,6 +1235,7 @@ public class ConfigurationGenerator {
         ifNotExistsAndIsDirectoryThenCreate(getPidDir());
         ifNotExistsAndIsDirectoryThenCreate(getDataDir());
         ifNotExistsAndIsDirectoryThenCreate(getTmpDir());
+        ifNotExistsAndIsDirectoryThenCreate(getPackagesDir());
         checkAddressesAndPorts();
         serverConfigurator.verifyInstallation();
         if (!"default".equals(userConfig.getProperty(PARAM_TEMPLATE_DBTYPE))) {
@@ -1261,6 +1263,15 @@ public class ConfigurationGenerator {
                         "Failed to connect on database: " + e.getMessage());
             }
         }
+    }
+
+    /**
+     * @return Marketplace packages directory
+     *
+     * @since 5.9.4
+     */
+    private File getPackagesDir() {
+        return serverConfigurator.getPackagesDir();
     }
 
     /**
@@ -1718,7 +1729,8 @@ public class ConfigurationGenerator {
             env.loadProperties(userConfig);
             env.setProperty(PARAM_MP_DIR,
                     getDistributionMPDir().getAbsolutePath());
-
+            env.setProperty(Environment.NUXEO_MP_DIR,
+                    getPackagesDir().getAbsolutePath());
         }
         return env;
     }

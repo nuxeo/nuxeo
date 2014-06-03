@@ -23,7 +23,7 @@ package org.nuxeo.launcher.config;
  * Constants duplicated from {@link org.nuxeo.common.Environment}
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated use org.nuxeo.common.Environment
+ * @deprecated Since 5.6. Use org.nuxeo.common.Environment
  */
 @Deprecated
 public class Environment {

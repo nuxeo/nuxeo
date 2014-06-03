@@ -22,6 +22,8 @@ package org.nuxeo.launcher.config;
 import java.io.File;
 import java.util.Properties;
 
+import org.nuxeo.common.Environment;
+
 /**
  * @author jcarsique
  */
@@ -93,9 +95,9 @@ public class JBossConfigurator extends ServerConfigurator {
     @Override
     public String getDefaultDataDir() {
         final String defaultDataDir = "server" + File.separator
-                + getConfiguration() + File.separator + DEFAULT_DATA_DIR
-                + File.separator + "NXRuntime" + File.separator
-                + DEFAULT_DATA_DIR;
+                + getConfiguration() + File.separator
+                + Environment.DEFAULT_DATA_DIR + File.separator + "NXRuntime"
+                + File.separator + Environment.DEFAULT_DATA_DIR;
         return defaultDataDir;
     }
 
@@ -116,8 +118,9 @@ public class JBossConfigurator extends ServerConfigurator {
 
         File oldPath = new File(generator.getDataDir(), "NXRuntime"
                 + File.separator + "binaries");
-        String message = "Please move 'binaries' directory from"
-                + oldPath.getParent() + "to " + generator.getDataDir();
+        String message = String.format("NXP-5370, NXP-5460. "
+                + "Please move 'binaries' directory from %s to %s",
+                oldPath.getParent(), generator.getDataDir());
         checkPath(oldPath, message);
     }
 
@@ -125,8 +128,9 @@ public class JBossConfigurator extends ServerConfigurator {
         File oldPath = new File(generator.getNuxeoHome(), "server"
                 + File.separator + jbossConfig + File.separator + "data"
                 + File.separator + "h2");
-        String message = "Please move 'h2' and 'derby' directories from"
-                + oldPath.getParent() + "to " + generator.getDataDir();
+        String message = String.format("NXP-5370, NXP-5460. "
+                + "Please move 'h2' and 'derby' directories from %s to %s",
+                oldPath.getParent(), generator.getDataDir());
         checkPath(oldPath, message);
 
         oldPath = new File(generator.getNuxeoHome(), "server" + File.separator
@@ -137,15 +141,17 @@ public class JBossConfigurator extends ServerConfigurator {
         oldPath = new File(generator.getNuxeoHome(), "server" + File.separator
                 + jbossConfig + File.separator + "data" + File.separator
                 + "NXRuntime" + File.separator + "binaries");
-        message = "Please move 'binaries' directory from" + oldPath.getParent()
-                + "to " + generator.getDataDir();
+        message = String.format("NXP-5370, NXP-5460. "
+                + "Please move 'binaries' directory from %s to %s",
+                oldPath.getParent(), generator.getDataDir());
         checkPath(oldPath, message);
     }
 
     @Override
     public String getDefaultTmpDir() {
         final String defaultTmpDir = "server" + File.separator
-                + getConfiguration() + File.separator + DEFAULT_TMP_DIR;
+                + getConfiguration() + File.separator
+                + Environment.DEFAULT_TMP_DIR;
         return defaultTmpDir;
     }
 

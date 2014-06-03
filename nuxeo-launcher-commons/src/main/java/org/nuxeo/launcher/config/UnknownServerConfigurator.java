@@ -57,7 +57,8 @@ public class UnknownServerConfigurator extends ServerConfigurator {
     @Override
     public File getConfigDir() {
         return new File(System.getProperty(Environment.NUXEO_CONFIG_DIR,
-                getRuntimeHome().getPath() + File.separator + "config"));
+                getRuntimeHome().getPath() + File.separator
+                        + Environment.DEFAULT_CONFIG_DIR));
     }
 
     @Override

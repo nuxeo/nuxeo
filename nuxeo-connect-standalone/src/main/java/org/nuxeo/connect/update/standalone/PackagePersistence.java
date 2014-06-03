@@ -54,8 +54,6 @@ public class PackagePersistence {
 
     private static final Log log = LogFactory.getLog(PackagePersistence.class);
 
-    private static final String FEATURES_DIR = "packages";
-
     protected final File root;
 
     protected final File store;
@@ -69,12 +67,13 @@ public class PackagePersistence {
     private PackageUpdateService service;
 
     public PackagePersistence(PackageUpdateService pus) throws IOException {
-        // check if we should use a custom dataDir - useful for offline update
-        String dataDir = System.getProperty("org.nuxeo.connect.update.dataDir");
-        if (dataDir != null) {
-            root = new File(new File(dataDir), FEATURES_DIR);
+        Environment env = Environment.getDefault();
+        File mpDir = new File(env.getProperty(Environment.NUXEO_MP_DIR,
+                Environment.DEFAULT_MP_DIR));
+        if (mpDir.isAbsolute()) {
+            root = mpDir;
         } else {
-            root = new File(Environment.getDefault().getData(), FEATURES_DIR);
+            root = new File(env.getServerHome(), mpDir.getPath());
         }
         root.mkdirs();
         store = new File(root, "store");

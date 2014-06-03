@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.nuxeo.common.Environment;
 
 /**
  * @author jcarsique
@@ -69,7 +70,7 @@ public class TomcatConfigurator extends ServerConfigurator {
 
     @Override
     protected String getDefaultDataDir() {
-        return "nxserver" + File.separator + DEFAULT_DATA_DIR;
+        return "nxserver" + File.separator + Environment.DEFAULT_DATA_DIR;
     }
 
     @Override
@@ -77,16 +78,16 @@ public class TomcatConfigurator extends ServerConfigurator {
         super.checkPaths();
         File oldPath = new File(getRuntimeHome(), "data" + File.separator
                 + "vcsh2repo");
-        String message = "Please rename 'vcsh2repo' directory from "
-                + oldPath
-                + "to "
-                + new File(generator.getDataDir(), "h2" + File.separator
-                        + "nuxeo");
+        String message = String.format("NXP-5370, NXP-5460. "
+                + "Please rename 'vcsh2repo' directory from %s to %s", oldPath,
+                new File(generator.getDataDir(), "h2" + File.separator
+                        + "nuxeo"));
         checkPath(oldPath, message);
 
         oldPath = new File(getRuntimeHome(), "data" + File.separator + "derby"
                 + File.separator + "nxsqldirectory");
-        message = "It is not possible to migrate Derby data."
+        message = "NXP-5370, NXP-5460. "
+                + "It is not possible to migrate Derby data."
                 + System.getProperty("line.separator")
                 + "Please remove 'nx*' directories from "
                 + oldPath.getParent()
@@ -94,7 +95,7 @@ public class TomcatConfigurator extends ServerConfigurator {
                 + "or edit templates/default/"
                 + getTomcatConfig()
                 + System.getProperty("line.separator")
-                + "following http://hg.nuxeo.org/nuxeo/nuxeo-distribution/raw-file/release-5.3.2/nuxeo-distribution-resources/src/main/resources/templates-tomcat/default/conf/Catalina/localhost/nuxeo.xml";
+                + "following https://github.com/nuxeo/nuxeo-distribution/blob/release-5.3.2/nuxeo-distribution-resources/src/main/resources/templates-tomcat/default/conf/Catalina/localhost/nuxeo.xml";
         checkPath(oldPath, message);
     }
 
@@ -105,7 +106,7 @@ public class TomcatConfigurator extends ServerConfigurator {
 
     @Override
     public File getConfigDir() {
-        return new File(getRuntimeHome(), "config");
+        return new File(getRuntimeHome(), Environment.DEFAULT_CONFIG_DIR);
     }
 
     /**

@@ -54,19 +54,19 @@ public abstract class ServerConfigurator {
 
     protected static final Log log = LogFactory.getLog(ServerConfigurator.class);
 
-    protected static final String DEFAULT_LOG_DIR = "log";
-
     protected final ConfigurationGenerator generator;
 
     protected File dataDir = null;
 
     protected File logDir = null;
 
-    private File pidDir = null;
+    protected File pidDir = null;
 
     protected File libDir = null;
 
-    private File tmpDir = null;
+    protected File tmpDir = null;
+
+    protected File packagesDir = null;
 
     /**
      * @since 5.4.2
@@ -79,12 +79,29 @@ public abstract class ServerConfigurator {
     private static final String NEW_FILES = ConfigurationGenerator.TEMPLATES
             + File.separator + "files.list";
 
-    public static final String DEFAULT_DATA_DIR = "data";
+    /**
+     * @since 5.4.2
+     * @deprecated Since 5.9.4. Use
+     *             {@link org.nuxeo.common.Environment#DEFAULT_LOG_DIR} instead.
+     */
+    @Deprecated
+    public static final String DEFAULT_LOG_DIR = org.nuxeo.common.Environment.DEFAULT_LOG_DIR;
+
+    /**
+     * @deprecated Since 5.9.4. Use
+     *             {@link org.nuxeo.common.Environment#DEFAULT_DATA_DIR}
+     *             instead.
+     */
+    @Deprecated
+    public static final String DEFAULT_DATA_DIR = org.nuxeo.common.Environment.DEFAULT_DATA_DIR;
 
     /**
      * @since 5.4.2
+     * @deprecated Since 5.9.4. Use
+     *             {@link org.nuxeo.common.Environment#DEFAULT_TMP_DIR} instead.
      */
-    public static final String DEFAULT_TMP_DIR = "tmp";
+    @Deprecated
+    public static final String DEFAULT_TMP_DIR = org.nuxeo.common.Environment.DEFAULT_TMP_DIR;
 
     public ServerConfigurator(ConfigurationGenerator configurationGenerator) {
         generator = configurationGenerator;
@@ -242,7 +259,7 @@ public abstract class ServerConfigurator {
      * @since 5.4.2
      */
     protected String getDefaultDataDir() {
-        return DEFAULT_DATA_DIR;
+        return org.nuxeo.common.Environment.DEFAULT_DATA_DIR;
     }
 
     /**
@@ -270,7 +287,8 @@ public abstract class ServerConfigurator {
      */
     public File getLogDir() {
         if (logDir == null) {
-            logDir = new File(generator.getNuxeoHome(), DEFAULT_LOG_DIR);
+            logDir = new File(generator.getNuxeoHome(),
+                    org.nuxeo.common.Environment.DEFAULT_LOG_DIR);
         }
         return logDir;
     }
@@ -350,14 +368,36 @@ public abstract class ServerConfigurator {
                 getDefaultDataDir() + File.separator + "instance.clid");
         if (badInstanceClid.exists()
                 && !getDataDir().equals(badInstanceClid.getParentFile())) {
-            log.warn("Moving " + badInstanceClid + " to " + getDataDir() + ".");
+            log.warn(String.format("Moving %s to %s.", badInstanceClid,
+                    getDataDir()));
             try {
                 FileUtils.moveFileToDirectory(badInstanceClid, getDataDir(),
                         true);
             } catch (IOException e) {
-                throw new ConfigurationException("Move failed.", e);
+                throw new ConfigurationException("NXP-6722 move failed: "
+                        + e.getMessage(), e);
             }
         }
+
+        // NXP-8014
+        File oldPackagesPath = new File(getDataDir(), getDefaultPackagesDir());
+        if (oldPackagesPath.exists()
+                && !oldPackagesPath.equals(getPackagesDir())) {
+            log.warn(String.format("Moving %s content to %s...",
+                    oldPackagesPath, getPackagesDir()));
+            try {
+                for (File file : oldPackagesPath.listFiles()) {
+                    FileUtils.moveToDirectory(file, getPackagesDir(), true);
+                    log.info(String.format("Moved %s to %s.", file,
+                            getPackagesDir()));
+                }
+                oldPackagesPath.delete();
+            } catch (IOException e) {
+                throw new ConfigurationException("NXP-8014 move failed: "
+                        + e.getMessage(), e);
+            }
+        }
+
     }
 
     /**
@@ -376,7 +416,7 @@ public abstract class ServerConfigurator {
      * @since 5.4.2
      */
     public String getDefaultTmpDir() {
-        return DEFAULT_TMP_DIR;
+        return org.nuxeo.common.Environment.DEFAULT_TMP_DIR;
     }
 
     /**
@@ -404,9 +444,21 @@ public abstract class ServerConfigurator {
             setPidDir(absoluteDirectory);
         } else if (org.nuxeo.common.Environment.NUXEO_TMP_DIR.equals(key)) {
             setTmpDir(absoluteDirectory);
+        } else if (org.nuxeo.common.Environment.NUXEO_MP_DIR.equals(key)) {
+            setPackagesDir(absoluteDirectory);
         } else {
             log.error("Unknown directory key: " + key);
         }
+    }
+
+    /**
+     * @param absoluteDirectory
+     *
+     * @since 5.9.4
+     */
+    private void setPackagesDir(String packagesDirStr) {
+        packagesDir = new File(packagesDirStr);
+        packagesDir.mkdirs();
     }
 
     /**
@@ -441,6 +493,8 @@ public abstract class ServerConfigurator {
             return getPidDir();
         } else if (org.nuxeo.common.Environment.NUXEO_TMP_DIR.equals(key)) {
             return getTmpDir();
+        } else if (org.nuxeo.common.Environment.NUXEO_MP_DIR.equals(key)) {
+            return getPackagesDir();
         } else {
             log.error("Unknown directory key: " + key);
             return null;
@@ -458,7 +512,7 @@ public abstract class ServerConfigurator {
     protected void checkPath(File oldPath, String message)
             throws ConfigurationException {
         if (oldPath.exists()) {
-            log.error("Deprecated paths used (NXP-5370, NXP-5460).");
+            log.error("Deprecated paths used.");
             throw new ConfigurationException(message);
         }
     }
@@ -605,6 +659,27 @@ public abstract class ServerConfigurator {
     protected void addServerSpecificParameters(
             Map<String, String> parametersmigration) {
         // Nothing to do
+    }
+
+    /**
+     * @return Marketplace Packages directory
+     *
+     * @since 5.9.4
+     */
+    public File getPackagesDir() {
+        if (packagesDir == null) {
+            packagesDir = new File(generator.getNuxeoHome(),
+                    getDefaultPackagesDir());
+        }
+        return packagesDir;
+    }
+
+    /**
+     * @return Default MP directory path relative to Nuxeo Home
+     * @since 5.9.4
+     */
+    public String getDefaultPackagesDir() {
+        return org.nuxeo.common.Environment.DEFAULT_MP_DIR;
     }
 
 }
