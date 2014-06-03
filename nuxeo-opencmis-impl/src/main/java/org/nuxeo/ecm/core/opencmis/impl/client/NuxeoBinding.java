@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
+import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.spi.AuthenticationProvider;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.commons.spi.CmisBinding;
@@ -95,6 +96,18 @@ public class NuxeoBinding implements CmisBinding {
 
     @Override
     public void clearRepositoryCache(String repositoryId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getSessionId() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public BindingType getBindingType() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }

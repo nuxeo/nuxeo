@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,7 +29,6 @@ import org.apache.chemistry.opencmis.client.api.Property;
 import org.apache.chemistry.opencmis.client.api.Relationship;
 import org.apache.chemistry.opencmis.client.api.Rendition;
 import org.apache.chemistry.opencmis.client.api.SecondaryType;
-import org.apache.chemistry.opencmis.client.api.TransientCmisObject;
 import org.apache.chemistry.opencmis.client.runtime.RenditionImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
@@ -96,12 +96,6 @@ public abstract class NuxeoObject implements CmisObject {
     public <T> T getAdapter(Class<T> adapterInterface) {
         throw new CmisRuntimeException("Cannot adapt to "
                 + adapterInterface.getName());
-    }
-
-    @Override
-    @Deprecated
-    public TransientCmisObject getTransientObject() {
-        return (TransientCmisObject) getAdapter(TransientCmisObject.class);
     }
 
     public String getRepositoryId() {
@@ -208,6 +202,30 @@ public abstract class NuxeoObject implements CmisObject {
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
+    }
+
+    @Override
+    public CmisObject rename(String newName) {
+        if (newName == null || newName.length() == 0) {
+            throw new IllegalArgumentException("New name must not be empty!");
+        }
+
+        Map<String, Object> prop = new HashMap<String, Object>();
+        prop.put(PropertyIds.NAME, newName);
+
+        return updateProperties(prop);
+    }
+
+    @Override
+    public ObjectId rename(String newName, boolean refresh) {
+        if (newName == null || newName.length() == 0) {
+            throw new IllegalArgumentException("New name must not be empty!");
+        }
+
+        Map<String, Object> prop = new HashMap<String, Object>();
+        prop.put(PropertyIds.NAME, newName);
+
+        return updateProperties(prop, refresh);
     }
 
     @SuppressWarnings("unchecked")

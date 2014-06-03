@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,14 +21,15 @@ import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
-import org.apache.chemistry.opencmis.client.api.TransientDocument;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.data.ContentStreamHash;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamHashImpl;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
@@ -39,11 +41,6 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     public NuxeoDocument(NuxeoSession session, NuxeoObjectData data,
             ObjectType type) {
         super(session, data, type);
-    }
-
-    @Override
-    public TransientDocument getTransientDocument() {
-        return getAdapter(TransientDocument.class);
     }
 
     @Override
@@ -281,6 +278,21 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     public ObjectId appendContentStream(ContentStream contentStream,
             boolean isLastChunk, boolean refresh) {
         throw new CmisNotSupportedException();
+    }
+
+    @Override
+    public List<ContentStreamHash> getContentStreamHashes() {
+        List<String> hashes = getPropertyValue(PropertyIds.CONTENT_STREAM_HASH);
+        if (hashes == null || hashes.size() == 0) {
+            return null;
+        }
+
+        List<ContentStreamHash> result = new ArrayList<ContentStreamHash>(hashes.size());
+        for (String hash : hashes) {
+            result.add(new ContentStreamHashImpl(hash));
+        }
+
+        return result;
     }
 
 }
