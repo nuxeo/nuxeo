@@ -13,6 +13,7 @@
     <genericPageProvider name="current_user_tasks_sort_asc"
       class="org.nuxeo.ecm.platform.task.providers.UserTaskPageProvider">
       <sort ascending="true" column="dc:created"/>
+      <sort ascending="true" column="nt:name"/>
     </genericPageProvider>
 
     <genericPageProvider name="current_user_tasks_sort_desc"
