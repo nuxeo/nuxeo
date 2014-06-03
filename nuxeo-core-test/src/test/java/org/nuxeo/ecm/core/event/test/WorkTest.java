@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,15 +46,16 @@ public class WorkTest extends TXSQLRepositoryTestCase {
     @Before
     @Override
     public void setUp() throws Exception {
-        LogFactory.getLog(WorkTest.class).warn("inializing runtime");
         super.setUp();
-        LogFactory.getLog(WorkTest.class).warn("runtime initialized");
         deployBundle("org.nuxeo.ecm.core.event");
     }
 
     @After
     @Override
     public void tearDown() throws Exception {
+        if (!hasPoolingConfig()) {
+            return;
+        }
         super.tearDown();
     }
 
