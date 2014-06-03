@@ -41,152 +41,151 @@ import com.sun.faces.util.LRUMap;
  */
 public class NuxeoStateManager extends StateManager {
 
-	private static final Log log = LogFactory.getLog(NuxeoStateManager.class);
+    private static final Log log = LogFactory.getLog(NuxeoStateManager.class);
 
-	protected LRUMap<String, StateManager> stateManagerPerConversationMap;
+    protected LRUMap<String, StateManager> stateManagerPerConversationMap;
 
-	protected int maxCapacity = DEFAULT_NUMBER_OF_CONVERSATIONS_IN_SESSION;
+    protected int maxCapacity = DEFAULT_NUMBER_OF_CONVERSATIONS_IN_SESSION;
 
-	protected StateManager stateManager;
+    protected StateManager stateManager;
 
-	protected boolean isMultiConversation;
+    protected boolean isMultiConversation;
 
-	public static final String NUMBER_OF_CONVERSATIONS_IN_SESSION = "nuxeo.jsf.numberOfConversationsInSession";
+    public static final String NUMBER_OF_CONVERSATIONS_IN_SESSION = "nuxeo.jsf.numberOfConversationsInSession";
 
-	public static final int DEFAULT_NUMBER_OF_CONVERSATIONS_IN_SESSION = 4;
+    public static final int DEFAULT_NUMBER_OF_CONVERSATIONS_IN_SESSION = 4;
 
-	protected static int getNbOfConversationsInSession(
-			final FacesContext context) {
-		ExternalContext externalContext = context.getExternalContext();
-		String value = externalContext
-				.getInitParameter(NUMBER_OF_CONVERSATIONS_IN_SESSION);
-		if (null == value) {
-			return DEFAULT_NUMBER_OF_CONVERSATIONS_IN_SESSION;
-		} else {
-			try {
-				return Integer.parseInt(value);
+    protected static int getNbOfConversationsInSession(
+            final FacesContext context) {
+        ExternalContext externalContext = context.getExternalContext();
+        String value = externalContext.getInitParameter(NUMBER_OF_CONVERSATIONS_IN_SESSION);
+        if (null == value) {
+            return DEFAULT_NUMBER_OF_CONVERSATIONS_IN_SESSION;
+        } else {
+            try {
+                return Integer.parseInt(value);
 
-			} catch (NumberFormatException e) {
-				throw new FacesException("Context parameter "
-						+ NUMBER_OF_CONVERSATIONS_IN_SESSION
-						+ " must have integer value");
-			}
-		}
-	}
+            } catch (NumberFormatException e) {
+                throw new FacesException("Context parameter "
+                        + NUMBER_OF_CONVERSATIONS_IN_SESSION
+                        + " must have integer value");
+            }
+        }
+    }
 
-	public NuxeoStateManager(StateManager sm) {
-		this.stateManager = sm;
-		this.isMultiConversation = sm instanceof SeamStateManager;
-	}
+    public NuxeoStateManager(StateManager sm) {
+        this.stateManager = sm;
+        this.isMultiConversation = sm instanceof SeamStateManager;
+    }
 
-	@Override
-	protected Object getComponentStateToSave(FacesContext ctx) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    protected Object getComponentStateToSave(FacesContext ctx) {
+        throw new UnsupportedOperationException();
+    }
 
-	protected StateManager getEffectiveSateManager(final FacesContext context) {
-		if (!isMultiConversation) {
-			return this.stateManager;
-		} else {
-			Conversation conversation = Conversation.instance();
-			String conversationId = null;
-			if (conversation.isLongRunning()) {
-				conversationId = conversation.getId();
-			} else {
-				return this.stateManager;
-			}
-			LRUMap<String, StateManager> map = getStateManagerPerConversationMap(context);
-			synchronized (map) {
-				StateManager newStateManager = null;
-				if (!map.containsKey(conversationId)) {
-					newStateManager = new SeamStateManager(
-							new StateManagerImpl());
-					if (map.size() == this.maxCapacity) {
-						if (log.isDebugEnabled()) {
-							log.debug("Too many conversations, dumping the least recently used conversation ("
-									+ map.keySet().iterator().next() + ")");
-						}
-					}
-					map.put(conversationId, stateManager);
-					return newStateManager;
-				} else {
-					return map.get(conversationId);
-				}
-			}
-		}
-	}
+    protected StateManager getEffectiveSateManager(final FacesContext context) {
+        if (!isMultiConversation) {
+            return this.stateManager;
+        } else {
+            Conversation conversation = Conversation.instance();
+            String conversationId = null;
+            if (conversation.isLongRunning()) {
+                conversationId = conversation.getId();
+            } else {
+                return this.stateManager;
+            }
+            LRUMap<String, StateManager> map = getStateManagerPerConversationMap(context);
+            synchronized (map) {
+                StateManager newStateManager = null;
+                if (!map.containsKey(conversationId)) {
+                    newStateManager = new SeamStateManager(
+                            new StateManagerImpl());
+                    if (map.size() == this.maxCapacity) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Too many conversations, dumping the least recently used conversation ("
+                                    + map.keySet().iterator().next() + ")");
+                        }
+                    }
+                    map.put(conversationId, stateManager);
+                    return newStateManager;
+                } else {
+                    return map.get(conversationId);
+                }
+            }
+        }
+    }
 
-	protected LRUMap<String, StateManager> getStateManagerPerConversationMap(
-			final FacesContext context) {
-		if (stateManagerPerConversationMap == null) {
-			this.maxCapacity = getNbOfConversationsInSession(context);
-			stateManagerPerConversationMap = new LRUMap<String, StateManager>(
-					maxCapacity);
-		}
-		return stateManagerPerConversationMap;
-	}
+    protected LRUMap<String, StateManager> getStateManagerPerConversationMap(
+            final FacesContext context) {
+        if (stateManagerPerConversationMap == null) {
+            this.maxCapacity = getNbOfConversationsInSession(context);
+            stateManagerPerConversationMap = new LRUMap<String, StateManager>(
+                    maxCapacity);
+        }
+        return stateManagerPerConversationMap;
+    }
 
-	@Override
-	protected Object getTreeStructureToSave(FacesContext ctx) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    protected Object getTreeStructureToSave(FacesContext ctx) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public boolean isSavingStateInClient(FacesContext ctx) {
-		return getEffectiveSateManager(ctx).isSavingStateInClient(ctx);
-	}
+    @Override
+    public boolean isSavingStateInClient(FacesContext ctx) {
+        return getEffectiveSateManager(ctx).isSavingStateInClient(ctx);
+    }
 
-	@Override
-	protected void restoreComponentState(FacesContext ctx, UIViewRoot viewRoot,
-			String str) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    protected void restoreComponentState(FacesContext ctx, UIViewRoot viewRoot,
+            String str) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	protected UIViewRoot restoreTreeStructure(FacesContext ctx, String str1,
-			String str2) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    protected UIViewRoot restoreTreeStructure(FacesContext ctx, String str1,
+            String str2) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public UIViewRoot restoreView(FacesContext ctx, String str1, String str2) {
-		return getEffectiveSateManager(ctx).restoreView(ctx, str1, str2);
-	}
+    @Override
+    public UIViewRoot restoreView(FacesContext ctx, String str1, String str2) {
+        return getEffectiveSateManager(ctx).restoreView(ctx, str1, str2);
+    }
 
-	@Override
-	public SerializedView saveSerializedView(FacesContext facesContext) {
+    @Override
+    public SerializedView saveSerializedView(FacesContext facesContext) {
 
-		if (Contexts.isPageContextActive()) {
-			// store the page parameters in the view root
-			Pages.instance().updateStringValuesInPageContextUsingModel(
-					facesContext);
-		}
+        if (Contexts.isPageContextActive()) {
+            // store the page parameters in the view root
+            Pages.instance().updateStringValuesInPageContextUsingModel(
+                    facesContext);
+        }
 
-		return getEffectiveSateManager(facesContext).saveSerializedView(
-				facesContext);
-	}
+        return getEffectiveSateManager(facesContext).saveSerializedView(
+                facesContext);
+    }
 
-	@Override
-	public Object saveView(FacesContext facesContext) {
+    @Override
+    public Object saveView(FacesContext facesContext) {
 
-		if (Contexts.isPageContextActive()) {
-			// store the page parameters in the view root
-			Pages.instance().updateStringValuesInPageContextUsingModel(
-					facesContext);
-		}
+        if (Contexts.isPageContextActive()) {
+            // store the page parameters in the view root
+            Pages.instance().updateStringValuesInPageContextUsingModel(
+                    facesContext);
+        }
 
-		return getEffectiveSateManager(facesContext).saveView(facesContext);
-	}
+        return getEffectiveSateManager(facesContext).saveView(facesContext);
+    }
 
-	@Override
-	public void writeState(FacesContext ctx, Object sv) throws IOException {
-		getEffectiveSateManager(ctx).writeState(ctx, sv);
-	}
+    @Override
+    public void writeState(FacesContext ctx, Object sv) throws IOException {
+        getEffectiveSateManager(ctx).writeState(ctx, sv);
+    }
 
-	@Override
-	public void writeState(FacesContext ctx, SerializedView sv)
-			throws IOException {
-		getEffectiveSateManager(ctx).writeState(ctx, sv);
-	}
+    @Override
+    public void writeState(FacesContext ctx, SerializedView sv)
+            throws IOException {
+        getEffectiveSateManager(ctx).writeState(ctx, sv);
+    }
 
 }
