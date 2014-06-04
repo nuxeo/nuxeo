@@ -27,8 +27,10 @@ import java.util.Set;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletRequest;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -37,7 +39,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
-import org.nuxeo.common.Environment;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceHelper;
@@ -79,6 +80,22 @@ public class NuxeoDriveActions implements Serializable {
     public static final String NXDRIVE_PROTOCOL = "nxdrive";
 
     public static final String PROTOCOL_COMMAND_EDIT = "edit";
+
+    public static final String UPDATE_SITE_URL_PROP_KEY = "org.nuxeo.drive.update.site.url";
+
+    public static final String SERVER_VERSION_PROP_KEY = "org.nuxeo.ecm.product.version";
+
+    public static final String DESKTOP_PACKAGE_URL_LATEST_SEGMENT = "latest";
+
+    public static final String DESKTOP_PACKAGE_PREFIX = "nuxeo-drive.";
+
+    public static final String MSI_EXTENSION = "msi";
+
+    public static final String DMG_EXTENSION = "dmg";
+
+    public static final String WINDOWS_PLATFORM = "windows";
+
+    public static final String OSX_PLATFORM = "osx";
 
     protected FileSystemItem currentFileSystemItem;
 
@@ -277,41 +294,51 @@ public class NuxeoDriveActions implements Serializable {
 
     @Factory(value = "nuxeoDriveClientPackages", scope = ScopeType.CONVERSATION)
     public List<DesktopPackageDefinition> getClientPackages() {
-
         List<DesktopPackageDefinition> packages = new ArrayList<DesktopPackageDefinition>();
-        // Add packages from the client directory
-        File clientDir = new File(Environment.getDefault().getServerHome(),
-                "client");
-        if (clientDir.isDirectory()) {
-            for (File file : clientDir.listFiles()) {
-                String fileName = file.getName();
-                boolean isDesktopPackage = false;
-                String platform = null;
-                if (fileName.endsWith(".msi")) {
-                    isDesktopPackage = true;
-                    platform = "windows";
-                } else if (fileName.endsWith(".dmg")) {
-                    isDesktopPackage = true;
-                    platform = "osx";
-                } else if (fileName.endsWith(".deb")) {
-                    isDesktopPackage = true;
-                    platform = "ubuntu";
-                }
-                if (isDesktopPackage) {
-                    packages.add(new DesktopPackageDefinition(file, fileName,
-                            platform));
-                    log.debug(String.format(
-                            "Added %s to the list of desktop packages available for download.",
-                            fileName));
-                }
-            }
+        Object desktopPackageBaseURL = Component.getInstance(
+                "desktopPackageBaseURL", ScopeType.APPLICATION);
+        // Add link to packages from the update site
+        if (desktopPackageBaseURL != ObjectUtils.NULL) {
+            // Mac OS X
+            String packageName = DESKTOP_PACKAGE_PREFIX + DMG_EXTENSION;
+            String packageURL = desktopPackageBaseURL + packageName;
+            packages.add(new DesktopPackageDefinition(packageURL, packageName,
+                    OSX_PLATFORM));
+            log.debug(String.format(
+                    "Added %s to the list of desktop packages available for download.",
+                    packageURL));
+            // Windows
+            packageName = DESKTOP_PACKAGE_PREFIX + MSI_EXTENSION;
+            packageURL = desktopPackageBaseURL + packageName;
+            packages.add(new DesktopPackageDefinition(packageURL, packageName,
+                    WINDOWS_PLATFORM));
+            log.debug(String.format(
+                    "Added %s to the list of desktop packages available for download.",
+                    packageURL));
         }
-        // Add external links
+        // Debian / Ubuntu
         // TODO: remove when Debian package is available
         packages.add(new DesktopPackageDefinition(
                 "https://github.com/nuxeo/nuxeo-drive/#ubuntudebian-and-other-linux-variants-client",
                 "user.center.nuxeoDrive.platform.ubuntu.docLinkTitle", "ubuntu"));
         return packages;
+    }
+
+    @Factory(value = "desktopPackageBaseURL", scope = ScopeType.APPLICATION)
+    public Object getDesktopPackageBaseURL() {
+        String URL = Framework.getProperty(UPDATE_SITE_URL_PROP_KEY);
+        if (URL == null) {
+            return ObjectUtils.NULL;
+        }
+        StringBuilder sb = new StringBuilder(URL);
+        if (!URL.endsWith("/")) {
+            sb.append("/");
+        }
+        sb.append(DESKTOP_PACKAGE_URL_LATEST_SEGMENT);
+        sb.append("/");
+        sb.append(Framework.getProperty(SERVER_VERSION_PROP_KEY));
+        sb.append("/");
+        return sb.toString();
     }
 
     public String downloadClientPackage(String name, File file) {
