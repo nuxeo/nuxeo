@@ -50,6 +50,14 @@ public class UIAliasHolder extends UIOutput {
 
     public static final String COMPONENT_FAMILY = UIAliasHolder.class.getName();
 
+    /**
+     * Keep the alias transient: it's supposed to be set at build time by
+     * facelet handlers and does not need to be restored/saved.
+     *
+     * @since 5.9.4-JSF2
+     */
+    protected transient AliasVariableMapper alias;
+
     public UIAliasHolder() {
         super();
     }
@@ -204,42 +212,22 @@ public class UIAliasHolder extends UIOutput {
         }
     }
 
+    /**
+     * @since 5.9.4-JSF2
+     */
+    public AliasVariableMapper getAlias() {
+        return alias;
+    }
+
+    /**
+     * @since 5.9.4-JSF2
+     */
+    public void setAlias(AliasVariableMapper alias) {
+        this.alias = alias;
+    }
+
     protected AliasVariableMapper getAliasVariableMapper() {
-        Object value = getValue();
-        if (value instanceof AliasVariableMapper) {
-            return (AliasVariableMapper) value;
-        } else if (value != null) {
-            log.error("Invalid value: " + value);
-        }
-        return null;
-    }
-
-    @Override
-    public void restoreState(FacesContext context, Object state) {
-        AliasVariableMapper alias = getAliasVariableMapper();
-        try {
-            AliasVariableMapper.exposeAliasesToRequest(context, alias);
-            super.restoreState(context, state);
-        } finally {
-            if (alias != null) {
-                AliasVariableMapper.removeAliasesExposedToRequest(context,
-                        alias.getId());
-            }
-        }
-    }
-
-    @Override
-    public Object saveState(FacesContext context) {
-        AliasVariableMapper alias = getAliasVariableMapper();
-        try {
-            AliasVariableMapper.exposeAliasesToRequest(context, alias);
-            return super.saveState(context);
-        } finally {
-            if (alias != null) {
-                AliasVariableMapper.removeAliasesExposedToRequest(context,
-                        alias.getId());
-            }
-        }
+        return getAlias();
     }
 
     @Override

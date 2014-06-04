@@ -161,11 +161,8 @@ public class AliasTagHandler extends MetaTagHandler {
             }
         }
 
-        // update value held
-        c.setValueExpression(
-                "value",
-                ctx.getExpressionFactory().createValueExpression(alias,
-                        AliasVariableMapper.class));
+        // update value held by component
+        ((UIAliasHolder) c).setAlias(alias);
 
         FacesContext facesContext = ctx.getFacesContext();
         try {

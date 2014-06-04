@@ -179,4 +179,19 @@ public class AliasVariableMapper extends VariableMapper {
         }
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+
+        buf.append(getClass().getSimpleName());
+        buf.append(" {");
+        buf.append(" id=");
+        buf.append(id);
+        buf.append(", vars=");
+        buf.append(vars);
+        buf.append('}');
+
+        return buf.toString();
+    }
+
 }
