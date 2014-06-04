@@ -85,8 +85,7 @@ public class FancyNavigationHandler extends NavigationHandler {
         }
         // XXX AT: force redirect if outcome is null so that url can be
         // re-written except in an ajax request
-        Map<String, String> map = eContext.getRequestParameterMap();
-        boolean ajaxRequest = map != null && map.containsKey("AJAXREQUEST");
+        boolean ajaxRequest = context.getPartialViewContext().isAjaxRequest();
         if (outcome == null && !ajaxRequest && !context.getResponseComplete()) {
             String url = httpRequest.getRequestURL().toString();
             String localUrl = BaseURL.getServerURL(httpRequest, true);

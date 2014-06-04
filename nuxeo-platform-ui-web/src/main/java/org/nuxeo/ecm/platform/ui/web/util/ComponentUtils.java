@@ -180,15 +180,15 @@ public final class ComponentUtils {
 
     public static String download(FacesContext faces, Blob blob, String filename) {
         if (!faces.getResponseComplete()) {
-            ExternalContext econtext = faces.getExternalContext();
-            Map<String, String> map = econtext.getRequestParameterMap();
             // do not perform download in an ajax request
-            if (map != null && map.containsKey("AJAXREQUEST")) {
+            boolean ajaxRequest = faces.getPartialViewContext().isAjaxRequest();
+            if (ajaxRequest) {
                 return null;
             }
             if (blob == null) {
                 log.error("No bytes available for the file: " + filename);
             } else {
+                ExternalContext econtext = faces.getExternalContext();
                 HttpServletResponse response = (HttpServletResponse) econtext.getResponse();
                 if (filename == null || filename.length() == 0) {
                     filename = "file";
