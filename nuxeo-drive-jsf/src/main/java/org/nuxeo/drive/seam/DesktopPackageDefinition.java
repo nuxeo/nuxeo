@@ -17,8 +17,6 @@
  */
 package org.nuxeo.drive.seam;
 
-import java.io.File;
-
 /**
  * Data transfer object to display the list of available packages for download
  * in the User Center.
@@ -27,34 +25,16 @@ import java.io.File;
  */
 public class DesktopPackageDefinition {
 
-    protected final File file;
-
     protected final String name;
 
     protected final String platform;
 
-    protected final boolean isLink;
-
     protected final String url;
 
-    public DesktopPackageDefinition(File file, String name, String platform) {
-        this.file = file;
-        this.name = name;
-        this.platform = platform;
-        this.isLink = false;
-        this.url = null;
-    }
-
     public DesktopPackageDefinition(String url, String name, String platform) {
-        this.file = null;
         this.name = name;
         this.platform = platform;
-        this.isLink = true;
         this.url = url;
-    }
-
-    public File getFile() {
-        return file;
     }
 
     public String getName() {
@@ -67,10 +47,6 @@ public class DesktopPackageDefinition {
 
     public String getPlatformId() {
         return platform;
-    }
-
-    public boolean isLink() {
-        return isLink;
     }
 
     public String getURL() {
