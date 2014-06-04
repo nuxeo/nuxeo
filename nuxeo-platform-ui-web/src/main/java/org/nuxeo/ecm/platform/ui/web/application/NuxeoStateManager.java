@@ -83,8 +83,8 @@ public class NuxeoStateManager extends StateManager {
         throw new UnsupportedOperationException();
     }
 
-    protected StateManager getEffectiveSateManager(final FacesContext context) {
-        if (!isMultiConversation) {
+    protected StateManager getEffectiveStateManager(final FacesContext context) {
+        if (!isMultiConversation || !Contexts.isConversationContextActive()) {
             return this.stateManager;
         } else {
             Conversation conversation = Conversation.instance();
@@ -132,7 +132,7 @@ public class NuxeoStateManager extends StateManager {
 
     @Override
     public boolean isSavingStateInClient(FacesContext ctx) {
-        return getEffectiveSateManager(ctx).isSavingStateInClient(ctx);
+        return getEffectiveStateManager(ctx).isSavingStateInClient(ctx);
     }
 
     @Override
@@ -149,7 +149,7 @@ public class NuxeoStateManager extends StateManager {
 
     @Override
     public UIViewRoot restoreView(FacesContext ctx, String str1, String str2) {
-        return getEffectiveSateManager(ctx).restoreView(ctx, str1, str2);
+        return getEffectiveStateManager(ctx).restoreView(ctx, str1, str2);
     }
 
     @Override
@@ -161,7 +161,7 @@ public class NuxeoStateManager extends StateManager {
                     facesContext);
         }
 
-        return getEffectiveSateManager(facesContext).saveSerializedView(
+        return getEffectiveStateManager(facesContext).saveSerializedView(
                 facesContext);
     }
 
@@ -174,18 +174,18 @@ public class NuxeoStateManager extends StateManager {
                     facesContext);
         }
 
-        return getEffectiveSateManager(facesContext).saveView(facesContext);
+        return getEffectiveStateManager(facesContext).saveView(facesContext);
     }
 
     @Override
     public void writeState(FacesContext ctx, Object sv) throws IOException {
-        getEffectiveSateManager(ctx).writeState(ctx, sv);
+        getEffectiveStateManager(ctx).writeState(ctx, sv);
     }
 
     @Override
     public void writeState(FacesContext ctx, SerializedView sv)
             throws IOException {
-        getEffectiveSateManager(ctx).writeState(ctx, sv);
+        getEffectiveStateManager(ctx).writeState(ctx, sv);
     }
 
 }
