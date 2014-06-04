@@ -12,7 +12,7 @@
         ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
       </pattern>
-      <parameter>#{currentUser.id}</parameter>
+      <parameter>#{currentUser.name}</parameter>
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>
     </coreQueryPageProvider>
@@ -28,7 +28,7 @@
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>
     </coreQueryPageProvider>
-    
+
     <coreQueryPageProvider name="default_content_collection">
       <property name="maxResults">PAGE_SIZE</property>
       <pattern>
