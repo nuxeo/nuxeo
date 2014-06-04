@@ -473,8 +473,8 @@ public abstract class ExpressionEvaluator {
             value = value.toLowerCase();
             right = right.toLowerCase();
         }
-        // escape with slash except alphabetic and percent
-        String regex = right.replaceAll("([^a-zA-Z%])", "\\\\$1");
+        // escape with slash except alphanumeric and percent
+        String regex = right.replaceAll("([^a-zA-Z0-9%])", "\\\\$1");
         // replace percent with regexp
         regex = regex.replaceAll("%", ".*");
         boolean match = Pattern.compile(regex).matcher(value).matches();
