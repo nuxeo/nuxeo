@@ -1064,8 +1064,7 @@ public class DBSDocument implements Document {
 
     @Override
     public boolean hasFacet(String facet) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return getAllFacets().contains(facet);
     }
 
     @Override
