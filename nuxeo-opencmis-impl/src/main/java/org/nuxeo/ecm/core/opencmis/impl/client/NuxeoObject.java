@@ -306,7 +306,7 @@ public abstract class NuxeoObject implements CmisObject {
     public List<Rendition> getRenditions() {
         List<RenditionData> renditions = data.getRenditions();
         if (renditions == null) {
-            return null;
+            return Collections.emptyList();
         }
         List<Rendition> res = new ArrayList<Rendition>(renditions.size());
         for (RenditionData ren : renditions) {

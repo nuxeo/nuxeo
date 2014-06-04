@@ -548,7 +548,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     public void testRenditions() throws Exception {
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
         List<Rendition> renditions = ob.getRenditions();
-        assertNull(renditions);
+        assertTrue(renditions.isEmpty());
 
         // no renditions by default with object
 
@@ -557,7 +557,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
         // oc.setRenditionFilterString("*");
         ob = session.getObject(session.createObjectId(ob.getId()), oc);
         renditions = ob.getRenditions();
-        assertNull(renditions);
+        assertTrue(renditions.isEmpty());
 
         // get renditions with object
 
