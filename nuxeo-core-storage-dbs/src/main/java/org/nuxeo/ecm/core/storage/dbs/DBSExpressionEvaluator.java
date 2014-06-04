@@ -51,8 +51,6 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
     private static final Long ONE = Long.valueOf(1);
 
-    protected final DBSSession session;
-
     protected final Expression expr;
 
     protected final SchemaManager schemaManager;
@@ -61,7 +59,6 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
     public DBSExpressionEvaluator(DBSSession session, Expression expr) {
         super(new DBSPathResolver(session));
-        this.session = session;
         this.expr = expr;
         schemaManager = Framework.getLocalService(SchemaManager.class);
     }
@@ -91,8 +88,8 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
     @Override
     public Object walkExpression(Expression expr) {
         Operand lvalue = expr.lvalue;
-        Reference ref = lvalue instanceof Reference ? (Reference) lvalue : null;
-        String name = ref == null ? null : ref.name;
+        String name = lvalue instanceof Reference ? ((Reference) lvalue).name
+                : null;
         if (NXQL.ECM_ISPROXY.equals(name)) {
             return walkExpressionIsProxy(expr);
         } else {
