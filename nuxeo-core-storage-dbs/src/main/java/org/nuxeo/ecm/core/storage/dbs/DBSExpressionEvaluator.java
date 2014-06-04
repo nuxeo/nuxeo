@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
-import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 import java.io.Serializable;
@@ -31,6 +30,7 @@ import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -192,7 +192,19 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
         public OrderByComparator(OrderByClause orderByClause,
                 ExpressionEvaluator matcher) {
-            this.orderByClause = orderByClause;
+            // replace ecm:path with ecm:__path for evaluation
+            // (we don't want to allow ecm:path to be usable anywhere else
+            // and resolve to a null value)
+            OrderByList obl = new OrderByList(null); // stupid constructor
+            obl.clear();
+            for (OrderByExpr ob : orderByClause.elements) {
+                if (ob.reference.name.equals(NXQL.ECM_PATH)) {
+                    ob = new OrderByExpr(new Reference(NXQL_ECM_PATH),
+                            ob.isDescending);
+                }
+                obl.add(ob);
+            }
+            this.orderByClause = new OrderByClause(obl);
             this.matcher = matcher;
         }
 

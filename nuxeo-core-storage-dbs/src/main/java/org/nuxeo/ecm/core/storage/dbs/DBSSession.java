@@ -40,6 +40,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_MINOR_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_MIXIN_TYPES;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PATH_INTERNAL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_POS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PREFIX;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
@@ -75,6 +76,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -102,6 +104,7 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
+import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
@@ -897,13 +900,22 @@ public class DBSSession implements Session {
             versionSeriesId = targetId;
         }
 
-        DBSDocumentState target = transaction.getStateForUpdate(targetId);
         String parentId = folder.getUUID();
         String name = findFreeName(folder, doc.getName());
         Long pos = parentId == null ? null : getNextPos(parentId);
+
+        DBSDocumentState state = addProxyState(null, parentId, name, pos,
+                targetId, versionSeriesId);
+        return getDocument(state);
+    }
+
+    protected DBSDocumentState addProxyState(String id, String parentId,
+            String name, Long pos, String targetId, String versionSeriesId)
+            throws DocumentException {
+        DBSDocumentState target = transaction.getStateForUpdate(targetId);
         String typeName = (String) target.get(KEY_PRIMARY_TYPE);
 
-        DBSDocumentState proxy = transaction.createChild(null, parentId, name,
+        DBSDocumentState proxy = transaction.createChild(id, parentId, name,
                 pos, typeName);
         String proxyId = proxy.getId();
         proxy.put(KEY_IS_PROXY, TRUE);
@@ -919,7 +931,7 @@ public class DBSSession implements Session {
         // add back-reference to proxy on target
         addBackProxyId(target, proxyId);
 
-        return getDocument(proxyId);
+        return transaction.getStateForUpdate(proxyId);
     }
 
     protected void addBackProxyId(DBSDocumentState state, String id) {
@@ -1008,10 +1020,27 @@ public class DBSSession implements Session {
     public Document importDocument(String id, Document parent, String name,
             String typeName, Map<String, Serializable> properties)
             throws DocumentException {
+        String parentId = parent == null ? null : parent.getUUID();
         boolean isProxy = typeName.equals(CoreSession.IMPORT_PROXY_TYPE);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         Long pos = null; // TODO pos
-        if (!isProxy) {
+        DBSDocumentState state;
+        if (isProxy) {
+            // check that target exists and find its typeName
+            String targetId = (String) properties.get(CoreSession.IMPORT_PROXY_TARGET_ID);
+            if (targetId == null) {
+                throw new DocumentException("Cannot import proxy " + id
+                        + " with null target");
+            }
+            Map<String, Serializable> targetState = transaction.getStateForRead(targetId);
+            if (targetState == null) {
+                throw new DocumentException("Cannot import proxy " + id
+                        + " with missing target " + targetId);
+            }
+            String versionSeriesId = (String) properties.get(CoreSession.IMPORT_PROXY_VERSIONABLE_ID);
+            state = addProxyState(id, parentId, name, pos, targetId,
+                    versionSeriesId);
+        } else {
             // version & live document
             props.put(KEY_LIFECYCLE_POLICY,
                     properties.get(CoreSession.IMPORT_LIFECYCLE_POLICY));
@@ -1049,32 +1078,26 @@ public class DBSSession implements Session {
                     properties.get(CoreSession.IMPORT_VERSION_MAJOR));
             props.put(KEY_MINOR_VERSION,
                     properties.get(CoreSession.IMPORT_VERSION_MINOR));
-            props.put(KEY_IS_VERSION,
-                    trueOrNull(properties.get(CoreSession.IMPORT_IS_VERSION)));
-        }
-        if (parent == null) {
-            // version
-            props.put(KEY_VERSION_SERIES_ID,
-                    properties.get(CoreSession.IMPORT_VERSION_VERSIONABLE_ID));
-            props.put(KEY_VERSION_CREATED,
-                    properties.get(CoreSession.IMPORT_VERSION_CREATED));
-            props.put(KEY_VERSION_LABEL,
-                    properties.get(CoreSession.IMPORT_VERSION_LABEL));
-            props.put(KEY_VERSION_DESCRIPTION,
-                    properties.get(CoreSession.IMPORT_VERSION_DESCRIPTION));
-            props.put(
-                    KEY_IS_LATEST_VERSION,
-                    trueOrNull(properties.get(CoreSession.IMPORT_VERSION_IS_LATEST)));
-            props.put(
-                    KEY_IS_LATEST_MAJOR_VERSION,
-                    trueOrNull(properties.get(CoreSession.IMPORT_VERSION_IS_LATEST_MAJOR)));
-        } else {
-            if (isProxy) {
-                // proxy
-                props.put(KEY_PROXY_TARGET_ID,
-                        properties.get(CoreSession.IMPORT_PROXY_TARGET_ID));
-                props.put(KEY_PROXY_VERSION_SERIES_ID,
-                        properties.get(CoreSession.IMPORT_PROXY_VERSIONABLE_ID));
+            Boolean isVersion = trueOrNull(properties.get(CoreSession.IMPORT_IS_VERSION));
+            props.put(KEY_IS_VERSION, isVersion);
+            if (TRUE.equals(isVersion)) {
+                // version
+                props.put(
+                        KEY_VERSION_SERIES_ID,
+                        properties.get(CoreSession.IMPORT_VERSION_VERSIONABLE_ID));
+                props.put(KEY_VERSION_CREATED,
+                        properties.get(CoreSession.IMPORT_VERSION_CREATED));
+                props.put(KEY_VERSION_LABEL,
+                        properties.get(CoreSession.IMPORT_VERSION_LABEL));
+                props.put(KEY_VERSION_DESCRIPTION,
+                        properties.get(CoreSession.IMPORT_VERSION_DESCRIPTION));
+                // TODO maybe these should be recomputed at end of import:
+                props.put(
+                        KEY_IS_LATEST_VERSION,
+                        trueOrNull(properties.get(CoreSession.IMPORT_VERSION_IS_LATEST)));
+                props.put(
+                        KEY_IS_LATEST_MAJOR_VERSION,
+                        trueOrNull(properties.get(CoreSession.IMPORT_VERSION_IS_LATEST_MAJOR)));
             } else {
                 // live document
                 props.put(KEY_BASE_VERSION_ID,
@@ -1083,10 +1106,8 @@ public class DBSSession implements Session {
                         KEY_IS_CHECKED_IN,
                         trueOrNull(properties.get(CoreSession.IMPORT_CHECKED_IN)));
             }
+            state = addChildState(id, parentId, name, pos, typeName);
         }
-        String parentId = parent == null ? null : parent.getUUID();
-        DBSDocumentState state = addChildState(id, parentId, name, pos,
-                typeName);
         for (Entry<String, Serializable> entry : props.entrySet()) {
             state.put(entry.getKey(), entry.getValue());
         }
@@ -1429,6 +1450,7 @@ public class DBSSession implements Session {
             sqlQuery = transformer.transform(queryFilter.getPrincipal(),
                     sqlQuery);
         }
+        OrderByClause orderByClause = sqlQuery.orderBy;
 
         if (onlyId) {
             sqlQuery.select = new SelectClause();
@@ -1454,7 +1476,7 @@ public class DBSSession implements Session {
                 states.add(state.getMap());
             }
         }
-        boolean onlyRepo = states.isEmpty();
+        boolean postFilter = !states.isEmpty() || isOrderByPath(orderByClause);
 
         int limit = (int) queryFilter.getLimit();
         int offset = (int) queryFilter.getOffset();
@@ -1467,25 +1489,25 @@ public class DBSSession implements Session {
 
         int repoLimit;
         int repoOffset;
-        OrderByClause orderBy;
-        if (onlyRepo) {
+        OrderByClause repoOrderByClause;
+        if (postFilter) {
+            // we have to merge ordering and batching between memory and
+            // repository
+            repoLimit = 0;
+            repoOffset = 0;
+            repoOrderByClause = null;
+        } else {
             // fast case, we can use the repository query directly
             repoLimit = limit;
             repoOffset = offset;
-            orderBy = sqlQuery.orderBy;
-        } else {
-            // we have to merge ordering and batching between memory and
-            // repository
-            repoLimit = limit == 0 ? 0 : limit + offset;
-            repoOffset = 0;
-            orderBy = null;
+            repoOrderByClause = orderByClause;
         }
 
         // query the repository
         boolean deepCopy = !onlyId;
         PartialList<Map<String, Serializable>> pl = repository.queryAndFetch(
-                expression, evaluator, orderBy, repoLimit, repoOffset,
-                countUpTo, deepCopy, done);
+                expression, evaluator, repoOrderByClause, repoLimit,
+                repoOffset, countUpTo, deepCopy, done);
 
         long totalSize;
         if (pl.totalSize < 0) {
@@ -1504,22 +1526,25 @@ public class DBSSession implements Session {
                 }
             }
         }
-        if (onlyRepo) {
+
+        if (states.isEmpty()) {
             states = pl.list;
         } else {
             states.addAll(pl.list);
+        }
+
+        if (postFilter) {
             // ORDER BY
-            if (orderBy != null) {
-                Collections.sort(states, new OrderByComparator(orderBy,
-                        evaluator));
+            if (orderByClause != null) {
+                doOrderBy(states, orderByClause, evaluator);
             }
             // LIMIT / OFFSET
             if (limit != 0) {
                 int size = states.size();
-                states.subList(0, (int) (offset > size ? size : offset)).clear();
+                states.subList(0, offset > size ? size : offset).clear();
                 size = states.size();
                 if (limit < size) {
-                    states.subList((int) limit, size).clear();
+                    states.subList(limit, size).clear();
                 }
             }
         }
@@ -1537,6 +1562,53 @@ public class DBSSession implements Session {
         }
 
         return new PartialList<Map<String, Serializable>>(flatList, totalSize);
+    }
+
+    /** Does an ORDER BY clause include ecm:path */
+    protected boolean isOrderByPath(OrderByClause orderByClause) {
+        if (orderByClause == null) {
+            return false;
+        }
+        for (OrderByExpr ob : orderByClause.elements) {
+            if (ob.reference.name.equals(NXQL.ECM_PATH)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected String getPath(Map<String, Serializable> state) {
+        String name = (String) state.get(KEY_NAME);
+        String parentId = (String) state.get(KEY_PARENT_ID);
+        state = transaction.getStateForRead(parentId);
+        if (state == null) {
+            if ("".equals(name)) {
+                return "/"; // root
+            } else {
+                return name; // placeless, no slash
+            }
+        }
+        LinkedList<String> list = new LinkedList<String>();
+        list.addFirst(name);
+        while (state != null) {
+            name = (String) state.get(KEY_NAME);
+            parentId = (String) state.get(KEY_PARENT_ID);
+            list.addFirst(name);
+            state = transaction.getStateForRead(parentId);
+        }
+        return StringUtils.join(list, '/');
+    }
+
+    protected void doOrderBy(List<Map<String, Serializable>> states,
+            OrderByClause orderByClause, DBSExpressionEvaluator evaluator) {
+        if (isOrderByPath(orderByClause)) {
+            // add path info to do the sort
+            for (Map<String, Serializable> state : states) {
+                state.put(KEY_PATH_INTERNAL, getPath(state));
+            }
+        }
+        Collections.sort(states,
+                new OrderByComparator(orderByClause, evaluator));
     }
 
     /**
@@ -1576,12 +1648,9 @@ public class DBSSession implements Session {
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object[] params) throws QueryException {
-        // query
         int countUpTo = -1;
         PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query,
                 queryType, queryFilter, countUpTo);
-
-        // post-filter for ORDER BY path and limit/offset
         return new DBSQueryResult(pl);
     }
 
@@ -1707,6 +1776,8 @@ public class DBSSession implements Session {
             return KEY_VERSION_SERIES_ID;
         case ExpressionEvaluator.NXQL_ECM_ANCESTOR_IDS:
             return KEY_ANCESTOR_IDS;
+        case ExpressionEvaluator.NXQL_ECM_PATH:
+            return KEY_PATH_INTERNAL;
         }
         throw new RuntimeException("Unknown property: " + name);
     }

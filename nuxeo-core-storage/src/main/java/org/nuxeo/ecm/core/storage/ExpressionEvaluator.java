@@ -49,7 +49,10 @@ import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 public abstract class ExpressionEvaluator {
 
     /** pseudo NXQL to resolve ancestor ids. */
-    public static final String NXQL_ECM_ANCESTOR_IDS = "ecm:ancestorIds";
+    public static final String NXQL_ECM_ANCESTOR_IDS = "ecm:__ancestorIds";
+
+    /** pseudo NXQL to resolve internal path. */
+    public static final String NXQL_ECM_PATH = "ecm:__path";
 
     /**
      * Interface for a class that knows how to resolve a path into an id.

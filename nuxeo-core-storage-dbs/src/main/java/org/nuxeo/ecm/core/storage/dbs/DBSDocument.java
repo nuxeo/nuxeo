@@ -121,6 +121,8 @@ public class DBSDocument implements Document {
 
     public static final String KEY_ACL_NAME = "name";
 
+    public static final String KEY_PATH_INTERNAL = "ecm:__path";
+
     public static final String KEY_ACL = "acl";
 
     public static final String KEY_ACE_USER = "user";
