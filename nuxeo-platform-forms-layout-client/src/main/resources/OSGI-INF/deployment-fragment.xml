@@ -1,8 +1,14 @@
 <?xml version="1.0"?>
 <fragment version="1">
 
+  <extension target="faces-config#PHASE-LISTENER">
+    <phase-listener>
+      org.nuxeo.ecm.platform.forms.layout.facelets.LayoutPhaseListener
+    </phase-listener>
+  </extension>
+
   <install>
-    <!--  unzip the war template -->
+    <!-- unzip the war template -->
     <unzip from="${bundle.fileName}" to="/" prefix="web">
       <include>web/nuxeo.war/**</include>
     </unzip>

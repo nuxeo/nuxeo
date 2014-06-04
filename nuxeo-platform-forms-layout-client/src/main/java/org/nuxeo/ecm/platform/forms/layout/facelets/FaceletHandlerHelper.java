@@ -82,7 +82,7 @@ public final class FaceletHandlerHelper {
 
     public static final String MESSAGE_ID_SUFFIX = "_message";
 
-    private static final String LAYOUT_ID_COUNTERS = "org.nuxeo.ecm.platform.layouts.LAYOUT_ID_COUNTERS";
+    static final String LAYOUT_ID_COUNTERS = "org.nuxeo.ecm.platform.layouts.LAYOUT_ID_COUNTERS";
 
     private static final Pattern UNIQUE_ID_STRIP_PATTERN = Pattern.compile("(.*)(_[0-9]+)");
 
