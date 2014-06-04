@@ -533,7 +533,7 @@ public interface Document {
     /**
      * Gets the document (version or live document) to which this proxy points.
      */
-    Document getTargetDocument();
+    Document getTargetDocument() throws DocumentException;
 
     /**
      * Sets the document (version or live document) to which this proxy points.
