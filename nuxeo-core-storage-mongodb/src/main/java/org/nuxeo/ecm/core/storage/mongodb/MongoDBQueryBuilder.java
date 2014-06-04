@@ -79,7 +79,13 @@ public class MongoDBQueryBuilder {
         Operator op = expr.operator;
         Operand lvalue = expr.lvalue;
         Operand rvalue = expr.rvalue;
-        if (op == Operator.SUM) {
+        String name = lvalue instanceof Reference ? ((Reference) lvalue).name
+                : null;
+        if (op == Operator.STARTSWITH) {
+            return walkStartsWith(lvalue, rvalue);
+        } else if (NXQL.ECM_PATH.equals(name)) {
+            return walkEcmPath(op, rvalue);
+        } else if (op == Operator.SUM) {
             throw new UnsupportedOperationException("SUM");
         } else if (op == Operator.SUB) {
             throw new UnsupportedOperationException("SUB");
@@ -129,10 +135,36 @@ public class MongoDBQueryBuilder {
             throw new UnsupportedOperationException("BETWEEN");
         } else if (op == Operator.NOTBETWEEN) {
             throw new UnsupportedOperationException("NOT BETWEEN");
-        } else if (op == Operator.STARTSWITH) {
-            return walkStartsWith(lvalue, rvalue);
         } else {
             throw new RuntimeException("Unknown operator: " + op);
+        }
+    }
+
+    private DBObject walkEcmPath(Operator op, Operand rvalue) {
+        if (op != Operator.EQ && op != Operator.NOTEQ) {
+            throw new RuntimeException(NXQL.ECM_PATH
+                    + " requires = or <> operator");
+        }
+        if (!(rvalue instanceof StringLiteral)) {
+            throw new RuntimeException(NXQL.ECM_PATH
+                    + " requires literal path as right argument");
+        }
+        String path = ((StringLiteral) rvalue).value;
+        if (path.length() > 1 && path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+        String id = pathResolver.getIdForPath(path);
+        if (id == null) {
+            // no such path
+            // TODO XXX do better
+            return new BasicDBObject(MONGO_ID, "__nosuchid__");
+        }
+        String field = walkReference(new Reference(NXQL.ECM_UUID)).field;
+        if (op == Operator.EQ) {
+            return new BasicDBObject(field, id);
+        } else {
+            return new BasicDBObject(field, new BasicDBObject(
+                    QueryOperators.NE, id));
         }
     }
 
