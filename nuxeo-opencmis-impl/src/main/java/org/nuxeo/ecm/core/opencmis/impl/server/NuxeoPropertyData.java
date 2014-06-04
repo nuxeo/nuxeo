@@ -735,7 +735,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
      * Property for cmis:contentStreamHash.
      */
     public static class NuxeoPropertyDataContentStreamHash extends
-            NuxeoPropertyMultiDataFixed<String> {
+            NuxeoPropertyMultiDataFixed<String> implements PropertyString {
 
         protected NuxeoPropertyDataContentStreamHash(
                 PropertyDefinition<String> propertyDefinition, List<String> hashes) {
