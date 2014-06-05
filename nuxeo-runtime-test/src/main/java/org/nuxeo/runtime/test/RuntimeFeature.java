@@ -87,10 +87,10 @@ public class RuntimeFeature extends SimpleFeature {
                     "Cannot call scanDeployments until features are not loaded");
         }
         for (RunnerFeature feature : features) {
-            deploy.load(FeaturesRunner.getScanner(), feature.getClass());
+            deploy.load(runner.getScanner(), feature.getClass());
         }
         // load deployments from class to run
-        deploy.load(FeaturesRunner.getScanner(),
+        deploy.load(runner.getScanner(),
                 runner.getTestClass().getJavaClass());
     }
 
@@ -263,8 +263,6 @@ public class RuntimeFeature extends SimpleFeature {
         }
         binder.bind(RuntimeHarness.class).toInstance(harness);
         binder.bind(RuntimeService.class).toInstance(harness.runtime);
-        // binder.bind(FeaturesRunner.class).toInstance(runner);
-        // binder.bind(NuxeoRunner.class).toInstance(runner);
     }
 
     protected <T> void bind0(Binder binder, Class<T> type,

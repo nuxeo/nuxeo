@@ -38,6 +38,10 @@ public class OSGiLoader extends ClassLoader {
         wiring = new OSGiWiring(this);
     }
 
+    public OSGiAdapter getAdapter() {
+        return osgi.adapter;
+    }
+
     protected String[] computeRoots() {
         String[] roots = new String[1 + context.fragments.length];
         roots[0] = context.bundle.file.path.toString();

@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import org.apache.log4j.MDC;
-import org.junit.Ignore;
+import org.apache.commons.logging.LogFactory;
+import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -52,7 +52,7 @@ import com.google.inject.Module;
  */
 public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
-    protected static final AnnotationScanner scanner = new AnnotationScanner();
+    protected final AnnotationScanner scanner;
 
     /**
      * Guice injector.
@@ -61,9 +61,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected List<RunnerFeature> features;
 
-    protected final TargetResourceLocator locator;
-
-    public static AnnotationScanner getScanner() {
+    public AnnotationScanner getScanner() {
         return scanner;
     }
 
@@ -76,11 +74,11 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     public FeaturesRunner(Class<?> classToRun) throws InitializationError {
-        super(OSGiBootloader.loadOsgiClass(classToRun));
+        super(OSGiTestLoader.install(classToRun));
+        scanner = new AnnotationScanner();
         try {
             loadFeatures(getTargetTestClass());
             initialize();
-
         } catch (Throwable t) {
             throw new InitializationError(Collections.singletonList(t));
         }
@@ -145,7 +143,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         // register collected features
         this.features = new ArrayList<RunnerFeature>();
         for (Class<? extends RunnerFeature> fc : features) {
-            fc = OSGiBootloader.loadOsgiClass(fc);
             RunnerFeature rf = fc.newInstance();
             this.features.add(rf);
         }

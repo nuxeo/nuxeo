@@ -37,12 +37,12 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.OSGiBundleFile;
 import org.nuxeo.osgi.OSGiBundleHost;
+import org.nuxeo.osgi.OSGiLoader;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
-import org.nuxeo.runtime.test.runner.OSGiBootloader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
 
@@ -52,8 +52,6 @@ public class DefaultRuntimeHarness implements RuntimeHarness {
 
     protected RuntimeService runtime;
 
-    private static int counter = 0;
-
     protected boolean restart = false;
 
     @Override
@@ -61,7 +59,7 @@ public class DefaultRuntimeHarness implements RuntimeHarness {
         return restart;
     }
 
-    protected OSGiAdapter adapter = OSGiBootloader.bootstrap.adapter;
+    protected OSGiAdapter adapter = fetchAdapter();
 
     protected Bundle runtimeBundle;
 
@@ -72,6 +70,11 @@ public class DefaultRuntimeHarness implements RuntimeHarness {
 
     public DefaultRuntimeHarness(String name) {
         // super(name);
+    }
+
+    protected OSGiAdapter fetchAdapter() {
+        OSGiLoader loader = (OSGiLoader) this.getClass().getClassLoader();
+        return loader.getAdapter();
     }
 
     @Override
@@ -165,9 +168,8 @@ public class DefaultRuntimeHarness implements RuntimeHarness {
         log.info("Deploying contribution from " + url.toString());
         try {
             context.deploy(url);
-        } catch (Exception e) {
-            log.error(e);
-            fail("Failed to deploy contrib " + url.toString());
+        } catch (Exception cause) {
+            throw new AssertionError("Failed to deploy contrib " + url.toString(), cause);
         }
     }
 

@@ -79,7 +79,7 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
 
     }
 
-    protected void handleRegistered() throws Exception {
+    protected void handleRegistered() throws RuntimeModelException {
         if (pendingInfos.isEmpty() && requiredPendingContexts.isEmpty()) {
             setResolved();
         }

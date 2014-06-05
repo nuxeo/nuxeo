@@ -59,7 +59,9 @@ public class OSGiSystemContext extends OSGiBundleContext {
 
     protected final String[] bootPackages;
 
-    protected OSGiFactory factory;
+    protected final OSGiFactory factory;
+
+    protected OSGiAdapter adapter;
 
     public OSGiSystemContext(OSGiSystemBundle bundle, Properties props)
             throws BundleException {
@@ -78,6 +80,7 @@ public class OSGiSystemContext extends OSGiBundleContext {
         registry.bundleIds.load(idTableFile);
         bundleListeners.add(registry);
     }
+
 
     protected File newOSGiTempFile() throws BundleException {
         try {

@@ -132,8 +132,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             BundleContext context, Map<String, String> props) {
         super(runtimeContext, props);
         bundleContext = context;
-        bundles = new ConcurrentHashMap<String, Bundle>();
-        contexts = new ConcurrentHashMap<String, OSGiRuntimeContext>();
         String bindAddress = context.getProperty(PROP_NUXEO_BIND_ADDRESS);
         if (bindAddress != null) {
             properties.put(PROP_NUXEO_BIND_ADDRESS, bindAddress);
@@ -190,8 +188,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         } else {
             ctx = new OSGiRuntimeContext(bundle);
         }
-        bundles.put(bundle.getSymbolicName(), bundle);
-        contexts.put(bundle.getSymbolicName(), ctx);
+        contextsByName.put(bundle.getSymbolicName(), ctx);
         ctx.setRegistered(this);
         if (ctx.isResolved() && (bundle.getState() & Bundle.ACTIVE) != 0) {
             try {

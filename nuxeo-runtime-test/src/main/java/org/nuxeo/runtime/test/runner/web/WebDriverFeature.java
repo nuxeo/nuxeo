@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Damien Metzler (Leroy Merlin, http://www.leroymerlin.fr/)
  */
@@ -43,7 +43,7 @@ public class WebDriverFeature extends SimpleFeature {
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         Class<?> classToTest = runner.getTargetTestClass();
-        Browser browser = FeaturesRunner.getScanner().getFirstAnnotation(
+        Browser browser = runner.getScanner().getFirstAnnotation(
                 classToTest, Browser.class);
         DriverFactory factory;
         // test here if the driver factory is specified by environment
@@ -67,7 +67,7 @@ public class WebDriverFeature extends SimpleFeature {
         // get the home page and the url - first check for an url from the
         // environment
         String url = System.getProperty(HomePage.class.getName() + ".url");
-        HomePage home = FeaturesRunner.getScanner().getFirstAnnotation(
+        HomePage home = runner.getScanner().getFirstAnnotation(
                 classToTest, HomePage.class);
         if (home != null) {
             config.setHomePageClass(home.type());

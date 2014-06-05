@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,30 +26,32 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.runners.model.InitializationError;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.OSGiBundleFile;
-import org.nuxeo.osgi.OSGiBundleFragment;
 import org.nuxeo.osgi.OSGiDefaultFactory;
 import org.nuxeo.osgi.OSGiSystemContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 
-public class OSGiBootloader {
+public class OSGiTestLoader {
 
-    protected final Log log = LogFactory.getLog(OSGiBootloader.class);
+    protected final Log log = LogFactory.getLog(OSGiTestLoader.class);
 
     public final OSGiAdapter adapter = newAdapter();
 
-    public final OSGiSystemContext osgi;
+    public OSGiTestLoader() {
+    }
 
-    public static OSGiBootloader bootstrap = new OSGiBootloader();
-
-    public OSGiBootloader() {
+    public void install() {
         try {
             installClasspath();
-        } catch (URISyntaxException | IOException | BundleException e) {
-            throw new Error("Cannot load osgi", e);
+        } catch (URISyntaxException | IOException | BundleException cause) {
+            throw new Error("Cannot install osgi classpath", cause);
         }
-        osgi = adapter.getSytemContext();
+        try {
+            adapter.start();
+        } catch (BundleException cause) {
+            throw new Error("Cannot start osgi", cause);
+        }
     }
 
     protected OSGiAdapter newAdapter() {
@@ -57,7 +60,7 @@ public class OSGiBootloader {
         env.put(OSGiAdapter.BUNDLE_FACTORY,
                 OSGiHarnessBundleFactory.class.getName());
         env.put(OSGiAdapter.BOOT_DELEGATION,
-                "java,javax,org.osgi,org.nuxeo.osgi,org.nuxeo.runtime.test.runner,com.google.inject,org.junit");
+                "java,javax,org.osgi,org.nuxeo.osgi,com.google.inject,org.junit");
         try {
             return new OSGiAdapter(env);
         } catch (IOException e) {
@@ -119,15 +122,6 @@ public class OSGiBootloader {
         }
     }
 
-    protected void reset() {
-        try {
-            osgi.getBundle().stop();
-        } catch (BundleException e) {
-            log.error("Cannot shutdown osgi loader", e);
-        }
-        bootstrap = new OSGiBootloader();
-    }
-
     protected Bundle activateBundles(Class<?> clazz,
             Set<Class<?>> activatedClasses, Set<Bundle> activatedBundles)
             throws InitializationError {
@@ -155,6 +149,13 @@ public class OSGiBootloader {
 
         for (Field f : clazz.getDeclaredFields()) {
             activateBundles(f.getType(), activatedClasses, activatedBundles);
+            for (Annotation a:f.getDeclaredAnnotations()) {
+                activateBundles(a.annotationType(), activatedClasses, activatedBundles);
+            }
+        }
+
+        for (Annotation a:clazz.getDeclaredAnnotations()) {
+            activateBundles(a.annotationType(), activatedClasses, activatedBundles);
         }
 
         for (Method m : clazz.getDeclaredMethods()) {
@@ -182,16 +183,17 @@ public class OSGiBootloader {
             throw new UnsupportedOperationException("Unknown protocol in "
                     + resource);
         }
-        Bundle bundle = osgi.getBundle(location);
+        Bundle bundle = adapter.getSytemContext().getBundle(location);
         if (bundle == null) {
             return null;
         }
-        if (bundle.getHeaders().get(Constants.FRAGMENT_HOST) == null && (bundle.getState() & (Bundle.ACTIVE)) == 0) {
-            activatedBundles.add(bundle);
+        if (bundle.getHeaders().get(Constants.FRAGMENT_HOST) == null
+                && (bundle.getState() & (Bundle.ACTIVE)) == 0) {
             try {
-                if ((bundle.getState() & (Bundle.STARTING|Bundle.ACTIVE)) == 0) {
+                if ((bundle.getState() & (Bundle.STARTING | Bundle.ACTIVE)) == 0) {
                     bundle.start();
                 }
+                activatedBundles.add(bundle);
             } catch (BundleException e) {
                 throw new InitializationError(e);
             }
@@ -201,10 +203,10 @@ public class OSGiBootloader {
     }
 
     @SuppressWarnings("unchecked")
-    protected static <T> Class<T> loadOsgiClass(Class<T> clazz)
+    protected <T> Class<T> reloadClass(Class<T> clazz)
             throws InitializationError {
-        Bundle bundle = bootstrap.activateBundles(clazz,
-                new HashSet<Class<?>>(), new HashSet<Bundle>());
+        Bundle bundle = activateBundles(clazz, new HashSet<Class<?>>(),
+                new HashSet<Bundle>());
         if (bundle != null) {
             try {
                 return (Class<T>) bundle.loadClass(clazz.getName());
@@ -216,7 +218,7 @@ public class OSGiBootloader {
     }
 
     public Bundle lookupBundle(String bundleName) throws Exception {
-        Bundle bundle = osgi.getBundle(bundleName);
+        Bundle bundle = adapter.getSytemContext().getBundle(bundleName);
         if (bundle != null) {
             return bundle;
         }
@@ -229,7 +231,7 @@ public class OSGiBootloader {
 
     protected Set<URI> scanClasspath() throws IOException, URISyntaxException,
             BundleException {
-        ClassLoader classLoader = OSGiBootloader.class.getClassLoader();
+        ClassLoader classLoader = OSGiTestLoader.class.getClassLoader();
         Set<URI> files = new HashSet<URI>();
         if (classLoader instanceof URLClassLoader) {
             scanURLClasspath(classLoader, files);
@@ -250,9 +252,8 @@ public class OSGiBootloader {
             URISyntaxException {
         Set<URI> classpath = scanClasspath();
         for (URI file : classpath) {
-             adapter.install(file);
+            adapter.install(file);
         }
-        adapter.start();
     }
 
     protected void scanSurefireClasspath(Set<URI> files) throws IOException {
@@ -313,6 +314,13 @@ public class OSGiBootloader {
         for (URL entry : classpath) {
             files.add(entry.toURI());
         }
+    }
+
+    protected static Class<?> install(Class<?> pojoClass) throws InitializationError {
+        OSGiTestLoader loader = new OSGiTestLoader();
+        loader.install();
+        Class<?> osgiClass = loader.reloadClass(pojoClass);
+        return osgiClass;
     }
 
 }

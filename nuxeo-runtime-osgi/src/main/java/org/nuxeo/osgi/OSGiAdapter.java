@@ -130,6 +130,7 @@ public class OSGiAdapter {
             system = newSystemBundle();
             system.init();
             osgi = system.osgi;
+            osgi.adapter = this;
             OSGiBundle workingBundle = newConfigBundle();
             osgi.registry.register(workingBundle);
         } catch (Exception e) {

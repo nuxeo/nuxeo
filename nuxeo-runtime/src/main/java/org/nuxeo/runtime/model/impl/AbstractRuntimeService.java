@@ -38,7 +38,6 @@ import org.nuxeo.runtime.RuntimeExtension;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.ServiceManager;
 import org.nuxeo.runtime.model.RuntimeModelException;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
@@ -197,7 +196,6 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     }
 
     protected void doStop() throws Exception {
-        ServiceManager.getInstance().reset();
     }
 
     @Override
