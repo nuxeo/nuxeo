@@ -73,6 +73,7 @@
     <nuxeo.semantic.entities.version>5.9.4-SNAPSHOT</nuxeo.semantic.entities.version>
     <nuxeo.sync.version>5.9.4-SNAPSHOT</nuxeo.sync.version>
     <nuxeo.javaagent.version>5.9.4-SNAPSHOT</nuxeo.javaagent.version>
+    <nuxeo.fsexporter.version>5.9.4-SNAPSHOT</nuxeo.fsexporter.version>
     <!-- end of optional addons -->
   </properties>
 
@@ -1171,6 +1172,13 @@
         <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-easyshare</artifactId>
         <version>${nuxeo.easyshare.version}</version>
+      </dependency>
+
+      <!-- FS Exporter -->
+      <dependency>
+        <groupId>org.nuxeo.io</groupId>
+        <artifactId>nuxeo-fsexporter</artifactId>
+        <version>${nuxeo.fsexporter.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

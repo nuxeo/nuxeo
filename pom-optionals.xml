@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -26,6 +27,7 @@ included in the default full build). Thus they are not deprecated.</description>
     <module>nuxeo-platform-sync</module>
     <module>nuxeo-cm-demo-utils</module>
     <module>nuxeo-elasticsearch</module>
+    <module>nuxeo-fsexporter</module>
   </modules>
 
   <!-- dependencyManagement of optional addons must be defined in pom.xml -->
