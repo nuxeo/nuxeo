@@ -19,5 +19,3 @@ target
 *.ipr
 *.iws
 *.gpd.*
-*cpJar*
-dependency-tree.log

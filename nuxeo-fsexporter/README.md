@@ -1,4 +1,0 @@
-nuxeo-fsexporter
-================
-
-Customizable exporter
