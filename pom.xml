@@ -134,7 +134,7 @@
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.0.1</ant.assembly.version>
     <nuxeo.ftest.version>1.7.14</nuxeo.ftest.version>
-    <nuxeo.richfaces.version>3.3.1.GA-NX9.04-SNAPSHOT</nuxeo.richfaces.version>
+    <nuxeo.richfaces.version>3.3.1.GA-NX9.04</nuxeo.richfaces.version>
 
     <tomcat.version>7.0.42</tomcat.version>
     <lucene.version>4.7.2</lucene.version>
@@ -4637,8 +4637,8 @@
                 <excludes>
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
                   <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
-                  <exclude>org.richfaces.framework:richfaces-impl:*</exclude>
-                  <exclude>org.richfaces.ui:richfaces-ui:*</exclude>
+                  <!-- <exclude>org.richfaces.framework:richfaces-impl:*</exclude> -->
+                  <!-- <exclude>org.richfaces.ui:richfaces-ui:*</exclude> -->
                   <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                   <!-- <exclude>org.jboss.seam:*</exclude> -->
                 </excludes>
