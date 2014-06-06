@@ -42,6 +42,11 @@ public class UserLocaleProvider implements LocaleProvider {
     public Locale getLocale(CoreSession repo) throws ClientException {
         UserProfileService userProfileService = Framework.getLocalService(UserProfileService.class);
         DocumentModel userProfileDoc = userProfileService.getUserProfileDocument(repo);
+        return getLocale(userProfileDoc);
+    }
+
+    @Override
+    public Locale getLocale(DocumentModel userProfileDoc) throws ClientException {
         String locale = (String) userProfileDoc.getPropertyValue(UserProfileConstants.USER_PROFILE_LOCALE);
         if (locale == null || locale.trim().length() == 0) {
             // undefined if not set

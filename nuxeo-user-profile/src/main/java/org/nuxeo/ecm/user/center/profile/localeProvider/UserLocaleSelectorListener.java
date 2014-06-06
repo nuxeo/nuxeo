@@ -62,7 +62,7 @@ public class UserLocaleSelectorListener implements EventListener {
             log.warn("Locale Startup not available. Can't set locale");
             return;
         }
-        localeStartup.setupLocale(ctx.getCoreSession());
+        localeStartup.setupLocale(userProfileDocument);
 
     }
 
