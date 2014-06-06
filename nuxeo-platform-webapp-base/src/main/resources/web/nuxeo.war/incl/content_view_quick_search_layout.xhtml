@@ -48,12 +48,18 @@ empty:
         <h:commandButton
           value="#{messages['label.contentview.filter.filterAction']}"
           id="submitFilter"
-          styleClass="button">
-            <f:ajax execute="@form" render="#{elementsToReRender}" event="click" listener="#{jsfResetActions.resetComponents}"/>
-            <f:ajax execute="@form" render="#{elementsToReRender}" event="click" listener="#{contentView.resetPageProvider}"/>
-            <f:param value="false" name="selectedValue"/>
-            <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
-            <f:ajax execute="@form" render="#{elementsToReRender}" event="click" listener="#{selectionActions.onClick}"/>
+          styleClass="button"
+          action="#{contentView.resetPageProvider()}">
+          <nxu:actionListenerMethod
+            value="#{jsfResetActions.resetComponents}" />
+          <f:setPropertyActionListener value="false"
+            target="#{selectionActions.selectedValue}" />
+          <f:setPropertyActionListener
+            value="#{cvid}_showFilterFormBox"
+            target="#{selectionActions.selectedValueHolder}" />
+          <f:param value="false" name="selectedValue"/>
+          <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
+          <f:ajax execute="@form" render="#{elementsToReRender}" listener="#{selectionActions.onClick}"/>
         </h:commandButton>
       </h:form>
 
@@ -64,7 +70,7 @@ empty:
           styleClass="button">
           <f:param value="true" name="selectedValue"/>
           <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
-          <f:ajax execute="@this" render="#{filterFormId}_panel" event="click" listener="#{selectionActions.onClick}"/>
+          <f:ajax execute="@this" render="#{filterFormId}_panel" listener="#{selectionActions.onClick}"/>
         </h:commandLink>
       </h:form>
 
@@ -75,11 +81,13 @@ empty:
           id="resetFilter"
           rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
           styleClass="button">
-          <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{jsfResetActions.resetComponents}"/>
-          <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{contentView.resetSearchDocumentModel()}"/>
-          <f:param value="false" name="selectedValue"/>
+          <nxu:actionListenerMethod
+            value="#{jsfResetActions.resetComponents}" />
+          <nxu:actionListenerMethod
+            value="#{contentView.resetSearchDocumentModel()}" />
+          <f:param value="true" name="selectedValue"/>
           <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
-          <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{selectionActions.onClick}"/>
+          <f:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.onClick}"/>
         </h:commandLink>
       </h:form>
       <div class="action_bar">
@@ -116,20 +124,24 @@ empty:
               <h:commandButton onclick="jQuery.fancybox.close();"
                 value="#{messages['label.contentview.filter.filterAction']}"
                 id="submitFilter"
-                styleClass="button">
-                <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{jsfResetActions.resetComponents}"/>
-                <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{contentView.resetSearchDocumentModel()}"/>
+                styleClass="button"
+                action="#{contentView.resetPageProvider()}">
+                <nxu:actionListenerMethod
+                  value="#{jsfResetActions.resetComponents}" />
                 <f:param value="false" name="selectedValue"/>
                 <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
-                <f:ajax execute="@this" render="#{elementsToReRender}" event="click" listener="#{selectionActions.onClick}"/>
+                <f:ajax execute="@form" render="#{elementsToReRender}" listener="#{selectionActions.onClick}"/>
               </h:commandButton>
               <h:commandButton
                 value="#{messages['label.contentview.filter.clearFilterButton']}"
                 id="resetFilter"
                 disabled="#{not nxd:isDirty(contentView.searchDocumentModel)}"
                 styleClass="button">
-                <f:ajax execute="@this" render="#{filterFormId}" event="click" listener="#{jsfResetActions.resetComponents}"/>
-                <f:ajax execute="@this" render="#{filterFormId}" event="click" listener="#{contentView.resetSearchDocumentModel()}"/>
+                <nxu:actionListenerMethod
+                  value="#{jsfResetActions.resetComponents}" />
+                <nxu:actionListenerMethod
+                  value="#{contentView.resetSearchDocumentModel()}" />
+                <f:ajax execute="@this" render="#{filterFormId}" />
               </h:commandButton>
             </p>
 
