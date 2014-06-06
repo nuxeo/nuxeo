@@ -36,6 +36,7 @@ import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.international.TimeZoneSelector;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
@@ -106,6 +107,23 @@ public class LocaleStartup implements Serializable {
                     "Couldn't get locale from LocaleProvider, trying request locale and default locale",
                     e);
         }
+        setupLocale(locale);
+    }
+
+    public void setupLocale(DocumentModel userProfileDoc) {
+        Locale locale = null;
+        try {
+            locale = Framework.getLocalService(LocaleProvider.class).getLocale(
+                    userProfileDoc);
+        } catch (ClientException e) {
+            log.warn(
+                    "Couldn't get locale from LocaleProvider, trying request locale and default locale",
+                    e);
+        }
+        setupLocale(locale);
+    }
+
+    protected void setupLocale(Locale locale) {
         if (locale == null) {
             log.debug("Locale not set, falling back to request locale");
             locale = FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
