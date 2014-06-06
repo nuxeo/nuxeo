@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.security.SecurityManager;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
@@ -36,10 +35,6 @@ public class FakeRepository implements Repository {
 
     public String getName() {
         return "demo";
-    }
-
-    public SecurityManager getNuxeoSecurityManager() {
-        return new FakeSecurityManager();
     }
 
     public Session getSession(Map<String, Serializable> context)
