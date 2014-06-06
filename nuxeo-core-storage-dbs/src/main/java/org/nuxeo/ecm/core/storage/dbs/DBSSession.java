@@ -1832,6 +1832,10 @@ public class DBSSession implements Session {
             return "minor_version";
         case KEY_ACP:
             return null;
+        case KEY_ANCESTOR_IDS:
+            return null;
+        case KEY_BASE_VERSION_ID:
+            return null;
         }
         throw new RuntimeException("Unknown property: " + name);
     }
