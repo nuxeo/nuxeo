@@ -21,6 +21,7 @@ import java.util.TimeZone;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Provides locale and timezone.
@@ -33,6 +34,13 @@ public interface LocaleProvider {
      * @return the Locale to be used or null to let the caller decides.
      */
     public Locale getLocale(CoreSession session) throws ClientException;
+
+    /**
+     * Gets the locale stored in the given user profile.
+     *
+     * @return the Locale to be used or null to let the caller decide
+     */
+    Locale getLocale(DocumentModel userProfileDoc) throws ClientException;
 
     /**
      * @return the Timezone to be used or null to let the caller decides.
