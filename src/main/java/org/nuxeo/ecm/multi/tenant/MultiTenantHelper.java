@@ -100,7 +100,7 @@ public class MultiTenantHelper {
     public static String getTenantId(String username) throws ClientException {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         NuxeoPrincipal nuxeoPrincipal = userManager.getPrincipal(username);
-        return nuxeoPrincipal.getTenantId();
+        return nuxeoPrincipal != null ? nuxeoPrincipal.getTenantId() : null;
     }
 
     /**
