@@ -60,6 +60,8 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
 
     public static final String TEMPLATE_FORCED_TYPES_PROP = "tmpl:forcedTypes";
 
+    public static final String TEMPLATE_FORCED_TYPES_ITEM_PROP = "tmpl:forcedTypes/*";
+
     public static final String TEMPLATE_FORCED_TYPES_NONE = "none";
 
     public static final String TEMPLATE_RENDITION_NONE = "none";
