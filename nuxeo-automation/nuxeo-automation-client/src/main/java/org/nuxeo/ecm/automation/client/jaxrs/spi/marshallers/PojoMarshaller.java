@@ -42,7 +42,7 @@ public class PojoMarshaller<T> implements JsonMarshaller<T> {
 
     @Override
     public String getType() {
-        return entityTypeName.isEmpty() ? type.getCanonicalName()
+        return entityTypeName.isEmpty() ? type.getName()
                 : entityTypeName;
     }
 

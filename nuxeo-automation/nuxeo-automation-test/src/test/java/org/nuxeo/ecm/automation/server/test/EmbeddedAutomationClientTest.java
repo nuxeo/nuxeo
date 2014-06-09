@@ -59,6 +59,11 @@ import org.nuxeo.ecm.automation.client.model.PaginableDocuments;
 import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
+import org.nuxeo.ecm.automation.core.operations.business
+        .BusinessCreateOperation;
+import org.nuxeo.ecm.automation.core.operations.business.BusinessFetchOperation;
+import org.nuxeo.ecm.automation.core.operations.business
+        .BusinessUpdateOperation;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
@@ -72,6 +77,7 @@ import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation;
 import org.nuxeo.ecm.automation.server.test.json.POJOObject;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
+import org.nuxeo.ecm.automation.server.test.business.client.TestBusinessArray;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -101,7 +107,8 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.notification.core:OSGI-INF/NotificationService.xml",
         "org.nuxeo.ecm.automation.test" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.test:test-bindings.xml",
-        "org.nuxeo.ecm.automation.test:test-mvalues.xml" })
+        "org.nuxeo.ecm.automation.test:test-mvalues.xml",
+        "org.nuxeo.ecm.automation.test:operation-contrib.xml" })
 @Features({EmbeddedAutomationServerFeature.class, AuditFeature.class})
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)
@@ -801,17 +808,17 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         client.registerPojoMarshaller(note.getClass());
 
         note = (BusinessBean) session.newRequest(
-                "Business.BusinessCreateOperation").setInput(note).set("name",
+                BusinessCreateOperation.ID).setInput(note).set("name",
                 note.getTitle()).set("parentPath", "/").execute();
         assertNotNull(note);
         // Test for pojo <-> adapter automation update
         // Fetching the business adapter model
         note = (BusinessBean) session.newRequest(
-                "Business.BusinessFetchOperation").setInput(note).execute();
+                BusinessFetchOperation.ID).setInput(note).execute();
         assertNotNull(note.getId());
         note.setTitle("Update");
         note = (BusinessBean) session.newRequest(
-                "Business.BusinessUpdateOperation").setInput(note).execute();
+                BusinessUpdateOperation.ID).setInput(note).execute();
         assertEquals("Update", note.getTitle());
     }
 
@@ -864,5 +871,22 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             org.junit.Assert.assertEquals("logEntry", entries.get(i).get("entity-type").getValueAsText());
         }
 
+    }
+
+    @Test
+    public void testAutomationBusinessObjectsArray() throws Exception {
+        BusinessBean[] businessBeans = new BusinessBean[2];
+        @SuppressWarnings("unchecked")
+        BusinessService<BusinessBean> businessService = session.getAdapter
+                (BusinessService.class);
+        assertNotNull(businessService);
+
+        // Marshaller for array 'businessBeans' registration
+        client.registerPojoMarshaller(businessBeans.getClass());
+
+        businessBeans = (BusinessBean[]) session.newRequest(
+                TestBusinessArray.ID).execute();
+        assertNotNull(businessBeans);
+        assertEquals(2, businessBeans.length);
     }
 }
