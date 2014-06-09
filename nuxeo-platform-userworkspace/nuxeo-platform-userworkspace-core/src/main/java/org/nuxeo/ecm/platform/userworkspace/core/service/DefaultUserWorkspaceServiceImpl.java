@@ -147,8 +147,16 @@ public class DefaultUserWorkspaceServiceImpl implements UserWorkspaceService {
                     "You should pass at least one principal or one username");
         }
 
-        String usedUsername = principal != null ? principal.getName()
-                : userName;
+        String usedUsername = userName;
+        if (principal != null) {
+            if (principal instanceof NuxeoPrincipal) {
+                usedUsername = principal.getName();
+                String originatingUser = ((NuxeoPrincipal) principal).getOriginatingUser();
+                if (!StringUtils.isBlank(originatingUser)) {
+                    usedUsername = originatingUser;
+                }
+            }
+        }
 
         PathRef uwsDocRef = new PathRef(computePathForUserWorkspace(
                 userCoreSession, usedUsername, context));
