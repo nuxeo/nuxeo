@@ -28,6 +28,8 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
+import org.nuxeo.elasticsearch.listener.EventConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -365,6 +367,51 @@ public class TestTreeIndexing {
         // }
         Assert.assertEquals(2, docs.size());
 
+    }
+
+    @Test
+    public void shouldIndexOnCopyAsync() throws Exception {
+
+        buildAndIndexTree();
+
+        DocumentRef src = new PathRef("/folder0/folder1/folder2");
+        DocumentRef dst = new PathRef("/folder0");
+        DocumentModel doc = session.getDocument(dst);
+        session.copy(src, dst, "folder2-copy");
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        waitForAsyncIndexing();
+        esa.refresh();
+
+        TransactionHelper.startTransaction();
+
+        DocumentModelList docs = ess.query(session, "select * from Document", 20, 0);
+        Assert.assertEquals(18, docs.size());
+    }
+
+
+    @Test
+    public void shouldIndexOnCopySync() throws Exception {
+
+        buildAndIndexTree();
+
+        DocumentRef src = new PathRef("/folder0/folder1/folder2");
+        DocumentRef dst = new PathRef("/folder0");
+        DocumentModel doc = session.getDocument(dst);
+        // doc.getContextData().put(EventConstants.ES_SYNC_INDEXING_FLAG, true);
+        ElasticSearchInlineListener.useSyncIndexing.set(true);
+        session.copy(src, dst, "folder2-copy");
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        waitForAsyncIndexing();
+        esa.refresh();
+
+        TransactionHelper.startTransaction();
+
+        DocumentModelList docs = ess.query(session, "select * from Document", 20, 0);
+        Assert.assertEquals(18, docs.size());
     }
 
 }

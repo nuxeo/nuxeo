@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.elasticsearch.listener.EventConstants;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -86,6 +87,8 @@ public class IndexingCommand {
 
     public IndexingCommand(DocumentModel targetDocument, String command,
             boolean sync, boolean recurse) {
+        // we don't want sync and recursive command
+        assert(!(sync && recurse));
         this.id = PREFIX + UUID.randomUUID().toString();
         this.name = command;
         this.sync = sync;
@@ -127,6 +130,11 @@ public class IndexingCommand {
         this.sync = this.sync || sync;
         this.recurse = this.recurse || recurse;
         markUpdated();
+    }
+
+    public boolean canBeMerged(IndexingCommand other) {
+        // only if not sync and recurse
+        return ! ((other.sync || sync ) && (other.recurse || recurse));
     }
 
     public boolean isSync() {
@@ -275,7 +283,10 @@ public class IndexingCommand {
                         session.getPrincipal());
                 indexingEvent = context.newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
             } else {
-                log.error("Unable to generate event from cmd " + toString());
+                if (Framework.isInitialized()) {
+                    log.error(
+                            "Unable to generate event from cmd " + toString());
+                }
             }
         }
     }
@@ -301,4 +312,9 @@ public class IndexingCommand {
         }
     }
 
+    public void toSync() {
+        if (! recurse) {
+            sync = true;
+        }
+    }
 }

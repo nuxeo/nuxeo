@@ -28,6 +28,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -415,15 +416,17 @@ public class ElasticSearchComponent extends DefaultComponent implements
             }
             return;
         }
-        added = pendingWork.add(getWorkKey(doc));
-        if (!added) {
-            if (log.isDebugEnabled()) {
-                log.debug("Skip indexing for " + doc
-                        + " since it is already scheduled");
+        if (!cmd.isRecurse()) {
+            added = pendingWork.add(getWorkKey(doc));
+            if (!cmd.isRecurse() && !added) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Skip indexing for " + doc
+                            + " since there is already an work scheduled");
+                }
+                pendingCommands.remove(cmd.getId());
+                return;
             }
-            return;
         }
-
         if (cmd.isSync()) {
             if (log.isDebugEnabled()) {
                 log.debug("Schedule PostCommit indexing request "
@@ -456,7 +459,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
      * Get the elastic search indexes for searches
      */
     protected String[] getSearchIndexes() {
-        return indexNames.values().toArray(new String[0]);
+        Collection<String> values = indexNames.values();
+        return values.toArray(new String[values.size()]);
     }
 
     private String getSearchIndexesAsString() {
@@ -760,9 +764,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
                         .prepareGetMappings(conf.getName()).execute()
                         .actionGet().getMappings().containsKey(DOC_TYPE);
             } else {
-                log.warn(String.format("Initializing index: %s, type: %s with "
-                        + "dropIfExists flag, deleting an existing index",
-                        conf.getName(), conf.getType()));
+                if (! Framework.isTestModeSet()) {
+                    log.warn(String.format(
+                            "Initializing index: %s, type: %s with "
+                                    + "dropIfExists flag, deleting an existing index",
+                            conf.getName(), conf.getType()));
+                }
                 getClient().admin().indices()
                         .delete(new DeleteIndexRequest(conf.getName()))
                         .actionGet();

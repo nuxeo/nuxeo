@@ -127,8 +127,8 @@ public class NxqlQueryConverter {
         }
 
         public void merge(ExpressionBuilder expr) {
-            if ((expr.operator != null) && expr.equals(operator) && (query
-                    == null)) {
+            if ((expr.operator != null) && expr.operator.equals(operator)
+                    && (query == null)) {
                 query = expr.query;
             } else {
                 add(new QueryAndFilter(expr.query, null));

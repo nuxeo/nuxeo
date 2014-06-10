@@ -42,9 +42,9 @@ public class TestIndexingCommandsMarshaling {
         String json = cmds.toJSON();
 
         IndexingCommands cmds2 = IndexingCommands.fromJSON(session, json);
-        Assert.assertEquals(1, cmds.getMergedCommands().size());
+        Assert.assertEquals(1, cmds.getCommands().size());
         Assert.assertEquals(cmd1.getId(),
-                cmds2.getMergedCommands().get(0).getId());
+                cmds2.getCommands().get(0).getId());
     }
 
     @Test
@@ -64,11 +64,11 @@ public class TestIndexingCommandsMarshaling {
         String json = cmds.toJSON();
 
         IndexingCommands cmds2 = IndexingCommands.fromJSON(session, json);
-        Assert.assertEquals(2, cmds.getMergedCommands().size());
+        Assert.assertEquals(2, cmds.getCommands().size());
         Assert.assertEquals(cmd1.getId(),
-                cmds2.getMergedCommands().get(0).getId());
+                cmds2.getCommands().get(0).getId());
         Assert.assertEquals(cmd2.getId(),
-                cmds2.getMergedCommands().get(1).getId());
+                cmds2.getCommands().get(1).getId());
     }
 
 }

@@ -48,19 +48,24 @@ public class IndexingCommands {
         //
     }
 
-    public IndexingCommands(String command, DocumentModel targetDocument,
-            boolean sync, boolean recurse) {
-        this.targetDocument = targetDocument;
-        add(command, sync, recurse);
-    }
-
     public IndexingCommands(DocumentModel targetDocument) {
         this.targetDocument = targetDocument;
     }
 
     public IndexingCommand add(String command, boolean sync, boolean recurse) {
-        IndexingCommand cmd = new IndexingCommand(targetDocument, command,
-                sync, recurse);
+        IndexingCommand cmd;
+        if (sync && recurse) {
+            // split into 2 commands one sync and an async recurse
+            cmd = new IndexingCommand(targetDocument, command,
+                    true, false);
+            add(cmd);
+            cmd = new IndexingCommand(targetDocument, command,
+                    false, true);
+
+        } else {
+            cmd = new IndexingCommand(targetDocument, command,
+                    sync, recurse);
+        }
         return add(cmd);
     }
 
@@ -79,19 +84,21 @@ public class IndexingCommands {
             return null;
         }
 
-        // skip duplicates
         if (commandNames.contains(command.name)) {
-            find(command.name).update(command);
-            return null;
-        }
-
-        // index creation supersedes
-        if (commandNames.contains(IndexingCommand.INDEX)) {
+            IndexingCommand existing = find(command.name);
+            if (existing.canBeMerged(command)) {
+                existing.update(command);
+                return null;
+            }
+        } else if (commandNames.contains(IndexingCommand.INDEX)) {
             if (command.name.equals(IndexingCommand.DELETE)) {
+                // index and delete in the same tx
                 clear();
             } else if (command.isSync()) {
-                find(IndexingCommand.INDEX).sync = true;
+                // switch to sync if possible
+                find(IndexingCommand.INDEX).toSync();
             }
+            // we already have an index command, don't care about the new command
             return null;
         }
 
@@ -108,10 +115,6 @@ public class IndexingCommands {
     protected void clear() {
         commands.clear();
         commandNames.clear();
-    }
-
-    public List<IndexingCommand> getMergedCommands() {
-        return commands;
     }
 
     public DocumentModel getTargetDocument() {
@@ -169,10 +172,9 @@ public class IndexingCommands {
         return cmds;
     }
 
-    public List<IndexingCommand> getAllCommands() {
+    public List<IndexingCommand> getCommands() {
         return commands;
     }
-
 
 }
 

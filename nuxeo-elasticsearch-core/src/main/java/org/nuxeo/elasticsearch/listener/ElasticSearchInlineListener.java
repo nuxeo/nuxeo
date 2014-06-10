@@ -36,6 +36,7 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommands;
 import org.nuxeo.elasticsearch.commands.IndexingCommandsStacker;
 import org.nuxeo.runtime.api.Framework;
+import org.objectweb.carol.rmi.multi.CmiPRODelegate;
 
 /**
  * Synchronous Event listener used to schedule a reindexing
@@ -187,10 +188,8 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker
             if (Boolean.TRUE.equals(value)) {
                 // switch existing stack to sync
                 for (IndexingCommands cmds : transactionCommands.get().values()) {
-                    for (IndexingCommand cmd : cmds.getAllCommands()) {
-                        if (!cmd.isRecurse()&& cmd.getTargetDocument()!=null) {
-                            cmd.update(true, cmd.isRecurse());
-                        }
+                    for (IndexingCommand cmd : cmds.getCommands()) {
+                        cmd.toSync();
                     }
                 }
             }

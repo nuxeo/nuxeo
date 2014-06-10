@@ -92,15 +92,10 @@ public abstract class IndexingCommandsStacker {
         } else if (DOCUMENT_SECURITY_UPDATED.equals(eventId)) {
             cmds.add(IndexingCommand.UPDATE_SECURITY, sync, doc.isFolder());
         } else if (DOCUMENT_REMOVED.equals(eventId)) {
-            cmds.add(IndexingCommand.DELETE, sync, false);
-            if (doc.isFolder()) {
-                // subtree delete is always async
-                cmds.add(IndexingCommand.DELETE, false, true);
-            }
+            cmds.add(IndexingCommand.DELETE, sync, doc.isFolder());
         } else if (BINARYTEXT_UPDATED.equals(eventId)) {
             cmds.add(IndexingCommand.UPDATE, sync, false);
         }
-
     }
 
     protected boolean registerSynchronization(Synchronization sync) {
@@ -127,7 +122,7 @@ public abstract class IndexingCommandsStacker {
     protected void prepareFlush() throws IOException {
         Map<String, IndexingCommands> allCmds = getAllCommands();
         for (IndexingCommands cmds : allCmds.values()) {
-            for (IndexingCommand cmd : cmds.getAllCommands()) {
+            for (IndexingCommand cmd : cmds.getCommands()) {
                 if (cmd.isSync()) {
                     cmd.computeIndexingEvent();
                 }
@@ -142,7 +137,7 @@ public abstract class IndexingCommandsStacker {
         List<IndexingCommand> asyncCommands = new ArrayList<>();
 
         for (IndexingCommands cmds : allCmds.values()) {
-            for (IndexingCommand cmd : cmds.getMergedCommands()) {
+            for (IndexingCommand cmd : cmds.getCommands()) {
                 if (cmd.isSync()) {
                     syncCommands.add(cmd);
                 } else {
