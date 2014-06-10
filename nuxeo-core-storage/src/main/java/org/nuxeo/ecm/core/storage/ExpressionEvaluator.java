@@ -21,9 +21,12 @@ import static java.lang.Boolean.TRUE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -54,6 +57,9 @@ public abstract class ExpressionEvaluator {
     /** pseudo NXQL to resolve internal path. */
     public static final String NXQL_ECM_PATH = "ecm:__path";
 
+    /** pseudo NXQL to resolve read acls. */
+    public static final String NXQL_ECM_READ_ACL = "ecm:__read_acl";
+
     /**
      * Interface for a class that knows how to resolve a path into an id.
      */
@@ -69,8 +75,12 @@ public abstract class ExpressionEvaluator {
 
     public final PathResolver pathResolver;
 
-    public ExpressionEvaluator(PathResolver pathResolver) {
+    public final Set<String> principals;
+
+    public ExpressionEvaluator(PathResolver pathResolver, String[] principals) {
         this.pathResolver = pathResolver;
+        this.principals = principals == null ? null : new HashSet<String>(
+                Arrays.asList(principals));
     }
 
     public Object walkExpression(Expression expr) {

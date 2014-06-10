@@ -23,11 +23,10 @@ import java.util.Comparator;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
-import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
-import org.nuxeo.ecm.core.query.sql.model.Operand;
-import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
@@ -36,8 +35,9 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
-import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,6 +46,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.9.4
  */
 public class DBSExpressionEvaluator extends ExpressionEvaluator {
+
+    private static final Log log = LogFactory.getLog(DBSExpressionEvaluator.class);
 
     private static final Long ZERO = Long.valueOf(0);
 
@@ -57,8 +59,9 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
     protected Map<String, Serializable> map;
 
-    public DBSExpressionEvaluator(DBSSession session, Expression expr) {
-        super(new DBSPathResolver(session));
+    public DBSExpressionEvaluator(DBSSession session, Expression expr,
+            String[] principals) {
+        super(new DBSPathResolver(session), principals);
         this.expr = expr;
         schemaManager = Framework.getLocalService(SchemaManager.class);
     }
@@ -78,43 +81,30 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
     public boolean matches(Map<String, Serializable> map) {
         this.map = map;
+        // security check
+        if (principals != null) {
+            String[] racl = (String[]) walkReference(new Reference(
+                    NXQL_ECM_READ_ACL));
+            if (racl == null) {
+                log.error("NULL racl for " + map.get(DBSDocument.KEY_ID));
+            } else {
+                boolean allowed = false;
+                for (String user : racl) {
+                    if (principals.contains(user)) {
+                        allowed = true;
+                        break;
+                    }
+                }
+                if (!allowed) {
+                    return false;
+                }
+            }
+        }
         return TRUE.equals(walkExpression(expr));
     }
 
     public boolean matches(DBSDocumentState state) {
         return matches(state.getMap());
-    }
-
-    @Override
-    public Object walkExpression(Expression expr) {
-        Operand lvalue = expr.lvalue;
-        String name = lvalue instanceof Reference ? ((Reference) lvalue).name
-                : null;
-        if (NXQL.ECM_ISPROXY.equals(name)) {
-            return walkExpressionIsProxy(expr);
-        } else {
-            return super.walkExpression(expr);
-        }
-    }
-
-    protected Boolean walkExpressionIsProxy(Expression node) {
-        boolean bool = getBooleanRValue(NXQL.ECM_ISPROXY, node);
-        // TODO XXX no proxies for now
-        return Boolean.valueOf(bool);
-    }
-
-    protected boolean getBooleanRValue(String name, Expression node) {
-        if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
-            throw new QueryMakerException(name + " requires = or <> operator");
-        }
-        long v;
-        if (!(node.rvalue instanceof IntegerLiteral)
-                || ((v = ((IntegerLiteral) node.rvalue).value) != 0 && v != 1)) {
-            throw new QueryMakerException(name
-                    + " requires literal 0 or 1 as right argument");
-        }
-        boolean bool = node.operator == Operator.EQ ^ v == 0;
-        return bool;
     }
 
     @Override
@@ -128,9 +118,13 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
         String[] split = name.split("/");
         String prop = split[0];
         boolean isArray;
+        boolean isBoolean;
+        boolean isTrueOrNullBoolean;
         if (name.startsWith(NXQL.ECM_PREFIX)) {
             prop = DBSSession.convToInternal(name);
             isArray = DBSSession.isArray(prop);
+            isBoolean = DBSSession.isBoolean(prop);
+            isTrueOrNullBoolean = true;
         } else {
             Field field = schemaManager.getField(prop);
             if (field == null) {
@@ -156,8 +150,10 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
                 }
             }
             prop = field.getName().getPrefixedName();
-            isArray = field.getType() instanceof ListType
-                    && ((ListType) field.getType()).isArray();
+            Type type = field.getType();
+            isArray = type instanceof ListType && ((ListType) type).isArray();
+            isBoolean = type instanceof BooleanType;
+            isTrueOrNullBoolean = false;
         }
         Serializable value = map.get(prop);
         for (int i = 1; i < split.length; i++) {
@@ -173,9 +169,14 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
             // don't use null, as list-based matches don't use ternary logic
             value = new Object[0];
         }
-        if (value instanceof Boolean) {
+        if (isBoolean) {
             // boolean evaluation is like 0 / 1
-            value = ((Boolean) value).booleanValue() ? ONE : ZERO;
+            if (isTrueOrNullBoolean) {
+                value = TRUE.equals(value) ? ONE : ZERO;
+            } else {
+                value = value == null ? null
+                        : (((Boolean) value).booleanValue() ? ONE : ZERO);
+            }
         }
         return value;
     }

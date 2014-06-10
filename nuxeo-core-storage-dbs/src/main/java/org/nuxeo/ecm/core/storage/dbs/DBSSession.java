@@ -47,6 +47,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIES_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_DESCRIPTION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_LABEL;
@@ -57,7 +58,6 @@ import java.text.DateFormat;
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -773,6 +773,7 @@ public class DBSSession implements Session {
             }
         }
 
+        // prepare new ancestor ids
         Map<String, Serializable> parentState = transaction.getStateForRead(parentId);
         Object[] parentAncestorIds = (Object[]) parentState.get(KEY_ANCESTOR_IDS);
         List<String> ancestorIdsList = new ArrayList<String>();
@@ -784,18 +785,16 @@ public class DBSSession implements Session {
         ancestorIdsList.add(parentId);
         Object[] ancestorIds = ancestorIdsList.toArray(new Object[ancestorIdsList.size()]);
 
-        // checkNotUnder(parentId, sourceId, "move");
         if (ancestorIdsList.contains(sourceId)) {
             throw new DocumentException("Cannot move a node under itself: "
                     + parentId + " is under " + sourceId);
-
         }
 
         // do the move
         sourceState.put(KEY_NAME, name);
         sourceState.put(KEY_PARENT_ID, parentId);
 
-        // find all sub-children to update their ancestors
+        // update ancestors on all sub-children
         Object[] oldAncestorIds = (Object[]) sourceState.get(KEY_ANCESTOR_IDS);
         int ndel = oldAncestorIds == null ? 0 : oldAncestorIds.length;
         transaction.updateAncestors(sourceId, ndel, ancestorIds);
@@ -1285,8 +1284,10 @@ public class DBSSession implements Session {
             // merge with existing
             acp = updateACP(getACP(doc), acp);
         }
-        DBSDocumentState state = transaction.getStateForUpdate(doc.getUUID());
+        String id = doc.getUUID();
+        DBSDocumentState state = transaction.getStateForUpdate(id);
         state.put(KEY_ACP, acpToMem(acp));
+        transaction.updateReadAcls(id);
     }
 
     /**
@@ -1460,7 +1461,7 @@ public class DBSSession implements Session {
         MultiExpression expression = new QueryOptimizer().getOptimizedQuery(
                 sqlQuery, queryFilter.getFacetFilter());
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this,
-                expression);
+                expression, queryFilter.getPrincipals());
 
         // query in-memory in saved state
         List<Map<String, Serializable>> states = new ArrayList<>();
@@ -1778,6 +1779,8 @@ public class DBSSession implements Session {
             return KEY_ANCESTOR_IDS;
         case ExpressionEvaluator.NXQL_ECM_PATH:
             return KEY_PATH_INTERNAL;
+        case ExpressionEvaluator.NXQL_ECM_READ_ACL:
+            return KEY_READ_ACL;
         }
         throw new RuntimeException("Unknown property: " + name);
     }
@@ -1835,6 +1838,8 @@ public class DBSSession implements Session {
         case KEY_ANCESTOR_IDS:
             return null;
         case KEY_BASE_VERSION_ID:
+            return null;
+        case KEY_READ_ACL:
             return null;
         }
         throw new RuntimeException("Unknown property: " + name);

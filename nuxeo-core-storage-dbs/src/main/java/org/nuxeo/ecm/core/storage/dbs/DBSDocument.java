@@ -131,6 +131,8 @@ public class DBSDocument implements Document {
 
     public static final String KEY_ACE_GRANT = "grant";
 
+    public static final String KEY_READ_ACL = "ecm:racl";
+
     public static final String KEY_IS_CHECKED_IN = "ecm:isCheckedIn";
 
     public static final String KEY_IS_VERSION = "ecm:isVersion";

@@ -16,7 +16,15 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_GRANT;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_PERMISSION;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BASE_VERSION_ID;
@@ -30,10 +38,12 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIES_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,7 +57,9 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.CopyHelper;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Transactional state for a session: data that has been modified in the
@@ -88,8 +100,13 @@ public class DBSTransactionState {
     /** Ids of documents deleted. */
     protected Set<String> savedDeleted = new HashSet<String>();
 
+    protected final Set<String> browsePermissions;
+
     public DBSTransactionState(DBSRepository repository) {
         this.repository = repository;
+        SecurityService securityService = Framework.getLocalService(SecurityService.class);
+        browsePermissions = new HashSet<>(
+                Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
     }
 
     protected DBSDocumentState makeTransient(DBSDocumentState state) {
@@ -470,10 +487,11 @@ public class DBSTransactionState {
      * automatically saved.
      */
     public void updateAncestors(String id, int ndel, Object[] ancestorIds) {
+        int nadd = ancestorIds.length;
         Set<String> ids = getSubTree(id, null, null);
         ids.add(id);
         for (String cid : ids) {
-            int nadd = ancestorIds.length;
+            // XXX TODO oneShot update, don't pollute transient space
             DBSDocumentState state = getStateForUpdate(cid);
             Object[] ancestors = (Object[]) state.get(KEY_ANCESTOR_IDS);
             Object[] newAncestors;
@@ -487,6 +505,73 @@ public class DBSTransactionState {
             }
             state.put(KEY_ANCESTOR_IDS, newAncestors);
         }
+    }
+
+    /**
+     * Updates the Read ACLs recursively on a document.
+     */
+    public void updateReadAcls(String id) {
+        // versions too XXX TODO
+        Set<String> ids = getSubTree(id, null, null);
+        ids.add(id);
+        for (String cid : ids) {
+            // XXX TODO oneShot update, don't pollute transient space
+            DBSDocumentState state = getStateForUpdate(cid);
+            state.put(KEY_READ_ACL, getReadACL(state));
+        }
+    }
+
+    /**
+     * Gets the Read ACL (flat list of users having browse permission, including
+     * inheritance) on a document.
+     */
+    protected String[] getReadACL(DBSDocumentState state) {
+        Set<String> racls = new HashSet<>();
+        Map<String, Serializable> map = state.getMap();
+        LOOP: do {
+            @SuppressWarnings("unchecked")
+            List<Serializable> aclList = (List<Serializable>) map.get(KEY_ACP);
+            if (aclList != null) {
+                for (Serializable aclSer : aclList) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Serializable> aclMap = (Map<String, Serializable>) aclSer;
+                    @SuppressWarnings("unchecked")
+                    List<Serializable> aceList = (List<Serializable>) aclMap.get(KEY_ACL);
+                    for (Serializable aceSer : aceList) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Serializable> aceMap = (Map<String, Serializable>) aceSer;
+                        String username = (String) aceMap.get(KEY_ACE_USER);
+                        String permission = (String) aceMap.get(KEY_ACE_PERMISSION);
+                        Boolean granted = (Boolean) aceMap.get(KEY_ACE_GRANT);
+                        if (TRUE.equals(granted)
+                                && browsePermissions.contains(permission)) {
+                            racls.add(username);
+                        }
+                        if (FALSE.equals(granted)) {
+                            if (!EVERYONE.equals(username)) {
+                                // TODO log
+                                racls.add(UNSUPPORTED_ACL);
+                            }
+                            break LOOP;
+                        }
+                    }
+                }
+            }
+            // get parent
+            if (TRUE.equals(map.get(KEY_IS_VERSION))) {
+                String versionSeriesId = (String) map.get(KEY_VERSION_SERIES_ID);
+                map = versionSeriesId == null ? null
+                        : getStateForRead(versionSeriesId);
+            } else {
+                String parentId = (String) map.get(KEY_PARENT_ID);
+                map = parentId == null ? null : getStateForRead(parentId);
+            }
+        } while (map != null);
+
+        // sort to have canonical order
+        List<String> racl = new ArrayList<>(racls);
+        Collections.sort(racl);
+        return racl.toArray(new String[racl.size()]);
     }
 
     /**
@@ -505,7 +590,8 @@ public class DBSTransactionState {
             Map<String, Object[]> targetProxies) {
         Set<String> ids = new HashSet<String>();
         Set<String> seen = new HashSet<String>();
-        DOC: for (DBSDocumentState state : savedStates.values()) {
+        DOC: //
+        for (DBSDocumentState state : savedStates.values()) {
             String oid = state.getId();
             seen.add(oid);
             Object[] ancestors = (Object[]) state.get(KEY_ANCESTOR_IDS);
