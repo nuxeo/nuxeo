@@ -622,6 +622,7 @@ public class DBSSession implements Session {
         case KEY_POS:
         case KEY_PRIMARY_TYPE:
         case KEY_ACP:
+        case KEY_READ_ACL:
             // these are version-specific
         case KEY_VERSION_CREATED:
         case KEY_VERSION_DESCRIPTION:

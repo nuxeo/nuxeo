@@ -751,6 +751,7 @@ public class DBSTransactionState {
         case KEY_NAME:
         case KEY_POS:
         case KEY_ACP:
+        case KEY_READ_ACL:
             // these are proxy-specific
         case KEY_IS_PROXY:
         case KEY_PROXY_TARGET_ID:
