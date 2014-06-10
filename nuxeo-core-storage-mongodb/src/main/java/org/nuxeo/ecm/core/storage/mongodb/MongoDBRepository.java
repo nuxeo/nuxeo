@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.storage.PartialList;
+import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 
@@ -351,23 +352,24 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 evaluator.pathResolver);
         DBObject query = builder.walkExpression(expression);
         addIgnoredIds(query, ignored);
+        addPrincipals(query, evaluator.principals);
         List<Map<String, Serializable>> list;
         System.err.println(query); // XXX
-        DBCursor cursor = coll.find(query).skip(offset).limit(limit);
-        if (orderByClause != null) {
-            DBObject orderBy = new BasicDBObject();
-            for (OrderByExpr ob : orderByClause.elements) {
-                Reference ref = ob.reference;
-                boolean desc = ob.isDescending;
-                String field = builder.walkReference(ref).field;
-                if (!orderBy.containsField(field)) {
-                    orderBy.put(field, desc ? MINUS_ONE : ONE);
-                }
-            }
-            cursor = cursor.sort(orderBy);
-        }
         long totalSize;
+        DBCursor cursor = coll.find(query).skip(offset).limit(limit);
         try {
+            if (orderByClause != null) {
+                DBObject orderBy = new BasicDBObject();
+                for (OrderByExpr ob : orderByClause.elements) {
+                    Reference ref = ob.reference;
+                    boolean desc = ob.isDescending;
+                    String field = builder.walkReference(ref).field;
+                    if (!orderBy.containsField(field)) {
+                        orderBy.put(field, desc ? MINUS_ONE : ONE);
+                    }
+                }
+                cursor = cursor.sort(orderBy);
+            }
             list = new ArrayList<>();
             for (DBObject ob : cursor) {
                 list.add(bsonToState(ob));
@@ -397,6 +399,14 @@ public class MongoDBRepository extends DBSRepositoryBase {
             cursor.close();
         }
         return new PartialList<>(list, totalSize);
+    }
+
+    protected void addPrincipals(DBObject query, Set<String> principals) {
+        if (principals != null) {
+            DBObject inPrincipals = new BasicDBObject(QueryOperators.IN,
+                    new ArrayList<String>(principals));
+            query.put(DBSDocument.KEY_READ_ACL, inPrincipals);
+        }
     }
 
 }
