@@ -56,7 +56,7 @@ public class TargetPackageImpl extends TargetImpl implements TargetPackage,
         if (dependencies == null) {
             this.dependencies = null;
         } else {
-            this.dependencies = new ArrayList<>(dependencies);
+            this.dependencies = new ArrayList<String>(dependencies);
         }
     }
 

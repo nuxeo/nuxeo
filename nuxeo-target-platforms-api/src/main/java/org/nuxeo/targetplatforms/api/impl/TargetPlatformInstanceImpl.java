@@ -26,7 +26,6 @@ import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPlatform;
 import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
 
-
 /**
  * @since 5.7.1
  */
@@ -57,7 +56,7 @@ public class TargetPlatformInstanceImpl extends TargetImpl implements
         if (enabledPackages == null) {
             return Collections.emptyList();
         }
-        return new ArrayList<>(enabledPackages.keySet());
+        return new ArrayList<String>(enabledPackages.keySet());
     }
 
     @Override
@@ -73,14 +72,14 @@ public class TargetPlatformInstanceImpl extends TargetImpl implements
             return;
         }
         if (enabledPackages == null) {
-            enabledPackages = new LinkedHashMap<>();
+            enabledPackages = new LinkedHashMap<String, TargetPackage>();
         }
         enabledPackages.put(pack.getId(), pack);
     }
 
     public void setEnabledPackages(Map<String, TargetPackage> packages) {
         if (enabledPackages == null) {
-            enabledPackages = new LinkedHashMap<>();
+            enabledPackages = new LinkedHashMap<String, TargetPackage>();
         } else {
             enabledPackages.clear();
         }
