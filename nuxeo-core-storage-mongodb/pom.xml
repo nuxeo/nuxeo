@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>5.9.4-SNAPSHOT</version>
+    <version>5.9.5-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -43,12 +43,12 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage</artifactId>
-      <version>5.9.4-SNAPSHOT</version>
+      <version>5.9.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage-dbs</artifactId>
-      <version>5.9.4-SNAPSHOT</version>
+      <version>5.9.5-SNAPSHOT</version>
     </dependency>
 
     <dependency>
