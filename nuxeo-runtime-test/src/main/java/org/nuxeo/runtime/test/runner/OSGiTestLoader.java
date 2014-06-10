@@ -21,9 +21,9 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.runners.model.InitializationError;
+import org.junit.runner.Runner;
+import org.junit.runner.notification.RunNotifier;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.OSGiBundleFile;
 import org.nuxeo.osgi.OSGiDefaultFactory;
@@ -34,25 +34,7 @@ import org.osgi.framework.Constants;
 
 public class OSGiTestLoader {
 
-    protected final Log log = LogFactory.getLog(OSGiTestLoader.class);
-
-    public final OSGiAdapter adapter = newAdapter();
-
-    public OSGiTestLoader() {
-    }
-
-    public void install() {
-        try {
-            installClasspath();
-        } catch (URISyntaxException | IOException | BundleException cause) {
-            throw new Error("Cannot install osgi classpath", cause);
-        }
-        try {
-            adapter.start();
-        } catch (BundleException cause) {
-            throw new Error("Cannot start osgi", cause);
-        }
-    }
+    protected final OSGiAdapter adapter = newAdapter();
 
     protected OSGiAdapter newAdapter() {
         Properties env = new Properties();
@@ -60,11 +42,14 @@ public class OSGiTestLoader {
         env.put(OSGiAdapter.BUNDLE_FACTORY,
                 OSGiHarnessBundleFactory.class.getName());
         env.put(OSGiAdapter.BOOT_DELEGATION,
-                "java,javax,org.osgi,org.nuxeo.osgi,com.google.inject,org.junit");
+                "java,javax,org.osgi,org.nuxeo.osgi,org.junit");
         try {
-            return new OSGiAdapter(env);
-        } catch (IOException e) {
-            throw new Error("Cannot load osgi", e);
+            OSGiAdapter adapter = new OSGiAdapter(env);
+            adapter.initialize();
+            installClasspath(adapter);
+            return adapter;
+        } catch (IOException | BundleException | URISyntaxException cause) {
+            throw new Error("Cannot load osgi", cause);
         }
     }
 
@@ -123,46 +108,50 @@ public class OSGiTestLoader {
     }
 
     protected Bundle activateBundles(Class<?> clazz,
-            Set<Class<?>> activatedClasses, Set<Bundle> activatedBundles)
-            throws InitializationError {
+            Set<Class<?>> activatedClasses, Set<Bundle> activatedBundles,
+            AssertionError error) {
         if (clazz == null) {
             return null;
         }
-        if (activatedClasses.contains(clazz)) {
-            return null;
-        }
-        activatedClasses.add(clazz);
-
         if (clazz.equals(Object.class)) {
             return null;
         }
         if (clazz.isPrimitive()) {
             return null;
         }
+        if (activatedClasses.contains(clazz)) {
+            return null;
+        }
         if (clazz.isArray()) {
             return activateBundles(clazz.getComponentType(), activatedClasses,
-                    activatedBundles);
+                    activatedBundles, error);
         }
 
+        activatedClasses.add(clazz);
+
         activateBundles(clazz.getSuperclass(), activatedClasses,
-                activatedBundles);
+                activatedBundles, error);
 
         for (Field f : clazz.getDeclaredFields()) {
-            activateBundles(f.getType(), activatedClasses, activatedBundles);
-            for (Annotation a:f.getDeclaredAnnotations()) {
-                activateBundles(a.annotationType(), activatedClasses, activatedBundles);
+            activateBundles(f.getType(), activatedClasses, activatedBundles,
+                    error);
+            for (Annotation a : f.getDeclaredAnnotations()) {
+                activateBundles(a.annotationType(), activatedClasses,
+                        activatedBundles, error);
             }
         }
 
-        for (Annotation a:clazz.getDeclaredAnnotations()) {
-            activateBundles(a.annotationType(), activatedClasses, activatedBundles);
+        for (Annotation a : clazz.getDeclaredAnnotations()) {
+            activateBundles(a.annotationType(), activatedClasses,
+                    activatedBundles, error);
         }
 
         for (Method m : clazz.getDeclaredMethods()) {
             activateBundles(m.getReturnType(), activatedClasses,
-                    activatedBundles);
+                    activatedBundles, error);
             for (Class<?> ptype : m.getParameterTypes()) {
-                activateBundles(ptype, activatedClasses, activatedBundles);
+                activateBundles(ptype, activatedClasses, activatedBundles,
+                        error);
             }
         }
 
@@ -180,8 +169,9 @@ public class OSGiTestLoader {
             location = "file://" + location;
             break;
         default:
-            throw new UnsupportedOperationException("Unknown protocol in "
-                    + resource);
+            error.addSuppressed(new AssertionError("Unknown protocol in "
+                    + resource));
+            return null;
         }
         Bundle bundle = adapter.getSytemContext().getBundle(location);
         if (bundle == null) {
@@ -194,8 +184,8 @@ public class OSGiTestLoader {
                     bundle.start();
                 }
                 activatedBundles.add(bundle);
-            } catch (BundleException e) {
-                throw new InitializationError(e);
+            } catch (BundleException cause) {
+                error.addSuppressed(cause);
             }
         }
 
@@ -203,30 +193,20 @@ public class OSGiTestLoader {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> Class<T> reloadClass(Class<T> clazz)
-            throws InitializationError {
+    protected <T> Class<T> reloadClass(Class<T> clazz) {
+        AssertionError error = new AssertionError("Cannot load " + clazz
+                + " in osgi");
         Bundle bundle = activateBundles(clazz, new HashSet<Class<?>>(),
-                new HashSet<Bundle>());
-        if (bundle != null) {
-            try {
-                return (Class<T>) bundle.loadClass(clazz.getName());
-            } catch (ClassNotFoundException e) {
-                throw new InitializationError(e);
-            }
+                new HashSet<Bundle>(), error);
+        if (bundle == null || error.getSuppressed().length > 0) {
+            throw error;
         }
-        return clazz;
-    }
-
-    public Bundle lookupBundle(String bundleName) throws Exception {
-        Bundle bundle = adapter.getSytemContext().getBundle(bundleName);
-        if (bundle != null) {
-            return bundle;
+        try {
+            return (Class<T>) bundle.loadClass(clazz.getName());
+        } catch (ClassNotFoundException cause) {
+            error.addSuppressed(cause);
+            throw error;
         }
-
-        throw new RuntimeException(
-                String.format(
-                        "No bundle with symbolic name '%s'; Falling back to deprecated url lookup scheme",
-                        bundleName));
     }
 
     protected Set<URI> scanClasspath() throws IOException, URISyntaxException,
@@ -239,17 +219,18 @@ public class OSGiTestLoader {
                 "org.apache.tools.ant.AntClassLoader")) {
             scanAntClasspath(classLoader, files);
         } else {
-            log.warn("Unknown classloader type: "
-                    + classLoader.getClass().getName()
-                    + "\nWon't be able to load OSGI bundles");
+            LogFactory.getLog(OSGiTestLoader.class).warn(
+                    "Unknown classloader type: "
+                            + classLoader.getClass().getName()
+                            + "\nWon't be able to load OSGI bundles");
             return Collections.emptySet();
         }
         scanSurefireClasspath(files);
         return files;
     }
 
-    protected void installClasspath() throws BundleException, IOException,
-            URISyntaxException {
+    protected void installClasspath(OSGiAdapter adapter)
+            throws BundleException, IOException, URISyntaxException {
         Set<URI> classpath = scanClasspath();
         for (URI file : classpath) {
             adapter.install(file);
@@ -316,11 +297,26 @@ public class OSGiTestLoader {
         }
     }
 
-    protected static Class<?> install(Class<?> pojoClass) throws InitializationError {
-        OSGiTestLoader loader = new OSGiTestLoader();
-        loader.install();
-        Class<?> osgiClass = loader.reloadClass(pojoClass);
-        return osgiClass;
+    public void run(Class<?> classToRun, RunNotifier notifier) {
+        try {
+            adapter.start();
+        } catch (BundleException cause) {
+            throw new AssertionError("Cannot startup osgi", cause);
+        }
+        try {
+            classToRun = reloadClass(classToRun);
+            Class<? extends Runner> type = (Class<? extends Runner>) adapter.getSystemLoader().loadClass(OSGiFeaturesRunner.class.getName());
+            Runner runner = type.getConstructor(Class.class).newInstance(reloadClass(classToRun));
+            runner.run(notifier);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException cause) {
+            throw new AssertionError("Cannot run in osgi " + classToRun, cause);
+        } finally {
+            try {
+                adapter.shutdown();
+            } catch (BundleException | IOException cause) {
+                throw new AssertionError("Cannot shutdown osgi", cause);
+            }
+        }
     }
 
 }

@@ -8,9 +8,14 @@ import org.mockito.configuration.IMockitoConfiguration;
 import org.mockito.internal.configuration.GlobalConfiguration;
 import org.nuxeo.runtime.api.DefaultServiceProvider;
 import org.nuxeo.runtime.test.protocols.inline.InlineURLFactory;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
+@Deploy("org.mockito.mockito-all")
+@Features({RuntimeFeature.class})
 public class MockitoFeature extends SimpleFeature {
 
     @Override

@@ -20,9 +20,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;

@@ -35,7 +35,7 @@ import com.google.common.collect.Iterables;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class AnnotationScanner {
+public class AnnotationScanner  {
 
     protected final Set<Class<?>> visitedClasses = new HashSet<Class<?>>();
 
@@ -71,7 +71,6 @@ public class AnnotationScanner {
         return result.get(0);
     }
 
-    @SuppressWarnings("unchecked")
     public <T extends Annotation> List<T> getAnnotations(Class<?> clazz, Class<T> annotationType) {
         List<Annotation> list = classes.get(clazz);
         if (list != null) {

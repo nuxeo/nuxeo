@@ -16,8 +16,6 @@
  */
 package org.nuxeo.runtime;
 
-import static junit.framework.Assert.assertEquals;
-
 import org.junit.Test;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 

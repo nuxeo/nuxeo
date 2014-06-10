@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 import org.nuxeo.runtime.services.event.EventService;
-import org.nuxeo.runtime.test.RuntimeFeature;
 
 import com.google.inject.Inject;
 

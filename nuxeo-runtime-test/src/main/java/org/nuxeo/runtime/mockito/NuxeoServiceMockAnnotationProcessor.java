@@ -16,7 +16,6 @@
  */
 package org.nuxeo.runtime.mockito;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 import org.mockito.Mock;
@@ -36,10 +35,8 @@ public class NuxeoServiceMockAnnotationProcessor implements
 
         Object mock = Mockito.mock(field.getType(), field.getName());
 
-        for (Annotation ann : field.getAnnotations()) {
-            if (ann.annotationType().equals(RuntimeService.class)) {
-                bindMockAsNuxeoService(field, mock);
-            }
+        if (field.isAnnotationPresent(RuntimeService.class)) {
+            bindMockAsNuxeoService(field, mock);
         }
 
         return mock;

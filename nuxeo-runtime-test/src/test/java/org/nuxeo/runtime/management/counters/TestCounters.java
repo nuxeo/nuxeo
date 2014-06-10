@@ -11,10 +11,10 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.*;
 
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Deploy("org.nuxeo.runtime.management")

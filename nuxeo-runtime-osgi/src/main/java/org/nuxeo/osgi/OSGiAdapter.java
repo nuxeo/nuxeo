@@ -98,7 +98,7 @@ public class OSGiAdapter {
         this(System.getProperties());
     }
 
-    public OSGiAdapter(Properties properties) throws IOException {
+    public OSGiAdapter(Properties properties) throws IOException  {
         this.properties.putAll(properties);
         // setting up default properties
         properties.put(Constants.FRAMEWORK_VENDOR, "Nuxeo");
@@ -111,7 +111,6 @@ public class OSGiAdapter {
                 workingDirPath.concat("/data"));
         dataDir = new File(dataDirPath);
         dataDir.mkdirs();
-        init();
     }
 
     public OSGiAdapter(File workingDir, File dataDir) {
@@ -123,20 +122,6 @@ public class OSGiAdapter {
         this.dataDir = dataDir;
         this.dataDir.mkdirs();
         properties.put(DATA_DIR, dataDir);
-    }
-
-    protected void init() throws IOException {
-        try {
-            system = newSystemBundle();
-            system.init();
-            osgi = system.osgi;
-            osgi.adapter = this;
-            OSGiBundle workingBundle = newConfigBundle();
-            osgi.registry.register(workingBundle);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "Cannot create system bundle for " + workingDir, e);
-        }
     }
 
     public void start() throws BundleException {
@@ -170,12 +155,19 @@ public class OSGiAdapter {
         return new OSGiBundleFragment(bf);
     }
 
-    public void initialize(Properties properties) {
-        this.properties.putAll(properties);
+    public void initialize() {
         // setting up default properties
-        properties.put(Constants.FRAMEWORK_VENDOR, "Nuxeo");
-        properties.put(Constants.FRAMEWORK_VERSION, "1.0.0");
-
+        try {
+            system = newSystemBundle();
+            system.init();
+            osgi = system.osgi;
+            osgi.adapter = this;
+            OSGiBundle workingBundle = newConfigBundle();
+            osgi.registry.register(workingBundle);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(
+                    "Cannot create system bundle for " + workingDir, e);
+        }
     }
 
     public void setHome(File home) {
@@ -259,7 +251,7 @@ public class OSGiAdapter {
         return (OSGiSystemContext) system.context;
     }
 
-    public ClassLoader getSystemLoader() {
+    public OSGiLoader getSystemLoader() {
         return osgi.loader;
     }
 

@@ -16,10 +16,9 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.runtime.test;
+package org.nuxeo.runtime.test.runner;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,17 +30,10 @@ import java.util.Set;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.DataSourceHelper;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.DeploymentSet;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.JndiHelper;
-import org.nuxeo.runtime.test.runner.RunnerFeature;
-import org.nuxeo.runtime.test.runner.ServiceProvider;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.test.RuntimeHarness;
+import org.osgi.framework.Bundle;
 
 import com.google.common.base.Supplier;
 import com.google.common.collect.Multimaps;
@@ -53,8 +45,6 @@ import com.google.inject.Binder;
  */
 @Deploy({"org.nuxeo.runtime", "org.nuxeo.runtime.test"})
 public class RuntimeFeature extends SimpleFeature {
-
-    private static final Log log = LogFactory.getLog(RuntimeFeature.class);
 
     protected final DefaultRuntimeHarness harness;
 
@@ -122,17 +112,14 @@ public class RuntimeFeature extends SimpleFeature {
     /**
      * Deploys bundles specified in the @Bundles annotation.
      */
-    protected void deployTestClassBundles() throws Exception {
-        String[] bundles = getDeployments();
-        if (bundles.length > 0) {
-            for (String bundle : bundles) {
-                try {
-                    int p = bundle.indexOf(':');
-                    if (p == -1) {
-                        harness.deployBundle(bundle);
-                    } else {
-                        harness.deployContrib(bundle.substring(0, p),
-                                bundle.substring(p + 1));
+    protected void deployTestClassBundles(FeaturesRunner runner) throws Exception {
+        Set<String> bundles = new HashSet<String>();
+        Map<String, Collection<String>> mainDeployments = new HashMap<>();
+        SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(mainDeployments,
+                new Supplier<Set<String>>() {
+                    @Override
+                    public Set<String> get() {
+                        return new HashSet<String>();
                     }
                 });
         Map<String, Collection<String>> localDeployments = new HashMap<>();
@@ -155,31 +142,21 @@ public class RuntimeFeature extends SimpleFeature {
                 errors.addSuppressed(error);
                 continue;
             }
-        }
-        String[] localResources = getLocalDeployments();
-        if (localResources.length > 0) {
-            for (String bundle : localResources) {
-                try {
-                    int p = bundle.indexOf(':');
-                    if (p == -1) {
-                        throw new IllegalArgumentException(
-                                "Local resources must specify a traget bundle. "
-                                        + bundle);
-                    } else {
-                        URL url = getClass().getClassLoader().getResource(
-                                bundle.substring(p + 1));
-                        harness.deployTestContrib(bundle.substring(0, p), url);
+            try {
+                // deploy bundle contribs
+                for (String resource : mainIndex.removeAll(name)) {
+                    try {
+                        harness.deployContrib(name, resource);
+                    } catch (Exception error) {
+                        errors.addSuppressed(error);
                     }
                 }
                 // deploy local contribs
                 for (String resource : localIndex.removeAll(name)) {
-                    URL url = runner.getTargetTestResource(name);
+                    URL url = runner.getTargetTestClass().getClassLoader().getResource(
+                            resource);
                     if (url == null) {
                         url = bundle.getEntry(resource);
-                    }
-                    if (url == null) {
-                        url = runner.getTargetTestClass().getClassLoader().getResource(
-                                resource);
                     }
                     if (url == null) {
                         throw new AssertionError("Cannot find " + resource
@@ -207,7 +184,16 @@ public class RuntimeFeature extends SimpleFeature {
                 errors.addSuppressed(error);
             }
         }
-
+        for (String name : bundles) {
+            Bundle bundle = null;
+            try {
+                harness.deployBundle(name);
+                bundle = harness.getOSGiAdapter().getBundle(name);
+            } catch (Exception error) {
+                errors.addSuppressed(error);
+                continue;
+            }
+        }
         if (errors.getSuppressed().length > 0) {
             throw errors;
         }
@@ -215,17 +201,8 @@ public class RuntimeFeature extends SimpleFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        harness = new NXRuntimeTestCase(runner.getTargetTestClass());
         scanDeployments(runner);
-    }
-
-    @Override
-    public void start(FeaturesRunner runner) throws Exception {
-        // Starts Nuxeo Runtime
-        if (!harness.isStarted()) {
-            harness.start();
-        }
-        // Deploy bundles
+        harness.start();
         deployTestClassBundles(runner);
     }
 

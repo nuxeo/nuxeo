@@ -32,10 +32,9 @@ import org.junit.runner.RunWith;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.model.RuntimeContext;
-import org.nuxeo.runtime.model.impl.AbstractRuntimeService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.osgi.framework.Bundle;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.google.inject.Inject;
 
@@ -61,35 +60,12 @@ public class NXRuntimeTestCase extends TestCase implements RuntimeHarness {
     protected @Inject
     RuntimeService runtime;
 
-    static {
-        // jul to jcl redirection may pose problems (infinite loops) in some
-        // environment
-        // where slf4j to jul, and jcl over slf4j is deployed
-        System.setProperty(AbstractRuntimeService.REDIRECT_JUL, "false");
-    }
-
-    private final Log log = LogFactory.getLog(NXRuntimeTestCase.class);
 
     @Override
     public boolean isRestart() {
         return harness.isRestart();
     }
 
-    protected OSGiAdapter osgi;
-
-    protected Bundle runtimeBundle;
-
-    public NXRuntimeTestCase() {
-        targetResourceLocator = new TargetResourceLocator(this.getClass());
-    }
-
-    public NXRuntimeTestCase(String name) {
-        this();
-    }
-
-    public NXRuntimeTestCase(Class<?> clazz) {
-        targetResourceLocator = new TargetResourceLocator(clazz);
-    }
 
     @Override
     public void addWorkingDirectoryConfigurator(
@@ -197,7 +173,7 @@ public class NXRuntimeTestCase extends TestCase implements RuntimeHarness {
 
     @Override
     public OSGiAdapter getOSGiAdapter() {
-        return osgi;
+        return harness.getOSGiAdapter();
     }
 
     @Override

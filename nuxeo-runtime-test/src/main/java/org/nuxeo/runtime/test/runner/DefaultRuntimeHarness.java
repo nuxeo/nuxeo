@@ -17,7 +17,7 @@
  *     Nuxeo - initial API and implementation
  */
 
-package org.nuxeo.runtime.test;
+package org.nuxeo.runtime.test.runner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -43,6 +43,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
+import org.nuxeo.runtime.test.RuntimeHarness;
+import org.nuxeo.runtime.test.WorkingDirectoryConfigurator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
 
@@ -65,16 +67,9 @@ public class DefaultRuntimeHarness implements RuntimeHarness {
 
     protected final List<WorkingDirectoryConfigurator> wdConfigs = new ArrayList<WorkingDirectoryConfigurator>();
 
-    public DefaultRuntimeHarness() {
-    }
-
-    public DefaultRuntimeHarness(String name) {
-        // super(name);
-    }
-
     protected OSGiAdapter fetchAdapter() {
-        OSGiLoader loader = (OSGiLoader) this.getClass().getClassLoader();
-        return loader.getAdapter();
+        ClassLoader loader = this.getClass().getClassLoader();
+        return ((OSGiLoader) loader).getAdapter();
     }
 
     @Override
@@ -122,7 +117,6 @@ public class DefaultRuntimeHarness implements RuntimeHarness {
     @Override
     public void stop() throws Exception {
         wipeRuntime();
-        adapter.shutdown();
         adapter = null;
     }
 

@@ -84,8 +84,6 @@ public class NuxeoStarter implements ServletContextListener {
 
     protected final List<File> libraryFiles = new ArrayList<File>();
 
-    protected List<File> bundleFiles = new ArrayList<>();
-
     @Override
     public void contextInitialized(ServletContextEvent event) {
         try {
@@ -116,7 +114,6 @@ public class NuxeoStarter implements ServletContextListener {
 
     protected void start(ServletContextEvent event) throws Exception {
         ServletContext servletContext = event.getServletContext();
-        webinflib = servletContext.getResource("OSGI-INF").getFile();
         findLibraries(servletContext);
         findBundles(servletContext);
         findEnv(servletContext);

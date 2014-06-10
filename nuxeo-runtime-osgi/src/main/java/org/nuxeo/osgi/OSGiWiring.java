@@ -1,5 +1,7 @@
 package org.nuxeo.osgi;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -47,19 +49,20 @@ class OSGiWiring {
     }
 
     protected String bundlePath(URL location) {
-        String protocol = location.getProtocol();
-        String path = location.getPath();
-        for (String root : loader.roots) {
-            if (!path.startsWith(root)) {
-                continue;
-            }
-            if ("jar".equals(protocol)) {
-                return jarPath(root, path);
-            } else if ("file".equals(protocol)) {
-                return filePath(root, path);
-            } else {
-                throw new UnsupportedOperationException("unsupported protocol "
-                        + location);
+        URI uri;
+        try {
+            uri = location.toURI();
+        } catch (URISyntaxException cause) {
+            throw new Error("Unsupported resource location " + location, cause);
+        }
+        if ("jar".equals(uri.getScheme())) {
+            String path = uri.getSchemeSpecificPart();
+            return path.substring(path.indexOf('!')+1, path.length());
+        }
+        for (URI root : loader.roots) {
+            URI rel = root.relativize(uri);
+            if (!rel.equals(uri)) {
+                return rel.getSchemeSpecificPart();
             }
         }
         return null; // tycho+maven hack
@@ -113,6 +116,9 @@ class OSGiWiring {
     }
 
     protected String shrinkPath(String path) {
+        if (path.startsWith("/")) {
+            path = path.substring(1,path.length());
+        }
         String components[] = path.split("/");
         return shrinkPath(3, components.length - 2, components);
     }

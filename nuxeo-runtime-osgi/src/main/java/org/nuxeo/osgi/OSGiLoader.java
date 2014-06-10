@@ -2,6 +2,7 @@ package org.nuxeo.osgi;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -24,7 +25,7 @@ public class OSGiLoader extends ClassLoader {
 
     protected final OSGiBundleContext context;
 
-    protected final String[] roots;
+    protected final URI[] roots;
 
     protected static String path(String name) {
         return name.replace(".", "/").concat(".class");
@@ -42,17 +43,17 @@ public class OSGiLoader extends ClassLoader {
         return osgi.adapter;
     }
 
-    protected String[] computeRoots() {
-        String[] roots = new String[1 + context.fragments.length];
-        roots[0] = context.bundle.file.path.toString();
+    protected URI[] computeRoots() {
+        URI[] roots = new URI[1 + context.fragments.length];
+        roots[0] = context.bundle.file.path.toUri();
         for (int i = 0; i < context.fragments.length; ++i) {
-            roots[1 + i] = context.fragments[i].file.path.toString();
+            roots[1 + i] = context.fragments[i].file.path.toUri();
         }
         return roots;
     }
 
     @Override
-    protected Class<?> loadClass(String name, boolean resolve)
+    public Class<?> loadClass(String name, boolean resolve)
             throws ClassNotFoundException {
         if ((context.bundle.state & (Bundle.ACTIVE | Bundle.STOPPING)) == 0) {
             try {
@@ -93,13 +94,13 @@ public class OSGiLoader extends ClassLoader {
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-        String path = path(name);
 
         // in boot packages
         if (context.bundle.osgi.matchBootPackage(name)) {
             return getParent().loadClass(name);
         }
 
+        String path = path(name);
         // in this loader
         Class<?> clazz = findLocalClass(name, path);
         if (clazz != null) {
