@@ -295,18 +295,16 @@ public class IndexingCommand {
     public Event asIndexingEvent() throws IOException {
         if (indexingEvent == null) {
             computeIndexingEvent();
-        }
-        if (indexingEvent != null) {
-            indexingEvent.getContext().getProperties().put(getId(), toJSON());
+            if (indexingEvent != null) {
+                indexingEvent.getContext().getProperties()
+                        .put(getId(), toJSON());
+            }
         }
         return indexingEvent;
     }
 
     protected void markUpdated() {
         indexingEvent = null;
-        if (sync) {
-            computeIndexingEvent();
-        }
     }
 
     /**

@@ -27,9 +27,5 @@ public class EventConstants {
 
     public static final String ES_SYNC_INDEXING_FLAG = "ESSyncIndexing";
 
-    public static final String ES_RECURSE_FLAG = "ESRecurse";
-
-    public static final String ES_INDEX_EVENT = "ESIndexTrigger";
-
     public static final String ES_INDEX_EVENT_SYNC = "ESIndexSyncTrigger";
 }
