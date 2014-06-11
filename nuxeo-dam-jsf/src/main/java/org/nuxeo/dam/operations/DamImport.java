@@ -90,7 +90,7 @@ public class DamImport {
     protected Boolean importInCurrentDocument = false;
 
     /**
-     * @since 5.9.4
+     * @since 5.9.5
      */
     @Param(name = "docType", required = false)
     protected String docType;
