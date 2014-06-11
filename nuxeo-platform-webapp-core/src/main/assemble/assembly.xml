@@ -1,4 +1,4 @@
-<project name="nuxeo-assembly"
+<project name="theme-collection-assembly"
          default="build"
          xmlns:nx="urn:nuxeo-build"
          xmlns:artifact="urn:nuxeo-artifact">
@@ -8,8 +8,7 @@
 
   <property name="outdir" value="${maven.project.build.directory}" />
 
-  <target name="build"
-          description="Build theme collections">
+  <target name="build" description="Build theme collections">
     <!-- nuxeo DM -->
     <antcall target="build-theme-collection">
       <param name="collection" value="nuxeo-DM" />
@@ -24,14 +23,16 @@
         <exclude name="themes/collections/**" />
       </fileset>
     </copy>
-    <jar destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.jar" basedir="${outdir}/classes"/>
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.jar" type="jar"
-                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+    <jar destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.jar"
+         basedir="${outdir}/classes" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.jar"
+                     type="jar" />
   </target>
 
   <target name="build-theme-collection"
           description="Build theme collection: ${collection}">
-    <delete dir="${outdir}/classes/themes/collections/${collection}" failonerror="false" />
+    <delete dir="${outdir}/classes/themes/collections/${collection}"
+            failonerror="false" />
     <zip destfile="${outdir}/classes/themes/collections/${collection}.zip"
          basedir="src/main/resources/themes/collections/${collection}" />
   </target>
