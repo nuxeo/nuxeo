@@ -89,6 +89,9 @@ public class DamImport {
     @Param(name = "importInCurrentDocument", required = false)
     protected Boolean importInCurrentDocument = false;
 
+    /**
+     * @since 5.9.4
+     */
     @Param(name = "docType", required = false)
     protected String docType;
 
@@ -176,7 +179,7 @@ public class DamImport {
         }
     }
 
-    public void updateDocument(DocumentModel doc, Blob blob)
+    protected void updateDocument(DocumentModel doc, Blob blob)
             throws ClientException {
         try {
             blob = blob.persist();
