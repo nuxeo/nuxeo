@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
@@ -75,6 +76,16 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
             Annotation[] annotations, MediaType mediaType) {
         return super.isWriteable(type, genericType, annotations, mediaType)
                 && MIME_TYPE.equals(mediaType.toString());
+    }
+
+    /**
+     * @since 5.9.5
+     */
+    @Override
+    public void writeDocuments(OutputStream out, List<DocumentModel> docs,
+            String[] schemas, HttpHeaders headers) throws Exception {
+        writeDocs(factory.createJsonGenerator(out, JsonEncoding.UTF8), docs,
+                schemas);
     }
 
     @Override
