@@ -490,7 +490,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter
             for(DocumentModel doc : docs) {
                 refs.add(doc.getRef());
             }
-            getCoreSession().removeDocuments(refs.toArray(new DocumentRef[1]));
+            getCoreSession().removeDocuments(refs.toArray(new DocumentRef[refs.size()]));
         } catch (ClientException e) {
             log.warn("Unable to query", e);
         }
