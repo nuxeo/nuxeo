@@ -10,6 +10,7 @@
 
   <artifactId>nuxeo-core-storage-dbs</artifactId>
   <name>Nuxeo Core Storage Document-Based</name>
+  <version>5.9.5-mongodb-SNAPSHOT</version>
 
   <dependencies>
     <dependency>
@@ -43,7 +44,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage</artifactId>
-      <version>5.9.5-SNAPSHOT</version>
+      <version>5.9.5-mongodb-SNAPSHOT</version>
     </dependency>
 
 

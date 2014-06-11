@@ -10,6 +10,7 @@
 
   <artifactId>nuxeo-core-storage</artifactId>
   <name>Nuxeo Core Storage</name>
+  <version>5.9.5-mongodb-SNAPSHOT</version>
 
   <dependencies>
     <dependency>
