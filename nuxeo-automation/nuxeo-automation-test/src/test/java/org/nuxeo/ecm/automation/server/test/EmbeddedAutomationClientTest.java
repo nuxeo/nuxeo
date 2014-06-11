@@ -799,7 +799,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     public void testAutomationBusinessObjects() throws Exception {
         // Test for pojo <-> adapter automation creation
         BusinessBean note = new BusinessBean("Note", "File description",
-                "Note Content", "Note");
+                "Note Content", "Note", new String("object"));
         @SuppressWarnings("unchecked")
         BusinessService<BusinessBean> businessService = session.getAdapter(BusinessService.class);
         assertNotNull(businessService);
@@ -830,7 +830,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     public void testAutomationBusinessObjectsWithService() throws Exception {
         // Test for pojo <-> adapter automation creation
         BusinessBean note = new BusinessBean("Note", "File description",
-                "Note Content", "Note");
+                "Note Content", "Note", new String("object"));
         @SuppressWarnings("unchecked")
         BusinessService<BusinessBean> businessService = session.getAdapter(BusinessService.class);
         assertNotNull(businessService);

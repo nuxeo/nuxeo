@@ -30,15 +30,27 @@ public class BusinessBean {
 
     protected String type;
 
+    protected Object object;
+
     public BusinessBean() {
     }
 
     public BusinessBean(String title, String description, String note,
-            String type) {
+            String type, Object object) {
         this.title = title;
         this.description = description;
         this.note = note;
         this.type = type;
+        this.object = object;
+    }
+
+    public Object getObject() {
+        return object;
+    }
+
+    public void setObject(Object object) {
+        this.object = object;
+
     }
 
     public String getType() {

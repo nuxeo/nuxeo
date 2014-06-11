@@ -77,7 +77,7 @@ public class JsonMarshalling {
         public JavaType modifyType(JavaType type, Type jdkType,
                 TypeBindings context, TypeFactory typeFactory) {
             Class<?> raw = type.getRawClass();
-            if (raw.isAssignableFrom(Throwable.class)) {
+            if (raw.equals(Throwable.class)) {
                 return typeFactory.constructType(RemoteThrowable.class);
             }
             return type;

@@ -301,7 +301,7 @@ public class RemoteAutomationClientTCK {
     public void testAutomationBusinessObjects() throws Exception {
         // Test for pojo <-> adapter automation creation
         BusinessBean note = new BusinessBean("Note", "File description",
-                "Note Content", "Note");
+                "Note Content", "Note", new String("object"));
 
         // Marshaller for bean 'note' registration
         client.registerPojoMarshaller(note.getClass());
