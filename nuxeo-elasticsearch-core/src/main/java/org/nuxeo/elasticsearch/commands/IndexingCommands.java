@@ -87,7 +87,7 @@ public class IndexingCommands {
         if (commandNames.contains(command.name)) {
             IndexingCommand existing = find(command.name);
             if (existing.canBeMerged(command)) {
-                existing.update(command);
+                existing.merge(command);
                 return null;
             }
         } else if (commandNames.contains(IndexingCommand.INDEX)) {
@@ -96,7 +96,7 @@ public class IndexingCommands {
                 clear();
             } else if (command.isSync()) {
                 // switch to sync if possible
-                find(IndexingCommand.INDEX).toSync();
+                find(IndexingCommand.INDEX).makeSync();
             }
             // we already have an index command, don't care about the new command
             return null;

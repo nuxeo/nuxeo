@@ -168,7 +168,7 @@ public class TestTreeIndexing {
 
         waitForAsyncIndexing();
 
-        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
+        Assert.assertEquals(8, esa.getTotalCommandProcessed() - n);
         esa.refresh();
 
         TransactionHelper.startTransaction();
@@ -250,7 +250,7 @@ public class TestTreeIndexing {
         TransactionHelper.commitOrRollbackTransaction();
 
         waitForAsyncIndexing();
-        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
+        Assert.assertEquals(8, esa.getTotalCommandProcessed() - n);
 
         esa.refresh();
 
@@ -279,7 +279,7 @@ public class TestTreeIndexing {
         TransactionHelper.startTransaction();
 
         waitForAsyncIndexing();
-        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
+        Assert.assertEquals(5, esa.getTotalCommandProcessed() - n);
         esa.refresh();
 
         docs = ess.query(restrictedSession, "select * from Document", 10, 0);

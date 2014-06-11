@@ -44,11 +44,6 @@ public abstract class AbstractIndexingWorker extends AbstractWork {
         path = cmd.getTargetDocument().getPathAsString();
     }
 
-    public boolean isAlreadyScheduledForIndexing(DocumentModel doc) {
-        return Framework.getLocalService(ElasticSearchAdmin.class).isAlreadyScheduledForIndexing(
-                doc);
-    }
-
     @Override
     public String getCategory() {
         return "elasticSearchIndexing";

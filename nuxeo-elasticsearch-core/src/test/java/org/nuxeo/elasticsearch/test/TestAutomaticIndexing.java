@@ -96,7 +96,7 @@ public class TestAutomaticIndexing {
             doc = session.createDocument(doc);
 
         }
-        // update 5
+        // merge 5
         for (int i = 0; i < 5; i++) {
             DocumentModel doc = session.getDocument(new PathRef("/testDoc" + i));
             doc.setPropertyValue("dc:description", "Description TestMe" + i);

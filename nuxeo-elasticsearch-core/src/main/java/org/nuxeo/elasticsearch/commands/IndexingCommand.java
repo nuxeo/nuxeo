@@ -12,7 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo
+ *     tdelprat
+ *     bdelbosc
  */
 package org.nuxeo.elasticsearch.commands;
 
@@ -57,6 +58,8 @@ public class IndexingCommand {
 
     public static final String DELETE = "ESUnIndex";
 
+    public static final String PREFIX = "IndexingCommand-";
+
     protected String name;
 
     protected boolean sync;
@@ -73,11 +76,9 @@ public class IndexingCommand {
 
     protected String id;
 
-    protected static final Log log = LogFactory.getLog(IndexingCommand.class);
-
-    public static final String PREFIX = "IndexingCommand-";
-
     protected List<String> schemas;
+
+    protected static final Log log = LogFactory.getLog(IndexingCommand.class);
 
     protected transient Event indexingEvent;
 
@@ -122,11 +123,11 @@ public class IndexingCommand {
         return null;
     }
 
-    public void update(IndexingCommand other) {
-        update(other.sync, other.recurse);
+    public void merge(IndexingCommand other) {
+        merge(other.sync, other.recurse);
     }
 
-    public void update(boolean sync, boolean recurse) {
+    public void merge(boolean sync, boolean recurse) {
         this.sync = this.sync || sync;
         this.recurse = this.recurse || recurse;
         markUpdated();
@@ -216,7 +217,7 @@ public class IndexingCommand {
             } else if ("recurse".equals(fieldname)) {
                 cmd.recurse = jp.getBooleanValue();
             } else if ("sync".equals(fieldname)) {
-                cmd.recurse = jp.getBooleanValue();
+                cmd.sync = jp.getBooleanValue();
             }
         }
         // resolve DocumentModel if possible
@@ -275,7 +276,7 @@ public class IndexingCommand {
         }
     }
 
-    public void computeIndexingEvent() throws IOException {
+    public void computeIndexingEvent() {
         if (getTargetDocument() != null) {
             CoreSession session = getTargetDocument().getCoreSession();
             if (session != null) {
@@ -304,15 +305,16 @@ public class IndexingCommand {
     protected void markUpdated() {
         indexingEvent = null;
         if (sync) {
-            try {
-                computeIndexingEvent();
-            } catch (IOException e) {
-                log.error("Unable to build event from Command", e);
-            }
+            computeIndexingEvent();
         }
     }
 
-    public void toSync() {
+    /**
+     * Try to make the command synchronous.
+     *
+     * Recurse command will stay in async.
+     */
+    public void makeSync() {
         if (! recurse) {
             sync = true;
         }

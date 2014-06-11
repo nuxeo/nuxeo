@@ -61,7 +61,7 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements
 
             IndexingCommand childCommand = cmd.clone(child);
 
-            if (!isAlreadyScheduledForIndexing(child)) {
+            if (!esi.isAlreadyScheduled(childCommand)) {
                 esi.indexNow(childCommand);
             }
             if (child.isFolder()) {

@@ -231,14 +231,16 @@ public class ElasticSearchComponent extends DefaultComponent implements
             stackedCommands.addAll(cmds);
             return;
         }
+        int nbCommands = markCommandInProgress(cmds);
         processBulkDeleteCommands(cmds);
         Context stopWatch = bulkIndexTimer.time();
         try {
             processBulkIndexCommands(cmds);
         } finally {
             stopWatch.stop();
+            totalCommandProcessed.addAndGet(nbCommands);
         }
-        markCommandExecuted(cmds);
+
     }
 
     protected void processBulkDeleteCommands(List<IndexingCommand> cmds) {
@@ -274,8 +276,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (bulkRequest.numberOfActions() > 0) {
             if (log.isDebugEnabled()) {
                 log.debug(String
-                        .format("Index bulk request: curl -XPOST 'http://localhost:9200/_bulk' -d '%s'",
-                                bulkRequest.request().requests().toString()));
+                        .format("Index %d docs in bulk request: curl -XPOST 'http://localhost:9200/_bulk' -d '%s'",
+                                bulkRequest.numberOfActions(), bulkRequest.request().requests().toString()));
             }
             BulkResponse response = bulkRequest.execute().actionGet();
             if (response.hasFailures()) {
@@ -294,8 +296,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
             log.debug("Delaying indexing command: Waiting for Index to be initialized.");
             return;
         }
+        markCommandInProgress(cmd);
         if (log.isTraceEnabled()) {
-            log.trace("Sending indexing request to Elasticsearch "
+            log.trace("Sending indexing request to Elasticsearch: "
                     + cmd.toString());
         }
         if (IndexingCommand.DELETE.equals(cmd.getName())) {
@@ -304,6 +307,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 processDeleteCommand(cmd);
             } finally {
                 stopWatch.stop();
+                totalCommandProcessed.addAndGet(1);
             }
         } else {
             Context stopWatch = indexTimer.time();
@@ -311,9 +315,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 processIndexCommand(cmd);
             } finally {
                 stopWatch.stop();
+                totalCommandProcessed.addAndGet(1);
             }
         }
-        markCommandExecuted(cmd);
     }
 
     protected void processIndexCommand(IndexingCommand cmd)
@@ -388,18 +392,18 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-    protected void markCommandExecuted(List<IndexingCommand> cmds) {
+    protected int markCommandInProgress(List<IndexingCommand> cmds) {
+        int ret = 0;
         for (IndexingCommand cmd : cmds) {
-            markCommandExecuted(cmd);
+            ret += markCommandInProgress(cmd);
         }
+        return ret;
     }
 
-    protected void markCommandExecuted(IndexingCommand cmd) {
-        pendingWork.remove(getWorkKey(cmd.getTargetDocument()));
+    protected int markCommandInProgress(IndexingCommand cmd) {
+        pendingWork.remove(getWorkKey(cmd));
         boolean isRemoved = pendingCommands.remove(cmd.getId());
-        if (isRemoved) {
-            totalCommandProcessed.addAndGet(1);
-        }
+        return isRemoved ? 1: 0;
     }
 
     @Override
@@ -408,25 +412,15 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (doc == null) {
             return;
         }
-        boolean added = pendingCommands.add(cmd.getId());
-        if (!added) {
+        if (isAlreadyScheduled(cmd)) {
             if (log.isDebugEnabled()) {
-                log.debug("Skip indexing for " + doc
+                log.debug("Skip indexing for " + cmd.toString()
                         + " since it is already scheduled");
             }
             return;
         }
-        if (!cmd.isRecurse()) {
-            added = pendingWork.add(getWorkKey(doc));
-            if (!cmd.isRecurse() && !added) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Skip indexing for " + doc
-                            + " since there is already an work scheduled");
-                }
-                pendingCommands.remove(cmd.getId());
-                return;
-            }
-        }
+        pendingCommands.add(cmd.getId());
+        pendingWork.add(getWorkKey(cmd));
         if (cmd.isSync()) {
             if (log.isDebugEnabled()) {
                 log.debug("Schedule PostCommit indexing request "
@@ -439,6 +433,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             }
             WorkManager wm = Framework.getLocalService(WorkManager.class);
             IndexingWorker idxWork = new IndexingWorker(cmd);
+            // will be scheduled after the commit and only if the tx is not rollbacked
             wm.schedule(idxWork, true);
         }
     }
@@ -811,13 +806,20 @@ public class ElasticSearchComponent extends DefaultComponent implements
         indexNames.clear();
     }
 
-    protected String getWorkKey(DocumentModel doc) {
-        return doc.getRepositoryName() + ":" + doc.getId();
+    protected String getWorkKey(IndexingCommand cmd) {
+        DocumentModel doc = cmd.getTargetDocument();
+        return doc.getRepositoryName() + ":" + doc.getId() + ":" + cmd.isRecurse();
     }
 
     @Override
-    public boolean isAlreadyScheduledForIndexing(DocumentModel doc) {
-        return pendingWork.contains(getWorkKey(doc));
+    public boolean isAlreadyScheduled(IndexingCommand cmd) {
+        if (pendingCommands.contains(cmd.getId())) {
+            return true;
+        }
+        if (pendingWork.contains(getWorkKey(cmd))) {
+            return true;
+        }
+        return false;
     }
 
     @Override

@@ -23,6 +23,7 @@ import java.util.List;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.service.PendingClusterTask;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.elasticsearch.commands.IndexingCommand;
 
 /**
  * Administration interface for Elasticsearch service
@@ -50,13 +51,6 @@ public interface ElasticSearchAdmin {
      * @since 5.9.3
      */
     void initIndexes(boolean dropIfExists);
-
-    /**
-     * {true} if a doc has already been submited for indexing.
-     *
-     * @since 5.9.3
-     */
-    boolean isAlreadyScheduledForIndexing(DocumentModel doc);
 
     /**
      * Returns the number of documents that are waiting for being indexed.
