@@ -230,13 +230,13 @@ public class TestTreeIndexing {
 
         DocumentModelList docs = ess.query(session, "select * from Document",
                 10, 0);
-        Assert.assertEquals(10, docs.size());
+        Assert.assertEquals(10, docs.totalSize());
 
         // check for user with no rights
 
         CoreSession restrictedSession = getRestrictedSession("toto");
         docs = ess.query(restrictedSession, "select * from Document", 10, 0);
-        Assert.assertEquals(0, docs.size());
+        Assert.assertEquals(0, docs.totalSize());
 
         // add READ rights and check that user now has access
 
@@ -257,7 +257,7 @@ public class TestTreeIndexing {
         TransactionHelper.startTransaction();
 
         docs = ess.query(restrictedSession, "select * from Document", 10, 0);
-        Assert.assertEquals(8, docs.size());
+        Assert.assertEquals(8, docs.totalSize());
 
         // block rights and check that blocking is taken into account
 
@@ -283,7 +283,7 @@ public class TestTreeIndexing {
         esa.refresh();
 
         docs = ess.query(restrictedSession, "select * from Document", 10, 0);
-        Assert.assertEquals(3, docs.size());
+        Assert.assertEquals(3, docs.totalSize());
 
         restrictedSession.close();
     }
@@ -293,12 +293,12 @@ public class TestTreeIndexing {
         buildAndIndexTree();
         DocumentModelList docs = ess.query(session, "select * from Document",
                 10, 0);
-        Assert.assertEquals(10, docs.size());
+        Assert.assertEquals(10, docs.totalSize());
 
         // check for user with no rights
         CoreSession restrictedSession = getRestrictedSession("toto");
         docs = ess.query(restrictedSession, "select * from Document", 10, 0);
-        Assert.assertEquals(0, docs.size());
+        Assert.assertEquals(0, docs.totalSize());
 
         // add READ rights and check that user now has access
         DocumentRef ref = new PathRef("/folder0/folder1/folder2");
@@ -315,7 +315,7 @@ public class TestTreeIndexing {
         TransactionHelper.startTransaction();
         docs = ess.query(restrictedSession,
                 "select * from Document order by dc:title", 10, 0);
-        Assert.assertEquals(8, docs.size());
+        Assert.assertEquals(8, docs.totalSize());
 
         // Add an unsupported negative ACL
         ref = new PathRef("/folder0/folder1/folder2/folder3/folder4/folder5");
@@ -334,9 +334,16 @@ public class TestTreeIndexing {
         docs = ess.query(restrictedSession,
                 "select * from Document order by dc:title", 10, 0);
         // can view folder2, folder3 and folder4
-        Assert.assertEquals(3, docs.size());
+        Assert.assertEquals(3, docs.totalSize());
 
         restrictedSession.close();
+    }
+
+
+    @Test
+    public void shouldDenyAccessOnUnsupportedACLSync() throws Exception {
+        ElasticSearchInlineListener.useSyncIndexing.set(true);
+        shouldDenyAccessOnUnsupportedACL();
     }
 
     @Test
@@ -365,7 +372,7 @@ public class TestTreeIndexing {
         // for (DocumentModel doc : docs) {
             // System.out.println(doc.getPathAsString());
         // }
-        Assert.assertEquals(2, docs.size());
+        Assert.assertEquals(2, docs.totalSize());
 
     }
 
@@ -376,7 +383,6 @@ public class TestTreeIndexing {
 
         DocumentRef src = new PathRef("/folder0/folder1/folder2");
         DocumentRef dst = new PathRef("/folder0");
-        DocumentModel doc = session.getDocument(dst);
         session.copy(src, dst, "folder2-copy");
 
         TransactionHelper.commitOrRollbackTransaction();
@@ -387,7 +393,7 @@ public class TestTreeIndexing {
         TransactionHelper.startTransaction();
 
         DocumentModelList docs = ess.query(session, "select * from Document", 20, 0);
-        Assert.assertEquals(18, docs.size());
+        Assert.assertEquals(18, docs.totalSize());
     }
 
 
@@ -399,19 +405,17 @@ public class TestTreeIndexing {
         DocumentRef src = new PathRef("/folder0/folder1/folder2");
         DocumentRef dst = new PathRef("/folder0");
         DocumentModel doc = session.getDocument(dst);
-        // doc.getContextData().put(EventConstants.ES_SYNC_INDEXING_FLAG, true);
         ElasticSearchInlineListener.useSyncIndexing.set(true);
         session.copy(src, dst, "folder2-copy");
 
         TransactionHelper.commitOrRollbackTransaction();
-
         waitForAsyncIndexing();
         esa.refresh();
 
         TransactionHelper.startTransaction();
 
         DocumentModelList docs = ess.query(session, "select * from Document", 20, 0);
-        Assert.assertEquals(18, docs.size());
+        Assert.assertEquals(18, docs.totalSize());
     }
 
 }
