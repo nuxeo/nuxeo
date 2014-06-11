@@ -22,7 +22,6 @@ import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,11 +30,9 @@ import org.nuxeo.ecm.automation.io.services.contributor.RestContributor;
 import org.nuxeo.ecm.automation.io.services.contributor.RestContributorService;
 import org.nuxeo.ecm.automation.io.services.contributor.RestContributorServiceImpl;
 import org.nuxeo.ecm.automation.io.services.contributor.RestEvaluationContext;
-import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentListWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -84,14 +81,12 @@ public class RestServiceTest {
     public void doBefore() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "folder1",
                 "Folder");
-        doc = session.createDocument(doc);
-        doc = session.saveDocument(doc);
+        session.createDocument(doc);
+
         for (int i = 0; i < 3; i++) {
             doc = session.createDocumentModel("/folder1", "doc" + i, "Note");
             session.createDocument(doc);
-            doc = session.saveDocument(doc);
         }
-        session.save();
     }
 
     @Test
@@ -119,7 +114,7 @@ public class RestServiceTest {
         JsonGenerator jg = getJsonGenerator(out);
         DocumentModel folder = session.getDocument(new PathRef("/folder1"));
         RestEvaluationContext ec = new HeaderDocEvaluationContext(folder,
-                getFakeHeaders(), null);
+                getFakeHeaders(),null);
 
         // When the service write to the context
         jg.writeStartObject();
@@ -179,28 +174,7 @@ public class RestServiceTest {
                 breadCrumbEntries.get(0).get("path").getValueAsText());
         assertEquals("/folder1/doc0",
                 breadCrumbEntries.get(1).get("path").getValueAsText());
-    }
 
-    @Test
-    public void itCanContributeWithBreadcrumbWhenExpectingAListOfDocs()
-            throws Exception {
-        // Given a list of docs
-        DocumentModelList docs = session.query("Select * from Note");
-        // When are written as Json with breadcrumb context category
-        String docsJson = getDocumentsAsJson(docs, "breadcrumb");
-        // Then it contains the breadcrumb in contextParameters
-        JsonNode jsonDocs = parseJson(docsJson);
-        ArrayNode nodes = (ArrayNode) jsonDocs.get("entries");
-        int i = 0;
-        for (JsonNode node : nodes) {
-            JsonNode breadCrumbEntries = node.get("contextParameters").get(
-                    "breadcrumb").get("entries");
-            assertEquals("/folder1",
-                    breadCrumbEntries.get(0).get("path").getValueAsText());
-            assertEquals("/folder1/doc" + i,
-                    breadCrumbEntries.get(1).get("path").getValueAsText());
-            i++;
-        }
     }
 
     @Test
@@ -261,34 +235,13 @@ public class RestServiceTest {
      * @throws Exception
      *
      */
-    protected String getDocumentAsJson(DocumentModel doc, String category)
+    private String getDocumentAsJson(DocumentModel doc, String category)
             throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = getJsonGenerator(out);
         // When it is written as Json with appropriate headers
         JsonDocumentWriter.writeDocument(jg, doc, NO_SCHEMA,
                 new HashMap<String, String>(), getFakeHeaders(category), null);
-        jg.flush();
-        return out.toString();
-    }
-
-    /**
-     * Returns the JSON representation of these docs. A category may be passed
-     * to have impact on the Rest contributors
-     *
-     * @param doc
-     * @param category
-     * @return
-     * @throws Exception
-     *
-     */
-    protected String getDocumentsAsJson(List<DocumentModel> docs,
-            String category) throws Exception {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = getJsonGenerator(out);
-        // When it is written as Json with appropriate headers
-        JsonDocumentListWriter.writeDocuments(jg, docs, NO_SCHEMA,
-                getFakeHeaders(category), null);
         jg.flush();
         return out.toString();
     }
@@ -301,7 +254,7 @@ public class RestServiceTest {
      * @throws Exception
      *
      */
-    protected String getDocumentAsJson(DocumentModel doc) throws Exception {
+    private String getDocumentAsJson(DocumentModel doc) throws Exception {
         return getDocumentAsJson(doc, null);
     }
 
@@ -309,11 +262,11 @@ public class RestServiceTest {
         return factory.createJsonGenerator(out);
     }
 
-    protected HttpHeaders getFakeHeaders() {
+    private HttpHeaders getFakeHeaders() {
         return getFakeHeaders(null);
     }
 
-    protected HttpHeaders getFakeHeaders(String category) {
+    private HttpHeaders getFakeHeaders(String category) {
         HttpHeaders headers = mock(HttpHeaders.class);
 
         when(

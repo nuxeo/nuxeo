@@ -99,7 +99,7 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
             if (props != null && !props.isEmpty()) {
                 schemas = StringUtils.split(props.get(0), ',', true);
             }
-            writeDocuments(entityStream, docs, schemas, headers);
+            writeDocuments(entityStream, docs, schemas);
         } catch (Exception e) {
             log.error("Failed to serialize document list", e);
             throw new WebApplicationException(500);
@@ -112,27 +112,8 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
                 docs, schemas, request);
     }
 
-    /**
-     * @since 5.9.5
-     */
-    public void writeDocuments(OutputStream out, List<DocumentModel> docs,
-            String[] schemas, HttpHeaders headers) throws Exception {
-        writeDocuments(factory.createJsonGenerator(out, JsonEncoding.UTF8),
-                docs, schemas, headers, request);
-    }
-
     public static void writeDocuments(JsonGenerator jg,
-            List<DocumentModel> docs, String[] schemas, ServletRequest request)
-            throws Exception {
-        writeDocuments(jg, docs, schemas, null, request);
-    }
-
-    /**
-     * @since 5.9.5
-     */
-    public static void writeDocuments(JsonGenerator jg,
-            List<DocumentModel> docs, String[] schemas, HttpHeaders headers,
-            ServletRequest request) throws Exception {
+            List<DocumentModel> docs, String[] schemas, ServletRequest request) throws Exception {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "documents");
 
@@ -166,7 +147,8 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
             String codecName = null;
             if (documentViewCodecManager == null) {
                 log.warn("Service 'DocumentViewCodecManager' not available : documentUrl won't be generated");
-            } else {
+            }
+            else {
                 String documentLinkBuilder = provider.getDocumentLinkBuilder();
                 codecName = isBlank(documentLinkBuilder) ? documentViewCodecManager.getDefaultCodecName()
                         : documentLinkBuilder;
@@ -176,24 +158,23 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
             for (DocumentModel doc : docs) {
                 DocumentLocation docLoc = new DocumentLocationImpl(doc);
                 Map<String, String> contextParameters = new HashMap<String, String>();
-                if (documentViewCodecManager != null) {
+                if (documentViewCodecManager!=null) {
                     DocumentView docView = new DocumentViewImpl(docLoc,
                             doc.getAdapter(TypeInfo.class).getDefaultView());
                     String documentURL = VirtualHostHelper.getContextPathProperty()
-                            + "/"
-                            + documentViewCodecManager.getUrlFromDocumentView(
-                                    codecName, docView, false, null);
+                        + "/"
+                        + documentViewCodecManager.getUrlFromDocumentView(
+                                codecName, docView, false, null);
                     contextParameters.put("documentURL", documentURL);
                 }
                 JsonDocumentWriter.writeDocument(jg, doc, schemas,
-                        contextParameters, headers, request);
+                        contextParameters, request);
             }
             jg.writeEndArray();
         } else {
             jg.writeArrayFieldStart("entries");
             for (DocumentModel doc : docs) {
-                JsonDocumentWriter.writeDocument(jg, doc, schemas,
-                        new HashMap<String, String>(), headers, request);
+                JsonDocumentWriter.writeDocument(jg, doc, schemas, request);
             }
             jg.writeEndArray();
         }
