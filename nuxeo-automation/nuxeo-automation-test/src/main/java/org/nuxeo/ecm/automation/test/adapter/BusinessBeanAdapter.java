@@ -13,7 +13,8 @@ package org.nuxeo.ecm.automation.test.adapter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
+import org.nuxeo.ecm.automation.core.operations.business.adapter
+        .BusinessAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -57,6 +58,14 @@ public class BusinessBeanAdapter extends BusinessAdapter {
 
     public void setNote(String value) throws ClientException {
         getDocument().setPropertyValue("note:note", value);
+    }
+
+    public Object getObject() {
+        return new String("object");
+    }
+
+    public void setObject(Object object) {
+
     }
 
 }
