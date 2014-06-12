@@ -73,6 +73,8 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -599,84 +601,142 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return query(session, queryBuilder, limit, offset, sortInfos);
     }
 
+
     @Override
     public DocumentModelList query(CoreSession session,
             QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) throws ClientException {
-        long totalSize;
-        List<String> ids;
+        SearchResponse response = queryElasticsearch(session, queryBuilder,
+                limit, offset, sortInfos);
+        List<String> ids = new ArrayList<String>(limit);
+        for (SearchHit hit : response.getHits()) {
+            ids.add(hit.getId());
+        }
+        long totalSize = response.getHits().getTotalHits();
+        return fetchDocumentModelListFromVcs(session, ids, totalSize);
+    }
+
+    protected SearchResponse queryElasticsearch(CoreSession session,
+            QueryBuilder queryBuilder, int limit, int offset,
+            SortInfo[] sortInfos) {
         Context stopWatch = searchTimer.time();
         try {
             // Initialize request
-            SearchRequestBuilder request = getClient()
-                    .prepareSearch(getSearchIndexes()).setTypes(DOC_TYPE)
-                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                    .addField(ID_FIELD).setFrom(offset).setSize(limit);
+            SearchRequestBuilder request = initSearchRequest(limit, offset);
             // Add security filter
-            AndFilterBuilder aclFilter = null;
-            Principal principal = session.getPrincipal();
-            if (principal != null) {
-                if (!(principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal)
-                        .isAdministrator())) {
-                    String[] principals = SecurityService
-                            .getPrincipalsToCheck(principal);
-                    // we want an ACL that match principals but we discard
-                    // unsupported ACE that contains negative ACE
-                    aclFilter = FilterBuilders.andFilter(FilterBuilders
-                            .inFilter(ACL_FIELD, principals), FilterBuilders
-                            .notFilter(FilterBuilders.inFilter(ACL_FIELD,
-                                    UNSUPPORTED_ACL)));
-                }
-            }
-            if (aclFilter == null) {
-                request.setQuery(queryBuilder);
-            } else {
-                request.setQuery(QueryBuilders.filteredQuery(queryBuilder,
-                        aclFilter));
-            }
+            request.setQuery(addSecurityFilter(session, queryBuilder));
             // Add sort
-            if (sortInfos != null) {
-                for (SortInfo sortInfo : sortInfos) {
-                    request.addSort(sortInfo.getSortColumn(), sortInfo
-                            .getSortAscending() ? SortOrder.ASC
-                            : SortOrder.DESC);
-                }
+            for (SortBuilder sortBuilder : getSortBuilders(sortInfos)) {
+                request.addSort(sortBuilder);
             }
+            logSearchRequest(request);
             // Execute the ES query
-            if (log.isDebugEnabled()) {
-                log.debug(String
-                        .format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
-                                getSearchIndexesAsString(), DOC_TYPE,
-                                request.toString()));
-            }
             SearchResponse response = request.execute().actionGet();
-            if (log.isDebugEnabled()) {
-                log.debug("Response: " + response.toString());
-            }
-            // Get the list of ids
-            ids = new ArrayList<String>(limit);
-            for (SearchHit hit : response.getHits()) {
-                ids.add(hit.getId());
-            }
-            totalSize = response.getHits().getTotalHits();
+            logSearchResponse(response);
+            return response;
         } finally {
             stopWatch.stop();
         }
-        DocumentModelList ret = new DocumentModelListImpl(ids.size());
-        stopWatch = fetchTimer.time();
+    }
+
+    protected void logSearchResponse(SearchResponse response) {
+        if (log.isDebugEnabled()) {
+            log.debug("Response: " + response.toString());
+        }
+    }
+
+    protected void logSearchRequest(SearchRequestBuilder request) {
+        if (log.isDebugEnabled()) {
+            log.debug(String
+                    .format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
+                            getSearchIndexesAsString(), DOC_TYPE,
+                            request.toString()));
+        }
+    }
+
+    protected SortBuilder[] getSortBuilders(SortInfo[] sortInfos) {
+        SortBuilder[] ret;
+        if (sortInfos == null) {
+            return new SortBuilder[0];
+        }
+        ret = new SortBuilder[sortInfos.length];
+        int i = 0;
+        for (SortInfo sortInfo : sortInfos) {
+            ret[i++] = new FieldSortBuilder(sortInfo.getSortColumn()).order(
+                    sortInfo.getSortAscending() ? SortOrder.ASC: SortOrder.DESC);
+        }
+        return ret;
+    }
+
+    protected QueryBuilder addSecurityFilter(CoreSession session,
+            QueryBuilder queryBuilder) {
+        AndFilterBuilder aclFilter;
+        Principal principal = session.getPrincipal();
+        if (principal == null
+                || (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal)
+                        .isAdministrator())) {
+            return queryBuilder;
+        }
+        String[] principals = SecurityService.getPrincipalsToCheck(principal);
+        // we want an ACL that match principals but we discard
+        // unsupported ACE that contains negative ACE
+        aclFilter = FilterBuilders.andFilter(FilterBuilders.inFilter(ACL_FIELD,
+                principals), FilterBuilders.notFilter(FilterBuilders.inFilter(
+                ACL_FIELD, UNSUPPORTED_ACL)));
+        return QueryBuilders.filteredQuery(queryBuilder, aclFilter);
+    }
+
+    protected SearchRequestBuilder initSearchRequest(int limit,
+            int offset) {
+        return getClient()
+                        .prepareSearch(getSearchIndexes()).setTypes(DOC_TYPE)
+                        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                        .addField(ID_FIELD).setFrom(offset).setSize(limit);
+    }
+
+    protected DocumentModelList fetchDocumentModelListFromVcs(
+            CoreSession session, List<String> ids,
+            long totalSize) {
+        Context stopWatch = fetchTimer.time();
         try {
+            DocumentModelList ret = new DocumentModelListImpl(ids.size());
             ((DocumentModelListImpl) ret).setTotalSize(totalSize);
-            // Fetch the document model
             if (!ids.isEmpty()) {
                 try {
-                    ret.addAll(fetchDocuments(ids, session));
+                    ret.addAll(fetchDocumentsFromVcs(ids, session));
                 } catch (ClientException e) {
                     log.error(e.getMessage(), e);
                 }
             }
+            return ret;
         } finally {
             stopWatch.stop();
         }
+    }
+
+    /**
+     * Fetch document models from VCS, return results in the same order.
+     *
+     */
+    protected List<DocumentModel> fetchDocumentsFromVcs(final List<String> ids,
+            CoreSession session) throws ClientException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM Document WHERE ecm:uuid IN (");
+        for (int i = 0; i < ids.size(); i++) {
+            sb.append(NXQL.escapeString(ids.get(i)));
+            if (i < ids.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append(")");
+        DocumentModelList ret = session.query(sb.toString());
+        // Order the results
+        Collections.sort(ret, new Comparator<DocumentModel>() {
+            @Override
+            public int compare(DocumentModel a, DocumentModel b) {
+                return ids.indexOf(a.getId()) - ids.indexOf(b.getId());
+            }
+        });
         return ret;
     }
 
@@ -827,32 +887,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override public int getTotalCommandProcessed() {
         return totalCommandProcessed.get();
-    }
-
-    /**
-     * Fetch document models from VCS, return results in the same order.
-     *
-     */
-    protected List<DocumentModel> fetchDocuments(final List<String> ids,
-            CoreSession session) throws ClientException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM Document WHERE ecm:uuid IN (");
-        for (int i = 0; i < ids.size(); i++) {
-            sb.append(NXQL.escapeString(ids.get(i)));
-            if (i < ids.size() - 1) {
-                sb.append(", ");
-            }
-        }
-        sb.append(")");
-        DocumentModelList ret = session.query(sb.toString());
-        // Order the results
-        Collections.sort(ret, new Comparator<DocumentModel>() {
-            @Override
-            public int compare(DocumentModel a, DocumentModel b) {
-                return ids.indexOf(a.getId()) - ids.indexOf(b.getId());
-            }
-        });
-        return ret;
     }
 
 }
