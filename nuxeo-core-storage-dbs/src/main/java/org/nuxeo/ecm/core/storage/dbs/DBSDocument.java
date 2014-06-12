@@ -69,6 +69,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
@@ -189,7 +190,7 @@ public class DBSDocument implements Document {
 
     protected final String id;
 
-    protected final DBSDocumentState state;
+    protected final DBSDocumentState docState;
 
     protected final DocumentType type;
 
@@ -197,11 +198,11 @@ public class DBSDocument implements Document {
 
     protected boolean readonly;
 
-    public DBSDocument(DBSDocumentState state, DocumentType type,
+    public DBSDocument(DBSDocumentState docState, DocumentType type,
             DBSSession session, boolean readonly) {
         // no state for NullDocument (parent of placeless children)
-        this.id = state == null ? null : (String) state.get(KEY_ID);
-        this.state = state;
+        this.id = docState == null ? null : (String) docState.get(KEY_ID);
+        this.docState = docState;
         this.type = type;
         this.session = session;
         this.readonly = readonly;
@@ -229,23 +230,23 @@ public class DBSDocument implements Document {
 
     @Override
     public String getName() {
-        return state.getName();
+        return docState.getName();
     }
 
     @Override
     public Document getParent() throws DocumentException {
-        String parentId = state.getParentId();
+        String parentId = docState.getParentId();
         return parentId == null ? null : session.getDocument(parentId);
     }
 
     @Override
     public boolean isProxy() {
-        return TRUE.equals(state.get(KEY_IS_PROXY));
+        return TRUE.equals(docState.get(KEY_IS_PROXY));
     }
 
     @Override
     public boolean isVersion() {
-        return TRUE.equals(state.get(KEY_IS_VERSION));
+        return TRUE.equals(docState.get(KEY_IS_VERSION));
     }
 
     @Override
@@ -338,16 +339,16 @@ public class DBSDocument implements Document {
     // simple property only
     @Override
     public Serializable getPropertyValue(String name) throws DocumentException {
-        DBSDocumentState state = getStateMaybeProxyTarget(name);
-        return state.get(name);
+        DBSDocumentState docState = getStateMaybeProxyTarget(name);
+        return docState.get(name);
     }
 
     // simple property only
     @Override
     public void setPropertyValue(String name, Serializable value)
             throws DocumentException {
-        DBSDocumentState state = getStateMaybeProxyTarget(name);
-        state.put(name, value);
+        DBSDocumentState docState = getStateMaybeProxyTarget(name);
+        docState.put(name, value);
     }
 
     @Override
@@ -423,7 +424,7 @@ public class DBSDocument implements Document {
             if (isCheckedOut()) {
                 return null;
             } else {
-                String id = (String) state.get(KEY_BASE_VERSION_ID);
+                String id = (String) docState.get(KEY_BASE_VERSION_ID);
                 if (id == null) {
                     // shouldn't happen
                     return null;
@@ -438,16 +439,16 @@ public class DBSDocument implements Document {
         if (isVersion()) {
             return false;
         } else { // also if isProxy()
-            return !TRUE.equals(state.get(KEY_IS_CHECKED_IN));
+            return !TRUE.equals(docState.get(KEY_IS_CHECKED_IN));
         }
     }
 
     @Override
     public String getVersionSeriesId() throws DocumentException {
         if (isProxy()) {
-            return (String) state.get(KEY_PROXY_VERSION_SERIES_ID);
+            return (String) docState.get(KEY_PROXY_VERSION_SERIES_ID);
         } else if (isVersion()) {
-            return (String) state.get(KEY_VERSION_SERIES_ID);
+            return (String) docState.get(KEY_VERSION_SERIES_ID);
         } else {
             return getUUID();
         }
@@ -455,23 +456,23 @@ public class DBSDocument implements Document {
 
     @Override
     public Calendar getVersionCreationDate() throws DocumentException {
-        return (Calendar) state.get(KEY_VERSION_CREATED);
+        return (Calendar) docState.get(KEY_VERSION_CREATED);
     }
 
     @Override
     public String getVersionLabel() throws DocumentException {
-        return (String) state.get(KEY_VERSION_LABEL);
+        return (String) docState.get(KEY_VERSION_LABEL);
     }
 
     @Override
     public String getCheckinComment() throws DocumentException {
-        return (String) state.get(KEY_VERSION_DESCRIPTION);
+        return (String) docState.get(KEY_VERSION_DESCRIPTION);
     }
 
     @Override
     public boolean isLatestVersion() throws DocumentException {
         if (isProxy() || isVersion()) {
-            return TRUE.equals(state.get(KEY_IS_LATEST_VERSION));
+            return TRUE.equals(docState.get(KEY_IS_LATEST_VERSION));
         } else {
             return false;
         }
@@ -480,7 +481,7 @@ public class DBSDocument implements Document {
     @Override
     public boolean isMajorVersion() throws DocumentException {
         if (isProxy() || isVersion()) {
-            return ZERO.equals(state.get(KEY_MINOR_VERSION));
+            return ZERO.equals(docState.get(KEY_MINOR_VERSION));
         } else {
             return false;
         }
@@ -489,7 +490,7 @@ public class DBSDocument implements Document {
     @Override
     public boolean isLatestMajorVersion() throws DocumentException {
         if (isProxy() || isVersion()) {
-            return TRUE.equals(state.get(KEY_IS_LATEST_MAJOR_VERSION));
+            return TRUE.equals(docState.get(KEY_IS_LATEST_MAJOR_VERSION));
         } else {
             return false;
         }
@@ -520,8 +521,8 @@ public class DBSDocument implements Document {
     public Lock setLock(Lock lock) throws DocumentException {
         Lock oldLock = getLock();
         if (oldLock == null) {
-            state.put(KEY_LOCK_OWNER, lock.getOwner());
-            state.put(KEY_LOCK_CREATED, lock.getCreated());
+            docState.put(KEY_LOCK_OWNER, lock.getOwner());
+            docState.put(KEY_LOCK_CREATED, lock.getCreated());
         }
         return oldLock;
     }
@@ -536,19 +537,19 @@ public class DBSDocument implements Document {
                 return new Lock(oldLock, true);
             }
         } else if (oldLock != null) {
-            state.put(KEY_LOCK_OWNER, null);
-            state.put(KEY_LOCK_CREATED, null);
+            docState.put(KEY_LOCK_OWNER, null);
+            docState.put(KEY_LOCK_CREATED, null);
         }
         return oldLock;
     }
 
     @Override
     public Lock getLock() throws DocumentException {
-        String owner = (String) state.get(KEY_LOCK_OWNER);
+        String owner = (String) docState.get(KEY_LOCK_OWNER);
         if (owner == null) {
             return null;
         }
-        Calendar created = (Calendar) state.get(KEY_LOCK_CREATED);
+        Calendar created = (Calendar) docState.get(KEY_LOCK_CREATED);
         return new Lock(owner, created);
     }
 
@@ -575,23 +576,23 @@ public class DBSDocument implements Document {
 
     @Override
     public String getLifeCycleState() throws LifeCycleException {
-        return (String) state.get(KEY_LIFECYCLE_STATE);
+        return (String) docState.get(KEY_LIFECYCLE_STATE);
     }
 
     @Override
     public void setCurrentLifeCycleState(String lifeCycleState)
             throws LifeCycleException {
-        state.put(KEY_LIFECYCLE_STATE, lifeCycleState);
+        docState.put(KEY_LIFECYCLE_STATE, lifeCycleState);
     }
 
     @Override
     public String getLifeCyclePolicy() throws LifeCycleException {
-        return (String) state.get(KEY_LIFECYCLE_POLICY);
+        return (String) docState.get(KEY_LIFECYCLE_POLICY);
     }
 
     @Override
     public void setLifeCyclePolicy(String policy) throws LifeCycleException {
-        state.put(KEY_LIFECYCLE_POLICY, policy);
+        docState.put(KEY_LIFECYCLE_POLICY, policy);
     }
 
     // TODO generic
@@ -640,21 +641,21 @@ public class DBSDocument implements Document {
             throws PropertyException {
         if (isProxy() && !isSchemaForProxy(type.getName())) {
             try {
-                return ((DBSDocument) getTargetDocument()).state;
+                return ((DBSDocument) getTargetDocument()).docState;
             } catch (DocumentException e) {
                 throw new PropertyException(e.getMessage(), e);
             }
         } else {
-            return state;
+            return docState;
         }
     }
 
     protected DBSDocumentState getStateMaybeProxyTarget(String xpath)
             throws DocumentException {
         if (isProxy() && !isSchemaForProxy(getSchema(xpath))) {
-            return ((DBSDocument) getTargetDocument()).state;
+            return ((DBSDocument) getTargetDocument()).docState;
         } else {
-            return state;
+            return docState;
         }
     }
 
@@ -682,8 +683,8 @@ public class DBSDocument implements Document {
 
     @Override
     public void readDocumentPart(DocumentPart dp) throws PropertyException {
-        DBSDocumentState state = getStateMaybeProxyTarget(dp.getType());
-        readComplexProperty((ComplexProperty) dp, state.getMap());
+        DBSDocumentState docState = getStateMaybeProxyTarget(dp.getType());
+        readComplexProperty((ComplexProperty) dp, docState.getState());
     }
 
     protected String internalName(String name) {
@@ -697,13 +698,13 @@ public class DBSDocument implements Document {
     }
 
     protected void readComplexProperty(ComplexProperty complexProperty,
-            Map<String, Serializable> map) throws PropertyException {
-        if (map == null) {
+            State state) throws PropertyException {
+        if (state == null) {
             complexProperty.init(null);
             return;
         }
         if (complexProperty instanceof BlobProperty) {
-            StorageBlob value = readBlob(map);
+            StorageBlob value = readBlob(state);
             complexProperty.init(value);
             return;
         }
@@ -713,19 +714,19 @@ public class DBSDocument implements Document {
             Type type = property.getType();
             if (type.isSimpleType()) {
                 // simple property
-                Serializable value = map.get(name);
+                Serializable value = state.get(name);
                 property.init(value);
             } else if (type.isListType()) {
                 ListType listType = (ListType) type;
                 if (listType.getFieldType().isSimpleType()) {
                     // array
-                    Object[] array = (Object[]) map.get(name);
+                    Object[] array = (Object[]) state.get(name);
                     array = typedArray(listType.getFieldType(), array);
                     property.init(array);
                 } else {
                     // complex list
                     @SuppressWarnings("unchecked")
-                    List<Serializable> list = (List<Serializable>) map.get(name);
+                    List<Serializable> list = (List<Serializable>) state.get(name);
                     if (list == null) {
                         property.init(null);
                     } else {
@@ -733,8 +734,7 @@ public class DBSDocument implements Document {
                         List<Serializable> value = new ArrayList<Serializable>(
                                 list.size());
                         for (Serializable subMapSer : list) {
-                            @SuppressWarnings("unchecked")
-                            Map<String, Serializable> childMap = (Map<String, Serializable>) subMapSer;
+                            State childMap = (State) subMapSer;
                             ComplexProperty p = (ComplexProperty) complexProperty.getRoot().createProperty(
                                     property, listField, 0);
                             readComplexProperty(p, childMap);
@@ -745,8 +745,7 @@ public class DBSDocument implements Document {
                 }
             } else {
                 // complex property
-                @SuppressWarnings("unchecked")
-                Map<String, Serializable> childMap = (Map<String, Serializable>) map.get(name);
+                State childMap = (State) state.get(name);
                 readComplexProperty((ComplexProperty) property, childMap);
                 ((ComplexProperty) property).removePhantomFlag();
             }
@@ -786,8 +785,8 @@ public class DBSDocument implements Document {
         return copy;
     }
 
-    protected StorageBlob readBlob(Map<String, Serializable> map) {
-        Serializable data = map.get(KEY_BLOB_DATA);
+    protected StorageBlob readBlob(State state) {
+        Serializable data = state.get(KEY_BLOB_DATA);
         if (data == null) {
             return null;
         }
@@ -795,17 +794,17 @@ public class DBSDocument implements Document {
         if (binary == null) {
             return null;
         }
-        String name = (String) map.get(KEY_BLOB_NAME);
-        String mimeType = (String) map.get(KEY_BLOB_MIME_TYPE);
-        String encoding = (String) map.get(KEY_BLOB_ENCODING);
-        String digest = (String) map.get(KEY_BLOB_DIGEST);
-        Long length = (Long) map.get(KEY_BLOB_LENGTH);
+        String name = (String) state.get(KEY_BLOB_NAME);
+        String mimeType = (String) state.get(KEY_BLOB_MIME_TYPE);
+        String encoding = (String) state.get(KEY_BLOB_ENCODING);
+        String digest = (String) state.get(KEY_BLOB_DIGEST);
+        Long length = (Long) state.get(KEY_BLOB_LENGTH);
         return new StorageBlob(binary, name, mimeType, encoding, digest,
                 length.longValue());
     }
 
-    protected void writeBlobProperty(BlobProperty blobProperty,
-            Map<String, Serializable> map) throws PropertyException {
+    protected void writeBlobProperty(BlobProperty blobProperty, State state)
+            throws PropertyException {
         Serializable value = blobProperty.getValueForWrite();
         String data;
         String name;
@@ -845,12 +844,12 @@ public class DBSDocument implements Document {
             length = Long.valueOf(binary.getLength());
         }
 
-        map.put(KEY_BLOB_DATA, data);
-        map.put(KEY_BLOB_NAME, name);
-        map.put(KEY_BLOB_MIME_TYPE, mimeType);
-        map.put(KEY_BLOB_ENCODING, encoding);
-        map.put(KEY_BLOB_DIGEST, digest);
-        map.put(KEY_BLOB_LENGTH, length);
+        state.put(KEY_BLOB_DATA, data);
+        state.put(KEY_BLOB_NAME, name);
+        state.put(KEY_BLOB_MIME_TYPE, mimeType);
+        state.put(KEY_BLOB_ENCODING, encoding);
+        state.put(KEY_BLOB_DIGEST, digest);
+        state.put(KEY_BLOB_LENGTH, length);
     }
 
     protected Binary getBinary(Blob blob) throws DocumentException {
@@ -896,29 +895,29 @@ public class DBSDocument implements Document {
     @Override
     public Map<String, Serializable> readPrefetch(ComplexType complexType,
             Set<String> xpaths) throws PropertyException {
-        DBSDocumentState state = getStateMaybeProxyTarget(complexType);
+        DBSDocumentState docState = getStateMaybeProxyTarget(complexType);
         Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
         for (String xpath : xpaths) {
             try {
-                readPrefetch(complexType, state.getMap(), xpath, 0, prefetch);
+                readPrefetch(complexType, docState.getState(), xpath, 0,
+                        prefetch);
             } catch (IllegalStateException e) {
                 throw new IllegalStateException(e.getMessage() + " xpath="
-                        + xpath + ", data=" + state, e);
+                        + xpath + ", data=" + docState, e);
             }
         }
         return prefetch;
     }
 
-    protected static void readPrefetch(ComplexType type,
-            Map<String, Serializable> map, String xpath, int start,
-            Map<String, Serializable> prefetch) {
+    protected static void readPrefetch(ComplexType type, State state,
+            String xpath, int start, Map<String, Serializable> prefetch) {
         int i = xpath.indexOf('/', start);
         boolean last = i == -1;
         String prop = last ? xpath : xpath.substring(start, i);
-        Serializable v = map == null ? null : map.get(prop);
+        Serializable v = state == null ? null : state.get(prop);
         Field propType = type.getField(prop);
         if (last) {
-            if (v instanceof Map || v instanceof List) {
+            if (v instanceof State || v instanceof List) {
                 throw new IllegalStateException("xpath=" + xpath + " start="
                         + start + " last element is not scalar");
             }
@@ -943,23 +942,21 @@ public class DBSDocument implements Document {
                 for (int n = 0; n < list.size(); n++) {
                     String xp = base + n;
                     Object elem = list.get(n);
-                    if (!(elem instanceof Map)) {
+                    if (!(elem instanceof State)) {
                         throw new IllegalStateException("xp=" + xp
                                 + " not a Map");
                     }
-                    @SuppressWarnings("unchecked")
-                    Map<String, Serializable> subMap = (Map<String, Serializable>) elem;
+                    State subMap = (State) elem;
                     Type lt = ((ListType) propType.getType()).getFieldType();
                     readPrefetch((ComplexType) lt, subMap, xp, i + 3, prefetch);
                 }
             } else {
                 // map
-                if (v != null && !(v instanceof Map)) {
+                if (v != null && !(v instanceof State)) {
                     throw new IllegalStateException("xpath=" + xpath
                             + " start=" + start + " not a Map");
                 }
-                @SuppressWarnings("unchecked")
-                Map<String, Serializable> subMap = (Map<String, Serializable>) v;
+                State subMap = (State) v;
                 // XXX
                 readPrefetch((ComplexType) propType.getType(), subMap, xpath,
                         i + 1, prefetch);
@@ -969,9 +966,9 @@ public class DBSDocument implements Document {
 
     @Override
     public void writeDocumentPart(DocumentPart dp) throws PropertyException {
-        DBSDocumentState state = getStateMaybeProxyTarget(dp.getType());
-        writeComplexProperty((ComplexProperty) dp, state.getMap(),
-                state.getDirty());
+        DBSDocumentState docState = getStateMaybeProxyTarget(dp.getType());
+        writeComplexProperty((ComplexProperty) dp, docState.getState(),
+                docState.getDirty());
         clearDirtyFlags(dp);
     }
 
@@ -985,10 +982,9 @@ public class DBSDocument implements Document {
     }
 
     protected void writeComplexProperty(ComplexProperty complexProperty,
-            Map<String, Serializable> map, AtomicBoolean dirty)
-            throws PropertyException {
+            State state, AtomicBoolean dirty) throws PropertyException {
         if (complexProperty instanceof BlobProperty) {
-            writeBlobProperty((BlobProperty) complexProperty, map);
+            writeBlobProperty((BlobProperty) complexProperty, state);
             return;
         }
         for (Property property : complexProperty) {
@@ -1002,7 +998,7 @@ public class DBSDocument implements Document {
             if (type.isSimpleType()) {
                 // simple property
                 Serializable value = property.getValueForWrite();
-                map.put(name, value);
+                state.put(name, value);
                 dirty.set(true);
             } else if (type.isListType()) {
                 ListType listType = (ListType) type;
@@ -1014,7 +1010,7 @@ public class DBSDocument implements Document {
                     } else if (!(value == null || value instanceof Object[])) {
                         throw new IllegalStateException(value.toString());
                     }
-                    map.put(name, value);
+                    state.put(name, value);
                     dirty.set(true);
                 } else {
                     // complex list
@@ -1022,21 +1018,20 @@ public class DBSDocument implements Document {
                     List<Serializable> childMaps = new ArrayList<Serializable>(
                             children.size());
                     for (Property childProperty : children) {
-                        Map<String, Serializable> childMap = new HashMap<String, Serializable>();
+                        State childMap = new State();
                         writeComplexProperty((ComplexProperty) childProperty,
                                 childMap, dirty);
-                        childMaps.add((Serializable) childMap);
+                        childMaps.add(childMap);
                     }
-                    map.put(name, (Serializable) childMaps);
+                    state.put(name, (Serializable) childMaps);
                     dirty.set(true);
                 }
             } else {
                 // complex property
-                @SuppressWarnings("unchecked")
-                Map<String, Serializable> childMap = (Map<String, Serializable>) map.get(name);
+                State childMap = (State) state.get(name);
                 if (childMap == null) {
-                    childMap = new HashMap<String, Serializable>();
-                    map.put(name, (Serializable) childMap);
+                    childMap = new State();
+                    state.put(name, childMap);
                     dirty.set(true);
                 }
                 writeComplexProperty((ComplexProperty) property, childMap,
@@ -1054,7 +1049,7 @@ public class DBSDocument implements Document {
 
     @Override
     public String[] getFacets() {
-        Object[] mixins = (Object[]) state.get(KEY_MIXIN_TYPES);
+        Object[] mixins = (Object[]) docState.get(KEY_MIXIN_TYPES);
         if (mixins == null) {
             return EMPTY_STRING_ARRAY;
         } else {
@@ -1074,7 +1069,7 @@ public class DBSDocument implements Document {
         if (getType().getFacets().contains(facet)) {
             return false; // already present in type
         }
-        Object[] mixins = (Object[]) state.get(KEY_MIXIN_TYPES);
+        Object[] mixins = (Object[]) docState.get(KEY_MIXIN_TYPES);
         if (mixins == null) {
             mixins = new Object[] { facet };
         } else {
@@ -1086,13 +1081,13 @@ public class DBSDocument implements Document {
             list.add(facet);
             mixins = list.toArray(new Object[list.size()]);
         }
-        state.put(KEY_MIXIN_TYPES, mixins);
+        docState.put(KEY_MIXIN_TYPES, mixins);
         return true;
     }
 
     @Override
     public boolean removeFacet(String facet) throws DocumentException {
-        Object[] mixins = (Object[]) state.get(KEY_MIXIN_TYPES);
+        Object[] mixins = (Object[]) docState.get(KEY_MIXIN_TYPES);
         if (mixins == null) {
             return false;
         }
@@ -1104,14 +1099,14 @@ public class DBSDocument implements Document {
         if (mixins.length == 0) {
             mixins = null;
         }
-        state.put(KEY_MIXIN_TYPES, mixins);
+        docState.put(KEY_MIXIN_TYPES, mixins);
         // remove the fields from the facet
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         CompositeType ft = schemaManager.getFacet(facet);
         for (Field field : ft.getFields()) {
             String name = field.getName().getPrefixedName();
-            if (state.containsKey(name)) {
-                state.put(name, null);
+            if (docState.containsKey(name)) {
+                docState.put(name, null);
             }
         }
         return true;
@@ -1120,7 +1115,7 @@ public class DBSDocument implements Document {
     @Override
     public Document getTargetDocument() throws DocumentException {
         if (isProxy()) {
-            String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
+            String targetId = (String) docState.get(KEY_PROXY_TARGET_ID);
             return session.getDocument(targetId);
         } else {
             return null;

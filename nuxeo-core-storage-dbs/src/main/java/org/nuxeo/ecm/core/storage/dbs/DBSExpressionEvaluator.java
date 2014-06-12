@@ -20,7 +20,6 @@ import static java.lang.Boolean.TRUE;
 
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -38,6 +37,7 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
+import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -57,7 +57,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
     protected final SchemaManager schemaManager;
 
-    protected Map<String, Serializable> map;
+    protected State state;
 
     public DBSExpressionEvaluator(DBSSession session, Expression expr,
             String[] principals) {
@@ -79,14 +79,14 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
         }
     }
 
-    public boolean matches(Map<String, Serializable> map) {
-        this.map = map;
+    public boolean matches(State state) {
+        this.state = state;
         // security check
         if (principals != null) {
             String[] racl = (String[]) walkReference(new Reference(
                     NXQL_ECM_READ_ACL));
             if (racl == null) {
-                log.error("NULL racl for " + map.get(DBSDocument.KEY_ID));
+                log.error("NULL racl for " + state.get(DBSDocument.KEY_ID));
             } else {
                 boolean allowed = false;
                 for (String user : racl) {
@@ -103,17 +103,17 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
         return TRUE.equals(walkExpression(expr));
     }
 
-    public boolean matches(DBSDocumentState state) {
-        return matches(state.getMap());
+    public boolean matches(DBSDocumentState docState) {
+        return matches(docState.getState());
     }
 
     @Override
     public Object walkReference(Reference ref) {
-        return evaluateReference(ref, map);
+        return evaluateReference(ref, state);
     }
 
     @Override
-    public Object evaluateReference(Reference ref, Map<String, Serializable> map) {
+    public Object evaluateReference(Reference ref, State state) {
         String name = ref.name;
         String[] split = name.split("/");
         String prop = split[0];
@@ -155,15 +155,16 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
             isBoolean = type instanceof BooleanType;
             isTrueOrNullBoolean = false;
         }
-        Serializable value = map.get(prop);
+        Serializable value = state.get(prop);
         for (int i = 1; i < split.length; i++) {
             if (value == null) {
                 return null;
             }
-            if (!(value instanceof Map)) {
-                throw new RuntimeException("Unkown property (no map): " + name);
+            if (!(value instanceof State)) {
+                throw new RuntimeException("Unkown property (no State): "
+                        + name);
             }
-            value = ((Map<String, Serializable>) value).get(split[i]);
+            value = ((State) value).get(split[i]);
         }
         if (value == null && isArray) {
             // don't use null, as list-based matches don't use ternary logic
@@ -181,8 +182,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
         return value;
     }
 
-    public static class OrderByComparator implements
-            Comparator<Map<String, Serializable>> {
+    public static class OrderByComparator implements Comparator<State> {
 
         protected final OrderByClause orderByClause;
 
@@ -207,14 +207,13 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
         }
 
         @Override
-        public int compare(Map<String, Serializable> m1,
-                Map<String, Serializable> m2) {
+        public int compare(State s1, State s2) {
             for (OrderByExpr ob : orderByClause.elements) {
                 Reference ref = ob.reference;
                 boolean desc = ob.isDescending;
                 int sign = desc ? -1 : 1;
-                Object v1 = matcher.evaluateReference(ref, m1);
-                Object v2 = matcher.evaluateReference(ref, m2);
+                Object v1 = matcher.evaluateReference(ref, s1);
+                Object v2 = matcher.evaluateReference(ref, s2);
                 if (v1 == null) {
                     return v2 == null ? 0 : -sign;
                 } else if (v2 == null) {

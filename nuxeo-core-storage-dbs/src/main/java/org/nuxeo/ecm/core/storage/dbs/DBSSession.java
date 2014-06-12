@@ -116,6 +116,7 @@ import org.nuxeo.ecm.core.storage.CopyHelper;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.QueryOptimizer;
+import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator.OrderByComparator;
 import org.nuxeo.runtime.api.Framework;
@@ -212,7 +213,7 @@ public class DBSSession implements Session {
         if (len == 1) {
             return getRootDocument();
         }
-        DBSDocumentState state = null;
+        DBSDocumentState docState = null;
         String parentId = getRootId();
         String[] names = path.split("/", -1);
         for (int i = 1; i < names.length; i++) {
@@ -221,13 +222,13 @@ public class DBSSession implements Session {
                 throw new IllegalArgumentException(
                         "Path with empty component: " + path);
             }
-            state = transaction.getChildState(parentId, name);
-            if (state == null) {
+            docState = transaction.getChildState(parentId, name);
+            if (docState == null) {
                 throw new NoSuchDocumentException(path);
             }
-            parentId = state.getId();
+            parentId = docState.getId();
         }
-        return getDocument(state);
+        return getDocument(docState);
     }
 
     protected String getDocumentIdByPath(String path) {
@@ -252,7 +253,7 @@ public class DBSSession implements Session {
         if (len == 1) {
             return getRootId();
         }
-        DBSDocumentState state = null;
+        DBSDocumentState docState = null;
         String parentId = getRootId();
         String[] names = path.split("/", -1);
         for (int i = 1; i < names.length; i++) {
@@ -262,32 +263,32 @@ public class DBSSession implements Session {
                         "Path with empty component: " + path);
             }
             // TODO XXX add getChildId method
-            state = transaction.getChildState(parentId, name);
-            if (state == null) {
+            docState = transaction.getChildState(parentId, name);
+            if (docState == null) {
                 return null;
             }
-            parentId = state.getId();
+            parentId = docState.getId();
         }
-        return state.getId();
+        return docState.getId();
     }
 
     protected Document getChild(String parentId, String name)
             throws DocumentException {
-        DBSDocumentState state = transaction.getChildState(parentId, name);
-        return getDocument(state);
+        DBSDocumentState docState = transaction.getChildState(parentId, name);
+        return getDocument(docState);
     }
 
     protected Iterator<Document> getChildren(String parentId)
             throws DocumentException {
-        List<DBSDocumentState> states = transaction.getChildrenStates(parentId);
+        List<DBSDocumentState> docStates = transaction.getChildrenStates(parentId);
         if (isOrderable(parentId)) {
             // sort children in order
-            Collections.sort(states, POS_COMPARATOR);
+            Collections.sort(docStates, POS_COMPARATOR);
         }
-        List<Document> children = new ArrayList<Document>(states.size());
-        for (DBSDocumentState state : states) {
+        List<Document> children = new ArrayList<Document>(docStates.size());
+        for (DBSDocumentState docState : docStates) {
             try {
-                children.add(getDocument(state));
+                children.add(getDocument(docState));
             } catch (DocumentException e) {
                 // ignore error retrieving one of the children
                 // (Unknown document type)
@@ -301,11 +302,11 @@ public class DBSSession implements Session {
         if (isOrderable(parentId)) {
             // TODO get only id and pos, not full state
             // TODO state not for update
-            List<DBSDocumentState> states = transaction.getChildrenStates(parentId);
-            Collections.sort(states, POS_COMPARATOR);
-            List<String> children = new ArrayList<String>(states.size());
-            for (DBSDocumentState state : states) {
-                children.add(state.getId());
+            List<DBSDocumentState> docStates = transaction.getChildrenStates(parentId);
+            Collections.sort(docStates, POS_COMPARATOR);
+            List<String> children = new ArrayList<String>(docStates.size());
+            for (DBSDocumentState docState : docStates) {
+                children.add(docState.getId());
             }
             return children;
         } else {
@@ -377,33 +378,33 @@ public class DBSSession implements Session {
 
     protected List<Document> getDocuments(List<String> ids)
             throws DocumentException {
-        List<DBSDocumentState> states = transaction.getStatesForUpdate(ids);
+        List<DBSDocumentState> docStates = transaction.getStatesForUpdate(ids);
         List<Document> docs = new ArrayList<Document>(ids.size());
-        for (DBSDocumentState state : states) {
-            docs.add(getDocument(state, true));
+        for (DBSDocumentState docState : docStates) {
+            docs.add(getDocument(docState, true));
         }
         return docs;
     }
 
     protected Document getDocument(String id, boolean readonly)
             throws DocumentException {
-        DBSDocumentState state = transaction.getStateForUpdate(id);
-        return getDocument(state, readonly);
+        DBSDocumentState docState = transaction.getStateForUpdate(id);
+        return getDocument(docState, readonly);
     }
 
-    protected Document getDocument(DBSDocumentState state)
+    protected Document getDocument(DBSDocumentState docState)
             throws DocumentException {
-        return getDocument(state, true);
+        return getDocument(docState, true);
     }
 
-    protected Document getDocument(DBSDocumentState state, boolean readonly)
+    protected Document getDocument(DBSDocumentState docState, boolean readonly)
             throws DocumentException {
-        if (state == null) {
+        if (docState == null) {
             return null;
         }
-        boolean isVersion = TRUE.equals(state.get(KEY_IS_VERSION));
+        boolean isVersion = TRUE.equals(docState.get(KEY_IS_VERSION));
 
-        String typeName = state.getPrimaryType();
+        String typeName = docState.getPrimaryType();
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         DocumentType type = schemaManager.getDocumentType(typeName);
         if (type == null) {
@@ -411,9 +412,9 @@ public class DBSSession implements Session {
         }
 
         if (isVersion) {
-            return new DBSDocument(state, type, this, readonly);
+            return new DBSDocument(docState, type, this, readonly);
         } else {
-            return new DBSDocument(state, type, this, false);
+            return new DBSDocument(docState, type, this, false);
         }
     }
 
@@ -429,9 +430,9 @@ public class DBSSession implements Session {
     protected Document addChild(String id, String parentId, String name,
             Long pos, String typeName, boolean readonly)
             throws DocumentException {
-        DBSDocumentState state = addChildState(id, parentId, name, pos,
+        DBSDocumentState docState = addChildState(id, parentId, name, pos,
                 typeName);
-        return getDocument(state, readonly);
+        return getDocument(docState, readonly);
     }
 
     protected DBSDocumentState addChildState(String id, String parentId,
@@ -443,7 +444,7 @@ public class DBSSession implements Session {
     }
 
     protected boolean isOrderable(String id) {
-        Map<String, Serializable> state = transaction.getStateForRead(id);
+        State state = transaction.getStateForRead(id);
         String typeName = (String) state.get(KEY_PRIMARY_TYPE);
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         return schemaManager.getDocumentType(typeName).getFacets().contains(
@@ -455,8 +456,8 @@ public class DBSSession implements Session {
             return null;
         }
         long max = -1;
-        for (DBSDocumentState state : transaction.getChildrenStates(parentId)) {
-            Long pos = (Long) state.get(KEY_POS);
+        for (DBSDocumentState docState : transaction.getChildrenStates(parentId)) {
+            Long pos = (Long) docState.get(KEY_POS);
             if (pos != null && pos.longValue() > max) {
                 max = pos.longValue();
             }
@@ -476,15 +477,15 @@ public class DBSSession implements Session {
         // This is optimized by assuming the number of children is small enough
         // to be manageable in-memory.
         // fetch children
-        List<DBSDocumentState> states = transaction.getChildrenStates(parentId);
+        List<DBSDocumentState> docStates = transaction.getChildrenStates(parentId);
         // sort children in order
-        Collections.sort(states, POS_COMPARATOR);
+        Collections.sort(docStates, POS_COMPARATOR);
         // renumber
         int i = 0;
         DBSDocumentState source = null; // source if seen
         Long destPos = null;
-        for (DBSDocumentState state : states) {
-            Serializable id = state.getId();
+        for (DBSDocumentState docState : docStates) {
+            Serializable id = docState.getId();
             if (id.equals(destId)) {
                 destPos = Long.valueOf(i);
                 i++;
@@ -495,14 +496,14 @@ public class DBSSession implements Session {
             Long setPos;
             if (id.equals(sourceId)) {
                 i--;
-                source = state;
+                source = docState;
                 setPos = destPos;
             } else {
                 setPos = Long.valueOf(i);
             }
             if (setPos != null) {
-                if (!setPos.equals(state.get(KEY_POS))) {
-                    state.put(KEY_POS, setPos);
+                if (!setPos.equals(docState.get(KEY_POS))) {
+                    docState.put(KEY_POS, setPos);
                 }
             }
             i++;
@@ -516,24 +517,24 @@ public class DBSSession implements Session {
     }
 
     protected void checkOut(String id) throws DocumentException {
-        DBSDocumentState state = transaction.getStateForUpdate(id);
-        if (!TRUE.equals(state.get(KEY_IS_CHECKED_IN))) {
+        DBSDocumentState docState = transaction.getStateForUpdate(id);
+        if (!TRUE.equals(docState.get(KEY_IS_CHECKED_IN))) {
             throw new DocumentException("Already checked out");
         }
-        state.put(KEY_IS_CHECKED_IN, null);
+        docState.put(KEY_IS_CHECKED_IN, null);
     }
 
     protected Document checkIn(String id, String label, String checkinComment)
             throws DocumentException {
         transaction.save();
-        DBSDocumentState state = transaction.getStateForUpdate(id);
-        if (TRUE.equals(state.get(KEY_IS_CHECKED_IN))) {
+        DBSDocumentState docState = transaction.getStateForUpdate(id);
+        if (TRUE.equals(docState.get(KEY_IS_CHECKED_IN))) {
             throw new DocumentException("Already checked in");
         }
         if (label == null) {
             // use version major + minor as label
-            Long major = (Long) state.get(KEY_MAJOR_VERSION);
-            Long minor = (Long) state.get(KEY_MINOR_VERSION);
+            Long major = (Long) docState.get(KEY_MAJOR_VERSION);
+            Long minor = (Long) docState.get(KEY_MINOR_VERSION);
             if (major == null || minor == null) {
                 label = "";
             } else {
@@ -559,8 +560,8 @@ public class DBSSession implements Session {
         verState.put(KEY_IS_LATEST_MAJOR_VERSION, isMajor ? TRUE : null);
 
         // update the doc to mark it checked in
-        state.put(KEY_IS_CHECKED_IN, TRUE);
-        state.put(KEY_BASE_VERSION_ID, verId);
+        docState.put(KEY_IS_CHECKED_IN, TRUE);
+        docState.put(KEY_BASE_VERSION_ID, verId);
 
         recomputeVersionSeries(id);
         transaction.save();
@@ -572,20 +573,20 @@ public class DBSSession implements Session {
      * Recomputes isLatest / isLatestMajor on all versions.
      */
     protected void recomputeVersionSeries(String versionSeriesId) {
-        List<DBSDocumentState> states = transaction.getKeyValuedStates(
+        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(
                 KEY_VERSION_SERIES_ID, versionSeriesId);
-        Collections.sort(states, VERSION_CREATED_COMPARATOR);
-        Collections.reverse(states);
+        Collections.sort(docStates, VERSION_CREATED_COMPARATOR);
+        Collections.reverse(docStates);
         boolean isLatest = true;
         boolean isLatestMajor = true;
-        for (DBSDocumentState state : states) {
+        for (DBSDocumentState docState : docStates) {
             // isLatestVersion
-            state.put(KEY_IS_LATEST_VERSION, isLatest ? TRUE : null);
+            docState.put(KEY_IS_LATEST_VERSION, isLatest ? TRUE : null);
             isLatest = false;
             // isLatestMajorVersion
             boolean isMajor = Long.valueOf(0).equals(
-                    state.get(KEY_MINOR_VERSION));
-            state.put(KEY_IS_LATEST_MAJOR_VERSION,
+                    docState.get(KEY_MINOR_VERSION));
+            docState.put(KEY_IS_LATEST_MAJOR_VERSION,
                     isMajor && isLatestMajor ? TRUE : null);
             if (isMajor) {
                 isLatestMajor = false;
@@ -597,18 +598,18 @@ public class DBSSession implements Session {
         String docId = doc.getUUID();
         String versionId = version.getUUID();
 
-        DBSDocumentState state = transaction.getStateForUpdate(docId);
-        Map<String, Serializable> versionState = transaction.getStateForRead(versionId);
+        DBSDocumentState docState = transaction.getStateForUpdate(docId);
+        State versionState = transaction.getStateForRead(versionId);
 
         for (Entry<String, Serializable> en : versionState.entrySet()) {
             String key = en.getKey();
             if (!keepWhenRestore(key)) {
-                state.put(key, CopyHelper.deepCopy(en.getValue()));
+                docState.put(key, CopyHelper.deepCopy(en.getValue()));
             }
         }
-        state.put(KEY_IS_VERSION, null);
-        state.put(KEY_IS_CHECKED_IN, TRUE);
-        state.put(KEY_BASE_VERSION_ID, versionId);
+        docState.put(KEY_IS_VERSION, null);
+        docState.put(KEY_IS_CHECKED_IN, TRUE);
+        docState.put(KEY_BASE_VERSION_ID, versionId);
     }
 
     // keys we don't copy from version when restoring
@@ -649,8 +650,8 @@ public class DBSSession implements Session {
         name = findFreeName(parent, name);
         String sourceId = source.getUUID();
         String parentId = parent.getUUID();
-        Map<String, Serializable> sourceState = transaction.getStateForRead(sourceId);
-        Map<String, Serializable> parentState = transaction.getStateForRead(parentId);
+        State sourceState = transaction.getStateForRead(sourceId);
+        State parentState = transaction.getStateForRead(parentId);
         String oldParentId = (String) sourceState.get(KEY_PARENT_ID);
         Object[] parentAncestorIds = (Object[]) parentState.get(KEY_ANCESTOR_IDS);
         LinkedList<String> ancestorIds = new LinkedList<String>();
@@ -732,7 +733,7 @@ public class DBSSession implements Session {
                         + " a node under itself: " + parentId + " is under "
                         + id);
             }
-            Map<String, Serializable> state = transaction.getStateForRead(pid);
+            State state = transaction.getStateForRead(pid);
             if (state == null) {
                 // cannot happen
                 throw new DocumentException("No parent: " + pid);
@@ -775,7 +776,7 @@ public class DBSSession implements Session {
         }
 
         // prepare new ancestor ids
-        Map<String, Serializable> parentState = transaction.getStateForRead(parentId);
+        State parentState = transaction.getStateForRead(parentId);
         Object[] parentAncestorIds = (Object[]) parentState.get(KEY_ANCESTOR_IDS);
         List<String> ancestorIdsList = new ArrayList<String>();
         if (parentAncestorIds != null) {
@@ -817,7 +818,7 @@ public class DBSSession implements Session {
     protected void remove(String id) throws DocumentException {
         transaction.save();
 
-        Map<String, Serializable> state = transaction.getStateForRead(id);
+        State state = transaction.getStateForRead(id);
         String versionSeriesId;
         if (TRUE.equals(state.get(KEY_IS_VERSION))) {
             versionSeriesId = (String) state.get(KEY_VERSION_SERIES_ID);
@@ -891,7 +892,7 @@ public class DBSSession implements Session {
             versionSeriesId = doc.getVersionSeriesId();
         } else if (doc.isProxy()) {
             // copy the proxy
-            Map<String, Serializable> state = transaction.getStateForRead(id);
+            State state = transaction.getStateForRead(id);
             targetId = (String) state.get(KEY_PROXY_TARGET_ID);
             versionSeriesId = (String) state.get(KEY_PROXY_VERSION_SERIES_ID);
         } else {
@@ -904,9 +905,9 @@ public class DBSSession implements Session {
         String name = findFreeName(folder, doc.getName());
         Long pos = parentId == null ? null : getNextPos(parentId);
 
-        DBSDocumentState state = addProxyState(null, parentId, name, pos,
+        DBSDocumentState docState = addProxyState(null, parentId, name, pos,
                 targetId, versionSeriesId);
-        return getDocument(state);
+        return getDocument(docState);
     }
 
     protected DBSDocumentState addProxyState(String id, String parentId,
@@ -934,8 +935,8 @@ public class DBSSession implements Session {
         return transaction.getStateForUpdate(proxyId);
     }
 
-    protected void addBackProxyId(DBSDocumentState state, String id) {
-        Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
+    protected void addBackProxyId(DBSDocumentState docState, String id) {
+        Object[] proxyIds = (Object[]) docState.get(KEY_PROXY_IDS);
         Object[] newProxyIds;
         if (proxyIds == null) {
             newProxyIds = new Object[] { id };
@@ -944,15 +945,15 @@ public class DBSSession implements Session {
             System.arraycopy(proxyIds, 0, newProxyIds, 0, proxyIds.length);
             newProxyIds[proxyIds.length] = id;
         }
-        state.put(KEY_PROXY_IDS, newProxyIds);
+        docState.put(KEY_PROXY_IDS, newProxyIds);
     }
 
-    protected void removeBackProxyId(DBSDocumentState state, String id) {
-        removeBackProxyIds(state, Collections.singleton(id));
+    protected void removeBackProxyId(DBSDocumentState docState, String id) {
+        removeBackProxyIds(docState, Collections.singleton(id));
     }
 
-    protected void removeBackProxyIds(DBSDocumentState state, Set<String> ids) {
-        Object[] proxyIds = (Object[]) state.get(KEY_PROXY_IDS);
+    protected void removeBackProxyIds(DBSDocumentState docState, Set<String> ids) {
+        Object[] proxyIds = (Object[]) docState.get(KEY_PROXY_IDS);
         if (proxyIds == null) {
             return;
         }
@@ -964,36 +965,37 @@ public class DBSSession implements Session {
         }
         Object[] newProxyIds = keepIds.isEmpty() ? null
                 : keepIds.toArray(new Object[keepIds.size()]);
-        state.put(KEY_PROXY_IDS, newProxyIds);
+        docState.put(KEY_PROXY_IDS, newProxyIds);
     }
 
     @Override
     public Collection<Document> getProxies(Document doc, Document folder)
             throws DocumentException {
-        List<DBSDocumentState> states;
+        List<DBSDocumentState> docStates;
         String docId = doc.getUUID();
         if (doc.isVersion()) {
-            states = transaction.getKeyValuedStates(KEY_PROXY_TARGET_ID, docId);
+            docStates = transaction.getKeyValuedStates(KEY_PROXY_TARGET_ID,
+                    docId);
         } else {
             String versionSeriesId;
             if (doc.isProxy()) {
-                Map<String, Serializable> state = transaction.getStateForRead(docId);
+                State state = transaction.getStateForRead(docId);
                 versionSeriesId = (String) state.get(KEY_PROXY_VERSION_SERIES_ID);
             } else {
                 versionSeriesId = docId;
             }
-            states = transaction.getKeyValuedStates(
+            docStates = transaction.getKeyValuedStates(
                     KEY_PROXY_VERSION_SERIES_ID, versionSeriesId);
         }
 
         String parentId = folder == null ? null : folder.getUUID();
-        List<Document> documents = new ArrayList<Document>(states.size());
-        for (DBSDocumentState state : states) {
+        List<Document> documents = new ArrayList<Document>(docStates.size());
+        for (DBSDocumentState docState : docStates) {
             // filter by parent
-            if (parentId != null && !parentId.equals(state.getParentId())) {
+            if (parentId != null && !parentId.equals(docState.getParentId())) {
                 continue;
             }
-            documents.add(getDocument(state));
+            documents.add(getDocument(docState));
         }
         return documents;
     }
@@ -1024,7 +1026,7 @@ public class DBSSession implements Session {
         boolean isProxy = typeName.equals(CoreSession.IMPORT_PROXY_TYPE);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         Long pos = null; // TODO pos
-        DBSDocumentState state;
+        DBSDocumentState docState;
         if (isProxy) {
             // check that target exists and find its typeName
             String targetId = (String) properties.get(CoreSession.IMPORT_PROXY_TARGET_ID);
@@ -1032,13 +1034,13 @@ public class DBSSession implements Session {
                 throw new DocumentException("Cannot import proxy " + id
                         + " with null target");
             }
-            Map<String, Serializable> targetState = transaction.getStateForRead(targetId);
+            State targetState = transaction.getStateForRead(targetId);
             if (targetState == null) {
                 throw new DocumentException("Cannot import proxy " + id
                         + " with missing target " + targetId);
             }
             String versionSeriesId = (String) properties.get(CoreSession.IMPORT_PROXY_VERSIONABLE_ID);
-            state = addProxyState(id, parentId, name, pos, targetId,
+            docState = addProxyState(id, parentId, name, pos, targetId,
                     versionSeriesId);
         } else {
             // version & live document
@@ -1106,12 +1108,12 @@ public class DBSSession implements Session {
                         KEY_IS_CHECKED_IN,
                         trueOrNull(properties.get(CoreSession.IMPORT_CHECKED_IN)));
             }
-            state = addChildState(id, parentId, name, pos, typeName);
+            docState = addChildState(id, parentId, name, pos, typeName);
         }
         for (Entry<String, Serializable> entry : props.entrySet()) {
-            state.put(entry.getKey(), entry.getValue());
+            docState.put(entry.getKey(), entry.getValue());
         }
-        return getDocument(state, false); // not readonly
+        return getDocument(docState, false); // not readonly
     }
 
     protected static Boolean trueOrNull(Object value) {
@@ -1121,23 +1123,23 @@ public class DBSSession implements Session {
     @Override
     public Document getVersion(String versionSeriesId, VersionModel versionModel)
             throws DocumentException {
-        DBSDocumentState state = getVersionByLabel(versionSeriesId,
+        DBSDocumentState docState = getVersionByLabel(versionSeriesId,
                 versionModel.getLabel());
-        if (state == null) {
+        if (docState == null) {
             return null;
         }
-        versionModel.setDescription((String) state.get(KEY_VERSION_DESCRIPTION));
-        versionModel.setCreated((Calendar) state.get(KEY_VERSION_CREATED));
-        return getDocument(state);
+        versionModel.setDescription((String) docState.get(KEY_VERSION_DESCRIPTION));
+        versionModel.setCreated((Calendar) docState.get(KEY_VERSION_CREATED));
+        return getDocument(docState);
     }
 
     protected DBSDocumentState getVersionByLabel(String versionSeriesId,
             String label) {
-        List<DBSDocumentState> states = transaction.getKeyValuedStates(
+        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(
                 KEY_VERSION_SERIES_ID, versionSeriesId);
-        for (DBSDocumentState state : states) {
-            if (label.equals(state.get(KEY_VERSION_LABEL))) {
-                return state;
+        for (DBSDocumentState docState : docStates) {
+            if (label.equals(docState.get(KEY_VERSION_LABEL))) {
+                return docState;
             }
         }
         return null;
@@ -1145,31 +1147,31 @@ public class DBSSession implements Session {
 
     protected List<String> getVersionsIds(String versionSeriesId) {
         // order by creation date
-        List<DBSDocumentState> states = transaction.getKeyValuedStates(
+        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(
                 KEY_VERSION_SERIES_ID, versionSeriesId);
-        Collections.sort(states, VERSION_CREATED_COMPARATOR);
-        List<String> ids = new ArrayList<String>(states.size());
-        for (DBSDocumentState state : states) {
-            ids.add(state.getId());
+        Collections.sort(docStates, VERSION_CREATED_COMPARATOR);
+        List<String> ids = new ArrayList<String>(docStates.size());
+        for (DBSDocumentState docState : docStates) {
+            ids.add(docState.getId());
         }
         return ids;
     }
 
     protected Document getLastVersion(String versionSeriesId)
             throws DocumentException {
-        List<DBSDocumentState> states = transaction.getKeyValuedStates(
+        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(
                 KEY_VERSION_SERIES_ID, versionSeriesId);
-        if (states.isEmpty()) {
+        if (docStates.isEmpty()) {
             return null;
         }
         // find latest one
         Calendar latest = null;
         DBSDocumentState latestState = null;
-        for (DBSDocumentState state : states) {
-            Calendar created = (Calendar) state.get(KEY_VERSION_CREATED);
+        for (DBSDocumentState docState : docStates) {
+            Calendar created = (Calendar) docState.get(KEY_VERSION_CREATED);
             if (latest == null || created.compareTo(latest) > 0) {
                 latest = created;
-                latestState = state;
+                latestState = docState;
             }
         }
         return getDocument(latestState);
@@ -1271,7 +1273,7 @@ public class DBSSession implements Session {
     }
 
     protected ACP getACP(Document doc) throws SecurityException {
-        Map<String, Serializable> state = transaction.getStateForRead(doc.getUUID());
+        State state = transaction.getStateForRead(doc.getUUID());
         return memToAcp(state.get(KEY_ACP));
     }
 
@@ -1286,8 +1288,8 @@ public class DBSSession implements Session {
             acp = updateACP(getACP(doc), acp);
         }
         String id = doc.getUUID();
-        DBSDocumentState state = transaction.getStateForUpdate(id);
-        state.put(KEY_ACP, acpToMem(acp));
+        DBSDocumentState docState = transaction.getStateForUpdate(id);
+        docState.put(KEY_ACP, acpToMem(acp));
         transaction.updateReadAcls(id);
     }
 
@@ -1342,16 +1344,16 @@ public class DBSSession implements Session {
             List<Serializable> aceList = new ArrayList<Serializable>(
                     aces.length);
             for (ACE ace : aces) {
-                Map<String, Serializable> aceMap = new HashMap<String, Serializable>();
+                State aceMap = new State();
                 aceMap.put(KEY_ACE_USER, ace.getUsername());
                 aceMap.put(KEY_ACE_PERMISSION, ace.getPermission());
                 aceMap.put(KEY_ACE_GRANT, Boolean.valueOf(ace.isGranted()));
-                aceList.add((Serializable) aceMap);
+                aceList.add(aceMap);
             }
-            Map<String, Serializable> aclMap = new HashMap<String, Serializable>();
+            State aclMap = new State();
             aclMap.put(KEY_ACL_NAME, name);
             aclMap.put(KEY_ACL, (Serializable) aceList);
-            aclList.add((Serializable) aclMap);
+            aclList.add(aclMap);
         }
         return (Serializable) aclList;
     }
@@ -1364,15 +1366,13 @@ public class DBSSession implements Session {
         List<Serializable> aclList = (List<Serializable>) acpSer;
         ACP acp = new ACPImpl();
         for (Serializable aclSer : aclList) {
-            @SuppressWarnings("unchecked")
-            Map<String, Serializable> aclMap = (Map<String, Serializable>) aclSer;
+            State aclMap = (State) aclSer;
             String name = (String) aclMap.get(KEY_ACL_NAME);
             @SuppressWarnings("unchecked")
             List<Serializable> aceList = (List<Serializable>) aclMap.get(KEY_ACL);
             ACL acl = new ACLImpl(name);
             for (Serializable aceSer : aceList) {
-                @SuppressWarnings("unchecked")
-                Map<String, Serializable> aceMap = (Map<String, Serializable>) aceSer;
+                State aceMap = (State) aceSer;
                 String username = (String) aceMap.get(KEY_ACE_USER);
                 String permission = (String) aceMap.get(KEY_ACE_PERMISSION);
                 Boolean granted = (Boolean) aceMap.get(KEY_ACE_GRANT);
@@ -1422,25 +1422,25 @@ public class DBSSession implements Session {
 
     protected PartialList<String> doQuery(String query, String queryType,
             QueryFilter queryFilter, int countUpTo) throws QueryException {
-        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query,
-                queryType, queryFilter, countUpTo, true);
+        PartialList<State> pl = doQueryAndFetch(query, queryType, queryFilter,
+                countUpTo, true);
         List<String> ids = new ArrayList<String>(pl.list.size());
-        for (Map<String, Serializable> map : pl.list) {
-            String id = (String) map.get(NXQL.ECM_UUID);
+        for (State state : pl.list) {
+            String id = (String) state.get(NXQL.ECM_UUID);
             ids.add(id);
         }
         return new PartialList<String>(ids, pl.totalSize);
     }
 
-    protected PartialList<Map<String, Serializable>> doQueryAndFetch(
-            String query, String queryType, QueryFilter queryFilter,
-            int countUpTo) throws QueryException {
+    protected PartialList<State> doQueryAndFetch(String query,
+            String queryType, QueryFilter queryFilter, int countUpTo)
+            throws QueryException {
         return doQueryAndFetch(query, queryType, queryFilter, countUpTo, false);
     }
 
-    protected PartialList<Map<String, Serializable>> doQueryAndFetch(
-            String query, String queryType, QueryFilter queryFilter,
-            int countUpTo, boolean onlyId) throws QueryException {
+    protected PartialList<State> doQueryAndFetch(String query,
+            String queryType, QueryFilter queryFilter, int countUpTo,
+            boolean onlyId) throws QueryException {
         if (!NXQL.NXQL.equals(queryType)) {
             throw new QueryException("No QueryMaker accepts query type: "
                     + queryType);
@@ -1465,17 +1465,17 @@ public class DBSSession implements Session {
                 expression, queryFilter.getPrincipals());
 
         // query in-memory in saved state
-        List<Map<String, Serializable>> states = new ArrayList<>();
+        List<State> states = new ArrayList<>();
         Set<String> done = new HashSet<>();
-        for (DBSDocumentState state : transaction.savedStates.values()) {
-            String id = state.getId();
+        for (DBSDocumentState docState : transaction.savedStates.values()) {
+            String id = docState.getId();
             done.add(id);
             if (transaction.savedDeleted.contains(id)) {
                 // deleted
                 continue;
             }
-            if (evaluator.matches(state)) {
-                states.add(state.getMap());
+            if (evaluator.matches(docState)) {
+                states.add(docState.getState());
             }
         }
         boolean postFilter = !states.isEmpty() || isOrderByPath(orderByClause);
@@ -1507,9 +1507,9 @@ public class DBSSession implements Session {
 
         // query the repository
         boolean deepCopy = !onlyId;
-        PartialList<Map<String, Serializable>> pl = repository.queryAndFetch(
-                expression, evaluator, repoOrderByClause, repoLimit,
-                repoOffset, countUpTo, deepCopy, done);
+        PartialList<State> pl = repository.queryAndFetch(expression, evaluator,
+                repoOrderByClause, repoLimit, repoOffset, countUpTo, deepCopy,
+                done);
 
         long totalSize;
         if (pl.totalSize < 0) {
@@ -1551,19 +1551,18 @@ public class DBSSession implements Session {
             }
         }
 
-        List<Map<String, Serializable>> flatList;
+        List<State> flatList;
         if (onlyId) {
             // optimize because we just need the id
             flatList = new ArrayList<>(states.size());
-            for (Map<String, Serializable> state : states) {
-                flatList.add(Collections.singletonMap(NXQL.ECM_UUID,
-                        state.get(KEY_ID)));
+            for (State state : states) {
+                flatList.add(State.singleton(NXQL.ECM_UUID, state.get(KEY_ID)));
             }
         } else {
             flatList = flatten(states);
         }
 
-        return new PartialList<Map<String, Serializable>>(flatList, totalSize);
+        return new PartialList<State>(flatList, totalSize);
     }
 
     /** Does an ORDER BY clause include ecm:path */
@@ -1579,7 +1578,7 @@ public class DBSSession implements Session {
         return false;
     }
 
-    protected String getPath(Map<String, Serializable> state) {
+    protected String getPath(State state) {
         String name = (String) state.get(KEY_NAME);
         String parentId = (String) state.get(KEY_PARENT_ID);
         state = transaction.getStateForRead(parentId);
@@ -1601,11 +1600,11 @@ public class DBSSession implements Session {
         return StringUtils.join(list, '/');
     }
 
-    protected void doOrderBy(List<Map<String, Serializable>> states,
-            OrderByClause orderByClause, DBSExpressionEvaluator evaluator) {
+    protected void doOrderBy(List<State> states, OrderByClause orderByClause,
+            DBSExpressionEvaluator evaluator) {
         if (isOrderByPath(orderByClause)) {
             // add path info to do the sort
-            for (Map<String, Serializable> state : states) {
+            for (State state : states) {
                 state.put(KEY_PATH_INTERNAL, getPath(state));
             }
         }
@@ -1616,18 +1615,16 @@ public class DBSSession implements Session {
     /**
      * Flatten and convert from internal names to NXQL.
      */
-    protected List<Map<String, Serializable>> flatten(
-            List<Map<String, Serializable>> states) {
-        List<Map<String, Serializable>> flatList = new ArrayList<>(
-                states.size());
-        for (Map<String, Serializable> state : states) {
+    protected List<State> flatten(List<State> states) {
+        List<State> flatList = new ArrayList<>(states.size());
+        for (State state : states) {
             flatList.add(flatten(state));
         }
         return flatList;
     }
 
-    protected Map<String, Serializable> flatten(Map<String, Serializable> state) {
-        Map<String, Serializable> flat = new HashMap<>();
+    protected State flatten(State state) {
+        State flat = new State();
         for (Entry<String, Serializable> en : state.entrySet()) {
             String key = en.getKey();
             Serializable value = en.getValue();
@@ -1651,8 +1648,8 @@ public class DBSSession implements Session {
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object[] params) throws QueryException {
         int countUpTo = -1;
-        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query,
-                queryType, queryFilter, countUpTo);
+        PartialList<State> pl = doQueryAndFetch(query, queryType, queryFilter,
+                countUpTo);
         return new DBSQueryResult(pl);
     }
 
@@ -1661,15 +1658,15 @@ public class DBSSession implements Session {
 
         boolean closed;
 
-        protected List<Map<String, Serializable>> maps;
+        protected List<State> states;
 
         protected long totalSize;
 
         protected long pos;
 
-        protected DBSQueryResult(PartialList<Map<String, Serializable>> maps) {
-            this.maps = maps.list;
-            this.totalSize = maps.totalSize;
+        protected DBSQueryResult(PartialList<State> states) {
+            this.states = states.list;
+            this.totalSize = states.totalSize;
         }
 
         @Override
@@ -1714,13 +1711,13 @@ public class DBSSession implements Session {
         }
 
         @Override
-        public Map<String, Serializable> next() {
+        public State next() {
             if (closed || pos == totalSize) {
                 throw new NoSuchElementException();
             }
-            Map<String, Serializable> map = maps.get((int) pos);
+            State state = states.get((int) pos);
             pos++;
-            return map;
+            return state;
         }
 
         @Override

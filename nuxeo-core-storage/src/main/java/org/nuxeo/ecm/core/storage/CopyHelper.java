@@ -14,7 +14,6 @@ package org.nuxeo.ecm.core.storage;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,13 +32,12 @@ public class CopyHelper {
     /**
      * Makes a deep copy of a {@link Map}.
      */
-    public static Map<String, Serializable> deepCopy(
-            Map<String, Serializable> map) {
-        map = new HashMap<String, Serializable>(map);
-        for (Entry<String, Serializable> en : map.entrySet()) {
+    public static State deepCopy(State state) {
+        state = new State(state);
+        for (Entry<String, Serializable> en : state.entrySet()) {
             en.setValue(deepCopy(en.getValue()));
         }
-        return map;
+        return state;
     }
 
     /**
@@ -57,10 +55,9 @@ public class CopyHelper {
      * Makes a deep copy of a value.
      */
     public static Serializable deepCopy(Serializable value) {
-        if (value instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, Serializable> map = (Map<String, Serializable>) value;
-            value = (Serializable) deepCopy(map);
+        if (value instanceof State) {
+            State state = (State) value;
+            value = deepCopy(state);
         } else if (value instanceof List) {
             @SuppressWarnings("unchecked")
             List<Serializable> list = (List<Serializable>) value;

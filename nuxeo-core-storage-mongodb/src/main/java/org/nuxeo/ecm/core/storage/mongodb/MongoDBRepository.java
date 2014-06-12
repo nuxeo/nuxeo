@@ -24,7 +24,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,6 +38,7 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.storage.PartialList;
+import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
@@ -110,21 +110,20 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return db.getCollection(descriptor.name);
     }
 
-    protected DBObject stateToBson(Map<String, Serializable> state,
-            boolean skipNull) {
+    protected DBObject stateToBson(State state, boolean skipNull) {
         DBObject ob = new BasicDBObject();
         for (Entry<String, Serializable> en : state.entrySet()) {
             String key = en.getKey();
             Serializable value = en.getValue();
             Object val;
-            if (value instanceof Map) {
-                val = stateToBson((Map<String, Serializable>) value, skipNull);
+            if (value instanceof State) {
+                val = stateToBson((State) value, skipNull);
             } else if (value instanceof List) {
+                @SuppressWarnings("unchecked")
                 List<Serializable> states = (List<Serializable>) value;
                 ArrayList<DBObject> obs = new ArrayList<DBObject>(states.size());
                 for (Serializable state1 : states) {
-                    obs.add(stateToBson((Map<String, Serializable>) state1,
-                            skipNull));
+                    obs.add(stateToBson((State) state1, skipNull));
                 }
                 val = obs;
             } else if (value instanceof Object[]) {
@@ -144,15 +143,16 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return ob;
     }
 
-    protected Map<String, Serializable> bsonToState(DBObject ob) {
+    protected State bsonToState(DBObject ob) {
         if (ob == null) {
             return null;
         }
-        Map<String, Serializable> state = new HashMap<>();
+        State state = new State();
         for (String key : ob.keySet()) {
             Object val = ob.get(key);
             Serializable value;
             if (val instanceof List) {
+                @SuppressWarnings("unchecked")
                 List<Object> list = (List<Object>) val;
                 if (list.isEmpty()) {
                     value = null;
@@ -160,7 +160,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                     if (list.get(0) instanceof DBObject) {
                         List<Serializable> l = new ArrayList<>(list.size());
                         for (Object el : list) {
-                            l.add((Serializable) bsonToState((DBObject) el));
+                            l.add(bsonToState((DBObject) el));
                         }
                         value = (Serializable) l;
                     } else {
@@ -173,7 +173,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                     }
                 }
             } else if (val instanceof DBObject) {
-                value = (Serializable) bsonToState((DBObject) val);
+                value = bsonToState((DBObject) val);
             } else {
                 if (MONGO_ID.equals(key)) {
                     // skip ObjectId
@@ -203,8 +203,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void createState(Map<String, Serializable> state)
-            throws DocumentException {
+    public void createState(State state) throws DocumentException {
         DBObject ob = stateToBson(state, true);
         coll.insert(ob);
         // TODO dupe exception
@@ -212,21 +211,20 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public Map<String, Serializable> readState(String id) {
+    public State readState(String id) {
         DBObject query = new BasicDBObject(KEY_ID, id);
         return findOne(query);
     }
 
     @Override
-    public List<Map<String, Serializable>> readStates(List<String> ids) {
+    public List<State> readStates(List<String> ids) {
         DBObject query = new BasicDBObject(KEY_ID, new BasicDBObject(
                 QueryOperators.IN, ids));
         return findAll(query, ids.size());
     }
 
     @Override
-    public void updateState(Map<String, Serializable> state)
-            throws DocumentException {
+    public void updateState(State state) throws DocumentException {
         String id = (String) state.get(KEY_ID);
         DBObject query = new BasicDBObject(KEY_ID, id);
         DBObject ob = stateToBson(state, false);
@@ -243,8 +241,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public Map<String, Serializable> readChildState(String parentId,
-            String name, Set<String> ignored) {
+    public State readChildState(String parentId, String name,
+            Set<String> ignored) {
         DBObject query = getChildQuery(parentId, name, ignored);
         return findOne(query);
     }
@@ -273,8 +271,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public List<Map<String, Serializable>> queryKeyValue(String key,
-            String value, Set<String> ignored) {
+    public List<State> queryKeyValue(String key, String value,
+            Set<String> ignored) {
         DBObject query = new BasicDBObject(key, value);
         addIgnoredIds(query, ignored);
         return findAll(query, 0);
@@ -321,15 +319,14 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return coll.findOne(query, justPresenceField()) != null;
     }
 
-    protected Map<String, Serializable> findOne(DBObject query) {
+    protected State findOne(DBObject query) {
         return bsonToState(coll.findOne(query));
     }
 
-    protected List<Map<String, Serializable>> findAll(DBObject query,
-            int sizeHint) {
+    protected List<State> findAll(DBObject query, int sizeHint) {
         DBCursor cursor = coll.find(query);
         try {
-            List<Map<String, Serializable>> list = new ArrayList<>(sizeHint);
+            List<State> list = new ArrayList<>(sizeHint);
             for (DBObject ob : cursor) {
                 list.add(bsonToState(ob));
             }
@@ -344,16 +341,16 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public PartialList<Map<String, Serializable>> queryAndFetch(
-            Expression expression, DBSExpressionEvaluator evaluator,
-            OrderByClause orderByClause, int limit, int offset, int countUpTo,
-            boolean deepCopy, Set<String> ignored) {
+    public PartialList<State> queryAndFetch(Expression expression,
+            DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
+            int limit, int offset, int countUpTo, boolean deepCopy,
+            Set<String> ignored) {
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(
                 evaluator.pathResolver);
         DBObject query = builder.walkExpression(expression);
         addIgnoredIds(query, ignored);
         addPrincipals(query, evaluator.principals);
-        List<Map<String, Serializable>> list;
+        List<State> list;
         System.err.println(query); // XXX
         long totalSize;
         DBCursor cursor = coll.find(query).skip(offset).limit(limit);

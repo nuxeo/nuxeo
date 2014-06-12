@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.CopyHelper;
 import org.nuxeo.ecm.core.storage.PartialList;
+import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator.OrderByComparator;
@@ -55,7 +56,7 @@ public class MemRepository extends DBSRepositoryBase {
     /**
      * The content of the repository, a map of document id -> object.
      */
-    protected Map<String, Map<String, Serializable>> states;
+    protected Map<String, State> states;
 
     public MemRepository(String repositoryName) {
         super(repositoryName);
@@ -69,15 +70,15 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public Map<String, Serializable> readState(String id) {
-        Map<String, Serializable> state = states.get(id);
+    public State readState(String id) {
+        State state = states.get(id);
         // log.error("read   " + id + ": " + state);
         return state;
     }
 
     @Override
-    public List<Map<String, Serializable>> readStates(List<String> ids) {
-        List<Map<String, Serializable>> list = new ArrayList<>();
+    public List<State> readStates(List<String> ids) {
+        List<State> list = new ArrayList<>();
         for (String id : ids) {
             list.add(readState(id));
         }
@@ -85,8 +86,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void createState(Map<String, Serializable> state)
-            throws DocumentException {
+    public void createState(State state) throws DocumentException {
         String id = (String) state.get(KEY_ID);
         // log.error("create " + id + ": " + state);
         if (states.containsKey(id)) {
@@ -96,8 +96,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void updateState(Map<String, Serializable> state)
-            throws DocumentException {
+    public void updateState(State state) throws DocumentException {
         String id = (String) state.get(KEY_ID);
         // log.error("update " + id + ": " + state);
         if (!states.containsKey(id)) {
@@ -115,10 +114,10 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public Map<String, Serializable> readChildState(String parentId,
-            String name, Set<String> ignored) {
+    public State readChildState(String parentId, String name,
+            Set<String> ignored) {
         // TODO optimize by maintaining a parent/child index
-        for (Map<String, Serializable> state : states.values()) {
+        for (State state : states.values()) {
             if (ignored.contains(state.get(KEY_ID))) {
                 continue;
             }
@@ -139,10 +138,10 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public List<Map<String, Serializable>> queryKeyValue(String key,
-            String value, Set<String> ignored) {
-        List<Map<String, Serializable>> list = new ArrayList<>();
-        for (Map<String, Serializable> state : states.values()) {
+    public List<State> queryKeyValue(String key, String value,
+            Set<String> ignored) {
+        List<State> list = new ArrayList<>();
+        for (State state : states.values()) {
             String id = (String) state.get(KEY_ID);
             if (ignored.contains(id)) {
                 continue;
@@ -159,7 +158,7 @@ public class MemRepository extends DBSRepositoryBase {
     public void queryKeyValueArray(String key, Object value, Set<String> ids,
             Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies, Set<String> ignored) {
-        STATE: for (Map<String, Serializable> state : states.values()) {
+        STATE: for (State state : states.values()) {
             Object[] array = (Object[]) state.get(key);
             String id = (String) state.get(KEY_ID);
             if (ignored.contains(id)) {
@@ -190,7 +189,7 @@ public class MemRepository extends DBSRepositoryBase {
     @Override
     public boolean queryKeyValuePresence(String key, String value,
             Set<String> ignored) {
-        for (Map<String, Serializable> state : states.values()) {
+        for (State state : states.values()) {
             String id = (String) state.get(KEY_ID);
             if (ignored.contains(id)) {
                 continue;
@@ -203,22 +202,22 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public PartialList<Map<String, Serializable>> queryAndFetch(
-            Expression expression, DBSExpressionEvaluator evaluator,
-            OrderByClause orderByClause, int limit, int offset, int countUpTo,
-            boolean deepCopy, Set<String> ignored) {
-        List<Map<String, Serializable>> maps = new ArrayList<>();
-        for (Entry<String, Map<String, Serializable>> en : states.entrySet()) {
+    public PartialList<State> queryAndFetch(Expression expression,
+            DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
+            int limit, int offset, int countUpTo, boolean deepCopy,
+            Set<String> ignored) {
+        List<State> maps = new ArrayList<>();
+        for (Entry<String, State> en : states.entrySet()) {
             String id = en.getKey();
             if (ignored.contains(id)) {
                 continue;
             }
-            Map<String, Serializable> map = en.getValue();
-            if (evaluator.matches(map)) {
+            State state = en.getValue();
+            if (evaluator.matches(state)) {
                 if (deepCopy) {
-                    map = CopyHelper.deepCopy(map);
+                    state = CopyHelper.deepCopy(state);
                 }
-                maps.add(map);
+                maps.add(state);
             }
         }
         // ORDER BY

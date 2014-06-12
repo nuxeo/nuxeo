@@ -23,21 +23,22 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.storage.CopyHelper;
+import org.nuxeo.ecm.core.storage.State;
 
 /**
  * Implementation of a {@link Document} state for Document-Based Storage.
+ * <p>
+ * It wraps a {@link State}, together with a dirty flag.
  *
  * @since 5.9.4
  */
 public class DBSDocumentState {
 
-    protected Map<String, Serializable> map;
+    protected State state;
 
     protected AtomicBoolean dirty = new AtomicBoolean(false);
 
@@ -45,21 +46,21 @@ public class DBSDocumentState {
      * Constructs an empty state.
      */
     public DBSDocumentState() {
-        map = new HashMap<String, Serializable>();
+        state = new State();
     }
 
     /**
      * Constructs a state from an existing base map.
      */
-    public DBSDocumentState(Map<String, Serializable> base) {
-        map = CopyHelper.deepCopy(base);
+    public DBSDocumentState(State base) {
+        state = CopyHelper.deepCopy(base);
     }
 
     /**
      * Copy constructor.
      */
-    public DBSDocumentState(DBSDocumentState state) {
-        this(state.map);
+    public DBSDocumentState(DBSDocumentState docState) {
+        this(docState.state);
     }
 
     public AtomicBoolean getDirty() {
@@ -74,21 +75,21 @@ public class DBSDocumentState {
         dirty.set(false);
     }
 
-    public Map<String, Serializable> getMap() {
-        return map;
+    public State getState() {
+        return state;
     }
 
     public Serializable get(String key) {
-        return map.get(key);
+        return state.get(key);
     }
 
     public void put(String key, Serializable value) {
-        map.put(key, value);
+        state.put(key, value);
         dirty.set(true);
     }
 
     public boolean containsKey(String key) {
-        return map.get(key) != null;
+        return state.get(key) != null;
     }
 
     public String getId() {
@@ -114,7 +115,7 @@ public class DBSDocumentState {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(dirty=" + dirty + ','
-                + map.toString() + ')';
+                + state.toString() + ')';
     }
 
 }

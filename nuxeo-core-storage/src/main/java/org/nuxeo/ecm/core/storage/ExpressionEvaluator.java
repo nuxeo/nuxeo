@@ -19,13 +19,11 @@ package org.nuxeo.ecm.core.storage;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -390,8 +388,7 @@ public abstract class ExpressionEvaluator {
      * @param ref the reference
      * @param map the state representation
      */
-    public abstract Object evaluateReference(Reference ref,
-            Map<String, Serializable> map);
+    public abstract Object evaluateReference(Reference ref, State map);
 
     protected Boolean bool(Object value) {
         if (value == null) {

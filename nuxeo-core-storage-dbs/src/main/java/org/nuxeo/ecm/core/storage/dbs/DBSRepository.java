@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +20,7 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.PartialList;
+import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 
 /**
@@ -57,7 +57,7 @@ public interface DBSRepository extends Repository {
      * @param id the document id
      * @return the document state, or {@code null} if not found
      */
-    Map<String, Serializable> readState(String id);
+    State readState(String id);
 
     /**
      * Reads the states of several documents.
@@ -67,7 +67,7 @@ public interface DBSRepository extends Repository {
      * @param ids the document ids
      * @return the document states, an element by be {@code null} if not found
      */
-    List<Map<String, Serializable>> readStates(List<String> ids);
+    List<State> readStates(List<String> ids);
 
     /**
      * Creates a document.
@@ -75,7 +75,7 @@ public interface DBSRepository extends Repository {
      * @param state the document state
      * @throws DocumentException if the document already exists
      */
-    void createState(Map<String, Serializable> state) throws DocumentException;
+    void createState(State state) throws DocumentException;
 
     /**
      * Updates a document.
@@ -83,7 +83,7 @@ public interface DBSRepository extends Repository {
      * @param state the document state
      * @throws DocumentException if the document does not exist
      */
-    void updateState(Map<String, Serializable> state) throws DocumentException;
+    void updateState(State state) throws DocumentException;
 
     /**
      * Deletes a document.
@@ -101,8 +101,7 @@ public interface DBSRepository extends Repository {
      * @param ignored a set of document ids that should not be considered
      * @return the state of the child document, or {@code null} if not found
      */
-    Map<String, Serializable> readChildState(String parentId, String name,
-            Set<String> ignored);
+    State readChildState(String parentId, String name, Set<String> ignored);
 
     /**
      * Checks if a document has a child with the given name
@@ -122,8 +121,7 @@ public interface DBSRepository extends Repository {
      * @param ignored a set of document ids that should not be considered
      * @return the document states matching the query
      */
-    List<Map<String, Serializable>> queryKeyValue(String key, String value,
-            Set<String> ignored);
+    List<State> queryKeyValue(String key, String value, Set<String> ignored);
 
     /**
      * Queries the repository for document ids having value in key (an array).
@@ -172,7 +170,7 @@ public interface DBSRepository extends Repository {
      * @return a partial list containing the limited documents required, and the
      *         total size according to countUpTo
      */
-    PartialList<Map<String, Serializable>> queryAndFetch(Expression expression,
+    PartialList<State> queryAndFetch(Expression expression,
             DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
             int limit, int offset, int countUpTo, boolean deepCopy,
             Set<String> ignored);
