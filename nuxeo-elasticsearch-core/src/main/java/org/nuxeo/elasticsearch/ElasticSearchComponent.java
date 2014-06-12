@@ -73,9 +73,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -97,7 +95,7 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
-import org.nuxeo.elasticsearch.nxql.NxqlQueryConverter;
+import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -249,7 +247,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 log.trace("Sending bulk indexing request to Elasticsearch: "
                         + cmd.toString());
             }
-            IndexRequestBuilder idxRequest = buildESIndexingRequest(cmd);
+            IndexRequestBuilder idxRequest = buildEsIndexingRequest(cmd);
             bulkRequest.add(idxRequest);
         }
         if (bulkRequest.numberOfActions() > 0) {
@@ -304,7 +302,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             throws ClientException {
         DocumentModel doc = cmd.getTargetDocument();
         assert (doc != null);
-        IndexRequestBuilder request = buildESIndexingRequest(cmd);
+        IndexRequestBuilder request = buildEsIndexingRequest(cmd);
         if (log.isDebugEnabled()) {
             log.debug(String
                     .format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
@@ -352,7 +350,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-    protected IndexRequestBuilder buildESIndexingRequest(IndexingCommand cmd)
+    protected IndexRequestBuilder buildEsIndexingRequest(IndexingCommand cmd)
             throws ClientException {
         DocumentModel doc = cmd.getTargetDocument();
         try {
@@ -439,7 +437,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return values.toArray(new String[values.size()]);
     }
 
-    private String getSearchIndexesAsString() {
+    protected String getSearchIndexesAsString() {
         return StringUtils.join(indexNames.values(), ',');
     }
 
@@ -567,59 +565,67 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return client;
     }
 
+    @Override public DocumentModelList query(
+            NxQueryBuilder queryBuilder)
+            throws ClientException {
+        SearchResponse response = search(queryBuilder);
+        List<String> ids = new ArrayList<String>(queryBuilder.getLimit());
+        for (SearchHit hit : response.getHits()) {
+            ids.add(hit.getId());
+        }
+        long totalSize = response.getHits().getTotalHits();
+        return fetchDocumentModelListFromVcs(queryBuilder.getSession(), ids, totalSize);
+
+    }
+
     @Override
     public DocumentModelList query(CoreSession session, String nxql, int limit,
             int offset, SortInfo... sortInfos) throws ClientException {
-        QueryBuilder queryBuilder = NxqlQueryConverter.toESQueryBuilder(nxql);
-
-        // handle the built-in order by clause
-        if (nxql.toLowerCase().contains("order by")) {
-            List<SortInfo> builtInSortInfos = NxqlQueryConverter
-                    .getSortInfo(nxql);
-            if (sortInfos != null) {
-                Collections.addAll(builtInSortInfos, sortInfos);
-            }
-            sortInfos = builtInSortInfos.toArray(new SortInfo[builtInSortInfos
-                    .size()]);
-        }
-        return query(session, queryBuilder, limit, offset, sortInfos);
+        NxQueryBuilder query = new NxQueryBuilder(
+                session).nxql(nxql).limit(limit).offset(offset)
+                .addSort(sortInfos);
+        return query(query);
     }
 
     @Override
     public DocumentModelList query(CoreSession session,
             QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) throws ClientException {
-        SearchResponse response = queryElasticsearch(session, queryBuilder,
-                limit, offset, sortInfos);
-        List<String> ids = new ArrayList<String>(limit);
-        for (SearchHit hit : response.getHits()) {
-            ids.add(hit.getId());
-        }
-        long totalSize = response.getHits().getTotalHits();
-        return fetchDocumentModelListFromVcs(session, ids, totalSize);
+        NxQueryBuilder query = new NxQueryBuilder(
+                session).esQuery(queryBuilder).limit(limit).offset(offset)
+                .addSort(sortInfos);
+        return query(query);
     }
 
-    protected SearchResponse queryElasticsearch(CoreSession session,
-            QueryBuilder queryBuilder, int limit, int offset,
-            SortInfo[] sortInfos) {
+    protected SearchResponse search(NxQueryBuilder query) {
+        QueryBuilder qb = query.getEsQueryBuilder();
         Context stopWatch = searchTimer.time();
         try {
-            // Initialize request
-            SearchRequestBuilder request = initSearchRequest(limit, offset);
-            // Add security filter
-            request.setQuery(addSecurityFilter(session, queryBuilder));
-            // Add sort
-            for (SortBuilder sortBuilder : getSortBuilders(sortInfos)) {
-                request.addSort(sortBuilder);
-            }
+            SearchRequestBuilder request = buildEsSearchRequest(query);
             logSearchRequest(request);
-            // Execute the ES query
             SearchResponse response = request.execute().actionGet();
             logSearchResponse(response);
             return response;
         } finally {
             stopWatch.stop();
         }
+    }
+
+    protected SearchRequestBuilder buildEsSearchRequest(NxQueryBuilder query) {
+        SearchRequestBuilder request = getClient().prepareSearch(getSearchIndexes()).setTypes(
+                DOC_TYPE)
+                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                    .setFrom(query.getOffset()).setSize(query.getLimit());
+        if (! query.isFetchFromElasticsearch()) {
+            request.addField(ID_FIELD);
+        }
+        // Add security filter
+        request.setQuery(addSecurityFilter(query.getSession(), query.getEsQueryBuilder()));
+        // Add sort
+        for (SortBuilder sortBuilder : query.getSortBuilders()) {
+            request.addSort(sortBuilder);
+        }
+        return request;
     }
 
     protected void logSearchResponse(SearchResponse response) {
@@ -637,20 +643,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-    protected SortBuilder[] getSortBuilders(SortInfo[] sortInfos) {
-        SortBuilder[] ret;
-        if (sortInfos == null) {
-            return new SortBuilder[0];
-        }
-        ret = new SortBuilder[sortInfos.length];
-        int i = 0;
-        for (SortInfo sortInfo : sortInfos) {
-            ret[i++] = new FieldSortBuilder(sortInfo.getSortColumn())
-                    .order(sortInfo.getSortAscending() ? SortOrder.ASC
-                            : SortOrder.DESC);
-        }
-        return ret;
-    }
 
     protected QueryBuilder addSecurityFilter(CoreSession session,
             QueryBuilder queryBuilder) {
@@ -670,11 +662,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return QueryBuilders.filteredQuery(queryBuilder, aclFilter);
     }
 
-    protected SearchRequestBuilder initSearchRequest(int limit, int offset) {
-        return getClient().prepareSearch(getSearchIndexes()).setTypes(DOC_TYPE)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .addField(ID_FIELD).setFrom(offset).setSize(limit);
-    }
 
     protected DocumentModelList fetchDocumentModelListFromVcs(
             CoreSession session, List<String> ids, long totalSize) {

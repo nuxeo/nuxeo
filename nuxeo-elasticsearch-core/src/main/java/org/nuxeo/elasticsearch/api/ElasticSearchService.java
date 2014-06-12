@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 
 /**
  * Interface to search on documents
@@ -31,15 +32,30 @@ import org.nuxeo.ecm.core.api.SortInfo;
  */
 public interface ElasticSearchService {
 
+
+    /**
+     * Returns a document list using an {@link NxQueryBuilder}.
+     *
+     * @since 5.9.5
+     */
+    DocumentModelList query(
+            NxQueryBuilder queryBuilder)
+            throws ClientException;
+
     /**
      * Returns a document list using an NXQL query.
      *
+     * Fetch documents from the VCS repository.
+     *
+     * @since 5.9.3
      */
     DocumentModelList query(CoreSession session, String nxql, int limit,
             int offset, SortInfo... sortInfos) throws ClientException;
 
     /**
      * Returns a document list using an ElasticSearch {@link QueryBuilder}.
+     *
+     * Fetch documents from the VCS repository.
      *
      * @since 5.9.3
      */
