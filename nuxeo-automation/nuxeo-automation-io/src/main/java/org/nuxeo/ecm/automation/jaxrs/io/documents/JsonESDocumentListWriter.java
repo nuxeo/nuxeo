@@ -92,11 +92,19 @@ public class JsonESDocumentListWriter extends JsonDocumentListWriter {
     public void writeDocuments(OutputStream out, List<DocumentModel> docs,
             String[] schemas) throws Exception {
         writeDocs(factory.createJsonGenerator(out, JsonEncoding.UTF8), docs,
-                schemas);
+                schemas, null);
+    }
+
+    /**
+     * @since 5.9.5
+     */
+    public void writeDocs(JsonGenerator jg, List<DocumentModel> docs,
+            String[] schemas) throws Exception {
+        writeDocs(jg, docs, schemas, null);
     }
 
     public void writeDocs(JsonGenerator jg, List<DocumentModel> docs,
-            String[] schemas) throws Exception {
+            String[] schemas, HttpHeaders headers) throws Exception {
         String esIndex = request.getParameter("esIndex");
         if (esIndex == null) {
             esIndex = DEFAULT_ES_INDEX;
