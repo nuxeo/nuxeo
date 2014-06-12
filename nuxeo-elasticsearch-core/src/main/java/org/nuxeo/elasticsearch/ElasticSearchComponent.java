@@ -38,8 +38,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -120,57 +120,36 @@ import com.codahale.metrics.Timer.Context;
 public class ElasticSearchComponent extends DefaultComponent implements
         ElasticSearchService, ElasticSearchIndexing, ElasticSearchAdmin {
 
+    public static final String EP_REMOTE = "elasticSearchRemote";
+    public static final String EP_LOCAL = "elasticSearchLocal";
+    public static final String EP_INDEX = "elasticSearchIndex";
+    public static final String ID_FIELD = "_id";
     private static final Log log = LogFactory
             .getLog(ElasticSearchComponent.class);
-
-    public static final String EP_REMOTE = "elasticSearchRemote";
-
-    public static final String EP_LOCAL = "elasticSearchLocal";
-
-    public static final String EP_INDEX = "elasticSearchIndex";
-
-    public static final String ID_FIELD = "_id";
-
-    protected Node localNode;
-
-    protected Client client;
-
-    protected boolean indexInitDone = false;
-
     // indexing command that where received before the index initialization
     protected final List<IndexingCommand> stackedCommands = new ArrayList<>();
-
     protected final Map<String, String> indexNames = new HashMap<String, String>();
-
     // temporary hack until we are able to list pending indexing jobs cluster
     // wide
     protected final Set<String> pendingWork = Collections
             .synchronizedSet(new HashSet<String>());
-
     protected final Set<String> pendingCommands = Collections
             .synchronizedSet(new HashSet<String>());
-
     protected final Map<String, ElasticSearchIndexConfig> indexes = new HashMap<String, ElasticSearchIndexConfig>();
-
     // Metrics
     protected final MetricRegistry registry = SharedMetricRegistries
             .getOrCreate(MetricsService.class.getName());
-
-    protected Timer searchTimer;
-
-    protected Timer fetchTimer;
-
-    protected Timer deleteTimer;
-
-    protected Timer indexTimer;
-
-    protected Timer bulkIndexTimer;
-
-    private ElasticSearchLocalConfig localConfig;
-
-    private ElasticSearchRemoteConfig remoteConfig;
-
     private final AtomicInteger totalCommandProcessed = new AtomicInteger(0);
+    protected Node localNode;
+    protected Client client;
+    protected boolean indexInitDone = false;
+    protected Timer searchTimer;
+    protected Timer fetchTimer;
+    protected Timer deleteTimer;
+    protected Timer indexTimer;
+    protected Timer bulkIndexTimer;
+    private ElasticSearchLocalConfig localConfig;
+    private ElasticSearchRemoteConfig remoteConfig;
 
     @Override
     public void registerContribution(Object contribution,
@@ -277,7 +256,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Index %d docs in bulk request: curl -XPOST 'http://localhost:9200/_bulk' -d '%s'",
-                                bulkRequest.numberOfActions(), bulkRequest.request().requests().toString()));
+                                bulkRequest.numberOfActions(), bulkRequest
+                                        .request().requests().toString()));
             }
             BulkResponse response = bulkRequest.execute().actionGet();
             if (response.hasFailures()) {
@@ -328,8 +308,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (log.isDebugEnabled()) {
             log.debug(String
                     .format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                            getRepositoryIndex(doc.getRepositoryName()), DOC_TYPE, doc.getId(), request
-                                    .request().toString()));
+                            getRepositoryIndex(doc.getRepositoryName()),
+                            DOC_TYPE, doc.getId(), request.request().toString()));
         }
         request.execute().actionGet();
     }
@@ -343,8 +323,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (log.isDebugEnabled()) {
             log.debug(String
                     .format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                            indexName, DOC_TYPE, doc.getId(), request
-                                    .request().toString()));
+                            indexName, DOC_TYPE, doc.getId(), request.request()
+                                    .toString()));
         }
         request.execute().actionGet();
         if (cmd.isRecurse()) {
@@ -383,8 +363,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
             JsonESDocumentWriter.writeESDocument(jsonGen, doc,
                     cmd.getSchemas(), null);
             return getClient().prepareIndex(
-                    getRepositoryIndex(doc.getRepositoryName()),
-                    DOC_TYPE, doc.getId()).setSource(builder);
+                    getRepositoryIndex(doc.getRepositoryName()), DOC_TYPE,
+                    doc.getId()).setSource(builder);
         } catch (Exception e) {
             throw new ClientException(
                     "Unable to create index request for Document "
@@ -403,7 +383,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected int markCommandInProgress(IndexingCommand cmd) {
         pendingWork.remove(getWorkKey(cmd));
         boolean isRemoved = pendingCommands.remove(cmd.getId());
-        return isRemoved ? 1: 0;
+        return isRemoved ? 1 : 0;
     }
 
     @Override
@@ -433,7 +413,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
             }
             WorkManager wm = Framework.getLocalService(WorkManager.class);
             IndexingWorker idxWork = new IndexingWorker(cmd);
-            // will be scheduled after the commit and only if the tx is not rollbacked
+            // will be scheduled after the commit and only if the tx is not
+            // rollbacked
             wm.schedule(idxWork, true);
         }
     }
@@ -444,8 +425,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected String getRepositoryIndex(String repositoryName) {
         String ret = indexNames.get(repositoryName);
         if (ret == null) {
-            throw new NoSuchElementException("No index defined for repository: "
-                    + repositoryName);
+            throw new NoSuchElementException(
+                    "No index defined for repository: " + repositoryName);
         }
         return ret;
     }
@@ -462,22 +443,25 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return StringUtils.join(indexNames.values(), ',');
     }
 
-    @Override public void refreshRepositoryIndex(String repositoryName) {
+    @Override
+    public void refreshRepositoryIndex(String repositoryName) {
         if (log.isDebugEnabled()) {
-            log.debug("Refreshing index associated with repo: " + repositoryName);
+            log.debug("Refreshing index associated with repo: "
+                    + repositoryName);
         }
-         getClient().admin().indices().prepareRefresh(
-                getRepositoryIndex(repositoryName)).execute()
+        getClient().admin().indices()
+                .prepareRefresh(getRepositoryIndex(repositoryName)).execute()
                 .actionGet();
         if (log.isDebugEnabled()) {
             log.debug("Refreshing index done");
         }
     }
 
-    @Override public void flushRepositoryIndex(String repositoryName) {
+    @Override
+    public void flushRepositoryIndex(String repositoryName) {
         log.info("Flushing index associated with repo: " + repositoryName);
-        getClient().admin().indices().prepareFlush(getRepositoryIndex(
-                repositoryName)).execute()
+        getClient().admin().indices()
+                .prepareFlush(getRepositoryIndex(repositoryName)).execute()
                 .actionGet();
         if (log.isDebugEnabled()) {
             log.debug("Flushing index done");
@@ -486,14 +470,14 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public void refresh() {
-        for (String RepositoryName: indexNames.keySet()) {
+        for (String RepositoryName : indexNames.keySet()) {
             refreshRepositoryIndex(RepositoryName);
         }
     }
 
     @Override
     public void flush() {
-        for (String RepositoryName: indexNames.keySet()) {
+        for (String RepositoryName : indexNames.keySet()) {
             flushRepositoryIndex(RepositoryName);
         }
     }
@@ -601,7 +585,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return query(session, queryBuilder, limit, offset, sortInfos);
     }
 
-
     @Override
     public DocumentModelList query(CoreSession session,
             QueryBuilder queryBuilder, int limit, int offset,
@@ -662,8 +645,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
         ret = new SortBuilder[sortInfos.length];
         int i = 0;
         for (SortInfo sortInfo : sortInfos) {
-            ret[i++] = new FieldSortBuilder(sortInfo.getSortColumn()).order(
-                    sortInfo.getSortAscending() ? SortOrder.ASC: SortOrder.DESC);
+            ret[i++] = new FieldSortBuilder(sortInfo.getSortColumn())
+                    .order(sortInfo.getSortAscending() ? SortOrder.ASC
+                            : SortOrder.DESC);
         }
         return ret;
     }
@@ -686,17 +670,14 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return QueryBuilders.filteredQuery(queryBuilder, aclFilter);
     }
 
-    protected SearchRequestBuilder initSearchRequest(int limit,
-            int offset) {
-        return getClient()
-                        .prepareSearch(getSearchIndexes()).setTypes(DOC_TYPE)
-                        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                        .addField(ID_FIELD).setFrom(offset).setSize(limit);
+    protected SearchRequestBuilder initSearchRequest(int limit, int offset) {
+        return getClient().prepareSearch(getSearchIndexes()).setTypes(DOC_TYPE)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .addField(ID_FIELD).setFrom(offset).setSize(limit);
     }
 
     protected DocumentModelList fetchDocumentModelListFromVcs(
-            CoreSession session, List<String> ids,
-            long totalSize) {
+            CoreSession session, List<String> ids, long totalSize) {
         Context stopWatch = fetchTimer.time();
         try {
             DocumentModelList ret = new DocumentModelListImpl(ids.size());
@@ -817,11 +798,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
                         .prepareGetMappings(conf.getName()).execute()
                         .actionGet().getMappings().containsKey(DOC_TYPE);
             } else {
-                if (! Framework.isTestModeSet()) {
-                    log.warn(String.format(
-                            "Initializing index: %s, type: %s with "
-                                    + "dropIfExists flag, deleting an existing index",
-                            conf.getName(), conf.getType()));
+                if (!Framework.isTestModeSet()) {
+                    log.warn(String
+                            .format("Initializing index: %s, type: %s with "
+                                            + "dropIfExists flag, deleting an existing index",
+                                    conf.getName(), conf.getType()));
                 }
                 getClient().admin().indices()
                         .delete(new DeleteIndexRequest(conf.getName()))
@@ -866,13 +847,14 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected String getWorkKey(IndexingCommand cmd) {
         DocumentModel doc = cmd.getTargetDocument();
-        return doc.getRepositoryName() + ":" + doc.getId() + ":" + cmd.isRecurse();
+        return doc.getRepositoryName() + ":" + doc.getId() + ":"
+                + cmd.isRecurse();
     }
 
     @Override
     public boolean isAlreadyScheduled(IndexingCommand cmd) {
-        return pendingCommands.contains(cmd.getId()) || pendingWork
-                .contains(getWorkKey(cmd));
+        return pendingCommands.contains(cmd.getId())
+                || pendingWork.contains(getWorkKey(cmd));
     }
 
     @Override
@@ -885,7 +867,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return pendingCommands.size();
     }
 
-    @Override public int getTotalCommandProcessed() {
+    @Override
+    public int getTotalCommandProcessed() {
         return totalCommandProcessed.get();
     }
 
