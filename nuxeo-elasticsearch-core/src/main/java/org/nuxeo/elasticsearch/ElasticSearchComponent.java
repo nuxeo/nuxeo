@@ -565,25 +565,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return client;
     }
 
-    @Override public DocumentModelList query(
-            NxQueryBuilder queryBuilder)
-            throws ClientException {
-        SearchResponse response = search(queryBuilder);
-        List<String> ids = new ArrayList<String>(queryBuilder.getLimit());
-        for (SearchHit hit : response.getHits()) {
-            ids.add(hit.getId());
-        }
-        long totalSize = response.getHits().getTotalHits();
-        return fetchDocumentModelListFromVcs(queryBuilder.getSession(), ids, totalSize);
-
-    }
-
     @Override
     public DocumentModelList query(CoreSession session, String nxql, int limit,
             int offset, SortInfo... sortInfos) throws ClientException {
-        NxQueryBuilder query = new NxQueryBuilder(
-                session).nxql(nxql).limit(limit).offset(offset)
-                .addSort(sortInfos);
+        NxQueryBuilder query = new NxQueryBuilder(session).nxql(nxql)
+                .limit(limit).offset(offset).addSort(sortInfos);
         return query(query);
     }
 
@@ -591,10 +577,26 @@ public class ElasticSearchComponent extends DefaultComponent implements
     public DocumentModelList query(CoreSession session,
             QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) throws ClientException {
-        NxQueryBuilder query = new NxQueryBuilder(
-                session).esQuery(queryBuilder).limit(limit).offset(offset)
+        NxQueryBuilder query = new NxQueryBuilder(session)
+                .esQuery(queryBuilder).limit(limit).offset(offset)
                 .addSort(sortInfos);
         return query(query);
+    }
+
+    @Override
+    public DocumentModelList query(
+            NxQueryBuilder queryBuilder)
+            throws ClientException {
+        SearchResponse response = search(queryBuilder);
+        Context stopWatch = fetchTimer.time();
+        try {
+            if (queryBuilder.isFetchFromElasticsearch()) {
+                return fetchDocumentsFromElasticsearch(queryBuilder, response);
+            }
+            return fetchDocumentsFromVcs(queryBuilder, response);
+        } finally {
+            stopWatch.stop();
+        }
     }
 
     protected SearchResponse search(NxQueryBuilder query) {
@@ -643,7 +645,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-
     protected QueryBuilder addSecurityFilter(CoreSession session,
             QueryBuilder queryBuilder) {
         AndFilterBuilder aclFilter;
@@ -662,24 +663,30 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return QueryBuilders.filteredQuery(queryBuilder, aclFilter);
     }
 
+    private DocumentModelList fetchDocumentsFromElasticsearch(
+            NxQueryBuilder queryBuilder,
+            SearchResponse response) {
+        // TODO impl fetch from ES
+        return null;
+    }
 
-    protected DocumentModelList fetchDocumentModelListFromVcs(
-            CoreSession session, List<String> ids, long totalSize) {
-        Context stopWatch = fetchTimer.time();
-        try {
-            DocumentModelList ret = new DocumentModelListImpl(ids.size());
-            ((DocumentModelListImpl) ret).setTotalSize(totalSize);
-            if (!ids.isEmpty()) {
-                try {
-                    ret.addAll(fetchDocumentsFromVcs(ids, session));
-                } catch (ClientException e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
-            return ret;
-        } finally {
-            stopWatch.stop();
+    protected DocumentModelList fetchDocumentsFromVcs(
+            NxQueryBuilder queryBuilder, SearchResponse response) {
+        long totalSize = response.getHits().getTotalHits();
+        List<String> ids = new ArrayList<String>(queryBuilder.getLimit());
+        for (SearchHit hit : response.getHits()) {
+            ids.add(hit.getId());
         }
+        DocumentModelList ret = new DocumentModelListImpl(ids.size());
+        ((DocumentModelListImpl) ret).setTotalSize(totalSize);
+        if (!ids.isEmpty()) {
+            try {
+                ret.addAll(fetchDocumentsFromVcs(ids, queryBuilder.getSession()));
+            } catch (ClientException e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+        return ret;
     }
 
     /**

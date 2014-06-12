@@ -42,7 +42,7 @@ public class NxQueryBuilder {
     private List<SortInfo> sortInfos = new ArrayList<SortInfo>();
     private String nxql;
     private org.elasticsearch.index.query.QueryBuilder esQueryBuilder;
-    private boolean fetchFromElasticsearch = true;
+    private boolean fetchFromElasticsearch = false;
 
     public NxQueryBuilder(CoreSession coreSession) {
         session = coreSession;
