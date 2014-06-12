@@ -15,7 +15,7 @@
  *     bdelbosc
  */
 
-package org.nuxeo.elasticsearch.provider;
+package org.nuxeo.elasticsearch.query;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -30,9 +30,11 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
-import org.nuxeo.elasticsearch.nxql.NxqlQueryConverter;
 
-public class ElasticSearchQueryBuilder {
+/**
+ * Elasticsearch query builder for Page provider.
+ */
+public class PageProviderQueryBuilder {
 
     /**
      * Create a ES request from a PP pattern

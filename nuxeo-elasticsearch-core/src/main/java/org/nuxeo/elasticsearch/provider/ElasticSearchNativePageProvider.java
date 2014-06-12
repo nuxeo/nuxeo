@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.query.PageProviderQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 
 public class ElasticSearchNativePageProvider extends
@@ -85,7 +86,7 @@ public class ElasticSearchNativePageProvider extends
         try {
             PageProviderDefinition def = getDefinition();
             if (def.getWhereClause() == null) {
-                ret = ElasticSearchQueryBuilder.makeQuery(def.getPattern(),
+                ret = PageProviderQueryBuilder.makeQuery(def.getPattern(),
                         getParameters(), def.getQuotePatternParameters(),
                         def.getEscapePatternParameters(), isNativeQuery());
             } else {
@@ -96,7 +97,7 @@ public class ElasticSearchNativePageProvider extends
                                     + "no search document model is set",
                             getName()));
                 }
-                ret = ElasticSearchQueryBuilder.makeQuery(searchDocumentModel,
+                ret = PageProviderQueryBuilder.makeQuery(searchDocumentModel,
                         def.getWhereClause(), getParameters(), isNativeQuery());
             }
         } catch (ClientException e) {

@@ -26,10 +26,9 @@ import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.elasticsearch.nxql.NxqlQueryConverter;
 
 /**
- * A query builder for Nuxeo to build query for Elasticsearch.
+ * Elasticsearch query buidler for the Nuxeo ES api.
  *
  * @since 5.9.5
  */
@@ -140,7 +139,10 @@ public class NxQueryBuilder {
         return session;
     }
 
-    public org.elasticsearch.index.query.QueryBuilder getEsQueryBuilder() {
+    /**
+     * Get the Elasticsearch queryBuilder.
+     */
+    public org.elasticsearch.index.query.QueryBuilder makeQuery() {
         if (esQueryBuilder == null) {
             if (nxql != null) {
                 esQueryBuilder = NxqlQueryConverter.toESQueryBuilder(nxql);

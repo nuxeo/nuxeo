@@ -16,7 +16,7 @@
  *     bdelbosc
  */
 
-package org.nuxeo.elasticsearch.nxql;
+package org.nuxeo.elasticsearch.query;
 
 import java.io.StringReader;
 import java.util.ArrayList;

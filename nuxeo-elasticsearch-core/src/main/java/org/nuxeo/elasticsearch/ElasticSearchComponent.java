@@ -600,7 +600,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     protected SearchResponse search(NxQueryBuilder query) {
-        QueryBuilder qb = query.getEsQueryBuilder();
+        QueryBuilder qb = query.makeQuery();
         Context stopWatch = searchTimer.time();
         try {
             SearchRequestBuilder request = buildEsSearchRequest(query);
@@ -614,7 +614,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     protected SearchRequestBuilder buildEsSearchRequest(NxQueryBuilder query) {
-        SearchRequestBuilder request = getClient().prepareSearch(getSearchIndexes()).setTypes(
+        SearchRequestBuilder request = getClient().prepareSearch(
+                getSearchIndexes()).setTypes(
                 DOC_TYPE)
                     .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                     .setFrom(query.getOffset()).setSize(query.getLimit());
@@ -622,7 +623,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             request.addField(ID_FIELD);
         }
         // Add security filter
-        request.setQuery(addSecurityFilter(query.getSession(), query.getEsQueryBuilder()));
+        request.setQuery(addSecurityFilter(query.getSession(), query.makeQuery()));
         // Add sort
         for (SortBuilder sortBuilder : query.getSortBuilders()) {
             request.addSort(sortBuilder);
