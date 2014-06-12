@@ -18,12 +18,7 @@
 
 package org.nuxeo.elasticsearch.api;
 
-import java.util.List;
-
 import org.elasticsearch.client.Client;
-import org.elasticsearch.cluster.service.PendingClusterTask;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.elasticsearch.commands.IndexingCommand;
 
 /**
  * Administration interface for Elasticsearch service
@@ -74,13 +69,6 @@ public interface ElasticSearchAdmin {
      * @since 5.9.4
      */
     int getTotalCommandProcessed();
-
-    /**
-     * Returns list of {@link PendingClusterTask} not yet processed.
-     *
-     * @since 5.9.3
-     */
-    List<PendingClusterTask> getPendingTasks();
 
     /**
      * Refresh all document indexes, immediately after the operation occurs,

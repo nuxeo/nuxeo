@@ -9,7 +9,6 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.verification.Times;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -108,13 +107,13 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
         IndexingCommands ic1 = getCommands(doc1);
         Assert.assertEquals(1, ic1.getCommands().size());
-        ic1.contains(IndexingCommand.INDEX);
+        Assert.assertTrue(ic1.contains(IndexingCommand.INDEX));
         Assert.assertEquals(IndexingCommand.INDEX,
                 ic1.getCommands().get(0).getName());
 
         IndexingCommands ic2 = getCommands(doc2);
         Assert.assertEquals(1, ic2.getCommands().size());
-        ic2.contains(IndexingCommand.UPDATE);
+        Assert.assertTrue(ic2.contains(IndexingCommand.UPDATE));
         Assert.assertEquals(IndexingCommand.UPDATE,
                 ic2.getCommands().get(0).getName());
 
@@ -144,14 +143,14 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
         IndexingCommands ic1 = getCommands(doc1);
         Assert.assertEquals(1, ic1.getCommands().size());
-        ic1.contains(IndexingCommand.UPDATE);
+        Assert.assertTrue(ic1.contains(IndexingCommand.UPDATE));
         Assert.assertEquals(IndexingCommand.UPDATE,
                 ic1.getCommands().get(0).getName());
         Assert.assertTrue(ic1.getCommands().get(0).isSync());
 
         IndexingCommands ic2 = getCommands(doc2);
         Assert.assertEquals(1, ic2.getCommands().size());
-        ic2.contains(IndexingCommand.INDEX);
+        Assert.assertTrue(ic2.contains(IndexingCommand.INDEX));
         Assert.assertEquals(IndexingCommand.INDEX,
                 ic2.getCommands().get(0).getName());
         Assert.assertTrue(ic2.getCommands().get(0).isSync());
@@ -174,14 +173,14 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
         IndexingCommands ic1 = getCommands(doc1);
         Assert.assertEquals(1, ic1.getCommands().size());
-        ic1.contains(IndexingCommand.UPDATE);
+        Assert.assertTrue(ic1.contains(IndexingCommand.UPDATE));
         Assert.assertEquals(IndexingCommand.UPDATE,
                 ic1.getCommands().get(0).getName());
         Assert.assertTrue(ic1.getCommands().get(0).isRecurse());
 
         IndexingCommands ic2 = getCommands(doc2);
         Assert.assertEquals(1, ic2.getCommands().size());
-        ic2.contains(IndexingCommand.UPDATE_SECURITY);
+        Assert.assertTrue(ic2.contains(IndexingCommand.UPDATE_SECURITY));
         Assert.assertEquals(IndexingCommand.UPDATE_SECURITY,
                 ic2.getCommands().get(0).getName());
         Assert.assertTrue(ic2.getCommands().get(0).isRecurse());
@@ -202,7 +201,7 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
         IndexingCommands ic1 = getCommands(doc1);
         // We should have 2 commands 1 sync + 1 async and recursive
         Assert.assertEquals(2, ic1.getCommands().size());
-        ic1.contains(IndexingCommand.UPDATE);
+        Assert.assertTrue(ic1.contains(IndexingCommand.UPDATE));
         Assert.assertEquals(IndexingCommand.UPDATE,
                 ic1.getCommands().get(0).getName());
         Assert.assertFalse(ic1.getCommands().get(0).isRecurse());

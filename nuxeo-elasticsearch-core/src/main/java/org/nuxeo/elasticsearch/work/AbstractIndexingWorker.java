@@ -18,9 +18,7 @@
 package org.nuxeo.elasticsearch.work;
 
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.AbstractWork;
-import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
@@ -37,7 +35,7 @@ public abstract class AbstractIndexingWorker extends AbstractWork {
 
     protected final IndexingCommand cmd;
 
-    protected String path;
+    protected final String path;
 
     public AbstractIndexingWorker(IndexingCommand cmd) {
         this.cmd = cmd;

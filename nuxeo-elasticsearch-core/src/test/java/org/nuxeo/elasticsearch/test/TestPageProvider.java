@@ -50,7 +50,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
-@RunWith(FeaturesRunner.class)
+@SuppressWarnings("unchecked") @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy({ "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
@@ -78,7 +78,7 @@ public class TestPageProvider {
                 (Serializable) session);
         long pageSize = 5;
         PageProvider<?> pp = pps.getPageProvider("NATIVE_PP_1", ppdef, null,
-                null, pageSize, Long.valueOf(0), props);
+                null, pageSize, (long) 0, props);
         Assert.assertNotNull(pp);
 
         // create 10 docs
@@ -137,7 +137,7 @@ public class TestPageProvider {
                 (Serializable) session);
         long pageSize = 5;
         PageProvider<?> pp = pps.getPageProvider("NXQL_PP_1", ppdef, null,
-                null, pageSize, Long.valueOf(0), props);
+                null, pageSize, (long) 0, props);
         Assert.assertNotNull(pp);
 
         // create 10 docs
@@ -196,7 +196,7 @@ public class TestPageProvider {
                 (Serializable) session);
         long pageSize = 5;
         PageProvider<?> pp = pps.getPageProvider("nxql_search", ppdef, null,
-                null, pageSize, Long.valueOf(0), props);
+                null, pageSize, (long) 0, props);
         Assert.assertNotNull(pp);
 
         // create 10 docs

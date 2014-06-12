@@ -19,6 +19,7 @@ package org.nuxeo.elasticsearch.test;
 
 import java.io.File;
 
+import java.security.InvalidParameterException;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
@@ -51,7 +52,13 @@ public class BareElasticSearchFeature extends SimpleFeature {
 
         File home = Framework.getRuntime().getHome();
         File esDirectory = new File(home, "elasticsearch");
-        esDirectory.mkdir();
+        if (!esDirectory.exists()) {
+            if (!esDirectory.mkdir()) {
+                throw new InvalidParameterException(
+                        "Can not create directory: "
+                                + esDirectory.getAbsolutePath());
+            }
+        }
         Settings settings = ImmutableSettings.settingsBuilder().put(
                 "node.http.enabled", true).put("path.logs",
                 esDirectory.getPath() + "/logs").put("path.data",

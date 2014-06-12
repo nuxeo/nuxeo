@@ -27,7 +27,6 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BINARYTEXT_UPDATED;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +51,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public abstract class IndexingCommandsStacker {
 
-    protected static Log log = LogFactory.getLog(IndexingCommandsStacker.class);
+    protected static final Log log = LogFactory.getLog(IndexingCommandsStacker.class);
 
     protected abstract Map<String, IndexingCommands> getAllCommands();
 
@@ -119,7 +118,7 @@ public abstract class IndexingCommandsStacker {
     }
 
     // never called because we don't have a proper hook for that !
-    protected void prepareFlush() throws IOException {
+    protected void prepareFlush() {
         Map<String, IndexingCommands> allCmds = getAllCommands();
         for (IndexingCommands cmds : allCmds.values()) {
             for (IndexingCommand cmd : cmds.getCommands()) {

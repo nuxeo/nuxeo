@@ -36,9 +36,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class IndexingCommands {
 
-    protected List<IndexingCommand> commands = new ArrayList<>();
+    protected final List<IndexingCommand> commands = new ArrayList<>();
 
-    protected List<String> commandNames = new ArrayList<>();
+    protected final List<String> commandNames = new ArrayList<>();
 
     protected DocumentModel targetDocument;
 

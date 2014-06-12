@@ -46,7 +46,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.elasticsearch.action.admin.cluster.tasks.PendingClusterTasksResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.status.IndicesStatusRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -62,7 +61,6 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.cluster.service.PendingClusterTask;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.ImmutableSettings.Builder;
 import org.elasticsearch.common.settings.Settings;
@@ -138,7 +136,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected boolean indexInitDone = false;
 
     // indexing command that where received before the index initialization
-    protected List<IndexingCommand> stackedCommands = new ArrayList<>();
+    protected final List<IndexingCommand> stackedCommands = new ArrayList<>();
 
     protected final Map<String, String> indexNames = new HashMap<String, String>();
 
@@ -150,7 +148,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected final Set<String> pendingCommands = Collections
             .synchronizedSet(new HashSet<String>());
 
-    protected Map<String, ElasticSearchIndexConfig> indexes = new HashMap<String, ElasticSearchIndexConfig>();
+    protected final Map<String, ElasticSearchIndexConfig> indexes = new HashMap<String, ElasticSearchIndexConfig>();
 
     // Metrics
     protected final MetricRegistry registry = SharedMetricRegistries
@@ -170,7 +168,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     private ElasticSearchRemoteConfig remoteConfig;
 
-    private AtomicInteger totalCommandProcessed = new AtomicInteger(0);
+    private final AtomicInteger totalCommandProcessed = new AtomicInteger(0);
 
     @Override
     public void registerContribution(Object contribution,
@@ -813,13 +811,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public boolean isAlreadyScheduled(IndexingCommand cmd) {
-        if (pendingCommands.contains(cmd.getId())) {
-            return true;
-        }
-        if (pendingWork.contains(getWorkKey(cmd))) {
-            return true;
-        }
-        return false;
+        return pendingCommands.contains(cmd.getId()) || pendingWork
+                .contains(getWorkKey(cmd));
     }
 
     @Override
@@ -834,13 +827,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override public int getTotalCommandProcessed() {
         return totalCommandProcessed.get();
-    }
-
-    @Override
-    public List<PendingClusterTask> getPendingTasks() {
-        PendingClusterTasksResponse response = getClient().admin().cluster()
-                .preparePendingClusterTasks().execute().actionGet();
-        return response.getPendingTasks();
     }
 
     /**

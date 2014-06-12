@@ -109,6 +109,8 @@ public class IndexingCommand {
         } else {
             // Doc was deleted : no way we can fetch it
             // re-attach ???
+            log.info("Can not refresh document because it was deleted: "
+                    + targetDocument.getRef());
         }
         markUpdated();
     }

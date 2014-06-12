@@ -107,7 +107,7 @@ public class TestCompareCoreWithES {
     }
 
     protected String getDigest(DocumentModelList docs) throws Exception  {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (DocumentModel doc : docs) {
             String nameOrTitle = doc.getName();
              if (nameOrTitle==null || nameOrTitle.isEmpty()) {

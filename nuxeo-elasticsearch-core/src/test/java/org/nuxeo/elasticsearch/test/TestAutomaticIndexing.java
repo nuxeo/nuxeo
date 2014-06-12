@@ -398,7 +398,6 @@ public class TestAutomaticIndexing {
     @Test
     public void shouldIndexBinaryFulltext() throws Exception {
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
         ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         BlobHolder holder = doc.getAdapter(BlobHolder.class);

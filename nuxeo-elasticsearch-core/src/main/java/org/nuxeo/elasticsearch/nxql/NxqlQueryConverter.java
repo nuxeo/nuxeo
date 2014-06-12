@@ -70,8 +70,8 @@ public class NxqlQueryConverter {
      */
     public static class QueryAndFilter {
 
-        public QueryBuilder query;
-        public FilterBuilder filter;
+        public final QueryBuilder query;
+        public final FilterBuilder filter;
 
         public QueryAndFilter(QueryBuilder query, FilterBuilder filter) {
             this.query = query;
@@ -81,7 +81,7 @@ public class NxqlQueryConverter {
 
     public static class ExpressionBuilder {
 
-        public String operator;
+        public final String operator;
         public QueryBuilder query;
 
         public ExpressionBuilder(final String op) {
