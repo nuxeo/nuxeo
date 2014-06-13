@@ -53,10 +53,19 @@ import javax.faces.view.facelets.FaceletCache;
 import com.sun.faces.util.ConcurrentCache;
 import com.sun.faces.util.ExpiringConcurrentCache;
 import com.sun.faces.util.FacesLogger;
-import com.sun.faces.util.Util;
 
 /**
  * Default FaceletCache implementation.
+ * <p>
+ * Overrides the default facelet cache for the following reasons:
+ * <ul>
+ * <li>fix a bug in the refresh cache, incrementing next refresh time too much
+ * (and then breaking the refresh mechanism)</li>
+ * </ul>
+ *
+ * @since 5.9.4-JSF2: copy/paste of default implementation because constructor
+ *        is package private, and changing private DefaultFacelet
+ *        implementation references to {@link Facelet}, and for bufix/adapt.
  */
 final class DefaultFaceletCache extends FaceletCache<Facelet> {
 
@@ -201,7 +210,10 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
         long getNextRefreshTime() {
             // There is no point in calculating the next refresh time if we are
             // refreshing always/never
+            // Nuxeo patch: do not increment everytime on get
             return (_refreshInterval > 0) ? _nextRefreshTime.longValue() : 0;
+            // return (_refreshInterval > 0) ?
+            // _nextRefreshTime.getAndAdd(_refreshInterval) : 0;
         }
 
         private final long _lastModified;
@@ -221,6 +233,7 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
         public boolean isExpired(URL url, Record record) {
             // getNextRefreshTime() increments the next refresh time
             // atomically
+            // Nuxeo patch: do not increment it every time a check is done.
             long ttl = record.getNextRefreshTime();
             if (System.currentTimeMillis() > ttl) {
                 long lastModified = Util.getLastModified(url);

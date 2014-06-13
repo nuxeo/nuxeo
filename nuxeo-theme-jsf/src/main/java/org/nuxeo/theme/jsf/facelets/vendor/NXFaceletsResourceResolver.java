@@ -24,6 +24,8 @@ import javax.faces.view.facelets.ResourceResolver;
 import org.nuxeo.theme.jsf.FacesResourceResolver;
 
 /**
+ * Hooks up {@link FacesResourceResolver} to the JSF2 mechanism.
+ *
  * @since 5.9.4-JSF2
  */
 @SuppressWarnings("deprecation")
