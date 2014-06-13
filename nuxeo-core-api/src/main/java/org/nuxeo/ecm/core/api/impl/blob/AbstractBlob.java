@@ -24,6 +24,10 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 
+import org.apache.commons.io.CopyUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
@@ -92,6 +96,65 @@ public abstract class AbstractBlob implements Blob {
                 out.close();
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (!(object instanceof Blob)) {
+            return false;
+        }
+        Blob other = (Blob) object;
+        if (!ObjectUtils.equals(getFilename(), other.getFilename())) {
+            return false;
+        }
+        if (!ObjectUtils.equals(getMimeType(), other.getMimeType())) {
+            return false;
+        }
+        if (!ObjectUtils.equals(getEncoding(), other.getEncoding())) {
+            return false;
+        }
+        // ignore null digests, they are sometimes lazily computed
+        // therefore mutable
+        String digest = getDigest();
+        String otherDigest = other.getDigest();
+        if (digest != null && otherDigest != null
+                && !digest.equals(otherDigest)) {
+            return false;
+        }
+        // compare streams
+        return equalsStream(other);
+    }
+
+    // overridden by SQLBlob for improved performance
+    protected boolean equalsStream(Blob other) {
+        InputStream is = null;
+        InputStream ois = null;
+        try {
+            persist();
+            other.persist();
+            is = getStream();
+            ois = other.getStream();
+            return IOUtils.contentEquals(is, ois);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(is);
+            IOUtils.closeQuietly(ois);
+        }
+    }
+
+    // we don't implement a complex hashCode as we don't expect
+    // to put blobs as hashmap keys
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder() //
+        .append(getFilename()) //
+        .append(getMimeType()) //
+        .append(getEncoding()) //
+        .toHashCode();
     }
 
 }

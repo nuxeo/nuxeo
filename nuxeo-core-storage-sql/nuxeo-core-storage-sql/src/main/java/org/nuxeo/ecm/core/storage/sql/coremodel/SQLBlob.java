@@ -77,4 +77,23 @@ public class SQLBlob extends DefaultStreamBlob implements Serializable {
             return digest;
         }
     }
+
+    /*
+     * Optimized stream comparison method.
+     */
+    @Override
+    protected boolean equalsStream(Blob blob) {
+        if (!(blob instanceof SQLBlob)) {
+            return super.equalsStream(blob);
+        }
+        SQLBlob other = (SQLBlob) blob;
+        if (binary == null) {
+            return other.binary == null;
+        } else if (other.binary == null) {
+            return false;
+        } else {
+            return binary.getDigest().equals(other.binary.getDigest());
+        }
+    }
+
 }

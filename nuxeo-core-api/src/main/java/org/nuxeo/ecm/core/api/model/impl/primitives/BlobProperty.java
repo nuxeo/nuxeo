@@ -17,9 +17,11 @@ package org.nuxeo.ecm.core.api.model.impl.primitives;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.osm.DynamicObjectAdapter;
 import org.nuxeo.ecm.core.api.model.impl.osm.ObjectAdapter;
 import org.nuxeo.ecm.core.api.model.impl.osm.ObjectAdapterManager;
@@ -29,7 +31,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class BlobProperty extends ObjectProperty {
 
@@ -98,6 +100,15 @@ public class BlobProperty extends ObjectProperty {
     @Override
     public Object newInstance() {
         return new ByteArrayInputStream("".getBytes()); // TODO not serializable
+    }
+
+    @Override
+    public boolean isSameAs(Property property) throws PropertyException {
+        if (!(property instanceof BlobProperty)) {
+            return false;
+        }
+        BlobProperty other = (BlobProperty) property;
+        return ObjectUtils.equals(getValue(), other.getValue());
     }
 
 }

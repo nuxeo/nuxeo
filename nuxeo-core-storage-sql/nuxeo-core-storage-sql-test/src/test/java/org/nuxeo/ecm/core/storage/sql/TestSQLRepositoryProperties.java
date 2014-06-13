@@ -44,7 +44,9 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.ExternalBlobProperty;
@@ -825,6 +827,69 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.getDocument(doc.getRef());
         String value = doc.getProperty("restr:shortstring").getValue(String.class);
         assertEquals("foo", value);
+    }
+
+    @Test
+    public void testPropertyIsSameAsBlob() throws Exception {
+        doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        DocumentPart part = doc.getPart("file");
+        assertTrue(part.isSameAs(part));
+
+        DocumentModel doc2 = session.createDocumentModel("/", "file2", "File");
+        Blob blob2 = new ByteArrayBlob("hello world!".getBytes(), "text/plain",
+                "UTF-8");
+        doc2.setPropertyValue("file:content", (Serializable) blob2);
+        doc2 = session.createDocument(doc2);
+        DocumentPart part2 = doc2.getPart("file");
+        assertTrue(part2.isSameAs(part2));
+
+        assertFalse(part2.isSameAs(part));
+        assertFalse(part.isSameAs(part2));
+
+        // same blob content, should compare equal
+
+        DocumentModel doc3 = session.createDocumentModel("/", "file3", "File");
+        Blob blob3 = new StringBlob("hello world!", "text/plain");
+        doc3.setPropertyValue("file:content", (Serializable) blob3);
+        doc3 = session.createDocument(doc3);
+        DocumentPart part3 = doc3.getPart("file");
+        assertTrue(part2.isSameAs(part3));
+
+        // different blob content
+
+        DocumentModel doc4 = session.createDocumentModel("/", "file3", "File");
+        Blob blob4 = new StringBlob("this is goodbye", "text/plain");
+        doc4.setPropertyValue("file:content", (Serializable) blob4);
+        doc4 = session.createDocument(doc4);
+        DocumentPart part4 = doc4.getPart("file");
+        assertFalse(part2.isSameAs(part4));
+
+        // compare directly two SQLBlobs
+        // same
+        assertEquals(doc2.getPropertyValue("file:content"),
+                doc3.getPropertyValue("file:content"));
+        // different
+        assertFalse(doc2.getPropertyValue("file:content").equals(
+                doc4.getPropertyValue("file:content")));
+
+        // compare a ByteArrayBlob and a SQLBlob
+        assertEquals(blob2, doc3.getPropertyValue("file:content"));
+        assertEquals(doc3.getPropertyValue("file:content"), blob2);
+
+        // compare a StringBlob and a SQLBlob
+        assertEquals(blob3, doc3.getPropertyValue("file:content"));
+        assertEquals(doc3.getPropertyValue("file:content"), blob3);
+
+        // compare a ByteArrayBlob and a StringBlob
+        assertEquals(blob2, blob3);
+        assertEquals(blob3, blob2);
+
+        // compare a StringBlob with a different StringBlob or ByteArrayBlob
+        assertFalse(blob2.equals(blob4));
+        assertFalse(blob4.equals(blob2));
+        assertFalse(blob3.equals(blob4));
+        assertFalse(blob4.equals(blob3));
     }
 
 }
