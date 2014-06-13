@@ -23,6 +23,8 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -93,6 +95,19 @@ public class DatabaseH2 extends DatabaseHelper {
         h2Path = new File(dir, getId()).getAbsolutePath();
         setProperties();
         checkDatabaseLive();
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (RuntimeServiceEvent.RUNTIME_STOPPED == event.id) {
+                    try {
+                        tearDown();
+                    } catch (SQLException cause) {
+                        throw new AssertionError("Cannot teardown database", cause);
+                    }
+                }
+            }
+        });
     }
 
     protected void checkDatabaseLive() throws SQLException {
@@ -115,11 +130,8 @@ public class DatabaseH2 extends DatabaseHelper {
 
     @Override
     public void tearDown() throws SQLException {
-        owner = null;
-        if (origUrl == null) {
-            System.clearProperty(URL_PROPERTY);
-        } else {
-            System.setProperty(URL_PROPERTY, origUrl);
+        if (owner == null) {
+            return;
         }
         try {
             tearDownDatabase(url);
