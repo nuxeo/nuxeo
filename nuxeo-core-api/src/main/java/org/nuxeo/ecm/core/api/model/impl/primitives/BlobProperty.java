@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -112,7 +113,6 @@ public class BlobProperty extends MapProperty {
         return new ByteArrayInputStream("".getBytes()); // TODO not serializable
     }
 
-
     @Override
     public boolean isContainer() {
         return false;
@@ -154,20 +154,6 @@ public class BlobProperty extends MapProperty {
     protected Property internalGetChild(Field field) {
         return new ScalarMemberProperty(this, field, isPhantom() ? IS_PHANTOM
                 : 0);
-    }
-
-    @Override
-    public boolean isSameAs(Property property) throws PropertyException {
-        if (property == null) {
-            return false;
-        }
-        ScalarProperty sp = (ScalarProperty) property;
-        Object v1 = getValue();
-        Object v2 = sp.getValue();
-        if (v1 == null) {
-            return v2 == null;
-        }
-        return v1.equals(v2);
     }
 
     protected Object create(Map<String, Object> value) {
@@ -287,6 +273,15 @@ public class BlobProperty extends MapProperty {
             }
             return (Serializable) value;
         }
+    }
+
+    @Override
+    public boolean isSameAs(Property property) throws PropertyException {
+        if (!(property instanceof BlobProperty)) {
+            return false;
+        }
+        BlobProperty other = (BlobProperty) property;
+        return ObjectUtils.equals(getValue(), other.getValue());
     }
 
 }

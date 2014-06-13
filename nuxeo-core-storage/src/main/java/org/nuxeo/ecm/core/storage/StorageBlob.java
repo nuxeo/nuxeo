@@ -74,4 +74,23 @@ public class StorageBlob extends DefaultStreamBlob implements SQLBlob {
             return digest;
         }
     }
+
+    /*
+     * Optimized stream comparison method.
+     */
+    @Override
+    protected boolean equalsStream(Blob blob) {
+        if (!(blob instanceof StorageBlob)) {
+            return super.equalsStream(blob);
+        }
+        StorageBlob other = (StorageBlob) blob;
+        if (binary == null) {
+            return other.binary == null;
+        } else if (other.binary == null) {
+            return false;
+        } else {
+            return binary.getDigest().equals(other.binary.getDigest());
+        }
+    }
+
 }
