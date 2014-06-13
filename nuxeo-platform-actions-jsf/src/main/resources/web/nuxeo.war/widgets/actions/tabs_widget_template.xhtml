@@ -31,7 +31,7 @@
           <ui:decorate template="/incl/action/action_template.xhtml">
             <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
             <ui:param name="parentTabActionCategory" value="#{nxu:test(empty parentTabActionCategory, widgetProperty_category, parentTabActionCategory)}" />
-            <ui:param name="ajaxReRender" value="#{nxl:joinReRender(tabsPanelId, nxl:joinReRender(tabContentPanelId, widgetProperty_ajaxReRender))}" />
+            <ui:param name="ajaxReRender" value="#{nxl:joinRender(tabsPanelId, nxl:joinRender(tabContentPanelId, widgetProperty_ajaxReRender))}" />
             <ui:param name="addForm" value="#{widgetProperty_addForm}" />
             <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
             <ui:param name="formStyleClass" value="subWidgetForm" />

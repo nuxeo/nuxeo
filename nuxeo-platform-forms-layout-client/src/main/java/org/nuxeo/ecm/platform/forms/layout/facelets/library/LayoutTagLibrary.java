@@ -144,9 +144,18 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
         }
 
         try {
+            Method joinRender = LayoutTagLibrary.class.getMethod("joinRender",
+                    new Class[] { String.class, String.class });
+            addFunction("joinRender", joinRender);
+        } catch (NoSuchMethodException e) {
+            log.error(e, e);
+        }
+
+        // BBB
+        try {
             Method joinReRender = LayoutTagLibrary.class.getMethod(
                     "joinReRender", new Class[] { String.class, String.class });
-            addFunction("joinReRender", joinReRender);
+            addFunction("joinRender", joinReRender);
         } catch (NoSuchMethodException e) {
             log.error(e, e);
         }
@@ -197,18 +206,34 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
      * Joins two strings to get a valid reRender attribute for ajax components.
      *
      * @since 5.7
+     * @deprecated since 5.9.4-JSF2: use {@link #joinRender(String, String)}
+     *             instead.
      */
-    public static String joinReRender(String reRender1, String reRender2) {
-        String res = StringUtils.join(new String[] { reRender1, reRender2 },
-                ",");
-        res = res.replaceAll(" ", "");
-        res = res.replaceAll("(,)\\1+", "$1");
-        if (res.startsWith(",")) {
-            res = res.substring(1);
+    @Deprecated
+    public static String joinReRender(String render1, String render2) {
+        log.warn("Method joinReRender is deprecated, use joinRender instead");
+        return joinRender(render1, render2);
+    }
+
+    /**
+     * Joins two strings to get a valid render attribute for ajax components.
+     *
+     * @since 5.9.4-JSF2
+     */
+    public static String joinRender(String render1, String render2) {
+        if (StringUtils.isBlank(render1) && StringUtils.isBlank(render2)) {
+            return "";
         }
-        if (res.endsWith(",")) {
-            res = res.substring(0, res.length() - 1);
+        String res;
+        if (StringUtils.isBlank(render1)) {
+            res = render2;
+        } else if (StringUtils.isBlank(render2)) {
+            res = render1;
+        } else {
+            res = StringUtils.join(new String[] { render1, render2 }, " ");
+            res = res.replaceAll("\\s+", " ");
         }
+        res = res.trim();
         return res;
     }
 

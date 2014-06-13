@@ -114,12 +114,13 @@ public class TestLayoutFunctions extends NXRuntimeTestCase {
 
     @Test
     public void testJoinReRender() {
-        assertEquals("", LayoutTagLibrary.joinReRender(null, null));
-        assertEquals("", LayoutTagLibrary.joinReRender(null, ""));
-        assertEquals("", LayoutTagLibrary.joinReRender(" ", ",, "));
-        assertEquals("foo", LayoutTagLibrary.joinReRender("foo ,", " ,,"));
-        assertEquals("foo,bar", LayoutTagLibrary.joinReRender("foo", "bar"));
-        assertEquals("foo,bar,baz",
-                LayoutTagLibrary.joinReRender(", foo", "bar,,, baz,"));
+        assertEquals("", LayoutTagLibrary.joinRender(null, null));
+        assertEquals("", LayoutTagLibrary.joinRender(null, ""));
+        assertEquals("", LayoutTagLibrary.joinRender("", null));
+        assertEquals("", LayoutTagLibrary.joinRender(" ", "    "));
+        assertEquals("foo", LayoutTagLibrary.joinRender("foo   ", "    "));
+        assertEquals("foo bar", LayoutTagLibrary.joinRender("foo", "bar"));
+        assertEquals("foo bar baz",
+                LayoutTagLibrary.joinRender(" foo", "bar    baz   "));
     }
 }
