@@ -26,7 +26,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -288,6 +287,11 @@ public class ConfigurationGenerator {
 
     @SuppressWarnings("serial")
     protected static final Map<String, String> parametersMigration = new HashMap<String, String>() {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+
         {
             put(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS,
                     PARAM_TEMPLATES_PARSING_EXTENSIONS);
@@ -335,7 +339,6 @@ public class ConfigurationGenerator {
                 + NUXEO_DEFAULT_CONF);
 
         // detect server type based on System properties
-        isJBoss = System.getProperty(JBossConfigurator.JBOSS_HOME_DIR) != null;
         isJetty = System.getProperty(JettyConfigurator.JETTY_HOME) != null;
         isTomcat = System.getProperty(TomcatConfigurator.TOMCAT_HOME) != null;
         if (!isJBoss && !isJetty && !isTomcat) {
@@ -350,9 +353,7 @@ public class ConfigurationGenerator {
                 }
             }
         }
-        if (isJBoss) {
-            serverConfigurator = new JBossConfigurator(this);
-        } else if (isTomcat) {
+        if (isTomcat) {
             serverConfigurator = new TomcatConfigurator(this);
         } else if (isJetty) {
             serverConfigurator = new JettyConfigurator(this);
