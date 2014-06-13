@@ -257,7 +257,7 @@
       select2_params.id = function(doc) {
         return doc.properties[params.idProperty];
       };
-    } else if (params.prefixed) {
+    } else if (params.prefixed === true) {
       select2_params.id = function(item) {
         return item.prefixed_id;
       };
