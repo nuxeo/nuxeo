@@ -3907,7 +3907,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         session.save();
         waitForFulltextIndexing();
         // 3 = 1 main save + 1 simple index + 1 binary index
-        assertEventSet(IGNORE_VCS, "sessionSaved=3");
+        assertEventSet(IGNORE_VCS, "sessionSaved=3", "binaryTextUpdated=1");
 
         // delete
         session.removeDocument(doc.getRef());
