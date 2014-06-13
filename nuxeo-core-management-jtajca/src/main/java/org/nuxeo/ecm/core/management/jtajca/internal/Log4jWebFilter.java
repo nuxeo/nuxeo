@@ -28,13 +28,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.MDC;
 
 /**
  * @author matic
- * 
  */
 public class Log4jWebFilter implements Filter {
+
+    private static final Log log = LogFactory.getLog(Log4jWebFilter.class);
 
     protected FilterConfig config;
 
@@ -78,9 +81,13 @@ public class Log4jWebFilter implements Filter {
             if (object != null) {
                 String name = propertyName.substring(0, 1).toLowerCase()
                         + propertyName.substring(1);
-                MDC.put(propertyName, PropertyUtils.getProperty(object, name));
+                Object prop = PropertyUtils.getProperty(object, name);
+                if (prop != null) {
+                    MDC.put(propertyName, prop);
+                }
             }
         } catch (Exception e) {
+            log.error(e, e);
         }
     }
 
