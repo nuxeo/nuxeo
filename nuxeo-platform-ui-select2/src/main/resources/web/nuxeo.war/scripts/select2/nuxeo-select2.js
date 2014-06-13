@@ -271,7 +271,7 @@
       };
     } else if (params.idFunction) {
       select2_params.id = eval(params.idFunction);
-    } else if (params.prefixed) {
+    } else if (params.prefixed === true) {
       select2_params.id = function(item) {
         return item.prefixed_id;
       };
