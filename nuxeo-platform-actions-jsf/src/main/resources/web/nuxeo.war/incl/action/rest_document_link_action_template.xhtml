@@ -51,34 +51,15 @@
       resolveOnly="true"
       var="docUrl">
 
-      <c:if test="#{empty elementsToReRender}">
-        <a4j:commandLink
-          id="#{widget.id}"
-          action="#{webActions.setCurrentTabIds(tabIds)}"
-          accesskey="#{action.accessKey}"
-          onbeforedomupdate="history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');"
-          onclick="#{onclick}"
-          ignoreDupResponses="true"
-          accessKey="#{action.accessKey}">
-          <ui:include src="/incl/action/action_icon_label_template.xhtml" />
-          <ui:insert name="inside_action" />
-        </a4j:commandLink>
-      </c:if>
-
-      <c:if test="#{not empty elementsToReRender}">
-        <a4j:commandLink
-          id="#{widget.id}"
-          action="#{webActions.setCurrentTabIds(tabIds)}"
-          accesskey="#{action.accessKey}"
-          render="#{elementsToReRender}"
-          onbeforedomupdate="history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');"
-          onclick="#{onclick}"
-          ignoreDupResponses="true"
-          accessKey="#{action.accessKey}">
-          <ui:include src="/incl/action/action_icon_label_template.xhtml" />
-          <ui:insert name="inside_action" />
-        </a4j:commandLink>
-      </c:if>
+      <h:commandLink
+        id="#{widget.id}"
+        action="#{webActions.setCurrentTabIds(tabIds)}"
+        onclick="history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');#{onclick}"
+        accessKey="#{action.accessKey}">
+        <f:ajax execute="@this" render="#{elementsToReRender}" />
+        <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+        <ui:insert name="inside_action" />
+      </h:commandLink>
 
     </nxd:restDocumentLink>
 

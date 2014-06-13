@@ -17,6 +17,9 @@ Accepted parameters:
   the form id suffixed by _eventsQueue)
 - reRender: ajax elements ids to rerender (optional)
 - formStyleClass: style class to put on the form (optional)
+- formEnctype: since 5.9.5, encoding type must be set to "multipart/form-data" for
+  forms submissions containing multipart information. This is useful to prevent
+  invalid ajax requests, see https://java.net/jira/browse/JAVASERVERFACES-2843
 
 Templating zone to define:
 - form_template_content: inside the form if a form is defined
@@ -25,15 +28,15 @@ Templating zone to define:
 
 <c:if test="#{addForm}">
   <c:if test="#{not useAjaxForm}">
-    <h:form id="#{formId}" enctype="multipart/form-data"
+    <h:form id="#{formId}" enctype="#{formEnctype}"
       styleClass="#{formStyleClass}">
       <ui:insert name="form_template_content" />
     </h:form>
   </c:if>
   <c:if test="#{useAjaxForm}">
+
     <nxu:set var="defaultEventsId" value="#{formId}_eventsQueue">
-      <h:form id="#{formId}" ajaxSubmit="true"
-        ignoreDupResponses="true"
+      <h:form id="#{formId}"
         eventsQueue="#{nxu:test(empty eventsQueueId, defaultEventsId, eventsQueueId)}"
         render="#{reRender}"
         styleClass="#{formStyleClass}"

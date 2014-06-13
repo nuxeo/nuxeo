@@ -24,9 +24,34 @@
     <c:if test="#{empty iframe}">
 
       <c:if test="#{not widgetProperty_useButton}">
+        <h:commandLink id="#{fancyboxIdPrefix}link"
+          styleClass="actionLink #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
+          disabled="#{!action.available}"
+          accesskey="#{action.accessKey}">
+          <f:param value="#{nxu:test(widgetProperty_formAdded,'2','1')}" name="lookupLevel" />
+          <f:param value="#{action.id}" name="selectedValue" />
+          <f:param value="#{widgetProperty_clickedActionIdHolder}" name="valueHolderId" />
+          <f:ajax execute="@this" render="#{fancyboxIdPrefix}ajax_panel" listener="#{selectionActions.onClick}"/>
+          <ui:include src="/incl/action/action_icon_label_template.xhtml">
+            <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
+            <ui:param name="hideLabel" value="#{widgetProperty_hideLabel}" />
+          </ui:include>
+        </h:commandLink>
       </c:if>
 
       <c:if test="#{useButton}">
+        <h:commandButton id="#{fancyboxIdPrefix}link"
+          onclick="#{onclick}"
+          value="#{messages[action.label]}"
+          styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
+          disabled="#{!action.available}"
+          accesskey="#{action.accessKey}">
+          <f:param value="#{nxu:test(widgetProperty_formAdded,'2','1')}" name="lookupLevel" />
+          <f:param value="#{action.id}" name="selectedValue" />
+          <f:param value="#{widgetProperty_clickedActionIdHolder}" name="valueHolderId" />
+          <f:ajax execute="@this" render="#{fancyboxIdPrefix}ajax_panel" listener="#{selectionActions.onClick}"/>
+          <ui:insert name="inside_action" />
+        </h:commandButton>
       </c:if>
 
     </c:if>
@@ -109,6 +134,15 @@
           <c:if test="#{actionClicked}">
 
             <h:form>
+              <a4j:jsFunction name="#{fancyboxIdPrefix}closeFancybox">
+                <f:setPropertyActionListener value=""
+                  target="#{selectionActions.selectedValue}" />
+                <f:setPropertyActionListener
+                  value="#{widgetProperty_clickedActionIdHolder}"
+                  target="#{selectionActions.selectedValueHolder}" />
+                <nxu:actionListenerMethod
+                  value="#{selectionActions.onClick}" />
+              </a4j:jsFunction>
             </h:form>
 
             <script>
