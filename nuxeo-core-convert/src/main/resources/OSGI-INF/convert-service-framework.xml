@@ -8,6 +8,7 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.core.convert.api.ConversionService"/>
+    <provide interface="org.nuxeo.ecm.core.convert.service.MimeTypeTranslationHelper"/>
   </service>
 
   <extension-point name="converter">

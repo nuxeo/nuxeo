@@ -34,6 +34,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestCache extends NXRuntimeTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -88,7 +89,7 @@ public class TestCache extends NXRuntimeTestCase {
         ConversionCacheGCManager.doGC(file.length() / 1024);
 
         int cacheSize3 = ConversionCacheHolder.getNbCacheEntries();
-        assertEquals(0, cacheSize3);
+        assertEquals(0, cacheSize1 - cacheSize3);
     }
 
 }

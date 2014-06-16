@@ -39,6 +39,7 @@ public class TestCGCache extends NXRuntimeTestCase {
 
     ConversionService cs;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -82,7 +83,7 @@ public class TestCGCache extends NXRuntimeTestCase {
         assertTrue(ConversionCacheGCManager.getGCRuns() > 0);
 
         int cacheSize3 = ConversionCacheHolder.getNbCacheEntries();
-        assertEquals(0, cacheSize3);
+        assertEquals(0, cacheSize3-cacheSize1);
     }
 
     private Converter deployConverter() throws Exception{

@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 import org.nuxeo.ecm.core.convert.service.MimeTypeTranslationHelper;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Specific {@link Converter} implementation that acts as a converters chain.
@@ -105,7 +106,7 @@ public class ChainedConverter implements Converter {
 
             BlobHolder result = blobHolder;
             for (String dstMT : steps) {
-                String converterName = MimeTypeTranslationHelper.getConverterName(srcMT, dstMT);
+                String converterName = Framework.getLocalService(MimeTypeTranslationHelper.class).getConverterName(srcMT, dstMT);
                 if (converterName == null) {
                     throw new ConversionException(
                             "Chained conversion error : unable to find converter between "

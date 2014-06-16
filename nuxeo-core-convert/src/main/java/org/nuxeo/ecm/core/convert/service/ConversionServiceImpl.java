@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 import org.nuxeo.ecm.core.convert.extension.GlobalConfigDescriptor;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -54,7 +55,21 @@ public class ConversionServiceImpl extends DefaultComponent implements
     protected static final Map<String, ConverterDescriptor> converterDescriptors
             = new HashMap<String, ConverterDescriptor>();
 
+    protected static final MimeTypeTranslationHelper translationHelper =
+            new MimeTypeTranslationHelper();
     protected static final GlobalConfigDescriptor config = new GlobalConfigDescriptor();
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        converterDescriptors.clear();
+        translationHelper.clear();
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        converterDescriptors.clear();
+        translationHelper.clear();
+    }
 
     /**
      * Component implementation.
@@ -114,7 +129,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
             log.error("Unable to init converter " + desc.getConverterName(), e);
             return;
         }
-        MimeTypeTranslationHelper.addConverter(desc);
+        translationHelper.addConverter(desc);
         converterDescriptors.put(desc.getConverterName(), desc);
     }
 
@@ -187,7 +202,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
         String converterName;
         try {
             String srcMt = blobHolder.getBlob().getMimeType();
-            converterName = MimeTypeTranslationHelper.getConverterName(srcMt,
+            converterName = translationHelper.getConverterName(srcMt,
                     destinationMimeType);
         } catch (ClientException e) {
             throw new ConversionException(
@@ -204,7 +219,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
 
     @Override
     public List<String> getConverterNames(String sourceMimeType, String destinationMimeType) {
-        return MimeTypeTranslationHelper.getConverterNames(sourceMimeType,
+        return translationHelper.getConverterNames(sourceMimeType,
                 destinationMimeType);
     }
 
@@ -275,5 +290,13 @@ public class ConversionServiceImpl extends DefaultComponent implements
             String sourceMimeType) {
         return getConverterDescriptor(converterName).getSourceMimeTypes().contains(
                 sourceMimeType);
+    }
+
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter.isAssignableFrom(MimeTypeTranslationHelper.class)) {
+            return adapter.cast(translationHelper);
+        }
+        return super.getAdapter(adapter);
     }
 }

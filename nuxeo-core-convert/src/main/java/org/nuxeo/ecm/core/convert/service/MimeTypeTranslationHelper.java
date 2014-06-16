@@ -26,16 +26,13 @@ import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
  */
 public class MimeTypeTranslationHelper {
 
-    protected static final Map<String, List<ConvertOption>> srcMappings
+    protected final Map<String, List<ConvertOption>> srcMappings
             = new HashMap<String, List<ConvertOption>>();
-    protected static final Map<String, List<ConvertOption>> dstMappings
+    protected final Map<String, List<ConvertOption>> dstMappings
             = new HashMap<String, List<ConvertOption>>();
 
-    // Utility class.
-    private MimeTypeTranslationHelper() {
-    }
 
-    public static void addConverter(ConverterDescriptor desc) {
+    public  void addConverter(ConverterDescriptor desc) {
         List<String> sMts = desc.getSourceMimeTypes();
         String dMt = desc.getDestinationMimeType();
 
@@ -60,7 +57,7 @@ public class MimeTypeTranslationHelper {
         dstMappings.put(dMt, dco);
     }
 
-    public static String getConverterName(String sourceMimeType,
+    public  String getConverterName(String sourceMimeType,
             String destMimeType) {
 
         List<ConvertOption> sco = srcMappings.get(sourceMimeType);
@@ -79,7 +76,7 @@ public class MimeTypeTranslationHelper {
         return null;
     }
 
-    public static List<String> getConverterNames(String sourceMimeType, String destMimeType) {
+    public  List<String> getConverterNames(String sourceMimeType, String destMimeType) {
         List<ConvertOption> sco = srcMappings.get(sourceMimeType);
         List<String> converterNames = new ArrayList<String>();
         if (sco == null) {
@@ -97,7 +94,7 @@ public class MimeTypeTranslationHelper {
         return converterNames;
     }
 
-    public static List<String> getDestinationMimeTypes(String sourceMimeType) {
+    public List<String> getDestinationMimeTypes(String sourceMimeType) {
         List<String> dst = new ArrayList<String>();
 
         List<ConvertOption> sco = srcMappings.get(sourceMimeType);
@@ -110,7 +107,7 @@ public class MimeTypeTranslationHelper {
         return dst;
     }
 
-    public static List<String> getSourceMimeTypes(String destinationMimeType) {
+    public List<String> getSourceMimeTypes(String destinationMimeType) {
         List<String> src = new ArrayList<String>();
 
         List<ConvertOption> dco = dstMappings.get(destinationMimeType);
@@ -121,6 +118,11 @@ public class MimeTypeTranslationHelper {
             }
         }
         return src;
+    }
+
+    public void clear() {
+        dstMappings.clear();
+        srcMappings.clear();
     }
 
 }
