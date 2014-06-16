@@ -28,6 +28,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.json.XML;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,12 +67,13 @@ public class PackageInfoTest {
                         + "    <supportsHotReload>false</supportsHotReload>\n"
                         + "    <supported>false</supported>\n" //
                         + "</package>\n", xml.toString());
-        assertEquals(
-                "{\"package\": {\n"
-                        + "  \"visibility\": \"UNKNOWN\",\n"
-                        + "  \"supported\": \"false\",\n  \"name\": \"test\",\n"
-                        + "  \"state\": \"REMOTE\",\n  \"supportsHotReload\": \"false\",\n"
-                        + "  \"version\": \"1.0.0\"\n}}",
-                XML.toJSONObject(xml.toString()).toString(2));
+
+        JSONObject entity = XML.toJSONObject(xml.toString()).getJSONObject("package");
+        assertEquals("UNKNOWN", entity.getString("visibility"));
+        assertEquals("false", entity.getString("supported"));
+        assertEquals("test", entity.getString("name"));
+        assertEquals("REMOTE", entity.getString("state"));
+        assertEquals("false", entity.getString("supportsHotReload"));
+        assertEquals("1.0.0", entity.getString("version"));
     }
 }
