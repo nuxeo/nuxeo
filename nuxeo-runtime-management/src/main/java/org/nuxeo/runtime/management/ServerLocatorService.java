@@ -108,6 +108,9 @@ public class ServerLocatorService extends DefaultComponent implements
             final ServerLocatorDescriptor descriptor) {
         MBeanServer server = MBeanServerFactory.createMBeanServer();
         JMXServiceURL url = doFormatServerURL(descriptor);
+        if (!descriptor.remote) {
+            return server;
+        }
         final RMIConnectorServer connector;
         try {
             connector = new RMIConnectorServer(url, null, server);
@@ -172,6 +175,7 @@ public class ServerLocatorService extends DefaultComponent implements
                 + " is not registered");
     }
 
+    @Override
     public MBeanServer lookupServer() {
         return defaultServer;
     }

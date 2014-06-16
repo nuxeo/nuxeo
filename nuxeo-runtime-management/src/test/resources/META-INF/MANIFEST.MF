@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: nuxeo-runtime-management-tests
-Bundle-SymbolicName: org.nuxeo.runtime.management.tests;singleton:=true
-Bundle-Vendor: Nuxeo
-Provide-Package: org.nuxeo.runtime.management.tests
-Require-Bundle: org.nuxeo.runtime.management

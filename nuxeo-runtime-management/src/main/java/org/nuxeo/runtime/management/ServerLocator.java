@@ -24,7 +24,7 @@ import javax.management.ObjectName;
  *
  */
 public interface ServerLocator {
-
+    MBeanServer lookupServer();
     MBeanServer lookupServer(ObjectName name);
     MBeanServer lookupServer(String domainName);
 

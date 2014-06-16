@@ -19,22 +19,21 @@
 
 package org.nuxeo.runtime.management;
 
-import java.lang.management.ManagementFactory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Set;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 
-import org.junit.Test;
 import org.junit.Ignore;
-import static org.junit.Assert.*;
-
+import org.junit.Test;
 import org.nuxeo.runtime.api.Framework;
 
 public class TestResourcePublisherService extends ManagementTestCase {
-
-    protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 
     @Test
     public void testRegisteredService() throws Exception {
@@ -78,8 +77,8 @@ public class TestResourcePublisherService extends ManagementTestCase {
     public void testXMLConfiguration() throws Exception {
         Set<String> shortcutsName = publisherService.getShortcutsName();
         int size = shortcutsName.size();
-        deployContrib(OSGI_BUNDLE_NAME_TESTS, "management-tests-service.xml");
-        deployContrib(OSGI_BUNDLE_NAME_TESTS, "management-tests-contrib.xml");
+        deployTestContrib(OSGI_BUNDLE_NAME, "management-tests-service.xml");
+        deployTestContrib(OSGI_BUNDLE_NAME, "management-tests-contrib.xml");
 
         publisherService.bindResources();
         String qualifiedName = ObjectNameFactory.formatTypeQuery("service");

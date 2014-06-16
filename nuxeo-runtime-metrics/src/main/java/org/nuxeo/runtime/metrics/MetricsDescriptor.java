@@ -18,7 +18,6 @@ package org.nuxeo.runtime.metrics;
 
 import java.io.File;
 import java.io.Serializable;
-import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -36,10 +35,13 @@ import org.apache.log4j.LogManager;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.ServerLocator;
 
 import com.codahale.metrics.CsvReporter;
 import com.codahale.metrics.JmxAttributeGauge;
 import com.codahale.metrics.JmxReporter;
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
@@ -342,19 +344,24 @@ public class MetricsDescriptor implements Serializable {
             registry.register("jvm.garbage", new GarbageCollectorMetricSet());
             registry.register("jvm.threads", new ThreadStatesGaugeSet());
             registry.register("jvm.files", new FileDescriptorRatioGauge());
-            registry.register("jvm.buffers", new BufferPoolMetricSet(
-                    ManagementFactory.getPlatformMBeanServer()));
+            registry.register(
+                    "jvm.buffers",
+                    new BufferPoolMetricSet(Framework.getLocalService(
+                            ServerLocator.class).lookupServer()));
         }
 
         public void disable(MetricRegistry registry) {
             if (!enabled) {
                 return;
             }
-            registry.remove("jvm.memory");
-            registry.remove("jvm.garbage");
-            registry.remove("jvm.threads");
-            registry.remove("jvm.files");
-            registry.remove("jvm.buffers");
+            registry.removeMatching(new MetricFilter() {
+
+                @Override
+                public boolean matches(String name, Metric metric) {
+                    return name.startsWith("jvm.");
+                }
+            });
+
         }
     }
 
@@ -387,12 +394,12 @@ public class MetricsDescriptor implements Serializable {
 
     public void disable(MetricRegistry registry) {
         try {
-            jmxReporter.stop();
             graphiteReporter.disable(registry);
             csvReporter.disable(registry);
             log4jInstrumentation.disable(registry);
             tomcatInstrumentation.disable(registry);
             jvmInstrumentation.disable(registry);
+            jmxReporter.stop();
         } finally {
             jmxReporter = null;
         }

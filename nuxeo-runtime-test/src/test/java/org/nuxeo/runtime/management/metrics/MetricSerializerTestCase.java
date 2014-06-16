@@ -1,14 +1,16 @@
 package org.nuxeo.runtime.management.metrics;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 
 import org.javasimon.Sample;
 import org.javasimon.SimonManager;
 import org.javasimon.Split;
 import org.javasimon.Stopwatch;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
 
 public class MetricSerializerTestCase {
 
@@ -30,6 +32,16 @@ public class MetricSerializerTestCase {
         } finally {
             SimonManager.destroySimon("test");
         }
+    }
+
+    @Before
+    public void enableManager() {
+        SimonManager.enable();
+    }
+
+    @After
+    public void disableManager() {
+        SimonManager.disable();
     }
 
     @Test
