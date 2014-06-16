@@ -14,13 +14,15 @@
 
 package org.nuxeo.ecm.core.schema;
 
+import java.io.File;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.model.RuntimeContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 @XObject("schema")
 public class SchemaBindingDescriptor {
@@ -30,6 +32,8 @@ public class SchemaBindingDescriptor {
 
     @XNode("@src")
     public String src;
+
+    public File file;
 
     @XNode("@prefix")
     public String prefix = "";

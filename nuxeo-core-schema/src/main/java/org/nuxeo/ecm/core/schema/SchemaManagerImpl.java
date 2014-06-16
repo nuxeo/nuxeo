@@ -281,20 +281,35 @@ public class SchemaManagerImpl implements SchemaManager {
         schemas.clear();
         uriToSchema.clear();
         prefixToSchema.clear();
+        RuntimeException errors = new RuntimeException("Cannot load schemas");
         for (SchemaBindingDescriptor sd : allSchemas) {
             try {
-                recomputeSchema(sd);
-            } catch (Exception e) {
-                if (e instanceof InterruptedException) {
+                copySchema(sd);
+            } catch (Exception error) {
+                if (error instanceof InterruptedException) {
                     // restore interrupted status
                     Thread.currentThread().interrupt();
                 }
-                log.error(e);
+                errors.addSuppressed(error);
             }
+        }
+        for (SchemaBindingDescriptor sd : allSchemas) {
+            try {
+                loadSchema(sd);
+            } catch (Exception error) {
+                if (error instanceof InterruptedException) {
+                    // restore interrupted status
+                    Thread.currentThread().interrupt();
+                }
+                errors.addSuppressed(error);
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
         }
     }
 
-    protected void recomputeSchema(SchemaBindingDescriptor sd)
+    protected void copySchema(SchemaBindingDescriptor sd)
             throws IOException, SAXException, TypeException {
         if (sd.src == null || sd.src.length() == 0) {
             // log.error("INLINE Schemas ARE NOT YET IMPLEMENTED!");
@@ -311,23 +326,31 @@ public class SchemaManagerImpl implements SchemaManager {
         }
         InputStream in = url.openStream();
         try {
-            File file = new File(schemaDir, sd.name + ".xsd");
-            FileUtils.copyToFile(in, file); // may overwrite
-            Schema oldschema = schemas.get(sd.name);
-            // loadSchema calls this.registerSchema
-            XSDLoader schemaLoader = new XSDLoader(this, sd);
-            schemaLoader.loadSchema(sd.name, sd.prefix, file, sd.override,
-                    sd.xsdRootElement);
-
-            if (oldschema == null) {
-                log.info("Registered schema: " + sd.name + " from "
-                        + url.toString());
-            } else {
-                log.info("Reregistered schema: " + sd.name);
-            }
+            sd.file = new File(schemaDir, sd.name + ".xsd");
+            FileUtils.copyToFile(in, sd.file); // may overwrite
         } finally {
             in.close();
         }
+    }
+
+    protected void loadSchema(SchemaBindingDescriptor sd)
+            throws IOException, SAXException, TypeException {
+        if (sd.file == null) {
+            // log.error("INLINE Schemas ARE NOT YET IMPLEMENTED!");
+            return;
+        }
+            // loadSchema calls this.registerSchema
+            XSDLoader schemaLoader = new XSDLoader(this, sd);
+            Schema oldschema = schemas.get(sd.name);
+            schemaLoader.loadSchema(sd.name, sd.prefix, sd.file, sd.override,
+                    sd.xsdRootElement);
+            if (oldschema == null) {
+                log.info("Registered schema: " + sd.name + " from "
+                        + sd.file);
+            } else {
+                log.info("Reregistered schema: " + sd.name);
+            }
+
     }
 
     // called from XSDLoader, does not do the checkDirty call
