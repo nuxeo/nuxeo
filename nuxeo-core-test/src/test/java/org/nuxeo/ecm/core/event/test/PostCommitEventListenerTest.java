@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.ConditionalIgnoreRule;
 
 /**
  * PostCommitEventListenerTest test ScriptingPostCommitEventListener
@@ -56,6 +57,7 @@ public class PostCommitEventListenerTest extends SQLRepositoryTestCase {
     public static int SCRIPT_CNT = 0;
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition=ConditionalIgnoreRule.IgnoreIsolated.class)
     public void testScripts() throws Exception {
         deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
                 "test-PostCommitListeners.xml");
