@@ -24,6 +24,8 @@ https://github.com/nuxeo/marketplace-elasticsearch
 
 ## Limitations
 
+- The 5.8 version does not support default H2 database.
+
 - Only supports a single repository.
 
 - ACL filtering works fine only on simplified ACL. We don't support
