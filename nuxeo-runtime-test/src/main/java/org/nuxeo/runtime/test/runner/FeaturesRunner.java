@@ -18,14 +18,15 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.MDC;
 import org.junit.Ignore;
 import org.junit.runner.notification.Failure;
@@ -35,6 +36,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.nuxeo.runtime.mockito.MockProvider;
+import org.nuxeo.runtime.test.TargetResourceLocator;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Binder;
@@ -59,6 +61,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected List<RunnerFeature> features;
 
+    protected final TargetResourceLocator locator;
+
     public static AnnotationScanner getScanner() {
         return scanner;
     }
@@ -73,7 +77,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     public FeaturesRunner(Class<?> classToRun) throws InitializationError {
         super(classToRun);
-
+        locator = new TargetResourceLocator(classToRun);
         try {
             loadFeatures(getTargetTestClass());
             initialize();
@@ -86,6 +90,16 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     public Class<?> getTargetTestClass() {
         return super.getTestClass().getJavaClass();
     }
+
+
+    public Path getTargetTestBasepath() {
+        return locator.getBasepath();
+    }
+
+    public URL getTargetTestResource(String name) throws IOException {
+        return locator.getTargetTestResource(name);
+    }
+
 
     protected void loadFeature(HashSet<Class<?>> cycles,
             LinkedHashSet<Class<? extends RunnerFeature>> features,
@@ -192,8 +206,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void beforeRun() throws Exception {
-        LogFactory.getLog(FeaturesRunner.class).trace(
-                "b-> " + getDescription().getDisplayName());
         for (RunnerFeature feature : features) {
             feature.beforeRun(this);
         }
@@ -201,7 +213,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected void beforeMethodRun(FrameworkMethod method, Object test)
             throws Exception {
-        MDC.put("fMethod", method.getName());
+        MDC.put("fMethod", method.getMethod());
         for (RunnerFeature feature : features) {
             feature.beforeMethodRun(this, method, test);
         }
@@ -248,7 +260,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void start() throws Exception {
-        MDC.put("fclass", getDescription().getClassName());
+        MDC.put("fclass", getTargetTestClass());
         for (RunnerFeature feature : features) {
             feature.start(this);
         }
@@ -274,7 +286,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void beforeSetup() {
-        AssertionError errors = new AssertionError();
+        AssertionError errors = new AssertionError("Before setup errors");
         for (RunnerFeature feature : features) {
             try {
                 feature.beforeSetup(FeaturesRunner.this);
@@ -293,7 +305,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             try {
                 feature.afterTeardown(FeaturesRunner.this);
             } catch (Throwable error) {
-                errors.addSuppressed(errors);
+                errors.addSuppressed(error);
             }
         }
         if (errors.getSuppressed().length > 0) {
@@ -303,6 +315,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected void configureBindings(Binder binder) {
         binder.bind(FeaturesRunner.class).toInstance(this);
+        binder.bind(TargetResourceLocator.class).toInstance(locator);
         for (RunnerFeature feature : features) {
             feature.configure(this, binder);
         }
@@ -332,22 +345,35 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     @Override
     public void run(final RunNotifier notifier) {
+        AssertionError errors = new AssertionError("features error");
         try {
             try {
                 start();
                 try {
                     beforeRun();
-                    // create injector
                     resetInjector();
                     super.run(notifier); // launch tests
+                } catch (Exception error) {
+                    errors.addSuppressed(error);
                 } finally {
                     afterRun();
                 }
+            } catch (Exception error) {
+                errors.addSuppressed(error);
             } finally {
-                stop();
+                try {
+                    stop();
+                } catch (Exception error) {
+                    error.addSuppressed(errors);
+                }
             }
-        } catch (Throwable e) {
-            notifier.fireTestFailure(new Failure(getDescription(), e));
+        } catch (Throwable error) {
+            errors.addSuppressed(error);
+        } finally {
+            if (errors.getSuppressed().length > 0) {
+                notifier.fireTestFailure(new Failure(getDescription(),
+                        errors));
+            }
         }
     }
 

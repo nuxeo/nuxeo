@@ -51,6 +51,7 @@ import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
 import org.junit.runner.RunWith;
@@ -65,7 +66,6 @@ import org.nuxeo.osgi.SystemBundleFile;
 import org.nuxeo.osgi.application.StandaloneBundleLoader;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
@@ -84,6 +84,7 @@ import org.osgi.framework.FrameworkEvent;
  */
 // Make sure this class is kept in sync with with RuntimeHarness
 @RunWith(FeaturesRunner.class)
+@Ignore
 public class NXRuntimeTestCase implements RuntimeHarness {
 
     public final @Rule MethodRule ignoreRule = new ConditionalIgnoreRule();
@@ -126,11 +127,18 @@ public class NXRuntimeTestCase implements RuntimeHarness {
 
     protected final List<WorkingDirectoryConfigurator> wdConfigs = new ArrayList<WorkingDirectoryConfigurator>();
 
+    protected final TargetResourceLocator targetResourceLocator;
+
     public NXRuntimeTestCase() {
+        targetResourceLocator = new TargetResourceLocator(this.getClass());
     }
 
     public NXRuntimeTestCase(String name) {
-        // super(name);
+        this();
+    }
+
+    public NXRuntimeTestCase(Class<?> clazz) {
+        targetResourceLocator = new TargetResourceLocator(clazz);
     }
 
     @Override
@@ -197,11 +205,6 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         }
         readUris = null;
         bundles = null;
-        // super.tearDown();
-        if (NuxeoContainer.isInstalled()) {
-            throw new RuntimeException("Nuxeo container is still installed",
-                    NuxeoContainer.getInstallContext());
-        }
     }
 
     @Override
@@ -467,8 +470,13 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     public void deployContrib(String name, String contrib) throws Exception {
         RuntimeContext context = runtime.getContext(name);
         if (context == null) {
-            deployBundle(name);
-            deployContrib(name, contrib);
+            context = runtime.getContext();
+            BundleFile file = lookupBundle(name);
+            URL location = file.getEntry(contrib);
+            if (location == null) {
+                throw new AssertionError("Cannot locate " + contrib + " in " + name);
+            }
+            context.deploy(location);
             return;
         }
         context.deploy(contrib);
@@ -491,27 +499,20 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     @Override
     public RuntimeContext deployTestContrib(String bundle, String contrib)
             throws Exception {
-        Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);
-        if (b != null) {
-            OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
-            ctx.deploy(contrib);
-            return ctx;
-        } else {
-            throw new IllegalArgumentException("Bundle not deployed " + bundle);
-        }
+        URL url = targetResourceLocator.getTargetTestResource(contrib);
+        return deployTestContrib(bundle, url);
     }
 
     @Override
     public RuntimeContext deployTestContrib(String bundle, URL contrib)
             throws Exception {
         Bundle b = bundleLoader.getOSGi().getRegistry().getBundle(bundle);
-        if (b != null) {
-            OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
-            ctx.deploy(contrib);
-            return ctx;
-        } else {
-            throw new IllegalArgumentException("Bundle not deployed " + bundle);
+        if (b == null) {
+            b = osgi.getSystemBundle();
         }
+        OSGiRuntimeContext ctx = new OSGiRuntimeContext(runtime, b);
+        ctx.deploy(contrib);
+        return ctx;
     }
 
     /**
@@ -553,7 +554,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     public void undeployContrib(String name, String contrib) throws Exception {
         RuntimeContext context = runtime.getContext(name);
         if (context == null) {
-            throw new IllegalArgumentException("No runtime context available for " + name);
+            context = runtime.getContext();
         }
         context.undeploy(contrib);
     }
