@@ -25,7 +25,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -190,7 +189,9 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         wipeRuntime();
         if (workingDir != null) {
             if (!restart) {
-                FileUtils.deleteQuietly(workingDir);
+                if (!FileUtils.deleteQuietly(workingDir)) {
+                    log.warn("Cannot delete " + workingDir);
+                }
                 workingDir = null;
             }
         }
@@ -227,7 +228,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 if (System.getProperties().remove("nuxeo.home") != null) {
                     log.warn("Removed System property nuxeo.home.");
                 }
-                workingDir = File.createTempFile("nxruntime",
+                workingDir = File.createTempFile("nxruntime-"+Thread.currentThread().getName()+"-",
                         null,new File("target"));
                 workingDir.delete();
             }
@@ -257,8 +258,10 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 bundleLoader.getClass().getClassLoader(), true);
         runtimeBundle.start();
 
-        runtime = (OSGiRuntimeService) Framework.getRuntime();
+        runtime = handleNewRuntime((OSGiRuntimeService) Framework.getRuntime());
+
         assertNotNull(runtime);
+
 
         deployContrib(bundleFile, "OSGI-INF/DeploymentService.xml");
         deployContrib(bundleFile, "OSGI-INF/LoginComponent.xml");
@@ -268,26 +271,17 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     }
 
 
-    public static URL[] extractURLs(ClassLoader loader) {
+    protected OSGiRuntimeService handleNewRuntime(OSGiRuntimeService runtime) {
+        return runtime;
+    }
+
+    public static URL[] introspectClasspath(ClassLoader loader) {
         // normal case
         if (loader instanceof URLClassLoader) {
             return ((URLClassLoader) loader).getURLs();
         }
-        // classpath suite runner case
-        final Class<? extends ClassLoader> loaderClass = loader.getClass();
-        if (loaderClass.getName().equals(
-                "org.nuxeo.runtime.testsuite.IsolatedClassloader")) {
-            try {
-                Field f = loaderClass.getDeclaredField("baseLoader");
-                f.setAccessible(true);
-                return extractURLs((ClassLoader) f.get(loader));
-            } catch (NoSuchFieldException | SecurityException
-                    | IllegalArgumentException | IllegalAccessException cause) {
-                throw new AssertionError(
-                        "Cannot introspect suite class loader", cause);
-            }
-        }
         // surefire suite runner
+        final Class<? extends ClassLoader> loaderClass = loader.getClass();
         if (loaderClass.getName().equals("org.apache.tools.ant.AntClassLoader")) {
             try {
                 Method method = loaderClass.getMethod("getClasspath");
@@ -305,14 +299,22 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                         "Cannot introspect mavent class loader", cause);
             }
         }
-        throw new AssertionError("Unknown classloader type: "
-                + loaderClass.getName()
-                + "\nWon't be able to load OSGI bundles");
+        // try getURLs method
+        try {
+            Method m = loaderClass.getMethod("getURLs");
+            return (URL[]) m.invoke(loader);
+        } catch (NoSuchMethodException | SecurityException
+                | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException cause) {
+            throw new AssertionError("Unsupported classloader type: "
+                    + loaderClass.getName()
+                    + "\nWon't be able to load OSGI bundles");
+        }
     }
 
     protected void initUrls() throws Exception {
         ClassLoader classLoader = NXRuntimeTestCase.class.getClassLoader();
-        urls = extractURLs(classLoader);
+        urls = introspectClasspath(classLoader);
         // special cases such as Surefire with useManifestOnlyJar or Jacoco
         // Look for nuxeo-runtime
         boolean found = false;
@@ -417,7 +419,6 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         try {
             runtime.getContext().deploy(url);
         } catch (Exception e) {
-            log.error("Failed to deploy contrib " + url.toString(), e);
             fail("Failed to deploy contrib " + url.toString());
         }
     }
@@ -530,8 +531,13 @@ public class NXRuntimeTestCase implements RuntimeHarness {
     public void undeployContrib(String contrib) {
         URL url = getResource(contrib);
         assertNotNull("Test contribution not found: " + contrib, url);
-        deployContrib(url);
+        try {
+            runtime.getContext().undeploy(url);
+        } catch (Exception e) {
+            fail("Failed to undeploy contrib " + url.toString());
+        }
     }
+
 
     /**
      * Undeploys a contribution from a given bundle.
@@ -544,27 +550,12 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      * @param contrib the contribution
      */
     @Override
-    public void undeployContrib(String bundle, String contrib) throws Exception {
-        BundleFile b = lookupBundle(bundle);
-        URL url = b.getEntry(contrib);
-        if (url == null) {
-            fail(String.format("Could not find entry %s in bundle '%s'",
-                    contrib, b.getURL()));
+    public void undeployContrib(String name, String contrib) throws Exception {
+        RuntimeContext context = runtime.getContext(name);
+        if (context == null) {
+            throw new IllegalArgumentException("No runtime context available for " + name);
         }
-        runtime.getContext().undeploy(url);
-    }
-
-    // TODO: Never used. Remove?
-    @Deprecated
-    protected void undeployContrib(URL url, String contrib) {
-        assertEquals(runtime, Framework.getRuntime());
-        log.info("Undeploying contribution from " + url.toString());
-        try {
-            runtime.getContext().undeploy(url);
-        } catch (Exception e) {
-            log.error(e);
-            fail("Failed to undeploy contrib " + url.toString());
-        }
+        context.undeploy(contrib);
     }
 
     protected static boolean isVersionSuffix(String s) {

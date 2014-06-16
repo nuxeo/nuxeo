@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  */
@@ -22,22 +22,55 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Defaults implements InvocationHandler {
+public class Defaults<A extends Annotation> implements InvocationHandler {
 
     @SuppressWarnings("unchecked")
     public static <A extends Annotation> A of(Class<A> annotation) {
         return (A) Proxy.newProxyInstance(annotation.getClassLoader(),
-                new Class[] { annotation }, new Defaults());
+                new Class[] { annotation }, new Defaults<A>());
     }
+
+    @SuppressWarnings("unchecked")
+    public static <A extends Annotation> A of(Class<A> type, Iterable<A> annotations) {
+        return (A) Proxy.newProxyInstance(type.getClassLoader(),
+                new Class[] { type }, new Defaults<A>(annotations));
+    }
+
+    @SafeVarargs
+    public static <A extends Annotation> A of(Class<A> type, A... annotations) {
+        return of(type, Arrays.asList(annotations));
+    }
+
+    protected Defaults() {
+        this.annotations = Collections.emptyList();
+    }
+
+    protected Defaults(Iterable<A> annotations) {
+        this.annotations = annotations;
+    }
+
+    protected final Iterable<A > annotations;
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
-        return method.getDefaultValue();
+        final Object defaultValue = method.getDefaultValue();
+        for (Annotation each:annotations) {
+            if (each == null) {
+                continue;
+            }
+            Object value = method.invoke(each);
+            if (value != null && !value.equals(defaultValue)) {
+                return value;
+            }
+        }
+        return defaultValue;
     }
 }

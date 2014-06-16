@@ -27,18 +27,18 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.junit.runner.Description;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.MDC;
+import org.junit.Ignore;
 import org.junit.runner.notification.Failure;
-import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
-import org.mockito.configuration.MockProvider;
-import org.nuxeo.runtime.api.DefaultServiceProvider;
-import org.nuxeo.runtime.test.protocols.inline.InlineURLFactory;
+import org.nuxeo.runtime.mockito.MockProvider;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -77,8 +77,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         super(classToRun);
 
         try {
-            InlineURLFactory.install();
-            loadFeatures(getTestClass().getJavaClass());
+            loadFeatures(getTargetTestClass());
             initialize();
 
         } catch (Throwable t) {
@@ -157,17 +156,18 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
      * @since 5.6
      */
     public <T extends Annotation> T getConfig(Class<T> type) {
-        T config = getDescription().getAnnotation(type);
-        if (config != null) {
-            return config;
+        List<T> configs = new ArrayList<>();
+        T annotation = scanner.getAnnotation(getTargetTestClass(), type);
+        if (annotation != null) {
+            configs.add(annotation);
         }
-        for (RunnerFeature feature : features) {
-            config = feature.getClass().getAnnotation(type);
-            if (config != null) {
-                return config;
+        for (RunnerFeature feature : Lists.reverse(features)) {
+            annotation = scanner.getAnnotation(feature.getClass(), type);
+            if (annotation != null) {
+                configs.add(annotation);
             }
         }
-        return null;
+        return Defaults.of(type, configs);
     }
 
     /**
@@ -194,14 +194,16 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void beforeRun() throws Exception {
+        LogFactory.getLog(FeaturesRunner.class).trace(
+                "b-> " + getDescription().getDisplayName());
         for (RunnerFeature feature : features) {
             feature.beforeRun(this);
         }
-
     }
 
     protected void beforeMethodRun(FrameworkMethod method, Object test)
             throws Exception {
+        MDC.put("fMethod", method.getName());
         for (RunnerFeature feature : features) {
             feature.beforeMethodRun(this, method, test);
         }
@@ -210,14 +212,34 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected void afterMethodRun(FrameworkMethod method, Object test)
             throws Exception {
-        for (RunnerFeature feature : reversed(features)) {
-            feature.afterMethodRun(this, method, test);
+        try {
+            AssertionError errors = new AssertionError("test cleanup failure");
+            for (RunnerFeature feature : reversed(features)) {
+                try {
+                    feature.afterMethodRun(this, method, test);
+                } catch (Throwable error) {
+                    errors.addSuppressed(error);
+                }
+            }
+            if (errors.getSuppressed().length > 0) {
+                throw errors;
+            }
+        } finally {
+            MDC.remove("fMethod");
         }
     }
 
     protected void afterRun() throws Exception {
+        AssertionError errors = new AssertionError("test cleanup failure");
         for (RunnerFeature feature : reversed(features)) {
-            feature.afterRun(this);
+            try {
+                feature.afterRun(this);
+            } catch (Throwable error) {
+                errors.addSuppressed(error);
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
         }
     }
 
@@ -228,16 +250,57 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void start() throws Exception {
+        MDC.put("fclass", getDescription().getClassName());
         for (RunnerFeature feature : features) {
             feature.start(this);
         }
     }
 
     protected void stop() throws Exception {
-        for (RunnerFeature feature : reversed(features)) {
-            feature.stop(this);
+        try {
+            AssertionError errors = new AssertionError("test cleanup failure");
+            for (RunnerFeature feature : reversed(features)) {
+                try {
+                    feature.stop(this);
+                } catch (Throwable error) {
+                    errors.addSuppressed(error);
+                }
+            }
+            if (errors.getSuppressed().length > 0) {
+                throw errors;
+            }
+        } finally {
+            MockProvider.INSTANCE.clearBindings();
+            MDC.remove("fclass");
         }
-        MockProvider.INSTANCE.clearBindings();
+    }
+
+    protected void beforeSetup() {
+        AssertionError errors = new AssertionError();
+        for (RunnerFeature feature : features) {
+            try {
+                feature.beforeSetup(FeaturesRunner.this);
+            } catch (Exception error) {
+                errors.addSuppressed(error);
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
+    }
+
+    protected void afterTeardown() {
+        AssertionError errors = new AssertionError("teardown errors");
+        for (RunnerFeature feature : reversed(features)) {
+            try {
+                feature.afterTeardown(FeaturesRunner.this);
+            } catch (Throwable error) {
+                errors.addSuppressed(errors);
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
     }
 
     protected void configureBindings(Binder binder) {
@@ -269,27 +332,9 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return Guice.createInjector(module);
     }
 
-    protected final RunListener listener = new RunListener() {
-
-        @Override
-        public void testStarted(Description description) throws Exception {
-            for (RunnerFeature feature : features) {
-                feature.beforeSetup(FeaturesRunner.this);
-            }
-        }
-
-        @Override
-        public void testFinished(Description description) throws Exception {
-            for (RunnerFeature feature : reversed(features)) {
-                feature.afterTeardown(FeaturesRunner.this);
-            }
-        }
-    };
-
     @Override
     public void run(final RunNotifier notifier) {
         try {
-            notifier.addFirstListener(listener);
             try {
                 start();
                 try {
@@ -305,8 +350,20 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             }
         } catch (Throwable e) {
             notifier.fireTestFailure(new Failure(getDescription(), e));
+        }
+    }
+
+    @Override
+    protected void runChild(FrameworkMethod method, RunNotifier notifier) {
+        if (method.getAnnotation(Ignore.class) != null) {
+            super.runChild(method, notifier);
+            return;
+        }
+        beforeSetup();
+        try {
+            super.runChild(method, notifier);
         } finally {
-            notifier.removeListener(listener);
+            afterTeardown();
         }
     }
 
@@ -357,6 +414,11 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                 afterMethodRun(testMethod, target);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "FeaturesRunner [fTest=" + getTargetTestClass() + "]";
     }
 
 }
