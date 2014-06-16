@@ -39,10 +39,10 @@ import com.google.inject.Inject;
 @Features( JtajcaManagementFeature.class )
 public class CanMonitorStoragesTest {
 
-    @Inject @Named("test")
+    @Inject @Named("repository/test")
     protected StorageConnectionMonitor repo;
 
-    @Inject @Named("jdbc/NuxeoTestDS")
+    @Inject @Named("jdbc/repository_test")
     protected StorageConnectionMonitor db;
 
     @Inject

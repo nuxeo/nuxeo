@@ -28,7 +28,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 /**
  * @author matic
@@ -38,7 +40,9 @@ import com.google.inject.Inject;
 @Features(JtajcaManagementFeature.class)
 public class CanMonitorRepositoriesTest {
 
-    @Inject protected CoreSessionMonitor monitor;
+    @Inject
+    @Named("default")
+    CoreSessionMonitor monitor;
 
     @Inject
     CoreSession repository;

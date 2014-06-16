@@ -246,6 +246,10 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
     @Override
     public void uninstall() {
         DefaultMonitorComponent.unbind(self);
+        registry.remove(MetricRegistry.name("nuxeo", "repositories",
+                name, "connections", "count"));
+        registry.remove(MetricRegistry.name("nuxeo", "repositories",
+                name, "connections", "idle"));
         self = null;
     }
 

@@ -7,21 +7,21 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
+import javax.inject.Named;
 import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.management.jtajca.TransactionMonitor;
-import org.nuxeo.ecm.core.management.jtajca.TransactionStatistics;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
@@ -54,15 +54,30 @@ import com.google.inject.Inject;
 @Features({ JtajcaManagementFeature.class, LogCaptureFeature.class})
 public class CanMonitorTransactionsTest {
 
-    @Inject protected TransactionMonitor monitor;
+    @Inject @Named("default") protected TransactionMonitor monitor;
 
     @Inject protected TransactionManager tm;
 
-    protected Executor executor;
+    protected ExecutorService executor;
 
     @Before
     public void injectExectutor() {
         executor = Executors.newSingleThreadExecutor();
+    }
+
+    @After
+    public void shudownExecutor() {
+        executor.shutdownNow();
+    }
+
+    @Before
+    public void enableMonitoring() {
+        monitor.toggle();
+    }
+
+    @After
+    public void disableMonitoring() {
+        monitor.toggle();
     }
 
     protected void begin() {

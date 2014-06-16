@@ -22,11 +22,11 @@ import static org.junit.Assert.assertThat;
 
 import javax.inject.Named;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.management.jtajca.DatabaseConnectionMonitor;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -40,9 +40,10 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features( JtajcaManagementFeature.class )
 @LocalDeploy("org.nuxeo.ecm.core.management.jtajca:ds-contrib.xml")
+@Ignore // databases connection are monitored through a geronimo pool (see StorageConnectionMonitor)
 public class CanMonitorDatabasesTest {
 
-    @Inject @Named("jdbc/db")
+    @Inject @Named("jdbc/repository_test")
     protected DatabaseConnectionMonitor monitor;
 
     @Inject
