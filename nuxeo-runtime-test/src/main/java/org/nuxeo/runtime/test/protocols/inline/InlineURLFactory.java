@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
+import java.net.URLStreamHandlerFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,11 +35,25 @@ import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
 public class InlineURLFactory {
 
     public static void install() {
+        shf = new InlineURLStreamHandlerFactory();
         try {
-            URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(new InlineURLStreamHandlerFactory());
+            URLStreamHandlerFactoryInstaller.installURLStreamHandlerFactory(shf);
         } catch (Exception e) {
             throw new RuntimeException("Cannot install inline URLs", e);
         }
+    }
+
+    protected static URLStreamHandlerFactory shf;
+
+    public static void uninstall() {
+        try {
+            URLStreamHandlerFactoryInstaller.uninstallURLStreamHandlerFactory(shf);
+        } catch (Exception cause) {
+            throw new RuntimeException("Cannot uninstall inline URLs", cause);
+        } finally {
+           shf = null;
+        }
+
     }
 
     public static <T> byte[] marshall(T content) throws IOException {
@@ -85,5 +100,7 @@ public class InlineURLFactory {
         String data = matcher.group(2);
         return Base64.decode(data);
     }
+
+
 
 }
