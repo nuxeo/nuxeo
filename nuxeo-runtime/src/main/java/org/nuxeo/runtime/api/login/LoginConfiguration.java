@@ -1,64 +1,68 @@
-/*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
- */
-
 package org.nuxeo.runtime.api.login;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.security.auth.login.AppConfigurationEntry;
 import javax.security.auth.login.Configuration;
 
-/**
- * Custom login configuration.
- * <p>
- * This configuration reads login-modules configuration from extensions
- * contributed to the extension point exposed by the component LoginComponent.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- */
+import org.apache.commons.logging.LogFactory;
+
 public class LoginConfiguration extends Configuration {
 
-    private final LoginComponent login;
-    private final Configuration parent;
+    public static final LoginConfiguration INSTANCE = new LoginConfiguration();
 
-    LoginConfiguration(LoginComponent login) {
-        this(login, null);
+    protected final AtomicInteger counter = new AtomicInteger(0);
+
+    public interface Provider {
+
+        public AppConfigurationEntry[] getAppConfigurationEntry(String name);
+
     }
 
-    LoginConfiguration(LoginComponent login, Configuration parent) {
-        this.login = login;
-        this.parent = parent;
-    }
-
-    public Configuration getParent() {
-        return parent;
-    }
+    protected final InheritableThreadLocal<Provider> holder = new InheritableThreadLocal<>();
 
     @Override
     public AppConfigurationEntry[] getAppConfigurationEntry(String name) {
-        AppConfigurationEntry[] appConfig = login.getAppConfigurationEntry(name);
-        if (appConfig == null && parent != null) { // delegate to parent config
-            appConfig = parent.getAppConfigurationEntry(name);
-        }
-        return appConfig;
+        return holder.get().getAppConfigurationEntry(name);
     }
+
 
     @Override
     public void refresh() {
-        // do nothing for our configuration (it refreshes itself each time the
-        // config is modified)
-        // refresh the parent if any
-        if (parent != null) {
-            parent.refresh();
+       context.parent.refresh();
+    }
+
+    protected class InstallContext {
+        protected final Configuration parent = Configuration.getConfiguration();
+        protected final Thread thread = Thread.currentThread();
+        protected final Throwable stacktrace = new Throwable();
+        @Override
+        public String toString() {
+            return "Login Installation Context [parent=" + parent + ", thread=" + thread
+                    + "]";
+        }
+
+    }
+
+    protected InstallContext context;
+
+    public void install(Provider provider) {
+        holder.set(provider);
+        int count = counter.incrementAndGet();
+        if (count == 1) {
+            context = new InstallContext();
+            Configuration.setConfiguration(this);
+            LogFactory.getLog(LoginConfiguration.class).trace("installed login configuration", context.stacktrace);
+        }
+    }
+
+    public void uninstall() {
+        holder.remove();
+        int count = counter.decrementAndGet();
+        if (count == 0) {
+            LogFactory.getLog(LoginConfiguration.class).trace("uninstalled login configuration " + context.thread, context.stacktrace);
+            Configuration.setConfiguration(context.parent);
+            context = null;
         }
     }
 
