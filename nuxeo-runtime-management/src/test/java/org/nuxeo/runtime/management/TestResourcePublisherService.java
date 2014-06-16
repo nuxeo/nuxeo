@@ -76,6 +76,8 @@ public class TestResourcePublisherService extends ManagementTestCase {
 
     @Test
     public void testXMLConfiguration() throws Exception {
+        Set<String> shortcutsName = publisherService.getShortcutsName();
+        int size = shortcutsName.size();
         deployContrib(OSGI_BUNDLE_NAME_TESTS, "management-tests-service.xml");
         deployContrib(OSGI_BUNDLE_NAME_TESTS, "management-tests-contrib.xml");
 
@@ -86,9 +88,9 @@ public class TestResourcePublisherService extends ManagementTestCase {
         assertNotNull(registeredNames);
         assertEquals(4, registeredNames.size());
 
-        Set<String> shortcutsName = publisherService.getShortcutsName();
+        shortcutsName = publisherService.getShortcutsName();
         assertNotNull(shortcutsName);
-        assertEquals(5, shortcutsName.size());
+        assertEquals(size+4, shortcutsName.size());
         assertTrue(shortcutsName.contains("dummy"));
     }
 
