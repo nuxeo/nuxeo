@@ -25,8 +25,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -43,12 +45,23 @@ public class TestConfig extends AbstractCommandTest {
 
     private ConfigurationGenerator configurationGenerator;
 
+    protected URL locateResource(String path) throws IOException {
+        Enumeration<URL> urls = TestConfig.class.getClassLoader().getResources(path);
+        while (urls.hasMoreElements()) {
+            URL each = urls.nextElement();
+            if (each.getPath().contains("nuxeo-connect-standalone")) {
+                return each;
+            }
+        }
+        throw new IOException("Cannot find " + path + " in classpath");
+    }
+
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
 
-        URL url = getClass().getClassLoader().getResource("config/nuxeo.conf");
+        URL url = locateResource("config/nuxeo.conf");
         File nuxeoConf = new File(
                 org.nuxeo.common.Environment.getDefault().getServerHome(),
                 "nuxeo.conf");
@@ -59,17 +72,7 @@ public class TestConfig extends AbstractCommandTest {
         System.setProperty(
                 TomcatConfigurator.TOMCAT_HOME,
                 org.nuxeo.common.Environment.getDefault().getServerHome().getPath());
-        // TODO JC: the following System properties are required by
-        // ConfigurationGenerator which should find them looking at
-        // Environment.getDefault()
-        System.setProperty(
-                Environment.NUXEO_HOME,
-                org.nuxeo.common.Environment.getDefault().getServerHome().getPath());
-        System.setProperty(Environment.NUXEO_DATA_DIR,
-                org.nuxeo.common.Environment.getDefault().getData().getPath());
-        System.setProperty(Environment.NUXEO_LOG_DIR,
-                org.nuxeo.common.Environment.getDefault().getLog().getPath());
-        url = getClass().getClassLoader().getResource("templates");
+        url = locateResource("templates");
         FileUtils.copyDirectory(
                 new File(URLDecoder.decode(url.getPath(), "UTF-8")),
                 new File(
