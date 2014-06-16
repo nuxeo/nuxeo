@@ -18,8 +18,6 @@
  */
 package org.nuxeo.runtime.test.runner;
 
-import static org.mockito.MockitoAnnotations.initMocks;
-
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -371,9 +369,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     public Object createTest() throws Exception {
         // Return a Guice injected test class
         Object test = injector.getInstance(getTestClass().getJavaClass());
-        // Init mockito
-        DefaultServiceProvider.setProvider(MockProvider.INSTANCE);
-        initMocks(test);
         // let features adapt the test object if needed
         try {
             testCreated(test);

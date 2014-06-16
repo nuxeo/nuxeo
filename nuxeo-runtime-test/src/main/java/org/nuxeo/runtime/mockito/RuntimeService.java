@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.mockito.configuration;
+package org.nuxeo.runtime.mockito;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

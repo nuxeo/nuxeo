@@ -16,6 +16,8 @@
  */
 package org.mockito.configuration;
 
+import org.nuxeo.runtime.mockito.NuxeoInjectingAnnotationEngine;
+
 
 /**
  *

@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.mockito.configuration;
+package org.nuxeo.runtime.mockito;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
