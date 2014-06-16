@@ -31,6 +31,8 @@ import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import javax.inject.Inject;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -40,12 +42,16 @@ import org.nuxeo.connect.update.util.PackageBuilder;
 import org.nuxeo.connect.update.xml.XmlWriter;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.TomcatConfigurator;
+import org.nuxeo.runtime.test.TargetResourceLocator;
 
 public class TestConfig extends AbstractCommandTest {
 
+    @Inject TargetResourceLocator locator;
+
     private ConfigurationGenerator configurationGenerator;
 
-    protected URL locateResource(String path) throws IOException {
+
+     protected URL locateResource(String path) throws IOException {
         Enumeration<URL> urls = TestConfig.class.getClassLoader().getResources(path);
         while (urls.hasMoreElements()) {
             URL each = urls.nextElement();
@@ -61,7 +67,7 @@ public class TestConfig extends AbstractCommandTest {
     public void setUp() throws Exception {
         super.setUp();
 
-        URL url = locateResource("config/nuxeo.conf");
+        URL url = locator.getTargetTestResource("config/nuxeo.conf");
         File nuxeoConf = new File(
                 org.nuxeo.common.Environment.getDefault().getServerHome(),
                 "nuxeo.conf");
@@ -72,7 +78,7 @@ public class TestConfig extends AbstractCommandTest {
         System.setProperty(
                 TomcatConfigurator.TOMCAT_HOME,
                 org.nuxeo.common.Environment.getDefault().getServerHome().getPath());
-        url = locateResource("templates");
+        url = locator.getTargetTestResource("templates");
         FileUtils.copyDirectory(
                 new File(URLDecoder.decode(url.getPath(), "UTF-8")),
                 new File(
