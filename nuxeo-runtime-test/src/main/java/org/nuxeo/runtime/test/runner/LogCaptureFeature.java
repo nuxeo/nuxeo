@@ -143,7 +143,7 @@ public class LogCaptureFeature extends SimpleFeature {
 
         FilterWith filterProvider = runner.getConfig(method, FilterWith.class);
 
-        if (filterProvider == null) {
+        if (filterProvider.value() == null) {
             return;
         }
         Class<? extends Filter> filterClass = filterProvider.value();
