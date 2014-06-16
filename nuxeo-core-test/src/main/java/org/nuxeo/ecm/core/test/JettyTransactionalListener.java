@@ -9,26 +9,34 @@ import org.nuxeo.runtime.jetty.JettyComponent;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 public class JettyTransactionalListener implements ServletContextListener {
-        
+
     JettyComponent component = fetchComponent();
-    
+
     protected static JettyComponent fetchComponent() {
         return (JettyComponent)Framework.getRuntime().getComponent(JettyComponent.NAME);
     }
-    
+
+    boolean nxowner;
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        try {
-            NuxeoContainer.install();
-        } catch (NamingException e) {
-            throw new RuntimeException(
-                    "Cannot install jtajca in jetty naming context", e);
+        if (!NuxeoContainer.isInstalled()) {
+            try {
+                NuxeoContainer.install();
+            } catch (NamingException e) {
+                throw new RuntimeException(
+                        "Cannot install jtajca in jetty naming context", e);
+            }
+            nxowner = true;
         }
         component.setNuxeoClassLoader(Thread.currentThread().getContextClassLoader());
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        if (!nxowner) {
+            return;
+        }
         try {
             NuxeoContainer.uninstall();
         } catch (NamingException e) {

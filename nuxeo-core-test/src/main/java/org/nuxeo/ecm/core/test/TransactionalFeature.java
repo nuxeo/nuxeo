@@ -11,16 +11,13 @@
  */
 package org.nuxeo.ecm.core.test;
 
-import java.util.Properties;
-
 import org.apache.log4j.Logger;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
-import org.nuxeo.runtime.jtajca.JtaActivator;
-import org.nuxeo.runtime.test.runner.Defaults;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
@@ -34,32 +31,30 @@ public class TransactionalFeature extends SimpleFeature {
 
     protected String autoactivationValue;
 
+    protected boolean nsOwner;
+
     protected boolean txStarted;
 
     protected Class<? extends RepositoryFactory> defaultFactory;
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        config = runner.getDescription().getAnnotation(
-                TransactionalConfig.class);
-        if (config == null) {
-            config = Defaults.of(TransactionalConfig.class);
-        }
+        config = runner.getConfig(TransactionalConfig.class);
     }
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {
-        autoactivationValue = System.getProperty(JtaActivator.AUTO_ACTIVATION);
-        System.setProperty(JtaActivator.AUTO_ACTIVATION, "true");
+        if (!NuxeoContainer.isInstalled()) { // before runtime start (lazy loading)
+            NuxeoContainer.install();
+            nsOwner = true;
+        }
     }
 
     @Override
     public void stop(FeaturesRunner runner) throws Exception {
-        Properties props = System.getProperties();
-        if (autoactivationValue != null) {
-            props.put(JtaActivator.AUTO_ACTIVATION, autoactivationValue);
-        } else {
-            props.remove(JtaActivator.AUTO_ACTIVATION);
+        if (nsOwner) {
+            nsOwner = false;
+            NuxeoContainer.uninstall(); // before runtime shutdown
         }
     }
 
@@ -86,4 +81,5 @@ public class TransactionalFeature extends SimpleFeature {
         }
         TransactionHelper.commitOrRollbackTransaction();
     }
+
 }
