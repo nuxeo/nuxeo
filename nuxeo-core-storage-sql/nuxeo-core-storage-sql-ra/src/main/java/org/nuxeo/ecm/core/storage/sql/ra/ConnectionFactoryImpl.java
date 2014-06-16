@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
 
 /**
@@ -180,12 +181,12 @@ public class ConnectionFactoryImpl implements Repository,
 
     @Override
     public void shutdown() {
+        managedConnectionFactory.shutdown();
         try {
             NuxeoContainer.disposeConnectionManager(connectionManager);
-        } catch (Exception cause) {
-            // don't report as an error, datasources may not be available
+        } catch (Exception e) {
             LogFactory.getLog(ConnectionFactoryImpl.class).warn("cannot dispose connection manager of "
-                    + name, cause);
+                    + name);
         }
     }
 

@@ -289,6 +289,9 @@ public class RepositoryImpl implements Repository {
      */
     @Override
     public synchronized SessionImpl getConnection() throws StorageException {
+        if (Framework.getRuntime().isShuttingDown()) {
+            throw new IllegalStateException("Cannot open connection, runtime is shutting down");
+        }
         if (model == null) {
             initRepository();
         }

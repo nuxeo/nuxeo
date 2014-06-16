@@ -97,7 +97,7 @@ public class RepositoryManagerImpl extends DefaultComponent implements
     @Override
     public void removeRepository(String name) {
         log.info("Removing repository: " + name);
-        repositories.remove(name);
+        Repository repo = repositories.remove(name);
     }
 
     @Override

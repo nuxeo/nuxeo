@@ -5,6 +5,8 @@
     Service to manage core repositories.
   </documentation>
 
+  <require>org.nuxeo.ecm.core.api.repository.RepositoryManager</require>
+  
   <implementation class="org.nuxeo.ecm.core.repository.RepositoryService" />
 
   <service>
