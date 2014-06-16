@@ -14,8 +14,9 @@
  * Contributors:
  *     dmetzler
  */
-package org.mockito.configuration;
+package org.nuxeo.runtime.mockito;
 
+import org.mockito.configuration.AnnotationEngine;
 import org.mockito.internal.configuration.InjectingAnnotationEngine;
 import org.mockito.internal.configuration.SpyAnnotationEngine;
 

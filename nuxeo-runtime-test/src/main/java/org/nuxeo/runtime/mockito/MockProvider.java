@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.mockito.configuration;
+package org.nuxeo.runtime.mockito;
 
 import java.util.HashMap;
 import java.util.Map;
