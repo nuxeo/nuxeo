@@ -17,7 +17,6 @@
 
 package org.nuxeo.runtime.management.metrics;
 
-import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -28,12 +27,13 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
 import org.nuxeo.runtime.management.ResourcePublisher;
+import org.nuxeo.runtime.management.ServerLocator;
 
 public class MetricRegister {
 
     protected static final Log log = LogFactory.getLog(MetricRegister.class);
 
-    protected final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+    protected final MBeanServer server = Framework.getLocalService(ServerLocator.class).lookupServer();
 
     protected final HashMap<String,String> cnames = new HashMap<String,String>();
 

@@ -188,6 +188,9 @@ public class ResourcePublisherService extends DefaultComponent implements
         }
 
         protected void doBind(Resource resource) {
+            if (!started) {
+                return;
+            }
             if (resource.mbean != null) {
                 throw new IllegalStateException(resource + " is already bound");
             }
@@ -305,6 +308,7 @@ public class ResourcePublisherService extends DefaultComponent implements
 
     }
 
+    @Override
     public void registerResource(String shortName, String qualifiedName,
             Class<?> managementClass, Object instance) {
         resourcesRegistry.doRegisterResource(qualifiedName, managementClass,
@@ -314,6 +318,7 @@ public class ResourcePublisherService extends DefaultComponent implements
         }
     }
 
+    @Override
     public void unregisterResource(String shortName, String qualifiedName) {
         resourcesRegistry.doUnregisterResource(qualifiedName);
         if (shortName != null) {
@@ -373,8 +378,11 @@ public class ResourcePublisherService extends DefaultComponent implements
         doUnbindResources();
     }
 
+    protected boolean started  = false;
+
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
+        started = true;
         factoriesRegistry.doRegisterResources();
         doBindResources();
     }

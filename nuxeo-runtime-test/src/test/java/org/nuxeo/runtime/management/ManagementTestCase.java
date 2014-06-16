@@ -38,20 +38,13 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
 
     protected static final String OSGI_BUNDLE_NAME = "org.nuxeo.runtime.management";
 
-    protected static final String OSGI_BUNDLE_NAME_TESTS = OSGI_BUNDLE_NAME
-            + ".tests";
 
     protected ResourcePublisherService publisherService;
 
     protected ServerLocatorService locatorService;
 
-    public ManagementTestCase() {
-    }
 
-    public ManagementTestCase(String name) {
-        super(name);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -60,11 +53,16 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
                 "OSGI-INF/management-server-locator-service.xml");
         deployContrib(OSGI_BUNDLE_NAME,
                 "OSGI-INF/management-resource-publisher-service.xml");
+        deployTestContrib(OSGI_BUNDLE_NAME,
+                "isolated-server.xml");
+
+        fireFrameworkStarted();
 
         locatorService = (ServerLocatorService) Framework.getLocalService(ServerLocator.class);
         publisherService = (ResourcePublisherService) Framework.getLocalService(ResourcePublisher.class);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         Framework.getRuntime().stop();

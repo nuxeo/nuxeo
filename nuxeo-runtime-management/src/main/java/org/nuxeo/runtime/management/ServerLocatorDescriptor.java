@@ -41,13 +41,16 @@ public class ServerLocatorDescriptor {
     @XNode("@domain")
     protected String domainName;
 
+    @XNode("@remote")
+    protected boolean remote = true;
+
     public ServerLocatorDescriptor() {
-        this.domainName = "";
+        domainName = "";
     }
 
     public ServerLocatorDescriptor(String domainName, boolean isDefaultServer) {
         this.domainName = domainName;
-        this.isDefault = isDefaultServer;
+        isDefault = isDefaultServer;
     }
 
     @XNode("@exist")

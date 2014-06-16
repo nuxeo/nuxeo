@@ -9,6 +9,8 @@
     <provide interface="org.nuxeo.runtime.metrics.MetricsService" />
   </service>
 
+  <require>org.nuxeo.runtime.management.ServerLocator</require>
+  
   <implementation class="org.nuxeo.runtime.metrics.MetricsServiceImpl" />
 
   <extension-point name="configuration">
