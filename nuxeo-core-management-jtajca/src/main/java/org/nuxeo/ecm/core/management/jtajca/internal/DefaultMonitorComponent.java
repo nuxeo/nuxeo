@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.core.management.jtajca.internal;
 
-import java.lang.management.ManagementFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -35,6 +34,7 @@ import javax.naming.NamingException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import javax.sql.DataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
@@ -51,6 +51,7 @@ import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainerListener;
+import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.metrics.MetricsServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -231,7 +232,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
     protected static ObjectInstance bind(Class<?> itf, Object managed,
             String name) {
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
         name = Defaults.instance.name(itf, name);
         try {
             return mbs.registerMBean(managed, new ObjectName(name));
@@ -243,7 +244,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
     }
 
     protected static void unbind(ObjectInstance instance) {
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
         try {
             mbs.unregisterMBean(instance.getObjectName());
         } catch (MBeanRegistrationException | InstanceNotFoundException e) {

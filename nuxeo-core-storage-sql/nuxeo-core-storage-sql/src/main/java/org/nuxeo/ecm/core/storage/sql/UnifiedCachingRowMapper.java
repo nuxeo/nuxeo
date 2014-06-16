@@ -13,7 +13,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,11 +41,12 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
-import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
@@ -166,7 +166,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
             isXA = cacheManager.getConfiguration().getCacheConfigurations().get(
                     CACHE_NAME).isXaTransactional();
             // Exposes cache to JMX
-            MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+            MBeanServer mBeanServer = Framework.getLocalService(ServerLocator.class).lookupServer();
             ManagementService.registerMBeans(cacheManager, mBeanServer, true,
                     true, true, true);
         }
@@ -621,7 +621,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
         }
         // we only put as absent the root fragment, to avoid polluting the cache
         // with lots of absent info. the rest is removed entirely
-        cachePutAbsent(new RowId(model.HIER_TABLE_NAME, rootInfo.id));
+        cachePutAbsent(new RowId(Model.HIER_TABLE_NAME, rootInfo.id));
         return infos;
     }
 

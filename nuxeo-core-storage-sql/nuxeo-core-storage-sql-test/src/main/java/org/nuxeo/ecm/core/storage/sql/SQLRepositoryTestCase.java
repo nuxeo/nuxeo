@@ -62,11 +62,13 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         super(name);
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
         initialSingleConnections = ConnectionHelper.countConnectionReferences();
         super.setUp();
+        deployBundle("org.nuxeo.runtime.management");
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
@@ -82,6 +84,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
                 database.getDeploymentContrib());
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         waitForAsyncCompletion();

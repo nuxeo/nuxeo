@@ -42,7 +42,7 @@ import com.google.inject.Binder;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.query",
+@Deploy({ "org.nuxeo.runtime.management", "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.query",
         "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.event",
         "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.convert",
         "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.core.storage",

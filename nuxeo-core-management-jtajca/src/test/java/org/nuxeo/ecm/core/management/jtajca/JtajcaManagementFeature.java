@@ -1,6 +1,5 @@
 package org.nuxeo.ecm.core.management.jtajca;
 
-import java.lang.management.ManagementFactory;
 import java.util.Set;
 
 import javax.management.JMX;
@@ -12,7 +11,9 @@ import javax.transaction.TransactionManager;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -25,7 +26,7 @@ import com.google.inject.name.Names;
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.runtime.datasource",
         "org.nuxeo.ecm.core.management.jtajca" })
-@LocalDeploy("org.nuxeo.ecm.core.management.jtajca:ds-contrib.xml")
+@LocalDeploy({"org.nuxeo.ecm.core.management.jtajca:login-config.xml","org.nuxeo.ecm.core.management.jtajca:ds-contrib.xml"})
 public class JtajcaManagementFeature extends SimpleFeature {
 
     protected ObjectName nameOf(Class<?> itf) {
@@ -51,7 +52,7 @@ public class JtajcaManagementFeature extends SimpleFeature {
         // bind repository
         NuxeoContainer.getConnectionManager(DatabaseHelper.DATABASE.repositoryName);
 
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
         bind(binder, mbs, DatabaseConnectionMonitor.class);
         bind(binder, mbs, StorageConnectionMonitor.class);
         bind(binder, mbs, CoreSessionMonitor.class);
