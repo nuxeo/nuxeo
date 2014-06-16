@@ -25,12 +25,16 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -45,10 +49,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.MethodRule;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
 import org.nuxeo.osgi.BundleFile;
@@ -60,11 +65,12 @@ import org.nuxeo.osgi.SystemBundle;
 import org.nuxeo.osgi.SystemBundleFile;
 import org.nuxeo.osgi.application.StandaloneBundleLoader;
 import org.nuxeo.runtime.AbstractRuntimeService;
-import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
+import org.nuxeo.runtime.osgi.OSGiRuntimeService;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
@@ -78,8 +84,10 @@ import org.osgi.framework.FrameworkEvent;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // Make sure this class is kept in sync with with RuntimeHarness
-@RunWith(JMock.class)
+@RunWith(FeaturesRunner.class)
 public class NXRuntimeTestCase implements RuntimeHarness {
+
+    public final @Rule MethodRule ignoreRule = new ConditionalIgnoreRule();
 
     protected Mockery jmcontext = new JUnit4Mockery();
 
@@ -92,7 +100,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
 
     private static final Log log = LogFactory.getLog(NXRuntimeTestCase.class);
 
-    protected RuntimeService runtime;
+    protected OSGiRuntimeService runtime;
 
     protected URL[] urls; // classpath urls, used for bundles lookup
 
@@ -163,10 +171,9 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         wipeRuntime();
         initUrls();
         if (urls == null) {
-            initTestRuntime();
-        } else {
-            initOsgiRuntime();
+            throw new UnsupportedOperationException("no bundles available");
         }
+        initOsgiRuntime();
     }
 
     /**
@@ -220,8 +227,8 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 if (System.getProperties().remove("nuxeo.home") != null) {
                     log.warn("Removed System property nuxeo.home.");
                 }
-                workingDir = File.createTempFile("NXOSGITestFramework",
-                        generateId());
+                workingDir = File.createTempFile("nxruntime",
+                        null,new File("target"));
                 workingDir.delete();
             }
         } catch (IOException e) {
@@ -250,7 +257,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
                 bundleLoader.getClass().getClassLoader(), true);
         runtimeBundle.start();
 
-        runtime = Framework.getRuntime();
+        runtime = (OSGiRuntimeService) Framework.getRuntime();
         assertNotNull(runtime);
 
         deployContrib(bundleFile, "OSGI-INF/DeploymentService.xml");
@@ -260,32 +267,52 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         deployContrib(bundleFile, "OSGI-INF/ContributionPersistence.xml");
     }
 
-    protected void initTestRuntime() throws Exception {
-        runtime = new TestRuntime();
-        Framework.initialize(runtime);
-        deployContrib("org.nuxeo.runtime.test", "EventService.xml");
-        deployContrib("org.nuxeo.runtime.test", "DeploymentService.xml");
+
+    public static URL[] extractURLs(ClassLoader loader) {
+        // normal case
+        if (loader instanceof URLClassLoader) {
+            return ((URLClassLoader) loader).getURLs();
+        }
+        // classpath suite runner case
+        final Class<? extends ClassLoader> loaderClass = loader.getClass();
+        if (loaderClass.getName().equals(
+                "org.nuxeo.runtime.testsuite.IsolatedClassloader")) {
+            try {
+                Field f = loaderClass.getDeclaredField("baseLoader");
+                f.setAccessible(true);
+                return extractURLs((ClassLoader) f.get(loader));
+            } catch (NoSuchFieldException | SecurityException
+                    | IllegalArgumentException | IllegalAccessException cause) {
+                throw new AssertionError(
+                        "Cannot introspect suite class loader", cause);
+            }
+        }
+        // surefire suite runner
+        if (loaderClass.getName().equals("org.apache.tools.ant.AntClassLoader")) {
+            try {
+                Method method = loaderClass.getMethod("getClasspath");
+                String cp = (String) method.invoke(loader);
+                String[] paths = cp.split(File.pathSeparator);
+                URL[] urls = new URL[paths.length];
+                for (int i = 0; i < paths.length; i++) {
+                    urls[i] = new URL("file:" + paths[i]);
+                }
+                return urls;
+            } catch (NoSuchMethodException | SecurityException
+                    | IllegalAccessException | IllegalArgumentException
+                    | InvocationTargetException | MalformedURLException cause) {
+                throw new AssertionError(
+                        "Cannot introspect mavent class loader", cause);
+            }
+        }
+        throw new AssertionError("Unknown classloader type: "
+                + loaderClass.getName()
+                + "\nWon't be able to load OSGI bundles");
     }
 
     protected void initUrls() throws Exception {
         ClassLoader classLoader = NXRuntimeTestCase.class.getClassLoader();
-        if (classLoader instanceof URLClassLoader) {
-            urls = ((URLClassLoader) classLoader).getURLs();
-        } else if (classLoader.getClass().getName().equals(
-                "org.apache.tools.ant.AntClassLoader")) {
-            Method method = classLoader.getClass().getMethod("getClasspath");
-            String cp = (String) method.invoke(classLoader);
-            String[] paths = cp.split(File.pathSeparator);
-            urls = new URL[paths.length];
-            for (int i = 0; i < paths.length; i++) {
-                urls[i] = new URL("file:" + paths[i]);
-            }
-        } else {
-            log.warn("Unknown classloader type: "
-                    + classLoader.getClass().getName()
-                    + "\nWon't be able to load OSGI bundles");
-            return;
-        }
+        urls = extractURLs(classLoader);
         // special cases such as Surefire with useManifestOnlyJar or Jacoco
         // Look for nuxeo-runtime
         boolean found = false;
@@ -352,9 +379,27 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         }
     }
 
-    public static URL getResource(String resource) {
-        return Thread.currentThread().getContextClassLoader().getResource(
-                resource);
+    public static URL getResource(String name) {
+        final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        String callerName = Thread.currentThread().getStackTrace()[2].getClassName();
+        final String relativePath = callerName.replace('.', '/').concat(
+                ".class");
+        final String fullPath = loader.getResource(relativePath).getPath();
+        final String basePath = fullPath.substring(0,
+                fullPath.indexOf(relativePath));
+        Enumeration<URL> resources;
+        try {
+            resources = loader.getResources(name);
+            while (resources.hasMoreElements()) {
+                URL resource = resources.nextElement();
+                if (resource.getPath().startsWith(basePath)) {
+                    return resource;
+                }
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        return loader.getResource(name);
     }
 
     /**
@@ -372,7 +417,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         try {
             runtime.getContext().deploy(url);
         } catch (Exception e) {
-            log.error(e);
+            log.error("Failed to deploy contrib " + url.toString(), e);
             fail("Failed to deploy contrib " + url.toString());
         }
     }
@@ -395,7 +440,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         deployContrib(url);
     }
 
-    protected void deployContrib(BundleFile bundleFile, String contrib) {
+    private void deployContrib(BundleFile bundleFile, String contrib) {
         URL url = bundleFile.getEntry(contrib);
         if (url == null) {
             fail(String.format("Could not find entry %s in bundle '%s",
@@ -418,8 +463,14 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      * @param contrib the path to contrib in the bundle.
      */
     @Override
-    public void deployContrib(String bundle, String contrib) throws Exception {
-        deployContrib(lookupBundle(bundle), contrib);
+    public void deployContrib(String name, String contrib) throws Exception {
+        RuntimeContext context = runtime.getContext(name);
+        if (context == null) {
+            deployBundle(name);
+            deployContrib(name, contrib);
+            return;
+        }
+        context.deploy(contrib);
     }
 
     /**
@@ -565,12 +616,17 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      * @param bundle the symbolic name
      */
     @Override
-    public void deployBundle(String bundle) throws Exception {
+    public void deployBundle(String name) throws Exception {
         // install only if not yet installed
-        if (bundleLoader.getOSGi().getRegistry().getBundle(bundle) == null) {
-            BundleFile bundleFile = lookupBundle(bundle);
+        BundleImpl bundle = bundleLoader.getOSGi().getRegistry().getBundle(name);
+        if (bundle == null) {
+            BundleFile bundleFile = lookupBundle(name);
             bundleLoader.loadBundle(bundleFile);
             bundleLoader.installBundle(bundleFile);
+            bundle = bundleLoader.getOSGi().getRegistry().getBundle(name);
+        }
+        if (runtime.getContext(bundle) == null) {
+            runtime.createContext(bundle);
         }
     }
 
@@ -664,7 +720,9 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         return osgi;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.nuxeo.runtime.test.runner.RuntimeHarness#getClassLoaderFiles()
      */
     @Override
@@ -675,7 +733,5 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         }
         return files;
     }
-
-
 
 }

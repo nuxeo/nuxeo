@@ -11,10 +11,8 @@
  */
 package org.nuxeo.runtime.api;
 
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Enumeration;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -30,14 +28,5 @@ public class SharedResourceLoader extends URLClassLoader {
         super.addURL(url);
     }
 
-    @Override
-    public URL getResource(String name) {
-        return findResource(name);
-    }
-
-    @Override
-    public Enumeration<URL> getResources(String name) throws IOException {
-        return findResources(name);
-    }
 
 }
