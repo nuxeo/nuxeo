@@ -12,7 +12,6 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -20,7 +19,6 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.RuntimeServiceEvent;
@@ -37,7 +35,7 @@ public class DatabaseH2 extends DatabaseHelper {
     private static final Log log = LogFactory.getLog(DatabaseH2.class);
 
     /** This directory will be deleted and recreated. */
-    protected static final String DIRECTORY = "target/test/h2";
+    protected static final String DIRECTORY = "target";
 
     protected static final String DEF_USER = "sa";
 
@@ -47,33 +45,30 @@ public class DatabaseH2 extends DatabaseHelper {
 
     protected static final String DRIVER = "org.h2.Driver";
 
-    protected static final String URL_FORMAT = "jdbc:h2:%s/%s";
-
-    protected String h2Path;
-
-    protected String origUrl;
+    protected static final String URL_FORMAT = "jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1";
 
     protected String url;
 
     protected String url2;
 
-    protected Error owner;
+    protected String user;
+
+    protected String password;
 
     protected void setProperties() {
-        url = String.format(URL_FORMAT, h2Path, databaseName);
-        origUrl = setProperty(URL_PROPERTY, url);
+        url = setProperty(URL_PROPERTY, String.format(URL_FORMAT, databaseName));
 
-        Framework.getProperties().setProperty(REPOSITORY_PROPERTY,
+        setProperty(REPOSITORY_PROPERTY,
                 repositoryName);
         setProperty(DATABASE_PROPERTY, databaseName);
-        setProperty(USER_PROPERTY, DEF_USER);
-        setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+        user = setProperty(USER_PROPERTY, DEF_USER);
+        password = setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
         // for sql directory tests
         setProperty(DRIVER_PROPERTY, DRIVER);
     }
 
     protected void setProperties2() {
-        url2 = String.format(URL_FORMAT, h2Path, databaseName + "2");
+        url2 = String.format(URL_FORMAT, databaseName + "2");
         setProperty(URL_PROPERTY + "2", url2);
         Framework.getProperties().setProperty(REPOSITORY_PROPERTY + "2",
                 repositoryName + "2");
@@ -81,18 +76,8 @@ public class DatabaseH2 extends DatabaseHelper {
 
     @Override
     public void setUp() throws Exception {
-        if (owner != null) {
-            Error e = new Error("Second call to setUp() without tearDown()",
-                    owner);
-            log.fatal(e.getMessage(), e);
-            throw e;
-        }
-        owner = new Error("Database not released");
+        super.setUp();
         Class.forName(DRIVER);
-        File dir = new File(DIRECTORY);
-        FileUtils.deleteQuietly(dir);
-        dir.mkdirs();
-        h2Path = new File(dir, getId()).getAbsolutePath();
         setProperties();
         checkDatabaseLive();
         Framework.addListener(new RuntimeServiceListener() {
@@ -112,8 +97,8 @@ public class DatabaseH2 extends DatabaseHelper {
 
     protected void checkDatabaseLive() throws SQLException {
         try (Connection connection = DriverManager.getConnection(url,
-                System.getProperty(USER_PROPERTY),
-                System.getProperty(PASSWORD_PROPERTY))) {
+                Framework.getProperty(USER_PROPERTY, "sa"),
+                Framework.getProperty(PASSWORD_PROPERTY, null))) {
             try (Statement st = connection.createStatement()) {
                 st.execute("SELECT 1");
             }
@@ -145,14 +130,20 @@ public class DatabaseH2 extends DatabaseHelper {
 
     protected void tearDownDatabase(String url) throws SQLException {
         Connection connection = DriverManager.getConnection(url,
-                System.getProperty(USER_PROPERTY),
-                System.getProperty(PASSWORD_PROPERTY));
-        Statement st = connection.createStatement();
-        String sql = "SHUTDOWN";
-        log.trace(sql);
-        st.execute(sql);
-        st.close();
-        connection.close();
+                user,
+                password);
+        try {
+            Statement st = connection.createStatement();
+            try {
+                String sql = "SHUTDOWN";
+                log.trace(sql);
+                st.execute(sql);
+            } finally {
+                st.close();
+            }
+        } finally {
+            connection.close();
+        }
     }
 
     @Override
@@ -166,8 +157,8 @@ public class DatabaseH2 extends DatabaseHelper {
         descriptor.xaDataSourceName = "org.h2.jdbcx.JdbcDataSource";
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("URL", url);
-        properties.put("User", System.getProperty(USER_PROPERTY));
-        properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
+        properties.put("User", Framework.getProperty(USER_PROPERTY));
+        properties.put("Password", Framework.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
         return descriptor;
     }

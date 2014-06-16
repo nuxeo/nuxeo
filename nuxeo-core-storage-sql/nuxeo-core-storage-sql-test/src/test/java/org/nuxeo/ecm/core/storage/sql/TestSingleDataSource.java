@@ -31,8 +31,10 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.XAResourceConnectionAdapter;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -41,18 +43,17 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class TestSingleDataSource extends SQLRepositoryTestCase {
 
+    @Override
+    protected OSGiRuntimeService handleNewRuntime(OSGiRuntimeService runtime) {
+        runtime = super.handleNewRuntime(runtime);
+        Framework.getProperties().setProperty(ConnectionHelper.SINGLE_DS, "jdbc/NuxeoTestDS");
+        return runtime;
+    }
+
     @Before
     @Override
     public void setUp() throws Exception {
-        // set up single-datasource mode
-        // the name doesn't actually matter, as code in
-        // ConnectionHelper.getDataSource ignores it and uses
-        // nuxeo.test.vcs.url etc. for connections in test mode
-        String dataSourceName = "jdbc/NuxeoTestDS";
-        System.setProperty(ConnectionHelper.SINGLE_DS, dataSourceName);
-
         super.setUp(); // database setUp deletes all tables
-
         fireFrameworkStarted();
         NuxeoContainer.install();
         TransactionHelper.startTransaction();

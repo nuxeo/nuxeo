@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 
 public abstract class DatabaseHelper {
@@ -57,15 +58,12 @@ public abstract class DatabaseHelper {
     protected static final Class<? extends BinaryManager> defaultBinaryManager = DefaultBinaryManager.class;
 
     static {
-        setProperty(DB_PROPERTY, DB_DEFAULT);
+        setSystemProperty(DB_PROPERTY, DB_DEFAULT);
         String className = System.getProperty(DB_PROPERTY);
         if (className.indexOf('.') < 0) {
             className = DB_CLASS_NAME_BASE + className;
         }
         setDatabaseForTests(className);
-        setRepositoryFactory(defaultRepositoryFactory);
-        setBinaryManager(defaultBinaryManager, "");
-        setSingleDataSourceMode();
     }
 
     public static final String REPOSITORY_PROPERTY = "nuxeo.test.vcs.repository";
@@ -94,12 +92,24 @@ public abstract class DatabaseHelper {
     // set this to true to activate single datasource for all tests
     public static final String SINGLEDS_PROPERTY = "nuxeo.test.vcs.singleds";
 
-    public static String setProperty(String name, String def) {
+    protected Error owner;
+
+    public static String setSystemProperty(String name, String def) {
         String value = System.getProperty(name);
         if (value == null || value.equals("")
                 || value.equals("${" + name + "}")) {
             System.setProperty(name, def);
         }
+        return value;
+    }
+
+    public static String setProperty(String name, String def) {
+        String value = System.getProperty(name);
+        if (value == null || value.equals("")
+                || value.equals("${" + name + "}")) {
+            value = def;
+        }
+        Framework.getProperties().put(name, value);
         return value;
     }
 
@@ -238,33 +248,47 @@ public abstract class DatabaseHelper {
 
     public void setUp(Class<? extends RepositoryFactory> factoryClass)
             throws Exception {
-        setRepositoryFactory(factoryClass);
         setUp();
+        setRepositoryFactory(factoryClass);
     }
 
-    public abstract void setUp() throws Exception;
+    public void setUp() throws Exception {
+        setOwner();
+        setDatabaseName(DEFAULT_DATABASE_NAME);
+        setRepositoryName(DEFAULT_REPOSITORY_NAME);
+        setRepositoryFactory(defaultRepositoryFactory);
+        setBinaryManager(defaultBinaryManager, "");
+        setSingleDataSourceMode();
+    }
+
+    protected void setOwner() {
+        if (owner != null) {
+            Error e = new Error("Second call to setUp() without tearDown()",
+                    owner);
+            log.fatal(e.getMessage(), e);
+            throw e;
+        }
+        owner = new Error("Database not released");
+    }
 
     /**
      * @throws SQLException
      */
     public void tearDown() throws SQLException {
-        setDatabaseName(DEFAULT_DATABASE_NAME);
-        setRepositoryName(DEFAULT_REPOSITORY_NAME);
-        setRepositoryFactory(defaultRepositoryFactory);
-        setBinaryManager(defaultBinaryManager, "");
+        owner = null;
     }
 
     public static void setRepositoryFactory(
             Class<? extends RepositoryFactory> factoryClass) {
-        System.setProperty("nuxeo.test.vcs.repository-factory",
+        setProperty("nuxeo.test.vcs.repository-factory",
                 factoryClass.getName());
     }
 
     public static void setBinaryManager(
             Class<? extends BinaryManager> binaryManagerClass, String key) {
-        System.setProperty("nuxeo.test.vcs.binary-manager",
+        setProperty("nuxeo.test.vcs.binary-manager",
                 binaryManagerClass.getName());
-        System.setProperty("nuxeo.test.vcs.binary-manager-key", key);
+        setProperty("nuxeo.test.vcs.binary-manager-key", key);
     }
 
     public abstract String getDeploymentContrib();
@@ -278,7 +302,7 @@ public abstract class DatabaseHelper {
             // ConnectionHelper.getDataSource ignores it and uses
             // nuxeo.test.vcs.url etc. for connections in test mode
             String dataSourceName = "jdbc/NuxeoTestDS";
-            System.setProperty(ConnectionHelper.SINGLE_DS, dataSourceName);
+            Framework.getProperties().setProperty(ConnectionHelper.SINGLE_DS, dataSourceName);
         }
     }
 
