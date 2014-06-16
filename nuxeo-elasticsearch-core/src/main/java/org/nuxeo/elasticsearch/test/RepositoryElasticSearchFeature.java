@@ -26,6 +26,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 
 /**
  *
@@ -42,7 +44,7 @@ public class RepositoryElasticSearchFeature extends SimpleFeature {
     public void initialize(FeaturesRunner runner) throws Exception {
         super.initialize(runner);
         // Uncomment to use Derby when h2 lucene lib is not aligned with ES
-        // DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
+         DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
     }
 
 }

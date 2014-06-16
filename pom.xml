@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>5.9.5-SNAPSHOT</version>
+    <version>5.8.0-HF16-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.elasticsearch</groupId>
@@ -17,6 +17,77 @@
     <module>nuxeo-elasticsearch-core</module>
     <module>nuxeo-elasticsearch-web</module>
   </modules>
+
+  <properties>
+    <lucene.version>4.7.2</lucene.version>
+    <elasticsearch.version>1.1.2</elasticsearch.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+       <groupId>org.nuxeo.elasticsearch</groupId>
+       <artifactId>nuxeo-elasticsearch-core</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch</artifactId>
+        <version>${elasticsearch.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-queryparser</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-analyzers-common</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+     <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-suggest</artifactId>
+        <version>${lucene.version}</version>
+     </dependency>
+     <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-join</artifactId>
+        <version>${lucene.version}</version>
+     </dependency>
+     <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-spatial</artifactId>
+        <version>${lucene.version}</version>
+     </dependency>
+     <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-codecs</artifactId>
+        <version>${lucene.version}</version>
+     </dependency>
+     <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-queries</artifactId>
+        <version>${lucene.version}</version>
+     </dependency>
+     <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-memory</artifactId>
+        <version>${lucene.version}</version>
+     </dependency>
+     <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-highlighter</artifactId>
+        <version>${lucene.version}</version>
+     </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 
   <repositories>
     <repository>

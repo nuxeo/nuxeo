@@ -219,7 +219,7 @@ public class TestTreeIndexing {
                 .getLocalService(RepositoryManager.class);
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("principal", new UserPrincipal(userName, null, false, false));
-        return CoreInstance.openCoreSession(rm.getDefaultRepositoryName(), ctx);
+        return rm.getDefaultRepository().open(ctx);
     }
 
     @Test
@@ -284,7 +284,7 @@ public class TestTreeIndexing {
         docs = ess.query(restrictedSession, "select * from Document", 10, 0);
         Assert.assertEquals(3, docs.totalSize());
 
-        restrictedSession.close();
+        CoreInstance.getInstance().close(restrictedSession);
     }
 
     @Test
@@ -335,7 +335,7 @@ public class TestTreeIndexing {
         // can view folder2, folder3 and folder4
         Assert.assertEquals(3, docs.totalSize());
 
-        restrictedSession.close();
+        CoreInstance.getInstance().close(restrictedSession);
     }
 
 
