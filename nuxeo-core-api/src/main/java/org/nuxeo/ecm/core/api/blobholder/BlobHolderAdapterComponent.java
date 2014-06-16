@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapterDescriptor;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -44,10 +45,10 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
 
     public static final String EXTERNALBLOB_ADAPTER_EP = "ExternalBlobAdapter";
 
-    protected static final Map<String, BlobHolderFactory> factories
+    protected final Map<String, BlobHolderFactory> factories
             = new HashMap<String, BlobHolderFactory>();
 
-    protected final Map<String, BlobHolderFactory> factoriesByFacets
+    protected Map<String, BlobHolderFactory> factoriesByFacets
                 = new HashMap<String, BlobHolderFactory>();
 
     protected static final Map<String, ExternalBlobAdapter> externalBlobAdapters
@@ -97,7 +98,7 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements
     /* for test */
 
     public static Set<String> getFactoryNames() {
-        return factories.keySet();
+        return ((BlobHolderAdapterComponent)Framework.getLocalService(BlobHolderAdapterService.class)).factories.keySet();
     }
 
     /* Service Interface */
