@@ -26,6 +26,8 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -50,15 +52,13 @@ import org.quartz.impl.StdSchedulerFactory;
  *
  */
 public class SchedulerServiceImpl extends DefaultComponent implements
-        SchedulerService {
+        SchedulerService, RuntimeServiceListener {
 
     private static final Log log = LogFactory.getLog(SchedulerServiceImpl.class);
 
     protected RuntimeContext bundle;
 
     protected Scheduler scheduler;
-
-    protected boolean applicationStarted;
 
     protected final ScheduleExtensionRegistry registry = new ScheduleExtensionRegistry();
 
@@ -113,23 +113,33 @@ public class SchedulerServiceImpl extends DefaultComponent implements
         log.info("scheduler started");
     }
 
+    protected void shutdownScheduler() {
+        if (scheduler == null) {
+            return;
+        }
+        try {
+            scheduler.shutdown();
+        } catch (SchedulerException cause) {
+            log.error("Cannot shutdown scheduler", cause);
+        } finally {
+            scheduler = null;
+        }
+    }
+
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         log.debug("Deactivate");
-	if (scheduler != null) {
-	    scheduler.shutdown();
-	}
+        shutdownScheduler();
     }
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
-        applicationStarted = true;
         setupScheduler(context);
     }
 
     @Override
     public boolean hasApplicationStarted() {
-        return applicationStarted;
+        return scheduler != null;
     }
 
     @Override
@@ -160,7 +170,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements
     public void registerSchedule(Schedule schedule,
             Map<String, Serializable> parameters) {
         registry.addContribution(schedule);
-        if (!applicationStarted) {
+        if (scheduler == null) {
             return;
         }
         Schedule contributed = registry.getSchedule(schedule);
@@ -245,6 +255,14 @@ public class SchedulerServiceImpl extends DefaultComponent implements
     @Override
     public boolean unregisterSchedule(Schedule schedule) {
         return unregisterSchedule(schedule.getId());
+    }
+
+    @Override
+    public void handleEvent(RuntimeServiceEvent event) {
+        if (!event.getEventName().equals(RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP)) {
+            return;
+        }
+        shutdownScheduler();
     }
 
 }
