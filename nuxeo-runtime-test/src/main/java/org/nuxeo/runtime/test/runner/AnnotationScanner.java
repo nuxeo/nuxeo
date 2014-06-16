@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  */
@@ -21,16 +21,23 @@ package org.nuxeo.runtime.test.runner;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class AnnotationScanner {
+
+    protected final Set<Class<?>> visitedClasses = new HashSet<Class<?>>();
 
     protected final Map<Class<?>, List<Annotation>> classes = new Hashtable<Class<?>, List<Annotation>>();
 
@@ -38,36 +45,38 @@ public class AnnotationScanner {
         if (classes.containsKey(clazz)) {
             return;
         }
-        List<Annotation> result = new ArrayList<Annotation>();
-        Set<Class<?>> visitedClasses = new HashSet<Class<?>>();
-        collectAnnotations(clazz, result, visitedClasses);
+        collectAnnotations(clazz);
     }
 
     public List<? extends Annotation> getAnnotations(Class<?> clazz) {
+        if (!visitedClasses.contains(clazz)) {
+            scan(clazz);
+        }
         return classes.get(clazz);
+    }
+
+    public <T extends Annotation> T getAnnotation(Class<?> clazz, Class<T> annotationType) {
+        final List<T> annotations = getAnnotations(clazz, annotationType);
+        if (annotations.isEmpty()) {
+            return null;
+        }
+        return Defaults.of(annotationType, annotations);
     }
 
     public <T extends Annotation> T getFirstAnnotation(Class<?> clazz, Class<T> annotationType) {
         List<T> result = getAnnotations(clazz, annotationType);
-        if (result != null && !result.isEmpty()) {
-            return result.get(0);
+        if (result.isEmpty()) {
+            return null;
         }
-        return null;
+        return result.get(0);
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Annotation> List<T> getAnnotations(Class<?> clazz, Class<T> annotationType) {
-        List<Annotation> list = classes.get(clazz);
-        if (list != null) {
-            List<T> result = new ArrayList<T>();
-            for (Annotation anno : list) {
-                if (anno.annotationType() == annotationType) {
-                    result.add((T)anno);
-                }
-            }
-            return result;
+        if (!visitedClasses.contains(clazz)) {
+            scan(clazz);
         }
-        return null;
+        return (List<T>) ImmutableList.copyOf(Iterables.filter(classes.get(clazz), Predicates.instanceOf(annotationType)));
     }
 
     /**
@@ -76,34 +85,24 @@ public class AnnotationScanner {
      * @param result
      * @param visitedClasses
      */
-    protected void collectAnnotations(Class<?> clazz, List<Annotation> result, Set<Class<?>> visitedClasses) {
+    protected List<Annotation> collectAnnotations(Class<?> clazz) {
         if (visitedClasses.contains(clazz)) {
-            return;
+            return classes.get(clazz);
         }
         visitedClasses.add(clazz);
-        List<Annotation> partialResult = new ArrayList<Annotation>(); // collect only the annotation on this class
-        List<Annotation> annos = classes.get(clazz);
-        if (annos != null) {
-            result.addAll(annos);
-            return;
-        }
-        // collect local annotations
-        for (Annotation anno : clazz.getAnnotations()) {
-            partialResult.add(anno);
-        }
+        List<Annotation> result = new ArrayList<Annotation>(); // collect only the annotation on this class
+        result.addAll(Arrays.asList(clazz.getAnnotations()));
         // first scan interfaces
         for (Class<?> itf : clazz.getInterfaces()) {
-            collectAnnotations(itf, partialResult, visitedClasses);
+            result.addAll(collectAnnotations(itf));
         }
         // collect annotations from super classes
         Class<?> superClass = clazz.getSuperclass();
         if (superClass != null) {
-            collectAnnotations(superClass, partialResult, visitedClasses);
+            result.addAll(collectAnnotations(superClass));
         }
-        if (!partialResult.isEmpty()) {
-            result.addAll(partialResult);
-        }
-        classes.put(clazz, partialResult);
+        classes.put(clazz, result);
+        return result;
     }
 
 }

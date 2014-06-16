@@ -124,17 +124,19 @@ public class DefaultRuntimeContext implements RuntimeContext {
     @Override
     public void undeploy(URL url) throws Exception {
         ComponentName name = deployedFiles.remove(url.toString());
-        if (name != null) {
-            runtime.getComponentManager().unregister(name);
+        if (name == null) {
+            throw new IllegalArgumentException("not deployed " + url);
         }
+        runtime.getComponentManager().unregister(name);
     }
 
     @Override
     public void undeploy(StreamRef ref) throws Exception {
         ComponentName name = deployedFiles.remove(ref.getId());
-        if (name != null) {
-            runtime.getComponentManager().unregister(name);
+        if (name == null) {
+            throw new IllegalArgumentException("not deployed " + ref);
         }
+        runtime.getComponentManager().unregister(name);
     }
 
     @Override
@@ -150,21 +152,19 @@ public class DefaultRuntimeContext implements RuntimeContext {
     @Override
     public RegistrationInfo deploy(String location) throws Exception {
         URL url = getLocalResource(location);
-        if (url != null) {
-            return deploy(url);
+        if (url == null) {
+            throw new IllegalArgumentException("No local resources was found with this name: " + location);
         }
-        log.warn("No local resources was found with this name: " + location);
-        return null;
+        return deploy(url);
     }
 
     @Override
     public void undeploy(String location) throws Exception {
         URL url = getLocalResource(location);
-        if (url != null) {
-            undeploy(url);
-        } else {
-            log.warn("No local resources was found with this name: " + location);
+        if (url == null) {
+            throw new IllegalArgumentException("No local resources was found with this name: " + location);
         }
+        undeploy(url);
     }
 
     @Override
