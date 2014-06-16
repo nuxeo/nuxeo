@@ -609,13 +609,17 @@
       </fields>
     </widget>
 
-    <widget name="select2_inlinejs" type="textarea">
+    <widget name="select2_inlinejsDemoPreview" type="textarea">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
       <labels>
         <label mode="any">Inline Javascript</label>
       </labels>
+      <widgetModes>
+        <mode value="any">hidden</mode>
+        <mode value="edit_demo_preview">#{layout.mode}</mode>
+      </widgetModes>
       <helpLabels>
         <label mode="any">
           Javascript to be injected in the page with
@@ -634,6 +638,39 @@
       <fields>
         <field>inlinejs</field>
       </fields>
+    </widget>
+
+    <widget name="select2_inlinejs" type="codearea">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Inline Javascript</label>
+      </labels>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+      <helpLabels>
+        <label mode="any">
+          Javascript to be injected in the page with
+          the Widget.
+          You can define here custom formatters
+          referenced in "Selection
+          Formatter" and
+          "Suggestion Formatter" fields. Example:
+          &lt;pre&gt;
+          function myFormatter(entry) {
+          var markup = entry.displayLabel;
+          return markup;
+          }
+          &lt;/pre&gt; </label>
+      </helpLabels>
+      <fields>
+        <field>inlinejs</field>
+      </fields>
+      <properties mode="any">
+        <property name="language">javascript</property>
+      </properties>
     </widget>
 
     <widget name="select2_directorySuggestion_canAddNewEntry" type="checkbox">
@@ -734,13 +771,17 @@
       </fields>
     </widget>
 
-    <widget name="documentSuggestion_query" type="text">
+    <widget name="documentSuggestion_queryDemoPreview" type="text">
       <categories>
         <category>widgetTypeConf</category>
       </categories>
       <labels>
         <label mode="any">NXQL Query</label>
       </labels>
+      <widgetModes>
+        <mode value="any">hidden</mode>
+        <mode value="edit_demo_preview">#{layout.mode}</mode>
+      </widgetModes>
       <helpLabels>
         <label mode="any">
           NXQL Query to fetch the suggestions. This property is
@@ -757,6 +798,37 @@
       <fields>
         <field>query</field>
       </fields>
+    </widget>
+
+    <widget name="documentSuggestion_query" type="codearea">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">NXQL Query</label>
+      </labels>
+      <widgetModes>
+        <mode value="edit_demo_preview">hidden</mode>
+      </widgetModes>
+      <helpLabels>
+        <label mode="any">
+          NXQL Query to fetch the suggestions. This property is
+          ignored if a
+          Page Provider name is given.
+          &lt;p&gt;
+          Example: select *
+          from Document where dc:title LIKE ?
+          &lt;/p&gt;
+          The widget appends a '%'
+          wildcard to the parameter passed to query.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>query</field>
+      </fields>
+      <properties mode="any">
+        <property name="language">nxql</property>
+      </properties>
     </widget>
 
     <widget name="documentSuggestion_documentSchemas" type="text">
@@ -1107,6 +1179,9 @@
                   <widget category="widgetTypeConf">select2_inlinejs</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_inlinejsDemoPreview</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select2_selectionFormatter</widget>
                 </row>
                 <row>
@@ -1247,6 +1322,9 @@
                   <widget category="widgetTypeConf">select2_inlinejs</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_inlinejsDemoPreview</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select2_selectionFormatter</widget>
                 </row>
                 <row>
@@ -1322,6 +1400,9 @@
                   <widget category="widgetTypeConf">select2_inlinejs</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_inlinejsDemoPreview</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select2_selectionFormatter</widget>
                 </row>
               </rows>
@@ -1384,6 +1465,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejsDemoPreview</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_selectionFormatter</widget>
@@ -1467,6 +1551,9 @@
                   <widget category="widgetTypeConf">select2_inlinejs</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_inlinejsDemoPreview</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select2_selectionFormatter</widget>
                 </row>
                 <row>
@@ -1535,6 +1622,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejsDemoPreview</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_selectionFormatter</widget>
@@ -1699,6 +1789,9 @@
                   <widget category="widgetTypeConf">documentSuggestion_query</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">documentSuggestion_queryDemoPreview</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">documentSuggestion_pageProviderName
                   </widget>
                 </row>
@@ -1726,6 +1819,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejsDemoPreview</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_selectionFormatter</widget>
@@ -1807,6 +1903,9 @@
                   <widget category="widgetTypeConf">documentSuggestion_query</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">documentSuggestion_queryDemoPreview</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">documentSuggestion_pageProviderName
                   </widget>
                 </row>
@@ -1834,6 +1933,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_inlinejs</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_inlinejsDemoPreview</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_selectionFormatter</widget>
@@ -4863,7 +4965,7 @@
         </widgetModes>
       </widget>
     </layout>
-    
+
     <layout name="user_registration">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml
@@ -5028,7 +5130,7 @@
         </widgetModes>
       </widget>
     </layout>
-    
+
     <layout name="group">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml
