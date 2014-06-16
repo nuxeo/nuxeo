@@ -11,6 +11,11 @@
  */
 package org.nuxeo.ecm.core.event.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -20,8 +25,6 @@ import java.rmi.dgc.VMID;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
@@ -29,6 +32,7 @@ import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.test.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -138,6 +142,7 @@ public class EventListenerTest extends NXRuntimeTestCase {
     public static int SCRIPT_CNT = 0;
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition=ConditionalIgnoreRule.IgnoreIsolated.class)
     public void testScripts() throws Exception {
         URL url = EventListenerTest.class.getClassLoader().getResource(
                 "test-listeners.xml");
