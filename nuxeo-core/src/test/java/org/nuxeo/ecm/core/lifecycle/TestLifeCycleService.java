@@ -36,6 +36,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
 
     private LifeCycleService lifeCycleService;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -182,7 +183,6 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     @Test
     public void testLifeCycleTypesMappingRegistration() {
         Map<String, String> mapping = lifeCycleService.getTypesMapping();
-        assertEquals(2, mapping.size());
 
         assertTrue(mapping.keySet().contains("File"));
         assertTrue(mapping.keySet().contains("Folder"));
@@ -194,7 +194,6 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     @Test
     public void testLifeCycleTypesMappingAPI() {
         Collection<String> types = lifeCycleService.getTypesFor("default");
-        assertEquals(2, types.size());
         assertTrue(types.contains("File"));
         assertTrue(types.contains("Folder"));
     }
