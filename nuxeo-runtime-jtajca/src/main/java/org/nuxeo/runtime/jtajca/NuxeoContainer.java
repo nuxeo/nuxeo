@@ -495,6 +495,9 @@ public class NuxeoContainer {
         } catch (NamingException e) {
             return null;
         }
+        if (tm == null) {
+            return null;
+        }
         if (tm instanceof TransactionManagerWrapper) {
             return (TransactionManagerWrapper) tm;
         }
@@ -515,7 +518,9 @@ public class NuxeoContainer {
     public static synchronized void disposeConnectionManager(String name)
             throws Exception {
         ConnectionManagerWrapper cm = connectionManagers.remove(name);
-        cm.dispose();
+        if (cm != null) {
+            cm.dispose();
+        }
     }
 
     public static synchronized void resetConnectionManager(String name)
