@@ -21,8 +21,8 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.test.virusscan.service.DummyVirusScanner;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -40,10 +40,12 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@TransactionalConfig(autoStart = false)
 @Deploy({"org.nuxeo.ecm.core.test"})
 @LocalDeploy({"org.nuxeo.ecm.core.test:vscan/core-types-contrib.xml","org.nuxeo.ecm.core.test:vscan/virusscan-service-contrib.xml","org.nuxeo.ecm.core.test:vscan/listeners-contrib.xml"})
 public class TestDummyVirusScanner {
+
+    @Inject
+    protected RepositorySettings settings;
 
     @Inject
     protected CoreSession session;
@@ -73,14 +75,11 @@ public class TestDummyVirusScanner {
         DocumentModel file3;
         DocumentModel file4;
 
-        TransactionHelper.startTransaction();
         try {
             file = session.createDocumentModel("/", "file1", "File");
             file.setPropertyValue("file:content",
                     (Serializable) getFakeBlob(100, "Test1.txt"));
             file = session.createDocument(file);
-
-            session.save();
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
@@ -99,8 +98,6 @@ public class TestDummyVirusScanner {
             file3.setPropertyValue("file:content",
                     (Serializable) getFakeBlob(100, "Test3doFail.txt"));
             file3 = session.createDocument(file3);
-
-            session.save();
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
@@ -111,7 +108,6 @@ public class TestDummyVirusScanner {
             file4.setPropertyValue("file:content",
                     (Serializable) getFakeBlob(100, "Test4.txt"));
             file4 = session.createDocument(file4);
-            session.save();
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
@@ -131,7 +127,6 @@ public class TestDummyVirusScanner {
 
             file4.setPropertyValue("files:files", (Serializable) files);
             file4 = session.saveDocument(file4);
-            session.save();
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
@@ -147,14 +142,13 @@ public class TestDummyVirusScanner {
             files.add(map);
             file4.setPropertyValue("files:files", (Serializable) files);
             file4 = session.saveDocument(file4);
-            session.save();
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
 
+        TransactionHelper.startTransaction();
+
         // wait for processing to be done
-        Thread.sleep(1000);
-        // eventService.waitForAsyncCompletion(5000);
         workManager.awaitCompletion(10, TimeUnit.SECONDS);
 
         List<String> scannedFiles = DummyVirusScanner.getProcessedFiles();
@@ -173,35 +167,24 @@ public class TestDummyVirusScanner {
                 "Test4-4.txt", //
                 "Test4-b.txt")), new HashSet<String>(scannedFiles));
 
-        session.save();
+        file = session.getDocument(file.getRef());
+        file2 = session.getDocument(file2.getRef());
+        file3 = session.getDocument(file3.getRef());
 
-        TransactionHelper.startTransaction();
-        try {
+        Assert.assertTrue(file.hasFacet(VirusScanConsts.VIRUSSCAN_FACET));
+        Assert.assertTrue(file2.hasFacet(VirusScanConsts.VIRUSSCAN_FACET));
+        Assert.assertTrue(file3.hasFacet(VirusScanConsts.VIRUSSCAN_FACET));
 
-            file = session.getDocument(file.getRef());
-            file2 = session.getDocument(file2.getRef());
-            file3 = session.getDocument(file3.getRef());
+        Assert.assertTrue((Boolean) file.getPropertyValue(VirusScanConsts.VIRUSSCAN_OK_PROP));
+        Assert.assertTrue((Boolean) file2.getPropertyValue(VirusScanConsts.VIRUSSCAN_OK_PROP));
+        Assert.assertFalse((Boolean) file3.getPropertyValue(VirusScanConsts.VIRUSSCAN_OK_PROP));
 
-            Assert.assertTrue(file.hasFacet(VirusScanConsts.VIRUSSCAN_FACET));
-            Assert.assertTrue(file2.hasFacet(VirusScanConsts.VIRUSSCAN_FACET));
-            Assert.assertTrue(file3.hasFacet(VirusScanConsts.VIRUSSCAN_FACET));
+        Assert.assertEquals(VirusScanConsts.VIRUSSCAN_STATUS_DONE,
+                file.getPropertyValue(VirusScanConsts.VIRUSSCAN_STATUS_PROP));
+        Assert.assertEquals(VirusScanConsts.VIRUSSCAN_STATUS_DONE,
+                file2.getPropertyValue(VirusScanConsts.VIRUSSCAN_STATUS_PROP));
+        Assert.assertEquals(VirusScanConsts.VIRUSSCAN_STATUS_FAILED,
+                file3.getPropertyValue(VirusScanConsts.VIRUSSCAN_STATUS_PROP));
 
-            Assert.assertTrue((Boolean) file.getPropertyValue(VirusScanConsts.VIRUSSCAN_OK_PROP));
-            Assert.assertTrue((Boolean) file2.getPropertyValue(VirusScanConsts.VIRUSSCAN_OK_PROP));
-            Assert.assertFalse((Boolean) file3.getPropertyValue(VirusScanConsts.VIRUSSCAN_OK_PROP));
-
-            Assert.assertEquals(
-                    VirusScanConsts.VIRUSSCAN_STATUS_DONE,
-                    file.getPropertyValue(VirusScanConsts.VIRUSSCAN_STATUS_PROP));
-            Assert.assertEquals(
-                    VirusScanConsts.VIRUSSCAN_STATUS_DONE,
-                    file2.getPropertyValue(VirusScanConsts.VIRUSSCAN_STATUS_PROP));
-            Assert.assertEquals(
-                    VirusScanConsts.VIRUSSCAN_STATUS_FAILED,
-                    file3.getPropertyValue(VirusScanConsts.VIRUSSCAN_STATUS_PROP));
-
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
     }
 }
