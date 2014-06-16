@@ -27,7 +27,6 @@ import java.util.Set;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.AppConfigurationEntry;
-import javax.security.auth.login.Configuration;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -60,8 +59,6 @@ public class LoginComponent extends DefaultComponent implements LoginService {
 
     protected static final Log log = LogFactory.getLog(LoginComponent.class);
 
-    private LoginConfiguration config;
-
     private final Map<String, SecurityDomain> domains = new Hashtable<String, SecurityDomain>();
 
     private SecurityDomain systemLogin;
@@ -70,23 +67,19 @@ public class LoginComponent extends DefaultComponent implements LoginService {
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        // setup the nuxeo login configuration
-        Configuration parentConfig = null;
-        try {
-            parentConfig = Configuration.getConfiguration();
-        } catch (Exception e) {
-            // do nothing - this can happen if default configuration provider
-            // is not correctly configured
-            // for examnple FileConfig fails if no config file was defined
-        }
-        config = new LoginConfiguration(this, parentConfig);
-        Configuration.setConfiguration(config);
+        LoginConfiguration.INSTANCE.install(new LoginConfiguration.Provider() {
+
+            @Override
+            public AppConfigurationEntry[] getAppConfigurationEntry(String name) {
+                return LoginComponent.this.getAppConfigurationEntry(name);
+            }
+
+        });
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        Configuration.setConfiguration(config.getParent());
-        config = null;
+        LoginConfiguration.INSTANCE.uninstall();
     }
 
     @Override
