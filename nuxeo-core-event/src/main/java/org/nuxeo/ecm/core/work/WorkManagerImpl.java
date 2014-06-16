@@ -824,7 +824,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
         if (transactionManager == null) {
             if (log.isDebugEnabled()) {
-                log.warn("Not scheduling work after commit because of missing transaction manager: "
+                log.debug("Not scheduling work after commit because of missing transaction manager: "
                         + work);
             }
             return false;
@@ -833,7 +833,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             Transaction transaction = transactionManager.getTransaction();
             if (transaction == null) {
                 if (log.isDebugEnabled()) {
-                    log.warn("Not scheduling work after commit because of missing transaction: "
+                    log.debug("Not scheduling work after commit because of missing transaction: "
                             + work);
                 }
                 return false;
