@@ -26,7 +26,7 @@
        </table>
 
        <input class="button installButton" type="submit" value="Validate">
-       &nbsp; <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.showInstallForm.buttons.cancel)}</a>
+       &nbsp; <a href="${Root.path}/packages/${source}" class="button installButton">${Context.getMessage('label.showInstallForm.buttons.cancel')}</a>
 
      </form>
    </div>
