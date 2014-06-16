@@ -50,7 +50,7 @@ public abstract class AbstractConfigurationTest {
 
     @Before
     public void setUp() throws Exception {
-        nuxeoHome = File.createTempFile("nuxeo", null);
+        nuxeoHome = new File("target/launcher");
         nuxeoHome.delete();
         nuxeoHome.mkdirs();
         File nuxeoConf = getResourceFile("configurator/nuxeo.conf");
