@@ -38,14 +38,8 @@ public class TestExternalBlob extends NXRuntimeTestCase {
 
     public static String TEMP_DIRECTORY_NAME = "testExternalBlobDir";
 
-    public TestExternalBlob() {
-        super();
-    }
 
-    public TestExternalBlob(String name) {
-        super(name);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

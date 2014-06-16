@@ -35,14 +35,8 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestBlobsExtractor extends NXRuntimeTestCase {
 
-    public TestBlobsExtractor() {
-        super();
-    }
 
-    public TestBlobsExtractor(String name) {
-        super(name);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

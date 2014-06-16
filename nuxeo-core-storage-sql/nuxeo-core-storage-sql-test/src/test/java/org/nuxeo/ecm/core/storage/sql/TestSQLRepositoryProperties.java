@@ -63,14 +63,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
     DocumentModel doc;
 
-    public TestSQLRepositoryProperties() {
-        super();
-    }
-
-    public TestSQLRepositoryProperties(String name) {
-        super(name);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -101,6 +94,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc = session.createDocument(doc);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

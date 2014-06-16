@@ -61,14 +61,8 @@ import org.nuxeo.ecm.core.security.SecurityService;
  */
 public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
 
-    public TestSQLRepositorySecurity() {
-        super();
-    }
 
-    public TestSQLRepositorySecurity(String name) {
-        super(name);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -79,6 +73,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         // session.cancel();

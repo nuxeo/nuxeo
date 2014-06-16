@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -60,7 +59,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(repositoryName = "default", type = BackendType.H2, init = TypedExportedDocumentRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = TypedExportedDocumentRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestTypedExportedDocument {
 
     /** The Constant transformerFactory. */
@@ -227,6 +226,7 @@ public class TestTypedExportedDocument {
     @SuppressWarnings("rawtypes")
     protected final class CoreNamespaceContext implements NamespaceContext {
 
+        @Override
         public String getNamespaceURI(String prefix) {
 
             if ("dc".equals(prefix)) {
@@ -239,11 +239,13 @@ public class TestTypedExportedDocument {
         }
 
         // Unused => dummy
+        @Override
         public String getPrefix(String namespace) {
             return null;
         }
 
         // Unused => dummy
+        @Override
         public Iterator getPrefixes(String namespace) {
             return null;
         }

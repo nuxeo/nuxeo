@@ -37,12 +37,13 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestBlobHolder extends NXRuntimeTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
-        deployContrib("org.nuxeo.ecm.core.api.tests",
+        deployTestContrib("org.nuxeo.ecm.core.api",
                 "OSGI-INF/test-blobholder-contrib.xml");
     }
 

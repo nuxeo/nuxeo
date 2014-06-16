@@ -37,13 +37,14 @@ import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 public class TestDocumentAdapter extends SQLRepositoryTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("org.nuxeo.ecm.core.api");
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
