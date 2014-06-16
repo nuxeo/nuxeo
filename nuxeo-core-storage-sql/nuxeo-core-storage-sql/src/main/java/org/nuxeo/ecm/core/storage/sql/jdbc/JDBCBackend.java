@@ -84,15 +84,12 @@ public class JDBCBackend implements RepositoryBackend {
         }
 
         // try single-datasource non-XA mode
-        Connection connection = null;
-        try {
-            connection = ConnectionHelper.getConnection(pseudoDataSourceName);
+        try (Connection connection = ConnectionHelper.getConnection(pseudoDataSourceName)) {
             if (connection != null) {
-                connection.close();
                 return;
             }
         } catch (SQLException cause) {
-            throw new StorageException("Cannot close connection", cause);
+            throw new StorageException("Connection error", cause);
         }
 
         // standard XA mode

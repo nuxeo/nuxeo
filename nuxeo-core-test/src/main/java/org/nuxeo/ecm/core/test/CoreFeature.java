@@ -160,7 +160,10 @@ public class CoreFeature extends SimpleFeature {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
         }
-        CoreSession session = repository.createSession();
+        CoreSession session = repository.getSession();
+        if (session == null) {
+            session = repository.createSession();
+        }
         try {
             // remove everything except root
             session.removeChildren(new PathRef("/"));
@@ -185,6 +188,9 @@ public class CoreFeature extends SimpleFeature {
         }
         CoreScope.INSTANCE.enter();
         CoreSession session = repository.createSession();
+        if (session == null) {
+            throw new AssertionError("Cannot open session");
+        }
         RepositoryInit factory = repository.getInitializer();
         if (factory != null) {
             factory.populate(session);
