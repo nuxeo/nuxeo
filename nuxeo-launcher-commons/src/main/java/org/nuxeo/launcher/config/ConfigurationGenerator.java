@@ -288,7 +288,7 @@ public class ConfigurationGenerator {
     @SuppressWarnings("serial")
     protected static final Map<String, String> parametersMigration = new HashMap<String, String>() {
         /**
-         *
+         * 
          */
         private static final long serialVersionUID = 1L;
 
@@ -315,7 +315,8 @@ public class ConfigurationGenerator {
     public ConfigurationGenerator(boolean quiet, boolean debug) {
         this.quiet = quiet;
         this.debug = debug;
-        String nuxeoHomePath = System.getProperty(org.nuxeo.common.Environment.NUXEO_HOME);
+        Environment env = Environment.getDefault();
+        String nuxeoHomePath = env.getServerHome().getAbsolutePath();
         if (nuxeoHomePath != null) {
             nuxeoHome = new File(nuxeoHomePath);
         } else {
@@ -653,8 +654,8 @@ public class ConfigurationGenerator {
             if (bindAddress.isAnyLocalAddress()) {
                 boolean preferIPv6 = "false".equals(System.getProperty("java.net.preferIPv4Stack"))
                         && "true".equals(System.getProperty("java.net.preferIPv6Addresses"));
-                bindAddress = preferIPv6 ? Inet6Address.getByName("::1")
-                        : Inet4Address.getByName("127.0.0.1");
+                bindAddress = preferIPv6 ? InetAddress.getByName("::1")
+                        : InetAddress.getByName("127.0.0.1");
                 log.debug("Bind address is \"ANY\", using local address instead: "
                         + bindAddress);
             }
@@ -909,8 +910,8 @@ public class ConfigurationGenerator {
     public void saveConfiguration(Map<String, String> changedParameters,
             boolean setGenerationOnceToFalse, boolean setGenerationFalseToOnce)
             throws ConfigurationException {
-        this.setOnceToFalse = setGenerationOnceToFalse;
-        this.setFalseToOnce = setGenerationFalseToOnce;
+        setOnceToFalse = setGenerationOnceToFalse;
+        setFalseToOnce = setGenerationFalseToOnce;
         updateStoredConfig();
         String newDbTemplate = changedParameters.remove(PARAM_TEMPLATE_DBNAME);
         if (newDbTemplate != null) {
