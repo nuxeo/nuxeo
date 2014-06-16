@@ -160,7 +160,10 @@ public class DataSourceDescriptor {
     public void unbindSelf(InitialContext initialContext)
             throws NamingException {
         try {
-            Framework.getLocalService(PooledDataSourceRegistry.class).clearPool(name);
+            final PooledDataSourceRegistry registry = Framework.getLocalService(PooledDataSourceRegistry.class);
+            if (registry != null) {
+                registry.clearPool(name);
+            }
         } catch (Exception cause) {
             NamingException error = new NamingException(
                     "Cannot clear pooled datasource " + name);
