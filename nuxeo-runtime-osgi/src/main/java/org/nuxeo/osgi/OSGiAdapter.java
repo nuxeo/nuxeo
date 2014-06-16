@@ -228,8 +228,7 @@ public class OSGiAdapter {
         log.debug("Firing FrameworkEvent on " + frameworkListeners.size()
                 + " listeners");
         if (event.getType() == FrameworkEvent.STARTED) {
-            jarFileCloser = new JarFileCloser(Framework.getResourceLoader(),
-                    systemBundle.loader);
+            jarFileCloser = newJarFileCloser();
         }
         Object[] listeners = frameworkListeners.getListeners();
         for (Object listener : listeners) {
@@ -243,6 +242,11 @@ public class OSGiAdapter {
                         + listener.getClass(), e);
             }
         }
+    }
+
+    protected JarFileCloser newJarFileCloser() {
+        return new JarFileCloser(Framework.getResourceLoader(),
+                systemBundle.loader);
     }
 
     public void fireServiceEvent(ServiceEvent event) {
@@ -268,6 +272,9 @@ public class OSGiAdapter {
      * @since 5.6
      */
     public JarFileCloser getJarFileCloser() {
+        if (jarFileCloser == null) {
+            jarFileCloser = newJarFileCloser();
+        }
         return jarFileCloser;
     }
 }
