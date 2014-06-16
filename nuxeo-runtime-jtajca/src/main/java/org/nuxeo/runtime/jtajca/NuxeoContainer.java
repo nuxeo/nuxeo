@@ -495,6 +495,9 @@ public class NuxeoContainer {
         } catch (NamingException e) {
             return null;
         }
+        if (tm == null) {
+            return null;
+        }
         if (tm instanceof TransactionManagerWrapper) {
             return (TransactionManagerWrapper) tm;
         }
