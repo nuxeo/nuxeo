@@ -23,11 +23,11 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationParameters;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.google.inject.Inject;
 
@@ -37,7 +37,7 @@ import com.google.inject.Inject;
  * @sincze 5.7.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-registration-chain.xml")
 public class OperationChainRegistrationTest {
