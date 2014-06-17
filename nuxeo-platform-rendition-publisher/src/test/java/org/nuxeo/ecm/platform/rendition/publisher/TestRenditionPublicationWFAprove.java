@@ -23,12 +23,16 @@ import static org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationFac
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -41,7 +45,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.RepositorySettings;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -65,7 +68,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(type = BackendType.H2, init = RenditionPublicationRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = RenditionPublicationRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
         "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert",
         "org.nuxeo.ecm.platform.rendition.api",
@@ -182,8 +185,19 @@ public class TestRenditionPublicationWFAprove {
         session.save();
     }
 
+    protected final Set<CoreSession> others = new HashSet<CoreSession>();
+
     private void changeUser(String userName) throws Exception {
         session = settings.openSessionAs(userName, false, false);
+        session.save(); // synch with previous
+        others.add(session);
+    }
+
+    @After
+    public void closeOthers() {
+        for (CoreSession session:others) {
+            CoreInstance.closeCoreSession(session);
+        }
     }
 
     @Test
@@ -248,7 +262,6 @@ public class TestRenditionPublicationWFAprove {
 
         // published so myuser3 can see it
         changeUser("myuser3");
-        session.save(); // Save session to get modifications made by other
         // sessions (here, removing workflow ACL)
         assertEquals(
                 1,

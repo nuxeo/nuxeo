@@ -34,17 +34,14 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.RenditionException;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -66,12 +63,12 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIO
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(type = BackendType.H2, init = DefaultRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
         "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert",
         "org.nuxeo.ecm.platform.rendition.api",
         "org.nuxeo.ecm.platform.rendition.core",
-        "org.nuxeo.ecm.automation.core" })
+        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.commandline.executor" })
 @LocalDeploy("org.nuxeo.ecm.platform.rendition.core:test-rendition-contrib.xml")
 public class TestRenditionService {
 
@@ -293,7 +290,7 @@ public class TestRenditionService {
                 "/"));
         renditionService.storeRendition(proxy, PDF_RENDITION_DEFINITION);
     }
-    
+
     @Test
     public void shouldNotCreateANewVersionForACheckedInDocument()
             throws ClientException {

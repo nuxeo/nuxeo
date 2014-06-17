@@ -23,12 +23,16 @@ import static org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationFac
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -183,9 +187,21 @@ public class TestRenditionPublicationWFReject {
         session.save();
     }
 
+    protected final Set<CoreSession> others = new HashSet<CoreSession>();
+
     private void changeUser(String userName) throws Exception {
         session = settings.openSessionAs(userName, false, false);
+        session.save(); // synch with previous
+        others.add(session);
     }
+
+    @After
+    public void closeOthers() {
+        for (CoreSession session:others) {
+            CoreInstance.closeCoreSession(session);
+        }
+    }
+
 
     @Test
     public void testRejectRenditionPublication() throws Exception {
@@ -213,7 +229,6 @@ public class TestRenditionPublicationWFReject {
 
         // myuser3 can't see the document waiting for validation
         changeUser("myuser3");
-        session.save(); // Save session to get modifications made by other
         // sessions
         PublicationTree treeUser3 = publisherService.getPublicationTree(
                 defaultTreeName, session, factoryParams);
@@ -245,7 +260,6 @@ public class TestRenditionPublicationWFReject {
 
         // published so myuser3 still can't see it
         changeUser("myuser3");
-        session.save(); // Save session to get modifications made by other
         // sessions (here, removing workflow ACL)
         assertEquals(
                 0,
