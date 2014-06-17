@@ -452,7 +452,7 @@ public class CSVImporterWork extends AbstractWork {
                 logError(lineNumber, "Parent document '%s' does not exist",
                         "label.csv.importer.parentDoesNotExist", parentPath);
             }
-        } catch (ClientException e) {
+        } catch (ClientException | RuntimeException e) {
             Throwable unwrappedException = unwrapException(e);
             logError(lineNumber, "Unable to create document: %s",
                     "label.csv.importer.unableToCreate",
@@ -472,7 +472,7 @@ public class CSVImporterWork extends AbstractWork {
                         "Document updated",
                         "label.csv.importer.documentUpdated"));
                 return true;
-            } catch (ClientException e) {
+            } catch (ClientException | RuntimeException e) {
                 Throwable unwrappedException = unwrapException(e);
                 logError(lineNumber, "Unable to update document: %s",
                         "label.csv.importer.unableToUpdate",
