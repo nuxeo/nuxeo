@@ -19,27 +19,22 @@
 
 package org.nuxeo.ecm.platform.audit;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestServiceAccess extends NXRuntimeTestCase {
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.persistence");
-        deployBundle("org.nuxeo.ecm.platform.audit.api");
-        deployBundle("org.nuxeo.ecm.platform.audit");
-        fireFrameworkStarted();
-    }
+@Features(AuditFeature.class)
+@RunWith(FeaturesRunner.class)
+public class TestServiceAccess  {
 
     @Test
     public void testFullAccess() {
