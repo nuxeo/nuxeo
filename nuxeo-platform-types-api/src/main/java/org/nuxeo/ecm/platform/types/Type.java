@@ -57,7 +57,15 @@ public class Type implements Serializable {
     @XNode("label")
     protected String label;
 
-    protected Map<String, SubType> allowedSubTypes;
+    protected Type(String id) {
+        this.id = id;
+    }
+
+    public Type() {
+
+    }
+
+    protected Map<String, SubType> allowedSubTypes = new HashMap<>();
 
     @XNodeList(value = "subtypes/type", type = ArrayList.class, componentType = SubType.class)
     public void addSubType(List<SubType> subTypes) {

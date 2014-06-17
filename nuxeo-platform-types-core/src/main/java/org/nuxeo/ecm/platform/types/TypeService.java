@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurati
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -89,6 +90,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
 
     // Service implementation for TypeManager interface
 
+    @Override
     public String[] getSuperTypes(String typeName) {
         try {
             SchemaManager schemaMgr = Framework.getService(SchemaManager.class);
@@ -109,24 +111,29 @@ public class TypeService extends DefaultComponent implements TypeManager {
         }
     }
 
+    @Override
     public Type getType(String typeName) {
-        return typeRegistry.getType(typeName);
+        return  typeRegistry.getType(typeName);
     }
 
+    @Override
     public boolean hasType(String typeName) {
         return typeRegistry.hasType(typeName);
     }
 
+    @Override
     public Collection<Type> getTypes() {
         Collection<Type> types = new ArrayList<Type>();
         types.addAll(typeRegistry.getTypes());
         return types;
     }
 
+    @Override
     public Collection<Type> getAllowedSubTypes(String typeName) {
         return getAllowedSubTypes(typeName, null);
     }
 
+    @Override
     public Collection<Type> getAllowedSubTypes(String typeName,
             DocumentModel currentDoc) {
         Collection<Type> allowed = new ArrayList<Type>();
@@ -192,6 +199,7 @@ public class TypeService extends DefaultComponent implements TypeManager {
         return configuration;
     }
 
+    @Override
     public Map<String, List<Type>> getTypeMapForDocumentType(String typeName,
             DocumentModel currentDoc) {
         Type type = getType(typeName);
@@ -238,6 +246,9 @@ public class TypeService extends DefaultComponent implements TypeManager {
     protected Map<String, SubType> getFilteredAllowedSubTypes(
             String containerTypeName, DocumentModel currentDoc) {
         Type containerType = getType(containerTypeName);
+        if (containerType == null) {
+            return Collections.emptyMap();
+        }
         Map<String, SubType> allowedSubTypes = containerType.getAllowedSubTypes();
         return filterSubTypesFromConfiguration(allowedSubTypes, currentDoc);
     }
@@ -260,6 +271,9 @@ public class TypeService extends DefaultComponent implements TypeManager {
     @Override
     public boolean isAllowedSubType(String typeName, String containerTypeName) {
         Type containerType = getType(containerTypeName);
+        if (containerType == null) {
+            return false;
+        }
         Map<String, SubType> allowedSubTypes = containerType.getAllowedSubTypes();
         return isAllowedSubType(typeName, allowedSubTypes);
     }
