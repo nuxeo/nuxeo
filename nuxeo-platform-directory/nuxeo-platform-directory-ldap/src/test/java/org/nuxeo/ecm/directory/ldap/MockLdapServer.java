@@ -22,7 +22,6 @@
 package org.nuxeo.ecm.directory.ldap;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -76,14 +75,10 @@ public class MockLdapServer implements ContextProvider {
     /**
      * Starts up and configures ApacheDS.
      */
-    public MockLdapServer() {
-        try {
-            workingDir=File.createTempFile("apacheds-work-", ".tmp", new File(System.getProperty("java.io.tmpdir")));
-            workingDir.delete();
-            workingDir.mkdirs();
-        } catch (IOException e) {
-            log.error(e);
-        }
+    public MockLdapServer(File basedir) {
+        workingDir = new File(basedir, "apacheds");
+        workingDir.delete();
+        workingDir.mkdirs();
         startLdapServer();
     }
 

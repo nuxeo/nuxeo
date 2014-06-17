@@ -60,8 +60,8 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
         } else {
             deployContrib("org.nuxeo.ecm.directory.ldap.tests",
                     INTERNAL_SERVER_SETUP_OVERRIDE);
-            getLDAPDirectory("userDirectory").setTestServer(SERVER);
-            getLDAPDirectory("groupDirectory").setTestServer(SERVER);
+            getLDAPDirectory("userDirectory").setTestServer(server);
+            getLDAPDirectory("groupDirectory").setTestServer(server);
         }
     }
 

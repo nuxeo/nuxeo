@@ -48,18 +48,18 @@ import org.apache.directory.server.protocol.shared.store.LdifFileLoader;
 import org.apache.directory.server.protocol.shared.store.LdifLoadFilter;
 import org.bouncycastle.x509.X509V1CertificateGenerator;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="ogrisel@nuxeo.com">Olivier Grisel</a>
  */
-public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
+public abstract class LDAPDirectoryTestCase extends SQLRepositoryTestCase {
 
     private static final Log log = LogFactory.getLog(LDAPDirectoryTestCase.class);
 
-    protected static final MockLdapServer SERVER = new MockLdapServer();
+    protected MockLdapServer server;
 
     // change this flag to use an external LDAP directory instead of the
     // non networked default ApacheDS implementation
@@ -98,31 +98,28 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        DatabaseHelper.DATABASE.setUp();
+
+        deployBundle("org.nuxeo.ecm.directory.sql");
 
         // setup the client environment
-        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
-        deployContrib("org.nuxeo.ecm.directory.ldap.tests",
-                "ldap-test-setup/TypeService.xml");
-
-        deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+        deployBundle("org.nuxeo.ecm.directory.ldap.tests");
+        deployTestContrib("org.nuxeo.ecm.directory.ldap.tests",
                 "ldap-test-setup/DirectoryTypes.xml");
-        deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+        deployTestContrib("org.nuxeo.ecm.directory.ldap.tests",
                 "ldap-test-setup/DirectoryService.xml");
-        deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+        deployTestContrib("org.nuxeo.ecm.directory.ldap.tests",
                 "ldap-test-setup/LDAPDirectoryFactory.xml");
-        deployContrib("org.nuxeo.ecm.directory.sql",
-                "OSGI-INF/SQLDirectoryFactory.xml");
-        deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+        deployTestContrib("org.nuxeo.ecm.directory.ldap.tests",
                 "TestSQLDirectories.xml");
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+            deployTestContrib("org.nuxeo.ecm.directory.ldap.tests",
                     EXTERNAL_SERVER_SETUP);
         } else {
-            deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+            deployTestContrib("org.nuxeo.ecm.directory.ldap.tests",
                     INTERNAL_SERVER_SETUP);
-            getLDAPDirectory("userDirectory").setTestServer(SERVER);
-            getLDAPDirectory("groupDirectory").setTestServer(SERVER);
+            server = new MockLdapServer(new File(Framework.getRuntime().getHome(), "ldap"));
+            getLDAPDirectory("userDirectory").setTestServer(server);
+            getLDAPDirectory("groupDirectory").setTestServer(server);
         }
         LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession();
         try {
@@ -149,7 +146,13 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
                     session.close();
                 }
             } else {
-                SERVER.shutdownLdapServer();
+                if (server != null) {
+                    try {
+                        server.shutdownLdapServer();
+                    } finally {
+                        server = null;
+                    }
+                }
             }
         } finally {
             try {
