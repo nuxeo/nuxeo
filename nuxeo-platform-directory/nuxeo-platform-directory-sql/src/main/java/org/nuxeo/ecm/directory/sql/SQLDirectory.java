@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -243,7 +244,7 @@ public class SQLDirectory extends AbstractDirectory {
             return dataSource;
         }
         try {
-            if (config.dataSourceName != null) {
+            if (!StringUtils.isEmpty(config.dataSourceName)) {
                 managedSQLSession = true;
                 dataSource = DataSourceHelper.getDataSource(config.dataSourceName);
                 // InitialContext context = new InitialContext();
@@ -264,15 +265,15 @@ public class SQLDirectory extends AbstractDirectory {
 
     public Connection getConnection() throws DirectoryException {
         try {
-            // try single-datasource non-XA mode
-            Connection connection = ConnectionHelper.getConnection("no-matter-just-for-single-ds-mode");
-            if (connection == null) {
-                // standard datasource usage
-                connection = getConnection(getDataSource());
-            } else {
-                managedSQLSession = true;
+            if (!StringUtils.isEmpty(config.dataSourceName)) {
+                // try single-datasource non-XA mode
+                Connection connection = ConnectionHelper.getConnection(config.dataSourceName);
+                if (connection != null) {
+                    managedSQLSession = true;
+                    return connection;
+                }
             }
-            return connection;
+            return getConnection(getDataSource());
         } catch (SQLException e) {
             throw new DirectoryException("Cannot connect to SQL directory '"
                     + getName() + "': " + e.getMessage(), e);
