@@ -2,7 +2,6 @@ package org.nuxeo.ecm.directory.sql;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +12,7 @@ import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -62,26 +62,16 @@ public class TestSessionsAreClosedAutomatically {
     protected @Inject
     LogCaptureFeature.Result caughtEvents;
 
-    protected String savedSingleDS;
 
     @Before
     public void setSingleDataSourceMode() {
-        savedSingleDS = System.getProperty(ConnectionHelper.SINGLE_DS);
-        System.setProperty(ConnectionHelper.SINGLE_DS, "jdbc/NuxeoTestDS");
+        Framework.getProperties().setProperty(ConnectionHelper.SINGLE_DS, "jdbc/NuxeoTestDS");
     }
 
-    @After
-    public void resetSingleDataSourceMode() {
-        if (savedSingleDS == null || savedSingleDS.isEmpty()) {
-            System.clearProperty(ConnectionHelper.SINGLE_DS);
-        } else {
-            System.setProperty(ConnectionHelper.SINGLE_DS, savedSingleDS);
-        }
-    }
 
     @Before
     public void fetchUserDirectory() throws DirectoryException {
-        userDirectory = TestSQLDirectory.getDirectory("userDirectory");
+        userDirectory = SQLDirectoryTestCase.getDirectory("userDirectory");
         Assert.assertNotNull(userDirectory);
     }
 
