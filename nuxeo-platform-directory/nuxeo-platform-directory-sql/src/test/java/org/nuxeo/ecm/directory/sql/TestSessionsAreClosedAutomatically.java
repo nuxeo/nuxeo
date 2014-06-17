@@ -13,7 +13,7 @@ import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.runtime.api.ConnectionHelper;
+import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
