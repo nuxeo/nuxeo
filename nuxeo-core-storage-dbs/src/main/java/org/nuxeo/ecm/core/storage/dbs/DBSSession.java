@@ -422,20 +422,14 @@ public class DBSSession implements Session {
         return transaction.hasChild(parentId, name);
     }
 
-    public Document addChild(String id, String parentId, String name, Long pos,
-            String typeName) throws DocumentException {
-        return addChild(id, parentId, name, pos, typeName, true);
-    }
-
-    protected Document addChild(String id, String parentId, String name,
-            Long pos, String typeName, boolean readonly)
-            throws DocumentException {
-        DBSDocumentState docState = addChildState(id, parentId, name, pos,
+    public Document createChild(String id, String parentId, String name,
+            Long pos, String typeName) throws DocumentException {
+        DBSDocumentState docState = createChildState(id, parentId, name, pos,
                 typeName);
-        return getDocument(docState, readonly);
+        return getDocument(docState, true);
     }
 
-    protected DBSDocumentState addChildState(String id, String parentId,
+    protected DBSDocumentState createChildState(String id, String parentId,
             String name, Long pos, String typeName) throws DocumentException {
         if (pos == null && parentId != null) {
             pos = getNextPos(parentId);
@@ -676,6 +670,9 @@ public class DBSSession implements Session {
         if (source.isVersion()) {
             copyState.put(KEY_IS_VERSION, null);
         }
+        // update read acls
+        transaction.updateReadAcls(copyId);
+
         return getDocument(copyState);
     }
 
@@ -800,6 +797,9 @@ public class DBSSession implements Session {
         Object[] oldAncestorIds = (Object[]) sourceState.get(KEY_ANCESTOR_IDS);
         int ndel = oldAncestorIds == null ? 0 : oldAncestorIds.length;
         transaction.updateAncestors(sourceId, ndel, ancestorIds);
+
+        // update read acls
+        transaction.updateReadAcls(sourceId);
 
         return source;
     }
@@ -1108,7 +1108,7 @@ public class DBSSession implements Session {
                         KEY_IS_CHECKED_IN,
                         trueOrNull(properties.get(CoreSession.IMPORT_CHECKED_IN)));
             }
-            docState = addChildState(id, parentId, name, pos, typeName);
+            docState = createChildState(id, parentId, name, pos, typeName);
         }
         for (Entry<String, Serializable> entry : props.entrySet()) {
             docState.put(entry.getKey(), entry.getValue());

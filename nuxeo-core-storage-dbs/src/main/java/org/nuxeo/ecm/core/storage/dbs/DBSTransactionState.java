@@ -438,6 +438,8 @@ public class DBSTransactionState {
         docState.put(KEY_NAME, name);
         docState.put(KEY_POS, pos);
         docState.put(KEY_PRIMARY_TYPE, typeName);
+        // update read acls for new doc
+        updateReadAcls(id);
         return docState;
     }
 

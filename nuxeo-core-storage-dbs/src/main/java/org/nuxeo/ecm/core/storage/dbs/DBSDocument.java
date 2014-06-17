@@ -312,7 +312,7 @@ public class DBSDocument implements Document {
         if (!isFolder()) {
             throw new IllegalArgumentException("Not a folder");
         }
-        return session.addChild(null, id, name, null, typeName);
+        return session.createChild(null, id, name, null, typeName);
     }
 
     @Override
