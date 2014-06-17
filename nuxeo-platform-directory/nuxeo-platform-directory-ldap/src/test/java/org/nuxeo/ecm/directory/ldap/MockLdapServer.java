@@ -24,6 +24,7 @@ package org.nuxeo.ecm.directory.ldap;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Set;
 
@@ -36,14 +37,17 @@ import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import javax.naming.ldap.InitialLdapContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.directory.server.core.configuration.Configuration;
 import org.apache.directory.server.core.configuration.MutablePartitionConfiguration;
 import org.apache.directory.server.core.configuration.MutableStartupConfiguration;
+import org.apache.directory.server.core.configuration.ShutdownConfiguration;
 import org.apache.directory.server.core.jndi.CoreContextFactory;
 import org.apache.directory.server.core.partition.PartitionNexus;
+import org.apache.directory.server.core.prefs.ServerSystemPreferenceException;
 
 /**
  * An embedded LDAP test server, complete with test data for running the unit
@@ -53,6 +57,8 @@ import org.apache.directory.server.core.partition.PartitionNexus;
  * @version $Id: LdapTestServer.java 1496 2006-05-23 13:38:33Z benalex $
  */
 public class MockLdapServer implements ContextProvider {
+    private static final String BASE_DN = "dc=example,dc=com";
+
     // ~ Instance fields
     // ================================================================================================
     private static final Log log = LogFactory.getLog(MockLdapServer.class);
@@ -175,6 +181,7 @@ public class MockLdapServer implements ContextProvider {
         return cfg;
     }
 
+    @Override
     public DirContext getContext() {
         // ensure the context server is not closed
         startLdapServer();
@@ -185,7 +192,7 @@ public class MockLdapServer implements ContextProvider {
         // Create the partition for the tests
         MutablePartitionConfiguration testPartition = new MutablePartitionConfiguration();
         testPartition.setId("NuxeoTestLdapServer");
-        testPartition.setSuffix("dc=example,dc=com");
+        testPartition.setSuffix(BASE_DN);
 
         BasicAttributes attributes = new BasicAttributes();
         BasicAttribute objectClass = new BasicAttribute("objectClass");
@@ -201,7 +208,7 @@ public class MockLdapServer implements ContextProvider {
         indexedAttrs.add("cn");
         indexedAttrs.add("ou");
         indexedAttrs.add("uniqueMember");
-        
+
         // POSIX RFC-2307 schema.
         indexedAttrs.add("gidNumber");
         indexedAttrs.add("uidNumber");
@@ -222,7 +229,7 @@ public class MockLdapServer implements ContextProvider {
 
         Properties env = new Properties();
 
-        env.setProperty(Context.PROVIDER_URL, "dc=example,dc=com");
+        env.setProperty(Context.PROVIDER_URL, BASE_DN);
         env.setProperty(Context.INITIAL_CONTEXT_FACTORY,
                 CoreContextFactory.class.getName());
         env.setProperty(Context.SECURITY_AUTHENTICATION, "simple");
@@ -237,6 +244,20 @@ public class MockLdapServer implements ContextProvider {
             serverContext = new InitialDirContext(env);
         } catch (NamingException e) {
             log.error("Failed to start Apache DS: ", e);
+        }
+    }
+
+    public void shutdownLdapServer() {
+
+        Hashtable<String, Object> env = new Hashtable<>( new ShutdownConfiguration().toJndiEnvironment() );
+        env.put( Context.INITIAL_CONTEXT_FACTORY, CoreContextFactory.class.getName() );
+        env.put( Context.PROVIDER_URL, BASE_DN );
+
+        try {
+            new InitialLdapContext(env, null);
+        } catch (Exception e) {
+            throw new ServerSystemPreferenceException(
+                    "Failed to shutdown ldap server.", e);
         }
     }
 }

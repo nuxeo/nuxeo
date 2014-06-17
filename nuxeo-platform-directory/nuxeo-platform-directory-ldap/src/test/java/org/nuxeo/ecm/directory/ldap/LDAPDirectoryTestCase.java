@@ -137,43 +137,27 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession();
         try {
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-                DirContext ctx = session.getContext();
-                destroyRecursively("ou=people,dc=example,dc=com", ctx, -1);
-                destroyRecursively("ou=groups,dc=example,dc=com", ctx, -1);
+                LDAPSession session = (LDAPSession) getLDAPDirectory(
+                        "userDirectory").getSession();
+                try {
+                    DirContext ctx = session.getContext();
+                    destroyRecursively("ou=people,dc=example,dc=com", ctx, -1);
+                    destroyRecursively("ou=groups,dc=example,dc=com", ctx, -1);
+                } finally {
+                    session.close();
+                }
             } else {
-                DirContext ctx = SERVER.getContext();
-                destroyRecursively("ou=people", ctx, -1);
-                destroyRecursively("ou=groups", ctx, -1);
+                SERVER.shutdownLdapServer();
             }
         } finally {
-            session.close();
+            try {
+                DatabaseHelper.DATABASE.tearDown();
+            } finally {
+                super.tearDown();
+            }
         }
-        undeployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
-        undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
-                "ldap-test-setup/TypeService.xml");
-
-        undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
-                "ldap-test-setup/DirectoryTypes.xml");
-        undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
-                "ldap-test-setup/DirectoryService.xml");
-        undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
-                "ldap-test-setup/LDAPDirectoryFactory.xml");
-        undeployContrib("org.nuxeo.ecm.directory.sql",
-                "OSGI-INF/SQLDirectoryFactory.xml");
-        undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
-                "TestSQLDirectories.xml");
-        if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
-                    EXTERNAL_SERVER_SETUP);
-        } else {
-            undeployContrib("org.nuxeo.ecm.directory.ldap.tests",
-                    INTERNAL_SERVER_SETUP);
-        }
-        DatabaseHelper.DATABASE.tearDown();
-        super.tearDown();
     }
 
     protected static void loadDataFromLdif(String ldif, DirContext ctx) {
@@ -229,14 +213,14 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
     /**
      * Method to create a X509 certificate used to test the creation and the
      * update of an entry in the ldap.
-     * 
+     *
      * @return A X509 certificate
      * @throws CertificateException
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeyException
      * @throws SignatureException
      * @throws IllegalStateException
-     * 
+     *
      * @since 5.9.3
      */
     protected X509Certificate createCertificate(String dnNameStr)
