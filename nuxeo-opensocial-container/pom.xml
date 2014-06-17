@@ -36,7 +36,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-gwt</artifactId>
-      </dependency>
+    </dependency>
 
     <dependency>
       <groupId>com.allen-sauer.gwt.dnd</groupId>
