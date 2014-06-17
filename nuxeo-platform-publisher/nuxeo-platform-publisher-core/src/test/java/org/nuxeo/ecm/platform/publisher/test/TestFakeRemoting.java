@@ -45,14 +45,8 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
 
     DocumentModel doc2Publish;
 
-    public TestFakeRemoting() {
-        super();
-    }
 
-    public TestFakeRemoting(String name) {
-        super(name);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -70,6 +64,7 @@ public class TestFakeRemoting extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

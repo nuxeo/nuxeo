@@ -45,22 +45,15 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
+ *
  */
 public class TestServiceRootFinder extends SQLRepositoryTestCase {
 
     protected DocumentModel doc2Publish;
 
-    public TestServiceRootFinder() {
-        super();
-    }
-
-    public TestServiceRootFinder(String name) {
-        super(name);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -108,6 +101,7 @@ public class TestServiceRootFinder extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         try {

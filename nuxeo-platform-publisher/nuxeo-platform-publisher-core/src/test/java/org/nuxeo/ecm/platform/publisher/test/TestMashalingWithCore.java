@@ -46,22 +46,15 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePub
 
 /**
  * Test marshaling with real {@link DocumentModel}
- * 
+ *
  * @author tiry
- * 
+ *
  */
 public class TestMashalingWithCore extends SQLRepositoryTestCase {
 
     DocumentModel doc2Export;
 
-    public TestMashalingWithCore() {
-        super();
-    }
-
-    public TestMashalingWithCore(String name) {
-        super(name);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -74,6 +67,7 @@ public class TestMashalingWithCore extends SQLRepositoryTestCase {
         createInitialDocs();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

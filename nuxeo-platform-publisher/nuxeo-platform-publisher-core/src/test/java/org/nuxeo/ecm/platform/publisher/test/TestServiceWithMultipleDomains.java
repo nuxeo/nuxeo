@@ -39,14 +39,7 @@ public class TestServiceWithMultipleDomains extends SQLRepositoryTestCase {
 
     protected DocumentModel doc2Publish;
 
-    public TestServiceWithMultipleDomains() {
-        super();
-    }
-
-    public TestServiceWithMultipleDomains(String name) {
-        super(name);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -82,6 +75,7 @@ public class TestServiceWithMultipleDomains extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         try {

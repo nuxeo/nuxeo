@@ -31,14 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestServiceRegistration extends SQLRepositoryTestCase {
 
-    public TestServiceRegistration() {
-        super();
-    }
-
-    public TestServiceRegistration(String name) {
-        super(name);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -53,6 +46,7 @@ public class TestServiceRegistration extends SQLRepositoryTestCase {
         fireFrameworkStarted();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

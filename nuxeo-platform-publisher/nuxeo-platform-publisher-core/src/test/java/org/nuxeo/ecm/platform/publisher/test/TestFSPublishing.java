@@ -57,14 +57,7 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
 
     protected File rootFolder;
 
-    public TestFSPublishing() {
-        super();
-    }
-
-    public TestFSPublishing(String name) {
-        super(name);
-    }
-
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -81,6 +74,7 @@ public class TestFSPublishing extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
