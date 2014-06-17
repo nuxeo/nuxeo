@@ -20,10 +20,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.configuration.RuntimeService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.mockito.MockitoFeature;
+import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
@@ -33,7 +34,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  * @since 5.9.1
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features({RuntimeFeature.class, MockitoFeature.class})
 public class EmailResolutionTest {
 
     @Mock
