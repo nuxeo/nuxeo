@@ -43,11 +43,7 @@
       </operation>
       <operation id="Document.SetProperty">
         <param type="string" name="xpath">dc:description</param>
-        <param type="serializable" name="value">
-          expr:Document.getProperty('dc:description') != null &amp;&amp;
-          Document.getProperty('dc:description') != '' ?
-          Document.getProperty('dc:description').toUpperCase() : 'mydesc'
-        </param>
+        <param type="serializable" name="value">mydesc</param>
       </operation>
     </chain>
 

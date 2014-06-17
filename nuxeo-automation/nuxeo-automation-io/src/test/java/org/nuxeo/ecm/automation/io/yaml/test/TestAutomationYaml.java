@@ -137,10 +137,7 @@ public class TestAutomationYaml {
         res.append("    name: note_copy\n");
         res.append("- Document.SetProperty:\n");
         res.append("    xpath: dc:description\n");
-        res.append("    value: |-\n");
-        res.append("      Document.getProperty('dc:description') != null &&\n");
-        res.append("                Document.getProperty('dc:description') != '' ?\n");
-        res.append("                Document.getProperty('dc:description').toUpperCase() : 'mydesc'\n");
+        res.append("    value: mydesc\n");
         checkEquals(res.toString(), chain);
     }
 
