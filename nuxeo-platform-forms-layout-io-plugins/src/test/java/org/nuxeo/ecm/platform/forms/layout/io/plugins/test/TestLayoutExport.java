@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.io.plugins.test;
 
+import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -27,12 +28,10 @@ import java.util.List;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.hsqldb.jdbcDriver;
-import org.junit.Before;
+import org.h2.Driver;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.directory.sql.SimpleDataSource;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -45,6 +44,7 @@ import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @author Anahide Tchertchian
@@ -56,6 +56,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
     protected LayoutStore service;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -84,6 +85,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         NuxeoContainer.uninstallNaming();
@@ -92,7 +94,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
     public static void setUpContextFactory() throws NamingException {
         DataSource datasourceAutocommit = new SimpleDataSource(
-                "jdbc:hsqldb:mem:memid", jdbcDriver.class.getName(), "SA", "") {
+                "jdbc:h2:mem:memid;DB_CLOSE_DELAY=-1", Driver.class.getName(), "SA", "") {
             @Override
             public Connection getConnection() throws SQLException {
                 Connection con = super.getConnection();
@@ -142,8 +144,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
         String expectedString = FileUtils.read(expected);
         String writtenString = FileUtils.read(written);
-        assertTrue(FileUtils.areFilesContentEquals(expectedString,
-                writtenString));
+        JSONAssert.assertEquals(expectedString, writtenString, false);
     }
 
 }

@@ -11,17 +11,11 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import static org.junit.Assert.assertEquals;
 import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FIELD;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -43,6 +37,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.inject.Inject;
 
@@ -74,19 +69,11 @@ public class DirectoryEntriesTest {
 
     protected static final String continentLocalContentJson = "[{\"id\":\"atlantis\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Atlantis\"},{\"id\":\"middleearth\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Middle-earth\"},{\"id\":\"mu\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Mu\"}]";
 
-    protected static String sortJson(String json) {
-        String a = json.substring(2, json.length() - 2); // remove [{ and }]
-        String[] b = a.split("\\},\\{"); // remove },{ and split
-        List<String> c = new ArrayList<String>(Arrays.asList(b));
-        Collections.sort(c);
-        return "[{" + StringUtils.join(c, "},{") + "}]";
-    }
 
     @Test
     public void testGlobalDirectoryEntries() throws Exception {
         StringBlob result = getDirectoryEntries(session.getDocument(new PathRef("/default-domain/workspaces/test")));
-        assertEquals(sortJson(continentContentJson),
-                sortJson(result.getString()));
+        JSONAssert.assertEquals(continentContentJson, result.getString(), false);
     }
 
     @Test
@@ -97,8 +84,7 @@ public class DirectoryEntriesTest {
         session.save();
 
         StringBlob result = getDirectoryEntries(doc);
-        assertEquals(sortJson(continentLocalContentJson),
-                sortJson(result.getString()));
+        JSONAssert.assertEquals(continentLocalContentJson, result.getString(), false);
     }
 
     protected StringBlob getDirectoryEntries(DocumentModel doc) throws Exception {
