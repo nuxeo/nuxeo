@@ -8,7 +8,7 @@
     {
       "method":"GET",
       "nickname":"getDirectoryEntries",
-      "type":"DirectoryEntryList",
+      "type":"directoryEntries",
       <@params names = ["directoryname","paging"]/>,
       "summary":"Get directory entries",
       "notes": "",
@@ -17,7 +17,7 @@
     {
       "method":"POST",
       "nickname":"createDirectoryEntry",
-      "type":"DirectoryEntry",
+      "type":"directoryEntry",
       <@params names = ["directoryname","directorybody"]/>,
       "summary":"Creates a directory entry",
       "notes": "",
@@ -33,7 +33,7 @@
     {
       "method":"GET",
       "nickname":"getDirectoryEntry",
-      "type":"DirectoryEntry",
+      "type":"directoryEntry",
       <@params names = ["directoryname","entryid"]/>,
       "summary":"Get a directory entry",
       "notes": "",
@@ -42,7 +42,7 @@
     {
       "method":"PUT",
       "nickname":"updateDirectoryEntry",
-      "type":"DirectoryEntry",
+      "type":"directoryEntry",
       <@params names = ["directoryname","entryid","directorybody"]/>,
       "summary":"Update a directory entry",
       "notes": "",
@@ -50,7 +50,7 @@
     },
     {
       "method":"DELETE",
-      "nickname":"getDirectoryEntry",
+      "nickname":"deleteDirectoryEntry",
       <@params names = ["directoryname","entryid"]/>,
       "summary":"Delete a directory entry",
       "notes": "",

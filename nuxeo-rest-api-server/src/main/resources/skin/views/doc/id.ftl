@@ -9,7 +9,7 @@
         {
           "method":"GET",
           "nickname":"getDocumentById",
-          "type":"Document",
+          "type":"document",
           <@params names = ["docid","propheader"]/>,
           "summary":"Find a document by its id",
           "notes": "Only documents which you have permission to see will be returned",
@@ -18,7 +18,7 @@
         {
           "method":"PUT",
           "nickname":"updateDocumentById",
-          "type":"Document",
+          "type":"document",
           <@params names = ["docid","docbody","propheader"]/>,
           "summary":"Updates a document by its id",
           "notes": "Only documents which you have permission can be updated. Only the properties part of the document object is taken into account for update",
@@ -35,7 +35,7 @@
         {
           "method":"POST",
           "nickname":"createDocumentById",
-          "type":"Document",
+          "type":"document",
           <@params names = ["repoid","docbody"]/>,
           "summary":"Creates a document by its parent id",
           "notes": "",
@@ -52,7 +52,7 @@
         {
           "method":"GET",
           "nickname":"getDocumentById",
-          "type":"Document",
+          "type":"document",
           <@params names = ["repoid","docid","propheader"]/>,
           "summary":"Find a document by its id",
           "notes": "Only documents which you have permission to see will be returned",
@@ -61,7 +61,7 @@
         {
           "method":"PUT",
           "nickname":"updateDocumentById",
-          "type":"Document",
+          "type":"document",
           <@params names = ["repoid","docid","docbody","propheader"]/>,
           "summary":"Updates a document by its id",
           "notes": "Only documents which you have permission can be updated. Only the properties part of the document object is taken into account for update",
@@ -78,7 +78,7 @@
         {
           "method":"POST",
           "nickname":"createDocumentById",
-          "type":"Document",
+          "type":"document",
           <@params names = ["repoid","docid","docbody","propheader"]/>,
           "summary":"Creates a document by its parent id",
           "notes": "",

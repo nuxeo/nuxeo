@@ -2,6 +2,6 @@
   "paramType": "body",
   "name": "user",
   "description": "the group",
-  "dataType": "NuxeoGroup",
+  "dataType": "group",
   "required": true
 }

@@ -1,5 +1,5 @@
-"Document" : {
-    "id": "Document",
+"document" : {
+    "id": "document",
     "type": "any",
     "required": false,
     "uniqueItems": false,
@@ -83,8 +83,8 @@
 
 },
 
- "DocumentList" : {
-      "id": "DocumentList",
+ "documents" : {
+      "id": "documents",
       "uniqueItems": false,
       "properties": {
         "entity-type": {

@@ -1,5 +1,5 @@
-"DirectoryEntry" : {
-  "id": "DirectoryEntry",
+"directoryEntry" : {
+  "id": "directoryEntry",
   "uniqueItems": false,
   "properties": {
     "entity-type": {
@@ -22,8 +22,8 @@
 
   }
 },
-"DirectoryEntryList" : {
-  "id": "DirectoryEntryList",
+"directoryEntries" : {
+  "id": "directoryEntries",
   "uniqueItems": false,
   "properties": {
     "entity-type": {
@@ -36,7 +36,7 @@
       "uniqueItems": false,
       "type": "array",
       "items": {
-        "$ref":"DirectoryEntry"
+        "$ref":"directoryEntry"
       },
       "required": true
     }

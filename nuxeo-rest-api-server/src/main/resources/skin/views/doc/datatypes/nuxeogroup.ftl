@@ -1,5 +1,5 @@
-"NuxeoGroup" : {
-  "id": "NuxeoGroup",
+"group" : {
+  "id": "group",
   "uniqueItems": false,
   "properties": {
     "entity-type": {
@@ -33,8 +33,8 @@
     },
   }
 },
-"NuxeoGroupList" : {
-  "id": "NuxeoGroupList",
+"groupList" : {
+  "id": "groupList",
   "uniqueItems": false,
   "properties": {
     "entity-type": {
@@ -47,7 +47,7 @@
       "uniqueItems": false,
       "type": "array",
       "items": {
-        "$ref":"NuxeoGroup"
+        "$ref":"group"
       },
       "required": true
     }

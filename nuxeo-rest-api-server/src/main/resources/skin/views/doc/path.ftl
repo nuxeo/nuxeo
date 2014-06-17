@@ -8,7 +8,7 @@
         {
           "method":"GET",
           "nickname":"getDocumentByPath",
-          "type":"Document",
+          "type":"document",
           <@params names = ["docpath","propheader"]/>,
           "summary":"Find a document by its path",
           "notes": "Only documents which you have permission to see will be returned",
@@ -17,7 +17,7 @@
         {
           "method":"PUT",
           "nickname":"updateDocumentByPath",
-          "type":"Document",
+          "type":"document",
           <@params names = ["docpath","docbody","propheader"]/>,
           "summary":"Updates a document by its path",
           "notes": "Only documents which you have permission can be updated. Only the properties part of the document object is taken into account for update",
@@ -34,7 +34,7 @@
         {
           "method":"POST",
           "nickname":"createDocumentByPath",
-          "type":"Document",
+          "type":"document",
           <@params names = ["docpath","docbody","propheader"]/>,
           "summary":"Creates a document by its parent path",
           "notes": "",

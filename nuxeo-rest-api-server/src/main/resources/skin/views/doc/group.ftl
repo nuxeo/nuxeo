@@ -8,7 +8,7 @@
     {
       "method":"GET",
       "nickname":"getGroupByName",
-      "type":"NuxeoGroup",
+      "type":"group",
       <@params names = ["groupname"]/>,
       "summary":"Get a group by its name",
       "notes": "",
@@ -17,7 +17,7 @@
     {
       "method":"PUT",
       "nickname":"updateGroupByName",
-      "type":"NuxeoGroup",
+      "type":"group",
       <@params names = ["groupname","groupbody"]/>,
       "summary":"Update a group by its name",
       "notes": "",
@@ -40,7 +40,7 @@
     {
       "method":"GET",
       "nickname":"searchGroup",
-      "type":"NuxeoGroupList",
+      "type":"groups",
       <@params names = ["groupquery"]/>,
       "summary":"Search a group",
       "notes": "",
@@ -60,7 +60,7 @@
     {
       "method":"POST",
       "nickname":"createGroup",
-      "type":"NuxeoGroup",
+      "type":"group",
       <@params names = ["groupbody"]/>,
       "summary":"Create a group",
       "notes": "",
@@ -79,7 +79,7 @@
     {
       "method":"POST",
       "nickname":"addAUserToGroup",
-      "type":"NuxeoPrincipal",
+      "type":"user",
       <@params names = ["groupname","username"]/>,
       "summary":"Add a user to a group",
       "notes": "",

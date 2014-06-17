@@ -2,6 +2,6 @@
   "paramType": "body",
   "name": "user",
   "description": "the user",
-  "dataType": "NuxeoPrincipal",
+  "dataType": "user",
   "required": true
 }

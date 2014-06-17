@@ -8,7 +8,7 @@
     {
       "method":"GET",
       "nickname":"getUserByName",
-      "type":"NuxeoPrincipal",
+      "type":"user",
       <@params names = ["username"]/>,
       "summary":"Get a user by its name",
       "notes": "",
@@ -17,7 +17,7 @@
     {
       "method":"PUT",
       "nickname":"updateUserByName",
-      "type":"NuxeoPrincipal",
+      "type":"user",
       <@params names = ["username","userbody"]/>,
       "summary":"Update a user by its name",
       "notes": "",
@@ -26,7 +26,7 @@
     {
       "method":"DELETE",
       "nickname":"deleteUserByName",
-      "type":"NuxeoPrincipal",
+      "type":"user",
       <@params names = ["username"]/>,
       "summary":"Delete a user by its name",
       "notes": "",
@@ -43,7 +43,7 @@
     {
       "method":"GET",
       "nickname":"searchUser",
-      "type":"NuxeoPrincipalList",
+      "type":"users",
       <@params names = ["userquery"]/>,
       "summary":"Get a user by its name",
       "notes": "",
@@ -63,7 +63,7 @@
     {
       "method":"POST",
       "nickname":"createUser",
-      "type":"NuxeoPrincipal",
+      "type":"user",
       <@params names = ["userbody"]/>,
       "summary":"Create a user",
       "notes": "",
@@ -81,7 +81,7 @@
     {
       "method":"POST",
       "nickname":"addAGroupToUser",
-      "type":"NuxeoPrincipal",
+      "type":"user",
       <@params names = ["username","groupname"]/>,
       "summary":"Add a group to a user",
       "notes": "",

@@ -2,6 +2,6 @@
   "paramType": "body",
   "name": "Directory",
   "description": "Directory value",
-  "dataType": "DirectoryEntry",
+  "dataType": "directoryEntry",
   "required": true
 }

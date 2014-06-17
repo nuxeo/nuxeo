@@ -9,7 +9,7 @@
         {
           "method":"GET",
           "nickname":"getChildrenByPath",
-          "type":"DocumentList",
+          "type":"documents",
           <@params names = ["docpath","paging","propheader"]/>,
           "summary":"Get the children of a document by its path",
           "notes": "Only documents which you have permission to see will be returned",
@@ -27,7 +27,7 @@
         {
           "method":"GET",
           "nickname":"getChildrenById",
-          "type":"DocumentList",
+          "type":"documents",
           <@params names = ["docid","paging","propheader"]/>,
           "summary":"Get the children of a document by its id",
           "notes": "Only documents which you have permission to see will be returned",

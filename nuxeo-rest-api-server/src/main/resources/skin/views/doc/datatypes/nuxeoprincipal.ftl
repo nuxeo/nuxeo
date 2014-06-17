@@ -20,8 +20,8 @@
    }
  },
 
-"NuxeoPrincipal" : {
-  "id": "NuxeoPrincipal",
+"user" : {
+  "id": "user",
   "uniqueItems": false,
   "properties": {
     "entity-type": {
@@ -60,8 +60,8 @@
     }
   }
 },
-"NuxeoPrincipalList" : {
-  "id": "NuxeoPrincipalList",
+"userList" : {
+  "id": "userList",
   "uniqueItems": false,
   "properties": {
     "entity-type": {
@@ -74,7 +74,7 @@
       "uniqueItems": false,
       "type": "array",
       "items": {
-        "$ref":"NuxeoPrincipal"
+        "$ref":"user"
       },
       "required": true
     }

@@ -2,6 +2,6 @@
   "paramType": "body",
   "name": "document",
   "description": "the updated document",
-  "dataType": "Document",
+  "dataType": "document",
   "required": true
 }
