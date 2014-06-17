@@ -52,6 +52,7 @@ public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
 
     protected final AnnotationManager manager = new AnnotationManager();
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -69,7 +70,7 @@ public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.annotations");
         deployBundle("org.nuxeo.ecm.annotations.contrib");
-        deployTestContrib("org.nuxeo.ecm.annotations", "/test-ann-contrib.xml");
+        deployTestContrib("org.nuxeo.ecm.annotations", "test-ann-contrib.xml");
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.platform.types.core");
@@ -82,6 +83,7 @@ public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
         assertNotNull(annotation);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         if (NuxeoContainer.isInstalled()) {

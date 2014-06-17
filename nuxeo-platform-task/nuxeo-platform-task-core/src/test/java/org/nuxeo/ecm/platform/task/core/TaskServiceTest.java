@@ -62,6 +62,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
 
     protected NuxeoPrincipal user4;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -71,6 +72,8 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.directory.sql");
+        deployContrib("org.nuxeo.ecm.platform.test",
+                "test-usermanagerimpl/directory-config.xml");
 
         deployBundle(TaskUTConstants.CORE_BUNDLE_NAME);
         deployBundle(TaskUTConstants.TESTING_BUNDLE_NAME);
@@ -98,6 +101,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

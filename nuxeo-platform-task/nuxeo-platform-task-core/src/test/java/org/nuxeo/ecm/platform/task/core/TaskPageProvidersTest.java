@@ -62,6 +62,7 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
 
     protected DocumentModel document;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -71,9 +72,11 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.directory.sql");
-        deployContrib("org.nuxeo.ecm.platform.query.api",
+        deployContrib("org.nuxeo.ecm.platform.test",
+                "test-usermanagerimpl/directory-config.xml");
+        deployTestContrib("org.nuxeo.ecm.platform.query.api",
                 "OSGI-INF/pageprovider-framework.xml");
-        deployContrib("org.nuxeo.ecm.platform.task.core.test",
+        deployTestContrib("org.nuxeo.ecm.platform.task.core.test",
                 "OSGI-INF/pageproviders-contrib.xml");
 
         deployBundle(TaskUTConstants.CORE_BUNDLE_NAME);
@@ -108,6 +111,7 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
                 "test comment", calendar.getTime(), null, null);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

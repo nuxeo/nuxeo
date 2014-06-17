@@ -56,7 +56,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(repositoryName = "default", type = BackendType.H2, init = DefaultRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory",
         "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.directory.types.contrib",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
+        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.features" })
 @LocalDeploy("org.nuxeo.ecm.automation.features:test-directories-sql-contrib.xml")
 public class DirectoryEntriesTest {
 

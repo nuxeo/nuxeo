@@ -48,12 +48,13 @@ public class AnnotationQueryTest extends RepositoryOSGITestCase {
 
     private final AnnotationManager manager = new AnnotationManager();
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.relations");
         deployBundle("org.nuxeo.ecm.annotations");
-        deployTestContrib("org.nuxeo.ecm.annotations","/test-ann-contrib.xml");
+        deployTestContrib("org.nuxeo.ecm.annotations","test-ann-contrib.xml");
         deployBundle("org.nuxeo.ecm.relations.jena");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.platform.types.core");
