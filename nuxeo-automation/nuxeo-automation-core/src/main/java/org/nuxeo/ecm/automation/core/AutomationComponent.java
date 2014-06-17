@@ -129,6 +129,8 @@ import org.nuxeo.ecm.automation.core.operations.traces.AutomationTraceToggleOper
 import org.nuxeo.ecm.automation.core.rendering.operations.RenderDocument;
 import org.nuxeo.ecm.automation.core.rendering.operations.RenderDocumentFeed;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -305,7 +307,6 @@ public class AutomationComponent extends DefaultComponent {
         service = null;
         handlers = null;
         tracerFactory = null;
-        unBindManagement();
     }
 
     @Override
@@ -396,9 +397,28 @@ public class AutomationComponent extends DefaultComponent {
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
         super.applicationStarted(context);
-        bindManagement();
         if (!tracerFactory.getRecordingState()) {
             log.info("You can activate automation trace mode to get more informations on automation executions");
         }
+        bindManagement();
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
+                    return;
+                }
+                Framework.removeListener(this);
+                try {
+                    unBindManagement();
+                } catch (MalformedObjectNameException
+                        | NotCompliantMBeanException
+                        | InstanceAlreadyExistsException
+                        | MBeanRegistrationException
+                        | InstanceNotFoundException cause) {
+                    log.error("Cannot unbind management", cause);
+                }
+            }
+        });
     }
 }
