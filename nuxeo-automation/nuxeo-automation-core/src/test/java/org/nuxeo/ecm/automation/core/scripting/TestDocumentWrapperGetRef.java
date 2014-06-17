@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -41,7 +40,7 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.core" })
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-doc-wrapper.xml")
-@RepositoryConfig(init=DefaultRepositoryInit.class, cleanup=Granularity.METHOD)
+@RepositoryConfig(init=DefaultRepositoryInit.class)
 public class TestDocumentWrapperGetRef {
 
     @Inject

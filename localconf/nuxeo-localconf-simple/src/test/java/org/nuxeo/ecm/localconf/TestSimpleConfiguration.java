@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.localconf.SimpleConfiguration;
@@ -53,7 +52,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(repositoryName = "default", type = BackendType.H2, init = LocalConfRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = LocalConfRepositoryInit.class, user = "Administrator", cleanup=Granularity.METHOD )
 @Deploy({ "org.nuxeo.ecm.localconf" })
 public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
 

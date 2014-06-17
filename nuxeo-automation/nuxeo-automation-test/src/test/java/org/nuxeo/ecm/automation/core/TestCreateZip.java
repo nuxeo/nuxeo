@@ -18,8 +18,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -27,11 +25,10 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
-@RepositoryConfig(cleanup=Granularity.METHOD)
 public class TestCreateZip {
-    
+
     @Inject CoreSession session;
-    
+
     @Inject AutomationService as;
 
     @Test
@@ -45,11 +42,11 @@ public class TestCreateZip {
         ws1 = session.createDocument(ws1);
         DocumentModel doc2 = session.createDocumentModel("File");
         doc2.setPathInfo("/ws1", "doc2");
-        doc2.setPropertyValue("file:content", (Serializable) new StringBlob("content doc2"));
+        doc2.setPropertyValue("file:content", new StringBlob("content doc2"));
         doc2 = session.createDocument(doc2);
         DocumentModel doc = session.createDocumentModel("File");
         doc.setPathInfo("/ws1", "doc1");
-        doc.setPropertyValue("file:content", (Serializable) new StringBlob("content doc1"));
+        doc.setPropertyValue("file:content", new StringBlob("content doc1"));
         doc = session.createDocument(doc);
         session.save();
         OperationContext ctx = new OperationContext(session);
@@ -59,7 +56,7 @@ public class TestCreateZip {
         chain.add(GetDocumentBlob.ID);
         chain.add(CreateZip.ID).set("filename", "zip.zip");
         Blob zipBlob = (Blob) as.run(ctx, chain);
-        
+
         assertNotNull(zipBlob);
         assertTrue("ZIP blob '" + zipBlob.getFilename() + "' is empty", zipBlob.getLength() > 0);
     }
