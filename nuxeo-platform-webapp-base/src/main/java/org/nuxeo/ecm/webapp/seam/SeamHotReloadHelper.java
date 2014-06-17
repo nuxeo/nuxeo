@@ -21,7 +21,6 @@
  */
 package org.nuxeo.ecm.webapp.seam;
 
-import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.util.Set;
 
@@ -40,6 +39,8 @@ import org.jboss.seam.Seam;
 import org.jboss.seam.core.Init;
 import org.jboss.seam.init.Initialization;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.ServerLocator;
 
 /**
  * Helper class to manage Seam Hot Reload Most of the code comes from Jboss
@@ -112,8 +113,8 @@ public class SeamHotReloadHelper {
     protected static void flushWebResources()
             throws MalformedObjectNameException, ReflectionException,
             InstanceNotFoundException, MBeanException {
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         ObjectName on = new ObjectName("org.nuxeo:type=sdk,name=web-resources");
+        MBeanServer mbs = Framework.getLocalService(ServerLocator.class).lookupServer();
         if (mbs.isRegistered(on)) {
             // only in tomcat container
             mbs.invoke(on, "flushWebResources", new Object[0], new String[0]);
