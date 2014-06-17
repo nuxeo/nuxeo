@@ -77,7 +77,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login",
         "org.nuxeo.ecm.platform.web.common" })
-@LocalDeploy("org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml")
+@LocalDeploy({"org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml","org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml"})
 public class TestMultiTenantService {
 
     @Inject

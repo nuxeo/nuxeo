@@ -2,6 +2,7 @@
 <component name="org.nuxeo.ecm.multi.tenant.test">
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <require>org.nuxeo.ecm.platform.usermanager.test</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
       point="schema">
@@ -105,4 +106,18 @@
     </domain>
 
   </extension>
+  
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+
+    <userManager
+      class="org.nuxeo.ecm.multi.tenant.MultiTenantUserManager">
+      <users>
+        <listingMode>search_only</listingMode>
+      </users>
+    </userManager>
+
+  </extension>
+  
+  
 </component>
