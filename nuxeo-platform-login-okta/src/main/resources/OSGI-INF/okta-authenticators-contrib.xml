@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.shibboleth.auth">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="SHIB_AUTH" enabled="true"
+      class="org.nuxeo.ecm.platform.shibboleth.auth.ShibbolethAuthenticationPlugin">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+    </authenticationPlugin>
+  </extension>
+
+</component>
