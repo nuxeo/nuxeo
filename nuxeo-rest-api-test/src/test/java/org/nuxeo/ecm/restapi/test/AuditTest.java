@@ -44,6 +44,7 @@ import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.ClientResponse;
@@ -148,6 +149,9 @@ public class AuditTest extends BaseTest {
         logEntries.add(logEntry);
         auditLogger.addLogEntries(logEntries);
 
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("category", "One");
         queryParams.add("category", "Two");
@@ -195,6 +199,9 @@ public class AuditTest extends BaseTest {
         logEntry.setEventDate(secondDate.toDate());
         logEntries.add(logEntry);
         auditLogger.addLogEntries(logEntries);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
@@ -272,6 +279,9 @@ public class AuditTest extends BaseTest {
         logEntries.add(logEntry);
         auditLogger.addLogEntries(logEntries);
 
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
         queryParams.add("principalName", "leela");
@@ -345,6 +355,9 @@ public class AuditTest extends BaseTest {
         logEntry.setEventId("sixthEvent");
         logEntries.add(logEntry);
         auditLogger.addLogEntries(logEntries);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
