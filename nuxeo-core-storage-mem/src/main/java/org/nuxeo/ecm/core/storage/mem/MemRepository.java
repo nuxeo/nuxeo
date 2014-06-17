@@ -19,7 +19,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -99,10 +98,11 @@ public class MemRepository extends DBSRepositoryBase {
     public void updateState(State state) throws DocumentException {
         String id = (String) state.get(KEY_ID);
         // log.error("update " + id + ": " + state);
-        if (!states.containsKey(id)) {
+        State oldState = states.get(id);
+        if (oldState == null) {
             throw new DocumentException("Missing: " + id);
         }
-        states.put(id, state);
+        oldState.putAll(state);
     }
 
     @Override
