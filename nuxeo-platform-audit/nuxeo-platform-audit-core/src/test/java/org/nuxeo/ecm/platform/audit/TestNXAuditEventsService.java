@@ -19,18 +19,19 @@
 
 package org.nuxeo.ecm.platform.audit;
 
-import java.lang.management.ManagementFactory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.List;
 import java.util.Set;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -46,6 +47,7 @@ import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
+import org.nuxeo.runtime.management.ServerLocator;
 
 /**
  * Test the event conf service.
@@ -56,8 +58,9 @@ public class TestNXAuditEventsService extends SQLRepositoryTestCase {
 
     private NXAuditEventsService serviceUnderTest;
 
-    protected final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+    protected MBeanServer mbeanServer;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -76,12 +79,15 @@ public class TestNXAuditEventsService extends SQLRepositoryTestCase {
         assertNotNull(serviceUnderTest);
         openSession();
         fireFrameworkStarted();
+
+        mbeanServer = Framework.getLocalService(ServerLocator.class).lookupServer();
     }
 
     protected void waitForEventsDispatched() {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         waitForEventsDispatched();

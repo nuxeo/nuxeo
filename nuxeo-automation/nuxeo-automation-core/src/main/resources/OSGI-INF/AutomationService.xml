@@ -9,6 +9,8 @@
 
   <implementation class="org.nuxeo.ecm.automation.core.AutomationComponent" />
 
+  <require>org.nuxeo.runtime.management.ServerLocator</require>
+  
   <service>
     <provide interface="org.nuxeo.ecm.automation.AutomationService" />
     <provide

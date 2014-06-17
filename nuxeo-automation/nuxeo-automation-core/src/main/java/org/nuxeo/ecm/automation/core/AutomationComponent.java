@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.automation.core;
 
-import java.lang.management.ManagementFactory;
-
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
@@ -131,6 +129,8 @@ import org.nuxeo.ecm.automation.core.operations.traces.AutomationTraceToggleOper
 import org.nuxeo.ecm.automation.core.rendering.operations.RenderDocument;
 import org.nuxeo.ecm.automation.core.rendering.operations.RenderDocumentFeed;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -167,7 +167,6 @@ public class AutomationComponent extends DefaultComponent {
     public void activate(ComponentContext context) throws Exception {
         service = new OperationServiceImpl();
         tracerFactory = new TracerFactory();
-        bindManagement();
         // register built-in operations
         service.putOperation(FetchContextDocument.class);
         service.putOperation(FetchContextBlob.class);
@@ -283,17 +282,22 @@ public class AutomationComponent extends DefaultComponent {
     protected void bindManagement() throws MalformedObjectNameException,
             NotCompliantMBeanException, InstanceAlreadyExistsException,
             MBeanRegistrationException {
-        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-        mBeanServer.registerMBean(tracerFactory, new ObjectName(
-                "org.nuxeo.automation:name=tracerfactory"));
+        final ObjectName objectName = new ObjectName(
+                "org.nuxeo.automation:name=tracerfactory");
+        MBeanServer mBeanServer = Framework.getLocalService(ServerLocator.class).lookupServer();
+        mBeanServer.registerMBean(tracerFactory, objectName);
     }
 
     protected void unBindManagement() throws MalformedObjectNameException,
             NotCompliantMBeanException, InstanceAlreadyExistsException,
             MBeanRegistrationException, InstanceNotFoundException {
-        MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-        mBeanServer.unregisterMBean(new ObjectName(
-                "org.nuxeo.automation:name=tracerfactory"));
+        final ObjectName on = new ObjectName(
+                "org.nuxeo.automation:name=tracerfactory");
+        final ServerLocator locator = Framework.getLocalService(ServerLocator.class);
+        if (locator != null) {
+            MBeanServer mBeanServer = locator.lookupServer();
+            mBeanServer.unregisterMBean(on);
+        }
     }
 
     @Override
@@ -392,6 +396,7 @@ public class AutomationComponent extends DefaultComponent {
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
         super.applicationStarted(context);
+        bindManagement();
         if (!tracerFactory.getRecordingState()) {
             log.info("You can activate automation trace mode to get more informations on automation executions");
         }
