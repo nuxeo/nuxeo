@@ -1000,7 +1000,8 @@ BEGIN
       JOIN hierarchy_read_acl AS r ON NEW.acl_id = r.acl_id
       JOIN hierarchy AS h ON r.id = h.id
       -- do not use orphan version
-      WHERE h.isversion IS NULL
+      WHERE h.isversion IS NULL AND
+        NOT EXISTS (SELECT 1 FROM aclr_user_map WHERE user_id=u.user_id AND acl_id = NEW.acl_id)
       GROUP BY u.user_id, u.principals, NEW.acl_id
       HAVING dbo.NX_ACCESS_ALLOWED(max(h.id), u.principals, @permissions) = 1
   END TRY
