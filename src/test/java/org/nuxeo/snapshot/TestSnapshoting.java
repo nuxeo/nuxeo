@@ -6,7 +6,6 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
@@ -18,7 +17,7 @@ import static org.junit.Assert.*;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@RepositoryConfig(type = BackendType.H2, init = PublishRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.snapshot" })
 public class TestSnapshoting extends AbstractTestSnapshot {
 

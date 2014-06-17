@@ -7,7 +7,6 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -22,7 +21,7 @@ import static org.junit.Assert.*;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
-@RepositoryConfig(type = BackendType.H2, init = PublishRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.snapshot" })
 public class TestSnapshotOperations extends AbstractTestSnapshot {
 

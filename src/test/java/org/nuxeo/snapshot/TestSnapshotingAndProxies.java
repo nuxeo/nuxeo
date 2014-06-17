@@ -5,33 +5,23 @@ import static org.junit.Assert.*;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.inject.Inject;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.snapshot.Snapshot;
 import org.nuxeo.snapshot.Snapshotable;
 import org.nuxeo.snapshot.SnapshotableAdapter;
-import org.osgi.service.event.EventAdmin;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@RepositoryConfig(type = BackendType.H2, init = PublishRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.snapshot" })
 public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
 
@@ -67,6 +57,7 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
 
     }
 
+    @Override
     protected void dumpDBContent() throws Exception {
         System.out.println("\nDumping Live docs in repository");
         DocumentModelList docs = session.query("select * from Document where ecm:isCheckedInVersion=0 order by ecm:path");
@@ -95,6 +86,7 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
         System.out.println("\n");
     }
 
+    @Override
     protected void dumpVersionsContent() throws Exception {
         System.out.println("\nDumping versions in repository");
         DocumentModelList docs = session.query("select * from Document where ecm:isCheckedInVersion=1");
@@ -213,12 +205,12 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
     /**
      * Children added in proxyFolder should be in its targetFolder, and
      * proxyFolder's getChildren return its target folder's.
-     * 
+     *
      * If (probably) Nuxeo wants to keep the current proxy behaviour, it could
      * be done either as (EasySOA-) custom methods, or custom type / facet (?).
-     * 
+     *
      * @throws Exception
-     * 
+     *
      * @author mdutoo Open Wide - EasySOA use case
      */
     @Ignore
