@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.signature.web.sign.CertActions;
@@ -36,11 +35,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
- * 
+ *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD, type = BackendType.H2, user = "Administrator")
+@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy( { "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api",
         "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory.api",
         "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
@@ -54,7 +53,7 @@ public class CertActionsTest {
 
     protected DocumentModel user;
     protected CertActions certActions;
-    
+
     @Before
     public void setup() throws Exception {
         certActions = new CertActions();
