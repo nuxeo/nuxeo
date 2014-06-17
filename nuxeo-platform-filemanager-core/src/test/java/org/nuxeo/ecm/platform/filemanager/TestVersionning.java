@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
@@ -40,7 +39,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(repositoryName = "default", init = RepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init=RepositoryInit.class)
 @Deploy({ "org.nuxeo.ecm.platform.mimetype.api",
         "org.nuxeo.ecm.platform.mimetype.core",
         "org.nuxeo.ecm.platform.types.api",

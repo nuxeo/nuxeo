@@ -42,19 +42,21 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(repositoryName = "default", init = RepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = RepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.dublincore",
         "org.nuxeo.ecm.platform.versioning.api",
         "org.nuxeo.ecm.platform.versioning" })
+@LocalDeploy("org.nuxeo.ecm.platform.types.core:ecm-types-test-contrib.xml")
 public class TestFileManagerVersioning {
 
     private static final String TEST_BUNDLE = "org.nuxeo.ecm.platform.filemanager.core.tests";

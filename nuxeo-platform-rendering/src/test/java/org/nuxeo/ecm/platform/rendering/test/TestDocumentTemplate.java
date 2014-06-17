@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
@@ -50,7 +49,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(repositoryName = "default", type = BackendType.H2, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestDocumentTemplate {
 
     FreemarkerEngine engine;

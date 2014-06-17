@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -51,7 +50,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(repositoryName = "default", type = BackendType.H2, init = DirectoryLocalConfigurationRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = DirectoryLocalConfigurationRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.api" })
 @LocalDeploy("org.nuxeo.ecm.directory:types-for-test-directory-local-configuration.xml")
 public class TestDirectoryLocalConfigurationDefinition {
@@ -70,7 +69,7 @@ public class TestDirectoryLocalConfigurationDefinition {
 
     @Inject
     protected LocalConfigurationService localConfigurationService;
-    
+
     @Before
     public void disableListeners() throws Exception {
         EventServiceAdmin eventAdmin = Framework.getService(EventServiceAdmin.class);
