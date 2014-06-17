@@ -49,7 +49,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(repositoryName = "default", init = RepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = RepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.webapp.base" })
 @LocalDeploy("org.nuxeo.ecm.webapp.base:test-search-local-configuration.xml")
 public class TestSearchLocalConfiguration {

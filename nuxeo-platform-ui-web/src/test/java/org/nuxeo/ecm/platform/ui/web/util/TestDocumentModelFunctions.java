@@ -38,7 +38,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(repositoryName = "default", user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 @LocalDeploy("org.nuxeo.ecm.core:schemas-test-contrib.xml")
 public class TestDocumentModelFunctions {
 

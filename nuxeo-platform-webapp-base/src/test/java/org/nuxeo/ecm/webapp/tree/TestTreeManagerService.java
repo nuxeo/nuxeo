@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webapp.tree;
 
 import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -34,28 +33,19 @@ public class TestTreeManagerService extends NXRuntimeTestCase {
 
     protected TreeManager treeManager;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
 
         // deploy needed bundles
-        deployContrib("org.nuxeo.ecm.webapp.base",
+        deployTestContrib("org.nuxeo.ecm.webapp.base",
                 "OSGI-INF/nxtreemanager-framework.xml");
-        deployContrib("org.nuxeo.ecm.webapp.base",
+        deployTestContrib("org.nuxeo.ecm.webapp.base",
                 "OSGI-INF/nxtreemanager-contrib.xml");
 
         treeManager = Framework.getService(TreeManager.class);
         assertNotNull(treeManager);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        // undeploy bundles
-        undeployContrib("org.nuxeo.ecm.webapp.base",
-                "OSGI-INF/nxtreemanager-framework.xml");
-        undeployContrib("org.nuxeo.ecm.webapp.base",
-                "OSGI-INF/nxtreemanager-contrib.xml");
-        super.tearDown();
     }
 
     @Test
