@@ -5,6 +5,7 @@ import java.io.File;
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.core.mail.Mailer;
@@ -12,9 +13,7 @@ import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.IResultPublisher;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.PublishByMail;
@@ -26,7 +25,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class, AutomationFeature.class })
-@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 @Deploy({ "org.nuxeo.ecm.platform.query.api", "nuxeo-groups-rights-audit",
     /* following bundles are required to be able to send an email with attachement */
     "org.nuxeo.ecm.platform.url.api", "org.nuxeo.ecm.platform.url.core",
@@ -34,6 +32,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
     "org.nuxeo.ecm.platform.placeful.api"})
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
         "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
+@Ignore // wrong content and no smtp mock, not an unit test at all
 public class TrialSendViaGmail {
 
     @Test

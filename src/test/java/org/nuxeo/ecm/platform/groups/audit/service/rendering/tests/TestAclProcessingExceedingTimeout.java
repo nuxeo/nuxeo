@@ -22,12 +22,12 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.job.AclAuditWork;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.IResultPublisher;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.test.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -69,7 +70,11 @@ import com.google.inject.Inject;
 @Deploy({ "org.nuxeo.ecm.platform.query.api", "nuxeo-groups-rights-audit" })
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
         "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
+@ConditionalIgnoreRule.Ignore(condition=ConditionalIgnoreRule.IgnoreLongRunning.class)
 public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
+
+    @Rule public final ConditionalIgnoreRule ignoreRule = new ConditionalIgnoreRule();
+
     @Inject
     CoreSession session;
 
@@ -103,7 +108,6 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
         log.debug("done building test data");
         TransactionHelper.commitOrRollbackTransaction();
         // cancel lots of fulltext work
-        workManager.shutdownQueue("fulltextUpdater", 1, TimeUnit.SECONDS);
         eventService.waitForAsyncCompletion(60 * 1000); // 1min
         log.debug("done initial async work");
 
@@ -143,10 +147,11 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
         Workbook workbook = v.load(testFile);
         String txt = get(workbook, 1, AclExcelLayoutBuilder.STATUS_ROW,
                 AclExcelLayoutBuilder.STATUS_COL);
-        if(txt!=null)
+        if(txt!=null) {
             assertTrue("assert we found an error message",
                     txt.contains(ProcessorStatus.ERROR_TOO_LONG_PROCESS.toString()));
-        else
+        } else {
             fail("no text string available at expected cell");
+        }
     }
 }
