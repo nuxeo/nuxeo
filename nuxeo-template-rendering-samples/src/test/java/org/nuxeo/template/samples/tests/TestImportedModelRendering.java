@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -49,7 +48,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(type = BackendType.H2, user = "Administrator", cleanup = Granularity.CLASS)
+@RepositoryConfig(cleanup = Granularity.CLASS)
 @Deploy({ "org.nuxeo.ecm.platform.content.template",
         "org.nuxeo.ecm.automation.core",
         "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core.convert.api",

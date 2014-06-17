@@ -37,18 +37,7 @@ public abstract class SimpleTemplateDocTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.platform.dublincore");
         deployBundle("org.nuxeo.template.manager.api");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/core-types-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/life-cycle-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/adapter-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/templateprocessor-service.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/templateprocessor-contrib.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/listener-contrib.xml");
+        deployBundle("org.nuxeo.template.manager");
         openSession();
     }
 

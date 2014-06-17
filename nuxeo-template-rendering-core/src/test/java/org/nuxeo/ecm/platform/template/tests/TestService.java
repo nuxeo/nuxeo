@@ -26,8 +26,7 @@ public class TestService extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.template.manager.api");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/templateprocessor-service.xml");
+        deployBundle("org.nuxeo.template.manager");
     }
 
     @Test
@@ -40,8 +39,8 @@ public class TestService extends NXRuntimeTestCase {
     public void testRegisterMergeUnRegisterContrib() throws Exception {
 
         // test simple registration
-        deployContrib("org.nuxeo.template.manager.test",
-                "OSGI-INF/templateprocessor-contrib.xml");
+        deployTestContrib("org.nuxeo.template.manager",
+                "OSGI-INF/templateprocessor-contrib1.xml");
 
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
 
@@ -113,9 +112,6 @@ public class TestService extends NXRuntimeTestCase {
     @Test
     public void testDefaultContrib() throws Exception {
 
-        // test simple registration
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/templateprocessor-contrib.xml");
 
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
 

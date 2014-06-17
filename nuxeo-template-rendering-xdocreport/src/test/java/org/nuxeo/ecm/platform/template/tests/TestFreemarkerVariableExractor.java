@@ -20,10 +20,7 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.template.manager.api");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/templateprocessor-service.xml");
-        deployContrib("org.nuxeo.template.manager",
-                "OSGI-INF/templateprocessor-contrib.xml");
+        deployBundle("org.nuxeo.template.manager");
     }
 
     @Test
