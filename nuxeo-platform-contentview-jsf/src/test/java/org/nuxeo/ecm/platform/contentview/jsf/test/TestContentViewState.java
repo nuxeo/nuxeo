@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -50,9 +51,11 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewStateImpl;
 import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
+import org.nuxeo.ecm.platform.forms.layout.io.Base64;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
 import org.nuxeo.runtime.api.Framework;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @since 5.4.2
@@ -67,6 +70,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
 
     DocumentModel searchDocument;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -97,6 +101,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertNotNull(FacesContext.getCurrentInstance());
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -479,6 +484,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertEquals(new Long(1), new Long(pp.getCurrentPageIndex()));
     }
 
+
     @Test
     public void testSaveJSONContentViewWithSearchDoc() throws Exception {
         assertNull(service.saveContentView(null));
@@ -517,12 +523,14 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":null," + "\"resultColumns\":[\"column_1\"]"
                 + "}";
-        assertEquals(expectedJson, json);
+        JSONAssert.assertEquals(expectedJson, json, false);
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
-        assertEquals(
-                "H4sIAAAAAAAAAD2Q3WqDQBCFX6XMbQ1oYlvYu6ApCmkajGkvShDRMV2qu3Z%2FCFZ8985Gkr2aPXPmO8OMUElhUJgPjpdd2SEwiI5ZttnlRfweHd9cESXpNiap%2BEzzpDhs1lmU3LvgQV%2Be8cD%2FaHbpQWWVIt6eNGC%2BB78W1bAvFbENKg3s6%2BSBxlJV37GsbEdeYCOYoXfZr7xFR1SyR2U4aterK9bJmjcca7Is%2FSBc%2BOEieM6DJ7Z6YeHq0adHY2Q03LQONCc8%2FOBwkarW1GwIfY2fJlpAKpOKRjphvP4i2dpO0OQdMrvWukJRc3EGZpTFibZXqG1rtuUgLe0ubNvetBnioHRXVxYBnKZ%2F2JEe%2BWUBAAA%3D",
-                encodedJson);
+        String expecteValue = Base64.encodeBytes(expectedJson.getBytes(),
+                Base64.GZIP | Base64.DONT_BREAK_LINES);
+        expecteValue = URLEncoder.encode(expecteValue,
+                "UTF-8");
+        assertEquals(expecteValue, encodedJson);
     }
 
     @Test
