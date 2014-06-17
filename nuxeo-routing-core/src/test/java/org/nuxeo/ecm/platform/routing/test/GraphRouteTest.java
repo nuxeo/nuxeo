@@ -51,7 +51,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -65,6 +64,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.TaskInfo;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -77,7 +77,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({TransactionalFeature.class,
-        CoreFeature.class, AutomationFeature.class })
+        PlatformFeature.class, AutomationFeature.class })
 @Deploy({
         "org.nuxeo.ecm.platform.content.template", //
         "org.nuxeo.ecm.automation.core", //
@@ -1241,6 +1241,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // process invalidations from automation context
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         // query for all the workflows
         DocumentModelList workflows = session.query(String.format(
                 "Select * from DocumentRoute where docri:participatingDocuments IN ('%s') and ecm:currentLifeCycleState = 'running'",
@@ -1255,6 +1256,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // process invalidations from automation context
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         // query for all the workflows
         workflows = session.query(String.format(
                 "Select * from DocumentRoute where docri:participatingDocuments IN ('%s') and ecm:currentLifeCycleState = 'running'",

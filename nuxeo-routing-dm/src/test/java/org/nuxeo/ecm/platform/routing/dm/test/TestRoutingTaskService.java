@@ -46,6 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 @Deprecated
+
 public class TestRoutingTaskService extends SQLRepositoryTestCase {
 
     protected UserManager userManager;
@@ -75,6 +76,8 @@ public class TestRoutingTaskService extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployBundle("org.nuxeo.ecm.platform.task.core");
         deployBundle("org.nuxeo.ecm.platform.routing.core");
+        deployBundle("org.nuxeo.ecm.platform.test");
+        deployContrib("org.nuxeo.ecm.platform.test", "test-usermanagerimpl/directory-config.xml");
         deployBundle(TaskUTConstants.CORE_BUNDLE_NAME);
         deployBundle(TaskUTConstants.TESTING_BUNDLE_NAME);
 
