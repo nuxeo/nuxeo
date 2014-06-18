@@ -19,6 +19,7 @@ import java.io.File;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
@@ -49,6 +50,13 @@ public class TestImport extends ImportTestCase {
         openSession();
         deployContrib("org.nuxeo.ecm.platform.scanimporter",
                 "OSGI-INF/importerservice-framework.xml");
+    }
+
+    @Override
+    @After
+    public void tearDown() throws Exception {
+       closeSession();
+       super.tearDown(); 
     }
 
     @Test

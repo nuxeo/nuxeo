@@ -64,6 +64,12 @@ public class TestDefaultImporterServiceWithMetaAndDocType extends SQLRepositoryT
     }
 
     @Override
+    public void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
+
+    @Override
     protected void deployRepositoryContrib() throws Exception {
         super.deployRepositoryContrib();
         deployBundle("org.nuxeo.ecm.core.api");
