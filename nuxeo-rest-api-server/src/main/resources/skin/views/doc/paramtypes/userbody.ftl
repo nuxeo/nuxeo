@@ -1,7 +1,7 @@
 {
   "paramType": "body",
   "name": "user",
-  "description": "the user",
+  "description": "The user to be created or updated",
   "dataType": "user",
   "required": true
 }

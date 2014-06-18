@@ -1,7 +1,7 @@
 {
   "paramType": "query",
   "name": "q",
-  "description": "query string",
+  "description": "Query string",
   "dataType": "string",
   "required": true
 }

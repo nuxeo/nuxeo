@@ -1,7 +1,7 @@
 {
   "paramType": "path",
   "name": "userName",
-  "description": "Name of the user",
+  "description": "Username of the user, ex: 'Administrator'",
   "dataType": "string",
   "required": true
 }

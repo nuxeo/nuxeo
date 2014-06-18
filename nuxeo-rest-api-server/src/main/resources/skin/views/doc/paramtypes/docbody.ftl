@@ -1,7 +1,7 @@
 {
   "paramType": "body",
   "name": "document",
-  "description": "the updated document",
+  "description": "The created or updated document object",
   "dataType": "document",
   "required": true
 }

@@ -1,7 +1,7 @@
 {
   "paramType": "body",
   "name": "document",
-  "description": "the updated business object",
+  "description": "The created or updated business object",
   "dataType": "BusinessObject",
   "required": true
 }

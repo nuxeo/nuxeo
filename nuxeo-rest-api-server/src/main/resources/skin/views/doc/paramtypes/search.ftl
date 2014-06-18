@@ -8,7 +8,7 @@
 {
   "paramType": "query",
   "name": "fullText",
-  "description": "a full text query",
+  "description": "A full text query",
   "dataType": "string",
   "required": false
 },

@@ -94,6 +94,6 @@
 </@block>
 
 <@block name="models">
-  <#include "views/doc/datatypes/nuxeoprincipal.ftl"/>
+  <#include "views/doc/datatypes/user.ftl"/>
 </@block>
 </@extends>
