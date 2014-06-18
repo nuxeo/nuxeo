@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.importer.tests;
 
 import java.io.File;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -42,7 +40,7 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
         super();
     }
 
-    public TestImportWithMeta(String name) {
+    protected TestImportWithMeta(String name) {
         super(name);
     }
 
@@ -53,6 +51,7 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.content.template");
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -60,6 +59,7 @@ public class TestImportWithMeta extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

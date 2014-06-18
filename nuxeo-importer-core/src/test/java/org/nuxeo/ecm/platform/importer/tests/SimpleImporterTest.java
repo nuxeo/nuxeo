@@ -35,10 +35,11 @@ public class SimpleImporterTest extends SQLRepositoryTestCase {
         super();
     }
 
-    public SimpleImporterTest(String name) {
+    protected SimpleImporterTest(String name) {
         super(name);
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -66,6 +67,7 @@ public class SimpleImporterTest extends SQLRepositoryTestCase {
      * }
      */
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

@@ -51,7 +51,7 @@ public class TestDefaultImporterServiceWithMetaAndDocType extends SQLRepositoryT
         super();
     }
 
-    public TestDefaultImporterServiceWithMetaAndDocType(String name) {
+    protected TestDefaultImporterServiceWithMetaAndDocType(String name) {
         super(name);
     }
 

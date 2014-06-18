@@ -42,10 +42,11 @@ public class TestImporterWithDifferentType extends SQLRepositoryTestCase {
         super();
     }
 
-    public TestImporterWithDifferentType(String name) {
+    protected TestImporterWithDifferentType(String name) {
         super(name);
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -55,6 +56,7 @@ public class TestImporterWithDifferentType extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

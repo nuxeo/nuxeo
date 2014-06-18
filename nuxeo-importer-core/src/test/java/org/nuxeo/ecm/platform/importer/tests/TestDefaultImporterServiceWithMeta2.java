@@ -24,10 +24,11 @@ public class TestDefaultImporterServiceWithMeta2 extends SQLRepositoryTestCase {
         super();
     }
 
-    public TestDefaultImporterServiceWithMeta2(String name) {
+    protected TestDefaultImporterServiceWithMeta2(String name) {
         super(name);
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -88,6 +89,7 @@ public class TestDefaultImporterServiceWithMeta2 extends SQLRepositoryTestCase {
 
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();

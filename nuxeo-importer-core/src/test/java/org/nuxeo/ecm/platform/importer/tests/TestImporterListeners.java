@@ -38,10 +38,11 @@ public class TestImporterListeners extends SQLRepositoryTestCase {
         super();
     }
 
-    public TestImporterListeners(String name) {
+    protected TestImporterListeners(String name) {
         super(name);
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -51,6 +52,7 @@ public class TestImporterListeners extends SQLRepositoryTestCase {
         openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -106,14 +108,17 @@ class DummyListener implements ImporterListener {
 
     public boolean importFinished = false;
 
+    @Override
     public void beforeImport() throws Exception {
         importStarted = true;
     }
 
+    @Override
     public void afterImport() throws Exception {
         importFinished = true;
     }
 
+    @Override
     public void importError() throws Exception {
     }
 
