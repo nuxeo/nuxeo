@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -68,7 +67,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class })
-@RepositoryConfig(repositoryName = "default", init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
+@RepositoryConfig(init = DefaultRepositoryInit.class)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.drive.core" })
@@ -178,6 +177,8 @@ public class TestNuxeoDriveManager {
         nuxeoDriveManager.handleFolderDeletion((IdRef) doc("/").getRef());
     }
 
+    @Inject RepositorySettings settings;
+
     @Test
     public void testGetSynchronizationRoots() throws Exception {
 
@@ -199,7 +200,7 @@ public class TestNuxeoDriveManager {
 
         // Check synchronization root paths
         Map<String, SynchronizationRoots> synRootMap = nuxeoDriveManager.getSynchronizationRoots(user1Session.getPrincipal());
-        Set<String> rootPaths = synRootMap.get("default").paths;
+        Set<String> rootPaths = synRootMap.get(settings.getName()).paths;
         assertEquals(2, rootPaths.size());
         assertTrue(rootPaths.contains("/default-domain/UserWorkspaces/user1"));
         assertTrue(rootPaths.contains("/default-domain/workspaces/workspace-2"));
@@ -458,13 +459,13 @@ public class TestNuxeoDriveManager {
         assertEquals(
                 expectedCount,
                 nuxeoDriveManager.getSynchronizationRoots(principal).get(
-                        "default").refs.size());
+                        settings.getName()).refs.size());
     }
 
     protected void checkRoots(Principal principal, int expectedCount,
             Set<String> expectedRootPaths) throws ClientException {
         Map<String, SynchronizationRoots> syncRoots = nuxeoDriveManager.getSynchronizationRoots(principal);
-        Set<String> syncRootPaths = syncRoots.get("default").paths;
+        Set<String> syncRootPaths = syncRoots.get(settings.getName()).paths;
         assertEquals(expectedCount, syncRootPaths.size());
         for (String syncRootPath : expectedRootPaths) {
             assertTrue(syncRootPaths.contains(syncRootPath));

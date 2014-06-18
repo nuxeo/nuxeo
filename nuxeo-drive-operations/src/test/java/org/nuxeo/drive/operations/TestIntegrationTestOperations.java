@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -55,6 +56,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -64,7 +66,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(EmbeddedAutomationServerFeature.class)
+@Features({TransactionalFeature.class, EmbeddedAutomationServerFeature.class})
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
@@ -116,7 +118,8 @@ public class TestIntegrationTestOperations {
                 "permission", "ReadWrite").execute();
         assertNotNull(testUserCredentialsBlob);
         // Invalidate VCS cache
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // Check test users
         String testUserCredentials = IOUtils.toString(
@@ -156,7 +159,8 @@ public class TestIntegrationTestOperations {
         assertNotNull(session.getDocument(new PathRef(userWorkspaceParentPath
                 + "/nuxeoDriveTestUser-jack")));
         // Save personal workspaces
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // ----------------------------------------------------------------------
         // Setup the integration tests environment with other user names without
@@ -171,7 +175,8 @@ public class TestIntegrationTestOperations {
         assertNull(userManager.getPrincipal("nuxeoDriveTestUser_joe"));
         assertNull(userManager.getPrincipal("nuxeoDriveTestUser_jack"));
         // Process invalidations
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         try {
             session.getDocument(new PathRef(userWorkspaceParentPath
                     + "/nuxeoDriveTestUser-joe"));
@@ -213,7 +218,8 @@ public class TestIntegrationTestOperations {
         assertNotNull(session.getDocument(new PathRef(userWorkspaceParentPath
                 + "/nuxeoDriveTestUser-sarah")));
         // Save personal workspaces
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // ----------------------------------------------------------------------
         // Try to setup the integration tests environment as an unauthorized
@@ -249,7 +255,8 @@ public class TestIntegrationTestOperations {
         clientSession.newRequest(NuxeoDriveTearDownIntegrationTests.ID).execute();
         assertTrue(userManager.searchUsers("nuxeoDriveTestUser_").isEmpty());
         // Process invalidations
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         try {
             session.getDocument(new PathRef(userWorkspaceParentPath
                     + "/nuxeoDriveTestUser-sarah"));

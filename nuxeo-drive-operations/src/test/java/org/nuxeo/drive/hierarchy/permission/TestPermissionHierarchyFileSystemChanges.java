@@ -56,7 +56,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.RepositorySettings;
-import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
@@ -79,10 +79,9 @@ import com.google.inject.Inject;
  * @see AuditChangeFinder#getFileSystemChanges
  */
 @RunWith(FeaturesRunner.class)
-@Features(AuditFeature.class)
+@Features({TransactionalFeature.class, AuditFeature.class})
 // We handle transaction start and commit manually to make it possible to have
 // several consecutive transactions in a test method
-@TransactionalConfig(autoStart = false)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
@@ -135,31 +134,27 @@ public class TestPermissionHierarchyFileSystemChanges {
 
     @Before
     public void init() throws Exception {
+        // Enable deletion listener because the tear down disables it
+        eventServiceAdmin.setListenerEnabledFlag(
+                "nuxeoDriveFileSystemDeletionListener", true);
 
+        // Create test users
+        createUser("user1", "user1");
+        createUser("user2", "user2");
+
+        // Open a core session for each user
+        session1 = repository.openSessionAs("user1");
+        session2 = repository.openSessionAs("user2");
+        principal1 = session1.getPrincipal();
+        principal2 = session2.getPrincipal();
+
+        // Create personal workspace for user1
+        userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(
+                session1, null);
+        userWorkspace1ItemId = USER_SYNC_ROOT_PARENT_ID_PREFIX
+                + userWorkspace1.getId();
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        try {
-            // Enable deletion listener because the tear down disables it
-            eventServiceAdmin.setListenerEnabledFlag(
-                    "nuxeoDriveFileSystemDeletionListener", true);
-
-            // Create test users
-            createUser("user1", "user1");
-            createUser("user2", "user2");
-
-            // Open a core session for each user
-            session1 = repository.openSessionAs("user1");
-            session2 = repository.openSessionAs("user2");
-            principal1 = session1.getPrincipal();
-            principal2 = session2.getPrincipal();
-
-            // Create personal workspace for user1
-            userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                    session1, null);
-            userWorkspace1ItemId = USER_SYNC_ROOT_PARENT_ID_PREFIX
-                    + userWorkspace1.getId();
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
         // Wait for personal workspace creation event to be logged in the audit
         eventService.waitForAsyncCompletion();
     }
@@ -195,6 +190,8 @@ public class TestPermissionHierarchyFileSystemChanges {
     @Test
     public void testAdaptableUnregisteredSyncRootChange()
             throws ClientException, InterruptedException {
+
+        TransactionHelper.commitOrRollbackTransaction();
 
         // Set last synchronization date
         lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
@@ -279,6 +276,8 @@ public class TestPermissionHierarchyFileSystemChanges {
      */
     @Test
     public void testRootlessItems() throws Exception {
+
+        TransactionHelper.commitOrRollbackTransaction();
 
         DocumentModel user1Folder1;
         DocumentModel user1Folder2;

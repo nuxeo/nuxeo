@@ -52,7 +52,6 @@ import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventListenerList;
 import org.nuxeo.ecm.core.test.RepositorySettings;
-import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
@@ -76,7 +75,6 @@ import com.google.inject.Inject;
 @Features(AuditFeature.class)
 // We handle transaction start and commit manually to make it possible to have
 // several consecutive transactions in a test method
-@TransactionalConfig(autoStart = false)
 @Deploy("org.nuxeo.drive.core")
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestAuditFileSystemChangeFinder {
@@ -155,27 +153,24 @@ public class TestAuditFileSystemChangeFinder {
         }
         user1Session = repository.openSessionAs("user1");
 
-        TransactionHelper.startTransaction();
-        try {
-            folder1 = session.createDocument(session.createDocumentModel("/",
-                    "folder1", "Folder"));
-            folder2 = session.createDocument(session.createDocumentModel("/",
-                    "folder2", "Folder"));
-            folder3 = session.createDocument(session.createDocumentModel("/",
-                    "folder3", "Folder"));
-            Map<String, Boolean> permissions = new HashMap<String, Boolean>();
-            permissions.put(SecurityConstants.READ_WRITE, true);
-            setPermissions(folder1, "user1", permissions);
-            setPermissions(folder2, "user1", permissions);
-        } finally {
-            commitAndWaitForAsyncCompletion();
-        }
+        commitAndWaitForAsyncCompletion();
+
+        folder1 = session.createDocument(session.createDocumentModel("/",
+                "folder1", "Folder"));
+        folder2 = session.createDocument(session.createDocumentModel("/",
+                "folder2", "Folder"));
+        folder3 = session.createDocument(session.createDocumentModel("/",
+                "folder3", "Folder"));
+        Map<String, Boolean> permissions = new HashMap<String, Boolean>();
+        permissions.put(SecurityConstants.READ_WRITE, true);
+        setPermissions(folder1, "user1", permissions);
+        setPermissions(folder2, "user1", permissions);
+
+        commitAndWaitForAsyncCompletion();
     }
 
     @After
     public void tearDown() throws ClientException {
-        // needed for session cleanup
-        TransactionHelper.startTransaction();
 
         if (user1Session != null) {
             user1Session.close();
@@ -205,7 +200,7 @@ public class TestAuditFileSystemChangeFinder {
         DocumentModel copiedDoc;
         DocumentModel docToVersion;
 
-        TransactionHelper.startTransaction();
+        commitAndWaitForAsyncCompletion();
         try {
             // No sync roots
             changes = getChanges();
@@ -221,7 +216,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             // Get changes for Administrator
             changes = getChanges();
@@ -247,7 +241,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changes = getChanges();
             assertEquals(2, changes.size());
@@ -277,7 +270,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changes = getChanges();
             assertEquals(2, changes.size());
@@ -299,7 +291,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changes = getChanges();
             assertEquals(1, changes.size());
@@ -321,7 +312,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changes = getChanges();
             assertEquals(3, changes.size());
@@ -347,7 +337,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changes = getChanges();
             assertEquals(1, changes.size());
@@ -369,7 +358,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changes = getChanges();
             assertEquals(2, changes.size());
@@ -399,7 +387,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changes = getChanges();
             assertEquals(1, changes.size());
@@ -414,7 +401,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changes = getChanges();
             assertEquals(1, changes.size());
@@ -444,7 +430,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changes = getChanges();
             assertEquals(4, changes.size());
@@ -472,15 +457,11 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
-        try {
-            Framework.getProperties().put(
-                    "org.nuxeo.drive.document.change.limit", "1");
-            FileSystemChangeSummary changeSummary = getChangeSummary(session.getPrincipal());
-            assertEquals(true, changeSummary.getHasTooManyChanges());
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
+        Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
+                "1");
+        FileSystemChangeSummary changeSummary = getChangeSummary(session.getPrincipal());
+        assertEquals(true, changeSummary.getHasTooManyChanges());
+
     }
 
     @Test
@@ -489,7 +470,6 @@ public class TestAuditFileSystemChangeFinder {
         FileSystemItemChange change;
         DocumentModel subFolder;
 
-        TransactionHelper.startTransaction();
         try {
             // No sync roots
             changes = getChanges();
@@ -509,7 +489,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion(user1Session);
         }
 
-        TransactionHelper.startTransaction();
         try {
             // Get changes for user1
             changes = getChanges(user1Session.getPrincipal());
@@ -528,7 +507,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changes = getChanges(user1Session.getPrincipal());
             assertEquals(2, changes.size());
@@ -561,36 +539,31 @@ public class TestAuditFileSystemChangeFinder {
             // Grant Read to user1 on a sync root
             setPermissions(folder2, "user1", permissions);
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
-        try {
-            changes = getChanges(user1Session.getPrincipal());
-            assertEquals(2, changes.size());
+        changes = getChanges(user1Session.getPrincipal());
+        assertEquals(2, changes.size());
 
-            change = changes.get(0);
-            assertEquals("securityUpdated", change.getEventId());
-            assertEquals(folder2.getId(), change.getDocUuid());
-            assertEquals(
-                    "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
-                    change.getFileSystemItemId());
-            assertEquals("folder2", change.getFileSystemItemName());
-            // Adaptable as a FileSystemItem since Read permission
-            assertNotNull(change.getFileSystemItem());
+        change = changes.get(0);
+        assertEquals("securityUpdated", change.getEventId());
+        assertEquals(folder2.getId(), change.getDocUuid());
+        assertEquals(
+                "defaultSyncRootFolderItemFactory#test#" + folder2.getId(),
+                change.getFileSystemItemId());
+        assertEquals("folder2", change.getFileSystemItemName());
+        // Adaptable as a FileSystemItem since Read permission
+        assertNotNull(change.getFileSystemItem());
 
-            change = changes.get(1);
-            assertEquals("securityUpdated", change.getEventId());
-            assertEquals(subFolder.getId(), change.getDocUuid());
-            assertEquals(
-                    "defaultFileSystemItemFactory#test#" + subFolder.getId(),
-                    change.getFileSystemItemId());
-            assertEquals("subFolder", change.getFileSystemItemName());
-            // Adaptable as a FileSystemItem since Read permission
-            assertNotNull(change.getFileSystemItem());
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
+        change = changes.get(1);
+        assertEquals("securityUpdated", change.getEventId());
+        assertEquals(subFolder.getId(), change.getDocUuid());
+        assertEquals("defaultFileSystemItemFactory#test#" + subFolder.getId(),
+                change.getFileSystemItemId());
+        assertEquals("subFolder", change.getFileSystemItemName());
+        // Adaptable as a FileSystemItem since Read permission
+        assertNotNull(change.getFileSystemItem());
+
     }
 
     @Test
@@ -600,7 +573,6 @@ public class TestAuditFileSystemChangeFinder {
         DocumentModel doc1;
         DocumentModel doc2;
 
-        TransactionHelper.startTransaction();
         try {
             // No sync roots => shouldn't find any changes
             changeSummary = getChangeSummary(admin);
@@ -620,17 +592,15 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changeSummary = getChangeSummary(admin);
             assertEquals(2, changeSummary.getFileSystemChanges().size());
             assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
 
         // Create 3 documents, only 2 in sync roots => should find 2 changes
-        TransactionHelper.startTransaction();
         try {
             doc1 = session.createDocumentModel("/folder1", "doc1", "File");
             doc1.setPropertyValue("file:content", new StringBlob(
@@ -647,7 +617,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changeSummary = getChangeSummary(admin);
 
@@ -680,7 +649,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changeSummary = getChangeSummary(admin);
             assertTrue(changeSummary.getFileSystemChanges().isEmpty());
@@ -708,7 +676,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             changeSummary = getChangeSummary(admin);
             assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
@@ -726,16 +693,12 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
-        try {
-            Framework.getProperties().put(
-                    "org.nuxeo.drive.document.change.limit", "1");
-            changeSummary = getChangeSummary(admin);
-            assertTrue(changeSummary.getFileSystemChanges().isEmpty());
-            assertEquals(Boolean.TRUE, changeSummary.getHasTooManyChanges());
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
+        Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
+                "1");
+        changeSummary = getChangeSummary(admin);
+        assertTrue(changeSummary.getFileSystemChanges().isEmpty());
+        assertEquals(Boolean.TRUE, changeSummary.getHasTooManyChanges());
+
     }
 
     @Test
@@ -747,7 +710,6 @@ public class TestAuditFileSystemChangeFinder {
         List<FileSystemItemChange> changes;
         FileSystemItemChange fsItemChange;
 
-        TransactionHelper.startTransaction();
         try {
             // No root registered by default: no changes
             activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
@@ -766,7 +728,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             // Administrator does not see any change
             activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
@@ -785,7 +746,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
             assertNotNull(activeRootRefs);
@@ -811,7 +771,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
             assertNotNull(activeRootRefs);
@@ -833,7 +792,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
             assertNotNull(activeRootRefs);
@@ -854,7 +812,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(session);
             assertNotNull(activeRootRefs);
@@ -887,7 +844,6 @@ public class TestAuditFileSystemChangeFinder {
         List<FileSystemItemChange> changes;
         FileSystemItemChange change;
 
-        TransactionHelper.startTransaction();
         try {
             // No sync roots expected for user1
             changes = getChanges(user1Principal);
@@ -903,7 +859,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             // user1 should have 2 sync roots
             Set<IdRef> activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(user1Session);
@@ -943,7 +898,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             // user1 should have no sync roots
             Set<IdRef> activeRootRefs = nuxeoDriveManager.getSynchronizationRootReferences(user1Session);
@@ -981,7 +935,6 @@ public class TestAuditFileSystemChangeFinder {
     @Test
     public void testRegisterSyncRootAndUpdate() throws Exception {
 
-        TransactionHelper.startTransaction();
         try {
             // Register folder1 as a sync root for Administrator
             nuxeoDriveManager.registerSynchronizationRoot(
@@ -1073,6 +1026,7 @@ public class TestAuditFileSystemChangeFinder {
     protected void commitAndWaitForAsyncCompletion(CoreSession session)
             throws Exception {
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         eventService.waitForAsyncCompletion();
     }
 
@@ -1090,7 +1044,7 @@ public class TestAuditFileSystemChangeFinder {
     }
 
     protected void setPermissions(DocumentModel doc, String userName,
-            Map<String, Boolean> permissions) throws ClientException {
+            Map<String, Boolean> permissions) throws Exception {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         for (String permission : permissions.keySet()) {
@@ -1098,11 +1052,11 @@ public class TestAuditFileSystemChangeFinder {
                     new ACE(userName, permission, permissions.get(permission)));
         }
         session.setACP(doc.getRef(), acp, true);
-        session.save();
+        commitAndWaitForAsyncCompletion();
     }
 
     protected void resetPermissions(DocumentModel doc, String userName)
-            throws ClientException {
+            throws Exception {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         Iterator<ACE> localACLIt = localACL.iterator();
@@ -1113,7 +1067,7 @@ public class TestAuditFileSystemChangeFinder {
             }
         }
         session.setACP(doc.getRef(), acp, true);
-        session.save();
+        commitAndWaitForAsyncCompletion();
     }
 
 }

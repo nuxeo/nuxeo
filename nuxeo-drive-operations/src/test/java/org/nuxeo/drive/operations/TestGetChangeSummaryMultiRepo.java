@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -61,10 +62,10 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(EmbeddedAutomationServerFeature.class)
+@Features({TransactionalFeature.class, EmbeddedAutomationServerFeature.class})
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
-@LocalDeploy("org.nuxeo.drive.operations:test-other-repository-config.xml")
+@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
+@LocalDeploy({"org.nuxeo.drive.operations:drive-repo-ds.xml","org.nuxeo.drive.operations:test-other-repository-config.xml"})
 @Jetty(port = 18080)
 public class TestGetChangeSummaryMultiRepo {
 
@@ -113,6 +114,9 @@ public class TestGetChangeSummaryMultiRepo {
         folder3 = otherSession.createDocument(otherSession.createDocumentModel(
                 "/", "folder3", "Folder"));
 
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
         mapper = new ObjectMapper();
     }
 
@@ -127,7 +131,6 @@ public class TestGetChangeSummaryMultiRepo {
 
         // Reset 'other' repository
         otherSession.removeChildren(new PathRef("/"));
-        otherSession.save();
 
         // Close session bound to the 'other' repository
         otherSession.close();
@@ -148,56 +151,54 @@ public class TestGetChangeSummaryMultiRepo {
         DocumentModel doc1;
         DocumentModel doc2;
         DocumentModel doc3;
+
+        Principal administrator = session.getPrincipal();
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder1,
+                session);
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder2,
+                session);
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, folder3,
+                otherSession);
+
+        doc1 = session.createDocumentModel("/folder1", "doc1", "File");
+        doc1.setPropertyValue("file:content", new StringBlob(
+                "The content of file 1."));
+        doc1 = session.createDocument(doc1);
+        Thread.sleep(1000);
+        doc2 = session.createDocumentModel("/folder2", "doc2", "File");
+        doc2.setPropertyValue("file:content", new StringBlob(
+                "The content of file 2."));
+        doc2 = session.createDocument(doc2);
+        Thread.sleep(1000);
+        doc3 = otherSession.createDocumentModel("/folder3", "doc3", "File");
+        doc3.setPropertyValue("file:content", new StringBlob(
+                "The content of file 3."));
+        doc3 = otherSession.createDocument(doc3);
+
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        try {
-            Principal administrator = session.getPrincipal();
-            nuxeoDriveManager.registerSynchronizationRoot(administrator,
-                    folder1, session);
-            nuxeoDriveManager.registerSynchronizationRoot(administrator,
-                    folder2, session);
-            nuxeoDriveManager.registerSynchronizationRoot(administrator,
-                    folder3, otherSession);
-
-            doc1 = session.createDocumentModel("/folder1", "doc1", "File");
-            doc1.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 1."));
-            doc1 = session.createDocument(doc1);
-            Thread.sleep(1000);
-            doc2 = session.createDocumentModel("/folder2", "doc2", "File");
-            doc2.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 2."));
-            doc2 = session.createDocument(doc2);
-            Thread.sleep(1000);
-            doc3 = otherSession.createDocumentModel("/folder3", "doc3", "File");
-            doc3.setPropertyValue("file:content", new StringBlob(
-                    "The content of file 3."));
-            doc3 = otherSession.createDocument(doc3);
-
-            session.save();
-            otherSession.save();
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
 
         // Look in all repositories => should find 3 changes
         FileSystemChangeSummary changeSummary = getChangeSummary();
         List<FileSystemItemChange> docChanges = changeSummary.getFileSystemChanges();
         assertEquals(3, docChanges.size());
-        FileSystemItemChange docChange = docChanges.get(0);
-        assertEquals("other", docChange.getRepositoryId());
+
+        FileSystemItemChange docChange = docChanges.get(2);
+        assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
-        assertEquals(doc3.getId(), docChange.getDocUuid());
+        assertEquals(doc1.getId(), docChange.getDocUuid());
+        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
 
         docChange = docChanges.get(1);
         assertEquals("test", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
         assertEquals(doc2.getId(), docChange.getDocUuid());
 
-        docChange = docChanges.get(2);
-        assertEquals("test", docChange.getRepositoryId());
+        docChange = docChanges.get(0);
+        assertEquals("other", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
-        assertEquals(doc1.getId(), docChange.getDocUuid());
-        assertEquals(Boolean.FALSE, changeSummary.getHasTooManyChanges());
+        assertEquals(doc3.getId(), docChange.getDocUuid());
+
 
         // Update documents
         doc1.setPropertyValue("dc:description", "Added description to doc1.");
@@ -206,8 +207,8 @@ public class TestGetChangeSummaryMultiRepo {
         session.saveDocument(doc1);
         session.saveDocument(doc2);
         otherSession.saveDocument(doc3);
-        session.save();
-        otherSession.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         changeSummary = getChangeSummary();
         docChanges = changeSummary.getFileSystemChanges();

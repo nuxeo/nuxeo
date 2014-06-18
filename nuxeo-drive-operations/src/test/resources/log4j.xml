@@ -18,7 +18,7 @@
     <param name="File" value="target/tests.log" />
     <param name="Append" value="false" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %t %-5p [%C{1}] %m%X%n" />
+      <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %t %-5p [%C{1}] %m %X%n" />
     </layout>
   </appender>
 

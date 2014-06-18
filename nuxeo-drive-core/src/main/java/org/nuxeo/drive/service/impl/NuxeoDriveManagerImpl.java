@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -278,7 +279,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
 
         // Compute the list of all repositories to consider for the aggregate
         // summary
-        Set<String> allRepositories = new LinkedHashSet<String>();
+        Set<String> allRepositories = new TreeSet<String>();
         allRepositories.addAll(roots.keySet());
         allRepositories.addAll(lastActiveRootRefs.keySet());
 

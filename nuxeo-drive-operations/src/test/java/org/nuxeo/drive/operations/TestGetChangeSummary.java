@@ -39,6 +39,7 @@ import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -55,7 +56,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(EmbeddedAutomationServerFeature.class)
+@Features({TransactionalFeature.class, EmbeddedAutomationServerFeature.class})
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
 @Jetty(port = 18080)
@@ -106,7 +107,6 @@ public class TestGetChangeSummary {
         // Register sync roots and create 2 documents => should find 2 changes
         DocumentModel doc1;
         DocumentModel doc2;
-        TransactionHelper.startTransaction();
         try {
             Principal administrator = session.getPrincipal();
             nuxeoDriveManager.registerSynchronizationRoot(administrator,
@@ -127,6 +127,7 @@ public class TestGetChangeSummary {
             session.save();
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
 
         changeSummary = getChangeSummary();
@@ -160,7 +161,8 @@ public class TestGetChangeSummary {
                 "The content of file 5."));
         doc5 = session.createDocument(doc5);
 
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
     }
 
     /**

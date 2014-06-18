@@ -62,6 +62,7 @@ import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
 import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -80,7 +81,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(EmbeddedAutomationServerFeature.class)
+@Features({ TransactionalFeature.class, EmbeddedAutomationServerFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
@@ -164,58 +165,54 @@ public class TestUserWorkspaceHierarchy {
     @Before
     public void init() throws Exception {
 
+        // Create test user
+        createUser("user1", "user1");
+
+        // Grant ReadWrite permission to test user on the root document
+        setPermission(session.getRootDocument(), "user1",
+                SecurityConstants.READ_WRITE, true);
+
+        // Open a core session for test user
+        session1 = repository.openSessionAs("user1");
+
+        // Create user workspace for test user
+        userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(
+                session1, null);
+
+        userWorkspace1ItemId = TOP_LEVEL_ID_PREFIX + userWorkspace1.getId();
+        userWorkspace1ItemPath = "/" + userWorkspace1ItemId;
+        syncRootParentItemPath = userWorkspace1ItemPath + "/"
+                + SYNC_ROOT_PARENT_ID;
+
+        // Populate test user workspace
+        user1Folder1 = createFolder(session1, userWorkspace1.getPathAsString(),
+                "user1Folder1", "Folder");
+        user1File1 = createFile(session1, user1Folder1.getPathAsString(),
+                "user1File1", "File", "user1File1.txt", CONTENT_PREFIX
+                        + "user1File1");
+        user1Folder2 = createFolder(session1, user1Folder1.getPathAsString(),
+                "user1Folder2", "Folder");
+        user1File2 = createFile(session1, userWorkspace1.getPathAsString(),
+                "user1File2", "File", "user1File2.txt", CONTENT_PREFIX
+                        + "user1File2");
+        user1Folder3 = createFolder(session1, "/", "user1Folder3", "Folder");
+        user1File3 = createFile(session1, user1Folder3.getPathAsString(),
+                "user1File3", "File", "user1File3.txt", CONTENT_PREFIX
+                        + "user1File3");
+        user1Folder4 = createFolder(session1, "/", "user1Folder4", "Folder");
+        user1File4 = createFile(session1, user1Folder4.getPathAsString(),
+                "user1File4", "File", "user1File4.txt", CONTENT_PREFIX
+                        + "user1File4");
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        try {
-            // Create test user
-            createUser("user1", "user1");
 
-            // Grant ReadWrite permission to test user on the root document
-            setPermission(session.getRootDocument(), "user1",
-                    SecurityConstants.READ_WRITE, true);
-
-            // Open a core session for test user
-            session1 = repository.openSessionAs("user1");
-
-            // Create user workspace for test user
-            userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(
-                    session1, null);
-
-            userWorkspace1ItemId = TOP_LEVEL_ID_PREFIX + userWorkspace1.getId();
-            userWorkspace1ItemPath = "/" + userWorkspace1ItemId;
-            syncRootParentItemPath = userWorkspace1ItemPath + "/"
-                    + SYNC_ROOT_PARENT_ID;
-
-            // Populate test user workspace
-            user1Folder1 = createFolder(session1,
-                    userWorkspace1.getPathAsString(), "user1Folder1", "Folder");
-            user1File1 = createFile(session1, user1Folder1.getPathAsString(),
-                    "user1File1", "File", "user1File1.txt", CONTENT_PREFIX
-                            + "user1File1");
-            user1Folder2 = createFolder(session1,
-                    user1Folder1.getPathAsString(), "user1Folder2", "Folder");
-            user1File2 = createFile(session1, userWorkspace1.getPathAsString(),
-                    "user1File2", "File", "user1File2.txt", CONTENT_PREFIX
-                            + "user1File2");
-            user1Folder3 = createFolder(session1, "/", "user1Folder3", "Folder");
-            user1File3 = createFile(session1, user1Folder3.getPathAsString(),
-                    "user1File3", "File", "user1File3.txt", CONTENT_PREFIX
-                            + "user1File3");
-            user1Folder4 = createFolder(session1, "/", "user1Folder4", "Folder");
-            user1File4 = createFile(session1, user1Folder4.getPathAsString(),
-                    "user1File4", "File", "user1File4.txt", CONTENT_PREFIX
-                            + "user1File4");
-            session1.save();
-
-            // Register synchronization roots for user1
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    session1.getPrincipal(),
-                    session1.getDocument(user1Folder3.getRef()), session1);
-            nuxeoDriveManager.registerSynchronizationRoot(
-                    session1.getPrincipal(),
-                    session1.getDocument(user1Folder4.getRef()), session1);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
+        // Register synchronization roots for user1
+        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
+                session1.getDocument(user1Folder3.getRef()), session1);
+        nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(),
+                session1.getDocument(user1Folder4.getRef()), session1);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // Get an Automation client session for the test user
         clientSession1 = automationClient.getSession("user1", "user1");
@@ -399,11 +396,13 @@ public class TestUserWorkspaceHierarchy {
         // Check registering user workspace as a
         // synchronization root is ignored
         // ---------------------------------------------
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         try {
             nuxeoDriveManager.registerSynchronizationRoot(
                     session1.getPrincipal(), userWorkspace1, session1);
             TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
 
             syncRootsJSON = (Blob) clientSession1.newRequest(
                     NuxeoDriveGetChildren.ID).set("id", syncRootParent.getId()).execute();
@@ -413,6 +412,7 @@ public class TestUserWorkspaceHierarchy {
             assertEquals(2, syncRoots.size());
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
     }
 

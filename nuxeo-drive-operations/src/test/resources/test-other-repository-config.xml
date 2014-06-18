@@ -9,17 +9,21 @@
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="other"
-      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
+      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
       <repository>
         <indexing>
           <fulltext disabled="true" />
         </indexing>
-        <xa-datasource>org.h2.jdbcx.JdbcDataSource</xa-datasource>
-        <property name="URL">jdbc:h2:target/other</property>
-        <property name="User">sa</property>
-        <property name="Password"></property>
       </repository>
     </repository>
   </extension>
+  
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+    <datasource name="jdbc/repository_other" driverClassName="org.h2.Driver">
+      <property name="url">jdbc:h2:mem:other;DB_CLOSE_DELAY=-1</property>
+      <property name="other">pfouh</property>
+    </datasource>
+  </extension>
+    
 
 </component>

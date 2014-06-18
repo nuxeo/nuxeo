@@ -29,6 +29,7 @@ import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -42,7 +43,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(EmbeddedAutomationServerFeature.class)
+@Features({TransactionalFeature.class, EmbeddedAutomationServerFeature.class})
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
 @Jetty(port = 18080)
 public class TestSetVersioningOptions {

@@ -60,6 +60,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -79,7 +80,7 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features(EmbeddedAutomationServerFeature.class)
+@Features({ TransactionalFeature.class, EmbeddedAutomationServerFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
@@ -143,59 +144,57 @@ public class TestFileSystemItemOperations {
     @Before
     public void init() throws Exception {
 
+        Principal administrator = session.getPrincipal();
+        // Create 2 sync roots
+        syncRoot1 = session.createDocument(session.createDocumentModel("/",
+                "folder1", "Folder"));
+        syncRoot2 = session.createDocument(session.createDocumentModel("/",
+                "folder2", "Folder"));
+
+        // Register sync roots
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot1,
+                session);
+        nuxeoDriveManager.registerSynchronizationRoot(administrator, syncRoot2,
+                session);
+
+        // Create 1 file in each sync root
+        file1 = session.createDocumentModel("/folder1", "file1", "File");
+        org.nuxeo.ecm.core.api.Blob blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(
+                "The content of file 1.");
+        blob.setFilename("First file.odt");
+        file1.setPropertyValue("file:content", (Serializable) blob);
+        file1 = session.createDocument(file1);
+        file2 = session.createDocumentModel("/folder2", "file2", "File");
+        blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(
+                "The content of file 2.");
+        blob.setFilename("Second file.odt");
+        file2.setPropertyValue("file:content", (Serializable) blob);
+        file2 = session.createDocument(file2);
+
+        // Create a sub-folder in sync root 1
+        subFolder1 = session.createDocument(session.createDocumentModel(
+                "/folder1", "subFolder1", "Folder"));
+
+        // Create 2 files in sub-folder
+        file3 = session.createDocumentModel("/folder1/subFolder1", "file3",
+                "File");
+        blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(
+                "The content of file 3.");
+        blob.setFilename("Third file.odt");
+        file3.setPropertyValue("file:content", (Serializable) blob);
+        file3 = session.createDocument(file3);
+        file4 = session.createDocumentModel("/folder1/subFolder1", "file4",
+                "File");
+        blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(
+                "The content of file 4.");
+        blob.setFilename("Fourth file.odt");
+        file4.setPropertyValue("file:content", (Serializable) blob);
+        file4 = session.createDocument(file4);
+
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        try {
-            Principal administrator = session.getPrincipal();
-            // Create 2 sync roots
-            syncRoot1 = session.createDocument(session.createDocumentModel("/",
-                    "folder1", "Folder"));
-            syncRoot2 = session.createDocument(session.createDocumentModel("/",
-                    "folder2", "Folder"));
-
-            // Register sync roots
-            nuxeoDriveManager.registerSynchronizationRoot(administrator,
-                    syncRoot1, session);
-            nuxeoDriveManager.registerSynchronizationRoot(administrator,
-                    syncRoot2, session);
-
-            // Create 1 file in each sync root
-            file1 = session.createDocumentModel("/folder1", "file1", "File");
-            org.nuxeo.ecm.core.api.Blob blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(
-                    "The content of file 1.");
-            blob.setFilename("First file.odt");
-            file1.setPropertyValue("file:content", (Serializable) blob);
-            file1 = session.createDocument(file1);
-            file2 = session.createDocumentModel("/folder2", "file2", "File");
-            blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(
-                    "The content of file 2.");
-            blob.setFilename("Second file.odt");
-            file2.setPropertyValue("file:content", (Serializable) blob);
-            file2 = session.createDocument(file2);
-
-            // Create a sub-folder in sync root 1
-            subFolder1 = session.createDocument(session.createDocumentModel(
-                    "/folder1", "subFolder1", "Folder"));
-
-            // Create 2 files in sub-folder
-            file3 = session.createDocumentModel("/folder1/subFolder1", "file3",
-                    "File");
-            blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(
-                    "The content of file 3.");
-            blob.setFilename("Third file.odt");
-            file3.setPropertyValue("file:content", (Serializable) blob);
-            file3 = session.createDocument(file3);
-            file4 = session.createDocumentModel("/folder1/subFolder1", "file4",
-                    "File");
-            blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(
-                    "The content of file 4.");
-            blob.setFilename("Fourth file.odt");
-            file4.setPropertyValue("file:content", (Serializable) blob);
-            file4 = session.createDocument(file4);
-
-            session.save();
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
 
         mapper = new ObjectMapper();
     }
@@ -275,7 +274,8 @@ public class TestFileSystemItemOperations {
         // the file system item obtained by
         // FileSystemItemManager#getSession(String
         // repositoryName, Principal principal)
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         fileSystemItemExistsJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveFileSystemItemExists.ID).set("id",
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).execute();
@@ -360,7 +360,8 @@ public class TestFileSystemItemOperations {
         // the file system item obtained by
         // FileSystemItemManager#getSession(String
         // repositoryName, Principal principal)
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         fileSystemItemJSON = (Blob) clientSession.newRequest(
                 NuxeoDriveGetFileSystemItem.ID).set("id",
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).execute();
@@ -539,7 +540,8 @@ public class TestFileSystemItemOperations {
         // the file system item obtained by
         // FileSystemItemManager#getSession(String
         // repositoryName, Principal principal)
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         DocumentModel deletedFileDoc = session.getDocument(new IdRef(
                 file1.getId()));
@@ -550,16 +552,12 @@ public class TestFileSystemItemOperations {
         // ------------------------------------------------------
         clientSession.newRequest(NuxeoDriveDelete.ID).set("id",
                 SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
-        // Need a transaction to open a session by calling
-        // FileSystemItemManager#getSession(String
-        // repositoryName, Principal principal)
+
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        try {
-            assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(
-                    session).contains(new IdRef(syncRoot2.getId())));
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
+
+        assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session).contains(
+                new IdRef(syncRoot2.getId())));
 
         // ------------------------------------------------------
         // Delete top level folder: should be unsupported
@@ -628,7 +626,8 @@ public class TestFileSystemItemOperations {
         // the file system item obtained by
         // FileSystemItemManager#getSession(String
         // repositoryName, Principal principal)
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         DocumentModel renamedFolderDoc = session.getDocument(new IdRef(
                 subFolder1.getId()));
@@ -651,7 +650,8 @@ public class TestFileSystemItemOperations {
         // the file system item obtained by
         // FileSystemItemManager#getSession(String
         // repositoryName, Principal principal)
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         DocumentModel renamedSyncRootDoc = session.getDocument(new IdRef(
                 syncRoot1.getId()));
@@ -724,15 +724,13 @@ public class TestFileSystemItemOperations {
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
 
-        TransactionHelper.startTransaction();
-        try {
             nuxeoDriveManager.registerSynchronizationRoot(joe, syncRoot1,
                     session);
             nuxeoDriveManager.registerSynchronizationRoot(joe, syncRoot2,
                     session);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         Session joeSession = automationClient.getSession("joe", "joe");
         canMoveFSItemJSON = (Blob) joeSession.newRequest(NuxeoDriveCanMove.ID).set(
@@ -763,13 +761,11 @@ public class TestFileSystemItemOperations {
         // backing doc => true
         // ----------------------------------------------------------------------
         setPermission(syncRoot2, "joe", SecurityConstants.WRITE, true);
+
+        nuxeoDriveManager.unregisterSynchronizationRoot(joe, syncRoot2, session);
+
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        try {
-            nuxeoDriveManager.unregisterSynchronizationRoot(joe, syncRoot2,
-                    session);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
 
         canMoveFSItemJSON = (Blob) joeSession.newRequest(NuxeoDriveCanMove.ID).set(
                 "srcId", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
@@ -782,13 +778,11 @@ public class TestFileSystemItemOperations {
         // syncRoot2 is not registered as a sync root for joe
         assertEquals("false", canMoveFSItem);
 
+
+        nuxeoDriveManager.registerSynchronizationRoot(joe, syncRoot2, session);
+
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        try {
-            nuxeoDriveManager.registerSynchronizationRoot(joe, syncRoot2,
-                    session);
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-        }
 
         canMoveFSItemJSON = (Blob) joeSession.newRequest(NuxeoDriveCanMove.ID).set(
                 "srcId", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId()).set(
@@ -958,7 +952,8 @@ public class TestFileSystemItemOperations {
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         localACL.add(new ACE(userName, permission, isGranted));
         session.setACP(doc.getRef(), acp, true);
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
     }
 
     protected void resetPermissions(DocumentModel doc, String userName)
@@ -973,7 +968,8 @@ public class TestFileSystemItemOperations {
             }
         }
         session.setACP(doc.getRef(), acp, true);
-        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
     }
 
     protected void checkChildren(List<DocumentBackedFileItem> folderChildren,
