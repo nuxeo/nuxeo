@@ -42,6 +42,7 @@ import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
@@ -267,16 +268,16 @@ public class TestDocumentsCountUpdater {
                 session.saveDocument(folder);
             }
         }
-        session.save();
 
         String updaterName = "documentsCountUpdater";
         quotaStatsService.launchInitialStatisticsComputation(updaterName,
                 session.getRepositoryName());
+        TransactionHelper.commitOrRollbackTransaction();
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         String queueId = workManager.getCategoryQueueId(QuotaStatsInitialWork.CATEGORY_QUOTA_INITIAL);
         workManager.awaitCompletion(queueId, 10, TimeUnit.SECONDS);
 
-        session.save(); // process invalidations
+        TransactionHelper.startTransaction();
         testDocumentsCount();
     }
 
