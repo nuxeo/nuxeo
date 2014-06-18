@@ -683,11 +683,13 @@ public class Select2ActionsBean implements Serializable {
         String result = "";
         for (int i = 0; i < split.length; i++) {
             DocumentModel entry = session.getEntry(split[i]);
-            Serializable value = entry.getPropertyValue(labelFieldName.getPrefixedName());
-            if (localize && !dbl10n) {
-                value = messages.get(value);
+            if (entry != null) {
+                Serializable value = entry.getPropertyValue(labelFieldName.getPrefixedName());
+                if (localize && !dbl10n) {
+                    value = messages.get(value);
+                }
+                result += (i > 0 ? "/" : "") + value;
             }
-            result += value + (i < split.length - 1 ? "/" : "");
         }
 
         return result;
