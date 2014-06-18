@@ -1087,9 +1087,7 @@ public abstract class NuxeoLauncher {
                     new File(configurationGenerator.getRuntimeHome(), "bundles"));
             startCommand.add(classpath);
             startCommand.addAll(getNuxeoProperties());
-            if (configurationGenerator.isJBoss) {
-                startCommand.add(PACK_JBOSS_CLASS);
-            } else if (configurationGenerator.isTomcat) {
+            if (configurationGenerator.isTomcat) {
                 startCommand.add(PACK_TOMCAT_CLASS);
             } else {
                 errorValue = EXIT_CODE_ERROR;
@@ -1632,8 +1630,7 @@ public abstract class NuxeoLauncher {
      *         time than Tomcat)
      */
     private String getDefaultMaxWait() {
-        return configurationGenerator.isJBoss ? START_MAX_WAIT_JBOSS_DEFAULT
-                : START_MAX_WAIT_DEFAULT;
+        return START_MAX_WAIT_DEFAULT;
     }
 
     /**
@@ -1679,7 +1676,7 @@ public abstract class NuxeoLauncher {
 
     /**
      * @throws ParseException
-     * @return a NuxeoLauncher instance specific to current server (JBoss,
+     * @return a NuxeoLauncher instance specific to current server (
      *         Tomcat or Jetty).
      * @throws ConfigurationException If server cannot be identified
      * @since 5.5
@@ -1705,9 +1702,7 @@ public abstract class NuxeoLauncher {
         if (cmdLine.hasOption(OPTION_HIDE_DEPRECATION)) {
             cg.hideDeprecationWarnings(true);
         }
-        if (cg.isJBoss) {
-            launcher = new NuxeoJBossLauncher(cg);
-        } else if (cg.isJetty) {
+        if (cg.isJetty) {
             launcher = new NuxeoJettyLauncher(cg);
         } else if (cg.isTomcat) {
             launcher = new NuxeoTomcatLauncher(cg);
