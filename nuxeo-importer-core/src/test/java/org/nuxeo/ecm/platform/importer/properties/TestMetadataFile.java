@@ -32,14 +32,11 @@ import org.junit.runner.RunWith;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -51,7 +48,6 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(type = BackendType.H2, user = "Administrator")
 @Deploy( { "org.nuxeo.ecm.core.api" })
 public class TestMetadataFile {
 
@@ -78,7 +74,7 @@ public class TestMetadataFile {
         assertEquals("testTitle", properties.get("dc:title"));
         assertEquals("testDescription", properties.get("dc:description"));
         assertEquals("testCoverage", properties.get("dc:coverage"));
-        Date date = ((Calendar) formatDate((String) properties.get("dc:expired"))).getTime();
+        Date date = formatDate((String) properties.get("dc:expired")).getTime();
         DateFormat dateFormat = new SimpleDateFormat(
                 MetadataCollector.DATE_FORMAT);
         assertEquals(dateFormat.format(calendar.getTime()),
@@ -108,7 +104,7 @@ public class TestMetadataFile {
         assertEquals("testTitle", properties.get("dc:title"));
         assertEquals("testDescription", properties.get("dc:description"));
         assertEquals("testCoverage", properties.get("dc:coverage"));
-        Date date = ((Calendar) formatDate((String) properties.get("dc:expired"))).getTime();
+        Date date = formatDate((String) properties.get("dc:expired")).getTime();
         DateFormat dateFormat = new SimpleDateFormat(
                 MetadataCollector.DATE_FORMAT);
         assertEquals(dateFormat.format(calendar.getTime()),
