@@ -451,6 +451,9 @@ public class TestTagService {
                 tagService.getDocumentTags(session, versionId, "leela").size());
         assertEquals(2,
                 tagService.getDocumentTags(session, versionId, "bender").size());
+        // prevents NXP-14608 NXP-14441
+        tagService.removeTags(session, versionId);
+        tagService.removeTags(session, docId);
     }
 
     @Test
@@ -485,6 +488,9 @@ public class TestTagService {
                 tagService.getDocumentTags(session, proxyId, "leela").size());
         assertEquals(2,
                 tagService.getDocumentTags(session, proxyId, "bender").size());
+        // prevents NXP-14608 NXP-14441
+        tagService.removeTags(session, proxy.getId());
+        tagService.removeTags(session, docId);
     }
 
     @Test
@@ -521,6 +527,9 @@ public class TestTagService {
         assertEquals(2, tags.size());
         assertTrue(tags.contains(new Tag("tag1", 0)));
         assertTrue(tags.contains(new Tag("tag2", 0)));
+        // prevents NXP-14608 NXP-14441
+        tagService.removeTags(session, versionId);
+        tagService.removeTags(session, docId);
     }
 
     protected DocumentRef checkIn(DocumentRef ref) throws ClientException {
