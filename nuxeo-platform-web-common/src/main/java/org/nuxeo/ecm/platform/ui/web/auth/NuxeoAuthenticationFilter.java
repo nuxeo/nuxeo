@@ -91,6 +91,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.session.NuxeoHttpSessionMonitor;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginConfiguration;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
@@ -411,6 +412,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             }
         } finally {
             ClientLoginModule.clearThreadLocalLogin();
+            LoginConfiguration.INSTANCE.cleanupThisThread();
             contextTimer.stop();
             concurrentCount.dec();
         }
