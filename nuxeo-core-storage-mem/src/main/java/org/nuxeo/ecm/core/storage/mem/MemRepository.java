@@ -24,7 +24,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -52,6 +54,9 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
  */
 public class MemRepository extends DBSRepositoryBase {
 
+    // for debug
+    private final AtomicLong temporaryIdCounter = new AtomicLong(0);
+
     /**
      * The content of the repository, a map of document id -> object.
      */
@@ -59,13 +64,26 @@ public class MemRepository extends DBSRepositoryBase {
 
     public MemRepository(String repositoryName) {
         super(repositoryName);
-        states = new HashMap<>();
-        initRoot();
+        initRepository();
     }
 
     @Override
     public void shutdown() {
         states = null;
+    }
+
+    protected void initRepository() {
+        states = new HashMap<>();
+        initRoot();
+    }
+
+    @Override
+    public String generateNewId() {
+        if (DEBUG_UUIDS) {
+            return "UUID_" + temporaryIdCounter.incrementAndGet();
+        } else {
+            return UUID.randomUUID().toString();
+        }
     }
 
     @Override

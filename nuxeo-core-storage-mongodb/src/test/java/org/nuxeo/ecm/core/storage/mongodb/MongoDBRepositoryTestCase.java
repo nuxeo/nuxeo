@@ -106,6 +106,9 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
             DBCollection coll = MongoDBRepository.getCollection(descriptor,
                     mongoClient);
             coll.remove(new BasicDBObject());
+            coll = MongoDBRepository.getCountersCollection(descriptor,
+                    mongoClient);
+            coll.remove(new BasicDBObject());
         } finally {
             mongoClient.close();
         }

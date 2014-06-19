@@ -15,10 +15,12 @@ import static java.lang.Boolean.FALSE;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -56,17 +58,16 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     public static final String TYPE_ROOT = "Root";
 
+    // change to have deterministic pseudo-UUID generation for debugging
+    protected final boolean DEBUG_UUIDS = true;
+
+    private static final String UUID_ZERO = "00000000-0000-0000-0000-000000000000";
+
+    private static final String UUID_ZERO_DEBUG = "UUID_0";
+
     protected final String repositoryName;
 
     protected final BinaryManager binaryManager;
-
-    protected String rootId;
-
-    // change to have deterministic pseudo-UUID generation for debugging
-    private final boolean DEBUG_UUIDS = true;
-
-    // for debug
-    private final AtomicLong temporaryIdCounter = new AtomicLong(-1);
 
     public DBSRepositoryBase(String repositoryName) {
         this.repositoryName = repositoryName;
@@ -78,29 +79,14 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         return repositoryName;
     }
 
-    @Override
-    public String getRootId() {
-        return rootId;
-    }
-
-    @Override
-    public String generateNewId() {
-        if (DEBUG_UUIDS) {
-            return "UUID_" + temporaryIdCounter.incrementAndGet();
-        } else {
-            if (rootId == null) {
-                return "00000000-0000-0000-0000-000000000000";
-            } else {
-                return UUID.randomUUID().toString();
-            }
-        }
-    }
-
+    /**
+     * Initializes the root and its ACP.
+     */
     public void initRoot() {
         try {
             Session session = getSession(null);
-            Document root = session.getNullDocument().addChild("", TYPE_ROOT);
-            rootId = root.getUUID();
+            Document root = session.importDocument(getRootId(), null, "",
+                    TYPE_ROOT, new HashMap<String, Serializable>());
             ACLImpl acl = new ACLImpl();
             acl.add(new ACE(SecurityConstants.ADMINISTRATORS,
                     SecurityConstants.EVERYTHING, true));
@@ -120,6 +106,11 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         } catch (DocumentException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String getRootId() {
+        return DEBUG_UUIDS ? UUID_ZERO_DEBUG : UUID_ZERO;
     }
 
     @Override

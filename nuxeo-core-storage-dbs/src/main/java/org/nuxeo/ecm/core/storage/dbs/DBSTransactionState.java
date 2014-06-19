@@ -589,7 +589,7 @@ public class DBSTransactionState {
             Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies) {
         Set<String> ids = new HashSet<String>();
-        Set<String> seen = new HashSet<String>();
+        Set<String> seen = new HashSet<String>(savedDeleted);
         DOC: //
         for (DBSDocumentState docState : savedStates.values()) {
             String oid = docState.getId();

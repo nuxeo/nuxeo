@@ -1223,6 +1223,27 @@ public class TestMongoDBRepository extends MongoDBRepositoryTestCase {
     }
 
     @Test
+    public void testRemoveChildren2() throws ClientException {
+        DocumentModel folder1 = session.createDocumentModel("/", "folder1",
+                "Folder");
+        folder1 = session.createDocument(folder1);
+        DocumentModel folder2 = session.createDocumentModel("/folder1",
+                "folder2", "Folder");
+        folder2 = session.createDocument(folder2);
+        DocumentModel doc1 = session.createDocumentModel("/folder1/folder2",
+                "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        session.save();
+        // now remove
+        session.removeDocument(folder2.getRef());
+        // don't save
+        // check that we don't get phantom docs when getting children
+        // for instance when updating ACLs recursively
+        session.setACP(folder1.getRef(), new ACPImpl(), true);
+        session.save();
+    }
+
+    @Test
     public void testRemoveDocument() throws ClientException {
         DocumentModel root = session.getRootDocument();
 

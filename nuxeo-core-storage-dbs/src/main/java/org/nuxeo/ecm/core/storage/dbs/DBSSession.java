@@ -1707,7 +1707,7 @@ public class DBSSession implements Session {
 
         @Override
         public boolean hasNext() {
-            return pos < totalSize - 1;
+            return pos < totalSize;
         }
 
         @Override

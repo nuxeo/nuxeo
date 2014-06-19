@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,19 +73,28 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     public static final String MONGO_ID = "_id";
 
+    public static final String MONGO_INC = "$inc";
+
+    protected static final String COUNTER_NAME_UUID = "ecm:id";
+
+    protected static final String COUNTER_FIELD = "seq";
+
     protected MongoClient mongoClient;
 
     protected DBCollection coll;
+
+    protected DBCollection countersColl;
 
     public MongoDBRepository(MongoDBRepositoryDescriptor descriptor) {
         super(descriptor.name);
         try {
             mongoClient = newMongoClient(descriptor);
             coll = getCollection(descriptor, mongoClient);
+            countersColl = getCountersCollection(descriptor, mongoClient);
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
-        initRoot();
+        initRepository();
     }
 
     @Override
@@ -101,13 +111,24 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return new MongoClient(addr);
     }
 
-    // used also by unit tests
-    public static DBCollection getCollection(
-            MongoDBRepositoryDescriptor descriptor, MongoClient mongoClient) {
+    protected static DBCollection getCollection(MongoClient mongoClient,
+            String name) {
         // TODO configure db name
         // TODO authentication
         DB db = mongoClient.getDB(DB_NAME);
-        return db.getCollection(descriptor.name);
+        return db.getCollection(name);
+    }
+
+    // used also by unit tests
+    public static DBCollection getCollection(
+            MongoDBRepositoryDescriptor descriptor, MongoClient mongoClient) {
+        return getCollection(mongoClient, descriptor.name);
+    }
+
+    // used also by unit tests
+    public static DBCollection getCountersCollection(
+            MongoDBRepositoryDescriptor descriptor, MongoClient mongoClient) {
+        return getCollection(mongoClient, descriptor.name + ".counters");
     }
 
     protected DBObject stateToBson(State state, boolean skipNull) {
@@ -202,6 +223,46 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return (Serializable) val;
     }
 
+    protected void initRepository() {
+        // check root presence
+        DBObject query = new BasicDBObject(KEY_ID, getRootId());
+        if (coll.findOne(query, justPresenceField()) != null) {
+            return;
+        }
+        // create basic repository structure needed
+        if (DEBUG_UUIDS) {
+            // create the id counter
+            DBObject idCounter = new BasicDBObject();
+            idCounter.put(MONGO_ID, COUNTER_NAME_UUID);
+            idCounter.put(COUNTER_FIELD, ZERO);
+            countersColl.insert(idCounter);
+        }
+        initRoot();
+    }
+
+    protected Long getNextUuidSeq() {
+        DBObject query = new BasicDBObject(MONGO_ID, COUNTER_NAME_UUID);
+        DBObject update = new BasicDBObject(MONGO_INC, new BasicDBObject(
+                COUNTER_FIELD, ONE));
+        boolean returnNew = true;
+        DBObject idCounter = countersColl.findAndModify(query, null, null,
+                false, update, returnNew, false);
+        if (idCounter == null) {
+            throw new RuntimeException("Repository id counter not initialized");
+        }
+        return (Long) idCounter.get(COUNTER_FIELD);
+    }
+
+    @Override
+    public String generateNewId() {
+        if (DEBUG_UUIDS) {
+            Long id = getNextUuidSeq();
+            return "UUID_" + id;
+        } else {
+            return UUID.randomUUID().toString();
+        }
+    }
+
     @Override
     public void createState(State state) throws DocumentException {
         DBObject ob = stateToBson(state, true);
@@ -237,7 +298,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public void deleteState(String id) throws DocumentException {
         DBObject query = new BasicDBObject(KEY_ID, id);
         WriteResult w = coll.remove(query);
-        log.error("XXX DEBUG removed N=" + w.getN());
+        if (w.getN() != 1) {
+            log.error("Removed " + w.getN() + " docs for id: " + id);
+        }
     }
 
     @Override
