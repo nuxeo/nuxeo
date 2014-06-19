@@ -54,7 +54,7 @@ import com.sun.jersey.multipart.impl.MultiPartWriter;
  */
 public class BaseTest {
 
-    static enum RequestType {
+    protected static enum RequestType {
         GET, POST, DELETE, PUT, POSTREQUEST, GETES
     }
 
