@@ -299,7 +299,6 @@ public class TestMemRepositoryQuery extends MemRepositoryTestCase {
         dml = session.query("SELECT * FROM Document WHERE dc:subjects ILIKE '%oo'");
         assertEquals(1, dml.size());
 
-        System.err.println("start query");
         dml = session.query("SELECT * FROM Document WHERE dc:subjects NOT ILIKE '%oo'");
         assertEquals(6, dml.size());
     }

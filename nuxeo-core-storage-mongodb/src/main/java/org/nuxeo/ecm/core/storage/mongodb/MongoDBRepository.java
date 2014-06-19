@@ -414,7 +414,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
         addIgnoredIds(query, ignored);
         addPrincipals(query, evaluator.principals);
         List<State> list;
-        System.err.println(query); // XXX
+        if (log.isTraceEnabled()) {
+            log.trace("MongoDB: " + query + " offset " + offset + " limit "
+                    + limit);
+        }
         long totalSize;
         DBCursor cursor = coll.find(query).skip(offset).limit(limit);
         try {
@@ -457,6 +460,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
             }
         } finally {
             cursor.close();
+        }
+        if (log.isTraceEnabled() && list.size() != 0) {
+            log.trace("MongoDB: -> " + list.size());
         }
         return new PartialList<>(list, totalSize);
     }

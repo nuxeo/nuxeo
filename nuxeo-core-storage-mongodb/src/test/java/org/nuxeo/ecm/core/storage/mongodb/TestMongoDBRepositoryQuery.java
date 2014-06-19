@@ -300,7 +300,6 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         dml = session.query("SELECT * FROM Document WHERE dc:subjects ILIKE '%oo'");
         assertEquals(1, dml.size());
 
-        System.err.println("start query");
         dml = session.query("SELECT * FROM Document WHERE dc:subjects NOT ILIKE '%oo'");
         assertEquals(6, dml.size());
     }
