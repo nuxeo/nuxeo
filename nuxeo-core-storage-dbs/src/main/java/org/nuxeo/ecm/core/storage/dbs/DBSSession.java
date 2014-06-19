@@ -1441,6 +1441,11 @@ public class DBSSession implements Session {
     protected PartialList<State> doQueryAndFetch(String query,
             String queryType, QueryFilter queryFilter, int countUpTo,
             boolean onlyId) throws QueryException {
+        if ("NXTAG".equals(queryType)) {
+            // for now don't try to implement tags
+            // and return an empty list
+            return new PartialList<State>(Collections.<State> emptyList(), 0);
+        }
         if (!NXQL.NXQL.equals(queryType)) {
             throw new QueryException("No QueryMaker accepts query type: "
                     + queryType);
