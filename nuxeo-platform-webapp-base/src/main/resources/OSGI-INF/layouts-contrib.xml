@@ -2507,14 +2507,17 @@
               </widget>
               <widget name="foldable" type="checkbox">
                 <labels>
-                  <label mode="any">Make this content view foldable</label>
+                  <label mode="any">Foldable</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
                     If set to true, the content view will be
-                    displayed in a box that can be folded if users would like to
-                    hide this content view content. Note that this state is not
-                    persisted. Defaults to false.
+                    displayed in a box that can be folded/unfolded in
+                    javascript. Ignored if the widget is not marked as handling
+                    labels as the header will not be displayed in this case. If
+                    the widget label is empty, the content view title will be
+                    used. If this title is also empty, a default label will be
+                    shown. Defaults to false.
                   </label>
                 </helpLabels>
                 <fields>
@@ -3025,15 +3028,20 @@
               </widget>
               <widget name="foldable" type="checkbox">
                 <labels>
-                  <label mode="any">Make this content view foldable</label>
+                  <label mode="any">Foldable</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
                     If set to true, the layout will be
                     displayed
-                    in a box that can be folded if users would like to
-                    hide it.
-                    Note that this state is not persisted. Available since 5.7,
+                    in a box that can be folded/unfolded in
+                    javascript. Ignored
+                    if the widget is not marked as handling
+                    labels as the header
+                    will not be displayed in this case. If
+                    the widget label is
+                    empty, a default label will be
+                    shown. Available since 5.7,
                     defaults to false.
                   </label>
                 </helpLabels>
@@ -3364,7 +3372,7 @@
               </widget>
               <widget name="foldable" type="checkbox">
                 <labels>
-                  <label mode="any">Make this content view foldable</label>
+                  <label mode="any">Foldable</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">

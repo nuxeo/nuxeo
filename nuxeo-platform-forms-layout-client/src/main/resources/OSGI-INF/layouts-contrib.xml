@@ -2343,7 +2343,8 @@
                     displayed in a header of a box, containing the sub widgets
                     rendering. This box is foldable in javascript. Ignored if
                     the widget is not marked as handling labels as the header
-                    will not be displayed in this case. Defaults to false.
+                    will not be displayed in this case. If label is empty, a
+                    default label will be shown. Defaults to false.
                   </label>
                 </helpLabels>
                 <fields>
