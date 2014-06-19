@@ -160,6 +160,10 @@ public class OSGiManifestReader {
         if (val != null) {
             headers.put(Constants.BUNDLE_ACTIVATOR, val.trim());
         }
+        val = attrs.getValue(Constants.BUNDLE_ACTIVATIONPOLICY);
+        if (val != null) {
+            headers.put(Constants.BUNDLE_ACTIVATIONPOLICY, val.trim());
+        }
         val = attrs.getValue(Constants.BUNDLE_CLASSPATH);
         if (val != null) {
             headers.put(Constants.BUNDLE_CLASSPATH, val.trim());

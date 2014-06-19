@@ -46,20 +46,18 @@ import com.google.inject.Binder;
 @Deploy({"org.nuxeo.runtime", "org.nuxeo.runtime.test"})
 public class RuntimeFeature extends SimpleFeature {
 
-    protected final DefaultRuntimeHarness harness;
+    protected DefaultRuntimeHarness harness;
 
-    protected final DeploymentSet deploy;
+    protected DeploymentSet deploy;
 
     /**
      * Providers contributed by other features to override the default service
      * provider used for a nuxeo service.
      */
-    protected final Map<Class<?>, ServiceProvider<?>> serviceProviders;
+    protected Map<Class<?>, ServiceProvider<?>> serviceProviders;
 
     public RuntimeFeature() {
-        harness = new DefaultRuntimeHarness();
-        deploy = new DeploymentSet();
-        serviceProviders = new HashMap<Class<?>, ServiceProvider<?>>();
+
     }
 
     public <T> void addServiceProvider(ServiceProvider<T> provider) {
@@ -201,6 +199,9 @@ public class RuntimeFeature extends SimpleFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
+        harness = new DefaultRuntimeHarness();
+        deploy = new DeploymentSet();
+        serviceProviders = new HashMap<Class<?>, ServiceProvider<?>>();
         scanDeployments(runner);
         harness.start();
         deployTestClassBundles(runner);

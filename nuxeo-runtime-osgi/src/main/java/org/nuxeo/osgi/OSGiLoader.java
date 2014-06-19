@@ -55,25 +55,28 @@ public class OSGiLoader extends ClassLoader {
     @Override
     public Class<?> loadClass(String name, boolean resolve)
             throws ClassNotFoundException {
-        if ((context.bundle.state & (Bundle.ACTIVE | Bundle.STOPPING)) == 0) {
-            try {
-                context.bundle.activate();
-            } catch (BundleException e) {
-                throw new ClassNotFoundException("Cannot activate " + context,
-                        e);
+        try {
+            synchronized (getClassLoadingLock(name)) {
+                Class<?> clazz;
+                try {
+                    clazz = findClass(name);
+                } catch (ClassNotFoundException e) {
+                    clazz = findParentClass(name);
+                }
+                if (resolve) {
+                    resolveClass(clazz);
+                }
+                return clazz;
             }
-        }
-        synchronized (getClassLoadingLock(name)) {
-            Class<?> clazz;
-            try {
-                clazz = findClass(name);
-            } catch (ClassNotFoundException e) {
-                clazz = findParentClass(name);
+        } finally {
+            if ((context.bundle.state & (Bundle.ACTIVE | Bundle.STOPPING)) == 0) {
+                try {
+                    context.bundle.activate();
+                } catch (BundleException e) {
+                    throw new ClassNotFoundException("Cannot activate " + context,
+                            e);
+                }
             }
-            if (resolve) {
-                resolveClass(clazz);
-            }
-            return clazz;
         }
     }
 

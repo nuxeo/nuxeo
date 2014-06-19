@@ -61,7 +61,7 @@ public class ComponentDeploymentTest extends NXRuntimeTestCase {
         co = runtime.getComponentInstance("service:my.comp2");
         assertNull(co);
         co = runtime.getComponentInstance("service:my.comp1");
-        assertNotNull(co);
+        assertNull(co);
     }
 
 }

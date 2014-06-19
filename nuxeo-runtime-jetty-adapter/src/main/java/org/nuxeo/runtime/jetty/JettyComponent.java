@@ -24,10 +24,12 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.NCSARequestLog;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.handler.HandlerCollection;
+import org.mortbay.jetty.handler.HandlerWrapper;
 import org.mortbay.jetty.handler.RequestLogHandler;
 import org.mortbay.jetty.webapp.Configuration;
 import org.mortbay.jetty.webapp.WebAppContext;
@@ -57,7 +59,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * Third, the root collection is registered. This way all requests not handled
  * by regular wars are directed to the root war, which usually is the webengine
  * war in a nxserver application.
- * 
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class JettyComponent extends DefaultComponent {
@@ -158,7 +160,7 @@ public class JettyComponent extends DefaultComponent {
         }
 
         // create the war context handler if needed
-        HandlerCollection hc = (HandlerCollection) server.getHandler();
+        HandlerCollection hc = handlerCollection(server);
         warContexts = (ContextHandlerCollection) hc.getChildHandlerByClass(ContextHandlerCollection.class);
         if (warContexts == null) {
             // create the war context
@@ -279,8 +281,8 @@ public class JettyComponent extends DefaultComponent {
 
     // let's nuxeo runtime get access to the JNDI context
     // injected through the JettyTransactionalListener
-    protected ClassLoader nuxeoCL; 
-    
+    protected ClassLoader nuxeoCL;
+
     public void setNuxeoClassLoader(ClassLoader cl) {
         nuxeoCL = cl;
     }
@@ -294,7 +296,7 @@ public class JettyComponent extends DefaultComponent {
         }
         return nuxeoCL;
     }
-    
+
     @Override
     public int getApplicationStartedOrder() {
         return -100;
@@ -349,6 +351,20 @@ public class JettyComponent extends DefaultComponent {
                 }
             }
         }
+
+    }
+
+    protected HandlerCollection handlerCollection(Handler handler) {
+        if (handler == null) {
+            throw new NullPointerException("cannot find handler collection");
+        }
+        if (handler instanceof HandlerCollection) {
+            return ((HandlerCollection)handler);
+        }
+        if (handler instanceof HandlerWrapper) {
+            return handlerCollection(((HandlerWrapper)handler).getHandler());
+        }
+        throw new AssertionError("Unknown handler " + handler.getClass());
     }
 
 }

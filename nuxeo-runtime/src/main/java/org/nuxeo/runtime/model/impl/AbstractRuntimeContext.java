@@ -373,7 +373,9 @@ public abstract class AbstractRuntimeContext implements RuntimeContext {
             }
         } else if (isActivated()) {
             if (requiredActivated) {
-                info.activate();
+                if (!info.isActivated()) {
+                    info.activate();
+                }
             }
         }
     }

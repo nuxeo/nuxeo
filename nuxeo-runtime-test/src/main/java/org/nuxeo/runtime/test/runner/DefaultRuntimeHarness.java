@@ -61,7 +61,7 @@ public class DefaultRuntimeHarness implements RuntimeHarness {
         return restart;
     }
 
-    protected OSGiAdapter adapter = fetchAdapter();
+    protected OSGiAdapter adapter;
 
     protected Bundle runtimeBundle;
 
@@ -126,6 +126,7 @@ public class DefaultRuntimeHarness implements RuntimeHarness {
     }
 
     protected void initOsgiRuntime() throws Exception {
+        adapter = fetchAdapter();
         for (WorkingDirectoryConfigurator cfg : wdConfigs) {
             cfg.configure(this, adapter.getWorkingDir());
         }

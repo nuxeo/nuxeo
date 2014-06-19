@@ -19,14 +19,28 @@
 package org.nuxeo.runtime.test.runner;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.apache.log4j.MDC;
+import org.junit.Ignore;
+import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.Statement;
+import org.nuxeo.osgi.OSGiLoader;
+import org.nuxeo.runtime.mockito.MockProvider;
 
+import com.google.common.collect.Lists;
+import com.google.inject.Binder;
+import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 
 /**
  * A Test Case runner that can be extended through features and provide
@@ -36,35 +50,122 @@ import com.google.inject.Injector;
  */
 public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
+    protected final AnnotationScanner scanner;
+
+    /**
+     * Guice injector.
+     */
+    protected Injector injector;
+
+    protected List<RunnerFeature> features;
+
+    public AnnotationScanner getScanner() {
+        return scanner;
+    }
+
+    // not the most efficient to recompute this all the time
+    // but it doesn't matter here
+    public static <T> List<T> reversed(List<T> list) {
+        List<T> reversed = new ArrayList<T>(list);
+        Collections.reverse(reversed);
+        return reversed;
+    }
+
     public FeaturesRunner(Class<?> classToRun) throws InitializationError {
         super(classToRun);
+        scanner = new AnnotationScanner();
+        try {
+            loadFeatures(getTargetTestClass());
+        } catch (Throwable t) {
+            throw new InitializationError(Collections.singletonList(t));
+        }
     }
 
     public Class<?> getTargetTestClass() {
         return super.getTestClass().getJavaClass();
     }
 
-    public AnnotationScanner getScanner() {
-        throw new UnsupportedOperationException();
+
+    protected void loadFeature(HashSet<Class<?>> cycles,
+            LinkedHashSet<Class<? extends RunnerFeature>> features,
+            Class<? extends RunnerFeature> clazz) throws Exception {
+        if (features.contains(clazz)) {
+            return;
+        }
+        if (cycles.contains(clazz)) {
+            throw new IllegalStateException(
+                    "Cycle detected in features dependencies of " + clazz);
+        }
+        cycles.add(clazz);
+        scanner.scan(clazz);
+        // load required features from annotation
+        List<Features> annos = scanner.getAnnotations(clazz, Features.class);
+        if (annos != null) {
+            for (Features anno : annos) {
+                for (Class<? extends RunnerFeature> cl : anno.value()) {
+                    if (!features.contains(cl)) {
+                        loadFeature(cycles, features, cl);
+                    }
+                }
+            }
+        }
+        features.add(clazz); // add at the end to ensure requirements are added
+                             // first
     }
 
+    protected void loadFeatures(Class<?> classToRun) throws Exception {
+        scanner.scan(classToRun);
+        LinkedHashSet<Class<? extends RunnerFeature>> features = new LinkedHashSet<Class<? extends RunnerFeature>>();
+        // load required features from annotation
+        List<Features> annos = scanner.getAnnotations(classToRun,
+                Features.class);
+        if (annos != null) {
+            for (Features anno : annos) {
+                for (Class<? extends RunnerFeature> cl : anno.value()) {
+                    if (!features.contains(cl)) {
+                        loadFeature(new HashSet<Class<?>>(), features, cl);
+                    }
+                }
+            }
+        }
+        // register collected features
+        this.features = new ArrayList<RunnerFeature>();
+        for (Class<? extends RunnerFeature> fc : features) {
+            RunnerFeature rf = fc.newInstance();
+            this.features.add(rf);
+        }
+    }
 
     public <T extends RunnerFeature> T getFeature(Class<T> type) {
-        throw new UnsupportedOperationException();
+        for (RunnerFeature rf : features) {
+            if (rf.getClass() == type) {
+                return type.cast(rf);
+            }
+        }
+        return null;
     }
 
     public List<RunnerFeature> getFeatures() {
-        throw new UnsupportedOperationException();
+        return features;
     }
-
 
     /**
      * @since 5.6
      */
     public <T extends Annotation> T getConfig(Class<T> type) {
-        throw new UnsupportedOperationException();
+        List<T> configs = new ArrayList<>();
+        T annotation = scanner.getAnnotation(getTargetTestClass(), type);
+        if (annotation != null) {
+            configs.add(annotation);
+        }
+        for (RunnerFeature feature : Lists.reverse(features)) {
+            annotation = scanner.getAnnotation(feature.getClass(), type);
+            if (annotation != null) {
+                configs.add(annotation);
+            }
+        }
+        return Defaults.of(type, configs);
     }
-
 
     /**
      * Get the annotation on the test method, if no annotation has been found,
@@ -74,9 +175,139 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
      */
     public <T extends Annotation> T getConfig(FrameworkMethod method,
             Class<T> type) {
-        throw new UnsupportedOperationException();
+        T config = method.getAnnotation(type);
+        if (config != null) {
+            return config;
+        }
+        // if not define, try to get the config of the class
+        return getConfig(type);
+
     }
 
+    protected void initialize() throws Exception {
+        for (RunnerFeature feature : features) {
+            feature.initialize(this);
+        }
+    }
+
+    protected void beforeRun() throws Exception {
+        for (RunnerFeature feature : features) {
+            feature.beforeRun(this);
+        }
+    }
+
+    protected void beforeMethodRun(FrameworkMethod method, Object test)
+            throws Exception {
+        MDC.put("fMethod", method.getMethod());
+        for (RunnerFeature feature : features) {
+            feature.beforeMethodRun(this, method, test);
+        }
+        injector.injectMembers(test);
+    }
+
+    protected void afterMethodRun(FrameworkMethod method, Object test)
+            throws Exception {
+        try {
+            AssertionError errors = new AssertionError("test cleanup failure");
+            for (RunnerFeature feature : reversed(features)) {
+                try {
+                    feature.afterMethodRun(this, method, test);
+                } catch (Throwable error) {
+                    errors.addSuppressed(error);
+                }
+            }
+            if (errors.getSuppressed().length > 0) {
+                throw errors;
+            }
+        } finally {
+            MDC.remove("fMethod");
+        }
+    }
+
+    protected void afterRun() throws Exception {
+        AssertionError errors = new AssertionError("test cleanup failure");
+        for (RunnerFeature feature : reversed(features)) {
+            try {
+                feature.afterRun(this);
+            } catch (Throwable error) {
+                errors.addSuppressed(error);
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
+    }
+
+    protected void testCreated(Object test) throws Exception {
+        for (RunnerFeature feature : features) {
+            feature.testCreated(test);
+        }
+    }
+
+    protected void start() throws Exception {
+        MDC.put("fclass", getTargetTestClass());
+        for (RunnerFeature feature : features) {
+            feature.start(this);
+        }
+    }
+
+    protected void stop() throws Exception {
+        try {
+            AssertionError errors = new AssertionError("test cleanup failure");
+            for (RunnerFeature feature : reversed(features)) {
+                try {
+                    feature.stop(this);
+                } catch (Throwable error) {
+                    errors.addSuppressed(error);
+                }
+            }
+            if (errors.getSuppressed().length > 0) {
+                throw errors;
+            }
+        } finally {
+            MockProvider.INSTANCE.clearBindings();
+            MDC.remove("fclass");
+        }
+    }
+
+    protected void beforeSetup() {
+        AssertionError errors = new AssertionError("Before setup errors");
+        for (RunnerFeature feature : features) {
+            try {
+                feature.beforeSetup(FeaturesRunner.this);
+            } catch (Exception error) {
+                errors.addSuppressed(error);
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
+    }
+
+    protected void afterTeardown() {
+        AssertionError errors = new AssertionError("teardown errors");
+        for (RunnerFeature feature : reversed(features)) {
+            try {
+                feature.afterTeardown(FeaturesRunner.this);
+            } catch (Throwable error) {
+                errors.addSuppressed(error);
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
+    }
+
+    protected void configureBindings(Binder binder) {
+        binder.bind(FeaturesRunner.class).toInstance(this);
+        for (RunnerFeature feature : features) {
+            feature.configure(this, binder);
+        }
+    }
+
+    /**
+     * Gets the Guice injector.
+     */
     public Injector getInjector() {
         return injector;
     }
@@ -98,8 +329,13 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     @Override
     public void run(final RunNotifier notifier) {
+        if (!(FeaturesRunner.class.getClassLoader() instanceof OSGiLoader)) {
+           new OSGiTestLoader().run(getTargetTestClass(), notifier);
+           return;
+        }
         AssertionError errors = new AssertionError("features error");
         try {
+            initialize();
             try {
                 start();
                 try {
@@ -162,15 +398,31 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected void validateZeroArgConstructor(List<Throwable> errors) {
         // Guice can inject constructors with parameters so we don't want this
         // method to trigger an error
-        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void run(RunNotifier notifier) {
-        if (FeaturesRunner.class.equals(getClass())) {
-            new OSGiTestLoader().run(getTargetTestClass(), notifier);
-        } else {
-            super.run(notifier);
+    protected Statement methodInvoker(FrameworkMethod method, Object test) {
+        return new InvokeMethod(method, test);
+    }
+
+    protected class InvokeMethod extends Statement {
+        protected final FrameworkMethod testMethod;
+
+        protected final Object target;
+
+        protected InvokeMethod(FrameworkMethod testMethod, Object target) {
+            this.testMethod = testMethod;
+            this.target = target;
+        }
+
+        @Override
+        public void evaluate() throws Throwable {
+            beforeMethodRun(testMethod, target);
+            try {
+                testMethod.invokeExplosively(target);
+            } finally {
+                afterMethodRun(testMethod, target);
+            }
         }
     }
 

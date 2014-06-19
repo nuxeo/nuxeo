@@ -305,10 +305,10 @@ public class OSGiTestLoader {
         }
         try {
             classToRun = reloadClass(classToRun);
-            Class<? extends Runner> type = (Class<? extends Runner>) adapter.getSystemLoader().loadClass(OSGiFeaturesRunner.class.getName());
-            Runner runner = type.getConstructor(Class.class).newInstance(reloadClass(classToRun));
+            Class<? extends Runner> runnerClass = reloadClass(FeaturesRunner.class);
+            Runner runner = runnerClass.getConstructor(Class.class).newInstance(classToRun);
             runner.run(notifier);
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException cause) {
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException cause) {
             throw new AssertionError("Cannot run in osgi " + classToRun, cause);
         } finally {
             try {
