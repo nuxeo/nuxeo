@@ -185,7 +185,7 @@ public class RestServiceTest {
     public void itCanContributeWithBreadcrumbWhenExpectingAListOfDocs()
             throws Exception {
         // Given a list of docs
-        DocumentModelList docs = session.query("Select * from Note");
+        DocumentModelList docs = session.query("SELECT * FROM Note ORDER BY ecm:name ASC");
         // When are written as Json with breadcrumb context category
         String docsJson = getDocumentsAsJson(docs, "breadcrumb");
         // Then it contains the breadcrumb in contextParameters
