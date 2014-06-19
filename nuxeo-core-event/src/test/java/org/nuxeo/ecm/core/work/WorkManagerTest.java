@@ -151,11 +151,11 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
     @Test
     public void testWorkManagerWork() throws Exception {
-        int duration = 2000; // 2s
+        int duration = 3000; // ms
         SleepWork work = new SleepWork(duration, false);
         service.schedule(work);
 
-        Thread.sleep(duration / 2);
+        Thread.sleep(duration / 3);
         assertEquals(RUNNING, service.getWorkState(work.getId()));
         assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
         assertEquals(1, service.getQueueSize(QUEUE, RUNNING));
