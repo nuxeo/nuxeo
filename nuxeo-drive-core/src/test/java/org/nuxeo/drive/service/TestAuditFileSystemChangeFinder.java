@@ -958,6 +958,60 @@ public class TestAuditFileSystemChangeFinder {
         }
     }
 
+    @Test
+    public void testRegisterSyncRootAndUpdate() throws Exception {
+
+        TransactionHelper.startTransaction();
+        try {
+            // Register folder1 as a sync root for Administrator
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    session.getPrincipal(), folder1, session);
+
+            // Update folder1 title
+            folder1.setPropertyValue("dc:title", "folder1 updated");
+            session.saveDocument(folder1);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            // Check changes, expecting 3:
+            // - documentModified
+            // - rootRegistered
+            // - documentCreated (at init)
+            List<FileSystemItemChange> changes = getChanges();
+            assertEquals(3, changes.size());
+            FileSystemItemChange change = changes.get(0);
+            assertEquals("documentModified", change.getEventId());
+            change = changes.get(1);
+            assertEquals("rootRegistered", change.getEventId());
+            change = changes.get(2);
+            assertEquals("documentCreated", change.getEventId());
+
+            // Unregister folder1 as a sync root for Administrator
+            nuxeoDriveManager.unregisterSynchronizationRoot(
+                    session.getPrincipal(), folder1, session);
+
+            // Update folder1 title
+            folder1.setPropertyValue("dc:title", "folder1 updated twice");
+            session.saveDocument(folder1);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            // Check changes, expecting 1: deleted
+            List<FileSystemItemChange> changes = getChanges();
+            assertEquals(1, changes.size());
+            FileSystemItemChange change = changes.get(0);
+            assertEquals("deleted", change.getEventId());
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
     /**
      * Gets the document changes for the given user's synchronization roots
      * using the {@link AuditChangeFinder} and updates the

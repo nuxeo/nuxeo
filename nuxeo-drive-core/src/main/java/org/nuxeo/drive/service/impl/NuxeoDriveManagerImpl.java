@@ -169,6 +169,10 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         newRootContainer.putContextData(
                 NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
         DocumentModel savedNewRootContainer = session.saveDocument(newRootContainer);
+        newRootContainer.putContextData(
+                NXAuditEventsService.DISABLE_AUDIT_LOGGER, false);
+        newRootContainer.putContextData(
+                NotificationConstants.DISABLE_NOTIFICATION_SERVICE, false);
         fireEvent(savedNewRootContainer, session,
                 NuxeoDriveEvents.ROOT_REGISTERED, userName);
         session.save();
@@ -203,6 +207,10 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         rootContainer.putContextData(
                 NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
         session.saveDocument(rootContainer);
+        rootContainer.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER,
+                false);
+        rootContainer.putContextData(
+                NotificationConstants.DISABLE_NOTIFICATION_SERVICE, false);
         fireEvent(rootContainer, session, NuxeoDriveEvents.ROOT_UNREGISTERED,
                 userName);
         session.save();
