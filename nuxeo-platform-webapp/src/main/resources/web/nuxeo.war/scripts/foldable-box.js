@@ -6,9 +6,11 @@ function toggleBox(toggleButton) {
   else
     body = title.parentNode.children[1];
   if (Element.hasClassName(title, 'folded')) {
-    title.className = 'unfolded';
+    Element.removeClassName(title, 'folded');
+    Element.addClassName(title, 'unfolded');
   } else {
-    title.className = 'folded';
+    Element.removeClassName(title, 'unfolded');
+    Element.addClassName(title, 'folded');
   }
   Effect.toggle(body, 'blind', {duration:0.2});
   return false;
@@ -16,9 +18,11 @@ function toggleBox(toggleButton) {
 
 function toggleBoxFor(title, body) {
   if (Element.hasClassName(title, 'folded')) {
-    title.className = 'unfolded';
+    Element.removeClassName(title, 'folded');
+    Element.addClassName(title, 'unfolded');
   } else {
-    title.className = 'folded';
+    Element.removeClassName(title, 'unfolded');
+    Element.addClassName(title, 'folded');
   }
   Effect.toggle(body, 'blind', {duration:0.2});
   return false;
