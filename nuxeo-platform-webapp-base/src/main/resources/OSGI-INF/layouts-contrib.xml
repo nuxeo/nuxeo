@@ -2252,7 +2252,7 @@
               </widget>
               <widget name="foldable" type="checkbox">
                 <labels>
-                  <label mode="any">Make this content view foldable</label>
+                  <label mode="any">Foldable</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
@@ -3109,7 +3109,7 @@
               </widget>
               <widget name="foldable" type="checkbox">
                 <labels>
-                  <label mode="any">Make this content view foldable</label>
+                  <label mode="any">Foldable</label>
                 </labels>
                 <helpLabels>
                   <label mode="any">
