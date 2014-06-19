@@ -559,10 +559,11 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
-        session = openSession(admin);
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
-        assertFalse(route.isDone());
+        try (CoreSession session = openSession(admin)) {
+            route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                    DocumentRoute.class);
+            assertFalse(route.isDone());
+        }
 
         tasks = taskService.getTaskInstances(doc, user3, session);
         assertNotNull(tasks);
@@ -578,12 +579,11 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // end task and verify that route was done
         admin = new UserPrincipal("admin", null, false, true);
 
-        session.close();
-        session = openSession(admin);
-
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
-        assertTrue(route.isDone());
+        try (CoreSession session = openSession(admin)) {
+            route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                    DocumentRoute.class);
+            assertTrue(route.isDone());
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -963,18 +963,21 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
-        session = openSession(admin);
-        DocumentRef routeRef = route.getDocument().getRef();
-        route = session.getDocument(routeRef).getAdapter(DocumentRoute.class);
+        try (CoreSession session = openSession(admin)) {
+            DocumentRef routeRef = route.getDocument().getRef();
+            route = session.getDocument(routeRef).getAdapter(
+                    DocumentRoute.class);
 
-        assertTrue(route.isDone());
-        assertEquals(
-                "test",
-                route.getDocument().getPropertyValue("fctroute1:globalVariable"));
-        routing.cleanupDoneAndCanceledRouteInstances(
-                session.getRepositoryName(), 0);
-        session.save();
-        assertFalse(session.exists(routeRef));
+            assertTrue(route.isDone());
+            assertEquals(
+                    "test",
+                    route.getDocument().getPropertyValue(
+                            "fctroute1:globalVariable"));
+            routing.cleanupDoneAndCanceledRouteInstances(
+                    session.getRepositoryName(), 0);
+            session.save();
+            assertFalse(session.exists(routeRef));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -1031,14 +1034,15 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
-        session = openSession(admin);
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
-        assertTrue(route.isDone());
+        try (CoreSession session = openSession(admin)) {
+            route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                    DocumentRoute.class);
+            assertTrue(route.isDone());
 
-        // permissions are reset
-        assertFalse(session.hasPermission(user1, doc.getRef(), "Write"));
-        assertFalse(session.hasPermission(user2, doc.getRef(), "Write"));
+            // permissions are reset
+            assertFalse(session.hasPermission(user1, doc.getRef(), "Write"));
+            assertFalse(session.hasPermission(user2, doc.getRef(), "Write"));
+        }
     }
 
     /**
@@ -1745,13 +1749,15 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // verify that route was not done, as there are still 2
         // open tasks
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
-        session = openSession(admin);
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
-        graph = route.getDocument().getAdapter(GraphRoute.class);
-        assertFalse(route.isDone());
-        assertEquals(1, graph.getNode("node1").getEndedTasksInfo().size());
-        assertEquals(1, graph.getNode("node1").getProcessedTasksInfo().size());
+        try (CoreSession session = openSession(admin)) {
+            route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                    DocumentRoute.class);
+            graph = route.getDocument().getAdapter(GraphRoute.class);
+            assertFalse(route.isDone());
+            assertEquals(1, graph.getNode("node1").getEndedTasksInfo().size());
+            assertEquals(1,
+                    graph.getNode("node1").getProcessedTasksInfo().size());
+        }
 
         // end task2 as user 2
         data = new HashMap<String, Object>();
@@ -1772,12 +1778,13 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // verify that route is not done yet, 2 tasks were done but there is
         // still one open
-        session = openSession(admin);
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
-        graph = route.getDocument().getAdapter(GraphRoute.class);
-        assertFalse(route.isDone());
-        assertEquals(2, graph.getNode("node1").getEndedTasksInfo().size());
+        try (CoreSession session = openSession(admin)) {
+            route = session.getDocument(route.getDocument().getRef()).getAdapter(
+                    DocumentRoute.class);
+            graph = route.getDocument().getAdapter(GraphRoute.class);
+            assertFalse(route.isDone());
+            assertEquals(2, graph.getNode("node1").getEndedTasksInfo().size());
+        }
 
         // cancel the last open task, resume the route and verify that route is
         // done now
@@ -1820,7 +1827,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         assertEquals("myuser1", tasksInfo.get(task1Index).getActor());
         assertEquals("myuser2", tasksInfo.get(task2Index).getActor());
         // task3 was canceled as an admin
-        assertEquals("admin", tasksInfo.get(task3Index).getActor());
+        assertEquals("Administrator", tasksInfo.get(task3Index).getActor());
 
         assertEquals("faketrans1", tasksInfo.get(task1Index).getStatus());
         assertEquals("trans1", tasksInfo.get(task2Index).getStatus());
