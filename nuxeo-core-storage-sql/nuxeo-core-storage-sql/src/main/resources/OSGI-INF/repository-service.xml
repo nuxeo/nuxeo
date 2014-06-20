@@ -4,6 +4,7 @@
   <require>org.nuxeo.ecm.core.repository.RepositoryServiceComponent</require>
   <require>org.nuxeo.runtime.management.ServerLocator</require>
   <require>org.nuxeo.ecm.core.api.repository.RepositoryManager</require>
+  <require>org.nuxeo.ecm.core.storage.binary.BinaryManagerService</require>
   
   <documentation>
     Manages VCS repositories.
