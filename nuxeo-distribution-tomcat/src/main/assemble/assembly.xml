@@ -55,9 +55,7 @@
     <echo>Building Tomcat standard distributions...</echo>
     <property name="tomcat" value="${outdir}/tomcat.tmp" />
     <antcall target="prepare-tomcat" />
-    <artifact:attach file="pom.xml"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     type="pom" />
+    <artifact:attach file="pom.xml" type="pom" />
     <antcall target="build-nuxeo-coreserver">
       <param name="classifier" value="coreserver" />
     </antcall>
@@ -239,7 +237,6 @@ install nuxeo-dam
          basedir="${outdir}"
          includes="${classifier}-${maven.project.version}-tomcat/**" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
                      classifier="${classifier}"
                      type="zip" />
     <antcall target="build-sdk" />
@@ -353,7 +350,6 @@ org.nuxeo.distribution.package=zip</echo>
          basedir="${outdir}"
          includes="${classifier}-${maven.project.version}-tomcat/**" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}-sdk.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
                      classifier="${classifier}-sdk"
                      type="zip" />
   </target>
