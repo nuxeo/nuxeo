@@ -45,10 +45,7 @@ public class RepositoryReloader implements EventListener {
 
     public static void closeRepositories() throws Exception {
         RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
-        for (String name : repositoryService.getRepositoryNames()) {
-            Repository repo = repositoryService.getRepository(name);
-            repo.shutdown();
-        }
+        repositoryService.shutdown();
     }
 
     public static void flushJCAPool() throws Exception {

@@ -49,7 +49,7 @@ public class RepositoryService extends DefaultComponent {
         shutdown();
     }
 
-    protected void shutdown() {
+    public void shutdown() {
         log.info("Shutting down repository manager");
         synchronized (repositories) {
             for (Repository repository : repositories.values()) {
