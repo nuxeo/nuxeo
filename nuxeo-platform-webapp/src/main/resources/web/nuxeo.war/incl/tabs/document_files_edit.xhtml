@@ -56,7 +56,7 @@
 
           <div class="simpleBox">
             <a4j:commandLink immediate="true"
-              onclick="if( !confirmRemoveFiles('#{currentDocument.files.files[model.rowIndex].filename}')) return false;"
+              onclick="if( !confirmRemoveFiles('#{nxu:javaScriptEscape(currentDocument.files.files[model.rowIndex].filename)}')) return false;"
               actionListener="#{FileManageActions.performAction}"
               id="files_delete" reRender="document_files_edit"
               bypassUpdates="true">
