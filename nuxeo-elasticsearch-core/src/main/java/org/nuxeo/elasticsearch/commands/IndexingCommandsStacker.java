@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -105,7 +106,10 @@ public abstract class IndexingCommandsStacker {
                     tm.getTransaction().registerSynchronization(sync);
                     return true;
                 }
-                log.error("Unable to register synchronization : no active transaction");
+                if (! Framework.isTestModeSet()) {
+                    log.error(
+                            "Unable to register synchronization : no active transaction");
+                }
                 return false;
             } else {
                 log.error("Unable to register synchronization : no TransactionManager");
