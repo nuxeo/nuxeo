@@ -306,6 +306,10 @@ public class DialectH2 extends Dialect {
                 // Referential integrity constraint violation
                 return true;
             }
+            if ("23506".equals(sqlState)) {
+                // Referential integrity constraint violation
+                return true;
+            }
             if ("40001".equals(sqlState)) {
                 // Deadlock detected
                 return true;

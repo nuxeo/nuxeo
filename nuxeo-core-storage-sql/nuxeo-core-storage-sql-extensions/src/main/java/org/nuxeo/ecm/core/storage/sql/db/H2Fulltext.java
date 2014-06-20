@@ -57,13 +57,11 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Version;
-import org.h2.api.CloseListener;
-import org.h2.message.Message;
-import org.h2.store.fs.FileSystem;
+import org.h2.message.DbException;
+import org.h2.store.fs.FileUtils;
 import org.h2.tools.SimpleResultSet;
 import org.h2.util.IOUtils;
 import org.h2.util.StringUtils;
-import org.h2.value.DataType;
 import org.nuxeo.common.Environment;
 
 /**
@@ -374,7 +372,6 @@ public class H2Fulltext {
                     analyzer);
             query.add(parser.parse(text), BooleanClause.Occur.MUST);
 
-
             try (IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(
                     indexPath)))) {
                 IndexSearcher searcher = new IndexSearcher(reader);
@@ -526,7 +523,7 @@ public class H2Fulltext {
                 }
             }
         } finally {
-            FileSystem.getInstance(path).deleteRecursive(path);
+            FileUtils.deleteRecursive(path, false);
         }
     }
 
@@ -546,7 +543,7 @@ public class H2Fulltext {
         }
         switch (type) {
         case Types.BIT:
-        case DataType.TYPE_BOOLEAN:
+        case Types.BOOLEAN:
         case Types.INTEGER:
         case Types.BIGINT:
         case Types.DECIMAL:
@@ -570,7 +567,7 @@ public class H2Fulltext {
                 }
                 return IOUtils.readStringAndClose((Reader) data, -1);
             } catch (IOException e) {
-                throw Message.convert(e);
+                throw DbException.convert(e);
             }
         case Types.VARBINARY:
         case Types.LONGVARBINARY:
@@ -582,7 +579,7 @@ public class H2Fulltext {
         case Types.REF:
         case Types.NULL:
         case Types.ARRAY:
-        case DataType.TYPE_DATALINK:
+        case Types.DATALINK:
         case Types.DISTINCT:
             throw new SQLException("Unsupported column data type: " + type);
         default:
@@ -612,7 +609,7 @@ public class H2Fulltext {
     /**
      * Trigger used to update the lucene index upon row change.
      */
-    public static class Trigger implements org.h2.api.Trigger, CloseListener {
+    public static class Trigger implements org.h2.api.Trigger {
 
         private static final Log log = LogFactory.getLog(Trigger.class);
 

@@ -38,10 +38,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
@@ -76,10 +76,13 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnectionPropagator;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCRowMapper;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.ConditionalIgnoreRule;
 
 public class TestSQLBackend extends SQLBackendTestCase {
 
     private static final Log log = LogFactory.getLog(TestSQLBackend.class);
+
+    public final ConditionalIgnoreRule ignoreRule = new ConditionalIgnoreRule();
 
     @Override
     @Before
@@ -737,7 +740,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         protected DocCreator(Repository repository, String name) {
             this.repository = repository;
             this.name = name;
-            this.random = new Random();
+            random = new Random();
         }
 
         @Override
@@ -914,7 +917,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         DeadlockTestJob r1 = new DeadlockTestJob("foo1");
         DeadlockTestJob r2 = new DeadlockTestJob("foo2");
         try {
-            DeadlockTestJob.run(r1, r2);
+            LockStepJob.run(r1, r2);
             fail("Expected ConcurrentUpdateStorageException");
         } catch (ConcurrentUpdateStorageException e) {
             // ok, detected
@@ -1298,7 +1301,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         ClusterTestJob r1 = new ClusterTestJob(repository, repository2);
         ClusterTestJob r2 = new ClusterTestJob(repository, repository2);
-        ClusterTestJob.run(r1, r2);
+        LockStepJob.run(r1, r2);
         repository = null; // already closed
         repository2 = null; // already closed
     }
@@ -3033,6 +3036,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition=ConditionalIgnoreRule.NXP10926H2Upgrade.class)
     public void testLockingParallelClustered() throws Throwable {
         if (!DatabaseHelper.DATABASE.supportsClustering()) {
             System.out.println("Skipping clustered locking test for unsupported database: "

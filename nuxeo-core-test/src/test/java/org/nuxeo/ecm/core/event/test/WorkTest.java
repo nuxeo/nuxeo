@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.core.event.test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
 
 import java.util.ArrayList;
@@ -24,6 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import junit.framework.Assert;
+
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -71,9 +73,9 @@ public class WorkTest extends TXSQLRepositoryTestCase {
         DocumentModel folder = session.createDocumentModel("/", "folder",
                 "Folder");
         folder = session.createDocument(folder);
-        session.save();
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
+        waitForAsyncCompletion();
 
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
 
@@ -90,17 +92,18 @@ public class WorkTest extends TXSQLRepositoryTestCase {
         workManager.schedule(addChildWork);
 
         waitForAsyncCompletion();
-        assertEquals(Arrays.asList(Boolean.TRUE, Boolean.FALSE),
+        Assert.assertEquals(Arrays.asList(Boolean.TRUE, Boolean.FALSE),
                 addChildWork.existList);
     }
 
     @Test
-    @ConditionalIgnoreRule.Ignore(condition=ConditionalIgnoreRule.Ignore14142.class)
     public void testWorkConcurrencyExceptionExplicitSave() throws Exception {
         doTestWorkConcurrencyException(true);
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition=ConditionalIgnoreRule.NXP10926H2Upgrade.class)
+    // no concurrent update detected in H2 1.4.177
     public void testWorkConcurrencyExceptionImplicitSave() throws Exception {
         doTestWorkConcurrencyException(false);
     }
