@@ -330,6 +330,8 @@ org.nuxeo.distribution.package=zip</echo>
         <filename name="*artifacts-*.properties" />
       </fileset>
     </move>
+    <artifact:printMgt output="${distribution.dir}/sdk/artifacts-nuxeo.properties"
+                       key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom" />
   </target>
 
   <target name="build-sdk" if="build.sdk">
