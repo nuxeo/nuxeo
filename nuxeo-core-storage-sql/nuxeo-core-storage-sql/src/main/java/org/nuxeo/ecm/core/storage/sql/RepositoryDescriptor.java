@@ -217,7 +217,7 @@ public class RepositoryDescriptor {
 
     @XNode("pool")
     public void setPool(NuxeoConnectionManagerConfiguration pool) {
-        pool.setName(pool.getName() + "/" + name);
+        pool.setName("repository/"+name);
         this.pool = pool;
     }
 
