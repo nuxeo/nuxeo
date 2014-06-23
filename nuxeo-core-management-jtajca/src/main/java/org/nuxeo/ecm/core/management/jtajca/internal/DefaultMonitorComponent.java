@@ -127,8 +127,16 @@ public class DefaultMonitorComponent extends DefaultComponent {
         transactionMonitor = new DefaultTransactionMonitor();
         transactionMonitor.install();
 
-        installDatabaseStorageMonitors();
-        installRepositoryStorageMonitors();
+        try {
+            installDatabaseStorageMonitors();
+        } catch (ClientException cause) {
+            log.warn("Cannot install database monitors", cause);
+        }
+        try {
+            installRepositoryStorageMonitors();
+        } catch (ClientException cause) {
+            log.warn("Cannot install storage monitors", cause);
+        }
 
     }
 
@@ -165,12 +173,6 @@ public class DefaultMonitorComponent extends DefaultComponent {
         for (Map.Entry<String, DataSource> dsEntry : dsByName.entrySet()) {
             String name = dsEntry.getKey();
             DataSource ds = dsEntry.getValue();
-            try (Connection connection = ds.getConnection()) {
-                ;
-            } catch (SQLException cause) {
-                errors.addSuppressed(cause);
-                continue;
-            }
             DatabaseConnectionMonitor monitor = null;
             if (ds instanceof org.apache.commons.dbcp.BasicDataSource) {
                 monitor = new CommonsDatabaseConnectionMonitor(name,
