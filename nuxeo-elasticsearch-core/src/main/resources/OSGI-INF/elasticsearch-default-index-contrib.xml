@@ -4,9 +4,15 @@
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
     point="elasticSearchIndex">
 
-   <elasticSearchIndex name="nuxeo" type="doc">
+    <elasticSearchIndex name="nuxeo" type="doc">
 
-    <settings>
+      <fetchFromSource>
+        <include>ecm:*</include>
+        <include>dc:*</include>
+        <exclude>ecm:binaryfulltext</exclude>
+      </fetchFromSource>
+
+      <settings>
 {
    "analysis" : {
       "filter" : {
@@ -84,8 +90,8 @@
       }
    }
 }
-    </settings>
-    <mapping>
+      </settings>
+      <mapping>
 {
    "_size" : {
       "enabled" : true
@@ -163,9 +169,9 @@
       }
    }
 }
-    </mapping>
+      </mapping>
 
-   </elasticSearchIndex>
+    </elasticSearchIndex>
 
   </extension>
 

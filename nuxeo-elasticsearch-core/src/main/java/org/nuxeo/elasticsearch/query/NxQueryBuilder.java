@@ -106,14 +106,24 @@ public class NxQueryBuilder {
     }
 
     /**
-     * If true fetch the documents from the Elasticsearch _source field.
+     * Fetch the documents from the Elasticsearch _source field.
      *
-     * If false fetch the documents using VCS (database) engine.
      */
     public NxQueryBuilder fetchFromElasticsearch() {
         this.fetchFromElasticsearch = true;
         return this;
     }
+
+    /**
+     * Fetch the documents using VCS (database) engine.
+     *
+     * This is done by default
+     */
+    public NxQueryBuilder fetchFromDatabase() {
+        this.fetchFromElasticsearch = false;
+        return this;
+    }
+
 
     public int getLimit() {
         return limit;
