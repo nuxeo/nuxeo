@@ -13,7 +13,6 @@ package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.FALSE;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
@@ -24,9 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.naming.NamingException;
 import javax.transaction.RollbackException;
@@ -122,10 +119,8 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         BinaryManager binaryManager = new DefaultBinaryManager();
         BinaryManagerDescriptor binaryManagerDescriptor = new BinaryManagerDescriptor();
         try {
-            File dir = File.createTempFile("dbsBinaryManager", "");
-            dir.delete();
-            binaryManagerDescriptor.repositoryName = "dbs";
-            binaryManagerDescriptor.storePath = dir.getPath();
+            binaryManagerDescriptor.repositoryName = repositoryName;
+            binaryManagerDescriptor.storePath = null; // default
             binaryManager.initialize(binaryManagerDescriptor);
             BinaryManagerService bms = Framework.getLocalService(BinaryManagerService.class);
             bms.addBinaryManager(binaryManagerDescriptor.repositoryName,
