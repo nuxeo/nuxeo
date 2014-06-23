@@ -155,7 +155,7 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
         try {
             Method joinReRender = LayoutTagLibrary.class.getMethod(
                     "joinReRender", new Class[] { String.class, String.class });
-            addFunction("joinRender", joinReRender);
+            addFunction("joinReRender", joinReRender);
         } catch (NoSuchMethodException e) {
             log.error(e, e);
         }
