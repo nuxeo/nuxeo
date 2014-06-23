@@ -102,6 +102,12 @@ public class DBSDocument implements Document {
 
     private static final Long ZERO = Long.valueOf(0);
 
+    public static final String SYSPROP_FULLTEXT_SIMPLE = "fulltextSimple";
+
+    public static final String SYSPROP_FULLTEXT_BINARY = "fulltextBinary";
+
+    public static final String SYSPROP_FULLTEXT_JOBID = "fulltextJobId";
+
     public static final String KEY_PREFIX = "ecm:";
 
     public static final String KEY_ID = "ecm:id";
@@ -183,6 +189,12 @@ public class DBSDocument implements Document {
     public static final String KEY_BLOB_LENGTH = "length";
 
     public static final String KEY_BLOB_DATA = "data";
+
+    public static final String KEY_FULLTEXT_SIMPLE = "ecm:fulltextSimple";
+
+    public static final String KEY_FULLTEXT_BINARY = "ecm:fulltextBinary";
+
+    public static final String KEY_FULLTEXT_JOBID = "ecm:fulltextJobId";
 
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
@@ -623,8 +635,17 @@ public class DBSDocument implements Document {
     @Override
     public void setSystemProp(String name, Serializable value)
             throws DocumentException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        String propertyName;
+        if (name.equals(SYSPROP_FULLTEXT_SIMPLE)) {
+            propertyName = KEY_FULLTEXT_SIMPLE;
+        } else if (name.equals(SYSPROP_FULLTEXT_BINARY)) {
+            propertyName = KEY_FULLTEXT_BINARY;
+        } else if (name.equals(SYSPROP_FULLTEXT_JOBID)) {
+            propertyName = KEY_FULLTEXT_JOBID;
+        } else {
+            throw new DocumentException("Unknown system property: " + name);
+        }
+        setPropertyValue(propertyName, value);
     }
 
     @Override

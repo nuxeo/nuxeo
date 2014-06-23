@@ -40,7 +40,10 @@ public class DBSDocumentState {
 
     protected State state;
 
+    // dirty, but not including fulltext
     protected AtomicBoolean dirty = new AtomicBoolean(false);
+
+    protected boolean dirtyFulltext;
 
     /**
      * Constructs an empty state.
@@ -68,11 +71,16 @@ public class DBSDocumentState {
     }
 
     public boolean isDirty() {
+        return dirty.get() || dirtyFulltext;
+    }
+
+    public boolean isDirtyIgnoringFulltext() {
         return dirty.get();
     }
 
     public void setNotDirty() {
         dirty.set(false);
+        dirtyFulltext = false;
     }
 
     public State getState() {
@@ -85,7 +93,15 @@ public class DBSDocumentState {
 
     public void put(String key, Serializable value) {
         state.put(key, value);
-        dirty.set(true);
+        switch (key) {
+        case DBSDocument.KEY_FULLTEXT_SIMPLE:
+        case DBSDocument.KEY_FULLTEXT_BINARY:
+        case DBSDocument.KEY_FULLTEXT_JOBID:
+            dirtyFulltext = true;
+            break;
+        default:
+            dirty.set(true);
+        }
     }
 
     public boolean containsKey(String key) {

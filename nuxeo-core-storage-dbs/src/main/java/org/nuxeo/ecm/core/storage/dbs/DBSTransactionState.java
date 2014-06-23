@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BASE_VERSION_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
@@ -57,9 +58,14 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.CopyHelper;
 import org.nuxeo.ecm.core.storage.State;
+import org.nuxeo.ecm.core.storage.dbs.FulltextUpdaterWork.IndexAndText;
+import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -86,6 +92,8 @@ public class DBSTransactionState {
 
     protected final DBSRepository repository;
 
+    protected final DBSSession session;
+
     /** Retrieved and created document state. */
     protected Map<String, DBSDocumentState> transientStates = new HashMap<String, DBSDocumentState>();
 
@@ -103,8 +111,9 @@ public class DBSTransactionState {
 
     protected final Set<String> browsePermissions;
 
-    public DBSTransactionState(DBSRepository repository) {
+    public DBSTransactionState(DBSRepository repository, DBSSession session) {
         this.repository = repository;
+        this.session = session;
         SecurityService securityService = Framework.getLocalService(SecurityService.class);
         browsePermissions = new HashSet<>(
                 Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
@@ -664,6 +673,7 @@ public class DBSTransactionState {
      * may be references to them.
      */
     public void save() {
+        List<Work> works = getFulltextWorks();
         updateProxies();
         for (String id : transientCreated) { // ordered
             DBSDocumentState docState = transientStates.get(id);
@@ -682,6 +692,7 @@ public class DBSTransactionState {
             }
         }
         transientCreated.clear();
+        scheduleWork(works);
     }
 
     /**
@@ -812,6 +823,139 @@ public class DBSTransactionState {
         savedStates.clear();
         savedCreated.clear();
         savedDeleted.clear();
+    }
+
+    /**
+     * Gets the fulltext updates to do. Called at save() time.
+     *
+     * @return a list of {@link Work} instances to schedule post-commit.
+     */
+    protected List<Work> getFulltextWorks() {
+        Set<String> docsWithDirtyStrings = new HashSet<String>();
+        Set<String> docsWithDirtyBinaries = new HashSet<String>();
+        findDirtyDocuments(docsWithDirtyStrings, docsWithDirtyBinaries);
+        if (docsWithDirtyStrings.isEmpty() && docsWithDirtyBinaries.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Work> works = new LinkedList<Work>();
+        getFulltextSimpleWorks(works, docsWithDirtyStrings);
+        getFulltextBinariesWorks(works, docsWithDirtyBinaries);
+        return works;
+    }
+
+    /**
+     * Finds the documents having dirty text or dirty binaries that have to be
+     * reindexed as fulltext.
+     *
+     * @param docsWithDirtyStrings set of ids, updated by this method
+     * @param docWithDirtyBinaries set of ids, updated by this method
+     */
+    protected void findDirtyDocuments(Set<String> docsWithDirtyStrings,
+            Set<String> docWithDirtyBinaries) {
+        for (String id : transientCreated) {
+            docsWithDirtyStrings.add(id);
+            docWithDirtyBinaries.add(id);
+        }
+        for (DBSDocumentState docState : transientStates.values()) {
+            // TODO finer-grained dirty state
+            if (docState.isDirtyIgnoringFulltext()) {
+                String id = docState.getId();
+                docsWithDirtyStrings.add(id);
+                docWithDirtyBinaries.add(id);
+            }
+        }
+    }
+
+    protected void getFulltextSimpleWorks(List<Work> works,
+            Set<String> docsWithDirtyStrings) {
+        // TODO XXX make configurable, see also FulltextExtractorWork
+        FulltextParser fulltextParser = new FulltextParser();
+        // update simpletext on documents with dirty strings
+        for (String id : docsWithDirtyStrings) {
+            if (id == null) {
+                // cannot happen, but has been observed :(
+                log.error("Got null doc id in fulltext update, cannot happen");
+                continue;
+            }
+            DBSDocumentState docState = getStateForUpdate(id);
+            if (docState == null) {
+                // cannot happen
+                continue;
+            }
+            String documentType = docState.getPrimaryType();
+            // Object[] mixinTypes = (Object[]) docState.get(KEY_MIXIN_TYPES);
+
+            // TODO get from extension point, see also FulltextExtractorWork
+            // XXX hardcoded config for now
+            FulltextConfiguration config = new FulltextConfiguration();
+            if (!config.isFulltextIndexable(documentType)) {
+                continue;
+            }
+            docState.put(KEY_FULLTEXT_JOBID, docState.getId());
+            fulltextParser.setDocument(docState, session);
+            try {
+                List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
+                for (String indexName : config.indexNames) {
+                    // TODO paths from config
+                    String text = fulltextParser.findFulltext(indexName);
+                    indexesAndText.add(new IndexAndText(indexName, text));
+                }
+                if (!indexesAndText.isEmpty()) {
+                    Work work = new FulltextUpdaterWork(repository.getName(),
+                            id, true, false, indexesAndText);
+                    works.add(work);
+                }
+            } finally {
+                fulltextParser.setDocument(null, session);
+            }
+        }
+    }
+
+    protected void getFulltextBinariesWorks(List<Work> works,
+            Set<String> docWithDirtyBinaries) {
+        if (docWithDirtyBinaries.isEmpty()) {
+            return;
+        }
+
+        // TODO get from extension point, see also FulltextExtractorWork
+        // XXX hardcoded config for now
+        FulltextConfiguration config = new FulltextConfiguration();
+
+        // mark indexing in progress, so that future copies (including versions)
+        // will be indexed as well
+        for (String id : docWithDirtyBinaries) {
+            DBSDocumentState docState = getStateForUpdate(id);
+            if (docState == null) {
+                // cannot happen
+                continue;
+            }
+            if (!config.isFulltextIndexable(docState.getPrimaryType())) {
+                continue;
+            }
+            docState.put(KEY_FULLTEXT_JOBID, docState.getId());
+        }
+
+        // FulltextExtractorWork does fulltext extraction using converters
+        // and then schedules a FulltextUpdaterWork to write the results
+        // single-threaded
+        for (String id : docWithDirtyBinaries) {
+            Work work = new FulltextExtractorWork(repository.getName(), id);
+            works.add(work);
+        }
+    }
+
+    protected void scheduleWork(List<Work> works) {
+        // do async fulltext indexing only if high-level sessions are available
+        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        if (repositoryManager != null && !works.isEmpty()) {
+            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            for (Work work : works) {
+                // schedule work post-commit
+                // in non-tx mode, this may execute it nearly immediately
+                workManager.schedule(work, Scheduling.IF_NOT_SCHEDULED, true);
+            }
+        }
     }
 
 }

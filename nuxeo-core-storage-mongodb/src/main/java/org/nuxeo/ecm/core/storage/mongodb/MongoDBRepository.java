@@ -12,6 +12,8 @@
 package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
@@ -71,9 +73,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     public static final String DB_NAME = "nuxeo";
 
-    public static final String MONGO_ID = "_id";
+    public static final String MONGODB_ID = "_id";
 
-    public static final String MONGO_INC = "$inc";
+    public static final String MONGODB_INC = "$inc";
+
+    private static final String MONGODB_INDEX_TEXT = "text";
+
+    private static final String MONGODB_INDEX_NAME = "name";
 
     protected static final String COUNTER_NAME_UUID = "ecm:id";
 
@@ -196,7 +202,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             } else if (val instanceof DBObject) {
                 value = bsonToState((DBObject) val);
             } else {
-                if (MONGO_ID.equals(key)) {
+                if (MONGODB_ID.equals(key)) {
                     // skip ObjectId
                     continue;
                 }
@@ -224,6 +230,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected void initRepository() {
+        // create required indexes
+        DBObject indexKeys = new BasicDBObject();
+        indexKeys.put(KEY_FULLTEXT_SIMPLE, MONGODB_INDEX_TEXT);
+        indexKeys.put(KEY_FULLTEXT_BINARY, MONGODB_INDEX_TEXT);
+        DBObject indexOptions = new BasicDBObject(MONGODB_INDEX_NAME,
+                "fulltext");
+        coll.createIndex(indexKeys, indexOptions);
         // check root presence
         DBObject query = new BasicDBObject(KEY_ID, getRootId());
         if (coll.findOne(query, justPresenceField()) != null) {
@@ -233,7 +246,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (DEBUG_UUIDS) {
             // create the id counter
             DBObject idCounter = new BasicDBObject();
-            idCounter.put(MONGO_ID, COUNTER_NAME_UUID);
+            idCounter.put(MONGODB_ID, COUNTER_NAME_UUID);
             idCounter.put(COUNTER_FIELD, ZERO);
             countersColl.insert(idCounter);
         }
@@ -241,8 +254,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected Long getNextUuidSeq() {
-        DBObject query = new BasicDBObject(MONGO_ID, COUNTER_NAME_UUID);
-        DBObject update = new BasicDBObject(MONGO_INC, new BasicDBObject(
+        DBObject query = new BasicDBObject(MONGODB_ID, COUNTER_NAME_UUID);
+        DBObject update = new BasicDBObject(MONGODB_INC, new BasicDBObject(
                 COUNTER_FIELD, ONE));
         boolean returnNew = true;
         DBObject idCounter = countersColl.findAndModify(query, null, null,
@@ -348,7 +361,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         DBObject query = new BasicDBObject(key, value);
         addIgnoredIds(query, ignored);
         DBObject fields = new BasicDBObject();
-        fields.put(MONGO_ID, ZERO);
+        fields.put(MONGODB_ID, ZERO);
         fields.put(KEY_ID, ONE);
         fields.put(KEY_IS_PROXY, ONE);
         fields.put(KEY_PROXY_TARGET_ID, ONE);
@@ -400,7 +413,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected DBObject justPresenceField() {
-        return new BasicDBObject(MONGO_ID, ONE);
+        return new BasicDBObject(MONGODB_ID, ONE);
     }
 
     @Override

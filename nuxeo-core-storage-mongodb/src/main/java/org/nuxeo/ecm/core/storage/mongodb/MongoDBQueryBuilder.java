@@ -18,10 +18,11 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGO_ID;
+import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_ID;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -49,6 +50,8 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
+import org.nuxeo.ecm.core.storage.dbs.FulltextQueryAnalyzer;
+import org.nuxeo.ecm.core.storage.dbs.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.BasicDBObject;
@@ -85,6 +88,9 @@ public class MongoDBQueryBuilder {
             return walkStartsWith(lvalue, rvalue);
         } else if (NXQL.ECM_PATH.equals(name)) {
             return walkEcmPath(op, rvalue);
+        } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)
+                && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
+            return walkEcmFulltext(name, op, rvalue);
         } else if (op == Operator.SUM) {
             throw new UnsupportedOperationException("SUM");
         } else if (op == Operator.SUB) {
@@ -140,7 +146,7 @@ public class MongoDBQueryBuilder {
         }
     }
 
-    private DBObject walkEcmPath(Operator op, Operand rvalue) {
+    protected DBObject walkEcmPath(Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
             throw new RuntimeException(NXQL.ECM_PATH
                     + " requires = or <> operator");
@@ -157,7 +163,7 @@ public class MongoDBQueryBuilder {
         if (id == null) {
             // no such path
             // TODO XXX do better
-            return new BasicDBObject(MONGO_ID, "__nosuchid__");
+            return new BasicDBObject(MONGODB_ID, "__nosuchid__");
         }
         String field = walkReference(new Reference(NXQL.ECM_UUID)).field;
         if (op == Operator.EQ) {
@@ -166,6 +172,44 @@ public class MongoDBQueryBuilder {
             return new BasicDBObject(field, new BasicDBObject(
                     QueryOperators.NE, id));
         }
+    }
+
+    protected DBObject walkEcmFulltext(String name, Operator op, Operand rvalue) {
+        if (op != Operator.EQ && op != Operator.LIKE) {
+            throw new RuntimeException(NXQL.ECM_FULLTEXT
+                    + " requires = or LIKE operator");
+        }
+        if (!(rvalue instanceof StringLiteral)) {
+            throw new RuntimeException(NXQL.ECM_FULLTEXT
+                    + " requires literal string as right argument");
+        }
+        String fulltextQuery = ((StringLiteral) rvalue).value;
+        if (name.equals(NXQL.ECM_FULLTEXT)) {
+            // standard fulltext query
+            fulltextQuery = getMongoDBFulltextQuery(fulltextQuery);
+            DBObject textSearch = new BasicDBObject();
+            textSearch.put(QueryOperators.SEARCH, fulltextQuery);
+            // TODO language?
+            return new BasicDBObject(QueryOperators.TEXT, textSearch);
+        } else {
+            // secondary index match with explicit field
+            // do a regexp on the field
+            if (name.charAt(NXQL.ECM_FULLTEXT.length()) != '.') {
+                throw new RuntimeException(name + " has incorrect syntax"
+                        + " for a secondary fulltext index");
+            }
+            String prop = name.substring(NXQL.ECM_FULLTEXT.length() + 1);
+            fulltextQuery = fulltextQuery.replace(" ", "%");
+            rvalue = new StringLiteral(fulltextQuery);
+            return walkLike(new Reference(prop), rvalue, true, true);
+        }
+    }
+
+    protected String getMongoDBFulltextQuery(String query) {
+        FulltextQuery ft = FulltextQueryAnalyzer.analyzeFulltextQuery(query);
+        return FulltextQueryAnalyzer.translateFulltext(ft, " ", " ", " -",
+                "\"", "\"", Collections.<Character> emptySet(), "\"", "\"",
+                false);
     }
 
     public DBObject walkNot(Operand value) {
@@ -465,7 +509,7 @@ public class MongoDBQueryBuilder {
         if (ancestorId == null) {
             // no such path
             // TODO XXX do better
-            return new BasicDBObject(MONGO_ID, "__nosuchid__");
+            return new BasicDBObject(MONGODB_ID, "__nosuchid__");
         }
         return new BasicDBObject(DBSDocument.KEY_ANCESTOR_IDS, ancestorId);
     }

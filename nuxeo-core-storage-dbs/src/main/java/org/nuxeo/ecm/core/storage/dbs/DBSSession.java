@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BASE_VERSION_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_CHECKED_IN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_MAJOR_VERSION;
@@ -142,7 +143,7 @@ public class DBSSession implements Session {
     public DBSSession(DBSRepository repository, String sessionId) {
         this.repository = repository;
         this.sessionId = sessionId;
-        transaction = new DBSTransactionState(repository);
+        transaction = new DBSTransactionState(repository, this);
     }
 
     @Override
@@ -1752,10 +1753,6 @@ public class DBSSession implements Session {
             return KEY_IS_VERSION;
         case NXQL.ECM_LIFECYCLESTATE:
             return KEY_LIFECYCLE_STATE;
-        case NXQL.ECM_FULLTEXT:
-        case NXQL.ECM_FULLTEXT_JOBID:
-        case NXQL.ECM_TAG:
-            throw new UnsupportedOperationException(name);
         case NXQL.ECM_LOCK_OWNER:
             return KEY_LOCK_OWNER;
         case NXQL.ECM_LOCK_CREATED:
@@ -1784,6 +1781,11 @@ public class DBSSession implements Session {
             return KEY_PATH_INTERNAL;
         case ExpressionEvaluator.NXQL_ECM_READ_ACL:
             return KEY_READ_ACL;
+        case NXQL.ECM_FULLTEXT_JOBID:
+            return KEY_FULLTEXT_JOBID;
+        case NXQL.ECM_FULLTEXT:
+        case NXQL.ECM_TAG:
+            throw new UnsupportedOperationException(name);
         }
         throw new RuntimeException("Unknown property: " + name);
     }
@@ -1808,8 +1810,6 @@ public class DBSSession implements Session {
             return NXQL.ECM_ISVERSION;
         case KEY_LIFECYCLE_STATE:
             return NXQL.ECM_LIFECYCLESTATE;
-        case KEY_LIFECYCLE_POLICY:
-            return null;
         case KEY_LOCK_OWNER:
             return NXQL.ECM_LOCK_OWNER;
         case KEY_LOCK_CREATED:
@@ -1836,13 +1836,12 @@ public class DBSSession implements Session {
             return "major_version"; // TODO XXX constant
         case KEY_MINOR_VERSION:
             return "minor_version";
+        case KEY_LIFECYCLE_POLICY:
         case KEY_ACP:
-            return null;
         case KEY_ANCESTOR_IDS:
-            return null;
         case KEY_BASE_VERSION_ID:
-            return null;
         case KEY_READ_ACL:
+        case KEY_FULLTEXT_JOBID:
             return null;
         }
         throw new RuntimeException("Unknown property: " + name);
