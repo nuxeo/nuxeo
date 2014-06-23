@@ -39,6 +39,7 @@ public class BlobsWriter implements MessageBodyWriter<MultipartBlobs> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         try {
+            httpHeaders.putSingle("Content-Type", blobs.getContentType());
             blobs.writeTo(entityStream);
             entityStream.flush();
         } catch (MessagingException e) {
