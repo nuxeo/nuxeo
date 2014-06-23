@@ -32,12 +32,12 @@ import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
+import org.apache.tomcat.jdbc.naming.GenericNamingResourcesFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.datasource.h2.XADatasourceFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -122,7 +122,7 @@ public class DataSourceDescriptor {
                     PoolFactory.class.getName(), null);
             poolReference.add(new StringRefAddr("dataSourceJNDI", xaName));
             xaReference = new Reference(xaDataSource,
-                    XADatasourceFactory.class.getName(), null);
+                    GenericNamingResourcesFactory.class.getName(), null);
             for (Entry<String, String> e : properties.entrySet()) {
                 String key = e.getKey();
                 String value = Framework.expandVars(e.getValue());

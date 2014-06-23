@@ -34,7 +34,7 @@ public class ConditionalIgnoreRule implements MethodRule {
         }
     }
 
-    public static final class Ignore14142 implements Condition {
+    public static final class NXP10926H2Upgrade implements Condition {
 
         @Override
         public boolean shouldIgnore(Method method, Object target) {
