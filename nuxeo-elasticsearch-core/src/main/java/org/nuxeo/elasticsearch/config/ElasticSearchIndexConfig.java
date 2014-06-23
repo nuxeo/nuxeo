@@ -18,7 +18,11 @@
 package org.nuxeo.elasticsearch.config;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYFULLTEXT_FIELD;
+
 
 /**
  * XMap descriptor for configuring an index
@@ -46,6 +50,28 @@ public class ElasticSearchIndexConfig {
 
     @XNode("mapping")
     protected String mapping;
+
+    @XNodeList(value = "fetchFromSource/exclude", type = String[].class,
+            componentType = String.class)
+    protected String[] excludes;
+
+    @XNodeList(value = "fetchFromSource/include", type = String[].class,
+            componentType = String.class)
+    protected String[] includes;
+
+    public String[] getExcludes() {
+        if (excludes == null) {
+            return new String[] { BINARYFULLTEXT_FIELD };
+        }
+        return excludes;
+    }
+
+    public String[] getIncludes() {
+        if (includes == null || includes.length == 0) {
+            return new String[] { ALL_FIELDS };
+        }
+        return includes;
+    }
 
     public String getName() {
         return name;

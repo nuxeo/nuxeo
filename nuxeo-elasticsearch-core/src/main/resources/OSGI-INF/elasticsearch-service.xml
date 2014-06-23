@@ -93,9 +93,15 @@
        <elasticSearchIndex name="nuxeo" type="doc" create="true">
          <settings></settings>
          <mapping></mapping>
+         <fetchFromSources>
+           <include>ecm:*</include>
+           <include>dc:*</include>
+           <exclude>ecm:binaryFulltext</exclude>
+         </fetchFromSources>
        </elasticSearchIndex>
       </code>
 
+    @Since 5.9.3
     name is the Elasticsearch index name.
 
     type is the Elasticsearch type that hold a mapping, "doc" is the mapping
@@ -110,7 +116,11 @@
     mapping the Elasticsearch mapping for the type
     @see http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping.html
 
-    @Since 5.9.3
+    @Since 5.9.5
+    fetchFromSources, include a list of field name pattern that will be included
+      when fetching document from Elasticsearch (@see NxQueryBuilder.fetchFromElasticsearch)
+      use the exclude list to prevent returning fulltext or long fields.
+
     </documentation>
 
     <object class="org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig" />

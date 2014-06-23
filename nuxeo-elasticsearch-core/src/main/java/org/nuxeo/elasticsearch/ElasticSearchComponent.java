@@ -21,18 +21,22 @@ package org.nuxeo.elasticsearch;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -82,6 +86,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -108,6 +113,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
+import sun.plugin2.message.SetAppletSizeMessage;
 
 /**
  * Component used to configure and manage ElasticSearch integration
@@ -146,8 +152,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected Timer deleteTimer;
     protected Timer indexTimer;
     protected Timer bulkIndexTimer;
-    private ElasticSearchLocalConfig localConfig;
-    private ElasticSearchRemoteConfig remoteConfig;
+    protected ElasticSearchLocalConfig localConfig;
+    protected ElasticSearchRemoteConfig remoteConfig;
+    protected String[] includeSourceFields;
+    protected String[] excludeSourceFields;
 
     @Override
     public void registerContribution(Object contribution,
@@ -169,6 +177,24 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 log.info("Associate index " + idx.getName()
                         + " with repository: " + idx.getRepositoryName());
                 indexNames.put(idx.getRepositoryName(), idx.getName());
+                Set<String> set = new LinkedHashSet<String>();
+                if (includeSourceFields != null) {
+                    set.addAll(
+                            Arrays.asList(includeSourceFields));
+                }
+                set.addAll(Arrays.asList(idx.getIncludes()));
+                if (set.contains(ALL_FIELDS)) {
+                    set.clear();
+                    set.add(ALL_FIELDS);
+                }
+                includeSourceFields = set.toArray(new String[0]);
+                set.clear();
+                if (excludeSourceFields != null) {
+                    set.addAll(
+                            Arrays.asList(excludeSourceFields));
+                }
+                set.addAll(Arrays.asList(idx.getExcludes()));
+                excludeSourceFields = set.toArray(new String[0]);
             }
         }
     }
@@ -617,13 +643,18 @@ public class ElasticSearchComponent extends DefaultComponent implements
         SearchRequestBuilder request = getClient().prepareSearch(
                 getSearchIndexes()).setTypes(
                 DOC_TYPE)
-                    .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                    .setFrom(query.getOffset()).setSize(query.getLimit());
-        if (! query.isFetchFromElasticsearch()) {
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setFrom(query.getOffset()).setSize(query.getLimit());
+        if (query.isFetchFromElasticsearch()) {
+            // fetch the _source without the binaryfulltext field
+            request.setFetchSource(getIncludeSourceFields(),
+                    getExcludeSourceFields());
+        } else {
             request.addField(ID_FIELD);
         }
         // Add security filter
-        request.setQuery(addSecurityFilter(query.getSession(), query.makeQuery()));
+        request.setQuery(
+                addSecurityFilter(query.getSession(), query.makeQuery()));
         // Add sort
         for (SortBuilder sortBuilder : query.getSortBuilders()) {
             request.addSort(sortBuilder);
@@ -664,11 +695,80 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return QueryBuilders.filteredQuery(queryBuilder, aclFilter);
     }
 
-    private DocumentModelList fetchDocumentsFromElasticsearch(
-            NxQueryBuilder queryBuilder,
-            SearchResponse response) {
-        // TODO impl fetch from ES
-        return null;
+    protected DocumentModelList fetchDocumentsFromElasticsearch(
+            NxQueryBuilder queryBuilder, SearchResponse response) {
+        long totalSize = response.getHits().getTotalHits();
+        DocumentModelList ret = new DocumentModelListImpl(response.getHits()
+                .getHits().length);
+        DocumentModel doc;
+        String sid = queryBuilder.getSession().getSessionId();
+        for (SearchHit hit : response.getHits()) {
+            doc = loadDocumentModelFromSource(sid, hit.getSource());
+            ret.add(doc);
+        }
+        ((DocumentModelListImpl) ret).setTotalSize(totalSize);
+        return ret;
+    }
+
+    protected DocumentModel loadDocumentModelFromSource(
+            String sid, Map<String, Object> source) {
+        String type = source.get("ecm:primaryType").toString();
+        String name = source.get("ecm:name").toString();
+        String id = source.get("ecm:uuid").toString();
+        String path = source.get("ecm:path").toString();
+        String parentPath = new File(path).getParent();
+
+        DocumentModelImpl doc = new DocumentModelImpl(parentPath, name, type);
+        doc.setId(id);
+      /*  try {
+            doc.attach(sid);
+        } catch (ClientException e) {
+
+        }
+*/
+        for (String prop : source.keySet()) {
+            String schema = prop.split(":")[0];
+            // schema = schema.replace("dc", "dublincore");
+            String key = prop.split(":")[1];
+            if (source.get(prop) == null) {
+                continue;
+            }
+            String value = source.get(prop).toString();
+            if (value.isEmpty() || "[]".equals(value)) {
+                continue;
+            }
+            // System.out.println( String.format("schema: %s, key %s = %s", schema, key,   value));
+            if ("ecm".equals(schema)) {
+                switch(key) {
+                case "isProxy":
+                    doc.setIsProxy(Boolean.valueOf(value));
+                    break;
+                case "currentLifeCycleState":
+                    doc.prefetchCurrentLifecycleState(value);
+                    break;
+                case "repository":
+
+                    break;
+                case "acl":
+                case "mixinType":
+                    // TODO
+                    break;
+
+                }
+            } else {
+                try {
+                    doc.setPropertyValue(prop, value);
+                    // doc.setProperty(schema, key, value);
+                } catch (ClientException e) {
+                    log.warn(String.format("Can not set property %s to %s", key,
+                            value));
+                }
+            }
+        }
+        doc.setIsImmutable(true);
+
+
+        return doc;
     }
 
     protected DocumentModelList fetchDocumentsFromVcs(
@@ -867,4 +967,11 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return totalCommandProcessed.get();
     }
 
+    public String[] getIncludeSourceFields() {
+        return includeSourceFields;
+    }
+
+    public String[] getExcludeSourceFields() {
+        return excludeSourceFields;
+    }
 }
