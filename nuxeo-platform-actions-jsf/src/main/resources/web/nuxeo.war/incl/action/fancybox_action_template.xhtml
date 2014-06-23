@@ -129,9 +129,9 @@
         <nxu:set
           var="actionClicked"
           value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}"
-          cache="true">
+          cache="false">
 
-          <c:if test="#{actionClicked}">
+          <f:subview rendered="#{actionClicked}">
 
             <h:form>
               <a4j:jsFunction name="#{fancyboxIdPrefix}closeFancybox">
@@ -186,7 +186,7 @@
                 })()
               </script>
             </div>
-          </c:if>
+          </f:subview>
 
         </nxu:set>
         </nxu:set>
