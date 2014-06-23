@@ -78,12 +78,15 @@ import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortBuilder;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -113,7 +116,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
-import sun.plugin2.message.SetAppletSizeMessage;
 
 /**
  * Component used to configure and manage ElasticSearch integration
@@ -717,15 +719,18 @@ public class ElasticSearchComponent extends DefaultComponent implements
         String id = source.get("ecm:uuid").toString();
         String path = source.get("ecm:path").toString();
         String parentPath = new File(path).getParent();
+        String repository = source.get("ecm:repository").toString();
 
-        DocumentModelImpl doc = new DocumentModelImpl(parentPath, name, type);
-        doc.setId(id);
-      /*  try {
+        // DocumentModelImpl doc = new DocumentModelImpl(parentPath, name, type);
+        DocumentModelImpl doc = new DocumentModelImpl(null, type, id, new Path(path),
+                new IdRef(id), new PathRef(parentPath), null, null, null, repository, false);
+
+        /*  try {
             doc.attach(sid);
         } catch (ClientException e) {
 
         }
-*/
+        */
         for (String prop : source.keySet()) {
             String schema = prop.split(":")[0];
             // schema = schema.replace("dc", "dublincore");

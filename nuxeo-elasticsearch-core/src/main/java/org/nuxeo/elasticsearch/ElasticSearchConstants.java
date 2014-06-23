@@ -30,7 +30,7 @@ public class ElasticSearchConstants {
 
     public static final String CHILDREN_FIELD = "ecm:path.children";
 
-    public static final String BINARYFULLTEXT_FIELD = "ecm:binaryfulltext";
+    public static final String BINARYTEXT_FIELD = "ecm:binarytext";
 
     public static final String ALL_FIELDS = "*";
 

@@ -9,7 +9,7 @@
       <fetchFromSource>
         <include>ecm:*</include>
         <include>dc:*</include>
-        <exclude>ecm:binaryfulltext</exclude>
+        <exclude>ecm:binarytext</exclude>
       </fetchFromSource>
 
       <settings>

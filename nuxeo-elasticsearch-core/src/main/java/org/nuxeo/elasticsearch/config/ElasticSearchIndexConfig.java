@@ -21,7 +21,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYFULLTEXT_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYTEXT_FIELD;
 
 
 /**
@@ -61,7 +61,7 @@ public class ElasticSearchIndexConfig {
 
     public String[] getExcludes() {
         if (excludes == null) {
-            return new String[] { BINARYFULLTEXT_FIELD };
+            return new String[] { BINARYTEXT_FIELD };
         }
         return excludes;
     }
