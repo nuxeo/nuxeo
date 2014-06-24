@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.annotations.gwt.client.view.annotater;
 
+import com.google.gwt.user.client.Window;
 import org.nuxeo.ecm.platform.annotations.gwt.client.controler.AnnotationController;
 import org.nuxeo.ecm.platform.annotations.gwt.client.model.AnnotationChangeListener;
 import org.nuxeo.ecm.platform.annotations.gwt.client.model.AnnotationModel;
@@ -88,9 +89,9 @@ public class ImageAnnotater extends AbstractAnnotater implements
         image = getRootImage(event);
         int[] absoluteTopLeft = Utils.getAbsoluteTopLeft(image, Document.get());
         ax = event.getClientX() - absoluteTopLeft[1]
-                + image.getOwnerDocument().getBody().getScrollLeft();
+                + Window.getScrollLeft();
         ay = event.getClientY() - absoluteTopLeft[0]
-                + image.getOwnerDocument().getBody().getScrollTop();
+                + Window.getScrollTop();
         bx = ax;
         by = ay;
         writing = true;
@@ -143,9 +144,9 @@ public class ImageAnnotater extends AbstractAnnotater implements
         }
         int[] absoluteTopLeft = Utils.getAbsoluteTopLeft(image, Document.get());
         bx = event.getClientX() - absoluteTopLeft[1]
-                + image.getOwnerDocument().getBody().getScrollLeft();
+                + Window.getScrollLeft();
         by = event.getClientY() - absoluteTopLeft[0]
-                + image.getOwnerDocument().getBody().getScrollTop();
+                + Window.getScrollTop();
         updateMap(ax, ay, bx, by, image);
     }
 
@@ -178,9 +179,9 @@ public class ImageAnnotater extends AbstractAnnotater implements
 
         int[] absoluteTopLeft = Utils.getAbsoluteTopLeft(image, Document.get());
         bx = event.getClientX() - absoluteTopLeft[1]
-                + image.getOwnerDocument().getBody().getScrollLeft();
+                + Window.getScrollLeft();
         by = event.getClientY() - absoluteTopLeft[0]
-                + image.getOwnerDocument().getBody().getScrollTop();
+                + Window.getScrollTop();
         addMapAndGetAnnot(new int[] { ax, ay, bx, by }, image);
         if (controller.isAnnotationsVisible()) {
             controller.enablePopupListeners();
