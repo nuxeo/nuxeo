@@ -47,6 +47,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.user.client.Window;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
@@ -209,10 +210,10 @@ public class AnnotatedDocument implements AnnotationChangeListener {
                     }
                 }
             }
-            bodyElement.setScrollTop(scrollTop == Integer.MAX_VALUE ? 0
-                    : scrollTop);
-            bodyElement.setScrollLeft(scrollLeft == Integer.MAX_VALUE ? 0
-                    : scrollLeft);
+
+            scrollLeft = scrollLeft == Integer.MAX_VALUE ? 0 : scrollLeft;
+            scrollTop = scrollTop == Integer.MAX_VALUE ? 0 : scrollTop;
+            Window.scrollTo(scrollLeft, scrollTop);
         }
     }
 
@@ -347,8 +348,10 @@ public class AnnotatedDocument implements AnnotationChangeListener {
             Element parent = element.getParentElement();
             String parentHtml = parent.getInnerHTML();
 
-            String escapedClassName = element.getClassName().replaceAll("([/\\\\\\.\\*\\+\\?\\|\\(\\)\\[\\]\\{\\}$^])", "\\\\$1");
-            String escapedElementHtml = elementHtml.replaceAll("([/\\\\\\.\\*\\+\\?\\|\\(\\)\\[\\]\\{\\}$^])", "\\\\$1");
+            String escapedClassName = element.getClassName().replaceAll(
+                    "([/\\\\\\.\\*\\+\\?\\|\\(\\)\\[\\]\\{\\}$^])", "\\\\$1");
+            String escapedElementHtml = elementHtml.replaceAll(
+                    "([/\\\\\\.\\*\\+\\?\\|\\(\\)\\[\\]\\{\\}$^])", "\\\\$1");
 
             parentHtml = parentHtml.replaceFirst("<(span|SPAN) class=(\")?"
                     + escapedClassName + "(\")?.*>" + escapedElementHtml
