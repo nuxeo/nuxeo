@@ -18,16 +18,15 @@
 package org.nuxeo.ecm.platform.ui.web.util;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.UISelectMany;
 import javax.faces.component.ValueHolder;
-import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.FacesEvent;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
@@ -88,7 +87,7 @@ public class SelectionActionsBean implements Serializable {
     protected String valueHolderId;
 
     /**
-     * Lookup level request parameter (defaults to 1, means search is done in
+     * Lookup level request parameter (defaults to 1, means search is done in r
      * first parent naming container)
      *
      * @since 5.6
@@ -385,23 +384,33 @@ public class SelectionActionsBean implements Serializable {
      *
      * @since 5.5
      * @param event
+     * @deprecated since 5.9.4-JSF2: use
+     *             {@link #onSelection(AjaxBehaviorEvent)} instead.
      */
+    @Deprecated
     public void onSelection(ActionEvent event) {
-        UIComponent eventComp = event.getComponent();
-        ValueHolder selectComp = ComponentUtils.getComponent(eventComp,
-                selectorId, ValueHolder.class);
-        if (selectComp != null) {
-            Object value = selectComp.getValue();
-            ValueHolder valueHolderComp = ComponentUtils.getComponent(
-                    eventComp, valueHolderId, ValueHolder.class);
-            if (valueHolderComp != null) {
-                if (valueHolderComp instanceof EditableValueHolder) {
-                    ((EditableValueHolder) valueHolderComp).setSubmittedValue(value);
-                } else {
-                    valueHolderComp.setValue(value);
-                }
-            }
-        }
+        log.warn(String.format(
+                "The method #onSelection(ActionEvent) on component "
+                        + "'selectionActions' at '%s' is deprecated, please "
+                        + "use #onSelection(AjaxBehaviorEvent) instead",
+                this.getClass().getName()));
+        onSelection((FacesEvent) event);
+    }
+
+    /**
+     * @since 5.9.4-JSF2
+     */
+    public void onSelection(AjaxBehaviorEvent event) {
+        onSelection((FacesEvent) event);
+    }
+
+    protected void onSelection(FacesEvent event) {
+        UIComponent component = event.getComponent();
+        Object value = retrieveSourceComponentValue(component, selectorId);
+        UIComponent base = ComponentUtils.getBase(component);
+        ValueHolder valueHolderComp = ComponentUtils.getComponent(base,
+                valueHolderId, ValueHolder.class);
+        setTargetComponentValue(valueHolderComp, value);
     }
 
     /**
@@ -417,55 +426,31 @@ public class SelectionActionsBean implements Serializable {
      * possible to use the same logic in command buttons that do not make it
      * possible to pass request parameters).
      *
+     * @deprecated since 5.9.4-JSF2: use {@link #onClick(AjaxBehaviorEvent)}
+     *             instead.
      * @since 5.5
      * @param event
      */
     @Deprecated
     public void onClick(ActionEvent event) {
-        UIComponent component = event.getComponent();
-        if (component == null) {
-            return;
-        }
-        EditableValueHolder hiddenSelector = null;
-        UIComponent base = ComponentUtils.getBase(component);
-        int lookupLevel = computeLookupLevel();
-        if (lookupLevel > 1) {
-            for (int i = 0; i < (lookupLevel - 1); i++) {
-                base = ComponentUtils.getBase(base);
-            }
-        }
-        if (valueHolderId != null) {
-            hiddenSelector = ComponentUtils.getComponent(base, valueHolderId,
-                    EditableValueHolder.class);
-        }
-        if (hiddenSelector == null) {
-            String selectedValueHolder = getSelectedValueHolder();
-            if (selectedValueHolder != null) {
-                hiddenSelector = ComponentUtils.getComponent(base,
-                        selectedValueHolder, EditableValueHolder.class);
-            }
-        }
-        if (hiddenSelector != null) {
-            String selectedValue = getSelectedValue();
-            if (hiddenSelector != null) {
-                hiddenSelector.setSubmittedValue(selectedValue);
-            }
-        }
+        log.warn(String.format("The method #onClick(ActionEvent) on component "
+                + "'selectionActions' at '%s' is deprecated, please "
+                + "use #onClick(AjaxBehaviorEvent) instead",
+                this.getClass().getName()));
+        onClick((FacesEvent) event);
     }
 
     public void onClick(AjaxBehaviorEvent event) {
+        onClick((FacesEvent) event);
+    }
+
+    protected void onClick(FacesEvent event) {
         UIComponent component = event.getComponent();
         if (component == null) {
             return;
         }
         EditableValueHolder hiddenSelector = null;
-        UIComponent base = ComponentUtils.getBase(component);
-        int lookupLevel = computeLookupLevel();
-        if (lookupLevel > 1) {
-            for (int i = 0; i < (lookupLevel - 1); i++) {
-                base = ComponentUtils.getBase(base);
-            }
-        }
+        UIComponent base = retrieveBase(component, computeLookupLevel());
         if (valueHolderId != null) {
             hiddenSelector = ComponentUtils.getComponent(base, valueHolderId,
                     EditableValueHolder.class);
@@ -479,8 +464,134 @@ public class SelectionActionsBean implements Serializable {
         }
         if (hiddenSelector != null) {
             String selectedValue = getSelectedValue();
-            if (hiddenSelector != null) {
-                hiddenSelector.setSubmittedValue(selectedValue);
+            setTargetComponentValue(hiddenSelector, selectedValue);
+        }
+    }
+
+    protected UIComponent retrieveBase(UIComponent anchor, int lookupLevel) {
+        UIComponent base = ComponentUtils.getBase(anchor);
+        if (lookupLevel > 1) {
+            for (int i = 0; i < (lookupLevel - 1); i++) {
+                base = ComponentUtils.getBase(base);
+            }
+        }
+        return base;
+    }
+
+    /**
+     * Retrieves a value from another component and sets it on the target
+     * component.
+     * <p>
+     * Source component id must be passed in the event component attributes
+     * with id "sourceComponentId".
+     * <p>
+     * Target component id must be passed in the event component attributes
+     * with id "targetComponentId". If target component is an
+     * {@link EditableValueHolder}, its submitted value is set. Otherwise, its
+     * local value is set.
+     *
+     * @since 5.9.4-JSF2
+     * @param event
+     */
+    public void setValueFromComponent(AjaxBehaviorEvent event) {
+        setValueFromComponent((FacesEvent) event);
+    }
+
+    /**
+     * @see #setValueFromComponent(ActionEvent)
+     * @since 5.9.4-JSF2
+     */
+    public void setValueFromComponent(ActionEvent event) {
+        setValueFromComponent((FacesEvent) event);
+    }
+
+    protected void setValueFromComponent(FacesEvent event) {
+        UIComponent anchor = event.getComponent();
+        String sourceCompId = getStringAttribute(anchor, "sourceComponentId",
+                true);
+        Object value = retrieveSourceComponentValue(anchor, sourceCompId);
+        String targetCompId = getStringAttribute(anchor, "targetComponentId",
+                true);
+        ValueHolder targetComp = ComponentUtils.getComponent(anchor,
+                targetCompId, ValueHolder.class);
+        setTargetComponentValue(targetComp, value);
+    }
+
+    /**
+     * Retrieves a value passed as an attribute with id "selectedValue" on the
+     * event component attributes and sets it on the target component.
+     * <p>
+     * Target component id must be passed in the event component attributes
+     * with id "targetComponentId". If target component is an
+     * {@link EditableValueHolder}, its submitted value is set. Otherwise, its
+     * local value is set.
+     *
+     * @since 5.9.4-JSF2
+     * @param event
+     */
+    public void setStaticValue(AjaxBehaviorEvent event) {
+        setStaticValue((FacesEvent) event);
+    }
+
+    /**
+     * @see #setStaticValue(ActionEvent)
+     * @since 5.9.4-JSF2
+     */
+    public void setStaticValue(ActionEvent event) {
+        setStaticValue((FacesEvent) event);
+    }
+
+    protected void setStaticValue(FacesEvent event) {
+        UIComponent anchor = event.getComponent();
+        Object value = anchor.getAttributes().get("selectedValue");
+        String targetCompId = getStringAttribute(anchor, "targetComponentId",
+                true);
+        ValueHolder targetComp = ComponentUtils.getComponent(anchor,
+                targetCompId, ValueHolder.class);
+        setTargetComponentValue(targetComp, value);
+    }
+
+    protected String getStringAttribute(UIComponent component, String name,
+            boolean required) {
+        Object value = component.getAttributes().get(name);
+        if (required && value == null) {
+            throw new IllegalArgumentException(String.format(
+                    "Component attribute with name '%s' cannot be null: %s",
+                    name, value));
+        }
+        if (value == null || value instanceof String) {
+            return (String) value;
+        }
+        throw new IllegalArgumentException(String.format(
+                "Component attribute with name '%s' is not a String: %s", name,
+                value));
+    }
+
+    protected Object retrieveSourceComponentValue(UIComponent base,
+            String targetId) {
+        ValueHolder selectComp = ComponentUtils.getComponent(base, targetId,
+                ValueHolder.class);
+        if (selectComp != null) {
+            Object value;
+            if (selectComp instanceof EditableValueHolder) {
+                value = ((EditableValueHolder) selectComp).getSubmittedValue();
+                if (value == null) {
+                    value = selectComp.getValue();
+                }
+            } else {
+                value = selectComp.getValue();
+            }
+            return value;
+        }
+        return null;
+    }
+
+    protected void setTargetComponentValue(ValueHolder target, Object value) {
+        if (target != null) {
+            if (target instanceof EditableValueHolder) {
+                ((EditableValueHolder) target).setSubmittedValue(value);
+            } else {
+                target.setValue(value);
             }
         }
     }

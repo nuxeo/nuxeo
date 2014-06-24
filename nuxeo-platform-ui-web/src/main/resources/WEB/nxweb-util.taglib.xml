@@ -384,6 +384,16 @@
     </function-signature>
   </function>
 
+  <function>
+    <function-name>componentAbsoluteId</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String componentAbsoluteId(javax.faces.component.UIComponent, java.lang.String)
+    </function-signature>
+  </function>
+
   <tag>
     <tag-name>methodResult</tag-name>
     <handler-class>

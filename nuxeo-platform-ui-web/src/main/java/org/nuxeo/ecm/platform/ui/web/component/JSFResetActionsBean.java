@@ -22,18 +22,16 @@ import javax.el.ValueExpression;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
-import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.FacesEvent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.ui.util.cdk.RendererUtils;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.richfaces.renderkit.util.AjaxRendererUtils;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentRenderUtils;
 
 /**
  * Managed bean, request-scoped, that resets the components value for ajax
@@ -100,14 +98,8 @@ public class JSFResetActionsBean {
         }
         String baseCompId = getBaseComponentId();
         if (baseCompId != null) {
-            FacesContext ctx = FacesContext.getCurrentInstance();
-            // TODO migrate to JSF2
-            /* UIComponent target = component.findComponent(baseCompId);
-            if (target != null) {
-            baseCompId = AjaxRendererUtils.getAbsoluteId(target);
-            }*/
-            UIComponent anchor =
-            ctx.getViewRoot().findComponent(baseCompId);
+            UIComponent anchor = ComponentRenderUtils.getComponent(component,
+                    baseCompId);
             resetComponentResursive(anchor);
         } else {
             log.error("No base component id given => cannot reset "
@@ -118,26 +110,39 @@ public class JSFResetActionsBean {
     /**
      * Looks up the parent naming container for the component source of the
      * action event, and reset components recursively within this container.
+     *
+     * @deprecated since 5.9.4-JSF2: use
+     *             {@link #resetComponents(AjaxBehaviorEvent)} instead.
      */
     @Deprecated
     public void resetComponents(ActionEvent event) {
-        UIComponent component = event.getComponent();
-        if (component == null) {
-            return;
-        }
-        // take first anchor and force flush on every resettable component
-        UIComponent anchor = ComponentUtils.getBase(component);
-        resetComponentResursive(anchor);
+        log.warn(String.format(
+                "The method #resetComponents(ActionEvent) on component "
+                        + "'jsfResetActions' at '%s' is deprecated, please "
+                        + "use #resetComponents(AjaxBehaviorEvent) instead",
+                this.getClass().getName()));
+        resetComponents((FacesEvent) event);
     }
 
+    /**
+     * @since 5.9.4-JSF2
+     */
     public void resetComponents(AjaxBehaviorEvent event) {
+        resetComponents((FacesEvent) event);
+    }
+
+    protected void resetComponents(FacesEvent event) {
         UIComponent component = event.getComponent();
         if (component == null) {
             return;
         }
         // take first anchor and force flush on every resettable component
-        UIComponent anchor = ComponentUtils.getBase(component);
-        resetComponentResursive(anchor);
+        UIComponent anchor = component.getNamingContainer();
+        if (anchor == null) {
+            resetComponentResursive(component);
+        } else {
+            resetComponentResursive(anchor);
+        }
     }
 
     /**

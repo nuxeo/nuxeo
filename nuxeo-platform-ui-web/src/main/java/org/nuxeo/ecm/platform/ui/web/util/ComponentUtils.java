@@ -30,7 +30,6 @@ import java.util.Map;
 
 import javax.el.ValueExpression;
 import javax.faces.application.FacesMessage;
-import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.UISelectMany;
@@ -343,16 +342,12 @@ public final class ComponentUtils {
      */
     public static UIComponent getBase(UIComponent anchor) {
         UIComponent base = anchor;
-        boolean firstFound = false;
-        while (base.getParent() != null) {
-            if (base instanceof NamingContainer) {
-                if (firstFound) {
-                    break;
-                } else {
-                    firstFound = true;
-                }
+        UIComponent container = anchor.getNamingContainer();
+        if (container != null) {
+            UIComponent supContainer = container.getNamingContainer();
+            if (supContainer != null) {
+                container = supContainer;
             }
-            base = base.getParent();
         }
         if (log.isDebugEnabled()) {
             log.debug(String.format("Resolved base '%s' for anchor '%s'",
@@ -378,7 +373,8 @@ public final class ComponentUtils {
             return null;
         }
         try {
-            UIComponent component = base.findComponent(componentId);
+            UIComponent component = ComponentRenderUtils.getComponent(base,
+                    componentId);
             if (component == null) {
                 log.error("Could not find component with id: " + componentId);
             } else {
