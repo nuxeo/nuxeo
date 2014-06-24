@@ -111,11 +111,12 @@ public class Request extends HashMap<String, String> {
         } else if (status >= 400) {
             handleException(status, ctype, stream);
         }
-        if (ctype.startsWith(CTYPE_ENTITY)) {
+        String lctype = ctype.toLowerCase();
+        if (lctype.startsWith(CTYPE_ENTITY)) {
             return JsonMarshalling.readEntity(IOUtils.read(stream));
-        } else if (ctype.startsWith(CTYPE_AUTOMATION)) {
+        } else if (lctype.startsWith(CTYPE_AUTOMATION)) {
             return JsonMarshalling.readRegistry(IOUtils.read(stream));
-        } else if (ctype.startsWith(CTYPE_MULTIPART_MIXED)) { // list of
+        } else if (lctype.startsWith(CTYPE_MULTIPART_MIXED)) { // list of
                                                                 // blobs
             return readBlobs(ctype, stream);
         } else { // a blob?
@@ -175,7 +176,7 @@ public class Request extends HashMap<String, String> {
 
     protected void handleException(int status, String ctype, InputStream stream)
             throws Exception {
-        if (CTYPE_ENTITY.equals(ctype)) {
+        if (CTYPE_ENTITY.equalsIgnoreCase(ctype)) {
             String content = IOUtils.read(stream);
             RemoteException e = null;
             try {
