@@ -49,12 +49,14 @@ public class NXMessagesRenderer extends MessagesRenderer {
             return;
         }
 
+        // If id is user specified, we must render
+        boolean mustRender = shouldWriteIdAttribute(component);
+
         UIMessages messages = (UIMessages) component;
         ResponseWriter writer = context.getResponseWriter();
         assert (writer != null);
 
-        // String clientId = ((UIMessages) component).getFor();
-        String clientId = null; // PENDING - "for" is actually gone now
+        String clientId = ((UIMessages) component).getFor();
         // if no clientId was included
         if (clientId == null) {
             // and the author explicitly only wants global messages
@@ -70,14 +72,28 @@ public class NXMessagesRenderer extends MessagesRenderer {
         assert (messageIter != null);
 
         if (!messageIter.hasNext()) {
+            if (mustRender) {
+                // no message to render, but must render anyway
+                // but if we're writing the dev stage messages,
+                // only write it if messages exist
+                if ("javax_faces_developmentstage_messages".equals(component.getId())) {
+                    return;
+                }
+                writer.startElement("div", component);
+                writeIdAttributeIfNecessary(context, writer, component);
+                writer.endElement("div");
+            } // otherwise, return without rendering
             return;
         }
 
-        boolean showSummary = messages.isShowSummary();
         boolean showDetail = messages.isShowDetail();
 
         while (messageIter.hasNext()) {
             FacesMessage curMessage = (FacesMessage) messageIter.next();
+            if (curMessage.isRendered() && !messages.isRedisplay()) {
+                continue;
+            }
+            curMessage.rendered();
 
             // make sure we have a non-null value for summary and
             // detail.
@@ -110,6 +126,7 @@ public class NXMessagesRenderer extends MessagesRenderer {
                 timeout = 0;
             }
 
+            // ensure message stays visible when running tests
             if (Framework.getProperty("org.nuxeo.ecm.tester.name") != null) {
                 timeout = 0;
             }
