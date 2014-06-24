@@ -80,7 +80,8 @@
         </li>
         <li>
           joinReRender(String, String): joins two strings to generate a valid
-          reRender attribute for ajax components. Available since 5.7.
+          reRender attribute for ajax components. Available since 5.7, deprecated
+          since 5.9.5: use nxu:joinRender instead.
         </li>
       </ul>
     </p>

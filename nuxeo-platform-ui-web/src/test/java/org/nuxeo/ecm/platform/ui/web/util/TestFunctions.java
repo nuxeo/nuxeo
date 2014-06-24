@@ -122,4 +122,17 @@ public class TestFunctions {
         assertEquals("blah_blah", Functions.jsfTagIdEscape("blah-blah"));
         assertEquals("blah_blahe", Functions.jsfTagIdEscape("blah_blahé"));
     }
+
+    @Test
+    public void testJoinRender() {
+        assertEquals("", Functions.joinRender(null, null));
+        assertEquals("", Functions.joinRender(null, ""));
+        assertEquals("", Functions.joinRender("", null));
+        assertEquals("", Functions.joinRender(" ", "    "));
+        assertEquals("foo", Functions.joinRender("foo   ", "    "));
+        assertEquals("foo bar", Functions.joinRender("foo", "bar"));
+        assertEquals("foo bar baz",
+                Functions.joinRender(" foo", "bar    baz   "));
+    }
+
 }

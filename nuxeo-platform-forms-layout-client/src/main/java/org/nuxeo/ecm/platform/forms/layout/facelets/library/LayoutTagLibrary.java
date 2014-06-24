@@ -42,6 +42,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.functions.LayoutFunctions;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.tag.AbstractTagLibrary;
@@ -143,14 +144,6 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
             log.error(e, e);
         }
 
-        try {
-            Method joinRender = LayoutTagLibrary.class.getMethod("joinRender",
-                    new Class[] { String.class, String.class });
-            addFunction("joinRender", joinRender);
-        } catch (NoSuchMethodException e) {
-            log.error(e, e);
-        }
-
         // BBB
         try {
             Method joinReRender = LayoutTagLibrary.class.getMethod(
@@ -211,30 +204,8 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
      */
     @Deprecated
     public static String joinReRender(String render1, String render2) {
-        log.warn("Method joinReRender is deprecated, use joinRender instead");
-        return joinRender(render1, render2);
-    }
-
-    /**
-     * Joins two strings to get a valid render attribute for ajax components.
-     *
-     * @since 5.9.4-JSF2
-     */
-    public static String joinRender(String render1, String render2) {
-        if (StringUtils.isBlank(render1) && StringUtils.isBlank(render2)) {
-            return "";
-        }
-        String res;
-        if (StringUtils.isBlank(render1)) {
-            res = render2;
-        } else if (StringUtils.isBlank(render2)) {
-            res = render1;
-        } else {
-            res = StringUtils.join(new String[] { render1, render2 }, " ");
-            res = res.replaceAll("\\s+", " ");
-        }
-        res = res.trim();
-        return res;
+        log.warn("Method nxl:joinReRender is deprecated, use nxu:joinRender instead");
+        return Functions.joinRender(render1, render2);
     }
 
 }

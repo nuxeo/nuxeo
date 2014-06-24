@@ -374,6 +374,16 @@
     </function-signature>
   </function>
 
+  <function>
+    <function-name>joinRender</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.tag.fn.Functions
+    </function-class>
+    <function-signature>
+      java.lang.String joinRender(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+
   <tag>
     <tag-name>methodResult</tag-name>
     <handler-class>

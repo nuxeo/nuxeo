@@ -150,6 +150,10 @@
         id from the given name. Throws an error if given name is empty.
         Available since 5.7.
       </li>
+      <li>
+        joinRender(String, String): joins two strings to generate a valid
+        render attribute for ajax components on JSF2. Available since 5.9.5.
+      </li>
     </ul>
   </description>
 

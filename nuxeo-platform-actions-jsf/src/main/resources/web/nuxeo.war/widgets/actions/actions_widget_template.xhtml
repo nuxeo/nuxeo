@@ -36,7 +36,7 @@
               <span class="horizontalAction #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
                 <ui:decorate template="/incl/action/action_template.xhtml">
                   <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
-                  <ui:param name="ajaxReRender" value="#{nxl:joinRender(actionsPanelId, widgetProperty_ajaxReRender)}" />
+                  <ui:param name="ajaxReRender" value="#{nxu:joinRender(actionsPanelId, widgetProperty_ajaxReRender)}" />
                   <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                   <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                   <ui:param name="formStyleClass" value="displayI subWidgetForm" />

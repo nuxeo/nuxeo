@@ -805,4 +805,26 @@ public final class Functions {
         return FilenameUtils.getBaseName(filename);
     }
 
+    /**
+     * Joins two strings to get a valid render attribute for ajax components.
+     *
+     * @since 5.9.4-JSF2
+     */
+    public static String joinRender(String render1, String render2) {
+        if (StringUtils.isBlank(render1) && StringUtils.isBlank(render2)) {
+            return "";
+        }
+        String res;
+        if (StringUtils.isBlank(render1)) {
+            res = render2;
+        } else if (StringUtils.isBlank(render2)) {
+            res = render1;
+        } else {
+            res = StringUtils.join(new String[] { render1, render2 }, " ");
+            res = res.replaceAll("\\s+", " ");
+        }
+        res = res.trim();
+        return res;
+    }
+
 }
