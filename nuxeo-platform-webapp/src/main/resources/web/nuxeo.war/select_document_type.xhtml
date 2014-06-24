@@ -27,8 +27,7 @@
 
         <table cellspacing="2">
           <tr>
-            <nxu:dataList var="typesList" value="#{typesMap.entrySet}"
-              id="selectDocumentTypeForCreationTable">
+            <c:forEach var="typesList" items="#{typesMap.entrySet}">
               <td style="vertical-align : top;width : 300px;">
                 <div>
                   <h4 class="documentTypes">
@@ -36,35 +35,28 @@
                   </h4>
                   <table>
                     <tr>
-                      <nxu:dataList value="#{typesList.value}" var="typeColumn"
-                        id="selectDocumentTypeForCreationCategory">
+                      <c:forEach items="#{typesList.value}" var="typeColumn">
                         <td valign="top">
-                          <nxu:dataList value="#{typeColumn}" var="type"
-                            id="selectDocumentTypeForCreationCategoryTable">
+                          <c:forEach items="#{typeColumn}" var="type">
                             <div class="documentType">
                               <h:commandLink action="#{documentActions.createDocument(type.id)}"
-                                id="selectDocumentTypeForCreationCategoryImageLink">
+                                id="#{type.id}" immediate="true">
                                 <h:graphicImage height="32" width="32" value="#{type.bigIcon}"
                                   rendered="#{!empty type.bigIcon}" />
-                              </h:commandLink>
-                              <h:commandLink class="documentTypeLink"
-                                action="#{documentActions.createDocument(type.id)}"
-                                id="selectDocumentTypeForCreationCategoryTitleLink">
                                 <h:outputText value="#{messages[type.label]}" />
                               </h:commandLink>
                               <div style="clear: both;"></div>
                             </div>
-                          </nxu:dataList>
+                          </c:forEach>
                         </td>
-                      </nxu:dataList>
+                      </c:forEach>
                     </tr>
                   </table>
                 </div>
               </td>
-            </nxu:dataList>
+            </c:forEach>
           </tr>
         </table>
-
       </h:form>
 
     </c:if>
