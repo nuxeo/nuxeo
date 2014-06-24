@@ -9,7 +9,16 @@
   xmlns:h="http://java.sun.com/jsf/html">
 
 <nxu:set var="fancyboxIdPrefix" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}_">
-
+<nxu:set var="actionReRender"
+  value="#{action.properties.ajaxReRender}"
+  resolveTwice="true" cache="true">
+<nxu:set var="fancyReRenderId"
+  value="#{fancyboxIdPrefix}ajax_panel"
+  cache="true">
+<nxu:set var="fancyReRender"
+  value="#{nxu:componentAbsoluteId(component, fancyReRenderId)}">
+<nxu:set var="elementsToReRender"
+  value="#{nxu:joinRender(fancyReRender, nxu:joinRender(ajaxReRender, actionReRender))}">
 <nxu:set var="iframe"
   value="#{action.properties.iframe}"
   resolveTwice="true" cache="true">
@@ -28,10 +37,9 @@
           styleClass="actionLink #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
           accesskey="#{action.accessKey}">
-          <f:param value="#{nxu:test(widgetProperty_formAdded,'2','1')}" name="lookupLevel" />
-          <f:param value="#{action.id}" name="selectedValue" />
-          <f:param value="#{widgetProperty_clickedActionIdHolder}" name="valueHolderId" />
-          <f:ajax execute="@this" render="#{fancyboxIdPrefix}ajax_panel" listener="#{selectionActions.onClick}"/>
+          <f:attribute name="selectedValue" value="#{action.id}" />
+          <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
+          <f:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}"/>
           <ui:include src="/incl/action/action_icon_label_template.xhtml">
             <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
             <ui:param name="hideLabel" value="#{widgetProperty_hideLabel}" />
@@ -46,10 +54,9 @@
           styleClass="button #{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
           disabled="#{!action.available}"
           accesskey="#{action.accessKey}">
-          <f:param value="#{nxu:test(widgetProperty_formAdded,'2','1')}" name="lookupLevel" />
-          <f:param value="#{action.id}" name="selectedValue" />
-          <f:param value="#{widgetProperty_clickedActionIdHolder}" name="valueHolderId" />
-          <f:ajax execute="@this" render="#{fancyboxIdPrefix}ajax_panel" listener="#{selectionActions.onClick}"/>
+          <f:attribute name="selectedValue" value="#{action.id}" />
+          <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
+          <f:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}"/>
           <ui:insert name="inside_action" />
         </h:commandButton>
       </c:if>
@@ -134,14 +141,11 @@
           <f:subview rendered="#{actionClicked}">
 
             <h:form>
-              <a4j:jsFunction name="#{fancyboxIdPrefix}closeFancybox">
-                <f:setPropertyActionListener value=""
-                  target="#{selectionActions.selectedValue}" />
-                <f:setPropertyActionListener
-                  value="#{widgetProperty_clickedActionIdHolder}"
-                  target="#{selectionActions.selectedValueHolder}" />
-                <nxu:actionListenerMethod
-                  value="#{selectionActions.onClick}" />
+              <a4j:jsFunction name="#{fancyboxIdPrefix}closeFancybox"
+                render="#{elementsToReRender}">
+                <f:attribute name="selectedValue" value="" />
+                <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
+                <nxu:actionListenerMethod value="#{selectionActions.setStaticValue}" />
               </a4j:jsFunction>
             </h:form>
 
@@ -200,7 +204,10 @@
 </c:if>
 
 </nxu:set>
-
+</nxu:set>
+</nxu:set>
+</nxu:set>
+</nxu:set>
 </nxu:set>
 
 </ui:composition>
