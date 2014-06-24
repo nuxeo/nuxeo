@@ -45,9 +45,9 @@
         execute="#{action.immediate ? '@this' : '@form'}"
         value="#{messages[action.label]}"
         disabled="#{!action.available}"
-        styleClass="button #{actionStyleClass} #{action.properties.styleClass}">
-        <ui:include src="/incl/action/action_icon_label_template.xhtml"
+        styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
         accesskey="#{action.accessKey}">
+        <ui:include src="/incl/action/action_icon_label_template.xhtml">
           <ui:param name="hideLabel" value="true" />
         </ui:include>
         <ui:insert name="before_action_trigger" />
