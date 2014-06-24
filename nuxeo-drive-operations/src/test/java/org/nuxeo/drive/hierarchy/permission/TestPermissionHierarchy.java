@@ -23,12 +23,16 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.type.TypeReference;
@@ -79,6 +83,8 @@ import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
+
+
 
 /**
  * Tests the user workspace and permission based hierarchy.
@@ -317,10 +323,10 @@ public class TestPermissionHierarchy {
          *
          * Nuxeo Drive
          *   |-- My Docs
+         *   |     |-- user1File2
          *   |     |-- user1Folder1
          *   |     |     |-- user1File1
          *   |     |     |-- user1Folder2
-         *   |     |-- user1File2
          *   |     |-- user1Folder3
          *   |     |      |-- user1File3
          *   |     |-- user1Folder4
@@ -392,9 +398,23 @@ public class TestPermissionHierarchy {
         assertNotNull(userSyncRoots);
         assertEquals(4, userSyncRoots.size());
 
+        DocumentBackedFolderItem folderItem;
+        DocumentBackedFileItem childFileItem;
+        DocumentBackedFileItem fileItem;
+        DocumentBackedFolderItem childFolderItem;
+
+        JsonNode[] rootNodes = sortNodeByName(userSyncRoots);
+
+        // user1File2
+        fileItem = mapper.readValue(
+                rootNodes[0], DocumentBackedFileItem.class);
+        checkFileItem(fileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File2,
+                userWorkspace1ItemId, userWorkspace1ItemPath, "user1File2.txt",
+                "user1");
+
         // user1Folder1
-        DocumentBackedFolderItem folderItem = mapper.readValue(
-                userSyncRoots.get(0), DocumentBackedFolderItem.class);
+        folderItem = mapper.readValue(rootNodes[1],
+                DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
                 user1Folder1, userWorkspace1ItemId, userWorkspace1ItemPath,
                 "user1Folder1", "user1");
@@ -404,44 +424,48 @@ public class TestPermissionHierarchy {
                 folderItemChildrenJSON.getStream(), ArrayNode.class);
         assertNotNull(folderItemChildren);
         assertEquals(2, folderItemChildren.size());
-        // user1File1
-        DocumentBackedFileItem childFileItem = mapper.readValue(
-                folderItemChildren.get(0), DocumentBackedFileItem.class);
-        checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                user1File1, folderItem.getId(), folderItem.getPath(),
-                "user1File1.txt", "user1");
-        // user1Folder2
-        DocumentBackedFolderItem childFolderItem = mapper.readValue(
-                folderItemChildren.get(1), DocumentBackedFolderItem.class);
-        checkFolderItem(childFolderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                user1Folder2, folderItem.getId(), folderItem.getPath(),
-                "user1Folder2", "user1");
-        // user1File2
-        DocumentBackedFileItem fileItem = mapper.readValue(
-                userSyncRoots.get(1), DocumentBackedFileItem.class);
-        checkFileItem(fileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File2,
-                userWorkspace1ItemId, userWorkspace1ItemPath, "user1File2.txt",
-                "user1");
+        {
+            JsonNode[] nodes = sortNodeByName(folderItemChildren);
+
+            // user1File1
+                childFileItem = mapper.readValue(nodes[0],
+                    DocumentBackedFileItem.class);
+            checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
+                    user1File1, folderItem.getId(), folderItem.getPath(),
+                    "user1File1.txt", "user1");
+
+            // user1Folder2
+            childFolderItem = mapper.readValue(
+                    nodes[1], DocumentBackedFolderItem.class);
+            checkFolderItem(childFolderItem,
+                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1Folder2,
+                    folderItem.getId(), folderItem.getPath(), "user1Folder2",
+                    "user1");
+        }
+
         // user1Folder3
-        folderItem = mapper.readValue(userSyncRoots.get(2),
+        folderItem = mapper.readValue(rootNodes[2],
                 DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
                 user1Folder3, userWorkspace1ItemId, userWorkspace1ItemPath,
                 "user1Folder3", "user1");
-        folderItemChildrenJSON = (Blob) clientSession1.newRequest(
-                NuxeoDriveGetChildren.ID).set("id", folderItem.getId()).execute();
-        folderItemChildren = mapper.readValue(
-                folderItemChildrenJSON.getStream(), ArrayNode.class);
-        assertNotNull(folderItemChildren);
-        assertEquals(1, folderItemChildren.size());
-        // user1File3
-        childFileItem = mapper.readValue(folderItemChildren.get(0),
-                DocumentBackedFileItem.class);
-        checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                user1File3, folderItem.getId(), folderItem.getPath(),
-                "user1File3.txt", "user1");
+        {
+            folderItemChildrenJSON = (Blob) clientSession1.newRequest(
+                    NuxeoDriveGetChildren.ID).set("id", folderItem.getId()).execute();
+            folderItemChildren = mapper.readValue(
+                    folderItemChildrenJSON.getStream(), ArrayNode.class);
+            assertNotNull(folderItemChildren);
+            assertEquals(1, folderItemChildren.size());
+            // user1File3
+            childFileItem = mapper.readValue(folderItemChildren.get(0),
+                    DocumentBackedFileItem.class);
+            checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
+                    user1File3, folderItem.getId(), folderItem.getPath(),
+                    "user1File3.txt", "user1");
+        }
+
         // user1Folder4
-        folderItem = mapper.readValue(userSyncRoots.get(3),
+        folderItem = mapper.readValue(rootNodes[3],
                 DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
                 user1Folder4, userWorkspace1ItemId, userWorkspace1ItemPath,
@@ -458,6 +482,8 @@ public class TestPermissionHierarchy {
                 sharedSyncRootsJSON.getStream(),
                 new TypeReference<List<DefaultSyncRootFolderItem>>() {
                 });
+        Collections.sort(sharedSyncRoots);
+
         assertNotNull(sharedSyncRoots);
         assertEquals(2, sharedSyncRoots.size());
 
@@ -473,22 +499,27 @@ public class TestPermissionHierarchy {
                 sharedSyncRootChildrenJSON.getStream(), ArrayNode.class);
         assertNotNull(sharedSyncRootChildren);
         assertEquals(2, sharedSyncRootChildren.size());
-        // user2File1
-        DocumentBackedFileItem sharedSyncRootChildFileItem = mapper.readValue(
-                sharedSyncRootChildren.get(0), DocumentBackedFileItem.class);
-        checkFileItem(sharedSyncRootChildFileItem,
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                session1.getDocument(user2File1.getRef()),
-                sharedSyncRoot.getId(), sharedSyncRoot.getPath(),
-                "user2File1.txt", "user2");
-        // user2Folder2
-        DocumentBackedFolderItem sharedSyncRootChildFolderItem = mapper.readValue(
-                sharedSyncRootChildren.get(1), DocumentBackedFolderItem.class);
-        checkFolderItem(sharedSyncRootChildFolderItem,
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                session1.getDocument(user2Folder2.getRef()),
-                sharedSyncRoot.getId(), sharedSyncRoot.getPath(),
-                "user2Folder2", "user2");
+        DocumentBackedFolderItem sharedSyncRootChildFolderItem;
+        DocumentBackedFileItem sharedSyncRootChildFileItem;
+        {
+            JsonNode[] nodes = sortNodeByName(sharedSyncRootChildren);
+            // user2File1
+            sharedSyncRootChildFileItem = mapper.readValue(
+                    nodes[0], DocumentBackedFileItem.class);
+            checkFileItem(sharedSyncRootChildFileItem,
+                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
+                    session1.getDocument(user2File1.getRef()),
+                    sharedSyncRoot.getId(), sharedSyncRoot.getPath(),
+                    "user2File1.txt", "user2");
+            // user2Folder2
+            sharedSyncRootChildFolderItem = mapper.readValue(
+                    nodes[1], DocumentBackedFolderItem.class);
+            checkFolderItem(sharedSyncRootChildFolderItem,
+                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
+                    session1.getDocument(user2Folder2.getRef()),
+                    sharedSyncRoot.getId(), sharedSyncRoot.getPath(),
+                    "user2Folder2", "user2");
+        }
         // user2Folder3
         sharedSyncRoot = sharedSyncRoots.get(1);
         checkFolderItem(sharedSyncRoot, SYNC_ROOT_ID_PREFIX,
@@ -731,6 +762,23 @@ public class TestPermissionHierarchy {
                 });
         assertNotNull(sharedSyncRoots);
         assertEquals(0, sharedSyncRoots.size());
+    }
+
+    protected JsonNode[] sortNodeByName(ArrayNode array) {
+        JsonNode nodes[] = new JsonNode[array.size()];
+        for (int i = 0; i < array.size(); ++i) {
+            nodes[i] = array.get(i);
+        }
+        Arrays.sort(nodes, new Comparator<JsonNode>() {
+
+            @Override
+            public int compare(JsonNode o1, JsonNode o2) {
+                final String s1 = o1.get("name").getValueAsText();
+                final String s2 = o2.get("name").getValueAsText();
+                return s1.compareTo(s2);
+            }
+        });
+        return nodes;
     }
 
     protected void checkFileItem(FileItem fileItem, String fileItemIdPrefix,
