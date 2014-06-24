@@ -32,6 +32,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class HtmlSanitizerListener implements EventListener {
 
+    public static final String DISABLE_HTMLSANITIZER_LISTENER = "disableHtmlSanitizerListener";
+
     public void handleEvent(Event event) throws ClientException {
         String eventId = event.getName();
         if (!eventId.equals(DocumentEventTypes.ABOUT_TO_CREATE)
@@ -42,6 +44,11 @@ public class HtmlSanitizerListener implements EventListener {
         if (!(context instanceof DocumentEventContext)) {
             return;
         }
+        Boolean disableListener = (Boolean) context.getProperty(DISABLE_HTMLSANITIZER_LISTENER);
+        if (Boolean.TRUE.equals(disableListener)) {
+            return;
+        }
+
         DocumentModel doc = ((DocumentEventContext) context).getSourceDocument();
         if (doc.hasFacet(FacetNames.IMMUTABLE)) {
             return;
