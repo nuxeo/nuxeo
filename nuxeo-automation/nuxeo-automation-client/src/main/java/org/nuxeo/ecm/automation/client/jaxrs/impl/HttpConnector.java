@@ -147,7 +147,7 @@ public class HttpConnector implements Connector {
             }
             return null; // cannot handle responses with no ctype
         }
-        String ctype = ctypeHeader.getValue().toLowerCase();
+        String ctype = ctypeHeader.getValue();
         String disp = null;
         Header[] hdisp = resp.getHeaders("Content-Disposition");
         if (hdisp != null && hdisp.length > 0) {
