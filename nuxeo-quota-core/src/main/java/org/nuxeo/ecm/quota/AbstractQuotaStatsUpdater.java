@@ -33,6 +33,7 @@ import static org.nuxeo.ecm.platform.audit.service.NXAuditEventsService.DISABLE_
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.platform.publisher.listeners.DomainEventsListener.DISABLE_DOMAIN_LISTENER;
+import static org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerListener.DISABLE_HTMLSANITIZER_LISTENER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -213,6 +214,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
         doc.putContextData(DISABLE_DUBLINCORE_LISTENER, true);
         doc.putContextData(DISABLE_AUDIT_LOGGER, true);
         doc.putContextData(DISABLE_DOMAIN_LISTENER, true);
+        doc.putContextData(DISABLE_HTMLSANITIZER_LISTENER, true);
         doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT,
                 Boolean.TRUE);
         // force no versioning after quota modifications
