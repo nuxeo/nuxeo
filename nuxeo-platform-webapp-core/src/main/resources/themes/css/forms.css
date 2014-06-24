@@ -16,6 +16,10 @@ textarea {
   background: transparent url("${basePath}/icons/required.gif") top right no-repeat;
   padding: 0 1em 0 0 }
 
+.widgetHelpLabel .widgetLabel.required {
+  background: url("/nuxeo/icons/required.gif") no-repeat scroll right top, url("/nuxeo/icons/help.png") no-repeat scroll right 15px top transparent;
+  padding-right: 2.3em }
+
 optgroup {
   font-style: normal;
   font-weight: bold }

@@ -283,11 +283,11 @@ div.detail {
   padding: 3em 2em 6em }
 
 /* =Tips */
-.widgetHelpLabel {
-  border-bottom: 1px dashed #ffcc1d;
+ .widgetHelpLabel .widgetLabel {
+  background: url("${basePath}/icons/help.png") no-repeat scroll right top transparent;
   cursor: help;
-  display: inline;
-  padding-bottom: .2em }
+  display: block;
+  padding: 0 1.2em 0.2em 0 }
 
 .tooltip {
   background-color: #fff;

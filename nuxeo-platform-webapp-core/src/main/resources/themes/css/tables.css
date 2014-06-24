@@ -216,7 +216,7 @@ table.noHover tr:hover {
   width: 10em }
 
 .labelColumn .widgetHelpLabel span {
-  display: inline }
+  display: inherit; }
 
 /* =Generic table styles for Widgets in Layouts */
 .containerSubWidget {
