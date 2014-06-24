@@ -279,6 +279,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public void createState(State state) throws DocumentException {
         DBObject ob = stateToBson(state, true);
+        if (log.isTraceEnabled()) {
+            log.trace("MongoDB: CREATE " + ob);
+        }
         coll.insert(ob);
         // TODO dupe exception
         // throw new DocumentException("Already exists: " + id);
@@ -302,6 +305,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         String id = (String) state.get(KEY_ID);
         DBObject query = new BasicDBObject(KEY_ID, id);
         DBObject ob = stateToBson(state, false);
+        if (log.isTraceEnabled()) {
+            log.trace("MongoDB: UPDATE " + query + " <- " + ob);
+        }
         coll.update(query, ob);
         // TODO dupe exception
         // throw new DocumentException("Missing: " + id);
@@ -310,6 +316,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public void deleteState(String id) throws DocumentException {
         DBObject query = new BasicDBObject(KEY_ID, id);
+        if (log.isTraceEnabled()) {
+            log.trace("MongoDB: REMOVE " + query);
+        }
         WriteResult w = coll.remove(query);
         if (w.getN() != 1) {
             log.error("Removed " + w.getN() + " docs for id: " + id);
@@ -428,8 +437,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
         addPrincipals(query, evaluator.principals);
         List<State> list;
         if (log.isTraceEnabled()) {
-            log.trace("MongoDB: " + query + " offset " + offset + " limit "
-                    + limit);
+            log.trace("MongoDB: QUERY " + query + " OFFSET " + offset
+                    + " LIMIT " + limit);
         }
         long totalSize;
         DBCursor cursor = coll.find(query).skip(offset).limit(limit);
