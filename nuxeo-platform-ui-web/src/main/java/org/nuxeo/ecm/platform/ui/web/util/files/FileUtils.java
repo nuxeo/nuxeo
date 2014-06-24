@@ -128,7 +128,7 @@ public class FileUtils {
         }
 
         /**
-         * @since 5.9.2
+         * @since 5.9.4-JSF2
          */
         public TemporaryFileBlob(InputStream in, String mimeType,
                 String encoding, String filename, String digest) {
@@ -163,7 +163,7 @@ public class FileUtils {
     }
 
     /**
-     * @since 5.9.2
+     * @since 5.9.4-JSF2
      */
     public static Blob createTemporaryFileBlob(InputStream in, String filename,
             String mimeType) {
