@@ -30,6 +30,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -204,6 +205,13 @@ public class WorkTest extends TXSQLRepositoryTestCase {
                 if (explicitSave) {
                     session.save();
                 }
+            } catch (Exception cause) {
+                if (!(cause instanceof ConcurrentUpdateException)) {
+                    LogFactory.getLog(WorkTest.class).error("non concurrent error caught (no retry)", cause);
+                } else {
+                    LogFactory.getLog(WorkTest.class).info("concurrent error caught (should retry)", cause);
+                }
+                throw cause;
             } finally {
                 closeSession();
             }
