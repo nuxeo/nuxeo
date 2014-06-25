@@ -93,7 +93,7 @@ public class EditorLinkActionsBean extends InputController implements
         resultDocuments = documentManager.query(query, 100);
         hasSearchResults = !resultDocuments.isEmpty();
         log.debug("query result contains: " + resultDocuments.size() + " docs.");
-        return "test_popup";
+        return "editor_link_search_document";
     }
 
     public String getSearchKeywords() {
