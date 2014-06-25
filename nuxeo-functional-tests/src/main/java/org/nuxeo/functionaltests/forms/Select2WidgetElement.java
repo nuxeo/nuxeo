@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.Locator;
-import org.nuxeo.functionaltests.ScreenshotTaker;
 import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -43,21 +42,9 @@ public class Select2WidgetElement extends WebFragmentImpl {
 
     private static class Select2Wait implements Function<WebElement, Boolean> {
 
-        private int count = 0;
-
-        private boolean isDEBUGNXP13875 = false;
-
-        public Select2Wait(boolean isDEBUGNXP13875) {
-            this.isDEBUGNXP13875= isDEBUGNXP13875;
-        }
-
         public Boolean apply(WebElement element) {
             boolean result = !element.getAttribute("class").contains(
                     S2_CSS_ACTIVE_CLASS);
-            count++;
-            if (isDEBUGNXP13875 && result) {
-                log.warn("DEBUG-NXP-13875: nb wait = " + count);
-            }
             return result;
         }
     }
@@ -176,7 +163,6 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 5.7.3
      */
     public void selectValue(final String value) {
-        boolean isDEBUGNXP13875 = value.equals("France");
         WebElement select2Field = null;
         if (mutliple) {
             select2Field = element;
@@ -198,20 +184,13 @@ public class Select2WidgetElement extends WebFragmentImpl {
             suggestInput = driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH));
         }
 
-        ScreenshotTaker screenshotTaker = new ScreenshotTaker();
         char c;
         for (int i = 0; i < value.length(); i++) {
             c = value.charAt(i);
-            if (isDEBUGNXP13875) {
-                log.warn(String.format("typing char : %c", c));
-            }
             suggestInput.sendKeys(c + "");
             try {
-                Function<WebElement, Boolean> s2WaitFunction = new Select2Wait(isDEBUGNXP13875);
+                Function<WebElement, Boolean> s2WaitFunction = new Select2Wait();
                 wait.until(s2WaitFunction);
-                if (isDEBUGNXP13875) {
-                    log.warn(String.format("returning : %d item(s)", getSuggestedEntries().size()));
-                }
             } catch (TimeoutException e) {
                 if (i == (value.length() - 1)) {
                     log.error("Suggestion definitly timed out with last letter : "
@@ -224,8 +203,6 @@ public class Select2WidgetElement extends WebFragmentImpl {
         }
 
         if (getSuggestedEntries() != null && getSuggestedEntries().size() > 1) {
-            screenshotTaker.takeScreenshot(driver, "DEBUG-NXP-13875-");
-            screenshotTaker.dumpPageSource(driver, "DEBUG-NXP-13875-");
             log.warn("Suggestion for element "
                     + element.getAttribute("id")
                     + " returned more than 1 result, the first suggestion will be selected : "
