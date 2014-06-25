@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- *
  */
 public class UserAgentMatcher {
 
@@ -40,6 +39,8 @@ public class UserAgentMatcher {
     private static final Pattern UA_MSIE_67 = Pattern.compile("^Mozilla/4.0 \\(compatible; MSIE [67].[0-9]((?!Trident).)*$");
 
     private static final Pattern UA_MSIE_CF = Pattern.compile("^Mozilla.*chromeframe.*");
+
+    private static final Pattern UA_MSIE_FROM_10 = Pattern.compile("^Mozilla.*[Tt]rident/[6-9]\\..*");
 
     private UserAgentMatcher() {
         // Helper class
@@ -74,8 +75,15 @@ public class UserAgentMatcher {
         return UA_MSIE_CF.matcher(UA).matches();
     }
 
+    /**
+     * @since 5.9.5
+     */
+    public static boolean isMSIE10OrMore(String UA) {
+        return UA_MSIE_FROM_10.matcher(UA).matches();
+    }
+
     public static boolean isHistoryPushStateSupported(String UA) {
         return isFirefox4OrMore(UA) || isSafari5(UA) || isChrome(UA)
-                || isMSIEWithChromeFrame(UA);
+                || isMSIEWithChromeFrame(UA) || isMSIE10OrMore(UA);
     }
 }

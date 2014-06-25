@@ -39,6 +39,16 @@ public class TestUserAgent {
             + " .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; "
             + ".NET4.0C)";
 
+    public static final String MSIE10 = "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)";
+
+    public static final String MSIE10_COMPAT = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; Trident/6.0)";
+
+    public static final String MSIE11 = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
+
+    public static final String MSIE11_COMPAT = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C)";
+
+    public static final String FF_30 = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:30.0) Gecko/20100101 Firefox/30.0";
+
     @Test
     public void testSupportedBrowsers() throws Exception {
 
@@ -68,6 +78,17 @@ public class TestUserAgent {
         assertTrue(UserAgentMatcher.isMSIE6or7(MSIE7_UA));
         // IE9 in compatibility view shouldn't be treated as IE 6 or 7
         assertFalse(UserAgentMatcher.isMSIE6or7(MSIE9_COMPATIBILITY_VIEW_UA));
+    }
+
+    @Test
+    public void testHistoryPushStateSupport() {
+        assertFalse(UserAgentMatcher.isHistoryPushStateSupported(MSIE6_UA));
+        assertFalse(UserAgentMatcher.isHistoryPushStateSupported(MSIE7_UA));
+        assertFalse(UserAgentMatcher.isHistoryPushStateSupported(MSIE9_COMPATIBILITY_VIEW_UA));
+        assertTrue(UserAgentMatcher.isHistoryPushStateSupported(FF_30));
+        assertTrue(UserAgentMatcher.isHistoryPushStateSupported(MSIE10));
+        assertTrue(UserAgentMatcher.isHistoryPushStateSupported(MSIE11));
+        assertTrue(UserAgentMatcher.isHistoryPushStateSupported(MSIE11_COMPAT));
     }
 
 }
