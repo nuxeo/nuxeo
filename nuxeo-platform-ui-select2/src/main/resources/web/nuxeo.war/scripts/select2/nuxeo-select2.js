@@ -227,21 +227,41 @@
     }
 
     // build select2 parameters
+    var requestInProgress = false;
+    var nextQueryId;
     var select2_params = {
       containerCssClass : params.containerCssClass,
       dropdownCssClass : params.dropdownCssClass,
       minimumInputLength : params.minChars,
       query : function(query) {
 
-        configureOperationParameters(op, params, query);
+        var serverCall = function() {
+          if (!requestInProgress) {
+            requestInProgress = true;
+            configureOperationParameters(op, params, query);
 
-        op.execute(function(data, textStatus, xhr) {
-          var results = [];
-          fillResult(results, data, params)
-          query.callback({
-            results : results
-          });
-        });
+            op.execute(function(data, textStatus, xhr) {
+              var results = [];
+              fillResult(results, data, params)
+              query.callback({
+                results : results
+              });
+              requestInProgress = false;
+            }, function() {
+              requestInProgress = false;
+            });
+          } else {
+            window.clearTimeout(nextQueryId);
+            nextQueryId = window.setTimeout(function() {
+              serverCall();
+            }, 100);
+          }
+        }
+        window.clearTimeout(nextQueryId);
+        nextQueryId = window.setTimeout(function() {
+          serverCall()
+        }, 300);
+        ;
       }
     }
 
