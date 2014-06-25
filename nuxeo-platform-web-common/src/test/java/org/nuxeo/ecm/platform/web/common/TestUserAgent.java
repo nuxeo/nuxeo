@@ -17,32 +17,35 @@
 
 package org.nuxeo.ecm.platform.web.common;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 
 public class TestUserAgent {
 
-    public static final String MSIE6_UA = "Mozilla/4.0 (compatible; MSIE 6.1;" +
-            " Windows XP; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
+    public static final String MSIE6_UA = "Mozilla/4.0 (compatible; MSIE 6.1;"
+            + " Windows XP; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
 
-    public static final String MSIE7_UA = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1;" +
-            " WOW64; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729;" +
-            " .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C)";
+    public static final String MSIE7_UA = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1;"
+            + " WOW64; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729;"
+            + " .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C)";
 
-    public static final String MSIE9_COMPATIBILITY_VIEW_UA = "Mozilla/4.0 (compatible; MSIE 7.0;" +
-            " Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727;" +
-            " .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; " +
-            ".NET4.0C)";
+    public static final String MSIE9_COMPATIBILITY_VIEW_UA = "Mozilla/4.0 (compatible; MSIE 7.0;"
+            + " Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727;"
+            + " .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; "
+            + ".NET4.0C)";
 
     @Test
     public void testSupportedBrowsers() throws Exception {
 
-        List<String> UAs = FileUtils.readLines(this.getClass().getClassLoader().getResourceAsStream("supportedBrowsers.txt"));
-        List<String> BadUAs = FileUtils.readLines(this.getClass().getClassLoader().getResourceAsStream("unsupportedBrowsers.txt"));
+        List<String> UAs = FileUtils.readLines(this.getClass().getClassLoader().getResourceAsStream(
+                "supportedBrowsers.txt"));
+        List<String> BadUAs = FileUtils.readLines(this.getClass().getClassLoader().getResourceAsStream(
+                "unsupportedBrowsers.txt"));
 
         for (String UA : UAs) {
             if (!UA.startsWith("#") && !UA.isEmpty()) {
