@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -57,7 +57,7 @@ public final class I18NUtils {
             text = key;
         }
 
-        if (params != null) {
+        if (params != null && params.length != 0) {
             MessageFormat mf = new MessageFormat(text, locale);
             text = mf.format(params, new StringBuffer(), null).toString();
         }
