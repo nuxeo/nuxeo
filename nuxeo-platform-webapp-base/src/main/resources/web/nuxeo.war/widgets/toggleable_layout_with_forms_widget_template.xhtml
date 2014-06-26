@@ -85,7 +85,7 @@
 
           <ui:include src="/widgets/incl/widget_label_template.xhtml">
             <ui:param name="defaultLabel"
-              value="#{messages['label.foldableBox.foldUnfold']}" />
+              value="#{foldable?messages['label.foldableBox.foldUnfold']:''}" />
             <ui:param name="labelStyleClass"
               value="#{widgetProperty_headerStyleClass}" />
             <ui:param name="hideHelp" value="true" />
