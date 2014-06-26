@@ -1934,13 +1934,15 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
-        session = openSession(admin);
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
-        assertTrue(route.isDone());
-        assertEquals(
-                "test",
-                route.getDocument().getPropertyValue("fctroute1:globalVariable"));
+        try (CoreSession adminSession = openSession(admin)) {
+            route = adminSession.getDocument(route.getDocument().getRef()).getAdapter(
+                    DocumentRoute.class);
+            assertTrue(route.isDone());
+            assertEquals(
+                    "test",
+                    route.getDocument().getPropertyValue(
+                            "fctroute1:globalVariable"));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -2049,17 +2051,22 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
-        session = openSession(admin);
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
-        assertTrue(route.isDone());
-        assertEquals(
-                "test",
-                route.getDocument().getPropertyValue("fctroute1:globalVariable"));
-        // user1 and user 2 have no longer Write on the document following the
-        // workflow
-        assertFalse(session.hasPermission(user2, docs.get(0).getRef(), "Write"));
-        assertFalse(session.hasPermission(user1, docs.get(0).getRef(), "Write"));
+        try (CoreSession adminSession = openSession(admin)) {
+            route = adminSession.getDocument(route.getDocument().getRef()).getAdapter(
+                    DocumentRoute.class);
+            assertTrue(route.isDone());
+            assertEquals(
+                    "test",
+                    route.getDocument().getPropertyValue(
+                            "fctroute1:globalVariable"));
+            // user1 and user 2 have no longer Write on the document following
+            // the
+            // workflow
+            assertFalse(adminSession.hasPermission(user2, docs.get(0).getRef(),
+                    "Write"));
+            assertFalse(adminSession.hasPermission(user1, docs.get(0).getRef(),
+                    "Write"));
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -2138,26 +2145,31 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
         // end task and verify that route was done
         NuxeoPrincipal admin = new UserPrincipal("admin", null, false, true);
-        session = openSession(admin);
-        route = session.getDocument(route.getDocument().getRef()).getAdapter(
-                DocumentRoute.class);
-        assertTrue(route.isDone());
-        assertEquals(
-                "test",
-                route.getDocument().getPropertyValue("fctroute1:globalVariable"));
+        try (CoreSession adminSession = openSession(admin)) {
+            route = adminSession.getDocument(route.getDocument().getRef()).getAdapter(
+                    DocumentRoute.class);
+            assertTrue(route.isDone());
+            assertEquals(
+                    "test",
+                    route.getDocument().getPropertyValue(
+                            "fctroute1:globalVariable"));
 
-        // verify that the optput chain was executed on both docs
-        doc = session.getDocument(doc.getRef());
-        assertEquals("title 1", doc.getTitle());
+            // verify that the optput chain was executed on both docs
+            doc = adminSession.getDocument(doc.getRef());
+            assertEquals("title 1", doc.getTitle());
 
-        doc2 = session.getDocument(doc2.getRef());
-        assertEquals("title 1", doc2.getTitle());
+            doc2 = adminSession.getDocument(doc2.getRef());
+            assertEquals("title 1", doc2.getTitle());
 
-        // task assignees don't have WRITE any more on both documents following
-        // the workflow
-        // workflow
-        assertFalse(session.hasPermission(user1, docs.get(0).getRef(), "Write"));
-        assertFalse(session.hasPermission(user1, docs.get(1).getRef(), "Write"));
+            // task assignees don't have WRITE any more on both documents
+            // following
+            // the workflow
+            // workflow
+            assertFalse(adminSession.hasPermission(user1, docs.get(0).getRef(),
+                    "Write"));
+            assertFalse(adminSession.hasPermission(user1, docs.get(1).getRef(),
+                    "Write"));
+        }
     }
 
 }
