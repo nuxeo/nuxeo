@@ -200,28 +200,20 @@ public final class Framework {
     /**
      * Gets a service given its class.
      */
-    public static <T> T getService(Class<T> serviceClass) throws Exception {
-        return getLocalService(serviceClass);
-    }
-
-    /**
-     * Gets a service given its class and an identifier.
-     */
-    public static <T> T getService(Class<T> serviceClass, String name)
-            throws Exception {
-        return getLocalService(serviceClass);
-    }
-
-    /**
-     * Gets a nuxeo-runtime local service.
-     */
-    public static <T> T getLocalService(Class<T> serviceClass) {
+    public static <T> T getService(Class<T> serviceClass) {
         ServiceProvider provider = DefaultServiceProvider.getProvider();
         if (provider != null) {
             return provider.getService(serviceClass);
         }
         // TODO impl a runtime service provider
         return runtime.getService(serviceClass);
+    }
+
+    /**
+     * Gets a service given its class.
+     */
+    public static <T> T getLocalService(Class<T> serviceClass) {
+        return getService(serviceClass);
     }
 
     /**
