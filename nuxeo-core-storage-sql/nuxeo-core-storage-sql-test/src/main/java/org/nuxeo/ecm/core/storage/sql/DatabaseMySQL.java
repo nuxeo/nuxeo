@@ -66,9 +66,9 @@ public class DatabaseMySQL extends DatabaseHelper {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "com.mysql.jdbc.jdbc2.optional.MysqlXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("URL", System.getProperty(URL_PROPERTY));
-        properties.put("User", System.getProperty(USER_PROPERTY));
-        properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
+        properties.put("URL", Framework.getProperty(URL_PROPERTY));
+        properties.put("User", Framework.getProperty(USER_PROPERTY));
+        properties.put("Password", Framework.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
         return descriptor;
     }

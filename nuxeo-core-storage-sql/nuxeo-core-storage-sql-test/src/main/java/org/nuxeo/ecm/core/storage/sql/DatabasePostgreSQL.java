@@ -61,9 +61,9 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         Class.forName(DRIVER);
         setProperties();
         Connection connection = DriverManager.getConnection(
-                System.getProperty(URL_PROPERTY),
-                System.getProperty(USER_PROPERTY),
-                System.getProperty(PASSWORD_PROPERTY));
+                Framework.getProperty(URL_PROPERTY),
+                Framework.getProperty(USER_PROPERTY),
+                Framework.getProperty(PASSWORD_PROPERTY));
         try {
             doOnAllTables(connection, null, "public", "DROP TABLE \"%s\" CASCADE");
             Statement st = connection.createStatement();

@@ -59,7 +59,7 @@ public class DatabaseOracle extends DatabaseHelper {
     public void setUp() throws Exception {
         Class.forName(DRIVER);
         setProperties();
-        Connection connection = getConnection(System.getProperty(URL_PROPERTY),
+        Connection connection = getConnection(Framework.getProperty(URL_PROPERTY),
                 Framework.getProperty(USER_PROPERTY),
                 Framework.getProperty(PASSWORD_PROPERTY));
         doOnAllTables(connection, null,
@@ -99,11 +99,11 @@ public class DatabaseOracle extends DatabaseHelper {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "oracle.jdbc.xa.client.OracleXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("URL", System.getProperty(URL_PROPERTY));
-        properties.put("User", System.getProperty(USER_PROPERTY));
-        properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
+        properties.put("URL", Framework.getProperty(URL_PROPERTY));
+        properties.put("User", Framework.getProperty(USER_PROPERTY));
+        properties.put("Password", Framework.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
-        descriptor.idType = System.getProperty(ID_TYPE_PROPERTY);
+        descriptor.idType = Framework.getProperty(ID_TYPE_PROPERTY);
         return descriptor;
     }
 

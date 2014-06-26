@@ -92,7 +92,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
     public void setUp() throws Exception {
         Class.forName(DRIVER);
         setProperties();
-        Connection connection = DriverManager.getConnection(System.getProperty(URL_PROPERTY));
+        Connection connection = DriverManager.getConnection(Framework.getProperty(URL_PROPERTY));
         try  {
             doOnAllTables(connection, null, null, "DROP TABLE [%s]"); // no CASCADE...
             checkSupports(connection);
@@ -119,16 +119,16 @@ public class DatabaseSQLServer extends DatabaseHelper {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = XA_DATASOURCE;
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("ServerName", System.getProperty(SERVER_PROPERTY));
-        properties.put("PortNumber", System.getProperty(PORT_PROPERTY));
-        properties.put("DatabaseName", System.getProperty(DATABASE_PROPERTY));
-        properties.put("User", System.getProperty(USER_PROPERTY));
-        properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
+        properties.put("ServerName", Framework.getProperty(SERVER_PROPERTY));
+        properties.put("PortNumber", Framework.getProperty(PORT_PROPERTY));
+        properties.put("DatabaseName", Framework.getProperty(DATABASE_PROPERTY));
+        properties.put("User", Framework.getProperty(USER_PROPERTY));
+        properties.put("Password", Framework.getProperty(PASSWORD_PROPERTY));
         properties.put("UseCursors", "true");
         descriptor.properties = properties;
         descriptor.fulltextAnalyzer = "French";
         descriptor.fulltextCatalog = "nuxeo";
-        descriptor.idType = System.getProperty(ID_TYPE_PROPERTY);
+        descriptor.idType = Framework.getProperty(ID_TYPE_PROPERTY);
         return descriptor;
     }
 

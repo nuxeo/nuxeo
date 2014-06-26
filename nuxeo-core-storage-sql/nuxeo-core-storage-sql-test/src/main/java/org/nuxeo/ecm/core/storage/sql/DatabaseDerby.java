@@ -105,9 +105,9 @@ public class DatabaseDerby extends DatabaseHelper {
         descriptor.xaDataSourceName = "org.apache.derby.jdbc.EmbeddedXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("createDatabase", "create");
-        properties.put("databaseName", System.getProperty(DATABASE_PROPERTY));
-        properties.put("user", System.getProperty(USER_PROPERTY));
-        properties.put("password", System.getProperty(PASSWORD_PROPERTY));
+        properties.put("databaseName", Framework.getProperty(DATABASE_PROPERTY));
+        properties.put("user", Framework.getProperty(USER_PROPERTY));
+        properties.put("password", Framework.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
         return descriptor;
     }
