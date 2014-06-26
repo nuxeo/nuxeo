@@ -67,12 +67,30 @@ public class TestAutomaticIndexing {
     protected CoreSession session;
 
     @Inject
-    ElasticSearchIndexing esi;
+    ElasticSearchAdmin esa;
+
+    private int commandProcessed;
 
     @After
     public void cleanupIndexed() throws Exception {
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         esa.initIndexes(true);
+    }
+
+    private void startCountingCommandProcessed() {
+        Assert.assertNotNull(esa);
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+        commandProcessed = esa.getTotalCommandProcessed();
+    }
+
+    private void assertNumberOfCommandProcessed(int processed)
+            throws InterruptedException {
+        Assert.assertNotNull(esa);
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
     }
 
     @Test
@@ -83,7 +101,6 @@ public class TestAutomaticIndexing {
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
 
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
         Assert.assertEquals(0, esa.getPendingDocs());
 
@@ -132,7 +149,6 @@ public class TestAutomaticIndexing {
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
 
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
         Assert.assertEquals(0, esa.getPendingDocs());
 
@@ -174,10 +190,8 @@ public class TestAutomaticIndexing {
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
 
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
         Assert.assertEquals(0, esa.getPendingDocs());
-
         // create 10 docs
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
@@ -186,17 +200,11 @@ public class TestAutomaticIndexing {
             doc = session.createDocument(doc);
 
         }
-
-        int n = esa.getTotalCommandProcessed();
+        startCountingCommandProcessed();
 
         TransactionHelper.commitOrRollbackTransaction();
 
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
-        Assert.assertEquals(10, esa.getTotalCommandProcessed() - n);
+        assertNumberOfCommandProcessed(10);
 
         TransactionHelper.startTransaction();
 
@@ -218,10 +226,9 @@ public class TestAutomaticIndexing {
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
 
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
         Assert.assertEquals(0, esa.getPendingDocs());
-
+        startCountingCommandProcessed();
         // create 10 docs
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
@@ -235,14 +242,7 @@ public class TestAutomaticIndexing {
         TransactionHelper.setTransactionRollbackOnly();
         TransactionHelper.commitOrRollbackTransaction();
 
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
-
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        assertNumberOfCommandProcessed(0);
 
         TransactionHelper.startTransaction();
 
@@ -263,23 +263,16 @@ public class TestAutomaticIndexing {
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
 
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
         Assert.assertEquals(0, esa.getPendingDocs());
 
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:title", "TestMe");
         doc = session.createDocument(doc);
+
+        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-
-        Assert.assertEquals(1, esa.getPendingCommands());
-        Assert.assertEquals(1, esa.getPendingDocs());
-
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        assertNumberOfCommandProcessed(1);
 
         TransactionHelper.startTransaction();
 
@@ -292,14 +285,9 @@ public class TestAutomaticIndexing {
 
         // now delete the document
         session.removeDocument(doc.getRef());
-        int n = esa.getTotalCommandProcessed();
+        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
-        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
+        assertNumberOfCommandProcessed(1);
 
         TransactionHelper.startTransaction();
 
@@ -312,6 +300,7 @@ public class TestAutomaticIndexing {
 
     }
 
+
     @Test
     public void shouldReIndexDocumentAsynchronously() throws Exception {
 
@@ -320,7 +309,6 @@ public class TestAutomaticIndexing {
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
 
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
         Assert.assertEquals(0, esa.getPendingDocs());
 
@@ -333,19 +321,11 @@ public class TestAutomaticIndexing {
             doc = session.createDocument(doc);
 
         }
-        int n = esa.getTotalCommandProcessed();
-        // this should not be needed !
+        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
-        Assert.assertEquals(10, esa.getTotalCommandProcessed() - n);
+        assertNumberOfCommandProcessed(10);
 
         TransactionHelper.startTransaction();
-
         esa.refresh();
 
         SearchResponse searchResponse = esa.getClient().prepareSearch(
@@ -356,7 +336,7 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
         int i = 0;
-        n = esa.getTotalCommandProcessed();
+        startCountingCommandProcessed();
         for (SearchHit hit : searchResponse.getHits()) {
             i++;
             if (i> 8) {
@@ -368,12 +348,7 @@ public class TestAutomaticIndexing {
         }
 
         TransactionHelper.commitOrRollbackTransaction();
-
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
-        Assert.assertEquals(8, esa.getTotalCommandProcessed() - n);
+        assertNumberOfCommandProcessed(8);
 
         TransactionHelper.startTransaction();
 
@@ -398,7 +373,6 @@ public class TestAutomaticIndexing {
     @Test
     public void shouldIndexBinaryFulltext() throws Exception {
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
         holder.setBlob(new StringBlob("You know for search"));
