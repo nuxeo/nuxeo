@@ -40,7 +40,8 @@
     </platform>
 
     <platform id="cap-5.7.2" deprecated="true" enabled="true">
-      <name>Nuxeo Platform</name>
+      <name>cap</name>
+      <label>Nuxeo Platform</label>
       <version>5.7.2</version>
       <status>deprecated</status>
       <fastTrack>true</fastTrack>
