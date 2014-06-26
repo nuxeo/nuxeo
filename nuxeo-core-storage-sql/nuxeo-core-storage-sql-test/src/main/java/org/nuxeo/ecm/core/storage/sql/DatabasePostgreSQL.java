@@ -41,17 +41,17 @@ public class DatabasePostgreSQL extends DatabaseHelper {
 
     protected void setProperties() {
         Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
-        setProperty(DATABASE_PROPERTY, databaseName);
-        setProperty(SERVER_PROPERTY, DEF_SERVER);
-        setProperty(PORT_PROPERTY, DEF_PORT);
-        setProperty(USER_PROPERTY, DEF_USER);
-        setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
+        String db = setProperty(DATABASE_PROPERTY, databaseName);
+        String server = setProperty(SERVER_PROPERTY, DEF_SERVER);
+        String port = setProperty(PORT_PROPERTY, DEF_PORT);
+        String user = setProperty(USER_PROPERTY, DEF_USER);
+        String password = setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
         // for sql directory tests
-        setProperty(DRIVER_PROPERTY, DRIVER);
+        String driver = setProperty(DRIVER_PROPERTY, DRIVER);
         String url = String.format("jdbc:postgresql://%s:%s/%s",
-                System.getProperty(SERVER_PROPERTY),
-                System.getProperty(PORT_PROPERTY),
-                System.getProperty(DATABASE_PROPERTY));
+                server,
+                port,
+                db);
         setProperty(URL_PROPERTY, url);
         setProperty(ID_TYPE_PROPERTY, DEF_ID_TYPE);
     }

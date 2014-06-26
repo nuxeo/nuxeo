@@ -60,9 +60,9 @@ public class DatabaseDB2 extends DatabaseHelper {
         // for sql directory tests
         setProperty(DRIVER_PROPERTY, DRIVER);
         String url = String.format("jdbc:db2://%s:%s/%s",
-                System.getProperty(SERVER_PROPERTY),
-                System.getProperty(PORT_PROPERTY),
-                System.getProperty(DATABASE_PROPERTY));
+                Framework.getProperty(SERVER_PROPERTY),
+                Framework.getProperty(PORT_PROPERTY),
+                Framework.getProperty(DATABASE_PROPERTY));
         setProperty(URL_PROPERTY, url);
     }
 
@@ -71,11 +71,11 @@ public class DatabaseDB2 extends DatabaseHelper {
         Class.forName(DRIVER);
         setProperties();
         Connection connection = DriverManager.getConnection(
-                System.getProperty(URL_PROPERTY),
-                System.getProperty(USER_PROPERTY),
-                System.getProperty(PASSWORD_PROPERTY));
+                Framework.getProperty(URL_PROPERTY),
+                Framework.getProperty(USER_PROPERTY),
+                Framework.getProperty(PASSWORD_PROPERTY));
         doOnAllTables(connection, null,
-                System.getProperty(USER_PROPERTY).toUpperCase(),
+                Framework.getProperty(USER_PROPERTY).toUpperCase(),
                 "DROP TABLE \"%s\"");
         dropSequences(connection);
         connection.close();

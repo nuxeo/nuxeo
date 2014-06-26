@@ -69,20 +69,20 @@ public class DatabaseSQLServer extends DatabaseHelper {
         if (DRIVER.startsWith("com.microsoft")) {
             url = String.format(
                     "jdbc:sqlserver://%s:%s;databaseName=%s;user=%s;password=%s",
-                    System.getProperty(SERVER_PROPERTY),
-                    System.getProperty(PORT_PROPERTY),
-                    System.getProperty(DATABASE_PROPERTY),
-                    System.getProperty(USER_PROPERTY),
-                    System.getProperty(PASSWORD_PROPERTY));
+                    Framework.getProperty(SERVER_PROPERTY),
+                    Framework.getProperty(PORT_PROPERTY),
+                    Framework.getProperty(DATABASE_PROPERTY),
+                    Framework.getProperty(USER_PROPERTY),
+                    Framework.getProperty(PASSWORD_PROPERTY));
 
         } else {
             url = String.format(
                     "jdbc:jtds:sqlserver://%s:%s;databaseName=%s;user=%s;password=%s",
-                    System.getProperty(SERVER_PROPERTY),
-                    System.getProperty(PORT_PROPERTY),
-                    System.getProperty(DATABASE_PROPERTY),
-                    System.getProperty(USER_PROPERTY),
-                    System.getProperty(PASSWORD_PROPERTY));
+                    Framework.getProperty(SERVER_PROPERTY),
+                    Framework.getProperty(PORT_PROPERTY),
+                    Framework.getProperty(DATABASE_PROPERTY),
+                    Framework.getProperty(USER_PROPERTY),
+                    Framework.getProperty(PASSWORD_PROPERTY));
         }
         setProperty(URL_PROPERTY, url);
         setProperty(ID_TYPE_PROPERTY, DEF_ID_TYPE);

@@ -52,7 +52,7 @@ public class DatabaseDerby extends DatabaseHelper {
         // for sql directory tests
         setProperty(DRIVER_PROPERTY, DRIVER);
         url = String.format("jdbc:derby:%s;create=true",
-                System.getProperty(DATABASE_PROPERTY));
+                Framework.getProperty(DATABASE_PROPERTY));
         setProperty(URL_PROPERTY, url);
     }
 

@@ -60,10 +60,10 @@ public class DatabaseOracle extends DatabaseHelper {
         Class.forName(DRIVER);
         setProperties();
         Connection connection = getConnection(System.getProperty(URL_PROPERTY),
-                System.getProperty(USER_PROPERTY),
-                System.getProperty(PASSWORD_PROPERTY));
+                Framework.getProperty(USER_PROPERTY),
+                Framework.getProperty(PASSWORD_PROPERTY));
         doOnAllTables(connection, null,
-                System.getProperty(USER_PROPERTY).toUpperCase(),
+                Framework.getProperty(USER_PROPERTY).toUpperCase(),
                 "DROP TABLE \"%s\" CASCADE CONSTRAINTS PURGE");
         dropSequences(connection);
         connection.close();
