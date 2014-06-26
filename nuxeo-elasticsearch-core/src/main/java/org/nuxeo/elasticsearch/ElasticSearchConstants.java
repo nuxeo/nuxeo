@@ -34,5 +34,6 @@ public class ElasticSearchConstants {
 
     public static final String ALL_FIELDS = "*";
 
+    public static final String FETCH_DOC_FROM_ES_PROPERTY = "elasticsearch.fetchDocFromEs";
 }
 

@@ -17,15 +17,19 @@
 
 package org.nuxeo.elasticsearch.query;
 
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Elasticsearch query buidler for the Nuxeo ES api.
@@ -35,9 +39,9 @@ import org.nuxeo.ecm.core.api.SortInfo;
 public class NxQueryBuilder {
 
     private static final int DEFAULT_LIMIT = 10;
-    private final CoreSession session;
     private int limit = DEFAULT_LIMIT;
-    private int  offset = 0;
+    private final CoreSession session;
+    private int offset = 0;
     private List<SortInfo> sortInfos = new ArrayList<SortInfo>();
     private String nxql;
     private org.elasticsearch.index.query.QueryBuilder esQueryBuilder;
@@ -45,6 +49,8 @@ public class NxQueryBuilder {
 
     public NxQueryBuilder(CoreSession coreSession) {
         session = coreSession;
+        fetchFromElasticsearch = Boolean.parseBoolean(Framework.getProperty(
+                FETCH_DOC_FROM_ES_PROPERTY, "false"));
     }
 
     /**
@@ -61,8 +67,8 @@ public class NxQueryBuilder {
     /**
      * Says to skip that many documents before beginning to return documents.
      *
-     * If both offset and limit appear, then offset documents are skipped
-     * before starting to count the limit documents that are returned.
+     * If both offset and limit appear, then offset documents are skipped before
+     * starting to count the limit documents that are returned.
      *
      */
     public NxQueryBuilder offset(int offset) {
@@ -98,8 +104,7 @@ public class NxQueryBuilder {
      *
      * You should either use nxql, either esQuery, not both.
      */
-    public NxQueryBuilder esQuery(
-            QueryBuilder queryBuilder) {
+    public NxQueryBuilder esQuery(QueryBuilder queryBuilder) {
         this.esQueryBuilder = queryBuilder;
         this.nxql = null;
         return this;
@@ -123,7 +128,6 @@ public class NxQueryBuilder {
         this.fetchFromElasticsearch = false;
         return this;
     }
-
 
     public int getLimit() {
         return limit;
@@ -165,7 +169,7 @@ public class NxQueryBuilder {
             }
         }
         return esQueryBuilder;
-   }
+    }
 
     public SortBuilder[] getSortBuilders() {
         SortBuilder[] ret;
