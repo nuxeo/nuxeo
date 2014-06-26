@@ -721,16 +721,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         String parentPath = new File(path).getParent();
         String repository = source.get("ecm:repository").toString();
 
-        // DocumentModelImpl doc = new DocumentModelImpl(parentPath, name, type);
-        DocumentModelImpl doc = new DocumentModelImpl(null, type, id, new Path(path),
+        DocumentModelImpl doc = new DocumentModelImpl(sid, type, id, new Path(path),
                 new IdRef(id), new PathRef(parentPath), null, null, null, repository, false);
-
-        /*  try {
-            doc.attach(sid);
-        } catch (ClientException e) {
-
-        }
-        */
         for (String prop : source.keySet()) {
             String schema = prop.split(":")[0];
             // schema = schema.replace("dc", "dublincore");
@@ -765,14 +757,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     doc.setPropertyValue(prop, value);
                     // doc.setProperty(schema, key, value);
                 } catch (ClientException e) {
-                    log.warn(String.format("Can not set property %s to %s", key,
+                    log.info(String.format("fetchDocFromEs can not set property %s to %s", key,
                             value));
                 }
             }
         }
         doc.setIsImmutable(true);
-
-
         return doc;
     }
 
