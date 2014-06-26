@@ -18,6 +18,7 @@ package org.nuxeo.targetplatforms.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
@@ -40,9 +41,19 @@ public class JSONExporter {
         exportToJson((Object) tp, out, pretty);
     }
 
+    public static void exportToJson(List<TargetPlatform> tp, OutputStream out,
+            boolean pretty) throws IOException {
+        exportToJson((Object) tp, out, pretty);
+    }
+
     public static void exportToJson(TargetPlatformInfo tpi, OutputStream out,
             boolean pretty) throws IOException {
         exportToJson((Object) tpi, out, pretty);
+    }
+
+    public static void exportInfosToJson(List<TargetPlatformInfo> tpi,
+            OutputStream out, boolean pretty) throws IOException {
+        exportToJson(tpi, out, pretty);
     }
 
     public static void exportToJson(TargetPlatformInstance tpi,

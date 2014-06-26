@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.naming.NamingException;
@@ -109,7 +110,7 @@ public class TestJsonExporter {
         try {
             JSONAssert.assertEquals(expected, actual, true);
         } catch (AssertionError e) {
-            System.err.println(actual);
+            // System.err.println(actual);
             throw e;
         }
     }
@@ -165,6 +166,22 @@ public class TestJsonExporter {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JSONExporter.exportToJson(tpi, out, true);
         checkJsonEquals("target-package-info-export.json", out);
+    }
+
+    @Test
+    public void testTargetPlatformsExport() throws Exception {
+        List<TargetPlatform> tps = service.getAvailableTargetPlatforms(null);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        JSONExporter.exportToJson(tps, out, true);
+        checkJsonEquals("target-platforms-export.json", out);
+    }
+
+    @Test
+    public void testTargetPlatformsInfosExport() throws Exception {
+        List<TargetPlatformInfo> tps = service.getAvailableTargetPlatformsInfo(null);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        JSONExporter.exportInfosToJson(tps, out, true);
+        checkJsonEquals("target-platform-infos-export.json", out);
     }
 
 }
