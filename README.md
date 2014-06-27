@@ -53,19 +53,19 @@ or
 
 (pretty printed)
 
-### Json serialization for target platform info 'cap-5.8':
+### Json serialization for target platform info 'cap-5.8'
 
     http://localhost:8080/nuxeo/site/target-platforms/platform-info/cap-5.8:
 
-### Json serialization for target package 'nuxeo-dm-5.8':
+### Json serialization for target package 'nuxeo-dm-5.8'
 
     http://localhost:8080/nuxeo/site/target-platforms/package/nuxeo-dm-5.8
 
-### Json serialization for target package info 'nuxeo-dm-5.8':
+### Json serialization for target package info 'nuxeo-dm-5.8'
 
     http://localhost:8080/nuxeo/site/target-platforms/package-info/nuxeo-dm-5.8
 
-### Json serialization for target platform instance 'cap-5.8':
+### Json serialization for target platform instance 'cap-5.8'
 
     http://localhost:8080/nuxeo/site/target-platforms/platform-instance/cap-5.8
 
@@ -79,7 +79,7 @@ or
 
 (packages 'nuxeo-dm-5.8' and 'nuxeo-dam-5.8' activated)
 
-### Json serialization of available target platforms:
+### Json serialization of available target platforms
 
     http://localhost:8080/nuxeo/site/target-platforms/platforms
 
@@ -89,7 +89,7 @@ or
 
  (with filtering criteria)
 
-### Json serialization of available target platforms info:
+### Json serialization of available target platforms info
 
     http://localhost:8080/nuxeo/site/target-platforms/platforms-info
 
