@@ -29,17 +29,13 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.Properties;
-import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.RepositorySettings;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.operation.CompleteTaskOperation;
@@ -48,36 +44,14 @@ import org.nuxeo.ecm.platform.routing.core.api.operation.SetWorkflowVar;
 import org.nuxeo.ecm.platform.routing.core.api.operation.StartWorkflowOperation;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-
 import com.google.inject.Inject;
 /**
  * @since 5.7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({CoreFeature.class, AutomationFeature.class })
-@Deploy({
-        "org.nuxeo.ecm.platform.content.template", //
-        "org.nuxeo.ecm.automation.core", //
-        "org.nuxeo.ecm.directory", //
-        "org.nuxeo.ecm.platform.usermanager", //
-        "org.nuxeo.ecm.directory.types.contrib", //
-        "org.nuxeo.ecm.directory.sql", //
-        "org.nuxeo.ecm.platform.userworkspace.core", //
-        "org.nuxeo.ecm.platform.userworkspace.types", //
-        "org.nuxeo.ecm.platform.task.api", //
-        "org.nuxeo.ecm.platform.task.core", //
-        "org.nuxeo.ecm.platform.task.testing",
-        "org.nuxeo.ecm.platform.routing.api",
-        "org.nuxeo.ecm.platform.routing.core" //
-})
-@LocalDeploy({
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-operations-contrib.xml",
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-types-contrib.xml" })
-@RepositoryConfig(cleanup = Granularity.METHOD)
+@Features(WorkflowFeature.class)
 public class WorkflowOperationsTest extends AbstractGraphRouteTest {
 
     @Inject

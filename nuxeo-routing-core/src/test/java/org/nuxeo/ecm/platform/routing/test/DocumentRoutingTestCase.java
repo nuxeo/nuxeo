@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author arussel
- * 
+ *
  */
 public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
     public static final String ROOT_PATH = "/";
@@ -69,6 +69,7 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.userworkspace.core");
         deployBundle("org.nuxeo.ecm.platform.userworkspace.types");
         deployBundle("org.nuxeo.ecm.platform.types.api");
+        deployContrib("org.nuxeo.ecm.platform.test","test-usermanagerimpl/directory-config.xml");
         deployContrib(TEST_BUNDLE, "OSGI-INF/test-sql-directories-contrib.xml");
         deployContrib(TEST_BUNDLE, "OSGI-INF/test-graph-types-contrib.xml");
         deployBundle(TestConstants.CORE_BUNDLE);

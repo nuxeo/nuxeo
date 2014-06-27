@@ -17,7 +17,7 @@
       <schema name="facetnode1" />
     </facet>
     
-    <doctype name="MyTaskDoc" extends="TaskDoc">
+    <doctype name="MyTaskDoc" extends="File">
       <facet name="HiddenInNavigation" />
     </doctype>
     
