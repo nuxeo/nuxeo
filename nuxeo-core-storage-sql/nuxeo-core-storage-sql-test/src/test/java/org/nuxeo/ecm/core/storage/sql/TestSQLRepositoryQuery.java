@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -2218,6 +2219,44 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
 
         dml = session.query(query);
         assertIdSet(dml, file1.getId(), copy.getId());
+    }
+
+    @Test
+    public void testFulltextAfterAutoVersioning() throws Exception {
+        String query;
+        DocumentModelList dml;
+
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc.setPropertyValue("dc:title", "world");
+        doc = session.createDocument(doc);
+        session.saveDocument(doc);
+        session.save();
+        waitForFulltextIndexing();
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+        assertIdSet(dml, doc.getId());
+
+        // modify and save with version increment
+        doc.setPropertyValue("dc:title", "something");
+        doc.putContextData(VersioningService.VERSIONING_OPTION,
+                VersioningOption.MAJOR);
+        session.saveDocument(doc);
+        session.save();
+        waitForFulltextIndexing();
+
+        List<DocumentModel> versions = session.getVersions(doc.getRef());
+        assertEquals(1, versions.size());
+        DocumentModel ver = versions.get(0);
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
+        dml = session.query(query);
+        assertIdSet(dml, ver.getId());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'something'";
+        dml = session.query(query);
+        assertIdSet(dml, doc.getId());
     }
 
     @Test
