@@ -46,6 +46,7 @@ public class DatabaseMySQL extends DatabaseHelper {
 
     @Override
     public void setUp() throws Exception {
+        super.setUp();
         Class.forName(DRIVER);
         setProperties();
         Connection connection = DriverManager.getConnection(

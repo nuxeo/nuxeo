@@ -57,6 +57,7 @@ public class DatabaseOracle extends DatabaseHelper {
 
     @Override
     public void setUp() throws Exception {
+        super.setUp();
         Class.forName(DRIVER);
         setProperties();
         Connection connection = getConnection(Framework.getProperty(URL_PROPERTY),

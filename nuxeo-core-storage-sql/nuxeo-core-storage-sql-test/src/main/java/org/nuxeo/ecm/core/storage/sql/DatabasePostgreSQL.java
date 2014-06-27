@@ -58,6 +58,7 @@ public class DatabasePostgreSQL extends DatabaseHelper {
 
     @Override
     public void setUp() throws Exception {
+        super.setUp();
         Class.forName(DRIVER);
         setProperties();
         Connection connection = DriverManager.getConnection(
@@ -84,16 +85,16 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         descriptor.xaDataSourceName = "org.postgresql.xa.PGXADataSource";
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("ServerName", System.getProperty(SERVER_PROPERTY));
-        properties.put("PortNumber", System.getProperty(PORT_PROPERTY));
-        properties.put("DatabaseName", System.getProperty(DATABASE_PROPERTY));
-        properties.put("User", System.getProperty(USER_PROPERTY));
-        properties.put("Password", System.getProperty(PASSWORD_PROPERTY));
+        properties.put("ServerName", Framework.getProperty(SERVER_PROPERTY));
+        properties.put("PortNumber", Framework.getProperty(PORT_PROPERTY));
+        properties.put("DatabaseName", Framework.getProperty(DATABASE_PROPERTY));
+        properties.put("User", Framework.getProperty(USER_PROPERTY));
+        properties.put("Password", Framework.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
         descriptor.fulltextAnalyzer = "french";
         descriptor.setPathOptimizationsEnabled(true);
         descriptor.setAclOptimizationsEnabled(true);
-        descriptor.idType = System.getProperty(ID_TYPE_PROPERTY);
+        descriptor.idType = Framework.getProperty(ID_TYPE_PROPERTY);
         return descriptor;
     }
 

@@ -90,6 +90,7 @@ public class DatabaseSQLServer extends DatabaseHelper {
 
     @Override
     public void setUp() throws Exception {
+        super.setUp();
         Class.forName(DRIVER);
         setProperties();
         Connection connection = DriverManager.getConnection(Framework.getProperty(URL_PROPERTY));

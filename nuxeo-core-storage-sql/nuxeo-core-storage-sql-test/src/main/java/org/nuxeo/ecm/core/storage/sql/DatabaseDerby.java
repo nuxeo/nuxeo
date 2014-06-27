@@ -58,6 +58,7 @@ public class DatabaseDerby extends DatabaseHelper {
 
     @Override
     public void setUp() throws Exception {
+        super.setUp();
         System.setProperty("derby.stream.error.file",
                 new File(LOG).getAbsolutePath());
         // newInstance needed after a previous shutdown
