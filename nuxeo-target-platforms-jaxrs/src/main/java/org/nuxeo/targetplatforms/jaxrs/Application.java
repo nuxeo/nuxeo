@@ -19,14 +19,6 @@ package org.nuxeo.targetplatforms.jaxrs;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.nuxeo.targetplatforms.jaxrs.json.TargetPackageInfoJsonWriter;
-import org.nuxeo.targetplatforms.jaxrs.json.TargetPackageJsonWriter;
-import org.nuxeo.targetplatforms.jaxrs.json.TargetPlatformInfoJsonWriter;
-import org.nuxeo.targetplatforms.jaxrs.json.TargetPlatformInstanceJsonWriter;
-import org.nuxeo.targetplatforms.jaxrs.json.TargetPlatformJsonWriter;
-import org.nuxeo.targetplatforms.jaxrs.json.TargetPlatformsInfoJsonWriter;
-import org.nuxeo.targetplatforms.jaxrs.json.TargetPlatformsJsonWriter;
-
 /**
  * @since 5.9.3
  */
@@ -42,13 +34,7 @@ public class Application extends javax.ws.rs.core.Application {
     @Override
     public Set<Object> getSingletons() {
         Set<Object> result = new HashSet<Object>();
-        result.add(new TargetPackageInfoJsonWriter());
-        result.add(new TargetPackageJsonWriter());
-        result.add(new TargetPlatformInfoJsonWriter());
-        result.add(new TargetPlatformsInfoJsonWriter());
-        result.add(new TargetPlatformInstanceJsonWriter());
-        result.add(new TargetPlatformJsonWriter());
-        result.add(new TargetPlatformsJsonWriter());
+        result.add(new JsonWriter());
         return result;
     }
 
