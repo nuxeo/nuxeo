@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -48,6 +49,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 
 /**
  * @author Dragos Mihalache
@@ -939,4 +941,42 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         assertTrue(map.containsKey("binarytext"));
         assertTrue(map.get("binarytext").contains("drink"));
     }
+
+    @Test
+    public void testFulltextAfterAutoVersioning() throws Exception {
+        String query;
+        DocumentModelList dml;
+
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc.setPropertyValue("dc:title", "world");
+        doc = session.createDocument(doc);
+        session.saveDocument(doc);
+        session.save();
+        waitForFulltextIndexing();
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+        assertIdSet(dml, doc.getId());
+        // modify and save with version increment
+        doc.setPropertyValue("dc:title", "something");
+        doc.putContextData(VersioningService.VERSIONING_OPTION,
+                VersioningOption.MAJOR);
+        session.saveDocument(doc);
+        session.save();
+        waitForFulltextIndexing();
+
+        List<DocumentModel> versions = session.getVersions(doc.getRef());
+        assertEquals(1, versions.size());
+        DocumentModel ver = versions.get(0);
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'world'";
+        dml = session.query(query);
+        assertIdSet(dml, ver.getId());
+
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'something'";
+        dml = session.query(query);
+        assertIdSet(dml, doc.getId());
+    }
+
 }

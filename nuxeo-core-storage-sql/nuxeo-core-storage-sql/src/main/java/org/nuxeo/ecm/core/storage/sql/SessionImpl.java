@@ -345,7 +345,7 @@ public class SessionImpl implements Session, XAResource {
         final Timer.Context timerContext = saveTimer.time();
         try {
             checkLive();
-            flushAndScheduleWork();
+            flush();
             if (!inTransaction) {
                 sendInvalidationsToOthers();
                 // as we don't have a way to know when the next
@@ -358,7 +358,7 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
-    protected void flushAndScheduleWork() throws StorageException {
+    protected void flush() throws StorageException {
         checkThread();
         List<Work> works;
         if (!repository.getRepositoryDescriptor().getFulltextDisabled()) {
@@ -366,7 +366,7 @@ public class SessionImpl implements Session, XAResource {
         } else {
             works = Collections.emptyList();
         }
-        flush();
+        doFlush();
         if (readAclsChanged) {
             updateReadAcls();
         }
@@ -387,7 +387,7 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
-    protected void flush() throws StorageException {
+    protected void doFlush() throws StorageException {
         RowBatch batch = context.getSaveBatch();
         if (!batch.isEmpty()) {
             log.debug("Saving session");
@@ -1409,7 +1409,7 @@ public class SessionImpl implements Session, XAResource {
         try {
             if (flags != TMFAIL) {
                 try {
-                    flushAndScheduleWork();
+                    flush();
                 } catch (Exception e) {
                     String msg = "Exception during transaction commit";
                     if (e instanceof ConcurrentUpdateStorageException) {
