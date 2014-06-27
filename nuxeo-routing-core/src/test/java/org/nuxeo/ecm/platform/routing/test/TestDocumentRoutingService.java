@@ -61,6 +61,7 @@ import org.nuxeo.ecm.platform.routing.api.RouteModelResourceType;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.reload.ReloadService;
 
 /**
  * @author arussel
@@ -863,11 +864,14 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
 
     @Test
     public void testImportRouteModel() throws Exception {
+        closeSession();
+        deployBundle("org.nuxeo.runtime.reload");
         deployBundle("org.nuxeo.ecm.platform.filemanager.core");
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
         deployBundle("org.nuxeo.ecm.platform.task.core");
         deployBundle(TEST_BUNDLE);
-
+        Framework.getLocalService(ReloadService.class).reloadRepository();
+        openSession();
         // test contrib parsing and deployment
         deployTestContrib(TEST_BUNDLE,
                 "OSGI-INF/test-document-routing-route-models-template-resource-contrib.xml");
