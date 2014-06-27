@@ -26,8 +26,8 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
-import org.nuxeo.runtime.api.ConnectionHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class MemRepositoryTestCase extends NXRuntimeTestCase {
