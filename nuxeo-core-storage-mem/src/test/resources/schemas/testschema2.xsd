@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/test/testschema2"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/test/testschema2"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:simpleType name="stringArray">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
+  <xs:simpleType name="dateList">
+    <xs:list itemType="xs:date"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="intList">
+    <xs:list itemType="xs:int"/>
+  </xs:simpleType>
+
+  <xs:element name="title" type="xs:string" />
+  <xs:element name="bignotes" type="nxs:stringArray"/>
+  <xs:element name="subjects" type="nxs:stringArray"/>
+  <xs:element name="dates" type="nxs:dateList"/>
+  <xs:element name="counts" type="nxs:intList"/>
+
+</xs:schema>

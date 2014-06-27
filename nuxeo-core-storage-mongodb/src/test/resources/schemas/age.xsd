@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/age"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/age"
+  >
+
+  <xs:simpleType name="stringArray">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
+  <xs:complexType name="ageperson">
+    <xs:sequence>
+      <xs:element name="firstname" type="xs:string"/>
+      <xs:element name="lastname" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Schema used as a facet -->
+  <xs:element name="age" type="xs:string"/>
+  <xs:element name="nicknames" type="nxs:stringArray"/>
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="fullname" type="nxs:ageperson"/>
+
+</xs:schema>
