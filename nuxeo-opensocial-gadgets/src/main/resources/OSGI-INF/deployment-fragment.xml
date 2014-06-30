@@ -12,10 +12,12 @@
     <mkdir path="${bundle.fileName}.tmp" />
     <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
 
-    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages.properties"
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en_US.properties"
       to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
-    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en.properties"
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en_US.properties"
       to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en_US.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en_US.properties" addNewLine="true" />
     <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_fr_FR.properties"
       to="nuxeo.war/WEB-INF/classes/messages_fr_FR.properties" addNewLine="true" />
     <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_fr_FR.properties"
