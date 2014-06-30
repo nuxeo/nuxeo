@@ -30,6 +30,10 @@
       <param name="name" value="nuxeo.db.singleDataSource" />
       <param name="value" value="" />
     </antcall>
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.server.declare_datasources" />
+      <param name="value" value="false" />
+    </antcall>
   </target>
 
   <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat,prepare-jboss"
