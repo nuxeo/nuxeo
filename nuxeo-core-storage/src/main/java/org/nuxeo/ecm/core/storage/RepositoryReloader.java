@@ -10,11 +10,10 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql.reload;
+package org.nuxeo.ecm.core.storage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
@@ -43,12 +42,11 @@ public class RepositoryReloader implements EventListener {
         }
     }
 
-    public static void closeRepositories() throws Exception {
-        RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
-        repositoryService.shutdown();
+    protected static void closeRepositories() throws Exception {
+        Framework.getService(RepositoryService.class).shutdown();
     }
 
-    public static void flushJCAPool() throws Exception {
+    protected static void flushJCAPool() throws Exception {
         try {
             Class<?> nuxeoContainerClass = Class.forName("org.nuxeo.runtime.jtajca.NuxeoContainer");
             if (nuxeoContainerClass != null) {
@@ -66,7 +64,7 @@ public class RepositoryReloader implements EventListener {
      *
      * @throws Exception
      */
-    public static void reloadRepositories() throws Exception {
+    protected static void reloadRepositories() throws Exception {
         RepositoryReloader.flushJCAPool();
         RepositoryReloader.closeRepositories();
     }

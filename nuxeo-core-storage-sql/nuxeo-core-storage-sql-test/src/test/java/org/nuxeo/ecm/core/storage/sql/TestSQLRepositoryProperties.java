@@ -55,8 +55,8 @@ import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.storage.sql.reload.RepositoryReloader;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.reload.ReloadService;
 
 @SuppressWarnings("unchecked")
 public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
@@ -505,6 +505,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
     @Test
     public void testComplexPropertySchemaUpdate() throws Exception {
+        deployBundle("org.nuxeo.runtime.reload");
+
         // create a doc
         doc.setPropertyValue("tp:complex/string", "test");
         doc = session.saveDocument(doc);
@@ -517,7 +519,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
                 "OSGI-INF/test-schema-update.xml");
 
         // reload repo with new doctype
-        RepositoryReloader.reloadRepositories();
+        Framework.getService(ReloadService.class).reloadRepository();
         openSession();
         doc = session.getDocument(new IdRef(doc.getId()));
 
