@@ -60,9 +60,7 @@
       <needRedirectFilter>true</needRedirectFilter>
       <needFilterPreprocessing>true</needFilterPreprocessing>
       <codecName>dociddam</codecName>
-      <actionBinding>
-        #{damSearchActions.loadPermanentLink}
-      </actionBinding>
+      <actionBinding>#{restHelper.initContextFromRestRequest}</actionBinding>
       <documentViewBindingApplies>
         #{mainTabsActions.isOnMainTab('dam')}
       </documentViewBindingApplies>
@@ -74,18 +72,6 @@
         <binding name="tabIds">#{damActions.damMainTab}</binding>
         <binding name="language" callGetter="false">
           #{restHelper.localeString}
-        </binding>
-        <binding name="contentViewName" callGetter="true">
-          #{damSearchActions.currentContentViewName}
-        </binding>
-        <binding name="currentPage" callGetter="true">
-          #{damSearchActions.currentPage}
-        </binding>
-        <binding name="pageSize" callGetter="true">
-          #{damSearchActions.pageSize}
-        </binding>
-        <binding name="state" callGetter="false">
-          #{damSearchActions.state}
         </binding>
       </bindings>
     </urlPattern>

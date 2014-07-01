@@ -104,8 +104,6 @@ public class DamSearchActions implements Serializable {
 
     public static final String DAM_CODEC = "docpathdam";
 
-    public static final String DAM_ID_CODEC = "dociddam";
-
     public static final String CONTENT_VIEW_NAME_PARAMETER = "contentViewName";
 
     public static final String CURRENT_PAGE_PARAMETER = "currentPage";
@@ -155,7 +153,8 @@ public class DamSearchActions implements Serializable {
     /**
      * @since 5.9.1
      */
-    public String getJSONContentViewState() throws ClientException, UnsupportedEncodingException {
+    public String getJSONContentViewState() throws ClientException,
+            UnsupportedEncodingException {
         ContentView contentView = contentViewActions.getContentView(currentContentViewName);
         ContentViewService contentViewService = Framework.getLocalService(ContentViewService.class);
         ContentViewState state = contentViewService.saveContentView(contentView);
@@ -249,7 +248,7 @@ public class DamSearchActions implements Serializable {
 
     public void updateCurrentDocument(PageProvider<DocumentModel> pageProvider)
             throws ClientException {
-        if (pageProvider == null) {
+        if (pageProvider == null || !damActions.isOnDamView()) {
             return;
         }
 
@@ -422,7 +421,6 @@ public class DamSearchActions implements Serializable {
         this.pageSize = pageSize;
     }
 
-
     /**
      * Compute a permanent link for the current search.
      */
@@ -440,7 +438,8 @@ public class DamSearchActions implements Serializable {
         docView.setViewId("assets");
         docView.addParameter(CONTENT_VIEW_NAME_PARAMETER,
                 currentContentViewName);
-        docView.addParameter(CONTENT_VIEW_STATE_PARAMETER, getJSONContentViewState());
+        docView.addParameter(CONTENT_VIEW_STATE_PARAMETER,
+                getJSONContentViewState());
         DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
         String url = documentViewCodecManager.getUrlFromDocumentView(DAM_CODEC,
                 docView, true, BaseURL.getBaseURL());
@@ -458,21 +457,14 @@ public class DamSearchActions implements Serializable {
         }
     }
 
+    /**
+     * @deprecated since 5.9.5. Use
+     *             {@link DamActions#getAssetPermanentLinkUrl(boolean)}.
+     */
+    @Deprecated
     public String getAssetPermanentLinkUrl() throws ClientException,
             UnsupportedEncodingException {
-        // do not try to compute an URL if we don't have any CoreSession
-        if (documentManager == null) {
-            return null;
-        }
-
-        DocumentModel damCurrentDocument = mainTabsActions.getDocumentFor(DAM_MAIN_TAB_ACTION);
-        DocumentView docView = new DocumentViewImpl(new DocumentLocationImpl(
-                documentManager.getRepositoryName(), new IdRef(
-                        damCurrentDocument.getId())));
-        docView.setViewId("asset");
-        DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
-        return documentViewCodecManager.getUrlFromDocumentView(DAM_ID_CODEC,
-                docView, true, BaseURL.getBaseURL());
+        return damActions.getAssetPermanentLinkUrl(true);
     }
 
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
@@ -488,8 +480,7 @@ public class DamSearchActions implements Serializable {
             throws ClientException {
         String currentContentViewName = getCurrentContentViewName();
         if (currentContentViewName != null
-                && currentContentViewName.equals(contentViewName)
-                && damActions.isOnDamView()) {
+                && currentContentViewName.equals(contentViewName)) {
             updateCurrentDocument();
         }
     }

@@ -20,10 +20,10 @@ package org.nuxeo.dam.seam;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import static org.nuxeo.dam.DamConstants.ASSETS_VIEW_ID;
-import static org.nuxeo.dam.DamConstants.ASSET_VIEW_ID;
 import static org.nuxeo.dam.DamConstants.DAM_MAIN_TAB_ACTION;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
@@ -64,6 +64,8 @@ public class DamActions implements Serializable {
     public static final String MAIN_TABS_DAM = "MAIN_TABS:dam";
 
     public static final String MAIN_TABS_DOCUMENT_MANAGEMENT = "MAIN_TABS:documents";
+
+    public static final String DAM_ID_PATTERN = "damid";
 
     @In(create = true)
     protected NavigationContext navigationContext;
@@ -111,10 +113,12 @@ public class DamActions implements Serializable {
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
     }
 
-    public String viewInDAM() throws ClientException {
-        webActions.setCurrentTabIds(MAIN_TABS_DAM);
-        navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
-        return "asset";
+    /**
+     * @deprecated since 5.9.5. Use {@code #getAssetPermanentLinkUrl}.
+     */
+    public String viewInDAM() throws ClientException,
+            UnsupportedEncodingException {
+        return getAssetPermanentLinkUrl(false);
     }
 
     public String updateCurrentDocument() throws ClientException {
@@ -146,7 +150,7 @@ public class DamActions implements Serializable {
             String viewId = viewRoot.getViewId();
             // FIXME find a better way to update the current document only
             // if we are on DAM
-            if (ASSETS_VIEW_ID.equals(viewId) || ASSET_VIEW_ID.equals(viewId)) {
+            if (ASSETS_VIEW_ID.equals(viewId)) {
                 return true;
             }
         }
@@ -177,5 +181,17 @@ public class DamActions implements Serializable {
     public String getDownloadURL() {
         return DocumentModelFunctions.bigFileUrl(
                 navigationContext.getCurrentDocument(), "blobholder:0", "");
+    }
+
+    /**
+     * Returns the permanent link of an asset.
+     *
+     * @since 5.9.5
+     */
+    public String getAssetPermanentLinkUrl(boolean newConversation)
+            throws ClientException, UnsupportedEncodingException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        return DocumentModelFunctions.documentUrl(DAM_ID_PATTERN,
+                currentDocument, "asset", null, newConversation);
     }
 }

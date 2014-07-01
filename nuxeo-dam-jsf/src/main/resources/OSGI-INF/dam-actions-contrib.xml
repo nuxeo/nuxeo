@@ -179,7 +179,7 @@
       <category>DAM_ASSET_VIEW_ACTIONS</category>
     </action>
 
-    <action id="damViewInDAM" link="#{damActions.viewInDAM()}" label="label.dam.action.viewInDAM"
+    <action id="damViewInDAM" type="bare_link" link="#{damActions.getAssetPermanentLinkUrl(false)}" label="label.dam.action.viewInDAM"
       icon="/icons/switch.png" order="65">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>hasAssetFacet</filter-id>
