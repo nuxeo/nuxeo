@@ -10,6 +10,10 @@
     <configuration>
       <tenantDocumentType>Domain</tenantDocumentType>
       <membersGroupPermission>Read</membersGroupPermission>
+      <prohibitedGroups>
+      	<group>members</group>
+      	<group>Everyone</group>
+      </prohibitedGroups>
     </configuration>
 
   </extension>

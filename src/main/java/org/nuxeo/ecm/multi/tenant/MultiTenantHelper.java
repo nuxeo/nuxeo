@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.multi.tenant;
 
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ADMINISTRATORS_GROUP_SUFFIX;
+import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_CONFIG_FACET;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_GROUP_PREFIX;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_MEMBERS_GROUP_SUFFIX;
 
@@ -51,7 +52,13 @@ public class MultiTenantHelper {
 
     protected static final Integer CACHE_TIMEOUT = 10;
 
+    protected static final String NO_TENANT = "NO_TENANT";
+
     protected final static Cache<String, String> pathCache = CacheBuilder.newBuilder().concurrencyLevel(
+            CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(
+            CACHE_TIMEOUT, TimeUnit.MINUTES).build();
+
+    protected final static Cache<String, String> tenantBinding = CacheBuilder.newBuilder().concurrencyLevel(
             CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(
             CACHE_TIMEOUT, TimeUnit.MINUTES).build();
 
@@ -132,4 +139,62 @@ public class MultiTenantHelper {
         return path;
     }
 
+    /**
+     * Return the Tenant containing the provided DocumentModel if any
+     * 
+     * @param doc
+     * @return DocumentModel corresponding to the Tenant container, null
+     *         otherwise
+     * 
+     * @throws ClientException
+     */
+    public static String getOwningTenantId(final DocumentModel doc)
+            throws ClientException {
+        String tenantId = tenantBinding.getIfPresent(doc.getId());
+        if (NO_TENANT.equals(tenantId)) {
+            return null;
+        }
+
+        if (tenantId == null) {
+            TenantIdFinder finder = new TenantIdFinder(doc);
+            finder.runUnrestricted();
+            tenantId = finder.getTenantId();
+
+            if (tenantId == null) {
+                tenantBinding.put(doc.getId(), NO_TENANT);
+            } else {
+                tenantBinding.put(doc.getId(), tenantId);
+            }
+        }
+        return tenantId;
+    }
+
+    protected static class TenantIdFinder extends UnrestrictedSessionRunner {
+
+        protected String tenantId;
+
+        protected final DocumentModel target;
+
+        protected TenantIdFinder(DocumentModel target) {
+            super(target.getCoreSession());
+            this.target = target;
+        }
+
+        @Override
+        public void run() throws ClientException {
+            List<DocumentModel> parents = session.getParentDocuments(target.getRef());
+            for (int i = parents.size() - 1; i >= 0; i--) {
+                DocumentModel parent = parents.get(i);
+                if (parent.hasFacet(TENANT_CONFIG_FACET)) {
+                    tenantId = (String) parent.getPropertyValue(Constants.TENANT_ID_PROPERTY);
+                    return;
+                }
+            }
+        }
+
+        public String getTenantId() {
+            return tenantId;
+        }
+
+    }
 }

@@ -301,4 +301,12 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
             }
         }
     }
+    
+    @Override
+    public List<String> getProhibitedGroups() {
+        if (configuration!=null) {
+            return configuration.getProhibitedGroups();
+        }
+        return null;
+    }
 }

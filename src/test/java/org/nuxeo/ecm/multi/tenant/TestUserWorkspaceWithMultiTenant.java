@@ -93,9 +93,8 @@ public class TestUserWorkspaceWithMultiTenant {
         Assert.assertNotNull(adminWS);
         Assert.assertTrue(adminWS.getPathAsString().contains(defaultDomain.getPathAsString()));
 
-        
-        // check ACLs
-        
+     
+        // check ACLs        
         ACP acp = marioWS.getACP();
         System.out.println(acp);
     }

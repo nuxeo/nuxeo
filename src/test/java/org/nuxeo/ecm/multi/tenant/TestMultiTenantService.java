@@ -50,6 +50,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -404,6 +406,46 @@ public class TestMultiTenantService {
         loginContext.logout();
     }
 
+    
+
+    @Test
+    public void shouldRewriteACLs() throws ClientException {
+        multiTenantService.enableTenantIsolation(session);
+
+        DocumentModel newDomain = session.createDocumentModel("/", "newDomain", "Domain");
+        newDomain = session.createDocument(newDomain);
+        session.save();
+        assertTrue(newDomain.hasFacet(TENANT_CONFIG_FACET));
+        assertEquals(newDomain.getName(),
+                newDomain.getPropertyValue(TENANT_ID_PROPERTY));
+        
+        DocumentModel newWS = session.createDocumentModel(newDomain.getPathAsString(), "newFolder", "Workspace");
+        newWS = session.createDocument(newWS);
+        session.save();
+        
+        ACP acp = new ACPImpl();
+        ACL local = new ACLImpl("local");
+        
+        local.add(new ACE("toto", "Read", true));
+        local.add(new ACE("members", "Read", true));
+        local.add(new ACE("Everyone", "Read", true));
+        
+        acp.addACL(local);
+        
+        newWS.setACP(acp, true);        
+        newWS = session.getDocument(newWS.getRef());
+        
+        acp = newWS.getACP();
+        local = acp.getACLs()[0];
+        
+        for (ACE ace : local) {
+            System.out.println(ace);
+        }
+        
+        
+    }
+
+    
     protected CoreSession openSession() throws ClientException {
         return settings.openSession();
     }

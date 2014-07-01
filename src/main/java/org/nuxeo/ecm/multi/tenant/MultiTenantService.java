@@ -50,5 +50,7 @@ public interface MultiTenantService {
     List<DocumentModel> getTenants() throws ClientException;
 
     boolean isTenantAdministrator(Principal principal);
+    
+    List<String> getProhibitedGroups();
 
 }

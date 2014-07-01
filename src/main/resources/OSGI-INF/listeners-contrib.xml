@@ -20,6 +20,13 @@
       <event>beforeDocumentModification</event>
     </listener>
 
+    <listener name="multiTenantACLListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.ecm.multi.tenant.acl.ACLUpdateListener"
+      priority="150">
+      <event>beforeDocumentSecurityModification</event>
+    </listener>
+
   </extension>
 
 </component>
