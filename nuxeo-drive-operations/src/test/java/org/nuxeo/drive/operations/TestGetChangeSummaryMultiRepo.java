@@ -64,8 +64,10 @@ import com.google.inject.Inject;
 @Features({ H2OnlyFeature.class, TransactionalFeature.class,
         EmbeddedAutomationServerFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
-@LocalDeploy({"org.nuxeo.drive.operations:drive-repo-ds.xml","org.nuxeo.drive.operations:test-other-repository-config.xml"})
+@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.drive.core",
+        "org.nuxeo.drive.operations" })
+@LocalDeploy({ "org.nuxeo.drive.operations:drive-repo-ds.xml",
+        "org.nuxeo.drive.operations:test-other-repository-config.xml" })
 @Jetty(port = 18080)
 public class TestGetChangeSummaryMultiRepo {
 
@@ -180,7 +182,6 @@ public class TestGetChangeSummaryMultiRepo {
         assertEquals("other", docChange.getRepositoryId());
         assertEquals("documentChanged", docChange.getEventId());
         assertEquals(doc3.getId(), docChange.getDocUuid());
-
 
         // Update documents
         doc1.setPropertyValue("dc:description", "Added description to doc1.");
