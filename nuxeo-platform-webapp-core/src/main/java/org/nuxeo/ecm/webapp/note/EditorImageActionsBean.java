@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.ListDiff;
+import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -106,7 +107,11 @@ public class EditorImageActionsBean extends InputController implements
 
     private List<DocumentModel> resultDocuments;
 
+    private List<DocumentModel> resultVideos;
+
     private boolean hasSearchResults = false;
+
+    private boolean hasSearchVideosResults = false;
 
     private String searchKeywords;
 
@@ -209,8 +214,18 @@ public class EditorImageActionsBean extends InputController implements
     }
 
     @Override
+    public boolean getHasSearchVideosResults() {
+        return hasSearchVideosResults;
+    }
+
+    @Override
     public List<DocumentModel> getSearchImageResults() {
         return resultDocuments;
+    }
+
+    @Override
+    public List<DocumentModel> getSearchVideosResults() {
+        return resultVideos;
     }
 
     @Override
@@ -220,9 +235,37 @@ public class EditorImageActionsBean extends InputController implements
 
     @Override
     public String searchImages() throws ClientException {
+        // Init the list of results
+        resultDocuments = null;
+        // Search the images
+        resultDocuments = searchMedia("Picture");
+        hasSearchResults = !resultDocuments.isEmpty();
+        log.debug("query result contains: " + resultDocuments.size() + " docs.");
+        return "editor_image_upload";
+    }
+
+    @Override
+    public String searchVideos() throws ClientException {
+        // Init the list of results
+        resultVideos = null;
+        // Search the videos
+        resultVideos = searchMedia("Video");
+        hasSearchVideosResults = !resultVideos.isEmpty();
+
+        log.debug("query result contains: " + resultVideos.size() + " videos.");
+        return "editor_image_upload";
+    }
+
+    /**
+     * Generic method to search a media.
+     * @param typeDocument The type of document to search.
+     * @throws ClientException
+     *
+     * @since 5.9.5
+     */
+    private List<DocumentModel> searchMedia(String typeDocument) throws ClientException {
         log.debug("Entering searchDocuments with keywords: " + searchKeywords);
 
-        resultDocuments = null;
         final List<String> constraints = new ArrayList<String>();
         if (searchKeywords != null) {
             searchKeywords = searchKeywords.trim();
@@ -234,14 +277,15 @@ public class EditorImageActionsBean extends InputController implements
                 }
             }
         }
-        constraints.add("ecm:primaryType = 'Picture'");
+        StringBuilder primaryType = new StringBuilder();
+        primaryType.append("ecm:primaryType = '");
+        primaryType.append(typeDocument);
+        primaryType.append("'");
+        constraints.add(primaryType.toString());
 
         final String query = String.format(SEARCH_QUERY,
                 StringUtils.join(constraints, " AND "));
-        resultDocuments = documentManager.query(query, 100);
-        hasSearchResults = !resultDocuments.isEmpty();
-        log.debug("query result contains: " + resultDocuments.size() + " docs.");
-        return "editor_image_upload";
+        return documentManager.query(query, 100);
     }
 
     @Override
@@ -267,6 +311,28 @@ public class EditorImageActionsBean extends InputController implements
     @Override
     public String getImageProperty() {
         return selectedSize + ":content";
+    }
+
+    @Override
+    public String getURLVideo(DocumentModel video, String type) throws ClientException {
+
+        if (video == null || type == null) {
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) video.getPropertyValue("vid:transcodedVideos");
+        int position = 0;
+        for (Map<String, Serializable> prop : transcodedVideos) {
+            if (type.equals((String) prop.get("name"))) {
+                StorageBlob content = (StorageBlob) prop.get("content");
+                String blobPropertyName = "vid:transcodedVideos/" + position + "/content";
+                return DocumentModelFunctions.bigFileUrl(video, blobPropertyName, content.getFilename());
+            }
+            position++;
+        }
+
+        return null;
     }
 
 }

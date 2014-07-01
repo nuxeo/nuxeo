@@ -55,9 +55,29 @@ public interface EditorImageActions {
     // image searching related methods
     String searchImages() throws ClientException;
 
+    String searchVideos() throws ClientException;
+
     List<DocumentModel> getSearchImageResults();
 
+    /**
+     * List of result of the searched the videos.
+     *
+     * @return The list of results.
+     *
+     * @since 5.9.5
+     */
+    List<DocumentModel> getSearchVideosResults();
+
     boolean getHasSearchResults();
+
+    /**
+     * Return true if the search has results.
+     *
+     * @return If the search has results.
+     *
+     * @since 5.9.5
+     */
+    boolean getHasSearchVideosResults();
 
     String getSearchKeywords();
 
@@ -71,4 +91,14 @@ public interface EditorImageActions {
 
     String getImageProperty();
 
+    /**
+     * Get the URL of a transcoded video for a specific format.
+     *
+     * @param video The video document.
+     * @param type The type of video.
+     * @return The URL of the selected video.
+     *
+     * @since 5.9.5
+     */
+    String getURLVideo(DocumentModel video, String type) throws ClientException ;
 }
