@@ -1232,7 +1232,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                     String requestedIndexName = statement.substring(0,
                             firstColumnIdx);
                     statement = statement.substring(firstColumnIdx + 1);
-                    if (model.fulltextInfo.indexNames.contains(requestedIndexName)) {
+                    if (model.getFulltextConfiguration().indexNames.contains(requestedIndexName)) {
                         indexName = requestedIndexName;
                     } else {
                         log.warn(String.format(
