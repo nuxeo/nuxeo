@@ -46,7 +46,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
-import org.nuxeo.ecm.core.storage.sql.management.RepositoryStatus;
+import org.nuxeo.ecm.core.storage.sql.management.SQLRepositoryStatus;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.runtime.api.Framework;
@@ -207,7 +207,7 @@ public class SystemInfoManager implements Serializable {
     }
 
     public int getActiveSessionNumber() {
-        RepositoryStatus status = new RepositoryStatus();
+        SQLRepositoryStatus status = new SQLRepositoryStatus();
         return status.getActiveSessionsCount();
     }
 
@@ -319,7 +319,7 @@ public class SystemInfoManager implements Serializable {
     }
 
     public boolean isBinariesGCInProgress() {
-        return new RepositoryStatus().isBinariesGCInProgress();
+        return new SQLRepositoryStatus().isBinariesGCInProgress();
     }
 
     public boolean isBinaryManagerStatusAvailable() {
@@ -347,7 +347,7 @@ public class SystemInfoManager implements Serializable {
         @Override
         public void run() {
             try {
-                binaryManagerStatus = new RepositoryStatus().gcBinaries(delete);
+                binaryManagerStatus = new SQLRepositoryStatus().gcBinaries(delete);
                 binaryManagerStatusInvalidation = true;
             } catch (RuntimeException e) {
                 log.error("Error while executing BinariesGCTask", e);
