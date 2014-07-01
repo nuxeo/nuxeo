@@ -104,12 +104,15 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
         descriptor = null;
     }
 
-    public static String getTargetDomainName() {
-        UserWorkspaceServiceImplComponent s = (UserWorkspaceServiceImplComponent) Framework.getRuntime().getComponent(
-                NAME);
-        return s.descriptor.getTargetDomainName();
+    public String getTargetDomainName() {
+        return descriptor.getTargetDomainName();
+    }
+    
+    public UserWorkspaceDescriptor getConfiguration() {
+        return descriptor;
     }
 
+    // for tests only
     public static void reset() {
         UserWorkspaceServiceImplComponent s = (UserWorkspaceServiceImplComponent) Framework.getRuntime().getComponent(
                 NAME);

@@ -29,6 +29,18 @@ public class UserWorkspaceDescriptor {
     @XNode("@targetDomainName")
     private String targetDomainName = "default-domain";
 
+    /**
+     * @since 5.9.5
+     */
+    @XNode("userWorkspaceType")
+    protected String userWorkspaceType = "Workspace";
+
+    /**
+     * @since 5.9.5
+     */
+    @XNode("userWorkspaceRootType")
+    protected String userWorkspaceRootType = "UserWorkspacesRoot";
+
     @XNode("@class")
     private Class<? extends UserWorkspaceService> userWorkspaceClass;
 
@@ -38,6 +50,14 @@ public class UserWorkspaceDescriptor {
 
     public String getTargetDomainName() {
         return targetDomainName;
+    }
+
+    public String getUserWorkspaceType() {
+        return userWorkspaceType;
+    }
+
+    public String getUserWorkspaceRootType() {
+        return userWorkspaceRootType;
     }
 
 }

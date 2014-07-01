@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @author Thierry Delprat
  */
+@Deprecated
 public class CompatUserWorkspaceServiceImpl extends
         DefaultUserWorkspaceServiceImpl {
 
@@ -36,7 +37,7 @@ public class CompatUserWorkspaceServiceImpl extends
         if (currentDocument != null && currentDocument.getPath().segmentCount() > 0) {
             return currentDocument.getPath().segment(0);
         } else {
-            return UserWorkspaceServiceImplComponent.getTargetDomainName();
+            return getComponent().getTargetDomainName();
         }
     }
 
