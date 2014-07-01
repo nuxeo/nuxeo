@@ -1264,6 +1264,46 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertFalse(session.exists(returnedChildDocs.get(1).getRef()));
     }
 
+    protected void dumpAllDocuments(CoreSession session) throws ClientException {
+        DocumentModelList docs = session.query("select * from Document");
+        System.out.println("List all documents");
+        for (DocumentModel doc : docs) {
+            System.out.println(String.format("- type: %s, proxy: %s, version: %s %s", doc.getType(),
+                    doc.isProxy(), doc.isVersion(), doc));
+        }
+    }
+
+    // Uncomment to reveal NXP-14686
+    // @Test
+    public void testRemoveChildrenWithVersion() throws ClientException {
+        DocumentModel root = session.getRootDocument();
+
+
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), "somefile", "File");
+        session.createDocument(doc);
+
+        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "somefolder",
+                "Folder");
+        folder = session.createDocument(folder);
+
+        DocumentModel file = session.getDocument(doc.getRef());
+        session.publishDocument(file, folder);
+        session.save();
+        // TransactionHelper.commitOrRollbackTransaction();
+        // TransactionHelper.startTransaction();
+
+        dumpAllDocuments(session);
+
+        session.removeChildren(root.getRef());
+        session.save();
+        // TransactionHelper.commitOrRollbackTransaction();
+        // TransactionHelper.startTransaction();
+        dumpAllDocuments(session);
+
+        assertTrue("NXP-14686 removeChildren fails to delete orphan version",
+                   session.query("SELECT * FROM Document").isEmpty());
+    }
+
     @Test
     public void testRemoveDocument() throws ClientException {
         DocumentModel root = session.getRootDocument();
