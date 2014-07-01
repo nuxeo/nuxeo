@@ -54,6 +54,11 @@
               TRIAL
             </span>
           </h:outputText>
+          <h:outputText rendered="#{tp.default}">
+            <span class="label label-info">
+              DEFAULT
+            </span>
+          </h:outputText>
           <h:outputText rendered="#{tp.deprecated}">
             <span class="label label-warning">
               DEPRECATED
@@ -107,14 +112,26 @@
               <h:outputText rendered="#{tp.trial}">
                 <a4j:commandLink styleClass="button" id="untrial_#{status.index}"
                   reRender="targetPlatformsTable"
-                  action="#{targetPlatformService.trialTargetPlatform(false, tp.id)}"
+                  action="#{targetPlatformService.setTrialTargetPlatform(false, tp.id)}"
                   value="#{messages['command.admin.targetplatforms.untrial']}" />
               </h:outputText>
               <h:outputText rendered="#{!tp.trial}">
                 <a4j:commandLink styleClass="button" id="trial_#{status.index}"
                   reRender="targetPlatformsTable"
-                  action="#{targetPlatformService.trialTargetPlatform(true, tp.id)}"
+                  action="#{targetPlatformService.setTrialTargetPlatform(true, tp.id)}"
                   value="#{messages['command.admin.targetplatforms.trial']}" />
+              </h:outputText>
+              <h:outputText rendered="#{tp.default}">
+                <a4j:commandLink styleClass="button" id="undefault_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.setDefaultTargetPlatform(false, tp.id)}"
+                  value="#{messages['command.admin.targetplatforms.undefault']}" />
+              </h:outputText>
+              <h:outputText rendered="#{!tp.default}">
+                <a4j:commandLink styleClass="button" id="default_#{status.index}"
+                  reRender="targetPlatformsTable"
+                  action="#{targetPlatformService.setDefaultTargetPlatform(true, tp.id)}"
+                  value="#{messages['command.admin.targetplatforms.default']}" />
               </h:outputText>
             </h:outputText>
             <h:outputText rendered="#{!tp.enabled}">

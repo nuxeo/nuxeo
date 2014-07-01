@@ -17,6 +17,7 @@
   "downloadLink" : "http://community.nuxeo.com/static/releases/nuxeo-5.8/nuxeo-cap-5.8-tomcat.zip",
   "fastTrack" : false,
   "trial" : false,
+  "default" : false,
   "types" : [ ],
   "enabled" : true,
   "overridden" : false

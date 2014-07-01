@@ -17,6 +17,7 @@
   "endOfAvailability" : null,
   "downloadLink" : null,
   "trial" : false,
+  "default" : false,
   "overridden" : false,
   "name" : "dm",
   "id" : "dm-5.3.0"
@@ -39,6 +40,7 @@
   "endOfAvailability" : null,
   "downloadLink" : "http://community.nuxeo.com/static/releases/cmf-1.8/nuxeo-case-management-distribution-1.8-tomcat-cmf.zip",
   "trial" : false,
+  "default" : true,
   "overridden" : false,
   "name" : "cmf",
   "id" : "cmf-1.8"
@@ -62,6 +64,7 @@
     "endOfAvailability" : null,
     "downloadLink" : "https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-dm?version=5.8.0",
     "trial" : false,
+    "default" : false,
     "overridden" : false,
     "name" : "nuxeo-dm",
     "id" : "nuxeo-dm-5.8"
@@ -82,6 +85,7 @@
     "endOfAvailability" : null,
     "downloadLink" : null,
     "trial" : false,
+    "default" : false,
     "overridden" : false,
     "name" : "nuxeo-dm",
     "id" : "nuxeo-dam-5.8"
@@ -101,6 +105,7 @@
   "endOfAvailability" : null,
   "downloadLink" : "http://community.nuxeo.com/static/releases/nuxeo-5.8/nuxeo-cap-5.8-tomcat.zip",
   "trial" : true,
+  "default" : true,
   "overridden" : false,
   "name" : "cap",
   "id" : "cap-5.8"
@@ -124,6 +129,7 @@
     "endOfAvailability" : null,
     "downloadLink" : null,
     "trial" : false,
+    "default" : false,
     "overridden" : false,
     "name" : "nuxeo-dm",
     "id" : "nuxeo-dm-5.7.2"
@@ -143,6 +149,7 @@
   "endOfAvailability" : null,
   "downloadLink" : null,
   "trial" : false,
+  "default" : false,
   "overridden" : false,
   "name" : "cap",
   "id" : "cap-5.7.2"
@@ -173,6 +180,7 @@
       "endOfAvailability" : null,
       "downloadLink" : null,
       "trial" : false,
+      "default" : false,
       "overridden" : false,
       "name" : "cap",
       "id" : "cap-5.9.1"
@@ -191,6 +199,7 @@
     "endOfAvailability" : 1403042400000,
     "downloadLink" : "http://community.nuxeo.com/static/releases/nuxeo-5.9.2/nuxeo-cap-5.9.2-tomcat.zip",
     "trial" : true,
+    "default" : false,
     "overridden" : false,
     "name" : "cap",
     "id" : "cap-5.9.2"
@@ -209,6 +218,7 @@
   "endOfAvailability" : null,
   "downloadLink" : null,
   "trial" : false,
+  "default" : false,
   "overridden" : false,
   "name" : "cap",
   "id" : "cap-5.9.3"
@@ -235,6 +245,7 @@
     "endOfAvailability" : null,
     "downloadLink" : null,
     "trial" : false,
+    "default" : false,
     "overridden" : false,
     "name" : "cap",
     "id" : "cap-5.9.1"
@@ -253,6 +264,7 @@
   "endOfAvailability" : 1403042400000,
   "downloadLink" : "http://community.nuxeo.com/static/releases/nuxeo-5.9.2/nuxeo-cap-5.9.2-tomcat.zip",
   "trial" : true,
+  "default" : false,
   "overridden" : false,
   "name" : "cap",
   "id" : "cap-5.9.2"
@@ -275,6 +287,7 @@
   "endOfAvailability" : null,
   "downloadLink" : null,
   "trial" : false,
+  "default" : false,
   "overridden" : false,
   "name" : "cap",
   "id" : "cap-5.9.1"

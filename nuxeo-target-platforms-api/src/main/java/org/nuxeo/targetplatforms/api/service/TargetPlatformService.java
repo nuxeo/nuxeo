@@ -34,14 +34,18 @@ import org.nuxeo.targetplatforms.api.TargetPlatformInstance;
 public interface TargetPlatformService {
 
     /**
-     * Returns the default target platform.
-     */
-    TargetPlatform getDefaultTargetPlatform() throws ClientException;
-
-    /**
      * Returns the override directory name.
      */
     String getOverrideDirectory();
+
+    /**
+     * Returns the default target platform.
+     * <p>
+     * If several target platforms are found for given filter, the first one is
+     * returned (ordered alphabetically on id).
+     */
+    TargetPlatform getDefaultTargetPlatform(TargetPlatformFilter filter)
+            throws ClientException;
 
     /**
      * Returns the target platform with given id, or null if not found.
@@ -120,7 +124,16 @@ public interface TargetPlatformService {
      * as trial if boolean is false), overriding the default value from
      * extension points and adding an entry in the override directory.
      */
-    void trialTargetPlatform(boolean trial, String id) throws ClientException;
+    void setTrialTargetPlatform(boolean trial, String id)
+            throws ClientException;
+
+    /**
+     * Set the target platform as default if given boolean is true (or unset it
+     * as default if boolean is false), overriding the default value from
+     * extension points and adding an entry in the override directory.
+     */
+    void setDefaultTargetPlatform(boolean isDefault, String id)
+            throws ClientException;
 
     /**
      * Removes overrides for this target platform.

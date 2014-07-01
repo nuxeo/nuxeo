@@ -41,6 +41,8 @@ public abstract class DirectoryUpdater {
 
     public static final String TRIAL_PROP = "trial";
 
+    public static final String DEFAULT_PROP = "default";
+
     protected String dirName;
 
     public DirectoryUpdater(String dirName) {

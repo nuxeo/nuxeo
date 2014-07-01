@@ -73,7 +73,7 @@ public class RootResource {
     String filterType) throws Exception {
         TargetPlatformService tps = Framework.getService(TargetPlatformService.class);
         List<TargetPlatform> res = tps.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
-                filterDisabled, filterRestricted, filterDeprecated, filterType));
+                filterDisabled, filterRestricted, filterDeprecated, false, filterType));
         if (res == null) {
             return new TargetPlatforms();
         } else {
@@ -102,7 +102,7 @@ public class RootResource {
     String filterType) throws Exception {
         TargetPlatformService tps = Framework.getService(TargetPlatformService.class);
         List<TargetPlatformInfo> res = tps.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
-                filterDisabled, filterRestricted, filterDeprecated, filterType));
+                filterDisabled, filterRestricted, filterDeprecated, false, filterType));
         if (res == null) {
             return new TargetPlatformsInfo();
         } else {

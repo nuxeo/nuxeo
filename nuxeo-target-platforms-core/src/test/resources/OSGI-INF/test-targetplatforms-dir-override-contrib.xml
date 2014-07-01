@@ -5,7 +5,6 @@
   <extension target="org.nuxeo.targetplatforms.core.framework" point="configuration">
 
     <configuration>
-      <defaultTargetPlatform>cap-5.8</defaultTargetPlatform>
       <overrideDirectory>test</overrideDirectory>
     </configuration>
 

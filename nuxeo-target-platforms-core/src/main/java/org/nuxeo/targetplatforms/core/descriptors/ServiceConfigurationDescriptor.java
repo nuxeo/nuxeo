@@ -27,15 +27,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("configuration")
 public class ServiceConfigurationDescriptor {
 
-    @XNode("defaultTargetPlatform")
-    String defaultTargetPlatform;
-
     @XNode("overrideDirectory")
     String overrideDirectory;
-
-    public String getDefaultTargetPlatform() {
-        return defaultTargetPlatform;
-    }
 
     public String getOverrideDirectory() {
         return overrideDirectory;

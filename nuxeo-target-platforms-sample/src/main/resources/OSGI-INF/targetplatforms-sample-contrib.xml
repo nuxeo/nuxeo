@@ -2,14 +2,6 @@
 
 <component name="org.nuxeo.targetplatforms.core.test.contrib">
 
-  <extension target="org.nuxeo.targetplatforms.core.framework" point="configuration">
-
-    <configuration>
-      <defaultTargetPlatform>cap-5.8</defaultTargetPlatform>
-    </configuration>
-
-  </extension>
-
   <extension target="org.nuxeo.targetplatforms.core.framework" point="platforms">
 
     <platform id="cmf-1.8">
@@ -18,6 +10,7 @@
       <label>Nuxeo CMF</label>
       <refVersion>5.4.2</refVersion>
       <status>deprecated</status>
+      <default>true</default>
       <description>
         This target platform shows CMF specific features.
         <p>
@@ -53,6 +46,7 @@
       <label>Nuxeo Platform</label>
       <status>supported</status>
       <trial>true</trial>
+      <default>true</default>
       <description>
         This target platform is the last LTS.
       </description>

@@ -52,6 +52,8 @@ public class TargetInfoImpl implements TargetInfo {
 
     protected boolean trial = false;
 
+    protected boolean isDefault = false;
+
     protected Date releaseDate;
 
     protected Date endOfAvailability;
@@ -200,6 +202,14 @@ public class TargetInfoImpl implements TargetInfo {
 
     public void setTrial(boolean trial) {
         this.trial = trial;
+    }
+
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
     }
 
     @Override

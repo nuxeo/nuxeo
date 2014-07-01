@@ -17,6 +17,8 @@
 package org.nuxeo.targetplatforms.core.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -141,13 +143,26 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     // Service API
 
     @Override
-    public TargetPlatform getDefaultTargetPlatform() throws ClientException {
-        ServiceConfigurationDescriptor desc = conf.getConfiguration();
-        if (desc == null) {
+    public TargetPlatform getDefaultTargetPlatform(TargetPlatformFilter filter)
+            throws ClientException {
+        List<TargetPlatform> tps = getAvailableTargetPlatforms(filter);
+        if (tps.isEmpty()) {
             return null;
         }
-        String id = desc.getDefaultTargetPlatform();
-        return getTargetPlatform(id);
+        if (tps.size() > 1) {
+            Collections.sort(tps, new Comparator<TargetPlatform>() {
+                @Override
+                public int compare(TargetPlatform arg0, TargetPlatform arg1) {
+                    return arg0.getId().compareTo(arg1.getId());
+                }
+            });
+        }
+        for (TargetPlatform tp : tps) {
+            if (tp.isDefault()) {
+                return tp;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -188,6 +203,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         tp.setEndOfAvailability(toDate(desc.getEndOfAvailability()));
         tp.setFastTrack(desc.isFastTrack());
         tp.setTrial(desc.isTrial());
+        tp.setDefault(desc.isDefault());
         tp.setParent(getTargetPlatform(desc.getParent()));
         tp.setRefVersion(desc.getRefVersion());
         tp.setReleaseDate(toDate(desc.getReleaseDate()));
@@ -220,6 +236,11 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
                     DirectoryUpdater.TRIAL_PROP);
             if (trial != null && trial.intValue() >= 0) {
                 tp.setTrial(trial.intValue() == 0 ? false : true);
+            }
+            Long isDefault = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
+                    DirectoryUpdater.DEFAULT_PROP);
+            if (isDefault != null && isDefault.intValue() >= 0) {
+                tp.setDefault(isDefault.intValue() == 0 ? false : true);
             }
             tp.setOverridden(true);
         }
@@ -299,6 +320,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         tpi.setAvailablePackagesInfo(getTargetPackagesInfo(id));
         tpi.setTypes(desc.getTypes());
         tpi.setTrial(desc.isTrial());
+        tpi.setDefault(desc.isDefault());
 
         DocumentModel entry = getDirectoryEntry(id);
         if (entry != null) {
@@ -321,6 +343,11 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
                     DirectoryUpdater.TRIAL_PROP);
             if (trial != null && trial.intValue() >= 0) {
                 tpi.setTrial(trial.intValue() == 0 ? false : true);
+            }
+            Long isDefault = (Long) entry.getProperty(DirectoryUpdater.SCHEMA,
+                    DirectoryUpdater.DEFAULT_PROP);
+            if (isDefault != null && isDefault.intValue() >= 0) {
+                tpi.setDefault(isDefault.intValue() == 0 ? false : true);
             }
             tpi.setOverridden(true);
         }
@@ -496,10 +523,17 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public void trialTargetPlatform(boolean trial, final String id)
+    public void setTrialTargetPlatform(boolean trial, final String id)
             throws ClientException {
         Integer val = trial ? Integer.valueOf(1) : Integer.valueOf(0);
         updateOrCreateEntry(id, DirectoryUpdater.TRIAL_PROP, val);
+    }
+
+    @Override
+    public void setDefaultTargetPlatform(boolean isDefault, final String id)
+            throws ClientException {
+        Integer val = isDefault ? Integer.valueOf(1) : Integer.valueOf(0);
+        updateOrCreateEntry(id, DirectoryUpdater.DEFAULT_PROP, val);
     }
 
     @Override

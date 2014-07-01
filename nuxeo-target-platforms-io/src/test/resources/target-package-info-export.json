@@ -14,6 +14,7 @@
   "downloadLink" : "https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-dm?version=5.8.0",
   "fastTrack" : false,
   "trial" : false,
+  "default" : false,
   "types" : [ ],
   "enabled" : true,
   "overridden" : false

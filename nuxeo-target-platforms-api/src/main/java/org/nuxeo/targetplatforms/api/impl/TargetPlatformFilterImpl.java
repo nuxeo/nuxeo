@@ -36,6 +36,8 @@ public class TargetPlatformFilterImpl implements TargetPlatformFilter {
 
     protected boolean filterDeprecated = false;
 
+    protected boolean filterDefault = false;
+
     protected boolean filterNotTrial = false;
 
     protected String filterType;
@@ -46,11 +48,12 @@ public class TargetPlatformFilterImpl implements TargetPlatformFilter {
 
     public TargetPlatformFilterImpl(boolean filterDisabled,
             boolean filterRestricted, boolean filterDeprecated,
-            String filterType) {
+            boolean filterDefault, String filterType) {
         super();
         this.filterDisabled = filterDisabled;
         this.filterRestricted = filterRestricted;
         this.filterDeprecated = filterDeprecated;
+        this.filterDefault = filterDefault;
         this.filterType = filterType;
     }
 
@@ -75,6 +78,14 @@ public class TargetPlatformFilterImpl implements TargetPlatformFilter {
         this.filterType = filterType;
     }
 
+    public void setFilterDefault(boolean filterDefault) {
+        this.filterDefault = filterDefault;
+    }
+
+    public void setFilterNotTrial(boolean filterNotTrial) {
+        this.filterNotTrial = filterNotTrial;
+    }
+
     @Override
     public boolean accepts(TargetInfo t) {
         if (t == null) {
@@ -84,6 +95,7 @@ public class TargetPlatformFilterImpl implements TargetPlatformFilter {
                 || (filterDeprecated && t.isDeprecated())
                 || (filterRestricted && t.isRestricted())
                 || (filterNotTrial && !t.isTrial())
+                || (filterDefault && !t.isDefault())
                 || (!StringUtils.isBlank(filterType) && !t.matchesType(filterType))) {
             return false;
         }
