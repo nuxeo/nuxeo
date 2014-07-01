@@ -29,12 +29,15 @@ import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_CONFIG_FACET;
 import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ID_PROPERTY;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
+
+import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Test;
@@ -438,11 +441,15 @@ public class TestMultiTenantService {
         acp = newWS.getACP();
         local = acp.getACLs()[0];
         
+        List<String> principals = new ArrayList<>();
         for (ACE ace : local) {
-            System.out.println(ace);
+            principals.add(ace.getUsername());            
         }
-        
-        
+
+        Assert.assertTrue(principals.contains("toto"));
+        Assert.assertTrue(principals.contains("tenant-newDomain_tenantMembers"));
+        Assert.assertFalse(principals.contains("members"));
+        Assert.assertFalse(principals.contains("Everyone"));
     }
 
     

@@ -1,4 +1,4 @@
-/*
+/*  
  * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
