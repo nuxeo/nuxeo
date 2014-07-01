@@ -169,6 +169,9 @@ public class CoreFeature extends SimpleFeature {
             session.removeChildren(new PathRef("/"));
             session.save();
             waitForAsyncCompletion();
+            if (! session.query("SELECT * FROM Document").isEmpty()) {
+                log.error("Fail to cleanupSession, repository will not be empty for the next test.");
+            }
         } catch (ClientException e) {
             log.error("Unable to reset repository", e);
         } finally {
