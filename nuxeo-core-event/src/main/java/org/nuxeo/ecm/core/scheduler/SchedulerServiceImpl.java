@@ -105,7 +105,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements
         // https://jira.nuxeo.com/browse/NXP-7303
         String[] jobs = scheduler.getJobNames("nuxeo");
         for (String job : jobs) {
-            unregisterSchedule(job);
+            unschedule(job);
         }
         for (Schedule each:registry.getSchedules()) {
             registerSchedule(each);
