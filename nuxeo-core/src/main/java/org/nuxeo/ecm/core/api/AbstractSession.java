@@ -641,12 +641,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             options.put(CoreEventConstants.OLD_ACP,
                     (Serializable) docModel.getACP().clone());
             options.put(CoreEventConstants.NEW_ACP,
-                    (Serializable) newAcp.clone());
+                    (Serializable) newAcp);
 
             notifyEvent(DocumentEventTypes.BEFORE_DOC_SECU_UPDATE, docModel,
                     options, null, null, true, true);
             getSession().setACP(doc, newAcp, overwrite);
             docModel = readModel(doc);
+            options.put(CoreEventConstants.NEW_ACP,
+                    (Serializable) newAcp.clone());
             notifyEvent(DocumentEventTypes.DOCUMENT_SECURITY_UPDATED, docModel,
                     options, null, null, true, false);
         } catch (DocumentException e) {
