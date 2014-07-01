@@ -293,6 +293,7 @@ public class TestAuditFileSystemChangeFinder {
             // Restore a deleted document and move a document in a newly
             // synchronized root
             session.followTransition(doc1.getRef(), "undelete");
+            waitToEnsureDistinctAuditEventDate();
             session.move(doc3.getRef(), folder2.getRef(), null);
             waitToEnsureDistinctAuditEventDate();
             nuxeoDriveManager.registerSynchronizationRoot(
