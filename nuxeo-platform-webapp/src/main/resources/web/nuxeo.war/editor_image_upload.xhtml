@@ -20,8 +20,76 @@
     <ul>
     <li class="#{nxu:test(editorImageActions.selectedTab == 'UPLOAD', 'selected', '')}"><a href="#{baseURL}editor_image_upload.faces?conversationId=#{org.jboss.seam.core.manager.currentConversationId}&amp;conversationIsLongRunning=true&amp;selectedTab=UPLOAD">#{messages['label.imageUpload.uploadTab']}</a></li>
     <li class="#{nxu:test(editorImageActions.selectedTab == 'SEARCH', 'selected', '')}"><a href="#{baseURL}editor_image_upload.faces?conversationId=#{org.jboss.seam.core.manager.currentConversationId}&amp;conversationIsLongRunning=true&amp;selectedTab=SEARCH">#{messages['label.imageUpload.searchTab']}</a></li>
+    <li class="#{nxu:test(editorImageActions.selectedTab == 'SEARCH_VIDEOS', 'selected', '')}"><a href="#{baseURL}editor_image_upload.faces?conversationId=#{org.jboss.seam.core.manager.currentConversationId}&amp;conversationIsLongRunning=true&amp;selectedTab=SEARCH_VIDEOS">#{messages['label.imageUpload.searchVideoTab']}</a></li>
     </ul>
   </div>
+
+  <script type="text/javascript">
+    function getSelectedRadio(buttonGroup) {
+      if (buttonGroup[0]) {
+        for (var i=0; i&lt;buttonGroup.length; i++) {
+          if (buttonGroup[i].checked) {
+            return buttonGroup[i]
+          }
+        }
+      } else if (buttonGroup.checked) {
+        return buttonGroup;
+      }
+      return null;
+    }
+
+    function getSelectedMedia(radioButton) {
+      ele = radioButton;
+      while (ele.nodeName != 'div' &amp;&amp; ele.nodeName != 'DIV') {
+        ele = ele.nextSibling;
+      }
+
+      if (ele.childNodes.length > 0) {
+        for (var i = 0; i &lt; ele.childNodes.length; ++i) {
+            e = ele.childNodes[i];
+            if (e.nodeName == 'input' || e.nodeName == 'INPUT') {
+              return e;
+            }
+         }
+      }
+      return null;
+    }
+
+    function getVideoHTML(radioButton) {
+      ele = radioButton;
+      while (ele.nodeName != 'div' &amp;&amp; ele.nodeName != 'DIV') {
+        ele = ele.nextSibling;
+      }
+
+      if (ele.childNodes.length > 0) {
+        for (var i = 0; i &lt; ele.childNodes.length; ++i) {
+            e = ele.childNodes[i];
+            if (e.nodeName == 'video' || e.nodeName == 'VIDEO') {
+              return e;
+            }
+         }
+      }
+      return null;
+    }
+
+    function updateEditor(element, type) {
+      if (window.opener.tinyMCE) {
+        var tinyMCE = window.opener.tinyMCE;
+        var button = getSelectedRadio(element);
+
+        if (type == 'Picture') {
+          var media = getSelectedMedia(button);
+          var html = '&lt;img src="' + media.value + '"/&gt;';
+          tinyMCE.execCommand('mceInsertContent', false, html);
+        } else if (type == 'Video') {
+          var media = getVideoHTML(button);
+          tinyMCE.execCommand('mceInsertContent', false, media.parentNode.innerHTML);
+        }
+
+      }
+      self.close();
+    }
+  </script>
 
   <div style="clear:both"></div>
   <div class="tabsContent">
@@ -125,8 +193,10 @@
               <nxu:column styleClass="iconColumn">
                 <input type="radio" id="selection" name="selection"
                   value="#{document.id}" />
-                <div style="display: none;" id="#{document.id}"><h:graphicImage
-                  value="#{nxd:fileUrl('downloadPicture', document, editorImageActions.imageProperty, currentDocument.dublincore.modified)}" /></div>
+                <div style="display: none;" id="#{document.id}">
+                  <input type="hidden" name="docUrl"
+                    value="#{nxd:fileUrl('downloadPicture', document, editorImageActions.imageProperty, currentDocument.dublincore.modified)}" />
+                </div>
               </nxu:column>
               <!-- Icon + Type -->
               <nxu:column styleClass="iconColumn">
@@ -153,57 +223,101 @@
             </nxu:dataTable>
           </h:selectOneRadio>
 
-          <script type="text/javascript">
-            function getSelectedRadio(buttonGroup) {
-              if (buttonGroup[0]) {
-                for (var i=0; i&lt;buttonGroup.length; i++) {
-                  if (buttonGroup[i].checked) {
-                    return buttonGroup[i]
-                  }
-                }
-              } else if (buttonGroup.checked) {
-                return buttonGroup;
-              }
-              return null;
-            }
-
-            function getImage(radioButton) {
-              ele = radioButton;
-              while (ele.nodeName != 'div' &amp;&amp; ele.nodeName != 'DIV') {
-                ele = ele.nextSibling;
-              }
-
-              if (ele.childNodes.length > 0) {
-                for (var i = 0; i &lt; ele.childNodes.length; ++i) {
-                    e = ele.childNodes[i];
-                    if (e.nodeName == 'img' || e.nodeName == 'IMG') {
-                      return e;
-                    }
-                  }
-              }
-              return null;
-            }
-
-            function updateEditor(form) {
-              if (window.opener.tinyMCE) {
-                var tinyMCE = window.opener.tinyMCE;
-                var button = getSelectedRadio(form.elements.selection);
-                var img = getImage(button);
-                var html = '&lt;img src="' + img.src + '"/&gt;';
-                tinyMCE.execCommand('mceInsertContent', false, html);
-              }
-              self.close();
-            }
-          </script>
           <input type="submit" id="button_update" class="button"
             value="#{messages['command.ok']}"
-            onclick="javascript:updateEditor(this.form);" />
+            onclick="javascript:updateEditor(this.form.elements.selection, 'Picture');" />
 
           </h:form>
           </f:subview>
         </div>
       </a4j:region>
 
+    </f:subview>
+
+    <f:subview rendered="#{editorImageActions.selectedTab == 'SEARCH_VIDEOS'}">
+      <div>
+        <h3><h:outputText
+          value="#{messages['label.search.form.simple']}" /></h3>
+        <h:form>
+          <h:inputText value="#{editorImageActions.searchKeywords}" size="40"
+            class="searchField"
+            onkeydown="if (event.keyCode == 13) {this.nextSibling.click()} else return true" />
+          <h:commandButton
+            value="#{messages['command.search']}"
+            action="#{editorImageActions.searchVideos}" class="button" />
+        </h:form>
+      </div>
+
+      <a4j:region>
+        <div id="content_videos">
+          <h:outputText value="#{messages['label.content.emptyFolder']}"
+            rendered="#{!editorImageActions.hasSearchVideosResults}" />
+
+          <f:subview rendered="#{editorImageActions.hasSearchVideosResults}">
+
+          <h:form id="search_videos_results"
+            rendered="#{editorImageActions.hasSearchVideosResults}">
+
+            <h3><h:outputText
+            value="#{messages['label.imageUpload.chooseFile']}" /></h3>
+
+            <h:selectOneRadio>
+              <nxu:dataTable id="dataTable_videos"
+                value="#{editorImageActions.searchVideosResults}"
+                var="document" rowClasses="dataRowEven,dataRowOdd"
+                styleClass="dataOutput">
+                <!-- id and selection -->
+                <nxu:column styleClass="iconColumn">
+                  <input type="radio" id="selection_videos" name="selection"
+                    value="#{document.id}" />
+                  <div style="display: none;" id="#{document.id}">
+                    <video id="#{document.id}_video" width="894" height="480" class="video-js vjs-default-skin" controls="controls" preload="auto"
+                          poster="#{staticPreview}">
+                      <nxu:set var="urlMP4" value="#{editorImageActions.getURLVideo(document, 'MP4 480p')}">
+                        <nxu:set var="urlWebM" value="#{editorImageActions.getURLVideo(document, 'WebM 480p')}">
+                          <f:subview rendered="#{not empty urlMP4}">
+                            <source src="#{urlMP4}" type='video/mp4' />
+                          </f:subview>
+                          <f:subview rendered="#{not empty urlWebM}">
+                            <source src="#{urlWebM}" type='video/webm' />
+                          </f:subview>
+                        </nxu:set>
+                      </nxu:set>
+                    </video>
+                  </div>
+                </nxu:column>
+                <!-- Icon + Type -->
+                <nxu:column styleClass="iconColumn">
+                  <nxu:graphicImage value="#{nxd:iconPath(document)}" alt="#{document.type}" />
+                </nxu:column>
+                <!--  Title -->
+                <nxu:column>
+                  <f:facet name="header">
+                    <h:outputText
+                      value="#{messages['label.content.header.title']}" />
+                  </f:facet>
+                  <h:outputText value="#{nxd:titleOrId(document)}" />
+                </nxu:column>
+                <!--  Image -->
+              <h:column>
+                <f:facet name="header">
+                  <h:outputText
+                    value="#{messages['label.imageUpload.image']}" />
+                </f:facet>
+                <h:graphicImage
+                  value="#{nxd:fileUrl('downloadPicture', document, 'StaticPlayerView:content', currentDocument.dublincore.modified)}" />
+              </h:column>
+              </nxu:dataTable>
+            </h:selectOneRadio>
+
+            <input type="submit" id="button_videos_update" class="button"
+              value="#{messages['command.ok']}"
+              onclick="javascript:updateEditor(this.form.elements.selection_videos, 'Video');" />
+
+          </h:form>
+          </f:subview>
+        </div>
+      </a4j:region>
     </f:subview>
 
     </div>
