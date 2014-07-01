@@ -110,7 +110,7 @@ public class TestJsonExporter {
         try {
             JSONAssert.assertEquals(expected, actual, true);
         } catch (AssertionError e) {
-            System.err.println(actual);
+            // System.err.println(actual);
             throw e;
         }
     }
