@@ -87,6 +87,7 @@ public class TestUserAgent {
         assertFalse(UserAgentMatcher.isHistoryPushStateSupported(MSIE9_COMPATIBILITY_VIEW_UA));
         assertTrue(UserAgentMatcher.isHistoryPushStateSupported(FF_30));
         assertTrue(UserAgentMatcher.isHistoryPushStateSupported(MSIE10));
+        assertTrue(UserAgentMatcher.isHistoryPushStateSupported(MSIE10_COMPAT));
         assertTrue(UserAgentMatcher.isHistoryPushStateSupported(MSIE11));
         assertTrue(UserAgentMatcher.isHistoryPushStateSupported(MSIE11_COMPAT));
     }
