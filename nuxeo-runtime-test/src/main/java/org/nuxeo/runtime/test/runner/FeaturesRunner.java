@@ -27,8 +27,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+
 import org.apache.log4j.MDC;
 import org.junit.Ignore;
+import org.junit.internal.AssumptionViolatedException;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -358,6 +360,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                 } finally {
                     afterRun();
                 }
+            } catch(AssumptionViolatedException e) {
+                notifier.fireTestIgnored(getDescription());
             } catch (Exception error) {
                 errors.addSuppressed(error);
             } finally {
