@@ -97,14 +97,19 @@ public class ConnectionImpl implements Session {
      * ----- javax.resource.cci.Connection -----
      */
 
+    protected Throwable closeTrace;
+
     @Override
     public void close() throws ResourceException {
         if (managedConnection == null) {
-            throw new IllegalStateException("connection already closed " + this);
+            IllegalStateException error = new IllegalStateException("connection already closed " + this);
+            error.addSuppressed(closeTrace);
+            throw error;
         }
         try {
             managedConnection.close(this);
         } finally {
+            closeTrace = new Throwable("close stack trace");
             managedConnection = null;
         }
     }
