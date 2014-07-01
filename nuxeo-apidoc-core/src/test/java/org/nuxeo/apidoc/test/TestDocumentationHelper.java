@@ -16,10 +16,10 @@
  */
 package org.nuxeo.apidoc.test;
 
-import org.junit.Before;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -33,23 +33,23 @@ public class TestDocumentationHelper extends NXRuntimeTestCase {
 
     @Test
     public void test() throws Exception {
-        assertEquals("<p>\nfoo\n</p>\n" //
-                + "<p>\nbar</p>", //
+        assertEquals("<p> foo </p>\n" //
+                + "<p> bar</p>", //
                 DocumentationHelper.getHtml("foo\n\nbar"));
-        assertEquals("<p>\nfoo\n</p>\n" //
-                + "<p>\nbar</p>", //
+        assertEquals("<p> foo </p>\n" //
+                + "<p> bar</p>", //
                 DocumentationHelper.getHtml("foo\n\n<br/>\nbar"));
-        assertEquals("<p>\nfoo\n</p>\n" //
-                + "<p>" //
-                + "<pre><code>bar\n" //
+        assertEquals("<p> foo </p>\n" //
+                + "<p>\n" //
+                + "  <pre><code>bar\n" //
                 + "</code></pre></p>\n" //
-                + "<p>\nbaz</p>", //
+                + "<p> baz</p>", //
                 DocumentationHelper.getHtml("foo\n<code>\nbar\n</code>\nbaz"));
-        assertEquals("<p>\nfoo\n<ul>\n" //
-                + "<li>bar</li>\n</ul></p>",
+        assertEquals("<p> foo <ul>\n" //
+                + "    <li>bar</li></ul></p>",
                 DocumentationHelper.getHtml("foo\n<ul>\n<li>bar</li>\n</ul>\n"));
-        assertEquals("<p>\nfoo\n</p>\n" //
-                + "<p>\nbar</p>", //
+        assertEquals("<p> foo </p>\n" //
+                + "<p> bar</p>", //
                 DocumentationHelper.getHtml("foo\n@author you\nbar"));
     }
 }
