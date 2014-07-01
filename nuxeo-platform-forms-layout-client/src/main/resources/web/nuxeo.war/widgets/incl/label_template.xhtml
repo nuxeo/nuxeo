@@ -27,7 +27,7 @@ Accepted parameters:
     <c:if test="#{not empty helpLabel and not hideHelp}">
       <div class="widgetHelpLabel">
         <nxu:set var="translatedHelpLabel"
-          value="#{nxu:htmlEscape(nxu:test(translated, messages[helpLabel], helpLabel))}">
+          value="#{nxu:test(translated, messages[helpLabel], helpLabel)}">
           <h:outputText value="#{translatedLabel}"
             title="#{translatedHelpLabel}"
             styleClass="widgetLabel tipsyShow tipsyGravityNW #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
