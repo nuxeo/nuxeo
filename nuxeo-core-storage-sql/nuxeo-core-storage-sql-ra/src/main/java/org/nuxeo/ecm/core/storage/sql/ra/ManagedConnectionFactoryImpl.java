@@ -282,17 +282,23 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
      * ----- -----
      */
 
-    private void initialize() throws StorageException {
+    private void initialize() throws ResourceException {
         synchronized (this) {
             if (repository == null) {
                 repositoryDescriptor.merge(getRepositoryDescriptor(repositoryDescriptor.name));
                 repository = new RepositoryImpl(repositoryDescriptor);
             }
+            SessionImpl session = repository.getConnection();
+            session.close();
         }
     }
 
-    public void shutdown() {
-        // don't close sessions, already managed by pool cleanup
+    public void shutdown() throws StorageException {
+        try {
+            repository.close();
+        } finally {
+            repository = null;
+        }
     }
 
     /**

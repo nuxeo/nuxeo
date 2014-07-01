@@ -181,11 +181,16 @@ public class ConnectionFactoryImpl implements Repository,
 
     @Override
     public void shutdown() {
-        managedConnectionFactory.shutdown();
         try {
             NuxeoContainer.disposeConnectionManager(connectionManager);
         } catch (Exception e) {
             LogFactory.getLog(ConnectionFactoryImpl.class).warn("cannot dispose connection manager of "
+                    + name);
+        }
+        try {
+            managedConnectionFactory.shutdown();
+        } catch (StorageException e) {
+            LogFactory.getLog(ConnectionFactoryImpl.class).warn("cannot shutdown connection factory  "
                     + name);
         }
     }
