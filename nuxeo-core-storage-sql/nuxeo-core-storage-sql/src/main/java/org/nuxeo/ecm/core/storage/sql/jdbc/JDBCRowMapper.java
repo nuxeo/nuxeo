@@ -925,7 +925,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     @Override
     public Map<String, String> getBinaryFulltext(RowId rowId) throws StorageException {
         ArrayList<String> columns = new ArrayList<String>();
-        for (String index: model.fulltextInfo.indexesAllBinary) {
+        for (String index: model.getFulltextConfiguration().indexesAllBinary) {
             String col = Model.FULLTEXT_BINARYTEXT_KEY + model.getFulltextIndexSuffix(index);
             columns.add(col);
         }

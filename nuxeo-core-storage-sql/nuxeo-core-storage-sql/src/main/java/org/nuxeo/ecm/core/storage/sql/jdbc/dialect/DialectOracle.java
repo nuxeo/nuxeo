@@ -45,11 +45,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
@@ -758,7 +758,7 @@ public class DialectOracle extends Dialect {
         if (!fulltextDisabled) {
             Table ft = database.getTable(Model.FULLTEXT_TABLE_NAME);
             properties.put("fulltextTable", ft.getQuotedName());
-            ModelFulltext fti = model.getFulltextInfo();
+            FulltextConfiguration fti = model.getFulltextConfiguration();
             List<String> lines = new ArrayList<String>(fti.indexNames.size());
             for (String indexName : fti.indexNames) {
                 String suffix = model.getFulltextIndexSuffix(indexName);

@@ -831,13 +831,13 @@ public class NXQLQueryMaker implements QueryMaker {
             useIndex = sep == '_';
             name = name.substring(NXQL.ECM_FULLTEXT.length() + 1);
             if (useIndex) {
-                if (!model.fulltextInfo.indexNames.contains(name)) {
+                if (!model.getFulltextConfiguration().indexNames.contains(name)) {
                     throw new QueryMakerException("No such fulltext index: "
                             + name);
                 }
             } else {
                 // find if there's an index holding just that field
-                String index = model.fulltextInfo.fieldToIndexName.get(name);
+                String index = model.getFulltextConfiguration().fieldToIndexName.get(name);
                 if (index != null) {
                     name = index;
                     useIndex = true;

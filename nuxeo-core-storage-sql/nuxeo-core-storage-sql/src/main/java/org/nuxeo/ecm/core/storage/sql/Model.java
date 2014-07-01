@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
@@ -401,7 +402,7 @@ public class Model {
     /** Map of field name to fragment holding it. Used for prefetch. */
     protected final Map<String, String> fieldFragment;
 
-    public final ModelFulltext fulltextInfo;
+    protected final FulltextConfiguration fulltextConfiguration;
 
     protected final Set<String> noPerDocumentQueryFacets;
 
@@ -453,7 +454,7 @@ public class Model {
         prefixToSchema = new HashMap<String, String>();
         schemaSimpleTextPaths = new HashMap<String, Set<String>>();
         allPathPropertyInfos = new HashMap<String, ModelProperty>();
-        fulltextInfo = new ModelFulltext();
+        fulltextConfiguration = new FulltextConfiguration();
         fulltextInfoByFragment = new HashMap<String, PropertyType>();
         fragmentKeyTypes = new HashMap<String, Map<String, ColumnType>>();
         binaryFragmentKeys = new HashMap<String, List<String>>();
@@ -781,12 +782,12 @@ public class Model {
         for (FulltextIndexDescriptor desc : descs) {
             String name = desc.name == null ? FULLTEXT_DEFAULT_INDEX
                     : desc.name;
-            fulltextInfo.indexNames.add(name);
-            fulltextInfo.indexAnalyzer.put(
+            fulltextConfiguration.indexNames.add(name);
+            fulltextConfiguration.indexAnalyzer.put(
                     name,
                     desc.analyzer == null ? repositoryDescriptor.fulltextAnalyzer
                             : desc.analyzer);
-            fulltextInfo.indexCatalog.put(name,
+            fulltextConfiguration.indexCatalog.put(name,
                     desc.catalog == null ? repositoryDescriptor.fulltextCatalog
                             : desc.catalog);
             if (desc.fields == null) {
@@ -796,15 +797,15 @@ public class Model {
                 desc.excludeFields = new HashSet<String>();
             }
             if (desc.fields.size() == 1 && desc.excludeFields.isEmpty()) {
-                fulltextInfo.fieldToIndexName.put(
+                fulltextConfiguration.fieldToIndexName.put(
                         desc.fields.iterator().next(), name);
             }
 
             if (desc.fieldType != null) {
-                if (desc.fieldType.equals(ModelFulltext.PROP_TYPE_STRING)) {
-                    fulltextInfo.indexesAllSimple.add(name);
-                } else if (desc.fieldType.equals(ModelFulltext.PROP_TYPE_BLOB)) {
-                    fulltextInfo.indexesAllBinary.add(name);
+                if (desc.fieldType.equals(FulltextConfiguration.PROP_TYPE_STRING)) {
+                    fulltextConfiguration.indexesAllSimple.add(name);
+                } else if (desc.fieldType.equals(FulltextConfiguration.PROP_TYPE_BLOB)) {
+                    fulltextConfiguration.indexesAllBinary.add(name);
                 } else {
                     log.error("Ignoring unknow repository fulltext configuration fieldType: "
                             + desc.fieldType);
@@ -813,15 +814,15 @@ public class Model {
             }
             if (desc.fields.isEmpty() && desc.fieldType == null) {
                 // no fields specified and no field type -> all of them
-                fulltextInfo.indexesAllSimple.add(name);
-                fulltextInfo.indexesAllBinary.add(name);
+                fulltextConfiguration.indexesAllSimple.add(name);
+                fulltextConfiguration.indexesAllBinary.add(name);
             }
 
             if (repositoryDescriptor.fulltextExcludedTypes != null) {
-                fulltextInfo.excludedTypes.addAll(repositoryDescriptor.fulltextExcludedTypes);
+                fulltextConfiguration.excludedTypes.addAll(repositoryDescriptor.fulltextExcludedTypes);
             }
             if (repositoryDescriptor.fulltextIncludedTypes != null) {
-                fulltextInfo.includedTypes.addAll(repositoryDescriptor.fulltextIncludedTypes);
+                fulltextConfiguration.includedTypes.addAll(repositoryDescriptor.fulltextIncludedTypes);
             }
 
             for (Set<String> fields : Arrays.asList(desc.fields,
@@ -838,15 +839,15 @@ public class Model {
                     Map<String, Set<String>> propPathsByIndex;
                     if (pi.propertyType == PropertyType.STRING
                             || pi.propertyType == PropertyType.ARRAY_STRING) {
-                        indexesByPropPath = fields == desc.fields ? fulltextInfo.indexesByPropPathSimple
-                                : fulltextInfo.indexesByPropPathExcludedSimple;
-                        propPathsByIndex = fields == desc.fields ? fulltextInfo.propPathsByIndexSimple
-                                : fulltextInfo.propPathsExcludedByIndexSimple;
+                        indexesByPropPath = fields == desc.fields ? fulltextConfiguration.indexesByPropPathSimple
+                                : fulltextConfiguration.indexesByPropPathExcludedSimple;
+                        propPathsByIndex = fields == desc.fields ? fulltextConfiguration.propPathsByIndexSimple
+                                : fulltextConfiguration.propPathsExcludedByIndexSimple;
                     } else if (pi.propertyType == PropertyType.BINARY) {
-                        indexesByPropPath = fields == desc.fields ? fulltextInfo.indexesByPropPathBinary
-                                : fulltextInfo.indexesByPropPathExcludedBinary;
-                        propPathsByIndex = fields == desc.fields ? fulltextInfo.propPathsByIndexBinary
-                                : fulltextInfo.propPathsExcludedByIndexBinary;
+                        indexesByPropPath = fields == desc.fields ? fulltextConfiguration.indexesByPropPathBinary
+                                : fulltextConfiguration.indexesByPropPathExcludedBinary;
+                        propPathsByIndex = fields == desc.fields ? fulltextConfiguration.propPathsByIndexBinary
+                                : fulltextConfiguration.propPathsExcludedByIndexBinary;
                     } else {
                         log.error(String.format(
                                 "Ignoring property '%s' with bad type %s in fulltext configuration: %s",
@@ -873,7 +874,7 @@ public class Model {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         for (DocumentType documentType : schemaManager.getDocumentTypes()) {
             if (documentType.hasFacet(FacetNames.NOT_FULLTEXT_INDEXABLE)) {
-                fulltextInfo.excludedTypes.add(documentType.getName());
+                fulltextConfiguration.excludedTypes.add(documentType.getName());
             }
         }
     }
@@ -1032,8 +1033,8 @@ public class Model {
         return schemas;
     }
 
-    public ModelFulltext getFulltextInfo() {
-        return fulltextInfo;
+    public FulltextConfiguration getFulltextConfiguration() {
+        return fulltextConfiguration;
     }
 
     /**
@@ -1280,7 +1281,7 @@ public class Model {
             fragments.add(MISC_TABLE_NAME);
         }
         if (!repositoryDescriptor.getFulltextDisabled()
-                && fulltextInfo.isFulltextIndexable(typeName)) {
+                && fulltextConfiguration.isFulltextIndexable(typeName)) {
             fragments.add(FULLTEXT_TABLE_NAME);
         }
         return fragments;
@@ -1519,7 +1520,7 @@ public class Model {
         addPropertyInfo(FULLTEXT_JOBID_PROP, PropertyType.STRING,
                 FULLTEXT_TABLE_NAME, FULLTEXT_JOBID_KEY, false,
                 StringType.INSTANCE, ColumnType.SYSNAME);
-        for (String indexName : fulltextInfo.indexNames) {
+        for (String indexName : fulltextConfiguration.indexNames) {
             String suffix = getFulltextIndexSuffix(indexName);
             if (materializeFulltextSyntheticColumn) {
                 addPropertyInfo(FULLTEXT_FULLTEXT_PROP + suffix,

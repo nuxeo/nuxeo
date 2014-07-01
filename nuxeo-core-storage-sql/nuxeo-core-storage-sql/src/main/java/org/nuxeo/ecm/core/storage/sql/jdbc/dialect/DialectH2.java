@@ -196,7 +196,7 @@ public class DialectH2 extends Dialect {
         }
         String fullIndexName = String.format("PUBLIC_%s_%s",
                 table.getPhysicalName(), indexName);
-        String analyzer = model.getFulltextInfo().indexAnalyzer.get(indexName);
+        String analyzer = model.getFulltextConfiguration().indexAnalyzer.get(indexName);
         if (analyzer == null) {
             analyzer = DEFAULT_FULLTEXT_ANALYZER;
         }

@@ -27,11 +27,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.Selection;
 import org.nuxeo.ecm.core.storage.sql.SelectionType;
@@ -579,15 +579,15 @@ public class SQLInfo {
          */
         if (!model.getRepositoryDescriptor().getFulltextDisabled()) {
             Table table = database.getTable(model.FULLTEXT_TABLE_NAME);
-            ModelFulltext fulltextInfo = model.getFulltextInfo();
-            if (fulltextInfo.indexNames.size() > 1
+            FulltextConfiguration fulltextConfiguration = model.getFulltextConfiguration();
+            if (fulltextConfiguration.indexNames.size() > 1
                     && !dialect.supportsMultipleFulltextIndexes()) {
                 String msg = String.format(
                         "SQL database supports only one fulltext index, but %d are configured: %s",
-                        fulltextInfo.indexNames.size(), fulltextInfo.indexNames);
+                        fulltextConfiguration.indexNames.size(), fulltextConfiguration.indexNames);
                 throw new StorageException(msg);
             }
-            for (String indexName : fulltextInfo.indexNames) {
+            for (String indexName : fulltextConfiguration.indexNames) {
                 String suffix = model.getFulltextIndexSuffix(indexName);
                 int ftic = dialect.getFulltextIndexedColumns();
                 if (ftic == 1) {

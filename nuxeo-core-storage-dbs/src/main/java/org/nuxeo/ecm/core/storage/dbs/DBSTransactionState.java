@@ -61,6 +61,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.CopyHelper;
+import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.dbs.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -117,6 +118,14 @@ public class DBSTransactionState {
         SecurityService securityService = Framework.getLocalService(SecurityService.class);
         browsePermissions = new HashSet<>(
                 Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
+    }
+
+    protected FulltextConfiguration getFulltextConfiguration() {
+        // TODO get from DBS repo service
+        FulltextConfiguration fulltextConfiguration = new FulltextConfiguration();
+        fulltextConfiguration.indexNames.add("default");
+        fulltextConfiguration.indexesAllBinary.add("default");
+        return fulltextConfiguration;
     }
 
     protected DBSDocumentState makeTransient(DBSDocumentState docState) {
@@ -886,9 +895,7 @@ public class DBSTransactionState {
             String documentType = docState.getPrimaryType();
             // Object[] mixinTypes = (Object[]) docState.get(KEY_MIXIN_TYPES);
 
-            // TODO get from extension point, see also FulltextExtractorWork
-            // XXX hardcoded config for now
-            FulltextConfiguration config = new FulltextConfiguration();
+            FulltextConfiguration config = getFulltextConfiguration();
             if (!config.isFulltextIndexable(documentType)) {
                 continue;
             }
@@ -920,7 +927,7 @@ public class DBSTransactionState {
 
         // TODO get from extension point, see also FulltextExtractorWork
         // XXX hardcoded config for now
-        FulltextConfiguration config = new FulltextConfiguration();
+        FulltextConfiguration config = getFulltextConfiguration();
 
         // mark indexing in progress, so that future copies (including versions)
         // will be indexed as well

@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.sql.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
@@ -59,7 +60,7 @@ public class FulltextExtractorWork extends AbstractWork {
 
     protected static final String TITLE = "fulltextExtractor";
 
-    protected transient ModelFulltext fulltextInfo;
+    protected transient FulltextConfiguration fulltextConfiguration;
 
     protected transient Class<? extends FulltextParser> fulltextParserClass;
 
@@ -90,7 +91,7 @@ public class FulltextExtractorWork extends AbstractWork {
         }
 
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
-        fulltextInfo = sqlRepositoryService.getModelFulltext(repositoryName);
+        fulltextConfiguration = sqlRepositoryService.getFulltextConfiguration(repositoryName);
         fulltextParserClass = sqlRepositoryService.getFulltextParserClass(repositoryName);
         initFulltextParser();
 
@@ -113,7 +114,7 @@ public class FulltextExtractorWork extends AbstractWork {
             // the target document that carries it
             return;
         }
-        if (!fulltextInfo.isFulltextIndexable(doc.getType())) {
+        if (!fulltextConfiguration.isFulltextIndexable(doc.getType())) {
             // excluded by config
             return;
         }
@@ -121,16 +122,16 @@ public class FulltextExtractorWork extends AbstractWork {
         // Iterate on each index to set the binaryText column
         BlobsExtractor extractor = new BlobsExtractor();
         List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
-        for (String indexName : fulltextInfo.indexNames) {
-            if (!fulltextInfo.indexesAllBinary.contains(indexName)
-                    && fulltextInfo.propPathsByIndexBinary.get(indexName) == null) {
+        for (String indexName : fulltextConfiguration.indexNames) {
+            if (!fulltextConfiguration.indexesAllBinary.contains(indexName)
+                    && fulltextConfiguration.propPathsByIndexBinary.get(indexName) == null) {
                 // nothing to do: index not configured for blob
                 continue;
             }
             extractor.setExtractorProperties(
-                    fulltextInfo.propPathsByIndexBinary.get(indexName),
-                    fulltextInfo.propPathsExcludedByIndexBinary.get(indexName),
-                    fulltextInfo.indexesAllBinary.contains(indexName));
+                    fulltextConfiguration.propPathsByIndexBinary.get(indexName),
+                    fulltextConfiguration.propPathsExcludedByIndexBinary.get(indexName),
+                    fulltextConfiguration.indexesAllBinary.contains(indexName));
             List<Blob> blobs = extractor.getBlobs(doc);
             String text = blobsToText(blobs, docId);
             fulltextParser.setStrings(new ArrayList<String>());
@@ -149,7 +150,7 @@ public class FulltextExtractorWork extends AbstractWork {
     @Override
     public void cleanUp(boolean ok, Exception e) {
         super.cleanUp(ok, e);
-        fulltextInfo = null;
+        fulltextConfiguration = null;
         fulltextParser = null;
         fulltextParserClass = null;
     }

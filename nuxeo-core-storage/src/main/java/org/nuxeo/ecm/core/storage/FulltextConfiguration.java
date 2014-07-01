@@ -10,7 +10,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.dbs;
+package org.nuxeo.ecm.core.storage;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,8 +20,6 @@ import java.util.Set;
 
 /**
  * Info about the fulltext configuration.
- *
- * @since 5.9.5
  */
 public class FulltextConfiguration {
 
@@ -75,8 +73,6 @@ public class FulltextConfiguration {
     public final Set<String> includedTypes = new HashSet<String>();
 
     public FulltextConfiguration() {
-        indexNames.add("default");
-        indexesAllBinary.add("default");
     }
 
     public boolean isFulltextIndexable(String typeName) {

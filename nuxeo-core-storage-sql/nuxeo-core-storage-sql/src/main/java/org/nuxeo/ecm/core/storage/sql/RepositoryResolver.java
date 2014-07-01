@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerService;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
@@ -87,9 +88,9 @@ public class RepositoryResolver {
      * @deprecated since 5.9.5, use SQLRepositoryService instead
      */
     @Deprecated
-    public static ModelFulltext getModelFulltext(String repositoryName) {
+    public static FulltextConfiguration getModelFulltext(String repositoryName) {
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
-        return sqlRepositoryService.getModelFulltext(repositoryName);
+        return sqlRepositoryService.getFulltextConfiguration(repositoryName);
     }
 
 }

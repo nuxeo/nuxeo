@@ -26,8 +26,8 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.repository.RepositoryService;
+import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.sql.FulltextParser;
-import org.nuxeo.ecm.core.storage.sql.ModelFulltext;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
@@ -253,8 +253,8 @@ public class SQLRepositoryService extends DefaultComponent {
         return getRepositoryImpl(repositoryName).getFulltextParserClass();
     }
 
-    public ModelFulltext getModelFulltext(String repositoryName) {
-        return getRepositoryImpl(repositoryName).getModel().getFulltextInfo();
+    public FulltextConfiguration getFulltextConfiguration(String repositoryName) {
+        return getRepositoryImpl(repositoryName).getModel().getFulltextConfiguration();
     }
 
     /**

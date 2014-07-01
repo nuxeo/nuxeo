@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.dbs.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.core.work.AbstractWork;
@@ -82,7 +83,7 @@ public class FulltextExtractorWork extends AbstractWork {
             return;
         }
 
-        fulltextConfig = getFulltextConfig();
+        fulltextConfig = getFulltextConfiguration();
         initFulltextParser();
 
         setStatus("Extracting");
@@ -139,12 +140,12 @@ public class FulltextExtractorWork extends AbstractWork {
         fulltextParser = null;
     }
 
-    protected FulltextConfiguration getFulltextConfig() {
-        // TODO get from extension point
-        // XXX hardcoded config for now
-        FulltextConfiguration config = new FulltextConfiguration();
-
-        return config;
+    protected FulltextConfiguration getFulltextConfiguration() {
+        // TODO get from DBS repo service
+        FulltextConfiguration fulltextConfiguration = new FulltextConfiguration();
+        fulltextConfiguration.indexNames.add("default");
+        fulltextConfiguration.indexesAllBinary.add("default");
+        return fulltextConfiguration;
     }
 
     protected void initFulltextParser() {

@@ -443,7 +443,7 @@ public class SessionImpl implements Session, XAResource {
             String documentType = document.getPrimaryType();
             String[] mixinTypes = document.getMixinTypes();
 
-            if (!model.getFulltextInfo().isFulltextIndexable(documentType)) {
+            if (!model.getFulltextConfiguration().isFulltextIndexable(documentType)) {
                 continue;
             }
             document.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(
@@ -451,16 +451,16 @@ public class SessionImpl implements Session, XAResource {
             fulltextParser.setDocument(document, this);
             try {
                 List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
-                for (String indexName : model.getFulltextInfo().indexNames) {
+                for (String indexName : model.getFulltextConfiguration().indexNames) {
                     Set<String> paths;
-                    if (model.getFulltextInfo().indexesAllSimple.contains(indexName)) {
+                    if (model.getFulltextConfiguration().indexesAllSimple.contains(indexName)) {
                         // index all string fields, minus excluded ones
                         // TODO XXX excluded ones...
                         paths = model.getSimpleTextPropertyPaths(documentType,
                                 mixinTypes);
                     } else {
                         // index configured fields
-                        paths = model.getFulltextInfo().propPathsByIndexSimple.get(indexName);
+                        paths = model.getFulltextConfiguration().propPathsByIndexSimple.get(indexName);
                     }
                     String text = fulltextParser.findFulltext(indexName, paths);
                     indexesAndText.add(new IndexAndText(indexName, text));
@@ -487,7 +487,7 @@ public class SessionImpl implements Session, XAResource {
         // will be indexed as well
         for (Node node : getNodesByIds(new ArrayList<Serializable>(
                 dirtyBinaries))) {
-            if (!model.getFulltextInfo().isFulltextIndexable(
+            if (!model.getFulltextConfiguration().isFulltextIndexable(
                     node.getPrimaryType())) {
                 continue;
             }
