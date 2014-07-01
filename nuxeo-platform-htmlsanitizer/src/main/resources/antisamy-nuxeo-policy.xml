@@ -19,6 +19,7 @@
     <directive name="embedStyleSheets" value="false" />
     <directive name="connectionTimeout" value="5000" />
     <directive name="maxStyleSheetImports" value="3" />
+    <directive name="entityEncodeIntlChars" value="true" />
 
   </directives>
 
@@ -837,6 +838,52 @@
           <regexp name="number" />
         </regexp-list>
       </attribute>
+    </tag>
+
+    <tag name="video" action="validate">
+      <attribute name="src">
+        <regexp-list>
+          <regexp name="onsiteURL" />
+          <regexp name="offsiteURL" />
+        </regexp-list>
+      </attribute>
+      <attribute name="width" />
+      <attribute name="height" />
+      <attribute name="preload">
+        <literal-list>
+          <literal value="none" />
+          <literal value="auto" />
+          <literal value="metadata" />
+        </literal-list>
+      </attribute>
+      <attribute name="controls">
+        <regexp-list>
+          <regexp name="anything" />
+        </regexp-list>
+      </attribute>
+      <attribute name="poster" >
+        <regexp-list>
+          <regexp name="onsiteURL" />
+          <regexp name="offsiteURL" />
+        </regexp-list>
+      </attribute>
+    </tag>
+
+    <tag name="source" action="validate" allowEmpty="true">
+      <attribute name="type">
+        <literal-list>
+          <literal value="video/mp4" />
+          <literal value="video/webm" />
+          <literal value="video/ogg" />
+        </literal-list>
+      </attribute>
+      <attribute name="src">
+        <regexp-list>
+          <regexp name="onsiteURL" />
+          <regexp name="offsiteURL" />
+        </regexp-list>
+      </attribute>
+      <attribute name="media" />
     </tag>
 
     <!-- no way to do this safely without hooking up the same code to @import
@@ -2666,5 +2713,31 @@
     </property>
     <!-- end manual properties -->
   </css-rules>
+
+  <allowed-empty-tags>
+    <literal-list>
+      <literal value="br"/>
+      <literal value="hr"/>
+      <literal value="a"/>
+      <literal value="img"/>
+      <literal value="link"/>
+      <literal value="iframe"/>
+      <literal value="script"/>
+      <literal value="object"/>
+      <literal value="applet"/>
+      <literal value="frame"/>
+      <literal value="base"/>
+      <literal value="param"/>
+      <literal value="meta"/>
+      <literal value="input"/>
+      <literal value="textarea"/>
+      <literal value="embed"/>
+      <literal value="basefont"/>
+      <literal value="col"/>
+      <literal value="div"/>
+      <literal value="video"/>
+      <literal value="source"/>
+    </literal-list>
+  </allowed-empty-tags>
 
 </anti-samy-rules>
