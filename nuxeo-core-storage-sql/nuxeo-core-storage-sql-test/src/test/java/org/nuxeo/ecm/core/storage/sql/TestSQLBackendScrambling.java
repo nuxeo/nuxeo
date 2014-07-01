@@ -40,10 +40,8 @@ public class TestSQLBackendScrambling extends SQLBackendTestCase {
     }
 
     @Override
-    protected RepositoryDescriptor newDescriptor(long clusteringDelay,
-            boolean fulltextDisabled) {
-        RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay,
-                fulltextDisabled);
+    protected RepositoryDescriptor newDescriptor(long clusteringDelay) {
+        RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay);
         descriptor.binaryManagerClass = XORBinaryManager.class;
         descriptor.binaryManagerKey = "AB";
         return descriptor;

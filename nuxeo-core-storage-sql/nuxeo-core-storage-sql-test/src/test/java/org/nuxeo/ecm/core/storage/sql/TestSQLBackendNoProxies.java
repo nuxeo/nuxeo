@@ -27,10 +27,8 @@ public class TestSQLBackendNoProxies extends TestSQLBackend {
     protected boolean proxiesEnabled = false;
 
     @Override
-    protected RepositoryDescriptor newDescriptor(long clusteringDelay,
-            boolean fulltextDisabled) {
-        RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay,
-                fulltextDisabled);
+    protected RepositoryDescriptor newDescriptor(long clusteringDelay) {
+        RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay);
         descriptor.setProxiesEnabled(proxiesEnabled);
         return descriptor;
     }
@@ -64,7 +62,7 @@ public class TestSQLBackendNoProxies extends TestSQLBackend {
         // create proxy through repo 2, which allows proxies
         // second repo with proxies allowed
         proxiesEnabled = true;
-        repository2 = newRepository(-1, false);
+        repository2 = newRepository(-1);
         proxiesEnabled = false;
         Session session2 = repository2.getConnection();
         Node root2 = session2.getRootNode();

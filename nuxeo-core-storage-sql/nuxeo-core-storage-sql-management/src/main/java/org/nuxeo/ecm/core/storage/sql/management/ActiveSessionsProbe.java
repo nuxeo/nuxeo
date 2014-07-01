@@ -25,7 +25,7 @@ public class ActiveSessionsProbe implements Probe {
 
     @Override
     public ProbeStatus run() throws ClientException {
-        RepositoryStatus status = new RepositoryStatus();
+        SQLRepositoryStatus status = new SQLRepositoryStatus();
         return ProbeStatus.newSuccess(status.listActiveSessions());
     }
 

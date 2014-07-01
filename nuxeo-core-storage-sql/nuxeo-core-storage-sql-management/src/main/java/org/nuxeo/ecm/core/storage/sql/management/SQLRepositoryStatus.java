@@ -18,19 +18,24 @@ import java.util.Map;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
-import org.nuxeo.ecm.core.storage.sql.RepositoryResolver;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * An MBean to manage SQL storage repositories.
  */
-public class RepositoryStatus implements RepositoryStatusMBean {
+public class SQLRepositoryStatus implements SQLRepositoryStatusMBean {
+
+    protected static List<RepositoryManagement> getRepositories() {
+        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
+        return sqlRepositoryService.getRepositories();
+    }
 
     @Override
     public String listActiveSessions() {
-        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
         StringBuilder buf = new StringBuilder();
         buf.append("Actives sessions for SQL repositories:<br />");
-        for (RepositoryManagement repository : repositories) {
+        for (RepositoryManagement repository : getRepositories()) {
             buf.append("<b>").append(repository.getName()).append("</b>: ");
             buf.append(repository.getActiveSessionsCount());
             buf.append("<br />");
@@ -40,9 +45,8 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     @Override
     public int getActiveSessionsCount() {
-        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
         int count = 0;
-        for (RepositoryManagement repository : repositories) {
+        for (RepositoryManagement repository : getRepositories()) {
             count += repository.getActiveSessionsCount();
         }
         return count;
@@ -50,10 +54,9 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     @Override
     public String clearCaches() {
-        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
         StringBuilder buf = new StringBuilder();
         buf.append("Cleared cached objects for SQL repositories:<br />");
-        for (RepositoryManagement repository : repositories) {
+        for (RepositoryManagement repository : getRepositories()) {
             buf.append("<b>").append(repository.getName()).append("</b>: ");
             buf.append(repository.clearCaches());
             buf.append("<br />");
@@ -63,9 +66,8 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     @Override
     public long getCachesSize() {
-        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
         long size = 0;
-        for (RepositoryManagement repository : repositories) {
+        for (RepositoryManagement repository : getRepositories()) {
             size += repository.getCacheSize();
         }
         return size;
@@ -73,10 +75,9 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     @Override
     public String listRemoteSessions() {
-        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
         StringBuilder buf = new StringBuilder();
         buf.append("Actives remote session for SQL repositories:<br />");
-        for (RepositoryManagement repository : repositories) {
+        for (RepositoryManagement repository : getRepositories()) {
             buf.append("<b>").append(repository.getName()).append("</b>");
             buf.append("<br/>");
         }
@@ -86,7 +87,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
     @Override
     public BinaryManagerStatus gcBinaries(boolean delete) {
         BinaryManagerStatus status = new BinaryManagerStatus();
-        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
+        List<RepositoryManagement> repositories = getRepositories();
         long start = System.currentTimeMillis();
         Map<String, BinaryGarbageCollector> repogcs = new LinkedHashMap<String, BinaryGarbageCollector>();
         Map<String, BinaryGarbageCollector> gcs = new LinkedHashMap<String, BinaryGarbageCollector>();
@@ -123,8 +124,7 @@ public class RepositoryStatus implements RepositoryStatusMBean {
 
     @Override
     public boolean isBinariesGCInProgress() {
-        List<RepositoryManagement> repositories = RepositoryResolver.getRepositories();
-        for (RepositoryManagement repo : repositories) {
+        for (RepositoryManagement repo : getRepositories()) {
             BinaryGarbageCollector gc = repo.getBinaryGarbageCollector();
             if (gc != null & gc.isInProgress()) {
                 return true;

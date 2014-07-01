@@ -3,10 +3,8 @@
 
   <extension target="org.nuxeo.runtime.management.ResourcePublisher"
     point="factories">
-
     <factory name="SQLRepositoryStatus"
-      class="org.nuxeo.ecm.core.storage.sql.management.RepositoryStatusFactory" />
-
+      class="org.nuxeo.ecm.core.storage.sql.management.SQLRepositoryStatusFactory" />
   </extension>
 
    <extension

@@ -20,7 +20,7 @@ public class RemoteSessionsProbe implements Probe {
 
     @Override
     public ProbeStatus run()  {
-       RepositoryStatus status = new RepositoryStatus();
+       SQLRepositoryStatus status = new SQLRepositoryStatus();
        return ProbeStatus.newSuccess(status.listRemoteSessions());
     }
 

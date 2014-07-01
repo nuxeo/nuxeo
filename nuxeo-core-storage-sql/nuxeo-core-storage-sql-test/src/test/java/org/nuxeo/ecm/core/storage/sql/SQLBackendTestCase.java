@@ -16,6 +16,7 @@ import java.util.Arrays;
 
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -45,20 +46,18 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         if (initDatabase()) {
             DatabaseHelper.DATABASE.setUp();
         }
-        repository = newRepository(-1, false);
+        repository = newRepository(-1);
     }
 
-    protected Repository newRepository(long clusteringDelay,
-            boolean fulltextDisabled) throws Exception {
-        RepositoryDescriptor descriptor = newDescriptor(clusteringDelay,
-                fulltextDisabled);
+    protected Repository newRepository(long clusteringDelay) throws Exception {
+        RepositoryDescriptor descriptor = newDescriptor(clusteringDelay);
         RepositoryImpl repo = new RepositoryImpl(descriptor);
-        RepositoryResolver.registerTestRepository(repo);
+        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
+        sqlRepositoryService.registerTestRepository(repo);
         return repo;
     }
 
-    protected RepositoryDescriptor newDescriptor(long clusteringDelay,
-            boolean fulltextDisabled) {
+    protected RepositoryDescriptor newDescriptor(long clusteringDelay) {
         RepositoryDescriptor descriptor = DatabaseHelper.DATABASE.getRepositoryDescriptor();
         descriptor.name = DatabaseHelper.DATABASE.repositoryName;
         descriptor.setClusteringEnabled(clusteringDelay != -1);
@@ -71,7 +70,9 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         schemaField2.type = Model.FIELD_TYPE_LARGETEXT;
         descriptor.schemaFields = Arrays.asList(schemaField1, schemaField2);
         descriptor.binaryStorePath = "testbinaries";
-        descriptor.setFulltextDisabled(fulltextDisabled);
+        // disable fulltext because fulltext workers wouldn't have any
+        // high-level repository to get a session from anyway.
+        descriptor.setFulltextDisabled(true);
         return descriptor;
     }
 

@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.storage.sql.FulltextUpdaterWork.IndexAndText;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -88,8 +89,9 @@ public class FulltextExtractorWork extends AbstractWork {
             return;
         }
 
-        fulltextInfo = RepositoryResolver.getModelFulltext(repositoryName);
-        fulltextParserClass = RepositoryResolver.getFulltextParserClass(repositoryName);
+        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
+        fulltextInfo = sqlRepositoryService.getModelFulltext(repositoryName);
+        fulltextParserClass = sqlRepositoryService.getFulltextParserClass(repositoryName);
         initFulltextParser();
 
         setStatus("Extracting");

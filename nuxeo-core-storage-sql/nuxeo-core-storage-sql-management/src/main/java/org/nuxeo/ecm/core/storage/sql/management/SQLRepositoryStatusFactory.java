@@ -17,14 +17,14 @@ import org.nuxeo.runtime.management.ObjectNameFactory;
 /**
  * @author Florent Guillaume
  */
-public class RepositoryStatusFactory extends AbstractResourceFactory {
+public class SQLRepositoryStatusFactory extends AbstractResourceFactory {
 
     @Override
     public void registerResources() {
-        RepositoryStatus instance = new RepositoryStatus();
+        SQLRepositoryStatus instance = new SQLRepositoryStatus();
         service.registerResource("SQLRepositoryStatus",
                 ObjectNameFactory.formatQualifiedName("SQLStorage"),
-                RepositoryStatusMBean.class, instance);
+                SQLRepositoryStatusMBean.class, instance);
     }
 
 }

@@ -69,6 +69,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.core.storage.sql.jdbc.ClusterNodeHandler;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
@@ -522,6 +523,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
             // windows doesn't have enough time granularity for such a test
             return;
         }
+        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
 
         Session session = repository.getConnection();
 
@@ -557,7 +559,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
             assertEquals(0, status.numBinariesGC);
             assertEquals(0 * 3, status.sizeBinariesGC);
             // do hard delete
-            RepositoryManagement repoMgmt = RepositoryResolver.getRepository(repository.getName());
+            RepositoryManagement repoMgmt = sqlRepositoryService.getRepository(repository.getName());
             repoMgmt.cleanupDeletedDocuments(0, null);
             // rerun GC in non-delete mode
             Thread.sleep(3 * 1000);
@@ -1253,7 +1255,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
      *
      * Also check opaque column behavior.
      */
+    // ignored because now in low-level tests fulltext is disabled
+    // because workers don't have any high-level repository to
+    // get a session from
     @Test
+    @Ignore
     public void testFulltextJobIdInvalidation() throws Exception {
         Session session1 = repository.getConnection();
         Node root1 = session1.getRootNode();
@@ -1296,8 +1302,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         repository.close();
         // get two clustered repositories
         long DELAY = 500; // ms
-        repository = newRepository(DELAY, false);
-        repository2 = newRepository(DELAY, false);
+        repository = newRepository(DELAY);
+        repository2 = newRepository(DELAY);
 
         ClusterTestJob r1 = new ClusterTestJob(repository, repository2);
         ClusterTestJob r2 = new ClusterTestJob(repository, repository2);
@@ -2684,11 +2690,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testFulltextDisabled() throws Exception {
-        // reconfigure repository with fulltext disabled
-        repository.close();
-        boolean fulltextDisabled = true;
-        repository = newRepository(-1, fulltextDisabled);
-
+        // repository is already configured with fulltext disabled
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
@@ -3049,8 +3051,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // get two clustered repositories
         repository.close();
         long DELAY = 50; // ms
-        repository = newRepository(DELAY, false);
-        repository2 = newRepository(DELAY, false);
+        repository = newRepository(DELAY);
+        repository2 = newRepository(DELAY);
 
         runParallelLocking(nodeId, repository, repository2);
     }
@@ -3251,7 +3253,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // get a clustered repository
         long DELAY = 500; // ms
-        repository = newRepository(DELAY, false);
+        repository = newRepository(DELAY);
 
         assertEquals(0, getClusterInvalidationsPropagatorSize());
         Session session = repository.getConnection();
@@ -3287,7 +3289,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // get a clustered repository
         long DELAY = 0; // ms
-        repository = newRepository(DELAY, false);
+        repository = newRepository(DELAY);
         repository.getConnection(); // init
 
         // lock manager mapper has no invalidations queue
@@ -4068,7 +4070,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testPathOptimizationsActivation() throws Exception {
         repository.close();
         // open a repository without path optimization
-        RepositoryDescriptor descriptor = newDescriptor(-1, false);
+        RepositoryDescriptor descriptor = newDescriptor(-1);
         descriptor.setPathOptimizationsEnabled(false);
         repository = new RepositoryImpl(descriptor);
         Session session = repository.getConnection();

@@ -17,7 +17,7 @@ import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
 /**
  * @author Florent Guillaume
  */
-public interface RepositoryStatusMBean {
+public interface SQLRepositoryStatusMBean {
 
     /**
      * Lists the opened sessions.

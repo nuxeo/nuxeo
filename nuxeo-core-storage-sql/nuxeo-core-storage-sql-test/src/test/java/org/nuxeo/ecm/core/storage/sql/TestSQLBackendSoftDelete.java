@@ -18,6 +18,8 @@ import java.util.Calendar;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * All the tests of TestSQLBackend in soft-delete mode, plus additional tests.
@@ -33,16 +35,15 @@ public class TestSQLBackendSoftDelete extends TestSQLBackend {
     }
 
     @Override
-    protected RepositoryDescriptor newDescriptor(long clusteringDelay,
-            boolean fulltextDisabled) {
-        RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay,
-                fulltextDisabled);
+    protected RepositoryDescriptor newDescriptor(long clusteringDelay) {
+        RepositoryDescriptor descriptor = super.newDescriptor(clusteringDelay);
         descriptor.setSoftDeleteEnabled(true);
         return descriptor;
     }
 
     @Test
     public void testSoftDelete() throws Exception {
+        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc",
@@ -71,12 +72,13 @@ public class TestSQLBackendSoftDelete extends TestSQLBackend {
         // remove folder4 and contained folder5
         session.removeNode(folder4);
 
-        RepositoryManagement repoMgmt = RepositoryResolver.getRepository(repository.getName());
+        RepositoryManagement repoMgmt = sqlRepositoryService.getRepository(repository.getName());
         assertEquals(5, repoMgmt.cleanupDeletedDocuments(0, null));
     }
 
     @Test
     public void testSoftDeleteCutoff() throws Exception {
+        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node folder1 = session.addChildNode(root, "folder1", null, "TestDoc",
@@ -90,13 +92,14 @@ public class TestSQLBackendSoftDelete extends TestSQLBackend {
         Calendar cutoff = Calendar.getInstance();
         Thread.sleep(2000);
         session.removeNode(folder1);
-        RepositoryManagement repoMgmt = RepositoryResolver.getRepository(repository.getName());
+        RepositoryManagement repoMgmt = sqlRepositoryService.getRepository(repository.getName());
         assertEquals(1, repoMgmt.cleanupDeletedDocuments(0, cutoff));
         assertEquals(1, repoMgmt.cleanupDeletedDocuments(0, null));
     }
 
     @Test
     public void testSoftDeleteMax() throws Exception {
+        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node folder = session.addChildNode(root, "folder", null, "TestDoc",
@@ -107,7 +110,7 @@ public class TestSQLBackendSoftDelete extends TestSQLBackend {
         session.save();
         session.removeNode(folder);
         session.save();
-        RepositoryManagement repoMgmt = RepositoryResolver.getRepository(repository.getName());
+        RepositoryManagement repoMgmt = sqlRepositoryService.getRepository(repository.getName());
         assertEquals(1, repoMgmt.cleanupDeletedDocuments(1, null));
         assertEquals(3, repoMgmt.cleanupDeletedDocuments(3, null));
         assertEquals(7, repoMgmt.cleanupDeletedDocuments(0, null));

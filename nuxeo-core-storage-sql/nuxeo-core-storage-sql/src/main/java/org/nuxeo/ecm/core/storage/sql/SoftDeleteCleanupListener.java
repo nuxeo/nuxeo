@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -96,7 +97,8 @@ public class SoftDeleteCleanupListener implements EventListener {
             beforeTime = Calendar.getInstance();
             beforeTime.add(Calendar.SECOND, -delay);
         }
-        for (RepositoryManagement repoMgmt : RepositoryResolver.getRepositories()) {
+        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
+        for (RepositoryManagement repoMgmt : sqlRepositoryService.getRepositories()) {
             log.debug("Calling repository soft-delete cleanup for repository: "
                     + repoMgmt.getName() + ", max=" + max
                     + ", beforeTimeDelay=" + delay);
