@@ -25,7 +25,6 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.Principal;
@@ -78,18 +77,14 @@ import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortBuilder;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -103,6 +98,7 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
+import org.nuxeo.elasticsearch.io.DocumentModelReaders;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
@@ -189,14 +185,14 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     set.clear();
                     set.add(ALL_FIELDS);
                 }
-                includeSourceFields = set.toArray(new String[0]);
+                includeSourceFields = set.toArray(new String[set.size()]);
                 set.clear();
                 if (excludeSourceFields != null) {
                     set.addAll(
                             Arrays.asList(excludeSourceFields));
                 }
                 set.addAll(Arrays.asList(idx.getExcludes()));
-                excludeSourceFields = set.toArray(new String[0]);
+                excludeSourceFields = set.toArray(new String[set.size()]);
             }
         }
     }
@@ -616,19 +612,30 @@ public class ElasticSearchComponent extends DefaultComponent implements
             NxQueryBuilder queryBuilder)
             throws ClientException {
         SearchResponse response = search(queryBuilder);
-        Context stopWatch = fetchTimer.time();
-        try {
-            if (queryBuilder.isFetchFromElasticsearch()) {
-                return fetchDocumentsFromElasticsearch(queryBuilder, response);
-            }
-            return fetchDocumentsFromVcs(queryBuilder, response);
-        } finally {
-            stopWatch.stop();
+        DocumentModelListImpl ret;
+        if (response.getHits().getHits().length == 0) {
+            ret = new DocumentModelListImpl(0);
         }
+        else {
+            Context stopWatch = fetchTimer.time();
+            try {
+                if (queryBuilder.isFetchFromElasticsearch()) {
+                    ret = fetchDocumentsFromElasticsearch(queryBuilder,
+                            response);
+                } else {
+                    ret = fetchDocumentsFromVcs(queryBuilder, response);
+                }
+            } finally {
+                stopWatch.stop();
+            }
+        }
+        long totalSize = response.getHits().getTotalHits();
+        ret.setTotalSize(totalSize);
+        return ret;
+
     }
 
     protected SearchResponse search(NxQueryBuilder query) {
-        QueryBuilder qb = query.makeQuery();
         Context stopWatch = searchTimer.time();
         try {
             SearchRequestBuilder request = buildEsSearchRequest(query);
@@ -697,84 +704,27 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return QueryBuilders.filteredQuery(queryBuilder, aclFilter);
     }
 
-    protected DocumentModelList fetchDocumentsFromElasticsearch(
+    protected DocumentModelListImpl fetchDocumentsFromElasticsearch(
             NxQueryBuilder queryBuilder, SearchResponse response) {
-        long totalSize = response.getHits().getTotalHits();
-        DocumentModelList ret = new DocumentModelListImpl(response.getHits()
+        DocumentModelListImpl ret = new DocumentModelListImpl(response.getHits()
                 .getHits().length);
         DocumentModel doc;
         String sid = queryBuilder.getSession().getSessionId();
         for (SearchHit hit : response.getHits()) {
-            doc = loadDocumentModelFromSource(sid, hit.getSource());
+            doc = DocumentModelReaders.fromSource(hit.getSource()).sid(sid).getDocumentModel();
             ret.add(doc);
         }
-        ((DocumentModelListImpl) ret).setTotalSize(totalSize);
         return ret;
     }
 
-    protected DocumentModel loadDocumentModelFromSource(
-            String sid, Map<String, Object> source) {
-        String type = source.get("ecm:primaryType").toString();
-        String name = source.get("ecm:name").toString();
-        String id = source.get("ecm:uuid").toString();
-        String path = source.get("ecm:path").toString();
-        String parentPath = new File(path).getParent();
-        String repository = source.get("ecm:repository").toString();
 
-        DocumentModelImpl doc = new DocumentModelImpl(sid, type, id, new Path(path),
-                new IdRef(id), new PathRef(parentPath), null, null, null, repository, false);
-        for (String prop : source.keySet()) {
-            String schema = prop.split(":")[0];
-            // schema = schema.replace("dc", "dublincore");
-            String key = prop.split(":")[1];
-            if (source.get(prop) == null) {
-                continue;
-            }
-            String value = source.get(prop).toString();
-            if (value.isEmpty() || "[]".equals(value)) {
-                continue;
-            }
-            // System.out.println( String.format("schema: %s, key %s = %s", schema, key,   value));
-            if ("ecm".equals(schema)) {
-                switch(key) {
-                case "isProxy":
-                    doc.setIsProxy(Boolean.valueOf(value));
-                    break;
-                case "currentLifeCycleState":
-                    doc.prefetchCurrentLifecycleState(value);
-                    break;
-                case "repository":
-
-                    break;
-                case "acl":
-                case "mixinType":
-                    // TODO
-                    break;
-
-                }
-            } else {
-                try {
-                    doc.setPropertyValue(prop, value);
-                    // doc.setProperty(schema, key, value);
-                } catch (ClientException e) {
-                    log.info(String.format("fetchDocFromEs can not set property %s to %s", key,
-                            value));
-                }
-            }
-        }
-        doc.setIsImmutable(true);
-        return doc;
-    }
-
-    protected DocumentModelList fetchDocumentsFromVcs(
+    protected DocumentModelListImpl fetchDocumentsFromVcs(
             NxQueryBuilder queryBuilder, SearchResponse response) {
-        long totalSize = response.getHits().getTotalHits();
         List<String> ids = new ArrayList<String>(queryBuilder.getLimit());
         for (SearchHit hit : response.getHits()) {
             ids.add(hit.getId());
         }
-        DocumentModelList ret = new DocumentModelListImpl(ids.size());
-        ((DocumentModelListImpl) ret).setTotalSize(totalSize);
+        DocumentModelListImpl ret = new DocumentModelListImpl(ids.size());
         if (!ids.isEmpty()) {
             try {
                 ret.addAll(fetchDocumentsFromVcs(ids, queryBuilder.getSession()));
