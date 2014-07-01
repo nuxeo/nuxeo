@@ -2,6 +2,7 @@ package org.nuxeo.elasticsearch.test.nxql;
 
 import java.util.concurrent.TimeUnit;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
@@ -30,7 +32,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
-@RepositoryConfig(cleanup = Granularity.CLASS, repositoryFactoryClass = PoolingRepositoryFactory.class)
+@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
 public class TestCompareCoreWithES {
 
     @Inject
@@ -44,22 +46,13 @@ public class TestCompareCoreWithES {
 
     @Inject
     protected ElasticSearchIndexing esi;
+    private String proxyPath;
 
     @Before
     public void initWorkingDocuments() throws Exception {
-        buildDocsIfNeeded();
-    }
-
-    public void buildDocsIfNeeded() throws Exception {
-
         if (!TransactionHelper.isTransactionActive()) {
             TransactionHelper.startTransaction();
         }
-
-        if (session.query("select * from File").size() > 0) {
-            return;
-        }
-
         for (int i = 0; i < 5; i++) {
             String name = "file" + i;
             DocumentModel doc = session.createDocumentModel("/", name, "File");
@@ -89,7 +82,8 @@ public class TestCompareCoreWithES {
         folder = session.createDocument(folder);
 
         DocumentModel file = session.getDocument(new PathRef("/file3"));
-        session.publishDocument(file, folder);
+        DocumentModel proxy = session.publishDocument(file, folder);
+        proxyPath = proxy.getPathAsString();
 
         session.followTransition(new PathRef("/file1"), "delete");
         session.followTransition(new PathRef("/note5"), "delete");
@@ -107,8 +101,15 @@ public class TestCompareCoreWithES {
 
         esa.refresh();
         TransactionHelper.startTransaction();
-
     }
+
+    @After
+    public void cleanWorkingDocuments() throws Exception {
+        // prevent NXP-14686 bug that prevent cleanupSession to remove version
+        session.removeDocument(new PathRef(proxyPath));
+    }
+
+
 
     protected String getDigest(DocumentModelList docs) throws Exception  {
         StringBuilder sb = new StringBuilder();
