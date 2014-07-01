@@ -41,8 +41,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.H2OnlyFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -62,7 +61,8 @@ import com.google.inject.Inject;
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features({TransactionalFeature.class, EmbeddedAutomationServerFeature.class})
+@Features({ H2OnlyFeature.class, TransactionalFeature.class,
+        EmbeddedAutomationServerFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
 @LocalDeploy({"org.nuxeo.drive.operations:drive-repo-ds.xml","org.nuxeo.drive.operations:test-other-repository-config.xml"})
@@ -95,12 +95,6 @@ public class TestGetChangeSummaryMultiRepo {
     @Before
     public void init() throws Exception {
 
-        // Don't run tests against other databases than h2 since the other test
-        // repository is bound to h2, see test-other-repository-config.xml
-        if (!(DatabaseHelper.DATABASE instanceof DatabaseH2)) {
-            return;
-        }
-
         otherSession = CoreInstance.openCoreSession("other", "Administrator");
 
         nuxeoDriveManager.setChangeFinder(new MockChangeFinder());
@@ -123,12 +117,6 @@ public class TestGetChangeSummaryMultiRepo {
     @After
     public void cleanUp() throws Exception {
 
-        // Don't run tests against other databases than h2 since the other test
-        // repository is bound to h2, see test-other-repository-config.xml
-        if (!(DatabaseHelper.DATABASE instanceof DatabaseH2)) {
-            return;
-        }
-
         // Reset 'other' repository
         otherSession.removeChildren(new PathRef("/"));
 
@@ -139,12 +127,6 @@ public class TestGetChangeSummaryMultiRepo {
 
     @Test
     public void testGetDocumentChangesSummary() throws Exception {
-
-        // Don't run tests against other databases than h2 since the other test
-        // repository is bound to h2, see test-other-repository-config.xml
-        if (!(DatabaseHelper.DATABASE instanceof DatabaseH2)) {
-            return;
-        }
 
         // Register 3 sync roots and create 3 documents: 2 in the 'test'
         // repository, 1 in the 'other' repository
