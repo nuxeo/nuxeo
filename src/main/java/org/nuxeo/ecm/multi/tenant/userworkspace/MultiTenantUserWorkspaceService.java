@@ -17,14 +17,11 @@
 
 package org.nuxeo.ecm.multi.tenant.userworkspace;
 
-import java.security.Principal;
-
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.multi.tenant.MultiTenantHelper;
 import org.nuxeo.ecm.multi.tenant.MultiTenantService;
 import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
@@ -38,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
  * If there is a current tenant, the UserWorkspaceRoot is stored inside the
  * tenant, otherwise it uses the default behavior of
  * {@link DefaultUserWorkspaceServiceImpl}.
- *
+ * 
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
@@ -47,26 +44,36 @@ public class MultiTenantUserWorkspaceService extends
 
     private static final long serialVersionUID = 1L;
 
-    @Override
-    protected String computePathUserWorkspaceRoot(CoreSession userCoreSession,
-            DocumentModel currentDocument) throws ClientException {
-        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
-        if (!multiTenantService.isTenantIsolationEnabled(userCoreSession)) {
-            return super.computePathUserWorkspaceRoot(userCoreSession,
-                    currentDocument);
+    protected String getTenantId(CoreSession userCoreSession, String userName)
+            throws ClientException {
+        String tenantId = null;
+        if (userName == null) {
+            userName = userCoreSession.getPrincipal().getName();
         }
+        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
+        if (multiTenantService.isTenantIsolationEnabled(userCoreSession)) {
+            tenantId = MultiTenantHelper.getTenantId(userName);
+        }
+        return tenantId;
+    }
+    
+    @Override
+    protected String computePathUserWorkspaceRoot(CoreSession userCoreSession,String userName,
+            DocumentModel currentDocument) throws ClientException {
 
-        String tenantId = MultiTenantHelper.getCurrentTenantId(userCoreSession.getPrincipal());
+        String tenantId = getTenantId(userCoreSession, userName);
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
-            return super.computePathUserWorkspaceRoot(userCoreSession,
+            return super.computePathUserWorkspaceRoot(userCoreSession,userName,
                     currentDocument);
+        } else {
+            // tenant specific behavior
+            return computePathUserWorkspaceRootForTenant(userCoreSession,
+                    tenantId);
         }
-
-        return computePathUserWorkspaceRoot(userCoreSession, tenantId);
     }
 
-    protected String computePathUserWorkspaceRoot(CoreSession session,
+    protected String computePathUserWorkspaceRootForTenant(CoreSession session,
             String tenantId) throws ClientException {
         String tenantDocumentPath = MultiTenantHelper.getTenantDocumentPath(
                 session, tenantId);
@@ -83,76 +90,26 @@ public class MultiTenantUserWorkspaceService extends
     protected String computePathForUserWorkspace(CoreSession userCoreSession,
             String userName, DocumentModel currentDocument)
             throws ClientException {
-        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
-        if (!multiTenantService.isTenantIsolationEnabled(userCoreSession)) {
-            return super.computePathForUserWorkspace(userCoreSession, userName,
-                    currentDocument);
-        }
 
-        String tenantId = MultiTenantHelper.getTenantId(userName);
+        String tenantId = getTenantId(userCoreSession, userName);
         if (StringUtils.isBlank(tenantId)) {
             // default behavior
             return super.computePathForUserWorkspace(userCoreSession, userName,
                     currentDocument);
+        } else {
+            // multi-tenant specific
+            return computePathForUserWorkspaceForTenant(userCoreSession,
+                    tenantId, userName);
         }
-
-        return computePathForUserWorkspace(userCoreSession, tenantId, userName);
     }
 
-    protected String computePathForUserWorkspace(CoreSession session,
+    protected String computePathForUserWorkspaceForTenant(CoreSession session,
             String tenantId, String userName) throws ClientException {
-        String rootPath = computePathUserWorkspaceRoot(session, tenantId);
+        String rootPath = computePathUserWorkspaceRootForTenant(session,
+                tenantId);
         Path path = new Path(rootPath);
         path = path.append(getUserWorkspaceNameForUser(userName));
         return path.toString();
-    }
-
-    /**
-     * Overridden to get the right user workspace when getting / creating a user
-     * workspace for a different user than the current user in the
-     * {@code userCoreSession}.
-     */
-    @Override
-    protected DocumentModel getCurrentUserPersonalWorkspace(
-            Principal principal, String username, CoreSession userCoreSession,
-            DocumentModel context) throws ClientException {
-        MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
-        if (!multiTenantService.isTenantIsolationEnabled(userCoreSession)) {
-            return super.getCurrentUserPersonalWorkspace(principal, username,
-                    userCoreSession, context);
-        }
-
-        String usedUsername = principal == null ? username
-                : principal.getName();
-        String tenantId = MultiTenantHelper.getTenantId(usedUsername);
-        if (StringUtils.isBlank(tenantId)) {
-            // default behavior
-            return super.getCurrentUserPersonalWorkspace(principal,
-                    usedUsername, userCoreSession, context);
-        }
-
-        PathRef uwsDocRef = new PathRef(computePathForUserWorkspace(
-                userCoreSession, tenantId, usedUsername));
-        if (!userCoreSession.exists(uwsDocRef)) {
-            // do the creation
-            PathRef rootRef = new PathRef(computePathUserWorkspaceRoot(
-                    userCoreSession, tenantId));
-            uwsDocRef = createUserWorkspace(rootRef, uwsDocRef,
-                    userCoreSession, principal, usedUsername);
-        }
-        // force Session synchro to process invalidation (in non JCA cases)
-        if (userCoreSession.getClass().getSimpleName().equals("LocalSession")) {
-            userCoreSession.save();
-        }
-        return userCoreSession.getDocument(uwsDocRef);
-    }
-
-    /**
-     * @deprecated since 5.7.2, not used anymore.
-     */
-    @Deprecated
-    protected boolean isSameUserName(CoreSession session, String userName) {
-        return session.getPrincipal().getName().equals(userName);
     }
 
 }
