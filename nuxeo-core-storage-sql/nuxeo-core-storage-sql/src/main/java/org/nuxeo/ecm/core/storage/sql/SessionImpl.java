@@ -124,7 +124,6 @@ public class SessionImpl implements Session, XAResource {
 
     private boolean readAclsChanged;
 
-
     // @since 5.7
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
@@ -152,9 +151,12 @@ public class SessionImpl implements Session, XAResource {
         } catch (Exception e) {
             throw new StorageException(e);
         }
-        saveTimer =  registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "saves"));
-        queryTimer =  registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "queries"));
-        aclrUpdateTimer =  registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "aclr-updates"));
+        saveTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories",
+                repository.getName(), "saves"));
+        queryTimer = registry.timer(MetricRegistry.name("nuxeo",
+                "repositories", repository.getName(), "queries"));
+        aclrUpdateTimer = registry.timer(MetricRegistry.name("nuxeo",
+                "repositories", repository.getName(), "aclr-updates"));
 
         computeRootNode();
     }
@@ -443,7 +445,8 @@ public class SessionImpl implements Session, XAResource {
             String documentType = document.getPrimaryType();
             String[] mixinTypes = document.getMixinTypes();
 
-            if (!model.getFulltextConfiguration().isFulltextIndexable(documentType)) {
+            if (!model.getFulltextConfiguration().isFulltextIndexable(
+                    documentType)) {
                 continue;
             }
             document.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(
@@ -877,7 +880,8 @@ public class SessionImpl implements Session, XAResource {
         if (model.getDocumentTypeFacets(node.getPrimaryType()).contains(mixin)) {
             return false; // already present in type
         }
-        List<String> list = new ArrayList<String>(Arrays.asList(node.getMixinTypes()));
+        List<String> list = new ArrayList<String>(
+                Arrays.asList(node.getMixinTypes()));
         if (list.contains(mixin)) {
             return false; // already present in node
         }
@@ -910,7 +914,7 @@ public class SessionImpl implements Session, XAResource {
         node.hierFragment.put(Model.MAIN_MIXIN_TYPES_KEY, mixins);
         // remove child nodes
         Map<String, String> childrenTypes = model.getMixinComplexChildren(mixin);
-        for (String childName: childrenTypes.keySet()) {
+        for (String childName : childrenTypes.keySet()) {
             Node child = getChildNode(node, childName, true);
             removePropertyNode(child);
         }
@@ -1234,7 +1238,7 @@ public class SessionImpl implements Session, XAResource {
         final Timer.Context timerContext = queryTimer.time();
         try {
             return mapper.query(query, NXQL.NXQL, queryFilter, countTotal);
-        } finally  {
+        } finally {
             timerContext.stop();
         }
     }
@@ -1245,7 +1249,7 @@ public class SessionImpl implements Session, XAResource {
         final Timer.Context timerContext = queryTimer.time();
         try {
             return mapper.query(query, queryType, queryFilter, countUpTo);
-        } finally  {
+        } finally {
             timerContext.stop();
         }
     }
@@ -1256,11 +1260,10 @@ public class SessionImpl implements Session, XAResource {
         final Timer.Context timerContext = queryTimer.time();
         try {
             return mapper.queryAndFetch(query, queryType, queryFilter, params);
-        } finally  {
+        } finally {
             timerContext.stop();
         }
     }
-
 
     @Override
     public Lock getLock(Serializable id) throws StorageException {
@@ -1416,13 +1419,15 @@ public class SessionImpl implements Session, XAResource {
                         TransactionHelper.noteSuppressedException(e);
                         log.debug(msg, e);
                         // set rollback only manually instead of throwing,
-                        // this avoids a spurious log in Geronimo TransactionImpl
+                        // this avoids a spurious log in Geronimo
+                        // TransactionImpl
                         // and has the same effect
                         TransactionHelper.setTransactionRollbackOnly();
                         return;
                     } else {
                         log.error(msg, e);
-                        throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
+                        throw (XAException) new XAException(
+                                XAException.XAER_RMERR).initCause(e);
                     }
                 }
             }
@@ -1526,7 +1531,8 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Map<String, String> getBinaryFulltext(Serializable id) throws StorageException {
+    public Map<String, String> getBinaryFulltext(Serializable id)
+            throws StorageException {
         RowId rowId = new RowId(Model.FULLTEXT_TABLE_NAME, id);
         return mapper.getBinaryFulltext(rowId);
     }
