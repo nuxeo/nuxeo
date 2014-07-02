@@ -93,12 +93,9 @@ public class JsonDocumentModelReader {
                 case "currentLifeCycleState":
                     doc.prefetchCurrentLifecycleState(value);
                     break;
-                case "repository":
-
-                    break;
-                case "acl":
+                case "versionLabel":
                 case "mixinType":
-                    // TODO
+                    // Can not be done via API
                     break;
 
                 }
