@@ -907,12 +907,18 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
         if (!indexExists) {
             log.info(String.format("Creating index: %s", conf.getName()));
+            if (log.isDebugEnabled()) {
+                log.debug("Using settings: " + conf.getSettings());
+            }
             getClient().admin().indices().prepareCreate(conf.getName())
                     .setSettings(conf.getSettings()).execute().actionGet();
         }
         if (!mappingExists) {
             log.info(String.format("Creating mapping type: %s on index: %s",
                     conf.getType(), conf.getName()));
+            if (log.isDebugEnabled()) {
+                log.debug("Using mapping: " + conf.getMapping());
+            }
             getClient().admin().indices().preparePutMapping(conf.getName())
                     .setType(conf.getType()).setSource(conf.getMapping())
                     .execute().actionGet();
