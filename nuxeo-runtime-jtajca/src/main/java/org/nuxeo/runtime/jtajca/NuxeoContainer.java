@@ -26,6 +26,8 @@ import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.Name;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.resource.ResourceException;
@@ -87,7 +89,7 @@ public class NuxeoContainer {
 
     private static TransactionManagerWrapper transactionManager;
 
-    private static final UserTransaction userTransaction = new UserTransactionImpl();
+    private static UserTransaction userTransaction;
 
     private static Map<String, ConnectionManagerWrapper> connectionManagers = new ConcurrentHashMap<String, ConnectionManagerWrapper>(
             8, 0.75f, 2);
@@ -175,6 +177,7 @@ public class NuxeoContainer {
                     new CompositeName(JNDI_USER_TRANSACTION),
                     getUserTransactionReference());
         }
+        userTransaction = new UserTransactionImpl(transactionManager);
     }
 
     /**
@@ -234,6 +237,7 @@ public class NuxeoContainer {
         } finally {
             uninstallNaming();
             transactionManager = null;
+            userTransaction = null;
             connectionManagers.clear();
         }
     }
@@ -257,6 +261,11 @@ public class NuxeoContainer {
      */
     public static synchronized void uninstallNaming() {
         log.trace("Uninstalling nuxeo container", installContext);
+        try {
+            cleanupContext(rootContext);
+        } catch (NamingException cause) {
+            log.error("Cannot cleanup root context", cause);
+        }
         installContext = null;
         parentContext = null;
         rootContext = null;
@@ -392,6 +401,27 @@ public class NuxeoContainer {
         }
     }
 
+    protected static void cleanupContext(Context context)
+            throws NamingException {
+        NamingEnumeration<NameClassPair> names = context.list("");
+        NamingException errors = new NamingException("Cannot cleanup context");
+        while (true) {
+            try {
+                if (!names.hasMore()) {
+                    return;
+                }
+                final String name = names.next().getName();
+                Object object = context.lookup(name);
+                if (object instanceof Context) {
+                    cleanupContext((Context) object);
+                }
+                context.unbind(name);
+            } catch (NamingException cause) {
+                errors.addSuppressed(cause);
+            }
+        }
+    }
+
     protected static void removeBinding(String name) throws NamingException {
         rootContext.unbind(name);
     }
@@ -515,9 +545,9 @@ public class NuxeoContainer {
         return cmw;
     }
 
-    public static synchronized void disposeConnectionManager(ConnectionManager mgr)
-            throws Exception {
-        ((ConnectionManagerWrapper)mgr).dispose();
+    public static synchronized void disposeConnectionManager(
+            ConnectionManager mgr) throws Exception {
+        ((ConnectionManagerWrapper) mgr).dispose();
     }
 
     public static synchronized void resetConnectionManager(String name)
@@ -579,43 +609,30 @@ public class NuxeoContainer {
      */
     public static class UserTransactionImpl implements UserTransaction {
 
-        protected boolean checked;
+        protected final TransactionManager transactionManager;
 
-        protected void check() throws SystemException {
-            if (transactionManager != null) {
-                return;
-            }
-            if (!checked) {
-                checked = true;
-                transactionManager = lookupTransactionManager();
-            }
-            if (transactionManager == null) {
-                throw new SystemException("No active transaction manager");
-            }
+        public UserTransactionImpl(TransactionManager manager) {
+            transactionManager = manager;
         }
 
         @Override
         public int getStatus() throws SystemException {
-            check();
             return transactionManager.getStatus();
         }
 
         @Override
         public void setRollbackOnly() throws IllegalStateException,
                 SystemException {
-            check();
             transactionManager.setRollbackOnly();
         }
 
         @Override
         public void setTransactionTimeout(int seconds) throws SystemException {
-            check();
             transactionManager.setTransactionTimeout(seconds);
         }
 
         @Override
         public void begin() throws NotSupportedException, SystemException {
-            check();
             transactionManager.begin();
             timers.put(transactionManager.getTransaction(),
                     transactionTimer.time());
@@ -629,7 +646,6 @@ public class NuxeoContainer {
         public void commit() throws HeuristicMixedException,
                 HeuristicRollbackException, IllegalStateException,
                 RollbackException, SecurityException, SystemException {
-            check();
             Timer.Context timerContext = timers.remove(transactionManager.getTransaction());
             transactionManager.commit();
             if (timerContext != null) {
@@ -641,7 +657,6 @@ public class NuxeoContainer {
         @Override
         public void rollback() throws IllegalStateException, SecurityException,
                 SystemException {
-            check();
             Timer.Context timerContext = timers.remove(transactionManager.getTransaction());
             transactionManager.rollback();
             concurrentCount.dec();
@@ -804,7 +819,8 @@ public class NuxeoContainer {
                 private static final long serialVersionUID = 1L;
 
                 protected AllocationErrors(Context context) {
-                    super("leaked " + context.inuse + " connections in " + context.threadName);
+                    super("leaked " + context.inuse + " connections in "
+                            + context.threadName);
                     for (Allocation each : context.inuse.values()) {
                         addSuppressed(each);
                         try {
@@ -835,7 +851,8 @@ public class NuxeoContainer {
                 try {
                     checkIsEmpty();
                 } catch (AllocationErrors cause) {
-                    LogFactory.getLog(ConnectionTrackingCoordinator.class).error("cleanup errors", cause);
+                    LogFactory.getLog(ConnectionTrackingCoordinator.class).error(
+                            "cleanup errors", cause);
                 }
             }
 
