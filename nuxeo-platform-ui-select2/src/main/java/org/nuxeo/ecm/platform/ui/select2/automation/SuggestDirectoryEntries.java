@@ -303,8 +303,17 @@ public class SuggestDirectoryEntries {
                     // I am not the parent, let's check if I could be the
                     // parent
                     // of one the ancestor.
-                    DocumentModel parent = session.getEntry(newEntry.getParentId());
-                    return push(new JSONAdapter(session, schema, parent).push(newEntry));
+                    final String parentId = newEntry.getParentId();
+                    DocumentModel parent = session.getEntry(parentId);
+                    if (parent == null) {
+                        if (log.isInfoEnabled()) {
+                            log.info(String.format("parent %s not found for entry %s", parentId, newEntry.getId()));
+                        }
+                        mergeJsonAdapter(newEntry);
+                        return this;
+                    } else {
+                        return push(new JSONAdapter(session, schema, parent).push(newEntry));
+                    }
                 }
             } else {
                 // The given adapter has no parent, I can merge it in my
