@@ -271,8 +271,9 @@
                   <input type="radio" id="selection_videos" name="selection"
                     value="#{document.id}" />
                   <div style="display: none;" id="#{document.id}">
-                    <video id="#{document.id}_video" width="894" height="480" class="video-js vjs-default-skin" controls="controls" preload="auto"
-                          poster="#{staticPreview}">
+                    <video id="#{document.id}_video" width="#{document.getPropertyValue('vid:info').get('width')}"
+                          height="#{document.getPropertyValue('vid:info').get('height')}" class="video-js vjs-default-skin"
+                          controls="controls" preload="auto" poster="#{staticPreview}">
                       <nxu:set var="urlMP4" value="#{editorImageActions.getURLVideo(document, 'MP4 480p')}">
                         <nxu:set var="urlWebM" value="#{editorImageActions.getURLVideo(document, 'WebM 480p')}">
                           <f:subview rendered="#{not empty urlMP4}">
