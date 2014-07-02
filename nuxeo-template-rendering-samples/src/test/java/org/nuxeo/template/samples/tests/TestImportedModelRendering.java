@@ -22,12 +22,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -130,7 +132,10 @@ public class TestImportedModelRendering {
         assertTrue(text.contains("1 Overview"));
         assertTrue(text.contains("1.1 Introduction"));
 
-        // check include
+        // remove "unbreakable spaces" 
+        text=text.replaceAll("\\u00A0", " ");
+        
+        // check include        
         assertTrue(text.contains("This set of plugins provides a way to associate a Nuxeo Document with a Template."));
     }
 
