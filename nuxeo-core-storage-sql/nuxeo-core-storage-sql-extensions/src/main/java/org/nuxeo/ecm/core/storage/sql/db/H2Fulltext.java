@@ -56,13 +56,13 @@ import org.apache.lucene.search.Scorer;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
 import org.h2.message.DbException;
 import org.h2.store.fs.FileUtils;
 import org.h2.tools.SimpleResultSet;
 import org.h2.util.IOUtils;
 import org.h2.util.StringUtils;
-import org.nuxeo.common.Environment;
 
 /**
  * An optimized Lucene-based fulltext indexing trigger and search.
@@ -351,10 +351,8 @@ public class H2Fulltext {
             return rs;
         }
 
-        final String indexPath = getIndexPath(conn);
-
         // flush changes
-        final IndexWriter writer = getIndexWriter(indexPath, analyzerName);
+        final IndexWriter writer = getIndexWriter(getIndexName(conn), getIndexPath(conn), analyzerName);
         if (writer.hasUncommittedChanges()) {
             try {
                 writer.commit();
@@ -372,8 +370,7 @@ public class H2Fulltext {
                     analyzer);
             query.add(parser.parse(text), BooleanClause.Occur.MUST);
 
-            try (IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(
-                    indexPath)))) {
+            try (IndexReader reader = DirectoryReader.open(writer.getDirectory())) {
                 IndexSearcher searcher = new IndexSearcher(reader);
                 Collector collector = new ResultSetCollector(rs, reader, type);
                 searcher.search(query, collector);
@@ -471,13 +468,17 @@ public class H2Fulltext {
         return analyzer;
     }
 
-    private static String getIndexPath(Connection conn) throws SQLException {
+    protected static String getIndexName(Connection conn) throws SQLException {
+        return conn.getCatalog();
+    }
+
+    protected static String getIndexPath(Connection conn) throws SQLException {
         try (Statement st = conn.createStatement()) {
             try (ResultSet rs = st.executeQuery("CALL DATABASE_PATH()")) {
                 rs.next();
                 String path = rs.getString(1);
                 if (path == null) {
-                    path = new File(Environment.getDefault().getData(), "h2").getPath();
+                    return null;
                 }
                 return path + ".lucene";
             }
@@ -485,30 +486,34 @@ public class H2Fulltext {
 
     }
 
-    private static IndexWriter getIndexWriter(String indexPath, String analyzer)
+    private static IndexWriter getIndexWriter(String name, String path, String analyzer)
             throws SQLException {
-        IndexWriter indexWriter = indexWriters.get(indexPath);
-        if (indexWriter == null) {
-            synchronized (indexWriters) {
-                if (!indexWriters.containsKey(indexPath)) {
-                    try {
-                        Directory dir = FSDirectory.open(new File(indexPath));
-                        Analyzer an = getAnalyzer(analyzer);
-                        IndexWriterConfig iwc = new IndexWriterConfig(
-                                LUCENE_VERSION, an);
-                        iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
-                        indexWriter = new IndexWriter(dir, iwc);
-                    } catch (LockObtainFailedException e) {
-                        throw convertException("Cannot open fulltext index "
-					       + indexPath, e);
-                    } catch (IOException e) {
-                        throw convertException(e);
-                    }
-                    indexWriters.put(indexPath, indexWriter);
-                }
-            }
+        IndexWriter indexWriter = indexWriters.get(name);
+        if (indexWriter != null) {
+            return indexWriter;
         }
-        return indexWriter;
+        synchronized (indexWriters) {
+            indexWriter = indexWriters.get(name);
+            if (indexWriter != null) {
+                return indexWriter;
+            }
+            try {
+                Directory dir = path == null ? new RAMDirectory()
+                        : FSDirectory.open(new File(path));
+                Analyzer an = getAnalyzer(analyzer);
+                IndexWriterConfig iwc = new IndexWriterConfig(LUCENE_VERSION,
+                        an);
+                iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
+                indexWriter = new IndexWriter(dir, iwc);
+            } catch (LockObtainFailedException e) {
+                throw convertException("Cannot open fulltext index "
+                        + path, e);
+            } catch (IOException e) {
+                throw convertException(e);
+            }
+            indexWriters.put(name, indexWriter);
+            return indexWriter;
+        }
     }
 
     private static void removeIndexFiles(Connection conn) throws SQLException {
@@ -613,7 +618,7 @@ public class H2Fulltext {
 
         private static final Log log = LogFactory.getLog(Trigger.class);
 
-        private String indexPath;
+        private String indexName;
 
         private IndexWriter indexWriter;
 
@@ -638,7 +643,6 @@ public class H2Fulltext {
         @Override
         public void init(Connection conn, String schema, String triggerName,
                 String table, boolean before, int opType) throws SQLException {
-            indexPath = getIndexPath(conn);
             DatabaseMetaData meta = conn.getMetaData();
 
             // find primary key name
@@ -708,7 +712,8 @@ public class H2Fulltext {
                         columnTypes.put(indexName, types);
                         columnIndices.put(indexName, indices);
                         // only one call actually needed for this:
-                        indexWriter = getIndexWriter(indexPath, analyzerName);
+                        this.indexName = getIndexName(conn);
+                        indexWriter = getIndexWriter(this.indexName, getIndexPath(conn), analyzerName);
                     }
 
                 }
@@ -795,7 +800,7 @@ public class H2Fulltext {
                 } catch (Exception e) {
                     throw convertException(e);
                 } finally {
-                    indexWriters.remove(indexPath);
+                    indexWriters.remove(indexName);
                 }
             }
         }
