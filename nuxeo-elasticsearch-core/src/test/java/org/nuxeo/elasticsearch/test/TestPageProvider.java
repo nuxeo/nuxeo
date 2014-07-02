@@ -63,6 +63,27 @@ public class TestPageProvider {
     @Inject
     ElasticSearchIndexing esi;
 
+    @Inject
+    ElasticSearchAdmin esa;
+    private int commandProcessed;
+
+    private void startCountingCommandProcessed() {
+        Assert.assertNotNull(esa);
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+        commandProcessed = esa.getTotalCommandProcessed();
+    }
+
+    private void assertNumberOfCommandProcessed(int processed)
+            throws InterruptedException {
+        Assert.assertNotNull(esa);
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
+    }
+
     @Test
     public void ICanUseANativePageProvider() throws Exception {
         PageProviderService pps = Framework
@@ -91,17 +112,10 @@ public class TestPageProvider {
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc = session.createDocument(doc);
         }
-
+        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
 
-        ElasticSearchAdmin esa = Framework
-                .getLocalService(ElasticSearchAdmin.class);
-        Assert.assertNotNull(esa);
-        Assert.assertTrue(esa.getPendingDocs() > 0);
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        assertNumberOfCommandProcessed(10);
 
         TransactionHelper.startTransaction();
         esa.refresh();
@@ -150,17 +164,10 @@ public class TestPageProvider {
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc = session.createDocument(doc);
         }
-
+        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
 
-        ElasticSearchAdmin esa = Framework
-                .getLocalService(ElasticSearchAdmin.class);
-        Assert.assertNotNull(esa);
-        Assert.assertTrue(esa.getPendingDocs() > 0);
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        assertNumberOfCommandProcessed(10);
 
         TransactionHelper.startTransaction();
         esa.refresh();
@@ -209,17 +216,9 @@ public class TestPageProvider {
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc = session.createDocument(doc);
         }
-
+        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
-
-        ElasticSearchAdmin esa = Framework
-                .getLocalService(ElasticSearchAdmin.class);
-        Assert.assertNotNull(esa);
-        Assert.assertTrue(esa.getPendingDocs() > 0);
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
+        assertNumberOfCommandProcessed(10);
 
         TransactionHelper.startTransaction();
         esa.refresh();
