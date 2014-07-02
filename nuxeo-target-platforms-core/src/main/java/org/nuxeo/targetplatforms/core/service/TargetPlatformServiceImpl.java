@@ -149,14 +149,6 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
         if (tps.isEmpty()) {
             return null;
         }
-        if (tps.size() > 1) {
-            Collections.sort(tps, new Comparator<TargetPlatform>() {
-                @Override
-                public int compare(TargetPlatform arg0, TargetPlatform arg1) {
-                    return arg0.getId().compareTo(arg1.getId());
-                }
-            });
-        }
         for (TargetPlatform tp : tps) {
             if (tp.isDefault()) {
                 return tp;
@@ -481,6 +473,13 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
             }
             tps.add(tp);
         }
+        // always sort for a deterministic result
+        Collections.sort(tps, new Comparator<TargetPlatform>() {
+            @Override
+            public int compare(TargetPlatform arg0, TargetPlatform arg1) {
+                return arg0.getId().compareTo(arg1.getId());
+            }
+        });
         return tps;
     }
 
@@ -498,6 +497,12 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
             }
             tps.add(tp);
         }
+        Collections.sort(tps, new Comparator<TargetPlatformInfo>() {
+            @Override
+            public int compare(TargetPlatformInfo arg0, TargetPlatformInfo arg1) {
+                return arg0.getId().compareTo(arg1.getId());
+            }
+        });
         return tps;
     }
 

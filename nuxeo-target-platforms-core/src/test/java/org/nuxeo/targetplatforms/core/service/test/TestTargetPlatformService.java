@@ -26,7 +26,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -592,7 +591,6 @@ public class TestTargetPlatformService {
         // filter all
         List<TargetPlatform> tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
                 true, true, true, false, null));
-        Collections.sort(tps);
         assertEquals(4, tps.size());
         // order is registration order
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -603,7 +601,6 @@ public class TestTargetPlatformService {
         // filter deprecated
         tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
                 true, true, true, false, null));
-        Collections.sort(tps);
         assertEquals(4, tps.size());
         // order is registration order
         assertEquals("cap-5.8", tps.get(0).getId());
@@ -614,7 +611,6 @@ public class TestTargetPlatformService {
         // filter restricted
         tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
                 true, false, true, false, null));
-        Collections.sort(tps);
         assertEquals(5, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -625,21 +621,18 @@ public class TestTargetPlatformService {
         // filter on type
         tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
                 true, false, false, false, "CMF"));
-        Collections.sort(tps);
         assertEquals(1, tps.size());
         assertEquals("cmf-1.8", tps.get(0).getId());
 
         // filter on trial
         tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
                 true));
-        Collections.sort(tps);
         assertEquals(2, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.2", tps.get(1).getId());
 
         // filter none
         tps = service.getAvailableTargetPlatforms(null);
-        Collections.sort(tps);
         assertEquals(7, tps.size());
         // order is registration order
         int index = 0;
@@ -657,7 +650,6 @@ public class TestTargetPlatformService {
             throws ClientException {
         List<TargetPlatform> tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
                 true, true, true, false, null));
-        Collections.sort(tps);
         assertEquals(4, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -668,7 +660,6 @@ public class TestTargetPlatformService {
 
         tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(
                 true, true, true, false, null));
-        Collections.sort(tps);
         assertEquals(3, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -680,7 +671,6 @@ public class TestTargetPlatformService {
         // filter all
         List<TargetPlatformInfo> tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
                 true, true, true, false, null));
-        Collections.sort(tps);
         assertEquals(4, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -690,7 +680,6 @@ public class TestTargetPlatformService {
         // filter deprecated
         tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
                 true, false, true, false, null));
-        Collections.sort(tps);
         assertEquals(5, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -701,7 +690,6 @@ public class TestTargetPlatformService {
         // filter restricted
         tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
                 true, false, true, false, null));
-        Collections.sort(tps);
         assertEquals(5, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.1", tps.get(1).getId());
@@ -712,7 +700,6 @@ public class TestTargetPlatformService {
         // filter default
         tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
                 false, false, false, true, null));
-        Collections.sort(tps);
         assertEquals(2, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cmf-1.8", tps.get(1).getId());
@@ -720,7 +707,6 @@ public class TestTargetPlatformService {
         // filter not trial
         tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
                 true));
-        Collections.sort(tps);
         assertEquals(2, tps.size());
         assertEquals("cap-5.8", tps.get(0).getId());
         assertEquals("cap-5.9.2", tps.get(1).getId());
@@ -728,7 +714,6 @@ public class TestTargetPlatformService {
         // filter on type
         tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(
                 true, false, false, false, "CMF"));
-        Collections.sort(tps);
         assertEquals(1, tps.size());
         assertEquals("cmf-1.8", tps.get(0).getId());
 
