@@ -14,23 +14,24 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage;
+
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-
-import org.junit.Test;
-import static org.junit.Assert.*;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestFulltextWordSplit extends NXRuntimeTestCase {
+public class TestDefaultFulltextParser extends NXRuntimeTestCase {
 
     protected void check(String expected, String s) {
-        FulltextParser parser = new FulltextParser();
-        parser.strings = new ArrayList<String>();
-        parser.parse(s, "fakepath");
-        assertEquals(expected, StringUtils.join(parser.strings, "|"));
+        FulltextParser parser = new DefaultFulltextParser();
+        List<String> strings = new ArrayList<String>();
+        parser.parse(s, "fakepath", strings);
+        assertEquals(expected, StringUtils.join(strings, "|"));
     }
 
     @Test

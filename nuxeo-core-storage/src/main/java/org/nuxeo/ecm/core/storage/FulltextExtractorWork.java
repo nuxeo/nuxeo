@@ -10,11 +10,8 @@
  *     Florent Guillaume
  *     Stephane Lacoin
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,17 +20,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
-import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.storage.FulltextConfiguration;
-import org.nuxeo.ecm.core.storage.sql.FulltextUpdaterWork.IndexAndText;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
+import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -45,30 +38,35 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * The extracted fulltext is then passed to the single-threaded
  * {@link FulltextUpdaterWork}.
+ * <p>
+ * This base abstract class must be subclassed in order to implement the proper
+ * {@link #initFulltextConfigurationAndParser} depending on the storage.
  *
  * @since 5.7
  */
-public class FulltextExtractorWork extends AbstractWork {
+public abstract class FulltextExtractorWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(FulltextExtractorWork.class);
 
-    private static final String ANY2TEXT = "any2text";
+    protected static final String ANY2TEXT = "any2text";
 
     protected static final String CATEGORY = "fulltextExtractor";
 
     protected static final String TITLE = "fulltextExtractor";
 
-    protected transient FulltextConfiguration fulltextConfiguration;
+    protected final boolean excludeProxies;
 
-    protected transient Class<? extends FulltextParser> fulltextParserClass;
+    protected transient FulltextConfiguration fulltextConfiguration;
 
     protected transient FulltextParser fulltextParser;
 
-    public FulltextExtractorWork(String repositoryName, String docId) {
-        super(repositoryName + ':' + docId + ":fulltextExtractor");
+    public FulltextExtractorWork(String repositoryName, String docId,
+            String id, boolean excludeProxies) {
+        super(id);
         setDocument(repositoryName, docId);
+        this.excludeProxies = excludeProxies;
     }
 
     @Override
@@ -90,10 +88,7 @@ public class FulltextExtractorWork extends AbstractWork {
             return;
         }
 
-        SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
-        fulltextConfiguration = sqlRepositoryService.getFulltextConfiguration(repositoryName);
-        fulltextParserClass = sqlRepositoryService.getFulltextParserClass(repositoryName);
-        initFulltextParser();
+        initFulltextConfigurationAndParser();
 
         setStatus("Extracting");
         setProgress(Progress.PROGRESS_0_PC);
@@ -102,6 +97,13 @@ public class FulltextExtractorWork extends AbstractWork {
         setStatus("Done");
     }
 
+    /**
+     * Initializes the fulltext configuration and parser.
+     *
+     * @since 5.9.5
+     */
+    public abstract void initFulltextConfigurationAndParser();
+
     protected void extractBinaryText() throws ClientException {
         IdRef docRef = new IdRef(docId);
         if (!session.exists(docRef)) {
@@ -109,8 +111,8 @@ public class FulltextExtractorWork extends AbstractWork {
             return;
         }
         DocumentModel doc = session.getDocument(docRef);
-        if (doc.isProxy()) {
-            // proxies don't have any fulltext attached, it's
+        if (excludeProxies && doc.isProxy()) {
+            // VCS proxies don't have any fulltext attached, it's
             // the target document that carries it
             return;
         }
@@ -134,9 +136,7 @@ public class FulltextExtractorWork extends AbstractWork {
                     fulltextConfiguration.indexesAllBinary.contains(indexName));
             List<Blob> blobs = extractor.getBlobs(doc);
             String text = blobsToText(blobs, docId);
-            fulltextParser.setStrings(new ArrayList<String>());
-            fulltextParser.parse(text, null);
-            text = StringUtils.join(fulltextParser.getStrings(), " ");
+            text = fulltextParser.parse(text, null);
             indexesAndText.add(new IndexAndText(indexName, text));
         }
         if (!indexesAndText.isEmpty()) {
@@ -152,22 +152,6 @@ public class FulltextExtractorWork extends AbstractWork {
         super.cleanUp(ok, e);
         fulltextConfiguration = null;
         fulltextParser = null;
-        fulltextParserClass = null;
-    }
-
-    protected void initFulltextParser() {
-        fulltextParser = new FulltextParser();
-        if (fulltextParserClass != null) {
-            try {
-                fulltextParser = fulltextParserClass.newInstance();
-            } catch (InstantiationException e) {
-                log.error(
-                        "Failed to instantiate "
-                                + fulltextParserClass.getCanonicalName(), e);
-            } catch (IllegalAccessException e) {
-                log.error(e);
-            }
-        }
     }
 
     protected String blobsToText(List<Blob> blobs, String docId) {

@@ -32,9 +32,11 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_MIXIN_TYPES;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_POS;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PREFIX;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
@@ -55,15 +57,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.CopyHelper;
+import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
+import org.nuxeo.ecm.core.storage.FulltextParser;
+import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
 import org.nuxeo.ecm.core.storage.State;
-import org.nuxeo.ecm.core.storage.dbs.FulltextUpdaterWork.IndexAndText;
+import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
@@ -879,7 +885,7 @@ public class DBSTransactionState {
     protected void getFulltextSimpleWorks(List<Work> works,
             Set<String> docsWithDirtyStrings) {
         // TODO XXX make configurable, see also FulltextExtractorWork
-        FulltextParser fulltextParser = new FulltextParser();
+        FulltextParser fulltextParser = new DefaultFulltextParser();
         // update simpletext on documents with dirty strings
         for (String id : docsWithDirtyStrings) {
             if (id == null) {
@@ -900,21 +906,18 @@ public class DBSTransactionState {
                 continue;
             }
             docState.put(KEY_FULLTEXT_JOBID, docState.getId());
-            fulltextParser.setDocument(docState, session);
-            try {
-                List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
-                for (String indexName : config.indexNames) {
-                    // TODO paths from config
-                    String text = fulltextParser.findFulltext(indexName);
-                    indexesAndText.add(new IndexAndText(indexName, text));
-                }
-                if (!indexesAndText.isEmpty()) {
-                    Work work = new FulltextUpdaterWork(repository.getName(),
-                            id, true, false, indexesAndText);
-                    works.add(work);
-                }
-            } finally {
-                fulltextParser.setDocument(null, session);
+            FulltextFinder fulltextFinder = new FulltextFinder(fulltextParser,
+                    docState, session);
+            List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
+            for (String indexName : config.indexNames) {
+                // TODO paths from config
+                String text = fulltextFinder.findFulltext(indexName);
+                indexesAndText.add(new IndexAndText(indexName, text));
+            }
+            if (!indexesAndText.isEmpty()) {
+                Work work = new FulltextUpdaterWork(repository.getName(), id,
+                        true, false, indexesAndText);
+                works.add(work);
             }
         }
     }
@@ -947,8 +950,91 @@ public class DBSTransactionState {
         // and then schedules a FulltextUpdaterWork to write the results
         // single-threaded
         for (String id : docWithDirtyBinaries) {
-            Work work = new FulltextExtractorWork(repository.getName(), id);
+            // don't exclude proxies
+            Work work = new DBSFulltextExtractorWork(repository.getName(), id);
             works.add(work);
+        }
+    }
+
+    protected static class FulltextFinder {
+
+        protected final FulltextParser fulltextParser;
+
+        protected final DBSDocumentState document;
+
+        protected final DBSSession session;
+
+        protected final String documentType;
+
+        protected final Object[] mixinTypes;
+
+        /**
+         * Prepares parsing for one document.
+         */
+        public FulltextFinder(FulltextParser fulltextParser,
+                DBSDocumentState document, DBSSession session) {
+            this.fulltextParser = fulltextParser;
+            this.document = document;
+            this.session = session;
+            if (document == null) {
+                documentType = null;
+                mixinTypes = null;
+            } else { // null in tests
+                documentType = document.getPrimaryType();
+                mixinTypes = (Object[]) document.get(KEY_MIXIN_TYPES);
+            }
+        }
+
+        /**
+         * Parses the document for one index.
+         */
+        public String findFulltext(String indexName) {
+            // TODO indexName
+            // TODO paths
+            List<String> strings = new ArrayList<String>();
+            findFulltext(indexName, document.getState(), strings);
+            return StringUtils.join(strings, ' ');
+        }
+
+        protected void findFulltext(String indexName, State state,
+                List<String> strings) {
+            for (Entry<String, Serializable> en : state.entrySet()) {
+                String key = en.getKey();
+                if (key.startsWith(KEY_PREFIX)) {
+                    switch (key) {
+                    // allow indexing of this:
+                    case DBSDocument.KEY_NAME:
+                        break;
+                    default:
+                        continue;
+                    }
+                }
+                Serializable value = en.getValue();
+                if (value instanceof State) {
+                    State s = (State) value;
+                    findFulltext(indexName, s, strings);
+                } else if (value instanceof List) {
+                    @SuppressWarnings("unchecked")
+                    List<State> v = (List<State>) value;
+                    for (State s : v) {
+                        findFulltext(indexName, s, strings);
+                    }
+                } else if (value instanceof Object[]) {
+                    Object[] ar = (Object[]) value;
+                    for (Object v : ar) {
+                        if (v instanceof String) {
+                            fulltextParser.parse((String) v, null, strings);
+                        } else {
+                            // arrays are homogeneous, no need to continue
+                            break;
+                        }
+                    }
+                } else {
+                    if (value instanceof String) {
+                        fulltextParser.parse((String) value, null, strings);
+                    }
+                }
+            }
         }
     }
 

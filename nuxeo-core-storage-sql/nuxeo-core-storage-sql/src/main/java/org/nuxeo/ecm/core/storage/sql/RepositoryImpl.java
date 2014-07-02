@@ -27,6 +27,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
+import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
@@ -112,7 +114,7 @@ public class RepositoryImpl implements Repository {
 
         String className = repositoryDescriptor.fulltextParser;
         if (StringUtils.isBlank(className)) {
-            className = FulltextParser.class.getName();
+            className = DefaultFulltextParser.class.getName();
         }
         Class<?> klass;
         try {

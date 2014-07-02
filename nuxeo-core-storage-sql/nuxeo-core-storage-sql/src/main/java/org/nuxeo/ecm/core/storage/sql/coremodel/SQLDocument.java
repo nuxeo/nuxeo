@@ -19,9 +19,9 @@ import org.nuxeo.ecm.core.storage.sql.Node;
  */
 public interface SQLDocument extends Document {
 
-    String SIMPLE_TEXT_SYS_PROP = "simpleText";
+    String SIMPLE_TEXT_SYS_PROP = "fulltextSimple";
 
-    String BINARY_TEXT_SYS_PROP = "binaryText";
+    String BINARY_TEXT_SYS_PROP = "fulltextBinary";
 
     String FULLTEXT_JOBID_SYS_PROP = "fulltextJobId";
 

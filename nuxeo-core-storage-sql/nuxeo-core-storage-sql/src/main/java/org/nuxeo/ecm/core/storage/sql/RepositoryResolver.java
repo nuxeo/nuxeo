@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
+import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerService;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;

@@ -38,6 +38,7 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -54,16 +55,19 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.EventConstants;
+import org.nuxeo.ecm.core.storage.FulltextParser;
+import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
+import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerStreamSupport;
-import org.nuxeo.ecm.core.storage.sql.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.storage.sql.Invalidations.InvalidationsPair;
 import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLFulltextExtractorWork;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
@@ -451,31 +455,27 @@ public class SessionImpl implements Session, XAResource {
             }
             document.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(
                     model.idToString(document.getId()));
-            fulltextParser.setDocument(document, this);
-            try {
-                List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
-                for (String indexName : model.getFulltextConfiguration().indexNames) {
-                    Set<String> paths;
-                    if (model.getFulltextConfiguration().indexesAllSimple.contains(indexName)) {
-                        // index all string fields, minus excluded ones
-                        // TODO XXX excluded ones...
-                        paths = model.getSimpleTextPropertyPaths(documentType,
-                                mixinTypes);
-                    } else {
-                        // index configured fields
-                        paths = model.getFulltextConfiguration().propPathsByIndexSimple.get(indexName);
-                    }
-                    String text = fulltextParser.findFulltext(indexName, paths);
-                    indexesAndText.add(new IndexAndText(indexName, text));
+            FulltextFinder fulltextFinder = new FulltextFinder(fulltextParser,
+                    document, this);
+            List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
+            for (String indexName : model.getFulltextConfiguration().indexNames) {
+                Set<String> paths;
+                if (model.getFulltextConfiguration().indexesAllSimple.contains(indexName)) {
+                    // index all string fields, minus excluded ones
+                    // TODO XXX excluded ones...
+                    paths = model.getSimpleTextPropertyPaths(documentType,
+                            mixinTypes);
+                } else {
+                    // index configured fields
+                    paths = model.getFulltextConfiguration().propPathsByIndexSimple.get(indexName);
                 }
-                if (!indexesAndText.isEmpty()) {
-                    Work work = new FulltextUpdaterWork(repository.getName(),
-                            model.idToString(docId), true, false,
-                            indexesAndText);
-                    works.add(work);
-                }
-            } finally {
-                fulltextParser.setDocument(null, this);
+                String text = fulltextFinder.findFulltext(paths);
+                indexesAndText.add(new IndexAndText(indexName, text));
+            }
+            if (!indexesAndText.isEmpty()) {
+                Work work = new FulltextUpdaterWork(repository.getName(),
+                        model.idToString(docId), true, false, indexesAndText);
+                works.add(work);
             }
         }
     }
@@ -503,8 +503,114 @@ public class SessionImpl implements Session, XAResource {
         // single-threaded
         for (Serializable id : dirtyBinaries) {
             String docId = model.idToString(id);
-            Work work = new FulltextExtractorWork(repository.getName(), docId);
+            Work work = new SQLFulltextExtractorWork(repository.getName(),
+                    docId);
             works.add(work);
+        }
+    }
+
+    /**
+     * Finds the fulltext in a document and sends it to a fulltext parser.
+     *
+     * @since 5.9.5
+     */
+    protected static class FulltextFinder {
+
+        protected final FulltextParser fulltextParser;
+
+        protected final Node document;
+
+        protected final SessionImpl session;
+
+        protected final String documentType;
+
+        protected final String[] mixinTypes;
+
+        public FulltextFinder(FulltextParser fulltextParser, Node document,
+                SessionImpl session) {
+            this.fulltextParser = fulltextParser;
+            this.document = document;
+            this.session = session;
+            if (document == null) {
+                documentType = null;
+                mixinTypes = null;
+            } else { // null in tests
+                documentType = document.getPrimaryType();
+                mixinTypes = document.getMixinTypes();
+            }
+        }
+
+        /**
+         * Parses the document for one index.
+         */
+        protected String findFulltext(Set<String> paths)
+                throws StorageException {
+            if (paths == null) {
+                return "";
+            }
+            List<String> strings = new ArrayList<String>();
+
+            for (String path : paths) {
+                ModelProperty pi = session.getModel().getPathPropertyInfo(
+                        documentType, mixinTypes, path);
+                if (pi == null) {
+                    continue; // doc type doesn't have this property
+                }
+                if (pi.propertyType != PropertyType.STRING
+                        && pi.propertyType != PropertyType.ARRAY_STRING) {
+                    continue;
+                }
+
+                List<Node> nodes = new ArrayList<Node>(
+                        Collections.singleton(document));
+
+                String[] names = path.split("/");
+                for (int i = 0; i < names.length; i++) {
+                    String name = names[i];
+                    if (i < names.length - 1) {
+                        // traverse
+                        List<Node> newNodes;
+                        if ("*".equals(names[i + 1])) {
+                            // traverse complex list
+                            i++;
+                            newNodes = new ArrayList<Node>();
+                            for (Node node : nodes) {
+                                newNodes.addAll(session.getChildren(node, name,
+                                        true));
+                            }
+                        } else {
+                            // traverse child
+                            newNodes = new ArrayList<Node>(nodes.size());
+                            for (Node node : nodes) {
+                                node = session.getChildNode(node, name, true);
+                                if (node != null) {
+                                    newNodes.add(node);
+                                }
+                            }
+                        }
+                        nodes = newNodes;
+                    } else {
+                        // last path component: get value
+                        for (Node node : nodes) {
+                            if (pi.propertyType == PropertyType.STRING) {
+                                String v = node.getSimpleProperty(name).getString();
+                                if (v != null) {
+                                    fulltextParser.parse(v, path, strings);
+                                }
+                            } else { /* ARRAY_STRING */
+                                for (Serializable v : node.getCollectionProperty(
+                                        name).getValue()) {
+                                    if (v != null) {
+                                        fulltextParser.parse((String) v, path,
+                                                strings);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return StringUtils.join(strings, ' ');
         }
     }
 

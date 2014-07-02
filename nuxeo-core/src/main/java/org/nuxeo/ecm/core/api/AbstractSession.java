@@ -125,7 +125,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     public static final String LIMIT_RESULTS_PROPERTY = "org.nuxeo.ecm.core.limit.results";
 
-    public static final String BINARY_TEXT_SYS_PROP = "binaryText";
+    public static final String BINARY_TEXT_SYS_PROP = "fulltextBinary";
 
     private Boolean limitedResults;
 

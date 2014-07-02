@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,7 +10,7 @@
  *     Florent Guillaume
  *     Stephane Lacoin
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -23,25 +23,29 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocument;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 
 /**
- * Work task that inserts the fulltext (extracted manually in
- * {@link SessionImpl#getFulltextSimpleWork} or through
- * {@link FulltextExtractorWork}) into the fulltext table.
+ * Work task that inserts the fulltext (extracted manually by the session at
+ * save time, or through FulltextExtractorWork) into the fulltext table.
  * <p>
  * This is done single-threaded through the use of a {@link WorkManager} queue
  * with only one thread.
- *
- * @since 5.7
  */
 public class FulltextUpdaterWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(FulltextUpdaterWork.class);
+
+    public static final String SYSPROP_FULLTEXT_SIMPLE = "fulltextSimple";
+
+    public static final String SYSPROP_FULLTEXT_BINARY = "fulltextBinary";
+
+    public static final String SYSPROP_FULLTEXT_JOBID = "fulltextJobId";
+
+    public static final String FULLTEXT_DEFAULT_INDEX = "default";
 
     protected static final String CATEGORY = "fulltextUpdater";
 
@@ -147,7 +151,7 @@ public class FulltextUpdaterWork extends AbstractWork {
             for (DocumentModel doc : docs) {
                 try {
                     session.setDocumentSystemProp(doc.getRef(),
-                            SQLDocument.FULLTEXT_JOBID_SYS_PROP, null);
+                            SYSPROP_FULLTEXT_JOBID, null);
                 } catch (DocumentException e) {
                     log.error("Could not set fulltext on: " + doc.getId(), e);
                     continue;
@@ -157,9 +161,9 @@ public class FulltextUpdaterWork extends AbstractWork {
     }
 
     protected String getFulltextPropertyName(String indexName) {
-        String name = isSimpleText ? SQLDocument.SIMPLE_TEXT_SYS_PROP
-                : SQLDocument.BINARY_TEXT_SYS_PROP;
-        if (!Model.FULLTEXT_DEFAULT_INDEX.equals(indexName)) {
+        String name = isSimpleText ? SYSPROP_FULLTEXT_SIMPLE
+                : SYSPROP_FULLTEXT_BINARY;
+        if (!FULLTEXT_DEFAULT_INDEX.equals(indexName)) {
             name += '_' + indexName;
         }
         return name;
