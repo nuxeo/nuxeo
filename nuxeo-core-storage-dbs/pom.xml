@@ -47,7 +47,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-storage</artifactId>
-      <version>5.9.5-SNAPSHOT</version>
     </dependency>
 
 
