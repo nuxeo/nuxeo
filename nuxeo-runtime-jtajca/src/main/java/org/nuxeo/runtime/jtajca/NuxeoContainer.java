@@ -176,8 +176,9 @@ public class NuxeoContainer {
             addDeepBinding(rootContext,
                     new CompositeName(JNDI_USER_TRANSACTION),
                     getUserTransactionReference());
+        } else {
+            userTransaction = new UserTransactionImpl(transactionManager);
         }
-        userTransaction = new UserTransactionImpl(transactionManager);
     }
 
     /**
@@ -516,6 +517,7 @@ public class NuxeoContainer {
             TransactionManagerConfiguration config) throws NamingException {
         TransactionManager tm = createTransactionManager(config);
         transactionManager = new TransactionManagerWrapper(tm);
+        userTransaction = new UserTransactionImpl(transactionManager);
     }
 
     protected static TransactionManagerWrapper lookupTransactionManager() {
