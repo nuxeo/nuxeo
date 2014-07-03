@@ -54,7 +54,7 @@ public class TestHtmlSanitizerServiceImpl {
 
     public static final String BAD_HTML5 = "<video id=\"test\"><source src=\"test\" type=\"video/mp4\"/><img src\"image\"/></video>";
 
-    public static final String SANITIZED_HTML5 = "<video id=\"test\">\n  <source src=\"test\" type=\"video/mp4\" /></video>";
+    public static final String SANITIZED_HTML5 = "<video id=\"test\"><source src=\"test\" type=\"video/mp4\" /></video>";
 
     @Inject
     CoreSession session;
@@ -192,6 +192,17 @@ public class TestHtmlSanitizerServiceImpl {
         assertEquals("a if b=c", fd.toString());
         fd.sanitize = false;
         assertEquals("a if b!=c", fd.toString());
+    }
+
+    @Test
+    public void testSanitizeSpaces() throws Exception {
+        HtmlSanitizerService service = Framework.getService(HtmlSanitizerService.class);
+        assertEquals("<strong>strong</strong>\n<em>content</em>",
+                service.sanitizeString(
+                        "<strong>strong</strong><em>content</em>", null));
+        assertEquals("<p><strong>strong</strong><em>content</em></p>",
+                service.sanitizeString(
+                        "<p><strong>strong</strong><em>content</em></p>", null));
     }
 
     @Test
