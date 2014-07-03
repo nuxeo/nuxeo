@@ -16,11 +16,10 @@
  */
 package org.nuxeo.ecm.platform.htmlsanitizer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
-import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -51,10 +50,6 @@ public class TestHtmlSanitizerServiceImpl {
 
     // script tag is added here just to be sure sanitizer is not run
     public static final String WIKI_MARKUP = "<script></script>[image:http://server/path/image.jpg My Image]";
-
-    public static final String BAD_HTML5 = "<video id=\"test\"><source src=\"test\" type=\"video/mp4\"/><img src\"image\"/></video>";
-
-    public static final String SANITIZED_HTML5 = "<video id=\"test\">\n  <source src=\"test\" type=\"video/mp4\" /></video>";
 
     @Inject
     CoreSession session;
@@ -194,15 +189,4 @@ public class TestHtmlSanitizerServiceImpl {
         assertEquals("a if b!=c", fd.toString());
     }
 
-    @Test
-    public void sanitizeNoteHtml5() throws Exception {
-        DocumentModel doc = session.createDocumentModel("/", "n2", "Note");
-        doc.setPropertyValue("note", BAD_HTML5);
-        doc.setPropertyValue("mime_type", "text/xml");
-        doc = session.createDocument(doc);
-        String note = (String) doc.getPropertyValue("note");
-        assertEquals(SANITIZED_HTML5, note);
-
-        session.save();
-    }
 }
