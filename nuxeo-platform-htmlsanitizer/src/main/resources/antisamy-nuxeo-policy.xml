@@ -13,6 +13,7 @@
     <directive name="maxInputSize" value="100000" />
     <directive name="useXHTML" value="true" />
     <directive name="formatOutput" value="true" />
+    <directive name="preserveSpace" value="true" />
 
     <!-- remember, this won't work for relative URIs - AntiSamy doesn't know
       anything about the URL or your web structure -->
