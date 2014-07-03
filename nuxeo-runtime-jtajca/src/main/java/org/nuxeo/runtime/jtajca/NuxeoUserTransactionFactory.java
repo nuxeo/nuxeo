@@ -15,7 +15,6 @@ package org.nuxeo.runtime.jtajca;
 import java.util.Hashtable;
 
 import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.Name;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
@@ -33,11 +32,11 @@ public class NuxeoUserTransactionFactory implements ObjectFactory {
         if (!UserTransaction.class.getName().equals(ref.getClassName())) {
             return null;
         }
-        if (NuxeoContainer.getTransactionManager() == null) {
+        if (NuxeoContainer.transactionManager == null) {
             // initialize tx manager through the factory
-            new InitialContext().lookup(NuxeoContainer.JNDI_TRANSACTION_MANAGER);
+            NuxeoContainer.lookupTransactionManager();
         }
-        return NuxeoContainer.getUserTransaction();
+        return NuxeoContainer.userTransaction;
     }
 
 }

@@ -48,7 +48,7 @@ public class NuxeoConnectionManagerFactory implements ObjectFactory {
             name = objName.get(size - 1);
         }
 
-        final ConnectionManager cm = NuxeoContainer.getConnectionManager(name);
+        final ConnectionManager cm = NuxeoContainer.connectionManagers.get(name);
         if (cm != null) {
             return cm;
         }

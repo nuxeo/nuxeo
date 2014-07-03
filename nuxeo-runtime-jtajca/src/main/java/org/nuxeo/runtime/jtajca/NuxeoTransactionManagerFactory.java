@@ -41,23 +41,24 @@ public class NuxeoTransactionManagerFactory implements ObjectFactory {
         if (!TransactionManager.class.getName().equals(ref.getClassName())) {
             return null;
         }
-        if (NuxeoContainer.getTransactionManager() == null) {
-            // initialize
-            TransactionManagerConfiguration config = new TransactionManagerConfiguration();
-            for (RefAddr addr : Collections.list(ref.getAll())) {
-                String name = addr.getType();
-                String value = (String) addr.getContent();
-                try {
-                    BeanUtils.setProperty(config, name, value);
-                } catch (Exception e) {
-                    log.error(String.format(
-                            "NuxeoTransactionManagerFactory cannot set %s = %s",
-                            name, value));
-                }
-            }
-            NuxeoContainer.initTransactionManager(config);
+        if (NuxeoContainer.transactionManager != null) {
+            return NuxeoContainer.transactionManager;
         }
-        return NuxeoContainer.getTransactionManager();
+
+        // initialize
+        TransactionManagerConfiguration config = new TransactionManagerConfiguration();
+        for (RefAddr addr : Collections.list(ref.getAll())) {
+            String name = addr.getType();
+            String value = (String) addr.getContent();
+            try {
+                BeanUtils.setProperty(config, name, value);
+            } catch (Exception e) {
+                log.error(String.format(
+                        "NuxeoTransactionManagerFactory cannot set %s = %s",
+                        name, value));
+            }
+        }
+        return NuxeoContainer.initTransactionManager(config);
     }
 
 }

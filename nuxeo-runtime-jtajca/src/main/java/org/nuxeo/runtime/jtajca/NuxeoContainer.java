@@ -87,11 +87,11 @@ public class NuxeoContainer {
 
     public static final String JNDI_NUXEO_CONNECTION_MANAGER_PREFIX = "java:comp/NuxeoConnectionManager/";
 
-    private static TransactionManagerWrapper transactionManager;
+    protected static TransactionManagerWrapper transactionManager;
 
-    private static UserTransaction userTransaction;
+    protected static UserTransaction userTransaction;
 
-    private static Map<String, ConnectionManagerWrapper> connectionManagers = new ConcurrentHashMap<String, ConnectionManagerWrapper>(
+    protected static Map<String, ConnectionManagerWrapper> connectionManagers = new ConcurrentHashMap<String, ConnectionManagerWrapper>(
             8, 0.75f, 2);
 
     private static final List<NuxeoContainerListener> listeners = new ArrayList<NuxeoContainerListener>();
@@ -513,11 +513,12 @@ public class NuxeoContainer {
         };
     }
 
-    public static synchronized void initTransactionManager(
+    protected static synchronized TransactionManager initTransactionManager(
             TransactionManagerConfiguration config) throws NamingException {
         TransactionManager tm = createTransactionManager(config);
         transactionManager = new TransactionManagerWrapper(tm);
         userTransaction = new UserTransactionImpl(transactionManager);
+        return transactionManager;
     }
 
     protected static TransactionManagerWrapper lookupTransactionManager() {
