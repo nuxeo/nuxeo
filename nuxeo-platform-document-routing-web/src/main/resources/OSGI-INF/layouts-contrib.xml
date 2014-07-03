@@ -171,7 +171,7 @@
             <li>A field to map the task name</li>
           </ul>
         </description>
-        <sinceVersion>5.8.0-HF17-SNAPSHOT</sinceVersion>
+        <sinceVersion>5.8</sinceVersion>
         <categories>
           <category>routing</category>
         </categories>
@@ -209,7 +209,7 @@
             <li>A field to map the task name</li>
           </ul>
         </description>
-        <sinceVersion>5.8.0-HF17-SNAPSHOT</sinceVersion>
+        <sinceVersion>5.8</sinceVersion>
         <categories>
           <category>routing</category>
         </categories>
@@ -245,7 +245,7 @@
             <li>A field to map the task id</li>
           </ul>
         </documentation>
-        <sinceVersion>5.8.0-HF17-SNAPSHOT</sinceVersion>
+        <sinceVersion>5.8</sinceVersion>
         <categories>
           <category>routing</category>
         </categories>
