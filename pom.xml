@@ -381,6 +381,21 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-dbs</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-mem</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-mongodb</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-storage-sql</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
