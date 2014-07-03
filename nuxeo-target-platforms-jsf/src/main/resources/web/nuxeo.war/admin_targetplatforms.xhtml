@@ -7,12 +7,19 @@
 
   <h3><h:outputText value="#{messages['label.admin.targetplatforms']}" /></h3>
 
+  <script type="text/javascript">
+    function confirmRestoreAllMessage() {
+      return confirm("#{messages['command.admin.restoreAll.confirm']}");
+    }
+  </script>
+
   <div class="tips">
     <a4j:region>
       <h:outputText value="#{messages['label.admin.targetplatforms.details']}" />
       <a4j:form id="restoreAll" ajaxSubmit="true"
         ignoreDupResponses="true">
         <a4j:commandLink styleClass="button" id="restoreAllButton"
+          onclick="if (!confirmRestoreAllMessage()) return false;"
           action="#{targetPlatformService.restoreAllTargetPlatforms()}"
           value="#{messages['command.admin.targetplatforms.restoreAll']}"
           reRender="targetPlatformsTable" />
