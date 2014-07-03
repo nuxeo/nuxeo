@@ -1,13 +1,46 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.login.shibboleth.auth">
+<component name="org.nuxeo.ecm.platform.login.okta.auth">
 
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+  
   <extension
     target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="authenticators">
-    <authenticationPlugin name="SHIB_AUTH" enabled="true"
-      class="org.nuxeo.ecm.platform.shibboleth.auth.ShibbolethAuthenticationPlugin">
+    <authenticationPlugin name="OKTA_AUTH" enabled="true"
+      class="org.nuxeo.ecm.platform.okta.auth.OktaSAMLAuthenticationPlugin">
       <loginModulePlugin>Trusting_LM</loginModulePlugin>
+      <parameters>
+        <parameter name="key">kv5dz339YLAVMBKFKVDU</parameter>
+        <parameter name="url">https://nuxeo.okta.com/app/template_saml/kv5dz339YLAVMBKFKVDU/sso/saml</parameter>
+        <parameter name="cert">MIIClTCCAf6gAwIBAgIGAUXPrtBWMA0GCSqGSIb3DQEBBQUAMIGNMQswCQYDVQQGEwJVUzETMBEG
+A1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzENMAsGA1UECgwET2t0YTEU
+MBIGA1UECwwLU1NPUHJvdmlkZXIxDjAMBgNVBAMMBW51eGVvMRwwGgYJKoZIhvcNAQkBFg1pbmZv
+QG9rdGEuY29tMB4XDTE0MDUwNjAzNTczMVoXDTQ0MDUwNjAzNTgzMVowgY0xCzAJBgNVBAYTAlVT
+MRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2NvMQ0wCwYDVQQKDARP
+a3RhMRQwEgYDVQQLDAtTU09Qcm92aWRlcjEOMAwGA1UEAwwFbnV4ZW8xHDAaBgkqhkiG9w0BCQEW
+DWluZm9Ab2t0YS5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAJoCxln1KS90rLJslXzC
+bf4QWSEWCTMyt6kgBdGYD8396U4I8adWV41DyPVSc6DHgfCyR8wnvItgeBRyLBxTKgkPAtJcdm37
+nMd9f/YrA5ojot74WyP/+BgvyooYTv5NImCTrQLaarBs8erp7XiAsKYjyXp3n7UcHyK0+6Bi/cwv
+AgMBAAEwDQYJKoZIhvcNAQEFBQADgYEAKtn65ECHNt8yRg40XmznGgxlHKUANnq+7b0C4R3klRzf
+pnVT2hjWJeU1dXeDeq/DICDjaSXoMh9Vam0jVYGlrX5XKCZjfihUsTx5mMtbXLlV5dQPDaeYLJcS
+kUY1OpELVsirl7edZ52Qljr3CvwJ4q0HUGN6tKerlNQcb/Zz51A=</parameter>
+      </parameters>
     </authenticationPlugin>
   </extension>
+
+  <!-- to make testing easier -->  
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="chain">
+
+    <authenticationChain>
+      <plugins>        
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>OKTA_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+
+  </extension>
+  
 
 </component>

@@ -16,11 +16,14 @@
 
 package org.nuxeo.ecm.platform.okta.auth;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +34,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
@@ -68,24 +73,47 @@ public class OktaSAMLAuthenticationPlugin implements NuxeoAuthenticationPlugin,
 
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;
-    }
+    }  
+    
+    protected String getOrGenerateOktaConfig(Map<String, String> parameters) throws Exception {
+        String oktaXmlConfig=null; 
 
+        String configFileName = parameters.get(OKTA_FILE_KEY);
+        if (configFileName!=null) {
+            File file = new File(configFileName);
+            if (file.exists()) {
+                oktaXmlConfig = FileUtils.readFile(file);
+            } else {
+                log.error("Unable to load okta config file from " + configFileName);
+            }
+        } else {
+            InputStream stream = this.getClass().getResourceAsStream("/okta-config-template.xml");            
+            oktaXmlConfig = IOUtils.toString(stream, "UTF-8");
+            
+            oktaXmlConfig = oktaXmlConfig.replaceAll("\\$\\{key\\}", parameters.get("key"));
+            oktaXmlConfig = oktaXmlConfig.replaceAll("\\$\\{url\\}", parameters.get("url"));
+            oktaXmlConfig = oktaXmlConfig.replaceAll("\\$\\{cert\\}", parameters.get("cert"));            
+            System.out.println(oktaXmlConfig);
+        }
+        return oktaXmlConfig;
+    }
+    
     protected void initOktaAppFromConfig(Map<String, String> parameters)
             throws Exception {
         validator = new SAMLValidator();
-        String configFileName = parameters.get(OKTA_FILE_KEY);
-        InputStream stream = Framework.getResourceLoader().getResourceAsStream(
-                configFileName);
-        String oktaXmlConfig = IOUtils.toString(stream, "UTF-8");
-        // Load configuration from the xml for the template app
-        configuration = validator.getConfiguration(oktaXmlConfig);
-        oktaApp = configuration.getDefaultApplication();
+        
+        String oktaXmlConfig= getOrGenerateOktaConfig(parameters);
+
+        if (oktaXmlConfig!=null) {
+            // Load configuration from the xml for the template app
+            configuration = validator.getConfiguration(oktaXmlConfig);
+            oktaApp = configuration.getDefaultApplication();
+        } else {
+            log.error("Unable to initialize Okta Config : this authentication plugin won't be active");
+        }
     }
 
-    protected Application getOktaApp() {
-        return oktaApp;
-    }
-
+    
     public void initPlugin(Map<String, String> parameters) {
         try {
             initOktaAppFromConfig(parameters);
@@ -96,12 +124,14 @@ public class OktaSAMLAuthenticationPlugin implements NuxeoAuthenticationPlugin,
 
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, String baseURL) {
-
-        Application app = getOktaApp();
-
-        SAMLRequest samlRequest = validator.getSAMLRequest(app);
+       
+        if (oktaApp==null) {
+            return false;
+        }
+        
+        SAMLRequest samlRequest = validator.getSAMLRequest(oktaApp);
         String encodedSaml = Base64.encodeBase64String(samlRequest.toString().getBytes());
-        String loginURL = app.getAuthenticationURL();
+        String loginURL = oktaApp.getAuthenticationURL();
         try {
             loginURL += "?" + SAML_REQUEST + "="
                     + URLEncoder.encode(encodedSaml, "UTF-8");
@@ -134,6 +164,10 @@ public class OktaSAMLAuthenticationPlugin implements NuxeoAuthenticationPlugin,
     public UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
+        if (oktaApp==null) {
+            return null;
+        }
+        
         if (!"POST".equals(httpRequest.getMethod())) {
             return null;
         }
@@ -172,17 +206,24 @@ public class OktaSAMLAuthenticationPlugin implements NuxeoAuthenticationPlugin,
         if (userId == null || "".equals(userId)) {
             return null;
         }
-
+        
+        Map<String, List<String>> userAttributes = samlResponse.getAttributes();
+        
+        String userLogin = null;
         try {
-            createOrUpdate(userId, null);
+            userLogin = createOrUpdate(userId, null);
         } catch (Exception e) {
             log.error("Unable to create or update user", e);
         }
 
-        return new UserIdentificationInfo(userId, userId);
+        if (userLogin!=null) {
+            return new UserIdentificationInfo(userLogin, userLogin);    
+        } else {
+            return null;
+        }        
     }
 
-    protected DocumentModel createOrUpdate(String userId,
+    protected String createOrUpdate(String userId,
             Map<String, Object> attributes) throws Exception {
         UserManager userManager = Framework.getService(UserManager.class);
 
@@ -192,18 +233,28 @@ public class OktaSAMLAuthenticationPlugin implements NuxeoAuthenticationPlugin,
 
         try {
             entry = userDir.getEntry(userId);
+            if (entry == null && userId.contains("@")) {
+                Map<String, Serializable> filter = new HashMap<String, Serializable>();                
+                filter.put(userManager.getUserEmailField(), userId);
+                DocumentModelList entries = userDir.query(filter);
+                if (entries!=null && entries.size()>0) {
+                    entry = entries.get(0);
+                }
+            }
             if (entry == null) {
                 // userDir.createEntry(fieldMap);
             } else {
-                entry.getDataModel(userManager.getUserSchemaName()).setMap(
-                        attributes);
-                userDir.updateEntry(entry);
-            }
-            userDir.commit();
+                if (attributes!=null && attributes.size()>0) {
+                    entry.getDataModel(userManager.getUserSchemaName()).setMap(
+                        attributes);                
+                    userDir.updateEntry(entry);
+                    userDir.commit();
+                }
+            }            
         } finally {
             userDir.close();
         }
-        return entry;
+        return (String) entry.getProperty(userManager.getUserSchemaName(), userManager.getUserIdField());
     }
 
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
