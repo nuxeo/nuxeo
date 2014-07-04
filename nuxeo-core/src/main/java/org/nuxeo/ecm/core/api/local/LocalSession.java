@@ -109,7 +109,9 @@ public class LocalSession extends AbstractSession implements Synchronization {
                 throw new LocalException(
                         "No transaction active, cannot reconnect: " + sessionId);
             }
-            log.debug("Reconnecting CoreSession: " + sessionId);
+            if (log.isDebugEnabled()) {
+                log.debug("Reconnecting CoreSession: " + sessionId);
+            }
             si = createSession();
         }
         return si.session;
@@ -136,8 +138,10 @@ public class LocalSession extends AbstractSession implements Synchronization {
         SessionInfo si = new SessionInfo(session);
         sessionHolder.set(si);
         allSessions.add(si);
-        log.debug("Adding thread " + Thread.currentThread().getName()
-                + " for CoreSession: " + sessionId);
+        if (log.isDebugEnabled()) {
+            log.debug("Adding thread " + Thread.currentThread().getName()
+                    + " for CoreSession: " + sessionId);
+        }
         return si;
     }
 
@@ -169,8 +173,10 @@ public class LocalSession extends AbstractSession implements Synchronization {
         if (si == null) {
             return;
         }
-        log.debug("Removing thread " + Thread.currentThread().getName()
-                + " for CoreSession: " + sessionId);
+        if (log.isDebugEnabled()) {
+            log.debug("Removing thread " + Thread.currentThread().getName()
+                    + " for CoreSession: " + sessionId);
+        }
         try {
             si.session.close();
         } finally {
