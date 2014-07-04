@@ -26,6 +26,8 @@ This plugin is available for Nuxeo Platform 5.8 and above.
 
 - Follow Nuxeo Wizard by clicking 'Next' buttons, re-start once completed
 
+- Follow Login Plugin Configuration part before restarting Nuxeo.
+
 - Check Nuxeo correctly re-started `http://localhost:8080/nuxeo`
   - username: Administrator
   - password: Administrator
