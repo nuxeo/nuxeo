@@ -84,25 +84,23 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
-
-
 /**
  * Tests the user workspace and permission based hierarchy.
  *
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, EmbeddedAutomationServerFeature.class})
+@Features({ TransactionalFeature.class, EmbeddedAutomationServerFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
         "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.drive.core", "org.nuxeo.drive.operations",
+        "org.nuxeo.ecm.platform.types.core", "org.nuxeo.drive.core",
+        "org.nuxeo.drive.operations",
         "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Jetty(port = 18080)
-@TransactionalConfig(autoStart=true)
+@TransactionalConfig(autoStart = true)
 public class TestPermissionHierarchy {
 
     private static final String TOP_LEVEL_ID = "org.nuxeo.drive.hierarchy.permission.factory.PermissionTopLevelFactory#";
@@ -406,8 +404,7 @@ public class TestPermissionHierarchy {
         JsonNode[] rootNodes = sortNodeByName(userSyncRoots);
 
         // user1File2
-        fileItem = mapper.readValue(
-                rootNodes[0], DocumentBackedFileItem.class);
+        fileItem = mapper.readValue(rootNodes[0], DocumentBackedFileItem.class);
         checkFileItem(fileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File2,
                 userWorkspace1ItemId, userWorkspace1ItemPath, "user1File2.txt",
                 "user1");
@@ -428,15 +425,15 @@ public class TestPermissionHierarchy {
             JsonNode[] nodes = sortNodeByName(folderItemChildren);
 
             // user1File1
-                childFileItem = mapper.readValue(nodes[0],
+            childFileItem = mapper.readValue(nodes[0],
                     DocumentBackedFileItem.class);
             checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
                     user1File1, folderItem.getId(), folderItem.getPath(),
                     "user1File1.txt", "user1");
 
             // user1Folder2
-            childFolderItem = mapper.readValue(
-                    nodes[1], DocumentBackedFolderItem.class);
+            childFolderItem = mapper.readValue(nodes[1],
+                    DocumentBackedFolderItem.class);
             checkFolderItem(childFolderItem,
                     DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1Folder2,
                     folderItem.getId(), folderItem.getPath(), "user1Folder2",
@@ -504,16 +501,16 @@ public class TestPermissionHierarchy {
         {
             JsonNode[] nodes = sortNodeByName(sharedSyncRootChildren);
             // user2File1
-            sharedSyncRootChildFileItem = mapper.readValue(
-                    nodes[0], DocumentBackedFileItem.class);
+            sharedSyncRootChildFileItem = mapper.readValue(nodes[0],
+                    DocumentBackedFileItem.class);
             checkFileItem(sharedSyncRootChildFileItem,
                     DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
                     session1.getDocument(user2File1.getRef()),
                     sharedSyncRoot.getId(), sharedSyncRoot.getPath(),
                     "user2File1.txt", "user2");
             // user2Folder2
-            sharedSyncRootChildFolderItem = mapper.readValue(
-                    nodes[1], DocumentBackedFolderItem.class);
+            sharedSyncRootChildFolderItem = mapper.readValue(nodes[1],
+                    DocumentBackedFolderItem.class);
             checkFolderItem(sharedSyncRootChildFolderItem,
                     DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
                     session1.getDocument(user2Folder2.getRef()),
