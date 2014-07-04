@@ -4,6 +4,7 @@
 
 The **Nuxeo** addon _nuxeo-duoweb-authentication_ is an integration of [DuoWeb](http://www.duosecurity.com) access in Nuxeo login plugin and provides two factors authentication through the Nuxeo login page.
 
+This plugin is available for Nuxeo Platform 5.8 and above.
 
 ### Getting Started
 
@@ -38,7 +39,7 @@ Note: Your machine needs internet access. If you have a proxy setting, skip the 
 
 You must [subscribe](https://signup.duosecurity.com/) to DuoWeb services and follow [DuoWeb documentation](https://www.duosecurity.com/docs/duoweb) to create all DuoWeb Keys.
 
-After installing the plugin, make sure before starting to include your DuoWeb Keys (provided by DuoWeb) in the following configuration file `NUXEO_HOME/nxserver/config/duo-authentication-config.xml`:
+After installing the plugin, make sure before starting to include your DuoWeb Keys (provided by DuoWeb) in the following configuration file `NUXEO_HOME/templates/duoweb-authentication/config/duo-authentication-config.xml`:
 
     <?xml version="1.0"?>
 	<component name="org.nuxeo.duo.factors.login.contrib">
