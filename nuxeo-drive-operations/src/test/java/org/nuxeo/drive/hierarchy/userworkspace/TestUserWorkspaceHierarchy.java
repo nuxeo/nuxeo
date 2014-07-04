@@ -23,11 +23,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.type.TypeReference;
@@ -235,15 +239,15 @@ public class TestUserWorkspaceHierarchy {
      * ==============================
      *
      * Nuxeo Drive
-     *   |-- user1Folder1
-     *   |     |-- user1File1
-     *   |     |-- user1Folder2
-     *   |-- user1File2
      *   |-- My synchronized folders
      *   |     |-- user1Folder3
      *   |     |     |-- user1File3
      *   |     |-- user1Folder4
      *   |     |     |-- user1File4
+     *   |-- user1File2
+     *   |-- user1Folder1
+     *   |     |-- user1File1
+     *   |     |-- user1Folder2
      *
      * </pre>
      */
@@ -293,46 +297,14 @@ public class TestUserWorkspaceHierarchy {
         assertNotNull(topLevelChildren);
         assertEquals(3, topLevelChildren.size());
 
-        // ---------------------------------------------
-        // Check user workspace children
-        // ---------------------------------------------
-        // user1Folder1
-        DocumentBackedFolderItem folderItem = mapper.readValue(
-                topLevelChildren.get(0), DocumentBackedFolderItem.class);
-        checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                user1Folder1, userWorkspace1ItemId, userWorkspace1ItemPath,
-                "user1Folder1", "user1");
-        Blob folderItemChildrenJSON = (Blob) clientSession1.newRequest(
-                NuxeoDriveGetChildren.ID).set("id", folderItem.getId()).execute();
-        ArrayNode folderItemChildren = mapper.readValue(
-                folderItemChildrenJSON.getStream(), ArrayNode.class);
-        assertNotNull(folderItemChildren);
-        assertEquals(2, folderItemChildren.size());
-        // user1File1
-        DocumentBackedFileItem childFileItem = mapper.readValue(
-                folderItemChildren.get(0), DocumentBackedFileItem.class);
-        checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                user1File1, folderItem.getId(), folderItem.getPath(),
-                "user1File1.txt", "user1");
-        // user1Folder2
-        DocumentBackedFolderItem childFolderItem = mapper.readValue(
-                folderItemChildren.get(1), DocumentBackedFolderItem.class);
-        checkFolderItem(childFolderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
-                user1Folder2, folderItem.getId(), folderItem.getPath(),
-                "user1Folder2", "user1");
-        // user1File2
-        DocumentBackedFileItem fileItem = mapper.readValue(
-                topLevelChildren.get(1), DocumentBackedFileItem.class);
-        checkFileItem(fileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File2,
-                userWorkspace1ItemId, userWorkspace1ItemPath, "user1File2.txt",
-                "user1");
+        JsonNode[] topLevelChildrenNodes = sortNodeByName(topLevelChildren);
 
         // ---------------------------------------------
         // Check synchronization roots
         // ---------------------------------------------
         // My synchronized folders
         UserWorkspaceSyncRootParentFolderItem syncRootParent = mapper.readValue(
-                topLevelChildren.get(2),
+                topLevelChildrenNodes[0],
                 UserWorkspaceSyncRootParentFolderItem.class);
         assertEquals(SYNC_ROOT_PARENT_ID, syncRootParent.getId());
         assertEquals(userWorkspace1ItemId, syncRootParent.getParentId());
@@ -354,6 +326,7 @@ public class TestUserWorkspaceHierarchy {
                 });
         assertNotNull(syncRoots);
         assertEquals(2, syncRoots.size());
+        Collections.sort(syncRoots);
 
         // user1Folder3
         DefaultSyncRootFolderItem syncRootItem = syncRoots.get(0);
@@ -369,7 +342,7 @@ public class TestUserWorkspaceHierarchy {
         assertNotNull(syncRootItemChildren);
         assertEquals(1, syncRootItemChildren.size());
         // user1File3
-        childFileItem = syncRootItemChildren.get(0);
+        DocumentBackedFileItem childFileItem = syncRootItemChildren.get(0);
         checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
                 user1File3, syncRootItem.getId(), syncRootItem.getPath(),
                 "user1File3.txt", "user1");
@@ -393,6 +366,44 @@ public class TestUserWorkspaceHierarchy {
                 "user1File4.txt", "user1");
 
         // ---------------------------------------------
+        // Check user workspace children
+        // ---------------------------------------------
+        // user1File2
+        DocumentBackedFileItem fileItem = mapper.readValue(
+                topLevelChildrenNodes[1], DocumentBackedFileItem.class);
+        checkFileItem(fileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1File2,
+                userWorkspace1ItemId, userWorkspace1ItemPath, "user1File2.txt",
+                "user1");
+        // user1Folder1
+        DocumentBackedFolderItem folderItem = mapper.readValue(
+                topLevelChildrenNodes[2], DocumentBackedFolderItem.class);
+        checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
+                user1Folder1, userWorkspace1ItemId, userWorkspace1ItemPath,
+                "user1Folder1", "user1");
+        Blob folderItemChildrenJSON = (Blob) clientSession1.newRequest(
+                NuxeoDriveGetChildren.ID).set("id", folderItem.getId()).execute();
+        ArrayNode folderItemChildren = mapper.readValue(
+                folderItemChildrenJSON.getStream(), ArrayNode.class);
+        assertNotNull(folderItemChildren);
+        assertEquals(2, folderItemChildren.size());
+        {
+            JsonNode[] folderItemChildrenNodes = sortNodeByName(folderItemChildren);
+            // user1File1
+            childFileItem = mapper.readValue(folderItemChildrenNodes[0],
+                    DocumentBackedFileItem.class);
+            checkFileItem(childFileItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX,
+                    user1File1, folderItem.getId(), folderItem.getPath(),
+                    "user1File1.txt", "user1");
+            // user1Folder2
+            DocumentBackedFolderItem childFolderItem = mapper.readValue(
+                    folderItemChildrenNodes[1], DocumentBackedFolderItem.class);
+            checkFolderItem(childFolderItem,
+                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1Folder2,
+                    folderItem.getId(), folderItem.getPath(), "user1Folder2",
+                    "user1");
+        }
+
+        // ---------------------------------------------
         // Check registering user workspace as a
         // synchronization root is ignored
         // ---------------------------------------------
@@ -414,6 +425,23 @@ public class TestUserWorkspaceHierarchy {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
         }
+    }
+
+    protected JsonNode[] sortNodeByName(ArrayNode array) {
+        JsonNode nodes[] = new JsonNode[array.size()];
+        for (int i = 0; i < array.size(); ++i) {
+            nodes[i] = array.get(i);
+        }
+        Arrays.sort(nodes, new Comparator<JsonNode>() {
+
+            @Override
+            public int compare(JsonNode o1, JsonNode o2) {
+                final String s1 = o1.get("name").getValueAsText();
+                final String s2 = o2.get("name").getValueAsText();
+                return s1.compareTo(s2);
+            }
+        });
+        return nodes;
     }
 
     protected void checkFileItem(FileItem fileItem, String fileItemIdPrefix,
