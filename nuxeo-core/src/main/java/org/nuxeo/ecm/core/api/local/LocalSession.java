@@ -182,30 +182,10 @@ public class LocalSession extends AbstractSession implements Synchronization {
     // explicit close()
     @Override
     public void destroy() {
-        log.debug("Closing CoreSession: " + sessionId);
-        int size = allSessions.size();
-        if (size > 1) {
-            // multiple sessions
-            Exception closeException = new Exception("Close stack trace for "
-                    + sessionId + " in thread "
-                    + Thread.currentThread().getName());
-            log.warn("At close time there are still " + size
-                    + " Session objects."
-                    + " Dumping close() then open() stack traces.",
-                    closeException);
-            for (SessionInfo si : allSessions) {
-                log.warn("Session open at", si.openException);
-            }
+        if (log.isDebugEnabled()) {
+            log.debug("Destroying CoreSession: " + sessionId);
         }
         closeInThisThread();
-        if (!allSessions.isEmpty()) {
-            // close leaks previously logged
-            for (SessionInfo si : allSessions) {
-                si.session.close();
-                si.openException = null;
-            }
-            allSessions.clear();
-        }
     }
 
     @Override
