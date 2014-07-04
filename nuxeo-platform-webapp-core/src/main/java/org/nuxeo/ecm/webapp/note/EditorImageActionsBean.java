@@ -34,15 +34,18 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.storage.StorageBlob;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.base.InputController;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Seam component implementing actions related to inserting an image in a Note
@@ -63,11 +66,15 @@ import org.nuxeo.ecm.webapp.base.InputController;
 public class EditorImageActionsBean extends InputController implements
         EditorImageActions, Serializable {
 
-    private static final String SEARCH_QUERY = "SELECT * FROM Document WHERE %s";
-
     private static final String FILES_SCHEMA = "files";
 
     private static final List<Map<String, String>> SIZES;
+
+    /** @since 5.9.5 */
+    private static final String PP_SEARCH_MEDIA_BY_TITLE = "search_media_by_title";
+
+    /** @since 5.9.5 */
+    private static final String PP_SEARCH_MEDIA_ALL = "search_media_all";
 
     static {
         SIZES = new ArrayList<Map<String, String>>();
@@ -244,6 +251,9 @@ public class EditorImageActionsBean extends InputController implements
         return "editor_image_upload";
     }
 
+    /**
+     * @since 5.9.5
+     */
     @Override
     public String searchVideos() throws ClientException {
         // Init the list of results
@@ -258,34 +268,46 @@ public class EditorImageActionsBean extends InputController implements
 
     /**
      * Generic method to search a media.
+     *
      * @param typeDocument The type of document to search.
      * @throws ClientException
      *
      * @since 5.9.5
      */
+    @SuppressWarnings("unchecked")
     private List<DocumentModel> searchMedia(String typeDocument) throws ClientException {
         log.debug("Entering searchDocuments with keywords: " + searchKeywords);
 
-        final List<String> constraints = new ArrayList<String>();
-        if (searchKeywords != null) {
-            searchKeywords = searchKeywords.trim();
-            if (searchKeywords.length() > 0) {
-                if (!searchKeywords.equals("*")) {
-                    // full text search
-                    constraints.add(String.format("ecm:fulltext LIKE '%s'",
-                            searchKeywords));
+        // use page providers
+        try {
+            PageProviderService ppService = Framework.getService(PageProviderService.class);
+            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            props.put(
+                    CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
+                    (Serializable) documentManager);
+            PageProvider<DocumentModel> pp = null;
+            if (searchKeywords != null) {
+                searchKeywords = searchKeywords.trim();
+                if (searchKeywords.length() > 0) {
+                    if (!searchKeywords.equals("*")) {
+                        // full text search
+                        pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                                PP_SEARCH_MEDIA_BY_TITLE, null, null, null, props,
+                                new Object[] { typeDocument, searchKeywords });
+                    }
                 }
             }
-        }
-        StringBuilder primaryType = new StringBuilder();
-        primaryType.append("ecm:primaryType = '");
-        primaryType.append(typeDocument);
-        primaryType.append("'");
-        constraints.add(primaryType.toString());
 
-        final String query = String.format(SEARCH_QUERY,
-                StringUtils.join(constraints, " AND "));
-        return documentManager.query(query, 100);
+            // If the pageprovider is null, we search all medias for the specific type
+            if (pp == null) {
+                pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                        PP_SEARCH_MEDIA_ALL, null, null, null,
+                        props, new Object[] { typeDocument });
+            }
+            return pp.getCurrentPage();
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
     }
 
     @Override
