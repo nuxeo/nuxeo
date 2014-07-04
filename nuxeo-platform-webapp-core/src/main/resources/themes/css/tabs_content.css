@@ -369,9 +369,6 @@ author: lkemen@nuxeo.com
   background-color: #f9f9f9;
   padding: .4em }
 
-.mce-toolbar .mce-btn.mce-active {
-  background: #eee }
-
 .mce-floatpanel {
   box-shadow: 0 3px 5px rgba(0,0,0,0.1) }
 
@@ -387,8 +384,15 @@ author: lkemen@nuxeo.com
 
 .mce-menu-item:hover,
 .mce-menu-item.mce-selected,
-.mce-menu-item:focus {
-  background: #eee }
+.mce-menu-item:focus,
+.mce-toolbar .mce-btn.mce-active {
+  background: #0af }
+
+.mce-menu-item:hover .mce-btn i,
+.mce-menu-item.mce-selected .mce-btn i,
+.mce-menu-item:focus .mce-btn i,
+.mce-toolbar .mce-btn.mce-active i {
+  color: #fff }
 
 .mce-menu-item:hover .mce-text,
 .mce-menu-item.mce-selected .mce-text {
@@ -399,3 +403,6 @@ author: lkemen@nuxeo.com
 
 .mce-toolbar-grp.mce-panel {
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.05) inset }
+
+.mce-fullscreen {
+  z-index: 1050 }
