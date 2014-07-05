@@ -9,9 +9,10 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.dbs;
+package org.nuxeo.ecm.core.storage;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -230,35 +231,33 @@ public class FulltextQueryAnalyzer {
         terms = new LinkedList<FulltextQuery>();
     }
 
-    // MongoDB specific
-    protected static void translate(FulltextQuery ft, StringBuilder buf,
+    public static void translate(FulltextQuery ft, StringBuilder buf,
             String or, String and, String andNot, String wordStart,
             String wordEnd, Set<Character> wordCharsReserved,
             String phraseStart, String phraseEnd, boolean quotePhraseWords) {
-        if (ft.op == Op.OR) {
+        if (ft.op == Op.AND || ft.op == Op.OR) {
+            buf.append('(');
             for (int i = 0; i < ft.terms.size(); i++) {
                 FulltextQuery term = ft.terms.get(i);
                 if (i > 0) {
                     buf.append(' ');
-                }
-                // don't quote words for OR
-                translate(term, buf, or, and, andNot, "", "",
-                        wordCharsReserved, phraseStart, phraseEnd,
-                        quotePhraseWords);
-            }
-        } else if (ft.op == Op.AND) {
-            for (int i = 0; i < ft.terms.size(); i++) {
-                FulltextQuery term = ft.terms.get(i);
-                if (i > 0) {
-                    buf.append(' ');
-                    if (term.op == Op.NOTWORD) {
-                        buf.append('-');
+                    if (ft.op == Op.OR) {
+                        buf.append(or);
+                    } else { // Op.AND
+                        if (term.op == Op.NOTWORD) {
+                            buf.append(andNot);
+                        } else {
+                            buf.append(and);
+                        }
                     }
+                    buf.append(' ');
                 }
                 translate(term, buf, or, and, andNot, wordStart, wordEnd,
                         wordCharsReserved, phraseStart, phraseEnd,
                         quotePhraseWords);
             }
+            buf.append(')');
+            return;
         } else {
             String word = ft.word.toLowerCase();
             if (ft.isPhrase()) {
@@ -325,6 +324,18 @@ public class FulltextQueryAnalyzer {
      */
     public static FulltextQuery analyzeFulltextQuery(String query) {
         return new FulltextQueryAnalyzer().analyze(query);
+    }
+
+    /**
+     * Translate fulltext into a common pattern used by many servers.
+     */
+    public static String translateFulltext(FulltextQuery ft, String or,
+            String and, String andNot, String phraseQuote) {
+        StringBuilder buf = new StringBuilder();
+        translate(ft, buf, or, and, andNot, "", "",
+                Collections.<Character> emptySet(), phraseQuote, phraseQuote,
+                false);
+        return buf.toString();
     }
 
     /**

@@ -43,7 +43,10 @@ import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -54,7 +57,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.TableAlias;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
 /**
  * PostgreSQL-specific dialect.
  *
@@ -468,12 +470,13 @@ public class DialectPostgreSQL extends Dialect {
     public String getDialectFulltextQuery(String query) {
         query = query.replace(" & ", " "); // PostgreSQL compatibility BBB
         query = PREFIX_PATTERN.matcher(query).replaceAll(PREFIX_REPL);
-        FulltextQuery ft = analyzeFulltextQuery(query);
+        FulltextQuery ft = FulltextQueryAnalyzer.analyzeFulltextQuery(query);
         if (ft == null) {
             return ""; // won't match anything
         }
-        if (!fulltextHasPhrase(ft)) {
-            return translateFulltext(ft, "|", "&", "& !", "");
+        if (!FulltextQueryAnalyzer.hasPhrase(ft)) {
+            return FulltextQueryAnalyzer.translateFulltext(ft, "|", "&", "& !",
+                    "");
         }
         if (compatibilityFulltextTable) {
             throw new QueryMakerException(
@@ -491,7 +494,8 @@ public class DialectPostgreSQL extends Dialect {
          * original query,
          */
         FulltextQuery broken = breakPhrases(ft);
-        String ftsql = translateFulltext(broken, "|", "&", "& !", "");
+        String ftsql = FulltextQueryAnalyzer.translateFulltext(broken, "|",
+                "&", "& !", "");
         /*
          * 2. AND with a LIKE-based search for all terms, except those that are
          * already exactly matched by the first part, i.e., toplevel ANDed

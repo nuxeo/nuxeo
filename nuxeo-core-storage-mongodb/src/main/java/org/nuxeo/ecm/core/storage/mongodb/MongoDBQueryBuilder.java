@@ -50,8 +50,9 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
-import org.nuxeo.ecm.core.storage.dbs.FulltextQueryAnalyzer;
-import org.nuxeo.ecm.core.storage.dbs.FulltextQueryAnalyzer.FulltextQuery;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
 import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.BasicDBObject;
@@ -186,9 +187,13 @@ public class MongoDBQueryBuilder {
         String fulltextQuery = ((StringLiteral) rvalue).value;
         if (name.equals(NXQL.ECM_FULLTEXT)) {
             // standard fulltext query
-            fulltextQuery = getMongoDBFulltextQuery(fulltextQuery);
+            String ft = getMongoDBFulltextQuery(fulltextQuery);
+            if (ft == null) {
+                // empty query, matches nothing
+                return new BasicDBObject(MONGODB_ID, "__nosuchid__");
+            }
             DBObject textSearch = new BasicDBObject();
-            textSearch.put(QueryOperators.SEARCH, fulltextQuery);
+            textSearch.put(QueryOperators.SEARCH, ft);
             // TODO language?
             return new BasicDBObject(QueryOperators.TEXT, textSearch);
         } else {
@@ -199,17 +204,76 @@ public class MongoDBQueryBuilder {
                         + " for a secondary fulltext index");
             }
             String prop = name.substring(NXQL.ECM_FULLTEXT.length() + 1);
-            fulltextQuery = fulltextQuery.replace(" ", "%");
-            rvalue = new StringLiteral(fulltextQuery);
+            String ft = fulltextQuery.replace(" ", "%");
+            rvalue = new StringLiteral(ft);
             return walkLike(new Reference(prop), rvalue, true, true);
         }
     }
 
-    protected String getMongoDBFulltextQuery(String query) {
+    // public static for tests
+    public static String getMongoDBFulltextQuery(String query) {
         FulltextQuery ft = FulltextQueryAnalyzer.analyzeFulltextQuery(query);
-        return FulltextQueryAnalyzer.translateFulltext(ft, " ", " ", " -",
-                "\"", "\"", Collections.<Character> emptySet(), "\"", "\"",
-                false);
+        if (ft == null) {
+            return null;
+        }
+        // translate into MongoDB syntax
+        return translateFulltext(ft, false);
+    }
+
+    /**
+     * Transforms the NXQL fulltext syntax into MongoDB syntax.
+     * <p>
+     * The MongoDB fulltext query syntax is badly documented, but is actually
+     * the following:
+     * <ul>
+     * <li>a term is a word,
+     * <li>a phrase is a set of spaced-separated words enclosed in double
+     * quotes,
+     * <li>negation is done by prepending a -,
+     * <li>the query is a space-separated set of terms, negated terms, phrases,
+     * or negated phrases.
+     * <li>all the words of non-negated phrases are also added to the terms.
+     * </ul>
+     * <p>
+     * The matching algorithm is (excluding stemming and stop words):
+     * <ul>
+     * <li>filter out documents with the negative terms, the negative phrases,
+     * or missing the phrases,
+     * <li>then if any term is present in the document then it's a match.
+     * </ul>
+     */
+    protected static String translateFulltext(FulltextQuery ft, boolean and) {
+        List<String> buf = new ArrayList<>();
+        translateFulltext(ft, buf, and);
+        return StringUtils.join(buf, ' ');
+    }
+
+    protected static void translateFulltext(FulltextQuery ft, List<String> buf,
+            boolean and) {
+        if (ft.op == Op.OR) {
+            for (FulltextQuery term : ft.terms) {
+                // don't quote words for OR
+                translateFulltext(term, buf, false);
+            }
+        } else if (ft.op == Op.AND) {
+            for (FulltextQuery term : ft.terms) {
+                // quote words for AND
+                translateFulltext(term, buf, true);
+            }
+        } else {
+            String neg;
+            if (ft.op == Op.NOTWORD) {
+                neg = "-";
+            } else { // Op.WORD
+                neg = "";
+            }
+            String word = ft.word.toLowerCase();
+            if (ft.isPhrase() || and) {
+                buf.add(neg + '"' + word + '"');
+            } else {
+                buf.add(neg + word);
+            }
+        }
     }
 
     public DBObject walkNot(Operand value) {

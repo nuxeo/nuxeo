@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQueryException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.ColumnType.WrappedId;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -423,7 +424,7 @@ public class NXQLQueryMaker implements QueryMaker {
             try {
                 whereBuilder = newWhereBuilder(docKind == DocKind.PROXY);
                 sqlQuery.select.accept(whereBuilder);
-            } catch (QueryMakerException e) {
+            } catch (QueryMakerException | FulltextQueryException e) {
                 throw new StorageException(e.getMessage(), e);
             }
             whatColumns = whereBuilder.whatColumns;

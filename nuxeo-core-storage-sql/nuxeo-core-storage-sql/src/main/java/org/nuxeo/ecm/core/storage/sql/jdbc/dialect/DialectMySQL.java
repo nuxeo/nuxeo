@@ -26,7 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -35,7 +38,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
 
 /**
  * MySQL-specific dialect.
@@ -227,7 +229,7 @@ public class DialectMySQL extends Dialect {
     @Override
     public String getDialectFulltextQuery(String query) {
         query = query.replace("%", "*");
-        FulltextQuery ft = analyzeFulltextQuery(query);
+        FulltextQuery ft = FulltextQueryAnalyzer.analyzeFulltextQuery(query);
         if (ft == null || ft.op == Op.NOTWORD) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }

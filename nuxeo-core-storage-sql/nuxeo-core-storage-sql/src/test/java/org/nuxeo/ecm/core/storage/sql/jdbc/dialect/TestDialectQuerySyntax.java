@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,8 +9,10 @@
  * Contributors:
  *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -19,21 +21,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.hamcrest.text.StringContains;
-import org.jmock.Mockery;
 import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
-import org.junit.runner.RunWith;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
-import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect.FulltextQuery.Op;
 
 @RunWith(JMock.class)
 public class TestDialectQuerySyntax {
@@ -140,15 +139,6 @@ public class TestDialectQuerySyntax {
         return m;
     }
 
-    protected void assertFulltextException(String query) {
-        try {
-            dialect.analyzeFulltextQuery(query);
-            fail("Query should fail: " + query);
-        } catch (QueryMakerException e) {
-            // ok
-        }
-    }
-
     protected static void dumpFulltextQuery(FulltextQuery ft, StringBuilder buf) {
         if (ft.op == Op.AND || ft.op == Op.OR) {
             assertNull(ft.word);
@@ -179,28 +169,16 @@ public class TestDialectQuerySyntax {
         }
     }
 
-    protected void assertFulltextQuery(String expected, String query) {
-        FulltextQuery ft = dialect.analyzeFulltextQuery(query);
-        if (ft == null) {
-            assertNull(expected);
-        } else {
-            StringBuilder buf = new StringBuilder();
-            dumpFulltextQuery(ft, buf);
-            assertEquals(expected, buf.toString());
-        }
-    }
-
     protected void assertPGPhraseBreak(String expected, String query) {
-        FulltextQuery ft = dialect.analyzeFulltextQuery(query);
+        FulltextQuery ft = FulltextQueryAnalyzer.analyzeFulltextQuery(query);
         FulltextQuery broken = DialectPostgreSQL.breakPhrases(ft);
         StringBuilder buf = new StringBuilder();
         dumpFulltextQuery(broken, buf);
         assertEquals(expected, buf.toString());
     }
 
-    protected void assertPGRemoveToplevelAndedWord(String expected,
-            String query) {
-        FulltextQuery ft = dialect.analyzeFulltextQuery(query);
+    protected void assertPGRemoveToplevelAndedWord(String expected, String query) {
+        FulltextQuery ft = FulltextQueryAnalyzer.analyzeFulltextQuery(query);
         FulltextQuery simplified = DialectPostgreSQL.removeToplevelAndedWords(ft);
         if (simplified == null) {
             assertNull(expected);
@@ -212,92 +190,10 @@ public class TestDialectQuerySyntax {
     }
 
     protected void assertPGLikeSql(String expected, String query) {
-        FulltextQuery ft = dialect.analyzeFulltextQuery(query);
+        FulltextQuery ft = FulltextQueryAnalyzer.analyzeFulltextQuery(query);
         StringBuilder buf = new StringBuilder();
         DialectPostgreSQL.generateLikeSql(ft, buf);
         assertEquals(expected, buf.toString());
-    }
-
-    @Test
-    public void testAnalyzeFulltextQuery() throws Exception {
-        dialect = new DialectH2(metadata, binaryManager, repositoryDescriptor);
-
-        // invalid queries
-
-        assertFulltextException("OR foo");
-        assertFulltextException("OR foo bar");
-        assertFulltextException("foo OR");
-        assertFulltextException("foo bar OR");
-        assertFulltextException("foo OR OR bar");
-        assertFulltextException("foo bar OR OR baz");
-        assertFulltextException("foo + bar");
-        assertFulltextException("foo - bar");
-
-        // ok queries
-
-        assertFulltextQuery(null, "");
-        assertFulltextQuery(null, "  ");
-        assertFulltextQuery("foo", "foo");
-        assertFulltextQuery("foo", " foo ");
-        assertFulltextQuery("[foo AND bar]", "foo bar");
-        assertFulltextQuery("[foo AND bar AND baz]", "foo bar baz");
-        assertFulltextQuery("[foo AND ~bar]", "foo -bar");
-        assertFulltextQuery("[foo AND baz AND ~bar]", "foo -bar baz");
-        assertFulltextQuery("[foo AND ~bar AND ~baz]", "foo -bar -baz");
-        assertFulltextQuery("[bar AND ~foo]", "-foo bar");
-        assertFulltextQuery("[bar AND baz AND ~foo]", "-foo bar baz");
-
-        // queries with OR
-
-        assertFulltextQuery("[foo OR bar]", "foo OR bar");
-        assertFulltextQuery("[foo OR [bar AND baz]]", "foo OR bar baz");
-        assertFulltextQuery("[[foo AND bar] OR baz]", "foo bar OR baz");
-        assertFulltextQuery("[foo OR bar OR baz]", "foo OR bar OR baz");
-        assertFulltextQuery("[foo OR [bar AND baz] OR gee]",
-                "foo OR bar baz OR gee");
-        assertFulltextQuery("[[bar AND ~foo] OR baz]", "-foo bar OR baz");
-        assertFulltextQuery("[foo OR [bar AND ~baz]]", "foo OR bar -baz");
-
-        // queries containing suppressed terms
-
-        assertFulltextQuery(null, "-foo");
-        assertFulltextQuery(null, "-foo -bar");
-        assertFulltextQuery("bar", "-foo OR bar");
-        assertFulltextQuery("foo", "foo OR -bar");
-        assertFulltextQuery(null, "-foo OR -bar");
-        assertFulltextQuery("foo", "foo OR -bar -baz");
-        assertFulltextQuery("baz", "-foo -bar OR baz");
-
-        // query with phrases
-
-        assertFulltextException("\"foo");
-        assertFulltextException("\"foo bar");
-        assertFulltextException("\"fo\"o\"");
-
-        assertFulltextQuery(null, "\"\"");
-        assertFulltextQuery(null, " \" \" ");
-        assertFulltextQuery("foo", "\"foo\"");
-        assertFulltextQuery("foo", "+\"foo\"");
-        assertFulltextQuery(null, "-\"foo\"");
-        assertFulltextQuery("foo", "\" foo\"");
-        assertFulltextQuery("foo", "\"foo \"");
-        assertFulltextQuery("foo", "\" foo \"");
-        assertFulltextQuery("OR", "\"OR\"");
-        assertFulltextQuery("{foo bar}", "\"foo bar\"");
-        assertFulltextQuery("{foo bar}", "\" foo bar\"");
-        assertFulltextQuery("{foo bar}", "\"foo bar \"");
-        assertFulltextQuery("{foo bar}", "\" foo  bar \"");
-        assertFulltextQuery("{foo bar}", "+\"foo bar\"");
-        assertFulltextQuery("{foo or bar}", "\"foo or bar\"");
-        assertFulltextQuery(null, "-\"foo bar\"");
-        assertFulltextQuery("[foo AND {bar baz}]", "foo \"bar baz\"");
-        assertFulltextQuery("[foo AND {bar baz}]", "foo +\"bar baz\"");
-        assertFulltextQuery("[foo AND ~{bar baz}]", "foo -\"bar baz\"");
-        assertFulltextQuery("[{foo bar} AND baz]", "\"foo bar\" baz");
-        assertFulltextQuery("[{foo bar} AND baz]", "+\"foo bar\" baz");
-        assertFulltextQuery("[baz AND ~{foo bar}]", "-\"foo bar\" baz");
-        assertFulltextQuery("[{foo bar} AND ~{baz gee}]",
-                "\"foo bar\" -\"baz gee\"");
     }
 
     protected void assertDialectFT(String expected, String query) {
@@ -333,8 +229,6 @@ public class TestDialectQuerySyntax {
 
     @Test
     public void testPostgreSQLPhraseBreak() throws Exception {
-        dialect = new DialectPostgreSQL(metadata, binaryManager,
-                repositoryDescriptor);
         assertPGPhraseBreak("foo", "foo");
         assertPGPhraseBreak("[foo AND bar]", "\"foo bar\"");
         assertPGPhraseBreak("[foo AND bar AND baz]", "\"foo bar\" baz");
@@ -348,8 +242,6 @@ public class TestDialectQuerySyntax {
 
     @Test
     public void testPostgreSQLToplevelAndedWordRemoval() throws Exception {
-        dialect = new DialectPostgreSQL(metadata, binaryManager,
-                repositoryDescriptor);
         assertPGRemoveToplevelAndedWord(null, "foo");
         assertPGRemoveToplevelAndedWord(null, "foo bar");
         assertPGRemoveToplevelAndedWord("{foo bar}", "\"foo bar\"");
@@ -365,8 +257,6 @@ public class TestDialectQuerySyntax {
 
     @Test
     public void testPostgreSQLLikeSql() throws Exception {
-        dialect = new DialectPostgreSQL(metadata, binaryManager,
-                repositoryDescriptor);
         assertPGLikeSql("?? LIKE '% foo %'", "foo");
         assertPGLikeSql("?? LIKE '% foo %'", "FOO");
         assertPGLikeSql("?? LIKE '% caf\u00e9 %'", "CAF\u00c9");

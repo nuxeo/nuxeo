@@ -46,7 +46,9 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -456,12 +458,12 @@ public class DialectOracle extends Dialect {
     @Override
     public String getDialectFulltextQuery(String query) {
         query = query.replace("*", "%"); // reserved, words with it not quoted
-        FulltextQuery ft = analyzeFulltextQuery(query);
+        FulltextQuery ft = FulltextQueryAnalyzer.analyzeFulltextQuery(query);
         if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        return translateFulltext(ft, "OR", "AND", "NOT", "{", "}",
-                CHARS_RESERVED, "", "", true);
+        return FulltextQueryAnalyzer.translateFulltext(ft, "OR", "AND", "NOT",
+                "{", "}", CHARS_RESERVED, "", "", true);
     }
 
     // SELECT ..., (SCORE(1) / 100) AS "_nxscore"

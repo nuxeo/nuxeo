@@ -34,7 +34,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -409,12 +411,13 @@ public class DialectSQLServer extends Dialect {
     @Override
     public String getDialectFulltextQuery(String query) {
         query = query.replace("%", "*");
-        FulltextQuery ft = analyzeFulltextQuery(query);
+        FulltextQuery ft = FulltextQueryAnalyzer.analyzeFulltextQuery(query);
         if (ft == null) {
             return "DONTMATCHANYTHINGFOREMPTYQUERY";
         }
-        return translateFulltext(ft, "OR", "AND", "AND NOT", "\"", "\"",
-                Collections.<Character> emptySet(), "\"", "\"", false);
+        return FulltextQueryAnalyzer.translateFulltext(ft, "OR", "AND",
+                "AND NOT", "\"", "\"", Collections.<Character> emptySet(),
+                "\"", "\"", false);
     }
 
     // SELECT ..., FTTBL.RANK / 1000.0
