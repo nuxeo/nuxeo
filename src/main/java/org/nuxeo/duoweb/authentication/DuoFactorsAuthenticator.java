@@ -187,7 +187,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         return null;
     }
 
-    public Principal createIdentity(String username) throws LoginException {
+    public Principal createIdentity(String username) throws Exception {
         UserManager manager = Framework.getService(UserManager.class);
         Random random = new Random(System.currentTimeMillis());
         log.debug("createIdentity: " + username);
