@@ -45,6 +45,9 @@ public class JDBCMapperConnector implements InvocationHandler {
         if ("commit".equals(name)) {
             return null;
         }
+        if ("rollback".equals(name)) {
+            return null;
+        }
         mapper.connect();
         try {
             return doInvoke(method, args);
