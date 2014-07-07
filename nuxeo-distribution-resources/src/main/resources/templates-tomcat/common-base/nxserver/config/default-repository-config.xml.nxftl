@@ -13,6 +13,8 @@
       <clustering enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
       <binaryStore path="${repository.binary.store}" />
       <noDDL>${nuxeo.vcs.noddl}</noDDL>
+      <aclOptimizations enabled="true"/>
+      <pathOptimizations enabled="true"/>
       <idType>${nuxeo.vcs.idtype}</idType>
       <indexing>
 <#if "${nuxeo.db.type}" == "postgresql">
