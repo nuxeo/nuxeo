@@ -11,7 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *******************************************************************************/
-package org.nuxeo.runtime.test;
+package org.nuxeo.runtime.test.runner;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,24 +33,18 @@ public class ConditionalIgnoreRule implements MethodRule {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.TYPE, ElementType.METHOD })
     public @interface Ignore {
-        Class<? extends Condition> condition() default IgnoreAlways.class;
+        Class<? extends Condition> condition();
     }
 
     public interface Condition {
-        boolean shouldIgnore(Method method, Object target);
+        boolean shouldIgnore();
     }
 
-    public static final class IgnoreAlways implements Condition {
-        @Override
-        public boolean shouldIgnore(Method method, Object target) {
-            return true;
-        }
-    }
 
     public static final class NXP10926H2Upgrade implements Condition {
 
         @Override
-        public boolean shouldIgnore(Method method, Object target) {
+        public boolean shouldIgnore() {
             return true;
         }
 
@@ -60,7 +54,7 @@ public class ConditionalIgnoreRule implements MethodRule {
         boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(getClass().getClassLoader().getClass().getName());
 
         @Override
-        public boolean shouldIgnore(Method method, Object target) {
+        public boolean shouldIgnore() {
             return isIsolated;
         }
     }
@@ -68,7 +62,7 @@ public class ConditionalIgnoreRule implements MethodRule {
     public static final class IgnoreLongRunning implements Condition {
 
         @Override
-        public boolean shouldIgnore(Method method, Object target) {
+        public boolean shouldIgnore() {
             return true; // TODO add an annotation suitable for
         }
 
@@ -80,63 +74,33 @@ public class ConditionalIgnoreRule implements MethodRule {
         Class<?> fixtureType = fixtureTarget.getClass();
         Method fixtureMethod = method.getMethod();
         if (fixtureType.isAnnotationPresent(Ignore.class)) {
-            checkIgnore(fixtureType.getAnnotation(Ignore.class),
-                    fixtureMethod, fixtureTarget);
+            check(fixtureType.getAnnotation(Ignore.class),
+                    fixtureType, fixtureMethod, fixtureTarget);
         }
         if (fixtureMethod.isAnnotationPresent(Ignore.class)) {
-            checkIgnore(fixtureMethod.getAnnotation(Ignore.class),
-                    fixtureMethod, fixtureTarget);
+            check(fixtureMethod.getAnnotation(Ignore.class),
+                    fixtureType, fixtureMethod, fixtureTarget);
         }
         return base;
     }
 
-    protected void checkIgnore(Ignore type, Method method,
-            Object target) {
-        Class<? extends Condition> conditionType = type.condition();
-        Condition condition = newCondition(conditionType);
-        injectCondition(method, target, conditionType, condition);
-        if(condition.shouldIgnore(method, target)) {
+    protected void check(Ignore ignore, Class<?> type) {
+        check(ignore, type, null, null);
+    }
+
+    protected void check(Ignore ignore, Class<?> type, Method method,Object target) {
+        Class<? extends Condition> conditionType = ignore.condition();
+        if (conditionType == null) {
+            return;
+        }
+        Condition condition = newCondition(type, method, target, conditionType);
+        if(condition.shouldIgnore()) {
             throw new AssumptionViolatedException(condition.getClass().getSimpleName());
         }
     }
 
-    protected void injectCondition(Method method, Object target,
-            Class<? extends Condition> conditionType, Condition condition)
-            throws SecurityException, Error {
-        for (Field eachField : conditionType.getDeclaredFields()) {
-            if (!eachField.isAnnotationPresent(Inject.class)) {
-                continue;
-            }
-            Object eachValue = null;
-            if (!eachField.isAnnotationPresent(Named.class)) {
-                String name = eachField.getAnnotation(Named.class).value();
-                switch (name) {
-                case "target":
-                    eachValue = target;
-                case "method":
-                    eachValue = method;
-                }
-            } else {
-                Class<?> eachType = eachField.getType();
-                if (eachType.equals(Object.class)) {
-                    eachValue = target;
-                } else if (eachType.equals(Method.class)) {
-                    eachValue = method;
-                }
-            }
-            if (eachValue == null) {
-                continue;
-            }
-            eachField.setAccessible(true);
-            try {
-                eachField.set(condition, eachValue);
-            } catch (IllegalArgumentException | IllegalAccessException cause) {
-                throw new Error("Cannot inject condition value in " + conditionType, cause);
-            }
-        }
-    }
 
-    protected Condition newCondition(Class<? extends Condition> conditionType)
+    protected Condition newCondition(Class<?> type, Method method, Object target, Class<? extends Condition> conditionType)
             throws Error {
         Condition condition;
         try {
@@ -145,7 +109,54 @@ public class ConditionalIgnoreRule implements MethodRule {
             throw new Error("Cannot instantiate condition of type "
                     + conditionType, cause);
         }
+        injectCondition(type, method, target, condition);
         return condition;
     }
+
+    protected void injectCondition(Class<?> type, Method method, Object target,
+            Condition condition)
+            throws SecurityException, Error {
+        Error errors = new Error("Cannot inject condition parameters in " + condition.getClass());
+        for (Field eachField : condition.getClass().getDeclaredFields()) {
+            if (!eachField.isAnnotationPresent(Inject.class)) {
+                continue;
+            }
+            Object eachValue = null;
+            if (eachField.isAnnotationPresent(Named.class)) {
+                String name = eachField.getAnnotation(Named.class).value();
+                if ("type".equals(name)) {
+                    eachValue = type;
+                } else if ("target".equals(name)) {
+                    eachValue = target;
+                } else if ("method".equals(name)) {
+                    eachValue = method;
+                }
+            } else {
+                Class<?> eachType = eachField.getType();
+                if (eachType.equals(Class.class)) {
+                    eachValue = type;
+                } else if (eachType.equals(Object.class)) {
+                    eachValue = target;
+                } else if (eachType.equals(Method.class)) {
+                    eachValue = method;
+                }
+            }
+            if (eachValue == null) {
+                errors.addSuppressed(new Error("Cannot inject "
+                        + eachField.getName()));
+            }
+            eachField.setAccessible(true);
+            try {
+                eachField.set(condition, eachValue);
+            } catch (IllegalArgumentException | IllegalAccessException cause) {
+                errors.addSuppressed(new Error("Cannot inject "
+                        + eachField.getName(), cause));
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
+    }
+
 
 }

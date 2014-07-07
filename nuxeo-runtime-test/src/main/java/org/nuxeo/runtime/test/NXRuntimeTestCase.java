@@ -52,8 +52,6 @@ import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.rules.MethodRule;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
 import org.nuxeo.osgi.BundleFile;
@@ -86,8 +84,6 @@ import org.osgi.framework.FrameworkEvent;
 @RunWith(FeaturesRunner.class)
 @Ignore
 public class NXRuntimeTestCase implements RuntimeHarness {
-
-    public final @Rule MethodRule ignoreRule = new ConditionalIgnoreRule();
 
     protected Mockery jmcontext = new JUnit4Mockery();
 

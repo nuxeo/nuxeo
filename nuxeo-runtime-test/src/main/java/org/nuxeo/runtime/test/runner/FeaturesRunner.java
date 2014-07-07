@@ -345,8 +345,17 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return Guice.createInjector(module);
     }
 
+    protected final ConditionalIgnoreRule ignoreRule = new ConditionalIgnoreRule();
+
     @Override
     public void run(final RunNotifier notifier) {
+        try {
+            ignoreRule.check(getConfig(ConditionalIgnoreRule.Ignore.class),
+                    getTargetTestClass());
+        } catch (AssumptionViolatedException cause) {
+            notifier.fireTestIgnored(getDescription());
+            return;
+        }
         AssertionError errors = new AssertionError("features error");
         try {
             try {
@@ -446,4 +455,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return "FeaturesRunner [fTest=" + getTargetTestClass() + "]";
     }
 
+    @Override
+    protected List<org.junit.rules.MethodRule> rules(Object target) {
+        List<org.junit.rules.MethodRule> rules = super.rules(target);
+        rules.add(ignoreRule);
+        return rules;
+    }
 }
