@@ -77,13 +77,11 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnectionPropagator;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCRowMapper;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 
 public class TestSQLBackend extends SQLBackendTestCase {
 
     private static final Log log = LogFactory.getLog(TestSQLBackend.class);
-
-    public final ConditionalIgnoreRule ignoreRule = new ConditionalIgnoreRule();
 
     @Override
     @Before

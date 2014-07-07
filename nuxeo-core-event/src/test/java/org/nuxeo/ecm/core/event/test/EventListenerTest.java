@@ -32,8 +32,8 @@ import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
-import org.nuxeo.runtime.test.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 
 /**
  * TODO add tests on post commit.

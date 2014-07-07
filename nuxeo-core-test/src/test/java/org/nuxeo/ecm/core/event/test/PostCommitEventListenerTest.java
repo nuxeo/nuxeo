@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 
 /**
  * PostCommitEventListenerTest test ScriptingPostCommitEventListener

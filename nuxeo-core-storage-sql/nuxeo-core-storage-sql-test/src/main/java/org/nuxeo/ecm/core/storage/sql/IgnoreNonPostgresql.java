@@ -13,14 +13,12 @@
  *******************************************************************************/
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.lang.reflect.Method;
-
-import org.nuxeo.runtime.test.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 
 public class IgnoreNonPostgresql implements ConditionalIgnoreRule.Condition {
 
     @Override
-    public boolean shouldIgnore(Method method, Object target) {
+    public boolean shouldIgnore() {
         return !(DatabaseHelper.DATABASE instanceof DatabasePostgreSQL);
     }
 }

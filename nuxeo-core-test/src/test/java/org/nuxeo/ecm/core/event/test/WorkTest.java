@@ -25,7 +25,6 @@ import junit.framework.Assert;
 
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,15 +35,11 @@ import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @ConditionalIgnoreRule.Ignore(condition=IgnoreNonPostgresql.class)
 public class WorkTest extends TXSQLRepositoryTestCase {
-
-    @Rule
-    public final ConditionalIgnoreRule ignoreRule = new ConditionalIgnoreRule();
-
 
     @Before
     @Override
