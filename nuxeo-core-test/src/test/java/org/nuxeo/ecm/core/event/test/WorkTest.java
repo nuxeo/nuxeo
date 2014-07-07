@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.core.event.test;
 
-import static org.junit.Assume.assumeTrue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +24,6 @@ import java.util.concurrent.CountDownLatch;
 import junit.framework.Assert;
 
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +31,7 @@ import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.storage.sql.IgnoreNonPooledCondition;
+import org.nuxeo.ecm.core.storage.sql.IgnoreNonPostgresql;
 import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -42,31 +39,18 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.ConditionalIgnoreRule;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@ConditionalIgnoreRule.Ignore(condition=IgnoreNonPooledCondition.class)
+@ConditionalIgnoreRule.Ignore(condition=IgnoreNonPostgresql.class)
 public class WorkTest extends TXSQLRepositoryTestCase {
 
     @Rule
     public final ConditionalIgnoreRule ignoreRule = new ConditionalIgnoreRule();
 
-    @Before
-    public void checkAssumptions() {
-        assumeTrue(hasPoolingConfig());
-    }
 
     @Before
     @Override
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.event");
-    }
-
-    @After
-    @Override
-    public void tearDown() throws Exception {
-        if (!hasPoolingConfig()) {
-            return;
-        }
-        super.tearDown();
     }
 
     public void doTestWorkConcurrencyException(boolean explicitSave)
