@@ -469,7 +469,11 @@ public class H2Fulltext {
     }
 
     protected static String getIndexName(Connection conn) throws SQLException {
-        return conn.getCatalog();
+        String catalog = conn.getCatalog();
+        if (catalog == null) {
+            catalog = "default";
+        }
+        return catalog;
     }
 
     protected static String getIndexPath(Connection conn) throws SQLException {
@@ -620,6 +624,8 @@ public class H2Fulltext {
 
         private String indexName;
 
+        private String indexPath;
+
         private IndexWriter indexWriter;
 
         // DEBUG
@@ -695,7 +701,7 @@ public class H2Fulltext {
                     columnTypes = new HashMap<String, int[]>();
                     columnIndices = new HashMap<String, int[]>();
                     while (rs.next()) {
-                        String indexName = rs.getString(1);
+                        String index = rs.getString(1);
                         String columns = rs.getString(2);
                         String analyzerName = rs.getString(3);
                         List<String> columnNames = Arrays.asList(columns.split(","));
@@ -709,11 +715,12 @@ public class H2Fulltext {
                             indices[i] = allColumnIndices.get(columnName).intValue();
                             i++;
                         }
-                        columnTypes.put(indexName, types);
-                        columnIndices.put(indexName, indices);
+                        columnTypes.put(index, types);
+                        columnIndices.put(index, indices);
                         // only one call actually needed for this:
-                        this.indexName = getIndexName(conn);
-                        indexWriter = getIndexWriter(this.indexName, getIndexPath(conn), analyzerName);
+                        indexName = getIndexName(conn);
+                        indexPath = getIndexPath(conn);
+                        indexWriter = getIndexWriter(indexName, indexPath, analyzerName);
                     }
 
                 }
