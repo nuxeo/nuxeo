@@ -82,6 +82,7 @@ class DriveClient:
                        ['revoke', 'false'],
                        ['deviceId', self.device_id],
                        ['permission', 'ReadWrite']],
+               ok_codes=[200, 201],
                description="Bind server")
         fl.clearBasicAuth()
         if self.token is None:
