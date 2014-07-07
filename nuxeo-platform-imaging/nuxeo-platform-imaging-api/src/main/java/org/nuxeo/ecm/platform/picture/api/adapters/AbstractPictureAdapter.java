@@ -69,7 +69,7 @@ import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WHITEBAL
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WIDTH;
 import static org.nuxeo.ecm.platform.picture.api.MetadataConstants.META_WRITER;
 
-import java.awt.*;
+import java.awt.Point;
 import java.awt.color.ICC_Profile;
 import java.io.File;
 import java.io.IOException;
@@ -154,6 +154,9 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
     protected Blob fileContent;
 
+    /** @since 5.9.5 */
+    protected ImageInfo imageInfo;
+
     private CoreSession session;
 
     private ImagingService imagingService;
@@ -201,7 +204,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
 
     protected void setMetadata() throws IOException, ClientException {
         boolean imageInfoUsed = false;
-        ImageInfo imageInfo = getImagingService().getImageInfo(fileContent);
+        ImageInfo imageInfo = getImageInfo();
         if (imageInfo != null) {
             width = imageInfo.getWidth();
             height = imageInfo.getHeight();
@@ -359,8 +362,8 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                     filename, width, height, depth, fileContent);
             createPictureimpl(description, "original", "Original", null,
                     filename, width, height, depth, fileContent);
-            createPictureimpl("Small Size", "small", "Small",
-                    SMALL_SIZE, filename, width, height, depth, fileContent);
+            createPictureimpl("Small Size", "small", "Small", SMALL_SIZE,
+                    filename, width, height, depth, fileContent);
             createPictureimpl("Thumbnail Size", "thumb", "Thumbnail",
                     THUMB_SIZE, filename, width, height, depth, fileContent);
             createPictureimpl("Original Picture in JPEG format",
@@ -385,7 +388,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         PictureTemplate pictureTemplate = new PictureTemplate(title,
                 description, tag, maxsize);
         PictureView view = getImagingService().computeViewFor(fileContent,
-                pictureTemplate, true);
+                pictureTemplate, getImageInfo(), true);
 
         List<Map<String, Serializable>> views = (List<Map<String, Serializable>>) doc.getPropertyValue(VIEWS_PROPERTY);
         if (views == null) {
@@ -393,6 +396,18 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         }
         views.add(view.asMap());
         doc.setPropertyValue(VIEWS_PROPERTY, (Serializable) views);
+    }
+
+    /**
+     * Returns the {@link ImageInfo} for the main Blob ({@code fileContent}).
+     *
+     * @since 5.9.5.
+     */
+    protected ImageInfo getImageInfo() {
+        if (imageInfo == null) {
+            imageInfo = getImagingService().getImageInfo(fileContent);
+        }
+        return imageInfo;
     }
 
     /**
