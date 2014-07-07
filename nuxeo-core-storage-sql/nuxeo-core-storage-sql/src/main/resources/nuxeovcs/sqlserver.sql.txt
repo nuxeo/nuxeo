@@ -749,7 +749,7 @@ DROP TABLE aclr_modified;
 CREATE TABLE aclr_modified (
   id INT NOT NULL IDENTITY,
   spid INTEGER NOT NULL,
-  hierarchy_id ${idType} COLLATE DATABASE_DEFAULT,
+  hierarchy_id ${idType},
   is_new TINYINT
 )
 
