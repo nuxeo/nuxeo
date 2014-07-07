@@ -4072,7 +4072,7 @@
       <dependency>
         <groupId>redis.clients</groupId>
         <artifactId>jedis</artifactId>
-        <version>2.1.0-20130502</version>
+        <version>2.4.1</version>
       </dependency>
 
       <dependency>
@@ -4941,6 +4941,29 @@
   </reporting>
 
   <profiles>
+    <profile>
+      <id>jdt</id>
+      <build>
+        <plugins>
+          <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-compiler-plugin</artifactId>
+           <configuration>
+             <compilerId>jdt</compilerId>
+             <source>1.7</source>
+             <target>1.7</target>
+           </configuration>
+           <dependencies>
+	     <dependency>
+	       <groupId>org.eclipse.tycho</groupId>
+	       <artifactId>tycho-compiler-jdt</artifactId>
+	       <version>0.20.0</version>
+	     </dependency>
+           </dependencies>
+         </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>skipUnitTests</id>
       <properties>
