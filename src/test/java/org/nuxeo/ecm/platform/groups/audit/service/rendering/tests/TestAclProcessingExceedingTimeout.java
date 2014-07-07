@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -50,7 +49,7 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.job.AclAuditWork;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.IResultPublisher;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.test.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -72,8 +71,6 @@ import com.google.inject.Inject;
         "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
 @ConditionalIgnoreRule.Ignore(condition=ConditionalIgnoreRule.IgnoreLongRunning.class)
 public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
-
-    @Rule public final ConditionalIgnoreRule ignoreRule = new ConditionalIgnoreRule();
 
     @Inject
     CoreSession session;
