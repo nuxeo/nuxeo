@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.core.annotations.Operation;
+import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
 
 /**
  * Service providing an operation registry and operation execution methods. The
@@ -27,6 +28,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
  * monitor for asynchronous executions is not yet implemented.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:grenard@nuxeo.com">Guillaume</a>
  */
 public interface AutomationService {
 
@@ -284,5 +286,13 @@ public interface AutomationService {
      * @since 5.7.3
      */
     boolean hasChainException(String onChainId);
+
+    /**
+     * @since 5.9.5
+     */
+    void putOperation(Class<?> type, boolean replace,
+            String contributingComponent,
+            List<WidgetDescriptor> widgetDescriptorList)
+            throws OperationException;
 
 }

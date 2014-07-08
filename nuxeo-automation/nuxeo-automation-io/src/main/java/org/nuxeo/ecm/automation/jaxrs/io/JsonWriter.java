@@ -36,12 +36,15 @@ import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.automation.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.AutomationInfo;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Json writer for operations export.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
 public class JsonWriter {
 
@@ -203,6 +206,11 @@ public class JsonWriter {
         }
         jg.writeEndArray();
         writeParams(jg, Arrays.asList(op.params));
+        jg.writeArrayFieldStart("widgets");
+        for (WidgetDefinition wdef : op.widgetDefinitions) {
+            jg.writeObject(JSONLayoutExporter.exportToJson(wdef, null, null));
+        }
+        jg.writeEndArray();
         jg.writeEndObject();
         jg.flush();
     }

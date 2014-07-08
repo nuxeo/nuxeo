@@ -107,6 +107,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-audit-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-forms-layout-io</artifactId>
+    </dependency>
 
     <!-- only for tests -->
     <dependency>

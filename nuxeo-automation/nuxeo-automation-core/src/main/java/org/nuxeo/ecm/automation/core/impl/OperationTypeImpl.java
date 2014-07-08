@@ -42,9 +42,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentRefList;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
 public class OperationTypeImpl implements OperationType {
 
@@ -81,12 +83,22 @@ public class OperationTypeImpl implements OperationType {
 
     protected String contributingComponent;
 
+    protected List<WidgetDefinition> widgetDefinitionList;
+
     public OperationTypeImpl(AutomationService service, Class<?> type) {
         this(service, type, null);
     }
 
     public OperationTypeImpl(AutomationService service, Class<?> type,
             String contributingComponent) {
+        this(service, type, contributingComponent, null);
+    }
+
+    /**
+     * @since 5.9.5
+     */
+    public OperationTypeImpl(AutomationService service, Class<?> type,
+            String contributingComponent, List<WidgetDefinition> widgetDefinitionList) {
         Operation anno = type.getAnnotation(Operation.class);
         if (anno == null) {
             throw new IllegalArgumentException("Invalid operation class: "
@@ -94,6 +106,7 @@ public class OperationTypeImpl implements OperationType {
         }
         this.service = service;
         this.type = type;
+        this.widgetDefinitionList = widgetDefinitionList;
         this.contributingComponent = contributingComponent;
         id = anno.id();
         if (id.length() == 0) {
@@ -319,6 +332,10 @@ public class OperationTypeImpl implements OperationType {
             }
         }
         doc.signature = result.toArray(new String[result.size()]);
+        // widgets descriptor
+        if (this.widgetDefinitionList != null) {
+            doc.widgetDefinitions = this.widgetDefinitionList.toArray(new WidgetDefinition[widgetDefinitionList.size()]);
+        }
         return doc;
     }
 

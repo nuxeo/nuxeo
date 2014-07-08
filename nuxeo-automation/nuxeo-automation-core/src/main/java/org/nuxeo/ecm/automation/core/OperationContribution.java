@@ -11,12 +11,18 @@
  */
 package org.nuxeo.ecm.automation.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
+import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
 @XObject("operation")
 public class OperationContribution {
@@ -35,5 +41,13 @@ public class OperationContribution {
      */
     @XNode("@replace")
     public boolean replace;
+
+    /**
+     * The widget descriptor for the operation parameters.
+     *
+     * @since 5.9.5
+     */
+    @XNodeList(componentType = WidgetDescriptor.class, type = ArrayList.class, value = "widgets/widget")
+    public List<WidgetDescriptor> widgets;
 
 }

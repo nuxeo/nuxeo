@@ -142,6 +142,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * {@link AutomationService} and handle extensions registrations.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
 public class AutomationComponent extends DefaultComponent {
 
@@ -316,7 +317,7 @@ public class AutomationComponent extends DefaultComponent {
         if (XP_OPERATIONS.equals(extensionPoint)) {
             OperationContribution opc = (OperationContribution) contribution;
             service.putOperation(opc.type, opc.replace,
-                    contributor.getName().toString());
+                    contributor.getName().toString(), opc.widgets);
         } else if (XP_CHAINS.equals(extensionPoint)) {
             OperationChainContribution occ = (OperationChainContribution) contribution;
             // Register the chain

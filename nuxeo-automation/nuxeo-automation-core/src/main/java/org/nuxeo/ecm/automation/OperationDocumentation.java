@@ -19,9 +19,11 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.OperationChainContribution;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  */
 public class OperationDocumentation implements
         Comparable<OperationDocumentation>, Serializable {
@@ -62,6 +64,8 @@ public class OperationDocumentation implements
     public String description;
 
     public Param[] params;
+
+    public WidgetDefinition[] widgetDefinitions;
 
     /**
      * The operations listing in case of a chain.

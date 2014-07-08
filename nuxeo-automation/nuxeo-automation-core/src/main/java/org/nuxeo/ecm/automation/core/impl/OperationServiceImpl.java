@@ -49,6 +49,8 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.exception.CatchChainException;
 import org.nuxeo.ecm.automation.core.exception.ChainExceptionRegistry;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -329,6 +331,20 @@ public class OperationServiceImpl implements AutomationService {
             String contributingComponent) throws OperationException {
         OperationTypeImpl op = new OperationTypeImpl(this, type,
                 contributingComponent);
+        putOperation(op, replace);
+    }
+
+    @Override
+    public void putOperation(Class<?> type, boolean replace,
+            String contributingComponent, List<WidgetDescriptor> widgetDescriptorList) throws OperationException {
+        List<WidgetDefinition> widgetDefinitionList = new ArrayList<WidgetDefinition>();
+        if (widgetDescriptorList != null) {
+            for (WidgetDescriptor widgetDescriptor : widgetDescriptorList) {
+                widgetDefinitionList.add(widgetDescriptor.getWidgetDefinition());
+            }
+        }
+        OperationTypeImpl op = new OperationTypeImpl(this, type,
+                contributingComponent, widgetDefinitionList);
         putOperation(op, replace);
     }
 
