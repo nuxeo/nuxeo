@@ -68,6 +68,10 @@ public class ShallowDocumentModel implements DocumentModel {
 
     private final boolean isVersion;
 
+    private final boolean isProxy;
+
+    private final boolean isImmutable;
+
     private final ScopedMap contextData;
 
     private final Set<String> facets;
@@ -82,6 +86,8 @@ public class ShallowDocumentModel implements DocumentModel {
         type = doc.getType();
         isFolder = doc.isFolder();
         isVersion = doc.isVersion();
+        isProxy = doc.isProxy();
+        isImmutable = doc.isImmutable();
         contextData = doc.getContextData();
         facets = doc.getFacets();
         if (doc.isLifeCycleLoaded()) {
@@ -382,12 +388,12 @@ public class ShallowDocumentModel implements DocumentModel {
 
     @Override
     public boolean isProxy() {
-        throw new UnsupportedOperationException();
+        return isProxy;
     }
 
     @Override
     public boolean isImmutable() {
-        throw new UnsupportedOperationException();
+        return isImmutable;
     }
 
     @Override
