@@ -17,7 +17,21 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.GetRelations" />
     <operation
-      class="org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation" />
+      class="org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation" >
+      <widgets>
+        <widget name="query" type="codearea">
+            <labels>
+              <label mode="any">NXQL query</label>
+            </labels>
+            <properties mode="any">
+              <property name="language">javascript</property>
+            </properties>
+             <fields>
+              <field>query</field>
+            </fields>
+        </widget>
+      </widgets>
+    </operation>
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation" />
     <operation
