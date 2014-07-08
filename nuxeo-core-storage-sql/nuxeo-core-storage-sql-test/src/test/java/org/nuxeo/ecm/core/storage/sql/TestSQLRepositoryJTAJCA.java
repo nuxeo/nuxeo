@@ -193,6 +193,56 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
         assertTrue(TransactionHelper.isTransactionActive());
     }
 
+    @Test
+    public void testNoRollbackOnExceptionForLock() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        session.setLock(doc.getRef());
+
+        // try to relock a document already locked
+        try {
+            session.setLock(doc.getRef());
+            fail("setLock on locked document should throw");
+        } catch (ClientException e) {
+            assertTrue(e.getMessage(),
+                    e.getMessage().contains("Document already locked"));
+        }
+        // tx still active because CoreSession.setLock is marked
+        // @NoRollbackOnException
+        assertTrue(TransactionHelper.isTransactionActive());
+
+        closeSession();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        session = openSessionAs("bob");
+
+        // also try with a user not allowed to lock
+        // (different exception raised)
+        try {
+            session.setLock(doc.getRef());
+            fail("setLock on locked document should throw");
+        } catch (ClientException e) {
+            assertTrue(e.getMessage(),
+                    e.getMessage().contains("not granted to 'bob'"));
+        }
+        // tx still active because CoreSession.setLock is marked
+        // @NoRollbackOnException
+        assertTrue(TransactionHelper.isTransactionActive());
+
+        // also try remove with wrong user
+        try {
+            session.removeLock(doc.getRef());
+            fail("removeLock on locked document should throw");
+        } catch (ClientException e) {
+            assertTrue(e.getMessage(),
+                    e.getMessage().contains("Document already locked"));
+        }
+        // tx still active because CoreSession.removeLock is marked
+        // @NoRollbackOnException
+        assertTrue(TransactionHelper.isTransactionActive());
+    }
+
     protected static final Log log = LogFactory.getLog(TestSQLRepositoryJTAJCA.class);
 
     protected static class TxWarnChecker extends AppenderSkeleton {
