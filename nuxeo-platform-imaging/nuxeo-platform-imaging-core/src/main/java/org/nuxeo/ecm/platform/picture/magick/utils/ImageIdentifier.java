@@ -48,7 +48,7 @@ public class ImageIdentifier extends MagickExecutor {
                         : 0);
         String[] res = out.split(" ");
 
-        return new ImageInfo(res[1], res[2], res[0], res[res.length - 1],
+        return new ImageInfo(res[1], res[2], res[0], res[3], res[4],
                 inputFilePath);
     }
 

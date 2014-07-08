@@ -8,8 +8,8 @@
 
     <command name="identify" enabled="true">
       <commandLine>identify</commandLine>
-      <parameterString> -quiet -ping -format '%m %w %h %z' #{inputFilePath}[0]</parameterString>
-      <winParameterString> -quiet -ping -format "%m %w %h %z" #{inputFilePath}[0]</winParameterString>
+      <parameterString> -quiet -ping -format '%m %w %h %z %[colorspace]' #{inputFilePath}[0]</parameterString>
+      <winParameterString> -quiet -ping -format "%m %w %h %z %[colorspace]" #{inputFilePath}[0]</winParameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>
 
@@ -42,14 +42,14 @@
 
     <command name="cropAndResize" enabled="true">
       <commandLine>stream</commandLine>
-      <parameterString> -quiet -map rgb -storage-type char -extract  #{tileWidth}x#{tileHeight}+#{offsetX}+#{offsetY} #{inputFilePath} - | convert -depth 8 -size #{tileWidth}x#{tileHeight} -resize #{targetWidth}x#{targetHeight}!  rgb:-  #{outputFilePath} </parameterString>
+      <parameterString> -quiet -map #{mapComponents} -storage-type char -extract  #{tileWidth}x#{tileHeight}+#{offsetX}+#{offsetY} #{inputFilePath} - | convert -depth 8 -size #{tileWidth}x#{tileHeight} -resize #{targetWidth}x#{targetHeight}!  #{mapComponents}:-  #{outputFilePath} </parameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>
 
     <command name="converter" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-quiet -colorspace rgb #{inputFilePath}[0] #{outputFilePath}</parameterString>
-      <winParameterString>-quiet -colorspace rgb #{inputFilePath} #{outputFilePath}</winParameterString>
+      <parameterString>-quiet #{inputFilePath}[0] #{outputFilePath}</parameterString>
+      <winParameterString>-quiet #{inputFilePath} #{outputFilePath}</winParameterString>
       <installationDirective>You need to install ImageMagic.</installationDirective>
     </command>
 

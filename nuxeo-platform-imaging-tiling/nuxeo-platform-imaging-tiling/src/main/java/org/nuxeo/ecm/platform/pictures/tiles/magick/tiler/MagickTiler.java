@@ -45,6 +45,9 @@ public class MagickTiler implements PictureTiler {
 
     private static final Log log = LogFactory.getLog(MagickTiler.class);
 
+    /** @since 5.9.5. */
+    public static final String CMYK_MAP_COMPONENTS = "cmyk";
+
     public boolean needsSync() {
         return false;
     }
@@ -53,8 +56,8 @@ public class MagickTiler implements PictureTiler {
         return "MagicTiler";
     }
 
-    static int[] computeCropCoords(ImageInfo input, int maxTiles, int tileWidth,
-            int tileHeight, int xCenter, int yCenter) {
+    static int[] computeCropCoords(ImageInfo input, int maxTiles,
+            int tileWidth, int tileHeight, int xCenter, int yCenter) {
         int startX = 0;
         int startY = 0;
         int cropWidth = 0;
@@ -121,26 +124,36 @@ public class MagickTiler implements PictureTiler {
 
     public PictureTiles getTilesFromFile(ImageInfo input, String outputDirPath,
             int tileWidth, int tileHeight, int maxTiles, int xCenter,
-            int yCenter, long lastModificationTime, boolean fullGeneration) throws ClientException {
+            int yCenter, long lastModificationTime, boolean fullGeneration)
+            throws ClientException {
 
         int[] cropCoords = computeCropCoords(input, maxTiles, tileWidth,
                 tileHeight, xCenter, yCenter);
 
-        String fileName = StringMaker.getTileFileName(xCenter, yCenter, lastModificationTime);
+        String fileName = StringMaker.getTileFileName(xCenter, yCenter,
+                lastModificationTime);
         String outputFilePath = new Path(outputDirPath).append(fileName).toString();
 
         try {
+            String mapComponents = null;
+            if (CMYK_MAP_COMPONENTS.equalsIgnoreCase(input.getColorSpace())) {
+                mapComponents = CMYK_MAP_COMPONENTS;
+            }
+
             ImageCropperAndResizer.cropAndResize(input.getFilePath(),
                     outputFilePath, cropCoords[2], cropCoords[3],
-                    cropCoords[0], cropCoords[1], cropCoords[6], cropCoords[7]);
+                    cropCoords[0], cropCoords[1], cropCoords[6], cropCoords[7],
+                    mapComponents);
         } catch (Exception e) {
             throw new ClientException(e);
         }
 
         Map<String, String> infoMap = new HashMap<String, String>();
         infoMap.put(PictureTilesImpl.TILE_OUTPUT_DIR_KEY, outputDirPath);
-        infoMap.put(PictureTilesImpl.X_TILES_KEY, Integer.toString(cropCoords[4]));
-        infoMap.put(PictureTilesImpl.Y_TILES_KEY, Integer.toString(cropCoords[5]));
+        infoMap.put(PictureTilesImpl.X_TILES_KEY,
+                Integer.toString(cropCoords[4]));
+        infoMap.put(PictureTilesImpl.Y_TILES_KEY,
+                Integer.toString(cropCoords[5]));
 
         return new PictureTilesImpl(infoMap);
     }

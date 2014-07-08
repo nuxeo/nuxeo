@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.picture.api;
 import java.io.File;
 
 /**
- * Wrapper class for the informations returned by the Identify ImageMagick
+ * Wrapper class for the information returned by the Identify ImageMagick
  * command.
  *
  * @author tiry
@@ -37,6 +37,9 @@ public class ImageInfo {
 
     protected String format;
 
+    /** @since 5.9.5 */
+    protected String colorSpace;
+
     protected String filePath;
 
     public ImageInfo(String width, String height, String format, String filePath) {
@@ -50,6 +53,14 @@ public class ImageInfo {
             String filePath) {
         this(width, height, format, filePath);
         this.depth = Integer.parseInt(depth);
+    }
+
+    /** @since 5.9.5 */
+    public ImageInfo(String width, String height, String format, String depth,
+            String colorSpace, String filePath) {
+        this(width, height, format, filePath);
+        this.depth = Integer.parseInt(depth);
+        this.colorSpace = colorSpace;
     }
 
     public int getWidth() {
@@ -97,4 +108,13 @@ public class ImageInfo {
         this.depth = depth;
     }
 
+    /** @since 5.9.5 */
+    public String getColorSpace() {
+        return colorSpace;
+    }
+
+    /** @since 5.9.5 */
+    public void setColorSpace(String colorSpace) {
+        this.colorSpace = colorSpace;
+    }
 }

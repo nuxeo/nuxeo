@@ -30,10 +30,26 @@ import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
  */
 public class ImageCropperAndResizer extends MagickExecutor {
 
+    public static final String DEFAULT_MAP_COMPONENTS = "rgb";
+
     public static void cropAndResize(String inputFilePath,
             String outputFilePath, int tileWidth, int tileHeight, int offsetX,
             int offsetY, int targetWidth, int targetHeight)
             throws CommandNotAvailable, CommandException {
+        cropAndResize(inputFilePath, outputFilePath, tileWidth, tileHeight,
+                offsetX, offsetY, targetWidth, targetHeight, null);
+    }
+
+    /** @since 5.9.5. */
+    public static void cropAndResize(String inputFilePath,
+            String outputFilePath, int tileWidth, int tileHeight, int offsetX,
+            int offsetY, int targetWidth, int targetHeight, String mapComponents)
+            throws CommandNotAvailable, CommandException {
+
+        if (mapComponents == null) {
+            mapComponents = DEFAULT_MAP_COMPONENTS;
+        }
+
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("tileWidth", String.valueOf(tileWidth));
         params.addNamedParameter("tileHeight", String.valueOf(tileHeight));
@@ -43,6 +59,7 @@ public class ImageCropperAndResizer extends MagickExecutor {
         params.addNamedParameter("targetHeight", String.valueOf(targetHeight));
         params.addNamedParameter("inputFilePath", inputFilePath);
         params.addNamedParameter("outputFilePath", outputFilePath);
+        params.addNamedParameter("mapComponents", mapComponents);
         ExecResult res = execCommand("cropAndResize", params);
         if (!res.isSuccessful()) {
             throw res.getError();

@@ -54,6 +54,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         assertEquals("JPEG", info.getFormat());
         assertFalse(info.getWidth() == 0);
         assertFalse(info.getHeight() == 0);
+        assertEquals("sRGB", info.getColorSpace());
 
         System.out.print(info);
     }
