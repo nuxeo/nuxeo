@@ -508,11 +508,7 @@ public class ConnectionHelper {
                 if (handles.size() == 1) {
                     if (mustRollback) {
                         logInvoke("rollback");
-                        connection.rollback();
                         mustRollback = false;
-                    } else {
-                        logInvoke("commit");
-                        connection.commit();
                     }
                 } else {
                     if (log.isDebugEnabled()) {
@@ -529,7 +525,6 @@ public class ConnectionHelper {
             try {
                 if (handles.size() == 1) {
                     logInvoke("rollback");
-                    connection.rollback();
                     mustRollback = false;
                 } else {
                     if (log.isDebugEnabled()) {
@@ -559,9 +554,6 @@ public class ConnectionHelper {
             if (log.isDebugEnabled()) {
                 log.debug("Reference removed for " + this);
             }
-            if (handles.isEmpty()) {
-                deallocate();
-            }
         }
 
         // Note that this is not called when a local connection was upgraded to
@@ -579,24 +571,26 @@ public class ConnectionHelper {
             connection.setAutoCommit(false);
         }
 
-        private void deallocate() throws SQLException {
-            if (log.isDebugEnabled()) {
-                log.debug("Closing physical connection " + this);
-                if (log.isTraceEnabled()) {
-                    log.trace("Closing physical connection stacktrace",
-                            new Exception("debug"));
-                }
-            }
-            close();
-        }
-
         /** Called after transaction completion to free resources. */
-        public void closeAfterTransaction() {
+        public void closeAfterTransaction(boolean mustRollback) {
             if (!handles.isEmpty()) {
                 log.error("Transaction ended with " + handles.size()
                         + " connections not committed " + this + " " + handles);
             }
-            if (connection != null) {
+            if (connection == null) {
+                return;
+            }
+            try {
+                if (mustRollback) {
+                    connection.rollback();
+                } else {
+                    connection.commit();
+                }
+            } catch (SQLException cause) {
+                log.error(
+                        "Could not close endup connection at transaction end",
+                        cause);
+            } finally {
                 close();
             }
         }
@@ -717,14 +711,14 @@ public class ConnectionHelper {
         public void afterCompletion(int status) {
             sharedSynchronizations.remove(transaction);
             afterCompletion(syncsFirst, status);
-            closeSharedAfterCompletion();
+            closeSharedAfterCompletion(status == Status.STATUS_ROLLEDBACK);
             afterCompletion(syncsLast, status);
         }
 
-        private void closeSharedAfterCompletion() {
+        private void closeSharedAfterCompletion(boolean rollback) {
             SharedConnection sharedConnection = sharedConnections.remove(transaction);
             if (sharedConnection != null) {
-                sharedConnection.closeAfterTransaction();
+                sharedConnection.closeAfterTransaction(rollback);
             }
         }
 
@@ -976,7 +970,7 @@ public class ConnectionHelper {
      */
     public static void clearConnectionReferences() {
         for (SharedConnection sharedConnection : sharedConnections.values()) {
-            sharedConnection.closeAfterTransaction();
+            sharedConnection.closeAfterTransaction(true);
         }
         sharedConnections.clear();
     }
