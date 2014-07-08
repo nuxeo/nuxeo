@@ -759,9 +759,9 @@ class FolderPage(BasePage):
         fl.assert_('driveSynchronizeCurrentDocument' in fl.getBody(),
                    "No sync button found")
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['nxw_documentActionsUpperButtons_1_driveSynchronizeCurrentDocument_form', 'nxw_documentActionsUpperButtons_1_driveSynchronizeCurrentDocument_form'],
+            ['nxw_driveSynchronizeCurrentDocument_form', 'nxw_driveSynchronizeCurrentDocument_form'],
             ['javax.faces.ViewState', extractJsfState(fl.getBody())],
-            ['nxw_documentActionsUpperButtons_1_driveSynchronizeCurrentDocument_form:nxw_documentActionsUpperButtons_1_driveSynchronizeCurrentDocument', 'nxw_documentActionsUpperButtons_1_driveSynchronizeCurrentDocument_form:nxw_documentActionsUpperButtons_1_driveSynchronizeCurrentDocument']],
+            ['nxw_driveSynchronizeCurrentDocument_form:nxw_driveSynchronizeCurrentDocument', 'nxw_driveSynchronizeCurrentDocument_form:nxw_driveSynchronizeCurrentDocument']],
             description="Synchronize the current document with Drive")
         fl.assert_('driveUnsynchronizeCurrentDocument' in fl.getBody()
                    or 'currentUserSyncRoots' in fl.getBody(),
@@ -771,9 +771,9 @@ class FolderPage(BasePage):
     def driveUnsynchronizeCurrentDocument(self):
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['nxw_documentActionsUpperButtons_1_driveUnsynchronizeCurrentDocument_form', 'nxw_documentActionsUpperButtons_1_driveUnsynchronizeCurrentDocument_form'],
+            ['nxw_driveUnsynchronizeCurrentDocument_form', 'nxw_driveUnsynchronizeCurrentDocument_form'],
             ['javax.faces.ViewState', extractJsfState(fl.getBody())],
-            ['nxw_documentActionsUpperButtons_1_driveUnsynchronizeCurrentDocument_form:nxw_documentActionsUpperButtons_1_driveUnsynchronizeCurrentDocument', 'nxw_documentActionsUpperButtons_1_driveUnsynchronizeCurrentDocument_form:nxw_documentActionsUpperButtons_1_driveUnsynchronizeCurrentDocument']],
+            ['nxw_driveUnsynchronizeCurrentDocument_form:nxw_driveUnsynchronizeCurrentDocument', 'nxw_driveUnsynchronizeCurrentDocument_form:nxw_driveUnsynchronizeCurrentDocument']],
             description="Unsynchronize the current document with Drive")
         fl.assert_('driveSynchronizeCurrentDocument' in fl.getBody())
         return self
