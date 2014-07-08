@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.onelogin.auth">
+
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+  
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    
+    <authenticationPlugin name="ONELOGIN_AUTH" enabled="true"
+      class="org.nuxeo.ecm.platform.onelogin.auth.OneLoginSAMLAuthenticationPlugin">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+      <parameters>
+        <parameter name="url">https://app.onelogin.com/trust/saml2/http-post/sso/384628</parameter>
+        <parameter name="cert">MIIEDjCCAvagAwIBAgIUJCRo5bgwYEexMEtGVoFaeKn1J5EwDQYJKoZIhvcNAQEF
+BQAwVTELMAkGA1UEBhMCVVMxDjAMBgNVBAoMBU51eGVvMRUwEwYDVQQLDAxPbmVM
+b2dpbiBJZFAxHzAdBgNVBAMMFk9uZUxvZ2luIEFjY291bnQgNDQyMjEwHhcNMTQw
+NzA2MTEyMjEwWhcNMTkwNzA3MTEyMjEwWjBVMQswCQYDVQQGEwJVUzEOMAwGA1UE
+CgwFTnV4ZW8xFTATBgNVBAsMDE9uZUxvZ2luIElkUDEfMB0GA1UEAwwWT25lTG9n
+aW4gQWNjb3VudCA0NDIyMTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
+AMmzB7BTwmwAknfJ5SF46AK9gjNR3OGpz2XXrT8jhFXqgAMQRVIo3d+tAVIMi6Mq
+3Z/TaTZyBQ7ZcF0kNjqIX4OceMlvh/8rJJ8+a0ksYprywubi783xa3bsFXXvhqTf
+l9Q+vQ5rStbQd8goKuDFGx0QnOdDRiXYT2ndg1K9CXdpDMq7NlPdqhUX8ZIpkQKY
+yGQNQL1b4KaWymwvfyOSj0gNOK2Tj+qqcDvqyEGGm8piiFIbwbgjc3zYG6Z5y0JP
+eL3Jni9vnVNffgN0WgWptAAyK4Ekd/Q0lkcqifF/Ge9DZ/tvUwSSrA9swFVjavJM
+kav9TgH2etZa8qbI0pEqlEMCAwEAAaOB1TCB0jAMBgNVHRMBAf8EAjAAMB0GA1Ud
+DgQWBBTKvhwFPknTwJBDSUgxF7x9hYmWkjCBkgYDVR0jBIGKMIGHgBTKvhwFPknT
+wJBDSUgxF7x9hYmWkqFZpFcwVTELMAkGA1UEBhMCVVMxDjAMBgNVBAoMBU51eGVv
+MRUwEwYDVQQLDAxPbmVMb2dpbiBJZFAxHzAdBgNVBAMMFk9uZUxvZ2luIEFjY291
+bnQgNDQyMjGCFCQkaOW4MGBHsTBLRlaBWnip9SeRMA4GA1UdDwEB/wQEAwIHgDAN
+BgkqhkiG9w0BAQUFAAOCAQEAHjDVdKcZgrS0dME1kOtxDytoc3JUHL+MpH3aTxTe
+OwcU9Rk9aQ9kvan6iyzMDy8rzWaWHli06hbyjp+Hx2lG+czIKqhM3BoAfDw8u3/P
+L8FfKujN6kUEeiy5ofBfg87oeyDjPxuCcAleOnAarYZfBPUoLLGUCOpAa13J7Hpj
+G689kDzEWQUroKhnUjRdCoMtvCEFYcQ5Q/Kt3F2LRcKGud6Ib65zj69zWkcdGUvQ
+m2pdUvEXFgtqEmwkYT/caApy/0P5xI5Zr7TZEtTE6t1vlFzCjjVh/JkmkgozQI8a
+ikXT/nenctra1Y16/QxWa+yGE5t+ADdPMiUR/D4duaCDvA==</parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+
+  <!-- to make testing easier -->  
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="chain">
+
+    <authenticationChain>
+      <plugins>        
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>ONELOGIN_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+
+  </extension>
+  
+
+</component>

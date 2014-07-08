@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Okta login module
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.onelogin;singleton:=true
+Bundle-Version: ${eclipseVersion}-r${buildNumber}
+Nuxeo-Component: OSGI-INF/onelogin-authenticators-contrib.xml
