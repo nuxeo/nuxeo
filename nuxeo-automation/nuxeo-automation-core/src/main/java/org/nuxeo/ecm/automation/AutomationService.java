@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.core.annotations.Operation;
-import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 
 /**
  * Service providing an operation registry and operation execution methods. The
@@ -292,7 +292,7 @@ public interface AutomationService {
      */
     void putOperation(Class<?> type, boolean replace,
             String contributingComponent,
-            List<WidgetDescriptor> widgetDescriptorList)
+            List<WidgetDefinition> widgetDefinitionList)
             throws OperationException;
 
 }

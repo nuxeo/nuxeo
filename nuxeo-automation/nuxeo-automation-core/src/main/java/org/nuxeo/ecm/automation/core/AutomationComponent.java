@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.automation.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
@@ -129,6 +132,8 @@ import org.nuxeo.ecm.automation.core.operations.traces.AutomationTraceToggleOper
 import org.nuxeo.ecm.automation.core.rendering.operations.RenderDocument;
 import org.nuxeo.ecm.automation.core.rendering.operations.RenderDocumentFeed;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -316,8 +321,14 @@ public class AutomationComponent extends DefaultComponent {
             throws Exception {
         if (XP_OPERATIONS.equals(extensionPoint)) {
             OperationContribution opc = (OperationContribution) contribution;
+            List<WidgetDefinition> widgetDefinitionList = new ArrayList<WidgetDefinition>();
+            if (opc.widgets != null) {
+                for (WidgetDescriptor widgetDescriptor : opc.widgets) {
+                    widgetDefinitionList.add(widgetDescriptor.getWidgetDefinition());
+                }
+            }
             service.putOperation(opc.type, opc.replace,
-                    contributor.getName().toString(), opc.widgets);
+                    contributor.getName().toString(), widgetDefinitionList);
         } else if (XP_CHAINS.equals(extensionPoint)) {
             OperationChainContribution occ = (OperationChainContribution) contribution;
             // Register the chain
