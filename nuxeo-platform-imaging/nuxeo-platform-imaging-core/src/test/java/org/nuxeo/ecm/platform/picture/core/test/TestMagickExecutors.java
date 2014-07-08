@@ -19,12 +19,15 @@
 
 package org.nuxeo.ecm.platform.picture.core.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -54,7 +57,7 @@ public class TestMagickExecutors extends RepositoryOSGITestCase {
         assertEquals("JPEG", info.getFormat());
         assertFalse(info.getWidth() == 0);
         assertFalse(info.getHeight() == 0);
-        assertEquals("sRGB", info.getColorSpace());
+        assertTrue(info.getColorSpace().endsWith("RGB"));
 
         System.out.print(info);
     }
