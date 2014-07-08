@@ -1521,6 +1521,7 @@ public interface CoreSession {
      * @deprecated since 5.4.2, use {@link #setLock(DocumentRef)} instead
      */
     @Deprecated
+    @NoRollbackOnException
     void setLock(DocumentRef doc, String key) throws ClientException;
 
     /**
@@ -1537,6 +1538,7 @@ public interface CoreSession {
      * @deprecated since 5.4.2, use {@link #removeLock} instead
      */
     @Deprecated
+    @NoRollbackOnException
     String unlock(DocumentRef docRef) throws ClientException;
 
     /**
@@ -1548,6 +1550,7 @@ public interface CoreSession {
      *
      * @since 5.4.2
      */
+    @NoRollbackOnException
     Lock setLock(DocumentRef docRef) throws ClientException;
 
     /**
@@ -1580,6 +1583,7 @@ public interface CoreSession {
      *
      * @since 5.4.2
      */
+    @NoRollbackOnException
     Lock removeLock(DocumentRef docRef) throws ClientException;
 
     /**
