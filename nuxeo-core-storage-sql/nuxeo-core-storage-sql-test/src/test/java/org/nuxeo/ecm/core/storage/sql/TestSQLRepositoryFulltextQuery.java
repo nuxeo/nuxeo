@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.storage.EventConstants;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 
 /**
  * @author Dragos Mihalache
@@ -958,10 +957,9 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         dml = session.query(query);
         assertEquals(1, dml.size());
         assertIdSet(dml, doc.getId());
-        // modify and save with version increment
+        // create a version, modify and save
+        doc.checkIn(VersioningOption.MAJOR, "No comment");
         doc.setPropertyValue("dc:title", "something");
-        doc.putContextData(VersioningService.VERSIONING_OPTION,
-                VersioningOption.MAJOR);
         session.saveDocument(doc);
         session.save();
         waitForFulltextIndexing();
