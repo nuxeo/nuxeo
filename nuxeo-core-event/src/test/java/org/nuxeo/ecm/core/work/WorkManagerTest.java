@@ -21,7 +21,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.work.api.Work.State.CANCELED;
 import static org.nuxeo.ecm.core.work.api.Work.State.COMPLETED;
@@ -96,42 +95,6 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
     }
 
-    @Test
-    public void testWorkSuspendFromThread() throws Exception {
-        long duration = 5000; // 5s
-        SleepWork work = new SleepWork(duration, true);
-        assertEquals(duration, work.durationMillis);
-
-        // start work in thread
-        Thread t = new Thread(new WorkHolder(work));
-        t.start();
-        try {
-            work.debugWaitReady();
-            work.debugStart();
-
-            Thread.sleep(50);
-
-            // suspend work manually
-            work.setWorkInstanceSuspending(); // manual
-            long delay = 1000; // 1s
-            long t0 = System.currentTimeMillis();
-            for (;;) {
-                if (work.isWorkInstanceSuspended()) { // manual
-                    break;
-                }
-                if (System.currentTimeMillis() - t0 > delay) {
-                    fail("took too long");
-                }
-                Thread.sleep(50);
-            }
-            work.debugFinish();
-        } finally {
-            t.join();
-        }
-
-        assertTrue("remaining " + work.durationMillis,
-                work.durationMillis < duration);
-    }
 
     @Test
     public void testWorkManagerConfig() throws Exception {
