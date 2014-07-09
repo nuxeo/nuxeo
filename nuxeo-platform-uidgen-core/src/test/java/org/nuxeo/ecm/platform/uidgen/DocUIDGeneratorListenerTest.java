@@ -22,11 +22,12 @@ package org.nuxeo.ecm.platform.uidgen;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
@@ -34,19 +35,21 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
  *
  * @author Julien Thimonier <jt@nuxeo.com>
  */
-public class DocUIDGeneratorListenerTest extends RepositoryOSGITestCase {
+public class DocUIDGeneratorListenerTest extends SQLRepositoryTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
         NuxeoContainer.installNaming();
-        openRepository();
+        openSession();
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.uidgen.core");
         deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
                 "nxuidgenerator-test-contrib.xml");
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -56,16 +59,16 @@ public class DocUIDGeneratorListenerTest extends RepositoryOSGITestCase {
 
     protected DocumentModel createFileDocument() throws ClientException {
 
-        DocumentModel fileDoc = getCoreSession().createDocumentModel("/",
+        DocumentModel fileDoc = session.createDocumentModel("/",
                 "testFile", "Note");
 
         fileDoc.setProperty("dublincore", "title", "TestFile");
         fileDoc.setProperty("dublincore", "description", "RAS");
 
-        fileDoc = getCoreSession().createDocument(fileDoc);
+        fileDoc = session.createDocument(fileDoc);
 
-        getCoreSession().saveDocument(fileDoc);
-        getCoreSession().save();
+        session.saveDocument(fileDoc);
+        session.save();
 
         return fileDoc;
     }

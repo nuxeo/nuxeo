@@ -26,13 +26,14 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.osgi.framework.FrameworkEvent;
 
@@ -41,7 +42,7 @@ import org.osgi.framework.FrameworkEvent;
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
+public class TestPlacefulServiceImpl extends SQLRepositoryTestCase {
 
     private static final Log log = LogFactory.getLog(PlacefulServiceImpl.class);
 
@@ -66,7 +67,7 @@ public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
         placefulServiceImpl = (PlacefulServiceImpl) runtime.getComponent(PlacefulService.ID);
         assertNotNull(placefulServiceImpl);
 
-        openRepository();
+        openSession();
     }
 
     @Override
@@ -77,13 +78,13 @@ public class TestPlacefulServiceImpl extends RepositoryOSGITestCase {
     }
 
     protected DocumentModel doCreateDocument() throws ClientException {
-        DocumentModel rootDocument = coreSession.getRootDocument();
-        DocumentModel model = coreSession.createDocumentModel(
+        DocumentModel rootDocument = session.getRootDocument();
+        DocumentModel model = session.createDocumentModel(
                 rootDocument.getPathAsString(), "youps", "File");
         model.setProperty("dublincore", "title", "huum");
-        DocumentModel source = coreSession.createDocument(model);
-        coreSession.save();
-        waitForEventsDispatched();
+        DocumentModel source = session.createDocument(model);
+        session.save();
+        waitForAsyncCompletion();
         return source;
     }
 

@@ -18,8 +18,7 @@ package org.nuxeo.ecm.platform.management.core.adapters;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.management.adapters.RuntimeInventoryFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ResourceFactoryDescriptor;
@@ -29,10 +28,11 @@ import org.nuxeo.runtime.management.ResourcePublisherService;
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public class TestRuntimeMbeanAdapterFactory extends RepositoryOSGITestCase {
+public class TestRuntimeMbeanAdapterFactory extends SQLRepositoryTestCase {
 
     protected ResourcePublisherService managementService;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
