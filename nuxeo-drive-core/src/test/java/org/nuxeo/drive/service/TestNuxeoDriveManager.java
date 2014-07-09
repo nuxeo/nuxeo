@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,6 +57,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -354,6 +356,65 @@ public class TestNuxeoDriveManager {
         folder_2_1 = user1Session.getDocument(new PathRef(
                 "/default-domain/workspaces/workspace-2/folder-2-1"));
         assertFalse(isUserSubscribed("user1", folder_2_1));
+    }
+
+    @Test
+    public void testSyncRootChildWhenBlockingInheritance()
+            throws ClientException {
+
+        // Create a folder_2_1_1, as a child of folder_2_1
+        DocumentModel folder_2_1_1 = session.createDocument(session.createDocumentModel(
+                "/default-domain/workspaces/workspace-2/folder-2-1",
+                "folder_2-1-1", "Folder"));
+
+        // Make user1 register workspace-2, should have no effect on child
+        // folder-2-1
+        // and on folder_2_1_1
+        nuxeoDriveManager.registerSynchronizationRoot(
+                user1Session.getPrincipal(), workspace_2, user1Session);
+        folder_2_1 = session.getDocument(new PathRef(
+                "/default-domain/workspaces/workspace-2/folder-2-1"));
+        assertTrue(isUserSubscribed("user1", workspace_2));
+        assertFalse(isUserSubscribed("user1", folder_2_1));
+        assertFalse(isUserSubscribed("user1", folder_2_1_1));
+
+        // Block permissions inheritance on folder_2_1
+        ACP acp = folder_2_1.getACP();
+        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        List<ACE> aceList = new ArrayList<ACE>();
+        aceList.addAll(Arrays.asList(localACL.getACEs()));
+        localACL.clear();
+        aceList.add(new ACE(SecurityConstants.EVERYONE,
+                SecurityConstants.EVERYTHING, false));
+        localACL.addAll(aceList);
+        folder_2_1.setACP(acp, true);
+        folder_2_1 = session.saveDocument(folder_2_1);
+
+        // Check that the user1 has no longer access to folder_2_1
+        assertFalse(session.hasPermission(
+                Framework.getLocalService(UserManager.class).getPrincipal(
+                        "user1"), folder_2_1_1.getRef(),
+                SecurityConstants.READ_WRITE));
+        // Give permission READ_WRITE to user1 on folder_2_1_1 and make it sync
+        // root
+
+        acp = folder_2_1_1.getACP();
+        localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        localACL.add(new ACE("user1", SecurityConstants.READ_WRITE, true));
+        folder_2_1_1.setACP(acp, true);
+        folder_2_1_1 = session.saveDocument(folder_2_1_1);
+        assertTrue(session.hasPermission(
+                Framework.getLocalService(UserManager.class).getPrincipal(
+                        "user1"), folder_2_1_1.getRef(),
+                SecurityConstants.READ_WRITE));
+        nuxeoDriveManager.registerSynchronizationRoot(
+                user1Session.getPrincipal(), folder_2_1_1, user1Session);
+
+        assertTrue(isUserSubscribed("user1", workspace_2));
+        assertFalse(isUserSubscribed("user1", folder_2_1));
+        assertTrue(isUserSubscribed("user1", folder_2_1_1));
+        Principal user1 = user1Session.getPrincipal();
+        checkRootsCount(user1, 2);
     }
 
     @Test

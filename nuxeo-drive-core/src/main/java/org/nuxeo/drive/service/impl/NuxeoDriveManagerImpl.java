@@ -43,6 +43,7 @@ import org.nuxeo.drive.service.TooManyChangesException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -108,15 +109,30 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
     public void registerSynchronizationRoot(Principal principal,
             DocumentModel newRootContainer, CoreSession session)
             throws ClientException {
-
+        String userName = principal.getName();
         // If new root is child of a sync root, ignore registration
         Map<String, SynchronizationRoots> syncRoots = getSynchronizationRoots(principal);
         SynchronizationRoots synchronizationRoots = syncRoots.get(session.getRepositoryName());
         for (String syncRootPath : synchronizationRoots.getPaths()) {
             String syncRootPrefixedPath = syncRootPath + "/";
+
             if (newRootContainer.getPathAsString().startsWith(
                     syncRootPrefixedPath)) {
-                return;
+                // the only exception is when the right inheritance is blocked
+                // in the hierarchy
+                boolean rightInheritanceBlockedInTheHierarchy = false;
+                DocumentRef[] parents = session.getParentDocumentRefs(newRootContainer.getRef());
+                for (DocumentRef parentRef : parents) {
+                    if (!session.hasPermission(principal, parentRef,
+                            SecurityConstants.READ)) {
+                        rightInheritanceBlockedInTheHierarchy = true;
+                        break;
+                    }
+                }
+
+                if (!rightInheritanceBlockedInTheHierarchy) {
+                    return;
+                }
             }
         }
 
@@ -138,7 +154,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         if (!newRootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
             newRootContainer.addFacet(NUXEO_DRIVE_FACET);
         }
-        String userName = principal.getName();
+
         fireEvent(newRootContainer, session,
                 NuxeoDriveEvents.ABOUT_TO_REGISTER_ROOT, userName);
 
