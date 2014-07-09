@@ -22,8 +22,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -89,25 +91,30 @@ public class BaseTest {
     CoreSession session;
 
     protected ClientResponse getResponse(RequestType requestType, String path) {
-        return getResponse(requestType, path, null, null, null);
+        return getResponse(requestType, path, null, null, null, null);
     }
 
     protected ClientResponse getResponse(RequestType requestType, String path,
             MultiPart mp) {
-        return getResponse(requestType, path, null, null, mp);
+        return getResponse(requestType, path, null, null, mp, null);
     }
 
     protected ClientResponse getResponse(RequestType requestType, String path,
             MultivaluedMap<String, String> queryParams) {
-        return getResponse(requestType, path, null, queryParams, null);
+        return getResponse(requestType, path, null, queryParams, null, null);
     }
 
     protected ClientResponse getResponse(RequestType requestType, String path, String data) {
-        return getResponse(requestType, path, data, null, null);
+        return getResponse(requestType, path, data, null, null, null);
+    }
+
+    protected ClientResponse getResponse(RequestType requestType,
+            String path, String data, Map<String, String> headers) {
+        return getResponse(requestType, path, data, null, null, headers);
     }
 
     protected ClientResponse getResponse(RequestType requestType, String path,
-            String data, MultivaluedMap<String, String> queryParams, MultiPart mp) {
+            String data, MultivaluedMap<String, String> queryParams, MultiPart mp, Map<String, String> headers) {
         WebResource wr = service.path(path);
 
         if (queryParams != null && !queryParams.isEmpty()) {
@@ -130,6 +137,12 @@ public class BaseTest {
             builder.header("Content-type", "application/json+nxentity");
         }
 
+        // Adding some headers if needed
+        if(headers!=null && !headers.isEmpty()) {
+            for (String headerKey : headers.keySet()) {
+                builder.header(headerKey, headers.get(headerKey));
+            }
+        }
         switch (requestType) {
         case GET:
         case GETES:

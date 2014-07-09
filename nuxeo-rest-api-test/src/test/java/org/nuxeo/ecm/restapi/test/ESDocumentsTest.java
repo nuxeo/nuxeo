@@ -97,7 +97,7 @@ public class ESDocumentsTest extends BaseTest {
         queryParams.putSingle("esIndex", "myIndex");
         queryParams.putSingle("esType", "myType");
         ClientResponse response = getResponse(RequestType.GETES, "id/" + folder.getId()
-                + "/@" + ChildrenAdapter.NAME, null, queryParams, null);
+                + "/@" + ChildrenAdapter.NAME, null, queryParams, null, null);
         // Then I get elasticsearch bulk output for the two document
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         // The first node is the an index action it looks like

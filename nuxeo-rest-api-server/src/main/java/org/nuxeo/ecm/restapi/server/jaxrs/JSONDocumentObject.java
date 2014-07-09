@@ -23,6 +23,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -36,9 +38,14 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.rest.DocumentObject;
+import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
+
+import java.util.List;
 
 /**
  * This object basically overrides the default DocumentObject that doesn't know
@@ -51,12 +58,11 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 @Produces({ "application/json+nxentity", "application/json+esentity", MediaType.APPLICATION_JSON })
 public class JSONDocumentObject extends DocumentObject {
 
-    /**
-     *
-     */
     private static final String APPLICATION_JSON_NXENTITY = "application/json+nxentity";
 
     protected static final Log log = LogFactory.getLog(JSONDocumentObject.class);
+
+    private boolean isVersioning;
 
     @Override
     @GET
@@ -64,14 +70,21 @@ public class JSONDocumentObject extends DocumentObject {
         return doc;
     }
 
+    /**
+     * @return the document or the last version document in case of
+     * versioning handled
+     */
     @PUT
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public DocumentModel doPut(DocumentModel inputDoc) throws ClientException {
+    public DocumentModel doPut(DocumentModel inputDoc,
+            @Context HttpHeaders headers) throws ClientException {
         JSONDocumentModelReader.applyPropertyValues(inputDoc, doc);
         CoreSession session = ctx.getCoreSession();
+        versioningDocFromHeaderIfExists(headers);
         doc = session.saveDocument(doc);
         session.save();
-        return doc;
+        return isVersioning ? session.getLastDocumentVersion(doc.getRef()) :
+                doc;
     }
 
     @POST
@@ -136,4 +149,25 @@ public class JSONDocumentObject extends DocumentObject {
         }
     }
 
+    /**
+     * In case of version option header presence, checkin the related document
+     *
+     * @param headers X-Versioning-Option Header
+     */
+    private void versioningDocFromHeaderIfExists(HttpHeaders headers) throws
+            ClientException {
+        isVersioning = false;
+        List<String> versionHeader = headers.getRequestHeader
+                (RestConstants.X_VERSIONING_OPTION);
+        if (versionHeader != null && versionHeader.size() != 0) {
+            VersioningOption versioningOption = VersioningOption.valueOf
+                    (versionHeader.get(0).toUpperCase());
+            if (versioningOption != null && !versioningOption.equals
+                    (VersioningOption.NONE)) {
+                doc.putContextData(VersioningService.VERSIONING_OPTION,
+                        versioningOption);
+                isVersioning = true;
+            }
+        }
+    }
 }

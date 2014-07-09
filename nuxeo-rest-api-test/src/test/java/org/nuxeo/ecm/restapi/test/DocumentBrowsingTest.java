@@ -19,8 +19,10 @@ package org.nuxeo.ecm.restapi.test;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
@@ -30,8 +32,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.restapi.jaxrs.io.documents.ACPWriter;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -124,6 +128,35 @@ public class DocumentBrowsingTest extends BaseTest {
         note = RestServerInit.getNote(0, session);
         assertEquals("New title", note.getTitle());
 
+    }
+
+    @Test
+    public void iCanUpdateDocumentVersion() throws Exception {
+        // Given a document
+        DocumentModel note = RestServerInit.getNote(0, session);
+        ClientResponse response = getResponse(RequestType.GET,
+                "id/" + note.getId());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Check the current version of the live document
+        assertEquals("0.0", note.getVersionLabel());
+
+        // When i do a PUT request on the document with modified version in the header
+        JSONDocumentNode jsonDoc = new JSONDocumentNode(
+                response.getEntityInputStream());
+        Map<String,String> headers = new HashMap<>();
+        headers.put(RestConstants.X_VERSIONING_OPTION,
+                VersioningOption.MAJOR.toString());
+        response = getResponse(RequestType.PUT, "id/" + note.getId(),
+                jsonDoc.asJson(), headers);
+
+        // Check if the version of the document has been returned
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals("1.0", node.get("versionLabel").getValueAsText());
+
+        // Check if the original document is still not versioned.
+        note = RestServerInit.getNote(0, session);
+        assertEquals("0.0", note.getVersionLabel());
     }
 
     @Test
