@@ -56,7 +56,7 @@ public class AnnotationsServiceTest extends AbstractAnnotationTest {
                 annIdUri.length());
         assertNotNull(annId);
 
-        waitForEventsDispatched();
+        waitForAsyncCompletion();
         List<Annotation> annotations = service.queryAnnotations(new URI(
                 "http://www.w3.org/2005/Incubator/"), null, user);
         assertNotNull(annotations);

@@ -36,15 +36,16 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.InputStreamBlob;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestImagingAdapter extends RepositoryOSGITestCase {
+public class TestImagingAdapter extends SQLRepositoryTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -56,9 +57,10 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.picture.api");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
         deployBundle("org.nuxeo.ecm.platform.picture.convert");
-        openRepository();
+        openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -82,15 +84,15 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
         view.put("maxsize", new Long("100"));
         pictureTemplates.add(view);
 
-        DocumentModel root = coreSession.getRootDocument();
-        DocumentModel document1 = coreSession.createDocumentModel(
+        DocumentModel root = session.getRootDocument();
+        DocumentModel document1 = session.createDocumentModel(
                 root.getPathAsString(), "document", "Folder");
         document1.setProperty("dublincore", "description", "toto");
-        document1 = coreSession.createDocument(document1);
+        document1 = session.createDocument(document1);
 
-        DocumentModel child = coreSession.createDocumentModel(
+        DocumentModel child = session.createDocumentModel(
                 document1.getPathAsString(), "fils" + 1, "Picture");
-        child = coreSession.createDocument(child);
+        child = session.createDocument(child);
         child.setProperty("dublincore", "description", "fils" + 1
                 + " description");
         child.setProperty("dublincore", "valid", Calendar.getInstance());
@@ -110,10 +112,10 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
             boolean ret = adapter.fillPictureViews(blob, filename, "sample",
                     pictureTemplates);
             assertTrue(ret);
-            child = coreSession.saveDocument(child);
-            coreSession.save();
+            child = session.saveDocument(child);
+            session.save();
             adapter = child.getAdapter(PictureResourceAdapter.class);
-            DocumentModel documentModel = coreSession.getChildren(
+            DocumentModel documentModel = session.getChildren(
                     document1.getRef()).get(0);
             MultiviewPicture multiview = documentModel.getAdapter(MultiviewPicture.class);
             assertEquals(child.getRef(), documentModel.getRef());
@@ -148,9 +150,9 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
 
     @Test
     public void testBlobReadOnlyOnce() throws Exception {
-        DocumentModel doc = coreSession.createDocumentModel("/", "pic",
+        DocumentModel doc = session.createDocumentModel("/", "pic",
                 "Picture");
-        doc = coreSession.createDocument(doc);
+        doc = session.createDocument(doc);
 
         PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
         assertNotNull(adapter);
@@ -165,7 +167,7 @@ public class TestImagingAdapter extends RepositoryOSGITestCase {
             Blob blob = new InputStreamBlob(in);
             blob.setFilename("foo.png");
             adapter.fillPictureViews(blob, "foo.png", "sample", null);
-            doc = coreSession.saveDocument(doc);
+            doc = session.saveDocument(doc);
             MultiviewPicture pic = doc.getAdapter(MultiviewPicture.class);
             assertNotNull(pic);
             assertNotNull(pic.getView("Thumbnail"));

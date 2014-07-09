@@ -29,7 +29,7 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageConverter;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropper;
@@ -37,8 +37,9 @@ import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropperAndResizer;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
 
-public class TestMagickExecutors extends RepositoryOSGITestCase {
+public class TestMagickExecutors extends SQLRepositoryTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

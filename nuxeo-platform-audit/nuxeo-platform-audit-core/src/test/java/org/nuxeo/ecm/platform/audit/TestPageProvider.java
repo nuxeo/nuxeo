@@ -14,7 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditPageProvider;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
-public class TestPageProvider extends RepositoryOSGITestCase {
+public class TestPageProvider extends SQLRepositoryTestCase {
 
     protected static final List<String> entriesIdx = Arrays.asList(new String[] {
             "3", "7", "7", "8", "1", "8", "7", "9" });
@@ -49,6 +49,7 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         }
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -68,6 +69,7 @@ public class TestPageProvider extends RepositoryOSGITestCase {
         createTestEntries();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         if (session != null) {

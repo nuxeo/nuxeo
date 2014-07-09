@@ -25,9 +25,10 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationImpl;
@@ -40,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author Alexandre Russel
  *
  */
-public class AnnotationQueryTest extends RepositoryOSGITestCase {
+public class AnnotationQueryTest extends SQLRepositoryTestCase {
 
     private AnnotationsService service;
 

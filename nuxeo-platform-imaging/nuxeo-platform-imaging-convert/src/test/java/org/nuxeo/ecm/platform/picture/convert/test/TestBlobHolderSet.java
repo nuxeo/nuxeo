@@ -18,6 +18,11 @@
 
 package org.nuxeo.ecm.platform.picture.convert.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,11 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -37,12 +40,13 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
-public class TestBlobHolderSet extends RepositoryOSGITestCase {
+public class TestBlobHolderSet extends SQLRepositoryTestCase {
 
     protected DocumentModel root;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -51,10 +55,11 @@ public class TestBlobHolderSet extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.commandline.executor");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
         deployBundle("org.nuxeo.ecm.platform.picture.convert");
-        openRepository();
-        root = getCoreSession().getRootDocument();
+        openSession();
+        root = session.getRootDocument();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -82,8 +87,8 @@ public class TestBlobHolderSet extends RepositoryOSGITestCase {
         DocumentModel picture = new DocumentModelImpl(root.getPathAsString(),
                 "pic", "Picture");
         picture.setPropertyValue("picture:views", (Serializable) createViews());
-        picture = coreSession.createDocument(picture);
-        coreSession.save();
+        picture = session.createDocument(picture);
+        session.save();
 
         BlobHolder bh = picture.getAdapter(BlobHolder.class);
         assertNotNull(bh);
@@ -95,8 +100,8 @@ public class TestBlobHolderSet extends RepositoryOSGITestCase {
         blob = new FileBlob(getFileFromPath("test-data/big_nuxeo_logo.jpg"),
                 "image/jpeg", null, "logo.jpg", null);
         bh.setBlob(blob);
-        coreSession.saveDocument(picture);
-        coreSession.save();
+        session.saveDocument(picture);
+        session.save();
 
         // reread
         bh = picture.getAdapter(BlobHolder.class);
@@ -115,8 +120,8 @@ public class TestBlobHolderSet extends RepositoryOSGITestCase {
 
         // test set null blob
         bh.setBlob(null);
-        coreSession.saveDocument(picture);
-        coreSession.save();
+        session.saveDocument(picture);
+        session.save();
         blob = bh.getBlob();
         assertNull(blob);
     }

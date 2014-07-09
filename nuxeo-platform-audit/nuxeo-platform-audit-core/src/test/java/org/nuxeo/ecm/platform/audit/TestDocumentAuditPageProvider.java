@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.DocumentHistoryReader;
@@ -29,7 +29,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
-public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
+public class TestDocumentAuditPageProvider extends SQLRepositoryTestCase {
 
     protected static final Calendar testDate = Calendar.getInstance();
 
@@ -51,6 +51,7 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
         }
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -68,6 +69,7 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
 
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         if (session != null) {
@@ -96,7 +98,7 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
             doc.getContextData().put("comment", "Update " + i);
             doc = session.saveDocument(doc);
             session.save();
-            waitForEventsDispatched();
+            waitForAsyncCompletion();
         }
 
         // wait at least 1s to be sure we have a precise timestamp in all DB
@@ -108,7 +110,7 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
                 VersioningOption.MINOR);
         doc = session.saveDocument(doc);
         session.save();
-        waitForEventsDispatched();
+        waitForAsyncCompletion();
 
         // wait at least 1s to be sure we have a precise timestamp in all DB
         // backend
@@ -120,7 +122,7 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
             doc.getContextData().put("comment", "Update " + i);
             doc = session.saveDocument(doc);
             session.save();
-            waitForEventsDispatched();
+            waitForAsyncCompletion();
         }
 
         // wait at least 1s to be sure we have a precise timestamp in all DB
@@ -129,7 +131,7 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
 
         proxy = session.publishDocument(doc, section);
         session.save();
-        waitForEventsDispatched();
+        waitForAsyncCompletion();
 
         Thread.sleep(1100); // wait at least 1s to be sure we have a precise
                             // timestamp in all DB backend
@@ -140,7 +142,7 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
             doc.getContextData().put("comment", "Update " + i);
             doc = session.saveDocument(doc);
             session.save();
-            waitForEventsDispatched();
+            waitForAsyncCompletion();
         }
 
         versions = session.getVersions(doc.getRef());
@@ -171,7 +173,7 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
     @Test
     public void testDocumentHistoryPageProvider() throws Exception {
 
-        openRepository();
+        openSession();
         createTestEntries();
 
         PageProviderService pps = Framework.getService(PageProviderService.class);
@@ -277,7 +279,7 @@ public class TestDocumentAuditPageProvider extends RepositoryOSGITestCase {
     @Test
     public void testDocumentHistoryReader() throws Exception {
 
-        openRepository();
+        openSession();
         createTestEntries();
 
         DocumentHistoryReader reader = Framework.getLocalService(DocumentHistoryReader.class);

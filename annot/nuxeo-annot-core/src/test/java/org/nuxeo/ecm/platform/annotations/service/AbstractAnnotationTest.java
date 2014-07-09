@@ -24,12 +24,13 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.After;
+
 import static org.junit.Assert.*;
 
 import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
@@ -39,7 +40,7 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  */
-public abstract class AbstractAnnotationTest extends RepositoryOSGITestCase {
+public abstract class AbstractAnnotationTest extends SQLRepositoryTestCase {
 
     protected AnnotationsService service;
 

@@ -17,17 +17,17 @@
 
 package org.nuxeo.ecm.platform.picture.core.test;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.runtime.api.Framework;
@@ -44,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author btatar
  *
  */
-public class TestImageInfo extends RepositoryOSGITestCase {
+public class TestImageInfo extends SQLRepositoryTestCase {
 
     protected DocumentModel root;
 
@@ -52,6 +52,7 @@ public class TestImageInfo extends RepositoryOSGITestCase {
 
     protected ImagingService imagingService;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -59,8 +60,8 @@ public class TestImageInfo extends RepositoryOSGITestCase {
         deployBundle("org.nuxeo.ecm.platform.picture.api");
         deployBundle("org.nuxeo.ecm.platform.picture.core");
 
-        openRepository();
-        root = getCoreSession().getRootDocument();
+        openSession();
+        root = session.getRootDocument();
         assertNotNull(root);
         blobHolderService = Framework.getLocalService(BlobHolderAdapterService.class);
         assertNotNull(blobHolderService);
@@ -68,6 +69,7 @@ public class TestImageInfo extends RepositoryOSGITestCase {
         assertNotNull(imagingService);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -91,12 +93,12 @@ public class TestImageInfo extends RepositoryOSGITestCase {
     public void testGetImageInfo() throws ClientException {
         DocumentModel picturebook = new DocumentModelImpl(
                 root.getPathAsString(), "picturebook", "PictureBook");
-        coreSession.createDocument(picturebook);
+        session.createDocument(picturebook);
         DocumentModel picture = new DocumentModelImpl(
                 picturebook.getPathAsString(), "pic1", "Picture");
         picture.setPropertyValue("picture:views", (Serializable) createViews());
-        coreSession.createDocument(picture);
-        coreSession.save();
+        session.createDocument(picture);
+        session.save();
 
         BlobHolder blobHolder = blobHolderService.getBlobHolderAdapter(picture);
         assertNotNull(blobHolder);

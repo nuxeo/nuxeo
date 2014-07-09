@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -40,16 +40,17 @@ import org.nuxeo.runtime.api.Framework;
  * @author Julien Thimonier <jt@nuxeo.com>
  */
 // FIXME: this test does not test anything (...)
-public class NotificationEventListenerTest extends RepositoryOSGITestCase {
+public class NotificationEventListenerTest extends SQLRepositoryTestCase {
 
     private static final Log log = LogFactory.getLog(NotificationService.class);
 
     private final EmailHelperMock emailHelperMock = new EmailHelperMock();
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        openRepository();
+        openSession();
         deployBundle("org.nuxeo.ecm.core.persistence");
         deployBundle("org.nuxeo.ecm.platform.placeful.api");
         deployBundle("org.nuxeo.ecm.platform.placeful.core");
@@ -78,6 +79,7 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
         log.info("setup Finnished");
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -85,22 +87,22 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
     }
 
     protected DocumentModel createNoteDocument() throws ClientException {
-        DocumentModel folder = getCoreSession().createDocumentModel("/",
+        DocumentModel folder = session.createDocumentModel("/",
                 "test", "Folder");
 
-        folder = getCoreSession().createDocument(folder);
-        getCoreSession().saveDocument(folder);
+        folder = session.createDocument(folder);
+        session.saveDocument(folder);
 
-        DocumentModel noteDoc = getCoreSession().createDocumentModel("/test/",
+        DocumentModel noteDoc = session.createDocumentModel("/test/",
                 "testFile", "Note");
 
         noteDoc.setProperty("dublincore", "title", "TestFile");
         noteDoc.setProperty("dublincore", "description", "RAS");
 
-        noteDoc = getCoreSession().createDocument(noteDoc);
+        noteDoc = session.createDocument(noteDoc);
 
-        getCoreSession().saveDocument(noteDoc);
-        getCoreSession().save();
+        session.saveDocument(noteDoc);
+        session.save();
 
         return noteDoc;
     }
@@ -119,18 +121,18 @@ public class NotificationEventListenerTest extends RepositoryOSGITestCase {
         // // Record notification
         // UserSubscription userSubscription = new UserSubscription(
         // "Workflow Change", "user:"
-        // + getCoreSession().getPrincipal().getName(),
+        // + session.getPrincipal().getName(),
         // noteDoc.getId());
         // placefulServiceImpl.setAnnotation(userSubscription);
         //
         // // Trigger notification
         // DocumentEventContext ctx = new
-        // DocumentEventContext(getCoreSession(),
-        // getCoreSession().getPrincipal(), noteDoc);
+        // DocumentEventContext(session,
+        // session.getPrincipal(), noteDoc);
         // ctx.setProperty("recipients", new Object[] { "jt@nuxeo.com" });
         // ctx.getProperties().put("comment", "RAS");
         // eventService.fireEvent(ctx.newEvent("workflowAbandoned"));
-        // getCoreSession().save();
+        // session.save();
         // waitForAsyncExec();
         // // Check that at least one email has been sending
         // assertTrue(emailHelperMock.getCompteur() > 0);

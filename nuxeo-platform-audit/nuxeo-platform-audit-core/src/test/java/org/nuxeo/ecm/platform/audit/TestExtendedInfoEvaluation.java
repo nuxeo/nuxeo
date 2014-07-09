@@ -31,14 +31,15 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 
-public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
+public class TestExtendedInfoEvaluation extends SQLRepositoryTestCase {
 
     protected ExpressionEvaluator evaluatorUnderTest;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -46,9 +47,10 @@ public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
         evaluatorUnderTest = new ExpressionEvaluator(
                 new ExpressionFactoryImpl());
 
-        openRepository();
+        openSession();
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -56,20 +58,20 @@ public class TestExtendedInfoEvaluation extends RepositoryOSGITestCase {
     }
 
     protected DocumentModel doCreateDocument() throws ClientException {
-        DocumentModel rootDocument = coreSession.getRootDocument();
-        DocumentModel model = coreSession.createDocumentModel(
+        DocumentModel rootDocument = session.getRootDocument();
+        DocumentModel model = session.createDocumentModel(
                 rootDocument.getPathAsString(), "youps", "File");
         model.setProperty("dublincore", "title", "huum");
 
-        return coreSession.createDocument(model);
+        return session.createDocument(model);
     }
 
     @Test
     public void testBean() throws ClientException {
         ExpressionContext context = new ExpressionContext();
         DocumentModel source = doCreateDocument();
-        EventContext eventContext = new DocumentEventContext(coreSession,
-                coreSession.getPrincipal(), source);
+        EventContext eventContext = new DocumentEventContext(session,
+                session.getPrincipal(), source);
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("test", "test");
         eventContext.setProperties(properties);
