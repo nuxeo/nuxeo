@@ -44,7 +44,7 @@
     <!-- scope test -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-sql-test</artifactId>
+      <artifactId>nuxeo-core-test</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>
