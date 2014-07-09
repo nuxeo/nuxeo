@@ -156,6 +156,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
         } else if (extensionPoint.equals(EP_CHAIN)) {
             AuthenticationChainDescriptor chainContrib = (AuthenticationChainDescriptor) contribution;
+            log.debug("New authentication chain powered by " + contributor.getName());
             authChain.clear();
             authChain.addAll(chainContrib.getPluginsNames());
         } else if (extensionPoint.equals(EP_OPENURL)) {
