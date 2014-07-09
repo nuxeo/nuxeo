@@ -110,6 +110,9 @@ public class LocaleStartup implements Serializable {
         setupLocale(locale);
     }
 
+    /**
+     * @since 5.9.5
+     */
     public void setupLocale(DocumentModel userProfileDoc) {
         Locale locale = null;
         try {
