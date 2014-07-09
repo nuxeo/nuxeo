@@ -10,7 +10,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -45,6 +45,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 
@@ -53,7 +55,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
         openSession();
     }

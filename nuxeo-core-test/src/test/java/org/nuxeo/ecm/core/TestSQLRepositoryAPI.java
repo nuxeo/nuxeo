@@ -10,7 +10,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -88,6 +88,8 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.storage.EventConstants;
+import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 import org.nuxeo.ecm.core.versioning.VersioningService;
@@ -105,7 +107,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
         openSession();
     }
@@ -3588,7 +3590,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
      */
     @Test
     public void testDoNotFireIncrementBeforeUpdateEventsOnVersion() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-listeners-contrib.xml");
 
         DocumentModel root = session.getRootDocument();
@@ -3658,7 +3660,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
     @Test
     public void testVersioningEvents() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-listeners-all-contrib.xml");
 
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
@@ -3739,7 +3741,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     public void testInvalidationEvents() throws Exception {
         Event event;
         Set<String> set;
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-listeners-invalidations-contrib.xml");
 
         DocumentModel root = session.getRootDocument();
@@ -3859,7 +3861,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
      */
     @Test
     public void testBeforeModificationListenerRename() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-listener-beforemod-contrib.xml");
 
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");

@@ -9,7 +9,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**

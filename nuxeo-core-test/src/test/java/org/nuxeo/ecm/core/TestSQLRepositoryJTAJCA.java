@@ -10,7 +10,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryService;
+import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyAsyncRetryListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -351,7 +352,7 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
     @Test
     public void testAsyncListenerRetry() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.storage.sql.test",
                 "OSGI-INF/test-listeners-async-retry-contrib.xml");
 
         DummyAsyncRetryListener.clear();

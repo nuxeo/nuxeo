@@ -11,7 +11,7 @@
  *     Florent Guillaume
  *     Benoit Delbosc
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -57,6 +57,9 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
+import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -74,9 +77,9 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/testquery-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib-2.xml");
         openSession();
     }
@@ -1223,7 +1226,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertEquals(7, dml.totalSize());
 
         // now add a security policy hiding docs of type File
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", contrib);
+        deployContrib("org.nuxeo.ecm.core.test.tests", contrib);
 
         dml = session.query("SELECT * FROM Document");
         assertEquals(4, dml.size());
@@ -1776,7 +1779,7 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         res.close();
 
         // NoFile2SecurityPolicy
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/security-policy2-contrib.xml");
 
         res = session.queryAndFetch("SELECT * FROM Document", "NXQL");

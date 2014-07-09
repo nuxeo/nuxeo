@@ -10,7 +10,7 @@
  *     Florent Guillaume, jcarsique
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerService;
 import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.storage.binary.LocalBinaryManager;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
 
@@ -57,7 +58,7 @@ public class TestSQLRepositoryDirectBlob extends SQLRepositoryTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
         openSession();
     }

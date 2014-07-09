@@ -9,7 +9,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,6 +19,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**

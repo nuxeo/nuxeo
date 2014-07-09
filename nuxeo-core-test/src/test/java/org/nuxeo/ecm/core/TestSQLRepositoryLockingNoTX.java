@@ -9,7 +9,8 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core;
+
 
 public class TestSQLRepositoryLockingNoTX extends TestSQLRepositoryLocking {
 

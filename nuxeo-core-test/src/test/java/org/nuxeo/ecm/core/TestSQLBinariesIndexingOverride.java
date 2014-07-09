@@ -9,7 +9,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -21,6 +21,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
+import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
+import org.nuxeo.ecm.core.storage.sql.TXSQLRepositoryTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class TestSQLBinariesIndexingOverride extends TXSQLRepositoryTestCase {
@@ -28,7 +32,7 @@ public class TestSQLBinariesIndexingOverride extends TXSQLRepositoryTestCase {
     @Override
     protected void deployRepositoryContrib() throws Exception {
         super.deployRepositoryContrib();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-override-indexing-contrib.xml");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");

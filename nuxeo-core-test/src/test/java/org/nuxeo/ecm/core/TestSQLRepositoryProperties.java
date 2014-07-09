@@ -11,7 +11,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
 
@@ -68,14 +69,14 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-restriction-contrib.xml");
 
         // deploy specific adapter for testing external blobs: files are stored
         // in temporary directory
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-externalblob-adapters-contrib.xml");
         // set container to temp directory here in case that depends on the OS
         // or machine configuration and add funny characters to avoid problems
@@ -515,7 +516,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         waitForAsyncCompletion();
 
         // add complexschema to TestDocument
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-schema-update.xml");
 
         // reload repo with new doctype

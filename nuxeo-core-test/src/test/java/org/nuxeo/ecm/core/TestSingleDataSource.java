@@ -9,7 +9,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -28,6 +28,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
+import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.XAResourceConnectionAdapter;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;

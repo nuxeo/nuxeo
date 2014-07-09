@@ -11,7 +11,7 @@
  *     Benoit Delbosc
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core;
 
 import static org.nuxeo.ecm.core.api.security.Access.DENY;
 import static org.nuxeo.ecm.core.api.security.Access.GRANT;
@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.Ignore;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.NXCore;
@@ -55,6 +56,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 
 /**
  * @author Florent Guillaume
@@ -66,9 +68,9 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-permissions-contrib.xml");
         openSession();
     }

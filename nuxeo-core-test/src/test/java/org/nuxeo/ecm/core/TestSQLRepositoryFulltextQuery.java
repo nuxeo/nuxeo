@@ -11,7 +11,7 @@
  *     Florent Guillaume
  *     Benoit Delbosc
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -48,6 +48,12 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.storage.EventConstants;
+import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
+import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
+import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
+import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 
 /**
@@ -66,11 +72,11 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.core.convert.api");
         deployBundle("org.nuxeo.ecm.core.convert");
         deployBundle("org.nuxeo.ecm.core.convert.plugins");
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/testquery-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib-2.xml");
         openSession();
     }
@@ -887,7 +893,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
 
     @Test
     public void testFulltextReindexOnCreateDelete() throws Exception {
-        deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
+        deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-listeners-all-contrib.xml");
         waitForFulltextIndexing();
 
