@@ -75,7 +75,9 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
 
     protected void clearPool(String name) throws Exception {
         PooledDataSource ds = pools.remove(name);
-        ds.dispose();
+        if (ds != null) {
+            ds.dispose();
+        }
     }
 
  }
