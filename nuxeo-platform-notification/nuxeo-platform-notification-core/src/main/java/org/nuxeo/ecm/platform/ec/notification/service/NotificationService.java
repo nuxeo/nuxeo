@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ec.notification.service;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -350,16 +351,17 @@ public class NotificationService extends DefaultComponent implements
             if (!notificationNames.contains(notification.getName())) {
                 // Check if notification is available for the current document
                 String availableIn = notification.getAvailableIn();
+                String[] types = availableIn.replace(",", " ").split(" ");
                 if (availableIn == null || "all".equals(availableIn)
                         || "*".equals(availableIn)
-                        || availableIn.equals(doc.getType())) {
+                        || Arrays.asList(types).contains(doc.getType())) {
                     notificationNames.add(notification.getName());
                     continue;
                 }
                 CoreSession session = doc.getCoreSession();
                 if (session != null) {
                     for (DocumentModel parent : session.getParentDocuments(doc.getRef())) {
-                        if (availableIn.equals(parent.getType())) {
+                        if (Arrays.asList(types).contains(parent.getType())) {
                             notificationNames.add(notification.getName());
                             continue;
                         }
