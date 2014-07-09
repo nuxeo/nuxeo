@@ -38,6 +38,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import com.google.inject.Inject;
 
@@ -85,7 +86,8 @@ public class DirectoryEntriesTest {
     public void testGlobalDirectoryEntries() throws Exception {
         StringBlob result = getDirectoryEntries(session.getDocument(new PathRef(
                 "/default-domain/workspaces/test")));
-        JSONAssert.assertEquals(continentContentJson, result.getString(), false);
+        JSONAssert.assertEquals(continentContentJson, result.getString(),
+                JSONCompareMode.NON_EXTENSIBLE);
     }
 
     @Test
@@ -98,7 +100,7 @@ public class DirectoryEntriesTest {
 
         StringBlob result = getDirectoryEntries(doc);
         JSONAssert.assertEquals(continentLocalContentJson, result.getString(),
-                false);
+                JSONCompareMode.NON_EXTENSIBLE);
     }
 
     protected StringBlob getDirectoryEntries(DocumentModel doc)
