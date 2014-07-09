@@ -139,16 +139,27 @@ public class SeamErrorComponent implements Serializable {
         throw new DocumentSecurityException("Security error on action");
     }
 
-    public String performRecoverableClientException() throws RecoverableClientException {
-        throw new RecoverableClientException("Application validation failed, rollingback", "Application validation failed, rollingback", null);
+    /**
+     * @since 5.8
+     */
+    public String performRecoverableClientException()
+            throws RecoverableClientException {
+        throw new RecoverableClientException(
+                "Application validation failed, rollingback",
+                "Application validation failed, rollingback", null);
     }
 
-    public String performPureRollback(){
+    /**
+     * @since 5.8
+     */
+    public String performPureRollback() {
         TransactionHelper.setTransactionRollbackOnly();
         return null;
     }
 
-
+    /**
+     * @since 5.9.5
+     */
     public void performDistributedRollback() throws ClientException {
         createDummyUser();
         createDummyLogEntry();
@@ -156,6 +167,9 @@ public class SeamErrorComponent implements Serializable {
         TransactionHelper.setTransactionRollbackOnly();
     }
 
+    /**
+     * @since 5.9.5
+     */
     public void clearDistributedRollbackEnv() throws ClientException {
         clearDummyUser();
         clearDummyDoc();
@@ -191,9 +205,11 @@ public class SeamErrorComponent implements Serializable {
         }
     }
 
+    /**
+     * @since 5.9.5
+     */
     @Factory(scope = ScopeType.EVENT)
-    public boolean isDummyUserExists()
-            throws DirectoryException {
+    public boolean isDummyUserExists() throws DirectoryException {
         DirectoryService directories = Framework.getLocalService(DirectoryService.class);
         org.nuxeo.ecm.directory.Session userDir = directories.getDirectory(
                 "userDirectory").getSession();
@@ -218,6 +234,9 @@ public class SeamErrorComponent implements Serializable {
         return entry;
     }
 
+    /**
+     * @since 5.9.5
+     */
     public void clearDummyLogEntries() {
         PersistenceProviderFactory pf = Framework.getService(PersistenceProviderFactory.class);
         EntityManager em = pf.newProvider("nxaudit-logs").acquireEntityManager();
@@ -225,6 +244,9 @@ public class SeamErrorComponent implements Serializable {
         provider.removeEntries("dummy", null);
     }
 
+    /**
+     * @since 5.9.5
+     */
     @Factory(scope = ScopeType.EVENT)
     public boolean isDummyAuditExists() {
         AuditReader reader = Framework.getLocalService(AuditReader.class);
@@ -232,25 +254,29 @@ public class SeamErrorComponent implements Serializable {
         return !entries.isEmpty();
     }
 
-
     protected DocumentModel createDummyDoc() throws ClientException {
-        DocumentModel doc = documentManager.createDocumentModel("/", "dummy", "Document");
+        DocumentModel doc = documentManager.createDocumentModel("/", "dummy",
+                "Document");
         doc = documentManager.createDocument(doc);
         documentManager.save();
         return doc;
     }
 
-
-    public void clearDummyDoc() throws ClientException  {
+    /**
+     * @since 5.9.5
+     */
+    public void clearDummyDoc() throws ClientException {
         PathRef ref = new PathRef("/dummy");
         if (documentManager.exists(ref)) {
             documentManager.removeDocument(ref);
         }
     }
 
+    /**
+     * @since 5.9.5
+     */
     @Factory(scope = ScopeType.EVENT)
-    public boolean isDummyDocExists()
-            throws ClientException {
+    public boolean isDummyDocExists() throws ClientException {
         return documentManager.exists(new PathRef("/dummy"));
     }
 
@@ -258,8 +284,11 @@ public class SeamErrorComponent implements Serializable {
 
     protected int counter = 0;
 
+    /**
+     * @since 5.8
+     */
     public String performConcurrentRequestTimeoutException() throws Exception {
-        Thread.sleep(15*1000);
+        Thread.sleep(15 * 1000);
         counter++;
         return null;
     }
@@ -267,6 +296,5 @@ public class SeamErrorComponent implements Serializable {
     public int getCounterValue() {
         return counter;
     }
-
 
 }
