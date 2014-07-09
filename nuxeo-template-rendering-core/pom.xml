@@ -198,11 +198,6 @@
       <artifactId>nuxeo-theme-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-sql-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <scope>test</scope>

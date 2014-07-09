@@ -142,7 +142,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-storage-sql-test</artifactId>
+      <artifactId>nuxeo-core-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
