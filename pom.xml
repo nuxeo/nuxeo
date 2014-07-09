@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
@@ -1351,16 +1352,16 @@
         <artifactId>nuxeo-webengine-samples-extended</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
-     <dependency>
-       <groupId>org.nuxeo.elasticsearch</groupId>
-       <artifactId>nuxeo-elasticsearch-core</artifactId>
+      <dependency>
+        <groupId>org.nuxeo.elasticsearch</groupId>
+        <artifactId>nuxeo-elasticsearch-core</artifactId>
         <version>${nuxeo.features.version}</version>
-     </dependency>
-     <dependency>
-       <groupId>org.nuxeo.elasticsearch</groupId>
-       <artifactId>nuxeo-elasticsearch-web</artifactId>
-       <version>${nuxeo.features.version}</version>
-     </dependency>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.elasticsearch</groupId>
+        <artifactId>nuxeo-elasticsearch-web</artifactId>
+        <version>${nuxeo.features.version}</version>
+      </dependency>
 
       <!-- Third parties -->
       <dependency>
@@ -1617,43 +1618,43 @@
         <artifactId>lucene-analyzers-common</artifactId>
         <version>${lucene.version}</version>
       </dependency>
-     <dependency>
+      <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-suggest</artifactId>
         <version>${lucene.version}</version>
-     </dependency>
-     <dependency>
+      </dependency>
+      <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-join</artifactId>
         <version>${lucene.version}</version>
-     </dependency>
-     <dependency>
+      </dependency>
+      <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-spatial</artifactId>
         <version>${lucene.version}</version>
-     </dependency>
-     <dependency>
+      </dependency>
+      <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-codecs</artifactId>
         <version>${lucene.version}</version>
-     </dependency>
-     <dependency>
+      </dependency>
+      <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-queries</artifactId>
         <version>${lucene.version}</version>
-     </dependency>
-     <dependency>
+      </dependency>
+      <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-memory</artifactId>
         <version>${lucene.version}</version>
-     </dependency>
-     <dependency>
+      </dependency>
+      <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-highlighter</artifactId>
         <version>${lucene.version}</version>
-     </dependency>
+      </dependency>
 
-     <dependency>
+      <dependency>
         <groupId>org.apache.directory.shared</groupId>
         <artifactId>shared-asn1</artifactId>
         <version>${apachedshared.version}</version>
@@ -2606,7 +2607,7 @@
           </exclusion>
           <exclusion>
             <groupId>xmlpull</groupId>
-	    <artifactId>xmlpull</artifactId>
+            <artifactId>xmlpull</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -4124,10 +4125,10 @@
       </dependency>
 
       <dependency>
-	<groupId>org.skyscreamer</groupId>
-	<artifactId>jsonassert</artifactId>
-	<version>1.2.3</version>
-	<scope>test</scope>
+        <groupId>org.skyscreamer</groupId>
+        <artifactId>jsonassert</artifactId>
+        <version>1.2.3</version>
+        <scope>test</scope>
       </dependency>
 
       <dependency>
@@ -4135,7 +4136,7 @@
         <artifactId>mongo-java-driver</artifactId>
         <version>2.12.1</version>
       </dependency>
-      
+
     </dependencies>
   </dependencyManagement>
 
@@ -4946,21 +4947,21 @@
       <build>
         <plugins>
           <plugin>
-           <groupId>org.apache.maven.plugins</groupId>
-           <artifactId>maven-compiler-plugin</artifactId>
-           <configuration>
-             <compilerId>jdt</compilerId>
-             <source>1.7</source>
-             <target>1.7</target>
-           </configuration>
-           <dependencies>
-	     <dependency>
-	       <groupId>org.eclipse.tycho</groupId>
-	       <artifactId>tycho-compiler-jdt</artifactId>
-	       <version>0.20.0</version>
-	     </dependency>
-           </dependencies>
-         </plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <compilerId>jdt</compilerId>
+              <source>1.7</source>
+              <target>1.7</target>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-compiler-jdt</artifactId>
+                <version>0.20.0</version>
+              </dependency>
+            </dependencies>
+          </plugin>
         </plugins>
       </build>
     </profile>
