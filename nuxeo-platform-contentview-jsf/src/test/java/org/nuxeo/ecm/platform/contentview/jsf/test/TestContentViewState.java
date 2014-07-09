@@ -53,6 +53,7 @@ import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
 import org.nuxeo.runtime.api.Framework;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @since 5.4.2
@@ -67,6 +68,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
 
     DocumentModel searchDocument;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -97,6 +99,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         assertNotNull(FacesContext.getCurrentInstance());
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         closeSession();
@@ -269,7 +272,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":{\"name\":\"document_listing\",\"title\":\"label.document_listing.layout\",\"translateTitle\":true,\"iconPath\":\"/icons/myicon.png\",\"showCSVExport\":true},"
                 + "\"resultColumns\":[\"column_1\"]" + "}";
-        assertEquals(expectedJson, json);
+        JSONAssert.assertEquals(expectedJson, json, true);
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
         assertEquals(
@@ -517,7 +520,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":null," + "\"resultColumns\":[\"column_1\"]"
                 + "}";
-        assertEquals(expectedJson, json);
+        JSONAssert.assertEquals(expectedJson, json, true);
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
         assertEquals(
@@ -537,7 +540,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
                 + "\"contentViewName\":\"CURRENT_DOCUMENT_WITH_PATH_PARAM\","
                 + "\"queryParameters\":[\"/\"]," + "\"searchDocument\":null,"
                 + "\"sortInfos\":[]," + "\"resultLayout\":null" + "}";
-        assertEquals(expectedJson, json);
+        JSONAssert.assertEquals(expectedJson, json, true);
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
         assertEquals(
