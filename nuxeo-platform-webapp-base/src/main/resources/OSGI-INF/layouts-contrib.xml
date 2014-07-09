@@ -1055,6 +1055,7 @@
           <complex>false</complex>
           <supportedTypes>
             <type>string</type>
+            <type>path</type>
           </supportedTypes>
         </fields>
       </configuration>
