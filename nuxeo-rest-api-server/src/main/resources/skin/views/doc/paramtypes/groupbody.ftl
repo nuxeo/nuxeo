@@ -1,7 +1,7 @@
 {
   "paramType": "body",
-  "name": "user",
-  "description": "Group object to be created or updated. Note: the parameter name 'user' is badly chosen here, it should have been 'group'",
+  "name": "group",
+  "description": "Group object to be created or updated.",
   "dataType": "group",
   "required": true
 }
