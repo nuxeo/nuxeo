@@ -36,6 +36,7 @@ public class TestNuxeoBindingRenditions extends NuxeoBindingTestCase {
     public void setUp() throws Exception {
         super.setUp();
         Helper.makeNuxeoRepository(nuxeotc.getSession());
+        sleepForFulltext();
     }
 
     @Override

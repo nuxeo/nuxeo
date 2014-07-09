@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -69,6 +69,7 @@ public class MainWithServlet extends SQLRepositoryTestCase {
 
         openSession();
         Helper.makeNuxeoRepository(session);
+        database.sleepForFulltext();
         closeSession();
 
         log.warn("CMIS repository starting...");

@@ -181,6 +181,7 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
 
     protected void setUpData() throws Exception {
         repoDetails = Helper.makeNuxeoRepository(super.session);
+        database.sleepForFulltext();
     }
 
     protected void tearDownData() {

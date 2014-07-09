@@ -177,6 +177,11 @@
       <artifactId>nuxeo-core-storage-sql-test</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-test</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <!-- would be pulled as test when nuxeo-core-convert-plugins is in scope test -->
     <dependency>
       <groupId>org.jmock</groupId>

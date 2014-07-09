@@ -130,6 +130,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
     public void setUp() throws Exception {
         super.setUp();
         Map<String, String> info = Helper.makeNuxeoRepository(nuxeotc.getSession());
+        sleepForFulltext();
         file5id = info.get("file5id");
     }
 
