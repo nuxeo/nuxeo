@@ -71,7 +71,8 @@ public class TestAutomationJson {
         res.append("  \"description\" : null,\n");
         res.append("  \"url\" : \"empty_chain\",\n");
         res.append("  \"signature\" : [ \"void\", \"void\" ],\n");
-        res.append("  \"params\" : [ ]\n");
+        res.append("  \"params\" : [ ],\n");
+        res.append("  \"widgets\" : [ ]\n");
         res.append("}");
         checkEquals(res.toString(), chain);
     }
@@ -88,7 +89,8 @@ public class TestAutomationJson {
         res.append("  \"description\" : \"My desc\",\n");
         res.append("  \"url\" : \"chain\",\n");
         res.append("  \"signature\" : [ \"document\", \"document\", \"documents\", \"documents\" ],\n");
-        res.append("  \"params\" : [ ]\n");
+        res.append("  \"params\" : [ ],\n");
+        res.append("  \"widgets\" : [ ]\n");
         res.append("}");
         checkEquals(res.toString(), chain);
     }
@@ -105,7 +107,8 @@ public class TestAutomationJson {
         res.append("  \"description\" : null,\n");
         res.append("  \"url\" : \"chain_props\",\n");
         res.append("  \"signature\" : [ \"document\", \"document\", \"documents\", \"documents\" ],\n");
-        res.append("  \"params\" : [ ]\n");
+        res.append("  \"params\" : [ ],\n");
+        res.append("  \"widgets\" : [ ]\n");
         res.append("}");
         checkEquals(res.toString(), chain);
     }
@@ -138,7 +141,8 @@ public class TestAutomationJson {
         res.append("    \"widget\" : null,\n");
         res.append("    \"order\" : 0,\n");
         res.append("    \"values\" : [ ]\n");
-        res.append("  } ]\n");
+        res.append("  } ],\n");
+        res.append("  \"widgets\" : [ ]\n");
         res.append("}");
         checkEquals(res.toString(), chain);
     }
@@ -155,7 +159,8 @@ public class TestAutomationJson {
         res.append("  \"description\" : null,\n");
         res.append("  \"url\" : \"chain_complex\",\n");
         res.append("  \"signature\" : [ \"document\", \"document\", \"documents\", \"documents\" ],\n");
-        res.append("  \"params\" : [ ]\n");
+        res.append("  \"params\" : [ ],\n");
+        res.append("  \"widgets\" : [ ]\n");
         res.append("}");
         checkEquals(res.toString(), chain);
     }
@@ -196,6 +201,61 @@ public class TestAutomationJson {
         res.append("    \"widget\" : null,\n");
         res.append("    \"order\" : 0,\n");
         res.append("    \"values\" : [ ]\n");
+        res.append("  } ],\n");
+        res.append("  \"widgets\" : [ ]\n");
+        res.append("}");
+        checkEquals(res.toString(), chain);
+    }
+
+    /**
+     * @since 5.9.5
+     */
+    @Test
+    public void testOperationWithWidgetDescriptor() throws Exception {
+        final String chain = getJsonChain("Document.Query");
+        StringBuilder res = new StringBuilder();
+        res.append("{\n");
+        res.append("  \"id\" : \"Document.Query\",\n");
+        res.append("  \"label\" : \"Query\",\n");
+        res.append("  \"category\" : \"Fetch\",\n");
+        res.append("  \"requires\" : null,\n");
+        res.append("  \"description\" : \"Perform a query on the repository. The query result will become the input for the next operation.\",\n");
+        res.append("  \"url\" : \"Document.Query\",\n");
+        res.append("  \"signature\" : [ \"void\",\n \"documents\" ],\n");
+        res.append("  \"params\" : [ {\n");
+        res.append("    \"name\" : \"query\",\n");
+        res.append("    \"description\" : \"\",\n");
+        res.append("    \"type\" : \"string\",\n");
+        res.append("    \"required\" : true,\n");
+        res.append("    \"widget\" : null,\n");
+        res.append("    \"order\" : 0,\n");
+        res.append("    \"values\" : [ ]\n");
+        res.append("  }, {\n");
+        res.append("    \"name\" : \"language\",\n");
+        res.append("    \"description\" : \"\",\n");
+        res.append("    \"type\" : \"string\",\n");
+        res.append("    \"required\" : false,\n");
+        res.append("    \"widget\" : \"Option\",\n");
+        res.append("    \"order\" : 0,\n");
+        res.append("    \"values\" : [ \"NXQL\",\n \"CMISQL\" ]\n");
+        res.append("  } ],\n");
+        res.append("  \"widgets\" : [ {\n");
+        res.append("    \"name\" : \"query\",\n");
+        res.append("    \"type\" : \"codearea\",\n");
+        res.append("    \"labels\" : {\n");
+        res.append("      \"any\" : \"NXQL query\"\n");
+        res.append("    },\n");
+        res.append("    \"translated\" : true,\n");
+        res.append("    \"handlingLabels\" : false,\n");
+        res.append("    \"fields\" : [ {\n");
+        res.append("      \"fieldName\" : \"query\",\n");
+        res.append("      \"propertyName\" : \"query\"\n");
+        res.append("    } ],\n");
+        res.append("    \"properties\" : {\n");
+        res.append("      \"any\" : {\n");
+        res.append("        \"language\" : \"javascript\"\n");
+        res.append("      }\n");
+        res.append("    }\n");
         res.append("  } ]\n");
         res.append("}");
         checkEquals(res.toString(), chain);
