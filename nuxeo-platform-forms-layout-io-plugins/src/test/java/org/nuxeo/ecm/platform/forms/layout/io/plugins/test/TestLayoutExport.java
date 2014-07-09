@@ -46,6 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 
 /**
  * @author Anahide Tchertchian
@@ -146,7 +147,10 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
         String expectedString = FileUtils.read(expected);
         String writtenString = FileUtils.read(written);
-        JSONAssert.assertEquals(expectedString, writtenString, false);
+        // order of select options may depend on directory database => do not
+        // check order of element by using the NON_EXTENSIBLE mode
+        JSONAssert.assertEquals(expectedString, writtenString,
+                JSONCompareMode.NON_EXTENSIBLE);
     }
 
 }
