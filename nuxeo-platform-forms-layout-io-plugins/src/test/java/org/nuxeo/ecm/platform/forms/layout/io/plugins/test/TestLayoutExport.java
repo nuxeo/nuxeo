@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.forms.layout.io.plugins.test;
 
 import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -94,7 +95,8 @@ public class TestLayoutExport extends NXRuntimeTestCase {
 
     public static void setUpContextFactory() throws NamingException {
         DataSource datasourceAutocommit = new SimpleDataSource(
-                "jdbc:h2:mem:memid;DB_CLOSE_DELAY=-1", Driver.class.getName(), "SA", "") {
+                "jdbc:h2:mem:memid;DB_CLOSE_DELAY=-1", Driver.class.getName(),
+                "SA", "") {
             @Override
             public Connection getConnection() throws SQLException {
                 Connection con = super.getConnection();

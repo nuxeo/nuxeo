@@ -49,7 +49,8 @@ import com.google.inject.Inject;
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory",
         "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.directory.types.contrib",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.features" })
+        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io",
+        "org.nuxeo.ecm.automation.features" })
 @LocalDeploy("org.nuxeo.ecm.automation.features:test-directories-sql-contrib.xml")
 public class DirectoryEntriesTest {
 
@@ -65,29 +66,43 @@ public class DirectoryEntriesTest {
     @Inject
     AutomationService service;
 
-    protected static final String continentContentJson = "[{\"id\":\"europe\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.europe\"},{\"id\":\"africa\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.africa\"},{\"id\":\"north-america\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.north-america\"},{\"id\":\"south-america\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.south-america\"},{\"id\":\"asia\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.asia\"},{\"id\":\"oceania\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.oceania\"},{\"id\":\"antarctica\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.antarctica\"}]";
+    protected static final String continentContentJson = "["
+            + "{\"id\":\"europe\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.europe\"},"
+            + "{\"id\":\"africa\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.africa\"},"
+            + "{\"id\":\"north-america\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.north-america\"},"
+            + "{\"id\":\"south-america\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.south-america\"},"
+            + "{\"id\":\"asia\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.asia\"},"
+            + "{\"id\":\"oceania\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.oceania\"},"
+            + "{\"id\":\"antarctica\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"label.directories.continent.antarctica\"}"
+            + "]";
 
-    protected static final String continentLocalContentJson = "[{\"id\":\"atlantis\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Atlantis\"},{\"id\":\"middleearth\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Middle-earth\"},{\"id\":\"mu\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Mu\"}]";
-
+    protected static final String continentLocalContentJson = "["
+            + "{\"id\":\"atlantis\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Atlantis\"},"
+            + "{\"id\":\"middleearth\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Middle-earth\"},"
+            + "{\"id\":\"mu\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Mu\"}]";
 
     @Test
     public void testGlobalDirectoryEntries() throws Exception {
-        StringBlob result = getDirectoryEntries(session.getDocument(new PathRef("/default-domain/workspaces/test")));
+        StringBlob result = getDirectoryEntries(session.getDocument(new PathRef(
+                "/default-domain/workspaces/test")));
         JSONAssert.assertEquals(continentContentJson, result.getString(), false);
     }
 
     @Test
     public void testLocalDirectoryEntries() throws Exception {
-        DocumentModel doc = session.getDocument(new PathRef("/default-domain/workspaces/test"));
+        DocumentModel doc = session.getDocument(new PathRef(
+                "/default-domain/workspaces/test"));
         doc.setPropertyValue(DIRECTORY_CONFIGURATION_FIELD, "local");
         doc = session.saveDocument(doc);
         session.save();
 
         StringBlob result = getDirectoryEntries(doc);
-        JSONAssert.assertEquals(continentLocalContentJson, result.getString(), false);
+        JSONAssert.assertEquals(continentLocalContentJson, result.getString(),
+                false);
     }
 
-    protected StringBlob getDirectoryEntries(DocumentModel doc) throws Exception {
+    protected StringBlob getDirectoryEntries(DocumentModel doc)
+            throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(doc);
 
