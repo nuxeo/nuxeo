@@ -55,7 +55,7 @@ import com.google.api.client.json.jackson.JacksonFactory;
  *
  * @author Nelson Silva <nelson.silva@inevo.pt>
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
+ *
  */
 public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
@@ -174,7 +174,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
         String type = response.getContentType();
 
         try {
-            if (type.contains("text/plain")) {
+            if (type.contains("text/plain") || type.contains("application/x-www-form")) {
                 String str = response.parseAsString();
                 String[] params = str.split("&");
                 for (String param : params) {
@@ -231,7 +231,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
         return enabled;
     }
 
-    
+
     public UserResolver getUserResolver() {
         return userResolver;
     }
