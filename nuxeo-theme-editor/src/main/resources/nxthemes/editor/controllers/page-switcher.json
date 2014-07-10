@@ -1,8 +1,0 @@
-  {"id": "page switcher",
-   "type": "behaviour",
-   "rules": {
-      "a.switcher": {
-        "click": "switch page"
-      }
-   }
-  }

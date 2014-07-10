@@ -1,7 +1,0 @@
-    {"id": "style manager actions",
-     "type": "behaviour",
-     "rules": {
-       "form.unusedViews": {
-         "submit": "delete unused style view"
-       }
-    }}

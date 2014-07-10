@@ -1,8 +1,0 @@
-  {"id": "canvas mode selector",
-   "type": "behaviour",
-   "rules": {
-      "a": {
-        "click": "set canvas mode"
-      }
-   }
-  }

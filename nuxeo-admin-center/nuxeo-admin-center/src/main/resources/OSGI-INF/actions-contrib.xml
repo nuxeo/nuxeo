@@ -162,13 +162,6 @@
       <filter-id>not_readonly</filter-id>
     </action>
 
-    <action id="ThemesManager" link="/incl/theme/themes_manager.xhtml"
-      label="tab.themes.management" order="70">
-      <category>NUXEO_ADMIN</category>
-      <filter-id>only_for_manager</filter-id>
-      <filter-id>not_readonly</filter-id>
-    </action>
-
     <!-- header actions -->
 
     <action id="StudioRegistered" label="Studio" order="200" type="bare_link">
