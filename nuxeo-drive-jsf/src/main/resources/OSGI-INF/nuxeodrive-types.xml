@@ -4,17 +4,17 @@
 	<extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 		<type id="File">
 		  <layouts mode="drive">
-			<layout>driveFormLayout</layout>
+			<layout>driveFormToggleLayout</layout>
 		  </layouts>
 	    </type>    
 		<type id="Note">
 		  <layouts mode="drive">
-			<layout>driveFormLayout</layout>
+			<layout>driveFormToggleLayout</layout>
 		  </layouts>
 	    </type>  	
 		<type id="Folder">
 		  <layouts mode="drive">
-			<layout>driveFormLayout</layout>
+			<layout>driveFormToggleLayout</layout>
 		  </layouts>
 	    </type>  
 	</extension>

@@ -16,7 +16,7 @@
 	      <lifetime>900</lifetime>
 	    </style-caching>
 
-		<view id="/layouts/drive_form_layout_template.xhtml">
+		<view id="/drive/drive_edit.xhtml">l
 		  <theme>galaxy/popup</theme>
 		</view>
 
