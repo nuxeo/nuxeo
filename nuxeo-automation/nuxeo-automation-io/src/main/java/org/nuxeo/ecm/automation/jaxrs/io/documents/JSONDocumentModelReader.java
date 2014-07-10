@@ -165,11 +165,10 @@ public class JSONDocumentModelReader implements
         // If a uid is specified, we try to get the doc from
         // the core session
         if (uid != null) {
-            try (CoreSession session = SessionFactory.getSession(request)) {
-                DocumentModel doc = session.getDocument(new IdRef(uid));
-                applyPropertyValues(simpleDoc, doc);
-                return doc;
-            }
+            CoreSession session = SessionFactory.getSession(request);
+            DocumentModel doc = session.getDocument(new IdRef(uid));
+            applyPropertyValues(simpleDoc, doc);
+            return doc;
         } else {
             return simpleDoc;
         }
