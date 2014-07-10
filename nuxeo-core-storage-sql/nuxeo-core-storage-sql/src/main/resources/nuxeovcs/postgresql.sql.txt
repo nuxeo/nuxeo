@@ -69,24 +69,6 @@ STABLE
 COST 400;
 
 
-# ------------------------------------------------------------
-# -- Path management using CTE
-# -- @since 5.9.5
-CREATE OR REPLACE FUNCTION nx_children(${idType})
-RETURNS TABLE(id ${idType})
-AS $$
-  WITH RECURSIVE children AS (
-    SELECT id FROM hierarchy
-      WHERE parentid = $1 AND NOT isproperty
-    UNION ALL
-    SELECT h.id FROM hierarchy AS h
-      JOIN children AS c ON (h.parentid = c.id)
-      WHERE NOT h.isproperty
-  ) SELECT id FROM children;
-$$
-LANGUAGE SQL;
-
-
 CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED(id ${idType}, users varchar[], permissions varchar[])
 RETURNS boolean
 AS $$
@@ -882,6 +864,24 @@ LOG.INFO Vacuuming tables used by optimized acls
 # Vacuum the read acls tables
 #IF: aclOptimizationsEnabled
 SELECT nx_vacuum_read_acls();
+
+
+# ------------------------------------------------------------
+# -- Path management using CTE
+# -- @since 5.9.5
+CREATE OR REPLACE FUNCTION nx_children(${idType})
+RETURNS TABLE(id ${idType})
+AS $$
+  WITH RECURSIVE children AS (
+    SELECT id FROM hierarchy
+      WHERE parentid = $1 AND NOT isproperty
+    UNION ALL
+    SELECT h.id FROM hierarchy AS h
+      JOIN children AS c ON (h.parentid = c.id)
+      WHERE NOT h.isproperty
+  ) SELECT id FROM children;
+$$
+LANGUAGE SQL;
 
 
 # ##### soft delete #####
