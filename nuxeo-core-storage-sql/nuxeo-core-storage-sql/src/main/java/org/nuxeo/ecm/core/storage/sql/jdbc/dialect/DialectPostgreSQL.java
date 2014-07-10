@@ -791,7 +791,7 @@ public class DialectPostgreSQL extends Dialect {
                     "EXISTS(SELECT 1 FROM ancestors WHERE id = %s AND ARRAY[?]%s <@ ancestors)",
                     idColumnName, cast);
         } else {
-            return String.format("NX_IN_TREE(%s, ?)", idColumnName);
+            return String.format("%s IN (SELECT * FROM nx_children(?))", idColumnName);
         }
     }
 
