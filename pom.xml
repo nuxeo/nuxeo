@@ -22,7 +22,7 @@
   <properties>
     <nuxeo.addons.version>5.9.5-SNAPSHOT</nuxeo.addons.version>
     <nuxeo.opencmis.version>5.9.5-SNAPSHOT</nuxeo.opencmis.version>
-    <nuxeo.marianne.version>5.9.5-SNAPSHOT</nuxeo.marianne.version>
+    <nuxeo.businessdays.version>5.9.5-SNAPSHOT</nuxeo.businessdays.version>
     <nuxeo.login.version>5.9.5-SNAPSHOT</nuxeo.login.version>
     <nuxeo.facetedsearch.version>5.9.5-SNAPSHOT</nuxeo.facetedsearch.version>
     <nuxeo.shell.version>5.9.5-SNAPSHOT</nuxeo.shell.version>
@@ -80,7 +80,7 @@
   <modules>
     <module>nuxeo-platform-lang-ext</module>
     <module>nuxeo-chemistry</module>
-    <module>nuxeo-correspondence-marianne</module>
+    <module>nuxeo-business-days-management</module>
     <module>nuxeo-core-binarymanager-sql</module>
     <module>nuxeo-http-client</module>
     <module>nuxeo-platform-classification</module>
@@ -166,16 +166,16 @@
         <scope>test</scope>
       </dependency>
 
-      <!-- Correspondence Marianne -->
+      <!-- Business Days Management -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-correspondence-marianne-api</artifactId>
-        <version>${nuxeo.marianne.version}</version>
+        <artifactId>nuxeo-business-days-management-api</artifactId>
+        <version>${nuxeo.businessdays.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-correspondence-marianne-core</artifactId>
-        <version>${nuxeo.marianne.version}</version>
+        <artifactId>nuxeo-business-days-management-core</artifactId>
+        <version>${nuxeo.businessdays.version}</version>
       </dependency>
 
       <!-- Login -->
@@ -1240,3 +1240,4 @@
   </pluginRepositories>
 
 </project>
+
