@@ -169,6 +169,7 @@ END;
 IF OBJECT_ID('dbo.NX_IN_TREE', 'FN') IS NOT NULL
   DROP FUNCTION dbo.NX_IN_TREE;
 
+#-- Deprecated since 5.9.5, see nx_children
 CREATE FUNCTION NX_IN_TREE(@id ${idType}, @baseid ${idType})
 RETURNS TINYINT AS
 BEGIN
@@ -204,6 +205,24 @@ BEGIN
   CLOSE @cur;
   DEALLOCATE @cur;
 END;
+
+
+# ------------------------------------------------------------
+# -- Path management using CTE
+# -- @since 5.9.5
+IF OBJECT_ID('dbo.nx_children', 'IF') IS NOT NULL
+  DROP FUNCTION dbo.nx_children;
+
+CREATE FUNCTION nx_children(@root ${idType})
+RETURNS TABLE AS RETURN
+  WITH children (id) AS (
+    SELECT id FROM hierarchy
+      WHERE parentid = @root AND isproperty = 0
+    UNION ALL
+    SELECT h.id FROM hierarchy AS h
+      JOIN children AS c ON (h.parentid = c.id)
+      WHERE h.isproperty = 0
+  ) SELECT id FROM children;
 
 
 # ##### soft delete #####

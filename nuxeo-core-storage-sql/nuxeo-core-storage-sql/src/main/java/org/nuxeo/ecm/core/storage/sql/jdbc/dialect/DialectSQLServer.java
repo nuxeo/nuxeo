@@ -512,7 +512,7 @@ public class DialectSQLServer extends Dialect {
                     "EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ancestor = ?)",
                     idColumnName);
         }
-        return String.format("dbo.NX_IN_TREE(%s, ?) = 1", idColumnName);
+        return String.format("%s IN (SELECT * FROM dbo.nx_children(?))", idColumnName);
     }
 
     @Override
