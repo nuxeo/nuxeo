@@ -26,23 +26,39 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestTrashService extends SQLRepositoryTestCase {
+import com.google.inject.Inject;
 
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(cleanup = Granularity.METHOD)
+public class TestTrashService {
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
     protected TrashService trashService;
+
+    @Inject
+    protected EventService eventService;
 
     protected DocumentModel fold;
 
@@ -56,16 +72,7 @@ public class TestTrashService extends SQLRepositoryTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        openSession();
-        trashService = Framework.getService(TrashService.class);
         principal = session.getPrincipal();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
     }
 
     public void createDocuments() throws Exception {
@@ -120,7 +127,7 @@ public class TestTrashService extends SQLRepositoryTestCase {
         String doc4origname = doc4.getName();
 
         trashService.trashDocuments(Arrays.asList(fold, doc1, doc3, doc4));
-        waitForEventsDispatched();
+        eventService.waitForAsyncCompletion();
         session.save(); // fetch invalidations from async sessions
 
         // refetch as lifecycle state is cached
@@ -186,7 +193,7 @@ public class TestTrashService extends SQLRepositoryTestCase {
     public void testUndeleteChildren() throws Exception {
         createDocuments();
         trashService.trashDocuments(Collections.singletonList(fold));
-        waitForEventsDispatched();
+        eventService.waitForAsyncCompletion();
         session.save(); // fetch invalidations from async sessions
 
         // refetch as lifecycle state is cached
@@ -200,7 +207,7 @@ public class TestTrashService extends SQLRepositoryTestCase {
 
         // undelete fold
         trashService.undeleteDocuments(Collections.singletonList(fold));
-        waitForEventsDispatched();
+        eventService.waitForAsyncCompletion();
         session.save(); // fetch invalidations from async sessions
         fold = session.getDocument(new IdRef(fold.getId()));
         doc1 = session.getDocument(new IdRef(doc1.getId()));
@@ -226,7 +233,7 @@ public class TestTrashService extends SQLRepositoryTestCase {
 
         // now delete the folder
         trashService.trashDocuments(Collections.singletonList(fold));
-        waitForEventsDispatched();
+        eventService.waitForAsyncCompletion();
         session.save(); // process async invalidations
 
         fold.refresh();
@@ -248,10 +255,6 @@ public class TestTrashService extends SQLRepositoryTestCase {
                 principal, true));
         assertFalse(trashService.canPurgeOrUndelete(Collections.singletonList(proxy),
                 principal));
-    }
-
-    private void waitForEventsDispatched() {
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
     }
 
 }

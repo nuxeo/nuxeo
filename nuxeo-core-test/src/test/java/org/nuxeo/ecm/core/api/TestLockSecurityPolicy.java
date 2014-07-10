@@ -18,22 +18,18 @@
 
 package org.nuxeo.ecm.core.api;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ANONYMOUS;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
-
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE_PROPERTIES;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
@@ -45,7 +41,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.google.inject.Inject;
@@ -53,9 +48,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:test-CoreExtensions.xml",
-        "org.nuxeo.ecm.core.test.tests:test-security-policy-contrib.xml" })
-public class TestSecurityPolicyService {
+public class TestLockSecurityPolicy {
 
     @Inject
     protected RepositorySettings repo;
@@ -81,41 +74,54 @@ public class TestSecurityPolicyService {
         }
     }
 
-    @Test
+    @SuppressWarnings("boxing")
+    public static void checkLockPermissions(CoreSession session,
+            DocumentRef docRef, boolean canWrite) throws ClientException {
+        assertEquals(canWrite, session.hasPermission(docRef, WRITE));
+        // test WRITE_PROPERTIES as it used to be granted when locked
+        assertEquals(canWrite, session.hasPermission(docRef, WRITE_PROPERTIES));
+        assertTrue(session.hasPermission(docRef, READ));
+    }
+
     @SuppressWarnings("deprecation")
-    public void testNewSecurityPolicy() throws Exception {
+    @Test
+    public void testLockSecurityPolicy() throws Exception {
         // create document
         DocumentRef folderRef;
         try (CoreSession session = repo.openSessionAs(ADMINISTRATOR)) {
-            setTestPermissions(ANONYMOUS, READ);
             DocumentModel root = session.getRootDocument();
             DocumentModel folder = new DocumentModelImpl(
                     root.getPathAsString(), "folder#1", "Folder");
-            // set access security
-            folder.setProperty("secupolicy", "securityLevel", Long.valueOf(4));
             folder = session.createDocument(folder);
             folderRef = folder.getRef();
-            session.save();
 
-            // test permission for 'foo' user using hasPermission
-            Principal fooUser = new UserPrincipal("foo",
-                    new ArrayList<String>(), false, false);
-            assertFalse(session.hasPermission(fooUser, folder.getRef(), READ));
+            // write granted to admin
+            checkLockPermissions(session, folderRef, true);
+
+            // add read/write to anonymous
+            setTestPermissions(ANONYMOUS, READ_WRITE);
+
+            session.save();
         }
 
-        // open session as anonymous and set access on user info
         try (CoreSession session = repo.openSessionAs(ANONYMOUS)) {
-            DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
-            Map<String, Object> data = new HashMap<String, Object>();
-            data.put("accessLevel", Long.valueOf(3));
-            documentModelImpl.addDataModel(new DataModelImpl("user", data));
-            ((NuxeoPrincipal) session.getPrincipal()).setModel(documentModelImpl);
-            // access level is too low for this doc
-            assertFalse(session.hasPermission(folderRef, READ));
-            // change user access level => can read
-            ((NuxeoPrincipal) session.getPrincipal()).getModel().setProperty(
-                    "user", "accessLevel", Long.valueOf(5));
-            assertTrue(session.hasPermission(folderRef, READ));
+            // write granted to anonymous
+            checkLockPermissions(session, folderRef, true);
+
+            // set lock
+            DocumentModel folder = session.getDocument(folderRef);
+            folder.setLock();
+            folder = session.saveDocument(folder);
+
+            // write still granted
+            checkLockPermissions(session, folderRef, true);
+
+            session.save();
+        }
+
+        // write denied to admin
+        try (CoreSession session = repo.openSessionAs(ADMINISTRATOR)) {
+            checkLockPermissions(session, folderRef, false);
             session.save();
         }
     }

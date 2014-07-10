@@ -17,41 +17,52 @@
 
 package org.nuxeo.ecm.core.management.test.statuses;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.management.statuses.AdministrableServiceDescriptor;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreSessionRunner;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestAdministrativeStatusService extends SQLRepositoryTestCase {
+import com.google.inject.Inject;
+
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.runtime.management", //
+    "org.nuxeo.ecm.core.management", //
+    "org.nuxeo.ecm.core.management.test" })
+public class TestAdministrativeStatusService {
+
+    @Inject
+    protected RepositorySettings settings;
 
     @Before
     public void setUp() throws Exception {
-        AdministrativeStatusChangeListener.init();
-        RuntimeListener.init();
-        super.setUp();
-        deployBundle("org.nuxeo.runtime.management");
-        deployBundle("org.nuxeo.ecm.core.management");
-        deployBundle("org.nuxeo.ecm.core.management.test");
-        DocumentStoreSessionRunner.setRepositoryName(REPOSITORY_NAME);
-        fireFrameworkStarted();
-        openSession();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
+        // init is too late, events are already received
+        // as we're only used once, init doesn't matter
+        // AdministrativeStatusChangeListener.init();
+        // RuntimeListener.init();
+        DocumentStoreSessionRunner.setRepositoryName(settings.getName());
     }
 
     @Test

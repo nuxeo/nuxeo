@@ -17,13 +17,23 @@
 
 package org.nuxeo.ecm.core.management.test.storage;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.nuxeo.ecm.core.management.test.CoreManagementTestCase;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.management.test.FakeDocumentStoreHandler;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestStorage extends CoreManagementTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@Deploy({ "org.nuxeo.runtime.management", //
+        "org.nuxeo.ecm.core.management", //
+        "org.nuxeo.ecm.core.management.test" })
+public class TestStorage {
 
     @Test
     public void testRegistration() {

@@ -18,38 +18,39 @@ package org.nuxeo.ecm.core.event.test;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.Constants;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+
+import com.google.inject.Inject;
 
 /**
  * PostCommitEventListenerTest test ScriptingPostCommitEventListener
  *
  * @author <a href="mailto:jt@nuxeo.com">Julien THIMONIER</a>
  */
-public class PostCommitEventListenerTest extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(cleanup = Granularity.METHOD)
+public class PostCommitEventListenerTest {
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.core.event");
-        openSession();
-    }
+    @Inject
+    protected RuntimeHarness harness;
 
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
+    @Inject
+    protected CoreSession session;
 
     /**
      * The script listener will update this counter
@@ -59,8 +60,9 @@ public class PostCommitEventListenerTest extends SQLRepositoryTestCase {
     @Test
     @ConditionalIgnoreRule.Ignore(condition=ConditionalIgnoreRule.IgnoreIsolated.class)
     public void testScripts() throws Exception {
-        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
+        harness.deployContrib("org.nuxeo.ecm.core.test.tests",
                 "test-PostCommitListeners.xml");
+
         assertEquals(0, SCRIPT_CNT);
 
         EventContextImpl customContext = new EventContextImpl(null, null);
@@ -79,20 +81,28 @@ public class PostCommitEventListenerTest extends SQLRepositoryTestCase {
         assertEquals(0, SCRIPT_CNT);
 
         session.save();
-        waitForAsyncCompletion();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
         assertEquals(2, SCRIPT_CNT);
+
+        harness.undeployContrib("org.nuxeo.ecm.core.test.tests",
+                "test-PostCommitListeners.xml");
     }
 
     @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:test-ShallowFilteringPostCommitListeners.xml")
     public void testShallowFiltering() throws Exception {
-        deployContrib(Constants.CORE_TEST_TESTS_BUNDLE,
+        harness.deployContrib("org.nuxeo.ecm.core.test.tests",
                 "test-ShallowFilteringPostCommitListeners.xml");
+
         DocumentModel doc = session.createDocumentModel("/", "empty", "Document");
         doc = session.createDocument(doc);
         ShallowFilterPostCommitEventListener.handledCount = 0;
         session.save();
-        waitForAsyncCompletion();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
         assertEquals(1, ShallowFilterPostCommitEventListener.handledCount);
+
+        harness.undeployContrib("org.nuxeo.ecm.core.test.tests",
+                "test-ShallowFilteringPostCommitListeners.xml");
     }
 
 }

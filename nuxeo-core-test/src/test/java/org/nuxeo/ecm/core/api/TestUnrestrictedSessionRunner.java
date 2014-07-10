@@ -16,22 +16,31 @@
  */
 package org.nuxeo.ecm.core.api;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.inject.Inject;
 
 /**
- * Test unrestricted session runner to check iso functionnality with and without
- * JCA
- *
- * @see TestUnrestrictedSessionRunnerJCA
+ * Test unrestricted session runner.
  */
-public class TestUnrestrictedSessionRunner extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@RepositoryConfig(cleanup = Granularity.METHOD)
+public class TestUnrestrictedSessionRunner {
 
     private static final String DOC_NAME = "doc";
 
@@ -39,18 +48,22 @@ public class TestUnrestrictedSessionRunner extends SQLRepositoryTestCase {
 
     public static final String NEW_TITLE = "new title";
 
-    @Test
-    public void testUnrestrictedPropertySetter() throws Exception {
-        session = openSessionAs("bob");
-        seeDocCreatedByUnrestricted(session);
-        closeSession();
-    }
+    @Inject
+    protected RepositorySettings repo;
 
     @Test
+    public void testUnrestrictedPropertySetter() throws Exception {
+        try (CoreSession session = repo.openSessionAs("bob")) {
+            seeDocCreatedByUnrestricted(session);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
     public void testUnrestrictedSessionSeesDocCreatedBefore() throws Exception {
-        session = openSessionAs("Administrator");
-        unrestrictedSeesDocCreatedBefore(session);
-        closeSession();
+        try (CoreSession session = repo.openSessionAs(SecurityConstants.ADMINISTRATOR)) {
+            unrestrictedSeesDocCreatedBefore(session);
+        }
     }
 
     /*
