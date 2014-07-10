@@ -39,6 +39,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.core.Events;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceHelper;
@@ -52,13 +54,19 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityException;
+import org.nuxeo.ecm.platform.types.TypeView;
+import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.ecm.user.center.UserCenterViewManager;
+import org.nuxeo.ecm.webapp.base.InputController;
+import org.nuxeo.ecm.webapp.helpers.EventManager;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -67,7 +75,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("nuxeoDriveActions")
 @Scope(ScopeType.PAGE)
 @Install(precedence = Install.FRAMEWORK)
-public class NuxeoDriveActions implements Serializable {
+public class NuxeoDriveActions extends InputController implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -96,6 +104,8 @@ public class NuxeoDriveActions implements Serializable {
     public static final String WINDOWS_PLATFORM = "windows";
 
     public static final String OSX_PLATFORM = "osx";
+
+	private static final String MODE_DRIVE_VIEW = "view_drive_metadata";
 
     protected FileSystemItem currentFileSystemItem;
 
@@ -385,6 +395,37 @@ public class NuxeoDriveActions implements Serializable {
             }
         }
         return currentFileSystemItem;
+    }
+    
+    
+     /*
+     * update document model and redirect to drive view
+     */
+    public String updateCurrentDocument() throws ClientException {
+    	
+        DocumentModel doc = navigationContext.getCurrentDocument();
+        
+        try {
+
+            Events.instance().raiseEvent(EventNames.BEFORE_DOCUMENT_CHANGED,
+                    doc);
+            doc = documentManager.saveDocument(doc);
+           // throwUpdateComments(doc);
+            documentManager.save();
+            // some changes (versioning) happened server-side, fetch new one
+            navigationContext.invalidateCurrentDocument();
+            facesMessages.add(StatusMessage.Severity.INFO,
+                    resourcesAccessor.getMessages().get("document_modified"),
+                    resourcesAccessor.getMessages().get(doc.getType()));
+            EventManager.raiseEventsOnDocumentChange(doc);
+
+            Events.instance().raiseEvent(org.nuxeo.ecm.webapp.helpers.EventNames.NAVIGATE_TO_DOCUMENT, doc);
+
+            return MODE_DRIVE_VIEW;
+
+        } catch (Throwable t) {
+            throw ClientException.wrap(t);
+        }
     }
 
 }

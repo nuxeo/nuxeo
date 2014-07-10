@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  class="popUpContent" id="popUpContent">
+
+  <ui:define name="body">
+    <div id="content">
+
+		<nxu:set var="mode" value="#{request.getParameter('mode')}">
+		
+			<h:form enctype="multipart/form-data" id="document_edit" styleClass="safeEditEnabled" >
+			
+			  <script>
+			    jQuery(document).ready(function() {
+			      jQuery('#document_edit').focusFirst();
+			    });
+			  </script>
+			
+			  <nxl:documentLayout documentMode="drive" mode="#{mode}" 
+			  					  value="#{currentDocument}" defaultLayout="driveFormLayout"
+					              includeAnyMode="false" />
+			
+			  <c:if test="#{mode=='edit'}">
+			      <p class="buttonsGadget">
+			        <nxh:commandButton action="#{nuxeoDriveActions.updateCurrentDocument}" immediate="false" onclick="" id="save" value="#{messages['command.save']}" styleClass="button" />
+					<input type="button" class="button" value="#{messages['command.cancel']}" id="cancel" onclick="window.close(); return false;" />
+				  </p>
+			
+			     
+			  </c:if>
+			
+			
+			</h:form>
+		
+		</nxu:set>
+
+	</div>
+	
+  </ui:define>
+
+</nxthemes:composition>

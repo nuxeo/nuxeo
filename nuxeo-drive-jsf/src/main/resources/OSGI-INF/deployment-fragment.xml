@@ -31,5 +31,14 @@
       to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
     <delete path="${bundle.fileName}.tmp" />
   </install>
+  
+  <extension target="faces-config#NAVIGATION">
+    <navigation-case>
+      <from-outcome>view_drive_metadata</from-outcome>
+      <to-view-id>/layouts/drive_form_layout_template.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </extension>
+  
 
 </fragment>
