@@ -243,7 +243,7 @@ public class TestAutomationJson {
         res.append("    \"name\" : \"query\",\n");
         res.append("    \"type\" : \"codearea\",\n");
         res.append("    \"labels\" : {\n");
-        res.append("      \"any\" : \"NXQL query\"\n");
+        res.append("      \"any\" : \"Query\"\n");
         res.append("    },\n");
         res.append("    \"translated\" : true,\n");
         res.append("    \"handlingLabels\" : false,\n");
