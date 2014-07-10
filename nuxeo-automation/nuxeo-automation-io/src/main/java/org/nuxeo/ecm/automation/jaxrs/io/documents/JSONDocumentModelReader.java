@@ -128,7 +128,7 @@ public class JSONDocumentModelReader implements
         String type = null;
         String name = null;
         String uid = null;
-        while (tok != JsonToken.END_OBJECT) {
+        while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             jp.nextToken();
             if ("properties".equals(key)) {
@@ -152,6 +152,11 @@ public class JSONDocumentModelReader implements
             }
 
             tok = jp.nextToken();
+        }
+
+        if (tok == null) {
+            throw new IllegalArgumentException(
+                    "Unexpected end of stream.");
         }
 
         if (StringUtils.isNotBlank(type)) {

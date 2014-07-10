@@ -32,7 +32,7 @@ public class JsonOperationMarshaller {
     public static OperationDocumentation read(JsonParser jp) throws Exception {
         OperationDocumentation op = new OperationDocumentation();
         JsonToken tok = jp.nextToken(); // skip {
-        while (tok != JsonToken.END_OBJECT) {
+        while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             jp.nextToken();
             if ("id".equals(key)) {
@@ -55,6 +55,10 @@ public class JsonOperationMarshaller {
                 readParams(jp, op);
             }
             tok = jp.nextToken();
+        }
+        if (tok == null) {
+            throw new IllegalArgumentException(
+                    "Unexpected end of stream.");
         }
         return op;
     }
@@ -86,7 +90,7 @@ public class JsonOperationMarshaller {
     private static void readParam(JsonParser jp, OperationDocumentation op) throws Exception {
         Param para = new Param();
         JsonToken tok = jp.nextToken(); // skip {
-        while (tok != JsonToken.END_OBJECT) {
+        while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             jp.nextToken();
             if ("name".equals(key)) {

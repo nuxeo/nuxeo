@@ -57,7 +57,7 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
         PropertyMap props = new PropertyMap();
         PropertyMapSetter propsSetter = new PropertyMapSetter(props);
         PropertyMap contextParameters = new PropertyMap();
-        while (tok != JsonToken.END_OBJECT) {
+        while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
             if (key.equals("uid")) {
@@ -102,13 +102,17 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
             }
             tok = jp.nextToken();
         }
+        if (tok == null) {
+            throw new IllegalArgumentException(
+                    "Unexpected end of stream.");
+        }
         return new Document(uid, type, facets, changeToken, path, state, lockOwner, lockCreated, repository, versionLabel, isCheckedOut, props, null);
     }
 
     protected static void readProperties(JsonParser jp, PropertyMap props) throws Exception {
         PropertyMapSetter setter = new PropertyMapSetter(props);
         JsonToken tok = jp.nextToken();
-        while (tok != JsonToken.END_OBJECT) {
+        while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
             if (tok == JsonToken.START_ARRAY) {
@@ -121,6 +125,10 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
                 setter.set(key, jp.getText());
             }
             tok = jp.nextToken();
+        }
+        if (tok == null) {
+            throw new IllegalArgumentException(
+                    "Unexpected end of stream.");
         }
     }
 

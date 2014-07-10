@@ -51,7 +51,7 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
         String type = null, message = null;
         Throwable cause = null;
         JsonToken tok = jp.nextToken();
-        while (tok != JsonToken.END_OBJECT) {
+        while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
             if ("status".equals(key)) {
@@ -68,6 +68,10 @@ public class ExceptionMarshaller implements JsonMarshaller<RemoteException> {
                 cause = jp.readValueAs(Throwable.class);
             }
             tok = jp.nextToken();
+        }
+        if (tok == null) {
+            throw new IllegalArgumentException(
+                    "Unexpected end of stream.");
         }
         return new RemoteException(status, type, message, cause);
     }

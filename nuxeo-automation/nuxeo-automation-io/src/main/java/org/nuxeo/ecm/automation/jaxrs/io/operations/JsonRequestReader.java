@@ -150,7 +150,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
         jp.nextToken(); // skip {
         JsonToken tok = jp.nextToken();
-        while (tok != JsonToken.END_OBJECT) {
+        while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             jp.nextToken();
             if ("input".equals(key)) {
@@ -179,6 +179,10 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
             }
             tok = jp.nextToken();
         }
+        if (tok == null) {
+            throw new IllegalArgumentException(
+                    "Unexpected end of stream.");
+        }
         return req;
     }
 
@@ -186,12 +190,16 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
             CoreSession session) throws Exception {
         ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
         JsonToken tok = jp.nextToken(); // move to first entry
-        while (tok != JsonToken.END_OBJECT) {
+        while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
             req.setParam(key,
                     codecService.readNode(jp.readValueAsTree(), session));
             tok = jp.nextToken();
+        }
+        if (tok == null) {
+            throw new IllegalArgumentException(
+                    "Unexpected end of stream.");
         }
     }
 
@@ -199,12 +207,16 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
             CoreSession session) throws Exception {
         ObjectCodecService codecService = Framework.getLocalService(ObjectCodecService.class);
         JsonToken tok = jp.nextToken(); // move to first entry
-        while (tok != JsonToken.END_OBJECT) {
+        while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             tok = jp.nextToken();
             req.setContextParam(key,
                     codecService.readNode(jp.readValueAsTree(), session));
             tok = jp.nextToken();
+        }
+        if (tok == null) {
+            throw new IllegalArgumentException(
+                    "Unexpected end of stream.");
         }
     }
 

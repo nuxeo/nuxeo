@@ -65,7 +65,7 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
     protected Documents readPaginableDocuments(JsonParser jp) throws Exception {
         PaginableDocuments docs = new PaginableDocuments();
         JsonToken tok = jp.getCurrentToken();
-        while (tok != JsonToken.END_OBJECT) {
+        while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             jp.nextToken();
             if ("resultsCount".equals(key)) {
@@ -86,6 +86,10 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
                 readDocumentEntries(jp, docs);
             }
             tok = jp.nextToken();
+        }
+        if (tok == null) {
+            throw new IllegalArgumentException(
+                    "Unexpected end of stream.");
         }
         return docs;
     }

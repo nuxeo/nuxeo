@@ -56,7 +56,7 @@ public class RecordSetMarshaller implements JsonMarshaller<RecordSet> {
     protected RecordSet readPaginableRecordSet(JsonParser jp) throws Exception {
         RecordSet record = new RecordSet();
         JsonToken tok = jp.getCurrentToken();
-        while (tok != JsonToken.END_OBJECT) {
+        while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             jp.nextToken();
             if ("pageSize".equals(key)) {
@@ -69,6 +69,10 @@ public class RecordSetMarshaller implements JsonMarshaller<RecordSet> {
                 readRecordEntries(jp, record);
             }
             tok = jp.nextToken();
+        }
+        if (tok == null) {
+            throw new IllegalArgumentException(
+                    "Unexpected end of stream.");
         }
         return record;
     }

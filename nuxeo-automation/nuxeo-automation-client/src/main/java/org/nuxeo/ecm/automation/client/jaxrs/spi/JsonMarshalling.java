@@ -208,7 +208,7 @@ public class JsonMarshalling {
         JsonParser jp = factory.createJsonParser(content);
         jp.nextToken(); // start_obj
         JsonToken tok = jp.nextToken();
-        while (tok != JsonToken.END_OBJECT) {
+        while (tok != null && tok != JsonToken.END_OBJECT) {
             String key = jp.getCurrentName();
             if ("operations".equals(key)) {
                 readOperations(jp, ops);
@@ -219,6 +219,10 @@ public class JsonMarshalling {
             }
             tok = jp.nextToken();
         }
+        if (tok == null) {
+            throw new IllegalArgumentException(
+                    "Unexpected end of stream.");
+        }
         return new OperationRegistry(paths, ops, chains);
     }
 
@@ -226,7 +230,7 @@ public class JsonMarshalling {
             Map<String, OperationDocumentation> ops) throws Exception {
         jp.nextToken(); // skip [
         JsonToken tok = jp.nextToken();
-        while (tok != JsonToken.END_ARRAY) {
+        while (tok != null && tok != JsonToken.END_ARRAY) {
             OperationDocumentation op = JsonOperationMarshaller.read(jp);
             ops.put(op.id, op);
             tok = jp.nextToken();
@@ -237,7 +241,7 @@ public class JsonMarshalling {
             Map<String, OperationDocumentation> chains) throws Exception {
         jp.nextToken(); // skip [
         JsonToken tok = jp.nextToken();
-        while (tok != JsonToken.END_ARRAY) {
+        while (tok != null && tok != JsonToken.END_ARRAY) {
             OperationDocumentation op = JsonOperationMarshaller.read(jp);
             chains.put(op.id, op);
             tok = jp.nextToken();
@@ -248,11 +252,16 @@ public class JsonMarshalling {
             throws Exception {
         jp.nextToken(); // skip {
         JsonToken tok = jp.nextToken();
-        while (tok != JsonToken.END_OBJECT) {
+        while (tok != null && tok != JsonToken.END_OBJECT) {
             jp.nextToken();
             paths.put(jp.getCurrentName(), jp.getText());
             tok = jp.nextToken();
         }
+        if (tok == null) {
+            throw new IllegalArgumentException(
+                    "Unexpected end of stream.");
+        }
+
     }
 
     public static Object readEntity(String content) throws Exception {
