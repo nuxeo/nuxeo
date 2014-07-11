@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,9 @@ import org.nuxeo.ecm.restapi.jaxrs.io.documents.JSONDocumentModelListReader;
 import org.nuxeo.ecm.restapi.test.JSONDocumentHelper;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionRef;
+import org.nuxeo.ecm.webengine.jaxrs.session.impl.PerRequestCoreProvider;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -54,7 +58,9 @@ import com.google.inject.Inject;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class DocumentModelListReaderTest {
 
-    private HttpServletRequest request = mock(HttpServletRequest.class);
+    private final HttpServletRequest request = mock(HttpServletRequest.class);
+
+    protected final PerRequestCoreProvider coreProvider = new PerRequestCoreProvider();
 
     @Inject
     CoreSession session;
@@ -65,6 +71,14 @@ public class DocumentModelListReaderTest {
     @Before
     public void doBefore() {
         when(request.getUserPrincipal()).thenReturn(session.getPrincipal());
+        when(request.getAttribute(SessionFactory.SESSION_FACTORY_KEY)).thenReturn(coreProvider);
+    }
+
+    @After
+    public void closeWebEngineSession() {
+        for (SessionRef ref:coreProvider.getSessions()) {
+            ref.destroy();
+        }
     }
 
     @Test
@@ -72,7 +86,6 @@ public class DocumentModelListReaderTest {
         DocumentModel note1 = RestServerInit.getNote(1, session);
 
         String json = JSONDocumentHelper.getDocAsJson(note1);
-
 
         JsonParser jp = getParserFor(json);
         DocumentModel doc = JSONDocumentModelReader.readJson(jp, null, request);
@@ -89,11 +102,10 @@ public class DocumentModelListReaderTest {
 
         String docsAsJson = JSONDocumentHelper.getDocsListAsJson(note1, note2);
 
-
         JsonParser jp = getParserFor(docsAsJson);
 
-        DocumentModelList docs = JSONDocumentModelListReader.readRequest(
-               jp, null, request);
+        DocumentModelList docs = JSONDocumentModelListReader.readRequest(jp,
+                null, request);
         assertEquals(2, docs.size());
 
         assertEquals(RestServerInit.getNote(1, session).getId(),
