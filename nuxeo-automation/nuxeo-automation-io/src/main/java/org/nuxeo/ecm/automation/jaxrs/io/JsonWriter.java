@@ -206,11 +206,14 @@ public class JsonWriter {
         }
         jg.writeEndArray();
         writeParams(jg, Arrays.asList(op.params));
-        if (op.widgetDefinitions != null && op.widgetDefinitions.length > 0) {
+        if (op.widgetDefinitions != null) {
             jg.writeArrayFieldStart("widgets");
             for (WidgetDefinition wdef : op.widgetDefinitions) {
                 jg.writeObject(JSONLayoutExporter.exportToJson(wdef, null, null));
             }
+            jg.writeEndArray();
+        } else {
+            jg.writeArrayFieldStart("widgets");
             jg.writeEndArray();
         }
         jg.writeEndObject();
