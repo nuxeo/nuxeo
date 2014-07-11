@@ -965,7 +965,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         assertIdSet(dml, doc.getId());
         // create a version, modify and save
         doc.checkIn(VersioningOption.MAJOR, "No comment");
-        doc.setPropertyValue("dc:title", "something");
+        doc.setPropertyValue("dc:title", "universe");
         session.saveDocument(doc);
         session.save();
         waitForFulltextIndexing();
@@ -978,7 +978,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
         dml = session.query(query);
         assertIdSet(dml, ver.getId());
 
-        query = "SELECT * FROM File WHERE ecm:fulltext = 'something'";
+        query = "SELECT * FROM File WHERE ecm:fulltext = 'universe'";
         dml = session.query(query);
         assertIdSet(dml, doc.getId());
     }
