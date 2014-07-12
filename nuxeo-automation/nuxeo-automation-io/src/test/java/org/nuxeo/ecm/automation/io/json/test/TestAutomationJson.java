@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.automation.io.json.test;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.ByteArrayOutputStream;
 
 import org.junit.Test;
@@ -30,6 +28,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.inject.Inject;
 
@@ -53,10 +52,7 @@ public class TestAutomationJson {
     }
 
     protected void checkEquals(String expected, String actual) throws Exception {
-        // System.err.println(actual);
-        // remove lines when comparing to avoid failure under windows.
-        assertEquals(expected.replaceAll("\r?\n", ""),
-                actual.replaceAll("\r?\n", ""));
+        JSONAssert.assertEquals(expected, actual, true);
     }
 
     @Test
@@ -72,7 +68,6 @@ public class TestAutomationJson {
         res.append("  \"url\" : \"empty_chain\",\n");
         res.append("  \"signature\" : [ \"void\", \"void\" ],\n");
         res.append("  \"params\" : [ ],\n");
-        res.append("  \"widgets\" : [ ]\n");
         res.append("}");
         checkEquals(res.toString(), chain);
     }
@@ -90,7 +85,6 @@ public class TestAutomationJson {
         res.append("  \"url\" : \"chain\",\n");
         res.append("  \"signature\" : [ \"document\", \"document\", \"documents\", \"documents\" ],\n");
         res.append("  \"params\" : [ ],\n");
-        res.append("  \"widgets\" : [ ]\n");
         res.append("}");
         checkEquals(res.toString(), chain);
     }
@@ -108,7 +102,6 @@ public class TestAutomationJson {
         res.append("  \"url\" : \"chain_props\",\n");
         res.append("  \"signature\" : [ \"document\", \"document\", \"documents\", \"documents\" ],\n");
         res.append("  \"params\" : [ ],\n");
-        res.append("  \"widgets\" : [ ]\n");
         res.append("}");
         checkEquals(res.toString(), chain);
     }
@@ -142,7 +135,6 @@ public class TestAutomationJson {
         res.append("    \"order\" : 0,\n");
         res.append("    \"values\" : [ ]\n");
         res.append("  } ],\n");
-        res.append("  \"widgets\" : [ ]\n");
         res.append("}");
         checkEquals(res.toString(), chain);
     }
@@ -160,7 +152,6 @@ public class TestAutomationJson {
         res.append("  \"url\" : \"chain_complex\",\n");
         res.append("  \"signature\" : [ \"document\", \"document\", \"documents\", \"documents\" ],\n");
         res.append("  \"params\" : [ ],\n");
-        res.append("  \"widgets\" : [ ]\n");
         res.append("}");
         checkEquals(res.toString(), chain);
     }
@@ -202,7 +193,6 @@ public class TestAutomationJson {
         res.append("    \"order\" : 0,\n");
         res.append("    \"values\" : [ ]\n");
         res.append("  } ],\n");
-        res.append("  \"widgets\" : [ ]\n");
         res.append("}");
         checkEquals(res.toString(), chain);
     }
