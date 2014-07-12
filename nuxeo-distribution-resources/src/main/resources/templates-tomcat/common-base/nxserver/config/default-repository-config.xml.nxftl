@@ -13,8 +13,6 @@
       <clustering enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
       <binaryStore path="${repository.binary.store}" />
       <noDDL>${nuxeo.vcs.noddl}</noDDL>
-      <aclOptimizations enabled="true"/>
-      <pathOptimizations enabled="true"/>
       <idType>${nuxeo.vcs.idtype}</idType>
       <indexing>
 <#if "${nuxeo.db.type}" == "postgresql">
@@ -87,10 +85,6 @@
       </indexing>
 <#if "${nuxeo.db.type}" != "mysql">
       <usersSeparator key="${nuxeo.db.user_separator_key}" />
-</#if>
-<#if "${nuxeo.db.singleDataSource}"=="">
-      <xa-datasource>${nuxeo.db.xadatasource}</xa-datasource>
-<#include "xadatasource-params.ftl" parse=true />
 </#if>
 <#if "${nuxeo.db.type}" == "mysql">
       <schema>
