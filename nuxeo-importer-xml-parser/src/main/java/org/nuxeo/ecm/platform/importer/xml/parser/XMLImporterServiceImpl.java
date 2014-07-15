@@ -21,11 +21,7 @@ package org.nuxeo.ecm.platform.importer.xml.parser;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -284,35 +280,39 @@ public class XMLImporterServiceImpl {
         } else if (property.isList()) {
 
             ListType lType = (ListType) property.getType();
-            @SuppressWarnings("unchecked")
-            List<Serializable> values = (List<Serializable>) property.getValue();
-            if (values == null) {
-                if (log.isTraceEnabled()) {
-                    log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE,
-                            targetDocProperty, el.getUniquePath(),
-                            "%NO_VALUE%", conf.toString()));
-                }
-                values = new ArrayList<Serializable>();
-            }
+
+            Serializable value;
+
             if (lType.getFieldType().isSimpleType()) {
-                Serializable value = (Serializable) resolveAndEvaluateXmlNode(
+                value = (Serializable) resolveAndEvaluateXmlNode(
                         el, conf.getSingleXpath());
-                if (log.isTraceEnabled()) {
-                    log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE,
-                            targetDocProperty, el.getUniquePath(), value,
-                            conf.toString()));
+                if (value != null) {
+                    Object values = property.getValue();
+                    if (values instanceof List) {
+                        ((List)values).add(value);
+                        property.setValue(values);
+                    } else if (values instanceof Object[]) {
+                        List<Object> valuesList = new ArrayList<>();
+                        Collections.addAll(valuesList, (Object[]) property.getValue());
+                        valuesList.add(value);
+                        property.setValue(valuesList.toArray());
+                    } else {
+                        log.error("Simple multi value property "+
+                                  targetDocProperty+
+                                  " is neither a List nor an Array");
+                    }
                 }
-                values.add(value);
-
             } else {
-                Serializable value = (Serializable) resolveComplex(el, conf);
-                if (log.isTraceEnabled()) {
-                    log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE,
-                            targetDocProperty, el.getUniquePath(), value,
-                            conf.toString()));
+                value = (Serializable) resolveComplex(el, conf);
+                if (value != null) {
+                    property.addValue(value);
                 }
-                values.add(value);
+            }
 
+            if (log.isTraceEnabled()) {
+                log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE,
+                        targetDocProperty, el.getUniquePath(), value,
+                        conf.toString()));
             }
         }
     }
