@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
+import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.webengine.WebException;
@@ -105,8 +105,8 @@ public class BlobObject extends DefaultObject {
             }
 
             EntityTag etag = null;
-            if (blob instanceof SQLBlob) {
-                etag = new EntityTag(((SQLBlob) blob).getBinary().getDigest());
+            if (blob instanceof StorageBlob) {
+                etag = new EntityTag(((StorageBlob) blob).getBinary().getDigest());
             }
             if (etag != null) {
                 Response.ResponseBuilder builder = request.evaluatePreconditions(etag);
