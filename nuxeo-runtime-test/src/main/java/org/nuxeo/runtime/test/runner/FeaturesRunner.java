@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
+
 import org.nuxeo.runtime.mockito.MockProvider;
 import org.nuxeo.runtime.test.TargetResourceLocator;
 
@@ -93,7 +94,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return super.getTestClass().getJavaClass();
     }
 
-
     public Path getTargetTestBasepath() {
         return locator.getBasepath();
     }
@@ -101,7 +101,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     public URL getTargetTestResource(String name) throws IOException {
         return locator.getTargetTestResource(name);
     }
-
 
     protected void loadFeature(HashSet<Class<?>> cycles,
             LinkedHashSet<Class<? extends RunnerFeature>> features,
@@ -347,6 +346,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     protected final ConditionalIgnoreRule ignoreRule = new ConditionalIgnoreRule();
 
+    protected final RandomBug randomBugRule = new RandomBug();
+
     @Override
     public void run(final RunNotifier notifier) {
         try {
@@ -369,7 +370,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                 } finally {
                     afterRun();
                 }
-            } catch(AssumptionViolatedException e) {
+            } catch (AssumptionViolatedException e) {
                 notifier.fireTestIgnored(getDescription());
             } catch (Exception error) {
                 errors.addSuppressed(error);
@@ -384,8 +385,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             errors.addSuppressed(error);
         } finally {
             if (errors.getSuppressed().length > 0) {
-                notifier.fireTestFailure(new Failure(getDescription(),
-                        errors));
+                notifier.fireTestFailure(new Failure(getDescription(), errors));
             }
         }
     }
@@ -459,6 +459,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected List<org.junit.rules.MethodRule> rules(Object target) {
         List<org.junit.rules.MethodRule> rules = super.rules(target);
         rules.add(ignoreRule);
+        rules.add(randomBugRule);
         return rules;
     }
 }
