@@ -21,7 +21,7 @@ import java.io.File;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
+import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.services.streaming.StreamSource;
 
@@ -47,8 +47,8 @@ public class BlobHelper {
     public static File getFileFromBlob(Blob blob) {
         if (blob instanceof FileBlob) {
             return ((FileBlob) blob).getFile();
-        } else if (blob instanceof SQLBlob) {
-            StreamSource source = ((SQLBlob) blob).getBinary().getStreamSource();
+        } else if (blob instanceof StorageBlob) {
+            StreamSource source = ((StorageBlob) blob).getBinary().getStreamSource();
             return ((FileSource) source).getFile();
         } else if (blob instanceof StreamingBlob) {
             StreamingBlob sb = (StreamingBlob) blob;
