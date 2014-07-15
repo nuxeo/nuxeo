@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -75,7 +76,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements
     public static final String XP_PACKAGES = "packages";
 
     protected static final DateTimeFormatter dateParser = DateTimeFormat.forPattern(
-            "yyyy/MM/dd").withLocale(Locale.ENGLISH);
+            "yyyy/MM/dd").withLocale(Locale.ENGLISH).withZone(DateTimeZone.UTC);
 
     protected ServiceConfigurationRegistry conf;
 

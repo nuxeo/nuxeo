@@ -56,7 +56,7 @@
   "overridden" : false,
   "parent" : null,
   "refVersion" : "5.8",
-  "releaseDate" : 1379887200000,
+  "releaseDate" : 1379894400000,
   "restricted" : false,
   "status" : "supported",
   "testVersions" : [ "5.8.0-HF07-SNAPSHOT", "5.8" ],
