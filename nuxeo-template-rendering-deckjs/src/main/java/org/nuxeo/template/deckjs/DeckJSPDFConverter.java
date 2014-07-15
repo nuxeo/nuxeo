@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
+import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
@@ -62,8 +62,8 @@ public class DeckJSPDFConverter implements Converter {
             File inputFile = null;
             if (blob instanceof FileBlob) {
                 inputFile = ((FileBlob) blob).getFile();
-            } else if (blob instanceof SQLBlob) {
-                StreamSource source = ((SQLBlob) blob).getBinary().getStreamSource();
+            } else if (blob instanceof StorageBlob) {
+                StreamSource source = ((StorageBlob) blob).getBinary().getStreamSource();
                 inputFile = ((FileSource) source).getFile();
             } else if (blob instanceof StreamingBlob) {
                 StreamingBlob streamingBlob = ((StreamingBlob) blob);
