@@ -45,7 +45,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
+import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -196,8 +196,8 @@ public final class ComponentUtils {
                 HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
 
                 String digest = null;
-                if (blob instanceof SQLBlob) {
-                    digest = ((SQLBlob) blob).getBinary().getDigest();
+                if (blob instanceof StorageBlob) {
+                    digest = ((StorageBlob) blob).getBinary().getDigest();
                 }
 
                 try {
