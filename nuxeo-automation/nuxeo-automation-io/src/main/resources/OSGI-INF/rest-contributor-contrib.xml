@@ -1,0 +1,14 @@
+<component name="org.nuxeo.ecm.automation.io.rest.contributor.contrib">
+
+  <extension
+          target="org.nuxeo.ecm.automation.io.services.contributor.RestContributorService"
+          point="contributor">
+
+    <contributor name="acl"
+                 class="org.nuxeo.ecm.automation.io.services.contributor.ACLRestContributor">
+      <category>acl</category>
+    </contributor>
+
+  </extension>
+
+</component>
