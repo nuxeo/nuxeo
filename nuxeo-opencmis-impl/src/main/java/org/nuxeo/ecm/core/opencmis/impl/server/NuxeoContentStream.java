@@ -23,7 +23,7 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.LastModifiedContentStream;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
+import org.nuxeo.ecm.core.storage.StorageBlob;
 
 /**
  * Nuxeo implementation of a CMIS {@link ContentStream}, backed by a
@@ -86,8 +86,8 @@ public class NuxeoContentStream implements CacheHeaderContentStream, LastModifie
 
     @Override
     public String getETag() {
-        if (blob instanceof SQLBlob) {
-            return ((SQLBlob) blob).getBinary().getDigest();
+        if (blob instanceof StorageBlob) {
+            return ((StorageBlob) blob).getBinary().getDigest();
         } else {
             return null;
         }

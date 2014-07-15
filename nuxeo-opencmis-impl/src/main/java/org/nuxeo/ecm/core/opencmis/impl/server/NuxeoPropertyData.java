@@ -63,7 +63,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
+import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -723,8 +723,8 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         @Override
         public String getFirstValue() {
             Blob blob = getBlob(doc);
-            if (blob instanceof SQLBlob) {
-                SQLBlob sqlBlob = ((SQLBlob) blob);
+            if (blob instanceof StorageBlob) {
+                StorageBlob sqlBlob = ((StorageBlob) blob);
                 return sqlBlob.getBinary().getDigest();
             }
             return null;
