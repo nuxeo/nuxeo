@@ -34,7 +34,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestRemotableBlob extends NXRuntimeTestCase {
 
 
-    protected SQLBlob createSQLBlob() throws Exception {
+    protected StorageBlob createStorageBlob() throws Exception {
         File file = File.createTempFile("nuxeo-test-", ".blob");
         file.deleteOnExit();
         OutputStream out = new FileOutputStream(file);
@@ -47,7 +47,7 @@ public class TestRemotableBlob extends NXRuntimeTestCase {
 
     @Test
     public void testSerialization() throws Exception {
-        SQLBlob blob = createSQLBlob();
+        StorageBlob blob = createStorageBlob();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream(baos);
         out.writeObject(blob);
@@ -55,8 +55,8 @@ public class TestRemotableBlob extends NXRuntimeTestCase {
         ObjectInputStream in = new ObjectInputStream(bais);
         Object obj = in.readObject();
 
-        assertTrue(obj instanceof SQLBlob);
-        SQLBlob sblob = (SQLBlob) obj;
+        assertTrue(obj instanceof StorageBlob);
+        StorageBlob sblob = (StorageBlob) obj;
 
         assertEquals(sblob.getFilename(), blob.getFilename());
         assertEquals(sblob.getDigest(), blob.getDigest());

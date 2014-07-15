@@ -949,7 +949,7 @@ public class SQLSession implements Session {
             throws PropertyException {
         if (complexProperty instanceof BlobProperty) {
             try {
-                SQLBlob value = readBlob(node);
+                StorageBlob value = readBlob(node);
                 complexProperty.init(value);
                 return;
             } catch (StorageException e) {
@@ -1024,7 +1024,7 @@ public class SQLSession implements Session {
                 return;
             }
             try {
-                SQLBlob value = readBlob(node);
+                StorageBlob value = readBlob(node);
                 prefetch.put(xpath, value);
                 return;
             } catch (StorageException e) {
@@ -1175,7 +1175,7 @@ public class SQLSession implements Session {
         }
     }
 
-    protected SQLBlob readBlob(Node node) throws StorageException {
+    protected StorageBlob readBlob(Node node) throws StorageException {
         Binary binary = (Binary) node.getSimpleProperty(BLOB_DATA).getValue();
         if (binary == null) {
             return null;
@@ -1286,8 +1286,8 @@ public class SQLSession implements Session {
      * @throws DocumentException
      */
     public Binary getBinary(Blob blob) throws DocumentException {
-        if (blob instanceof SQLBlob) {
-            return ((SQLBlob) blob).getBinary();
+        if (blob instanceof StorageBlob) {
+            return ((StorageBlob) blob).getBinary();
         }
         StreamSource source;
         try {
