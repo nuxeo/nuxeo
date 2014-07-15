@@ -30,6 +30,8 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.io.services.contributor
+        .RestContributorServiceImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -252,9 +254,11 @@ public class DocumentBrowsingTest extends BaseTest {
     }
 
     @Test
-    public void iCanGetTheACLsOnADocument() throws Exception {
+    public void iCanGetTheACLsOnADocumentThroughAdapter() throws Exception {
         // Given an existing document
         DocumentModel note = RestServerInit.getNote(0, session);
+        Map<String,String> headers = new HashMap<>();
+        headers.put(RestContributorServiceImpl.NXCONTENT_CATEGORY_HEADER, "acl");
 
         // When i do a GET Request on the note repository
         ClientResponse response = getResponse(
@@ -265,8 +269,29 @@ public class DocumentBrowsingTest extends BaseTest {
         // Then i get a the ACL
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(ACPWriter.ENTITY_TYPE,
-                node.get("entity-type").getValueAsText());
+        assertEquals(ACPWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+
+    }
+
+    @Test
+    public void iCanGetTheACLsOnADocumentThroughContributor() throws Exception {
+        // Given an existing document
+        DocumentModel note = RestServerInit.getNote(0, session);
+        Map<String,String> headers = new HashMap<>();
+        headers.put(RestContributorServiceImpl.NXCONTENT_CATEGORY_HEADER, "acl");
+
+        // When i do a GET Request on the note repository
+        ClientResponse response = getResponse(
+                RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path"
+                        + note.getPathAsString(),headers);
+
+        // Then i get a the ACL
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals("inherited", node.get(RestConstants
+                .CONTRIBUTOR_CTX_PARAMETERS).get("acl").get("acl").get(0).get
+                ("name").getTextValue());
 
     }
 

@@ -21,5 +21,13 @@ package org.nuxeo.ecm.restapi.jaxrs.io;
  */
 public class RestConstants {
 
+    /**
+     * Rest Versioning Option Header
+     */
     public static final String X_VERSIONING_OPTION = "X-Versioning-Option";
+
+    /**
+     * Rest Contributor Context Parameters Json Label Entry
+     */
+    public static final String CONTRIBUTOR_CTX_PARAMETERS = "contextParameters";
 }

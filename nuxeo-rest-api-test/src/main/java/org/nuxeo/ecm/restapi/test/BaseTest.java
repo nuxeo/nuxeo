@@ -94,6 +94,11 @@ public class BaseTest {
         return getResponse(requestType, path, null, null, null, null);
     }
 
+    protected ClientResponse getResponse(RequestType requestType,
+            String path, Map<String, String> headers) {
+        return getResponse(requestType, path, null, null, null, headers);
+    }
+
     protected ClientResponse getResponse(RequestType requestType, String path,
             MultiPart mp) {
         return getResponse(requestType, path, null, null, mp, null);
