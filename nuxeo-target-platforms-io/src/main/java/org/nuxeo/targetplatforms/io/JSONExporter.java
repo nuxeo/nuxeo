@@ -23,6 +23,7 @@ import java.util.List;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
 import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPackageInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatform;
@@ -74,6 +75,9 @@ public class JSONExporter {
     protected static JsonFactory createFactory() {
         JsonFactory factory = new JsonFactory();
         final ObjectMapper oc = new ObjectMapper(factory);
+        oc.configure(
+                SerializationConfig.Feature.SORT_PROPERTIES_ALPHABETICALLY,
+                true);
         factory.setCodec(oc);
         return factory;
     }
