@@ -25,8 +25,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatus;
@@ -59,11 +59,14 @@ public class TestAdministrativeStatusService {
 
     @Before
     public void setUp() throws Exception {
-        // init is too late, events are already received
-        // as we're only used once, init doesn't matter
-        // AdministrativeStatusChangeListener.init();
-        // RuntimeListener.init();
         DocumentStoreSessionRunner.setRepositoryName(settings.getName());
+    }
+
+    @After
+    public void tearDown() {
+        // clear for next test
+        AdministrativeStatusChangeListener.init();
+        RuntimeListener.init();
     }
 
     @Test
@@ -84,9 +87,6 @@ public class TestAdministrativeStatusService {
         assertNotNull(pm);
     }
 
-    // randomly failing
-    // ignored while fixing other things, see NXP-14776
-    @Ignore
     @Test
     public void testInstanceStatus() {
         AdministrativeStatusManager localManager = Framework.getLocalService(AdministrativeStatusManager.class);
