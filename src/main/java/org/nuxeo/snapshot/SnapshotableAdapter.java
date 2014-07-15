@@ -110,12 +110,6 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         return version;
     }
 
-    protected static boolean compareArrays(String[] arr1, String[] arr2) {
-        HashSet<String> set1 = new HashSet<String>(Arrays.asList(arr1));
-        HashSet<String> set2 = new HashSet<String>(Arrays.asList(arr2));
-        return set1.equals(set2);
-    }
-
     @Override
     public Snapshot createSnapshot(VersioningOption option)
             throws ClientException {
@@ -172,7 +166,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             mustSnapshot = true;
         } else {
             String[] existingUUIds = (String[]) doc.getPropertyValue(CHILDREN_PROP);
-            if (!compareArrays(vuuids, existingUUIds)) {
+            if (!Arrays.equals(vuuids, existingUUIds)) {
                 mustSnapshot = true;
             }
         }
