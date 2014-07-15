@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.storage.binary.Binary;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob;
 import org.nuxeo.ecm.platform.ui.web.download.DownloadServlet.ByteRange;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
 
@@ -105,7 +104,7 @@ public class TestDownloadServlet {
     private void doTestETagHeader(Boolean match) throws Exception {
         // Given a blob
         String blobValue = "Hello World";
-        SQLBlob blob = getBlobWithFakeDigest(blobValue, "12345");
+        StorageBlob blob = getBlobWithFakeDigest(blobValue, "12345");
 
         // When i send a request a given digest
         String digestToTest = getDigestToTest(match, blob);
@@ -132,7 +131,7 @@ public class TestDownloadServlet {
      *
      * @since 5.8
      */
-    private String getDigestToTest(Boolean match, SQLBlob blob) {
+    private String getDigestToTest(Boolean match, StorageBlob blob) {
         if (match == null) {
             return null;
         } else if (match == true) {
@@ -194,12 +193,12 @@ public class TestDownloadServlet {
      *
      * @since 5.8
      */
-    private SQLBlob getBlobWithFakeDigest(String stringValue, String digest)
+    private StorageBlob getBlobWithFakeDigest(String stringValue, String digest)
             throws IOException {
         Binary binary = mock(Binary.class);
         final byte[] bytes = stringValue.getBytes();
         InputStream in = new ByteArrayInputStream(bytes);
-        SQLBlob blob = new StorageBlob(binary, "myFile.txt", "text/plain",
+        StorageBlob blob = new StorageBlob(binary, "myFile.txt", "text/plain",
                 "UTF-8", digest, bytes.length);
         when(binary.getStream()).thenReturn(in);
         when(binary.getDigest()).thenReturn(digest);
