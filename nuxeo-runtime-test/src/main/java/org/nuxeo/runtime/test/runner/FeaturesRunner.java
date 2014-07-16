@@ -392,8 +392,9 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected void runChild(FrameworkMethod method, RunNotifier notifier) {
-        if (method.getAnnotation(Ignore.class) != null) {
-            super.runChild(method, notifier);
+        if (method.getAnnotation(Ignore.class) != null
+                || (method.getAnnotation(RandomBug.Repeat.class) != null && RandomBug.getMode() == RandomBug.MODE.BYPASS)) {
+            notifier.fireTestIgnored(describeChild(method));
             return;
         }
         beforeSetup();

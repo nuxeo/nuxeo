@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 
 import org.apache.log4j.MDC;
 import org.junit.Ignore;
+import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
@@ -147,17 +148,20 @@ public class RandomBug implements MethodRule {
 
         private final Statement statement;
 
-        private RepeatOnFailure(Statement statement, int times) {
+        private String issue;
+
+        private RepeatOnFailure(Statement statement, int times, String issue) {
             this.statement = statement;
             this.times = times;
+            this.issue = issue;
         }
 
         @Override
         public void evaluate() throws Throwable {
             Error error = new AssertionError(String.format(
                     "No success after %d tries. Either the bug is not random "
-                            + "or you should increase the 'onFailure' value.",
-                    times));
+                            + "or you should increase the 'onFailure' value.\n"
+                            + "Issue: %s", times, issue));
             for (int i = 1; i <= times; i++) {
                 MDC.put("fRepeat", i);
                 try {
@@ -180,17 +184,20 @@ public class RandomBug implements MethodRule {
 
         private final Statement statement;
 
-        private RepeatOnSuccess(Statement statement, int times) {
+        private String issue;
+
+        private RepeatOnSuccess(Statement statement, int times, String issue) {
             this.statement = statement;
             this.times = times;
+            this.issue = issue;
         }
 
         @Override
         public void evaluate() throws Throwable {
             Error error = new AssertionError(String.format(
                     "No failure after %d tries. Either the bug is fixed "
-                            + "or you should increase the 'onSuccess' value.",
-                    times));
+                            + "or you should increase the 'onSuccess' value.\n"
+                            + "Issue: %s", times, issue));
             for (int i = 1; i <= times; i++) {
                 MDC.put("fRepeat", i);
                 try {
@@ -204,9 +211,16 @@ public class RandomBug implements MethodRule {
     }
 
     private static class NoopStatement extends Statement {
+        private String issue;
+
+        public NoopStatement(String issue) {
+            this.issue = issue;
+        }
+
         @Override
         public void evaluate() throws Throwable {
-            return;
+            throw new AssumptionViolatedException(
+                    "Random bug ignored (bypass mode): " + issue);
         }
     }
 
@@ -220,17 +234,24 @@ public class RandomBug implements MethodRule {
         if (repeat == null) {
             return statement;
         }
-        String mode = System.getProperty(MODE_PROPERTY, DEFAULT.name());
-        switch (MODE.valueOf(mode.toUpperCase())) {
+        switch (getMode()) {
         case BYPASS:
-            return new NoopStatement();
+            return new NoopStatement(repeat.issue());
         case STRICT:
-            return new RepeatOnSuccess(statement, repeat.onSuccess());
+            return new RepeatOnSuccess(statement, repeat.onSuccess(),
+                    repeat.issue());
         case RELAX:
-            return new RepeatOnFailure(statement, repeat.onFailure());
+            return new RepeatOnFailure(statement, repeat.onFailure(),
+                    repeat.issue());
         default:
             return statement;
         }
 
     }
+
+    public static MODE getMode() {
+        String mode = System.getProperty(MODE_PROPERTY, DEFAULT.name());
+        return MODE.valueOf(mode.toUpperCase());
+    }
+
 }
