@@ -474,6 +474,45 @@
     </category>
   -->
 
+  <!-- VCS Storage logging -->
+  <!--
+  <appender name="STORAGE" class="org.apache.log4j.FileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+    <param name="File" value="${nuxeo.log.dir}/storage.log" />
+    <param name="Append" value="false" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t][%c] %m%X%n" />
+    </layout>
+  </appender>
+
+  <category name="org.nuxeo.ecm.core.management.jtajca" additivity="false">
+    <priority value="TRACE" />
+    <appender-ref ref="STORAGE" />
+  </category>
+
+  <category name="org.nuxeo.ecm.core.storage.sql.jdbc" additivity="false">
+    <priority value="TRACE" />
+    <appender-ref ref="STORAGE" />
+  </category>
+  -->
+
+  <!-- Elasticsearch logging -->
+  <!--
+  <appender name="ELASTIC" class="org.apache.log4j.FileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+    <param name="File" value="${nuxeo.log.dir}/elastic.log" />
+    <param name="Append" value="false" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t][%c] %m%X%n" />
+    </layout>
+  </appender>
+
+  <category name="org.nuxeo.elasticsearch" additivity="false">
+    <priority value="TRACE" />
+    <appender-ref ref="ELASTIC" />
+  </category>
+  -->
+
   <category name="nuxeo-error-log">
     <priority value="TRACE" />
     <appender-ref ref="ERROR-FILE" />
