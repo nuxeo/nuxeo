@@ -15,6 +15,9 @@
        <openUrl name="segmentio">
             <grantPattern>${org.nuxeo.ecm.contextPath}/site/segmentIO</grantPattern>
        </openUrl>
+       <openUrl name="segmentio-marketo">
+            <grantPattern>${org.nuxeo.ecm.contextPath}/site/segmentIO/marketo/*</grantPattern>
+       </openUrl>
   </extension>
 
 </component>
