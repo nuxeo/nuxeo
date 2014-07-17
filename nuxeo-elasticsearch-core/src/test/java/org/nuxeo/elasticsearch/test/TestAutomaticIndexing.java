@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
 import org.nuxeo.elasticsearch.listener.EventConstants;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
@@ -506,5 +508,37 @@ public class TestAutomaticIndexing {
                 .execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
+    }
+
+    @Test
+    public void shouldIndexOnCopySync() throws Exception {
+        ElasticSearchInlineListener.useSyncIndexing.set(true);
+        DocumentModel folder = session.createDocumentModel("/", "folder",
+                "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        TransactionHelper.commitOrRollbackTransaction();
+        assertNumberOfCommandProcessed(2);
+        TransactionHelper.startTransaction();
+        esa.refresh();
+
+        // sync marker is reset after a commit
+        Assert.assertNull(ElasticSearchInlineListener.useSyncIndexing.get());
+        DocumentRef src = doc.getRef();
+        DocumentRef dst = new PathRef("/");
+        session.copy(src, dst, "file2");
+        // turn the sync flag after the action
+        ElasticSearchInlineListener.useSyncIndexing.set(true);
+        TransactionHelper.commitOrRollbackTransaction();
+        esa.refresh();
+
+        TransactionHelper.startTransaction();
+
+        SearchResponse searchResponse = esa.getClient().prepareSearch(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60)
+                .execute().actionGet();
+        Assert.assertEquals(3, searchResponse.getHits().getTotalHits());
     }
 }

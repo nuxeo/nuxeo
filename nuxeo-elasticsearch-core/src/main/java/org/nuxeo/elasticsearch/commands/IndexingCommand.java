@@ -343,8 +343,14 @@ public class IndexingCommand {
      * Recurse command will stay in async for update.
      */
     public void makeSync() {
-        if (! recurse || DELETE.equals(name)) {
-            sync = true;
+        if (!sync) {
+            if (!recurse || DELETE.equals(name)) {
+                sync = true;
+                if (log.isDebugEnabled()) {
+                    log.debug("Turn command into sync: " + toString());
+                }
+                markUpdated();
+            }
         }
     }
 }
