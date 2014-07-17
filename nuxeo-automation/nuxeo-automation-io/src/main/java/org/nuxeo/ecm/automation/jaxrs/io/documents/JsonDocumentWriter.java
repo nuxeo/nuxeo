@@ -58,6 +58,12 @@ import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
+import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
+import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
+import org.nuxeo.ecm.core.schema.types.primitives.LongType;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -295,14 +301,25 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     }
 
     protected static void writeScalarPropertyValue(JsonGenerator jg,
-            Property prop) throws PropertyException, JsonGenerationException,
-            IOException {
+            Property prop) throws PropertyException, IOException {
         org.nuxeo.ecm.core.schema.types.Type type = prop.getType();
         Object v = prop.getValue();
         if (v == null) {
             jg.writeNull();
         } else {
-            jg.writeString(type.encode(v));
+            if (BooleanType.class.equals(type.getClass())) {
+                jg.writeBoolean((Boolean) v);
+            } else if (LongType.class.equals(type.getClass())) {
+                jg.writeNumber((Long) v);
+            } else if (DoubleType.class.equals(type.getClass())) {
+                jg.writeNumber((Double) v);
+            } else if (IntegerType.class.equals(type.getClass())) {
+                jg.writeNumber((Integer) v);
+            } else if (BinaryType.class.equals(type.getClass())) {
+                jg.writeBinary((byte[]) v);
+            } else {
+                jg.writeString(type.encode(v));
+            }
         }
     }
 
