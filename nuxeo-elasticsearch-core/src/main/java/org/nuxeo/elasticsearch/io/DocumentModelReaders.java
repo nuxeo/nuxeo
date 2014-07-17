@@ -17,7 +17,6 @@
 package org.nuxeo.elasticsearch.io;
 
 import java.util.Map;
-import org.elasticsearch.index.query.MatchAllQueryBuilder;
 
 /**
  * @since 5.9.5

@@ -52,7 +52,7 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
     }
 
     protected final List<String> recursableCommands = Arrays.asList(
-            IndexingCommand.UPDATE, IndexingCommand.INDEX,
+            IndexingCommand.UPDATE, IndexingCommand.INSERT,
             IndexingCommand.UPDATE_SECURITY);
 
     protected boolean needRecurse(IndexingCommand cmd) {

@@ -107,8 +107,8 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
         IndexingCommands ic1 = getCommands(doc1);
         Assert.assertEquals(1, ic1.getCommands().size());
-        Assert.assertTrue(ic1.contains(IndexingCommand.INDEX));
-        Assert.assertEquals(IndexingCommand.INDEX,
+        Assert.assertTrue(ic1.contains(IndexingCommand.INSERT));
+        Assert.assertEquals(IndexingCommand.INSERT,
                 ic1.getCommands().get(0).getName());
 
         IndexingCommands ic2 = getCommands(doc2);
@@ -150,8 +150,8 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
 
         IndexingCommands ic2 = getCommands(doc2);
         Assert.assertEquals(1, ic2.getCommands().size());
-        Assert.assertTrue(ic2.contains(IndexingCommand.INDEX));
-        Assert.assertEquals(IndexingCommand.INDEX,
+        Assert.assertTrue(ic2.contains(IndexingCommand.INSERT));
+        Assert.assertEquals(IndexingCommand.INSERT,
                 ic2.getCommands().get(0).getName());
         Assert.assertTrue(ic2.getCommands().get(0).isSync());
 

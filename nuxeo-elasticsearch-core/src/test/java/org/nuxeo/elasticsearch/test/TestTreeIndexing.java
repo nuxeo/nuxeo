@@ -148,8 +148,33 @@ public class TestTreeIndexing {
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
                 .setSize(60).execute().actionGet();
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
-
     }
+
+    @Test
+    public void shouldUnIndexSubTreeSync() throws Exception {
+        buildAndIndexTree();
+
+        DocumentRef ref = new PathRef("/folder0/folder1/folder2");
+        int n = esa.getTotalCommandProcessed();
+        // try to do it sync
+        // ElasticSearchInlineListener.useSyncIndexing.set(true);
+        session.removeDocument(ref);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForAsyncIndexing();
+
+        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
+        esa.refresh();
+
+        TransactionHelper.startTransaction();
+
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).execute().actionGet();
+        Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
+    }
+
 
     @Test
     public void shouldIndexMovedSubTree() throws Exception {

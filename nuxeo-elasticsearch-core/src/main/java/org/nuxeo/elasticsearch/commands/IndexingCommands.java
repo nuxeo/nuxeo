@@ -90,13 +90,13 @@ public class IndexingCommands {
                 existing.merge(command);
                 return null;
             }
-        } else if (commandNames.contains(IndexingCommand.INDEX)) {
+        } else if (commandNames.contains(IndexingCommand.INSERT)) {
             if (command.name.equals(IndexingCommand.DELETE)) {
                 // index and delete in the same tx
                 clear();
             } else if (command.isSync()) {
                 // switch to sync if possible
-                find(IndexingCommand.INDEX).makeSync();
+                find(IndexingCommand.INSERT).makeSync();
             }
             // we already have an index command, don't care about the new command
             return null;

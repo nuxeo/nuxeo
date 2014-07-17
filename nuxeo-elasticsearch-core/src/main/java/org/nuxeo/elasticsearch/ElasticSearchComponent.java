@@ -23,6 +23,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
 import java.net.InetAddress;
@@ -57,6 +58,8 @@ import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.action.deletebyquery.IndexDeleteByQueryResponse;
+import org.elasticsearch.action.get.GetRequestBuilder;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -219,7 +222,9 @@ public class ElasticSearchComponent extends DefaultComponent implements
             EventProducer evtProducer = Framework
                     .getLocalService(EventProducer.class);
             Event indexingEvent = cmd.asIndexingEvent();
-            evtProducer.fireEvent(indexingEvent);
+            if (indexingEvent != null) {
+                evtProducer.fireEvent(indexingEvent);
+            }
         } catch (Exception e) {
             throw ClientException.wrap(e);
         }
@@ -247,8 +252,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected void processBulkDeleteCommands(List<IndexingCommand> cmds) {
         // Can be optimized with a single delete by query
         for (IndexingCommand cmd : cmds) {
-            if ((cmd.getTargetDocument() != null)
-                    && (IndexingCommand.DELETE.equals(cmd.getName()))) {
+            if (IndexingCommand.DELETE.equals(cmd.getName())) {
                 Context stopWatch = deleteTimer.time();
                 try {
                     processDeleteCommand(cmd);
@@ -337,41 +341,78 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     protected void processDeleteCommand(IndexingCommand cmd) {
-        DocumentModel doc = cmd.getTargetDocument();
-        assert (doc != null);
-        String indexName = getRepositoryIndex(doc.getRepositoryName());
+        if (cmd.isRecurse()) {
+            processDeleteCommandRecursive(cmd);
+        } else {
+            processDeleteCommandNonRecursive(cmd);
+        }
+    }
+
+    protected void processDeleteCommandNonRecursive(IndexingCommand cmd) {
+        String indexName = getRepositoryIndex(cmd.getRepository());
         DeleteRequestBuilder request = getClient().prepareDelete(indexName,
-                DOC_TYPE, doc.getId());
+                DOC_TYPE, cmd.getDocId());
         if (log.isDebugEnabled()) {
             log.debug(String
-                    .format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                            indexName, DOC_TYPE, doc.getId(), request.request()
-                                    .toString()));
+                    .format("Delete request: curl -XDELETE 'http://localhost:9200/%s/%s/%s'",
+                            indexName, DOC_TYPE, cmd.getDocId()));
         }
         request.execute().actionGet();
-        if (cmd.isRecurse()) {
-            DeleteByQueryRequestBuilder deleteRequest = getClient()
-                    .prepareDeleteByQuery(indexName).setQuery(
-                            QueryBuilders.constantScoreQuery(FilterBuilders
-                                    .termFilter(CHILDREN_FIELD,
-                                            doc.getPathAsString())));
-            if (log.isDebugEnabled()) {
-                log.debug(String
-                        .format("Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
-                                indexName, DOC_TYPE, request.request()
-                                        .toString()));
+    }
+
+    protected void processDeleteCommandRecursive(IndexingCommand cmd) {
+        String indexName = getRepositoryIndex(cmd.getRepository());
+        // we don't want to rely on target document because the document can be already removed
+        String docPath = getPathOfDocFromEs(cmd.getRepository(), cmd.getDocId());
+        if (docPath == null) {
+            if (! Framework.isTestModeSet()) {
+                log.warn("Trying to delete a non existing doc: " + cmd
+                        .toString());
             }
-            DeleteByQueryResponse responses = deleteRequest.execute()
-                    .actionGet();
-            for (IndexDeleteByQueryResponse response : responses) {
-                if (response.getFailedShards() > 0) {
-                    log.error(String.format(
-                            "Delete byQuery fails on shard:%d out of %d",
-                            response.getFailedShards(),
-                            response.getTotalShards()));
-                }
+            return;
+        }
+        QueryBuilder query = QueryBuilders.constantScoreQuery(FilterBuilders
+                .termFilter(CHILDREN_FIELD, docPath));
+        DeleteByQueryRequestBuilder deleteRequest = getClient()
+                .prepareDeleteByQuery(indexName).setTypes(DOC_TYPE).setQuery(query);
+        if (log.isDebugEnabled()) {
+            log.debug(String
+                    .format("Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
+                            indexName, DOC_TYPE, query.toString()));
+        }
+        DeleteByQueryResponse responses = deleteRequest.execute()
+                .actionGet();
+        for (IndexDeleteByQueryResponse response : responses) {
+            // there is no way to trace how many docs are removed
+            if (response.getFailedShards() > 0) {
+                log.error(String.format(
+                        "Delete byQuery fails on shard: %d out of %d",
+                        response.getFailedShards(),
+                        response.getTotalShards()));
             }
         }
+    }
+
+    /**
+     * Return the ecm:path of an ES document or null if not found.
+     */
+    protected String getPathOfDocFromEs(String repository, String docId) {
+        String indexName = getRepositoryIndex(repository);
+        GetRequestBuilder getRequest = getClient()
+                .prepareGet(indexName, DOC_TYPE, docId)
+                .setFields(PATH_FIELD);
+        if (log.isDebugEnabled()) {
+            log.debug(String
+                    .format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s/%s?fields=%s'",
+                            indexName, DOC_TYPE, docId, PATH_FIELD));
+        }
+        GetResponse ret = getRequest.execute()
+                .actionGet();
+        if (!ret.isExists()) {
+            // doc not found
+            return null;
+        }
+        return ret.getField(PATH_FIELD).getValue().toString();
     }
 
     protected IndexRequestBuilder buildEsIndexingRequest(IndexingCommand cmd)
@@ -886,8 +927,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     protected String getWorkKey(IndexingCommand cmd) {
-        DocumentModel doc = cmd.getTargetDocument();
-        return doc.getRepositoryName() + ":" + doc.getId() + ":"
+        return cmd.getRepository() + ":" + cmd.getDocId() + ":"
                 + cmd.isRecurse();
     }
 

@@ -28,6 +28,8 @@ public class ElasticSearchConstants {
 
     public static final String ACL_FIELD = "ecm:acl";
 
+    public static final String PATH_FIELD = "ecm:path";
+
     public static final String CHILDREN_FIELD = "ecm:path.children";
 
     public static final String BINARYTEXT_FIELD = "ecm:binarytext";

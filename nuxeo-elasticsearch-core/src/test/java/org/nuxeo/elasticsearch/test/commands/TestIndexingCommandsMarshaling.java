@@ -32,7 +32,7 @@ public class TestIndexingCommandsMarshaling {
         doc1 = session.createDocument(doc1);
 
         IndexingCommands cmds = new IndexingCommands(doc1);
-        IndexingCommand cmd1 = cmds.add(IndexingCommand.INDEX, true, false);
+        IndexingCommand cmd1 = cmds.add(IndexingCommand.INSERT, true, false);
         IndexingCommand cmd2 = cmds.add(IndexingCommand.UPDATE_SECURITY, false,
                 false);
         Assert.assertNotNull(cmd1);
