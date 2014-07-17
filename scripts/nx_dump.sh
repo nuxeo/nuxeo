@@ -1,7 +1,8 @@
 #!/bin/bash
 
 QUERY="SELECT%20*%20FROM%20Document"
-BATCH_SIZE=20
+# note that Rest API don't accept bigger batch size than 100
+BATCH_SIZE=100
 
 NXUSER=${NXUSER:-Administrator}
 NXPASSWORD=${NXPASSWORD:-Administrator}
