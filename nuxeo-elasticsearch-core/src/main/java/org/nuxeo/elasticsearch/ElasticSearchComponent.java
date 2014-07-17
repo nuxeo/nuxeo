@@ -466,7 +466,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         pendingWork.add(getWorkKey(cmd));
         if (cmd.isSync()) {
             if (log.isDebugEnabled()) {
-                log.debug("Schedule PostCommit indexing request "
+                log.debug("Schedule Sync PostCommit indexing request "
                         + cmd.toString());
             }
             schedulePostCommitIndexing(cmd);
