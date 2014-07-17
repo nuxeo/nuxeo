@@ -15,7 +15,7 @@
 {
     "paramType": "header",
     "name": "X-Versioning-Option",
-    "description": "Checkin Document Version. Return the last document version. (not live document) | Values: major or minor",
+    "description": "Checkin Document Version. Return the last document version. (not "live" document) | Values: major or minor or none",
     "dataType": "string",
     "required": false
 }
