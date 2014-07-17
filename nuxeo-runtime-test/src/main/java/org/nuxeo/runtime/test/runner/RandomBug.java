@@ -166,16 +166,14 @@ public class RandomBug implements MethodRule {
                 MDC.put("fRepeat", i);
                 try {
                     statement.evaluate();
-                    break;
+                    return;
                 } catch (Throwable t) {
                     error.addSuppressed(t);
                 } finally {
                     MDC.remove("fRepeat");
                 }
             }
-            if (error.getSuppressed().length > 0) {
-                throw error;
-            }
+            throw error;
         }
     }
 
