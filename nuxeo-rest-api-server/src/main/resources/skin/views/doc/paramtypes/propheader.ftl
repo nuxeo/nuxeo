@@ -11,4 +11,11 @@
   "description": "Categories to be included in context parameters map",
   "dataType": "string",
   "required": false
+},
+{
+    "paramType": "header",
+    "name": "X-Versioning-Option",
+    "description": "Checkin Document Version. Return the last document version. (not live document) | Values: major or minor",
+    "dataType": "string",
+    "required": false
 }
