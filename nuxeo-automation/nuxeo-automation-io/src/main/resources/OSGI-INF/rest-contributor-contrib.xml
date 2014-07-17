@@ -8,6 +8,10 @@
                  class="org.nuxeo.ecm.automation.io.services.contributor.ACLRestContributor">
       <category>acl</category>
     </contributor>
+    <contributor name="thumbnail"
+                 class="org.nuxeo.ecm.automation.io.services.contributor.ThumbnailRestContributor">
+      <category>thumbnail</category>
+    </contributor>
 
   </extension>
 
