@@ -747,7 +747,7 @@ public class DBSTransactionState {
     protected void updateProxy(DBSDocumentState target, String proxyId) {
         DBSDocumentState proxy = getStateForUpdate(proxyId);
         if (proxy == null) {
-            throw new NullPointerException();
+            throw new NullPointerException(proxyId);
         }
         // clear all proxy data
         for (String key : proxy.getState().keySet().toArray(new String[0])) {

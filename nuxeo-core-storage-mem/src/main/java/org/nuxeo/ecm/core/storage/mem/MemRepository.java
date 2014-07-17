@@ -21,14 +21,17 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateDocumentException;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
@@ -54,6 +57,8 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
  */
 public class MemRepository extends DBSRepositoryBase {
 
+    private static final Log log = LogFactory.getLog(MemRepository.class);
+
     // for debug
     private final AtomicLong temporaryIdCounter = new AtomicLong(0);
 
@@ -73,7 +78,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     protected void initRepository() {
-        states = new HashMap<>();
+        states = new ConcurrentHashMap<>();
         initRoot();
     }
 
@@ -89,7 +94,9 @@ public class MemRepository extends DBSRepositoryBase {
     @Override
     public State readState(String id) {
         State state = states.get(id);
-        // log.error("read   " + id + ": " + state);
+        if (state != null) {
+            log.trace("read   " + id + ": " + state);
+        }
         return state;
     }
 
@@ -105,7 +112,7 @@ public class MemRepository extends DBSRepositoryBase {
     @Override
     public void createState(State state) throws DocumentException {
         String id = (String) state.get(KEY_ID);
-        // log.error("create " + id + ": " + state);
+        log.trace("create " + id + ": " + state);
         if (states.containsKey(id)) {
             throw new DocumentException("Already exists: " + id);
         }
@@ -115,17 +122,17 @@ public class MemRepository extends DBSRepositoryBase {
     @Override
     public void updateState(State state) throws DocumentException {
         String id = (String) state.get(KEY_ID);
-        // log.error("update " + id + ": " + state);
+        log.trace("update " + id + ": " + state);
         State oldState = states.get(id);
         if (oldState == null) {
-            throw new DocumentException("Missing: " + id);
+            throw new ConcurrentUpdateDocumentException("Missing: " + id);
         }
         oldState.putAll(state);
     }
 
     @Override
     public void deleteState(String id) throws DocumentException {
-        // log.error("delete " + id);
+        log.trace("delete " + id);
         if (states.remove(id) == null) {
             throw new DocumentException("Missing: " + id);
         }

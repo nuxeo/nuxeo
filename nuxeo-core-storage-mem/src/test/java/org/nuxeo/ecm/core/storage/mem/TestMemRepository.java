@@ -3152,7 +3152,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         // publish a restored version
         List<DocumentRef> versions = session.getVersionsRefs(doc.getRef());
-        assertEquals(2, versions.size());
+        assertEquals(versions.toString(), 2, versions.size());
         doc = session.restoreToVersion(doc.getRef(), versions.get(0));
         assertEquals("0.1", doc.getVersionLabel());
         proxy = session.publishDocument(doc, folder);

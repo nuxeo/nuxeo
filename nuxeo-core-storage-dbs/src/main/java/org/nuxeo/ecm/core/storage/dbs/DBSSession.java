@@ -836,7 +836,7 @@ public class DBSSession implements Session {
 
         // add this node
         removedIds.add(id);
-        if (TRUE.equals(KEY_IS_PROXY)) {
+        if (TRUE.equals(state.get(KEY_IS_PROXY))) {
             String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
             proxyTargets.put(id, targetId);
         }
@@ -887,6 +887,9 @@ public class DBSSession implements Session {
     @Override
     public Document createProxy(Document doc, Document folder)
             throws DocumentException {
+        if (doc == null) {
+            throw new NullPointerException();
+        }
         String id = doc.getUUID();
         String targetId;
         String versionSeriesId;
@@ -927,7 +930,14 @@ public class DBSSession implements Session {
         proxy.put(KEY_PROXY_VERSION_SERIES_ID, versionSeriesId);
         proxy.put(KEY_IS_VERSION, null);
         proxy.put(KEY_BASE_VERSION_ID, null);
-        proxy.put(KEY_VERSION_SERIES_ID, versionSeriesId);
+        // remove version-related props
+        proxy.put(KEY_IS_VERSION, null);
+        proxy.put(KEY_IS_LATEST_VERSION, null);
+        proxy.put(KEY_IS_LATEST_MAJOR_VERSION, null);
+        proxy.put(KEY_VERSION_CREATED, null);
+        proxy.put(KEY_VERSION_LABEL, null);
+        proxy.put(KEY_VERSION_DESCRIPTION, null);
+        proxy.put(KEY_VERSION_SERIES_ID, null);
 
         // copy target state to proxy
         transaction.updateProxy(target, proxyId);
@@ -1293,6 +1303,7 @@ public class DBSSession implements Session {
         String id = doc.getUUID();
         DBSDocumentState docState = transaction.getStateForUpdate(id);
         docState.put(KEY_ACP, acpToMem(acp));
+        transaction.save(); // read acls update needs full tree
         transaction.updateReadAcls(id);
     }
 
