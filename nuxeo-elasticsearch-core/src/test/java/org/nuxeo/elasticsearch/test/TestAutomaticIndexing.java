@@ -17,6 +17,8 @@
 
 package org.nuxeo.elasticsearch.test;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.action.search.SearchResponse;
@@ -34,11 +36,12 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.listener.EventConstants;
+import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -68,6 +71,9 @@ public class TestAutomaticIndexing {
 
     @Inject
     ElasticSearchAdmin esa;
+
+    @Inject
+    protected TrashService trashService;
 
     private int commandProcessed;
 
@@ -390,5 +396,115 @@ public class TestAutomaticIndexing {
 
         ret = ess.query(session, "SELECT * FROM Document WHERE ecm:fulltext='search'", 10, 0);
         Assert.assertEquals(1, ret.totalSize());
+    }
+
+    @Test
+    public void shouldIndexOnPublishing() throws Exception {
+
+        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        DocumentModel folder = session.createDocumentModel("/", "folder",
+                "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+
+        // publish
+        DocumentModel proxy = session.publishDocument(doc, folder);
+
+        startCountingCommandProcessed();
+        TransactionHelper.commitOrRollbackTransaction();
+        assertNumberOfCommandProcessed(4);
+
+        TransactionHelper.startTransaction();
+        esa.refresh();
+
+        SearchResponse searchResponse = esa.getClient().prepareSearch(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        // folder, version, file and proxy
+        Assert.assertEquals(4, searchResponse.getHits().getTotalHits());
+
+        // unpublish
+        startCountingCommandProcessed();
+        session.removeDocument(proxy.getRef());
+        DocumentModelList docs = ess
+                .query(new NxQueryBuilder(session) // .fetchFromElasticsearch()
+                        .nxql("SELECT * FROM Document"));
+
+        Assert.assertEquals(4, docs.totalSize());
+        TransactionHelper.commitOrRollbackTransaction();
+        assertNumberOfCommandProcessed(1);
+
+        TransactionHelper.startTransaction();
+
+        esa.refresh();
+
+        searchResponse = esa.getClient().prepareSearch(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        Assert.assertEquals(3, searchResponse.getHits().getTotalHits());
+
+    }
+
+
+    @Test
+    public void shouldUnIndexUsingTrashService() throws Exception {
+
+        DocumentModel folder = session.createDocumentModel("/", "folder",
+                "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+
+        trashService.trashDocuments(Arrays.asList(doc));
+        ElasticSearchService ess = Framework
+                .getLocalService(ElasticSearchService.class);
+
+        startCountingCommandProcessed();
+        TransactionHelper.commitOrRollbackTransaction();
+        assertNumberOfCommandProcessed(2);
+
+        TransactionHelper.startTransaction();
+        esa.refresh();
+
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session)
+                .nxql("SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'deleted'"));
+        Assert.assertEquals(1, ret.totalSize());
+        trashService.undeleteDocuments(Arrays.asList(doc));
+
+        startCountingCommandProcessed();
+        TransactionHelper.commitOrRollbackTransaction();
+        assertNumberOfCommandProcessed(1);
+
+        TransactionHelper.startTransaction();
+
+        esa.refresh();
+        ret = ess.query(new NxQueryBuilder(session)
+                .nxql("SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'deleted'"));
+        Assert.assertEquals(2, ret.totalSize());
+
+        SearchResponse searchResponse = esa.getClient().prepareSearch(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60)
+                .execute().actionGet();
+        Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
+
+        trashService.purgeDocuments(session,
+                Collections.singletonList(doc.getRef()));
+
+        startCountingCommandProcessed();
+        TransactionHelper.commitOrRollbackTransaction();
+        assertNumberOfCommandProcessed(1);
+
+        TransactionHelper.startTransaction();
+
+        esa.refresh();
+
+        searchResponse = esa.getClient().prepareSearch(
+                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60)
+                .execute().actionGet();
+        Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
+
     }
 }

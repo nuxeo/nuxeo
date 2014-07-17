@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.elasticsearch.listener.EventConstants;
@@ -50,13 +51,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class IndexingCommand {
 
-    public static final String INDEX = "ESIndex";
+    public static final String INSERT = "ES_INSERT";
 
-    public static final String UPDATE = "ESReIndex";
+    public static final String UPDATE = "ES_UPDATE";
 
-    public static final String UPDATE_SECURITY = "ESReIndexSecurity";
+    public static final String UPDATE_SECURITY = "ES_UPDATE_SECURITY";
 
-    public static final String DELETE = "ESUnIndex";
+    public static final String DELETE = "ES_DELETE";
 
     public static final String PREFIX = "IndexingCommand-";
 
@@ -89,7 +90,7 @@ public class IndexingCommand {
     public IndexingCommand(DocumentModel targetDocument, String command,
             boolean sync, boolean recurse) {
         // we don't want sync and recursive command
-        assert(!(sync && recurse));
+        assert(!(sync && recurse) || DELETE.equals(command));
         this.id = PREFIX + UUID.randomUUID().toString();
         this.name = command;
         this.sync = sync;
@@ -100,7 +101,7 @@ public class IndexingCommand {
 
     public IndexingCommand(DocumentModel targetDocument, boolean sync,
             boolean recurse) {
-        this(targetDocument, INDEX, sync, recurse);
+        this(targetDocument, INSERT, sync, recurse);
     }
 
     public void refresh(CoreSession session) throws ClientException {
@@ -116,13 +117,16 @@ public class IndexingCommand {
     }
 
     public String getRepository() {
-        if (repository != null) {
-            return repository;
+        if (repository == null) {
+            if (targetDocument != null) {
+                repository = targetDocument.getRepositoryName();
+            } else {
+                RepositoryManager mgr = Framework
+                        .getLocalService(RepositoryManager.class);
+                repository = mgr.getDefaultRepository().getName();
+            }
         }
-        if (targetDocument != null) {
-            return targetDocument.getRepositoryName();
-        }
-        return null;
+        return repository;
     }
 
     public void merge(IndexingCommand other) {
@@ -136,7 +140,14 @@ public class IndexingCommand {
     }
 
     public boolean canBeMerged(IndexingCommand other) {
-        // only if not sync and recurse
+        if (! name.equals(other.name)) {
+            return false;
+        }
+        if (DELETE.equals(name)) {
+            // we support recursive sync deletion
+            return true;
+        }
+        // only if the result is not a sync and recurse command
         return ! ((other.sync || sync ) && (other.recurse || recurse));
     }
 
@@ -170,9 +181,11 @@ public class IndexingCommand {
         jsonGen.writeStartObject();
         jsonGen.writeStringField("id", id);
         jsonGen.writeStringField("name", name);
-        jsonGen.writeStringField("docId", targetDocument.getId());
-        jsonGen.writeStringField("path", targetDocument.getPathAsString());
-        jsonGen.writeStringField("repo", targetDocument.getRepositoryName());
+            jsonGen.writeStringField("docId", getDocId());
+        if (targetDocument != null) {
+            jsonGen.writeStringField("path", targetDocument.getPathAsString());
+        }
+        jsonGen.writeStringField("repo", getRepository());
         jsonGen.writeBooleanField("recurse", recurse);
         jsonGen.writeBooleanField("sync", sync);
         jsonGen.writeEndObject();
@@ -248,6 +261,17 @@ public class IndexingCommand {
         return id;
     }
 
+    public String getDocId() {
+        if (uid == null) {
+            if (targetDocument != null) {
+                uid = targetDocument.getId();
+            } else {
+                uid = "unknown";
+            }
+        }
+        return uid;
+    }
+
     public IndexingCommand clone(DocumentModel newDoc) {
         return new IndexingCommand(newDoc, name, sync, recurse);
     }
@@ -284,11 +308,13 @@ public class IndexingCommand {
             if (session != null) {
                 EventContextImpl context = new EventContextImpl(session,
                         session.getPrincipal());
-                indexingEvent = context.newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
+                indexingEvent = context
+                        .newEvent(EventConstants.ES_INDEX_EVENT_SYNC);
+
             } else {
                 if (Framework.isInitialized()) {
-                    log.error(
-                            "Unable to generate event from cmd " + toString());
+                    log.error("Unable to generate event, no session found for cmd: "
+                            + toString());
                 }
             }
         }
@@ -297,25 +323,27 @@ public class IndexingCommand {
     public Event asIndexingEvent() throws IOException {
         if (indexingEvent == null) {
             computeIndexingEvent();
-            if (indexingEvent != null) {
-                indexingEvent.getContext().getProperties()
-                        .put(getId(), toJSON());
-            }
+        }
+        if (indexingEvent != null) {
+            indexingEvent.getContext().getProperties().put(getId(), toJSON());
         }
         return indexingEvent;
     }
 
     protected void markUpdated() {
         indexingEvent = null;
+        if (sync) {
+            computeIndexingEvent();
+        }
     }
 
     /**
      * Try to make the command synchronous.
      *
-     * Recurse command will stay in async.
+     * Recurse command will stay in async for update.
      */
     public void makeSync() {
-        if (! recurse) {
+        if (! recurse || DELETE.equals(name)) {
             sync = true;
         }
     }
