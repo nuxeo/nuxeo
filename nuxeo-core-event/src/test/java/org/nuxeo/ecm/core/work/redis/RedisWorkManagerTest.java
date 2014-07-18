@@ -18,19 +18,14 @@ package org.nuxeo.ecm.core.work.redis;
 
 import static org.junit.Assume.assumeTrue;
 
-import java.net.URL;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
-
 import org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor;
 import org.nuxeo.ecm.core.redis.RedisService;
 import org.nuxeo.ecm.core.redis.RedisServiceImpl;
 import org.nuxeo.ecm.core.work.WorkManagerTest;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -44,8 +39,6 @@ import redis.clients.jedis.Pipeline;
  */
 public class RedisWorkManagerTest extends WorkManagerTest {
 
-    private static final Log log = LogFactory.getLog(RedisWorkManagerTest.class);
-
     protected RedisConfigurationDescriptor redisConfigurationDescriptor;
 
     @Override
@@ -55,10 +48,6 @@ public class RedisWorkManagerTest extends WorkManagerTest {
 
     @Override
     protected void doDeploy() throws Exception {
-        // TODO NXP-14688: temporary logging
-        debugClasspath("redis/clients/jedis/JedisPoolConfig.class");
-        debugClasspath("org/apache/commons/pool2/impl/GenericObjectPoolConfig.class");
-        debugClasspath("org/apache/commons/pool/impl/GenericObjectPool.class");
         super.doDeploy();
         deployContrib("org.nuxeo.ecm.core.event.test",
                 "test-workmanager-redis-config.xml");
@@ -68,16 +57,6 @@ public class RedisWorkManagerTest extends WorkManagerTest {
         RedisServiceImpl redisService = (RedisServiceImpl) Framework.getLocalService(RedisService.class);
         redisService.registerConfiguration(redisConfigurationDescriptor);
         clearRedis(redisService);
-    }
-
-    protected void debugClasspath(String wanted) {
-        URL url = OSGiRuntimeService.class.getClassLoader().getResource(wanted);
-        // JedisPoolConfig.class.getName().replace('.', '/').concat(".class"));
-        if (url == null) {
-            log.warn("Not found in classpath: " + wanted);
-        } else {
-            log.warn(url);
-        }
     }
 
     @Override
