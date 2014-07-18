@@ -103,6 +103,7 @@ import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.elasticsearch.io.DocumentModelReaders;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
+import org.nuxeo.elasticsearch.work.ChildrenIndexingWorker;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -145,6 +146,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     protected final MetricRegistry registry = SharedMetricRegistries
             .getOrCreate(MetricsService.class.getName());
     private final AtomicInteger totalCommandProcessed = new AtomicInteger(0);
+    private final AtomicInteger totalCommandRunning = new AtomicInteger(0);
     protected Node localNode;
     protected Client client;
     protected boolean indexInitDone = false;
@@ -237,16 +239,25 @@ public class ElasticSearchComponent extends DefaultComponent implements
             stackedCommands.addAll(cmds);
             return;
         }
-        int nbCommands = markCommandInProgress(cmds);
-        processBulkDeleteCommands(cmds);
-        Context stopWatch = bulkIndexTimer.time();
+        markCommandInProgress(cmds);
+        // we count all commands even those coming from async children worker
+        // which are not scheduled
+        int nbCommands = cmds.size();
+        totalCommandRunning.addAndGet(nbCommands);
         try {
-            processBulkIndexCommands(cmds);
-        } finally {
-            stopWatch.stop();
-            totalCommandProcessed.addAndGet(nbCommands);
+            // uncomment to simulate long indexing which timeout postcommit
+            // try {Thread.sleep(1000);} catch (InterruptedException e) { }
+            processBulkDeleteCommands(cmds);
+            Context stopWatch = bulkIndexTimer.time();
+            try {
+                processBulkIndexCommands(cmds);
+            } finally {
+                stopWatch.stop();
+            }
+        } finally  {
+            totalCommandRunning.addAndGet(-nbCommands);
         }
-
+        totalCommandProcessed.addAndGet(nbCommands);
     }
 
     protected void processBulkDeleteCommands(List<IndexingCommand> cmds) {
@@ -303,6 +314,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             return;
         }
         markCommandInProgress(cmd);
+        totalCommandRunning.incrementAndGet();
         if (log.isTraceEnabled()) {
             log.trace("Sending indexing request to Elasticsearch: "
                     + cmd.toString());
@@ -314,6 +326,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             } finally {
                 stopWatch.stop();
                 totalCommandProcessed.addAndGet(1);
+                totalCommandRunning.decrementAndGet();
             }
         } else {
             Context stopWatch = indexTimer.time();
@@ -322,6 +335,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             } finally {
                 stopWatch.stop();
                 totalCommandProcessed.addAndGet(1);
+                totalCommandRunning.decrementAndGet();
             }
         }
     }
@@ -956,6 +970,14 @@ public class ElasticSearchComponent extends DefaultComponent implements
     @Override
     public int getTotalCommandProcessed() {
         return totalCommandProcessed.get();
+    }
+
+    @Override public int getRunningCommands() {
+        return totalCommandRunning.get();
+    }
+
+    @Override public boolean isIndexingInProgress() {
+        return (getRunningCommands() > 0 || getPendingCommands() > 0 || ChildrenIndexingWorker.getRunningWorkers() > 0);
     }
 
     public String[] getIncludeSourceFields() {
