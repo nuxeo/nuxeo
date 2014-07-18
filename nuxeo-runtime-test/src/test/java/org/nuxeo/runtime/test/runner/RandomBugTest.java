@@ -22,17 +22,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
-import org.junit.runner.notification.Failure;
+
+import org.nuxeo.runtime.test.Failures;
 
 /**
  * Tests verifying that test fixtures ({@link Before} and {@link After}) and
@@ -41,8 +38,6 @@ import org.junit.runner.notification.Failure;
  * @since 5.9.5
  */
 public class RandomBugTest {
-
-    private static final Log log = LogFactory.getLog(RandomBugTest.class);
 
     private static final String FAILURE_MESSAGE = "FAILURE";
 
@@ -141,11 +136,9 @@ public class RandomBugTest {
                 RandomBug.MODE.RELAX.toString());
         Result result = JUnitCore.runClasses(RandomlyFailingTest.class);
         if (!result.wasSuccessful()) {
-            List<Failure> failures = result.getFailures();
-            for (Failure failure : failures) {
-                log.error(failure);
-            }
-            fail("Unexpected failure: RELAX mode expects a success");
+            Failures failures = new Failures(result.getFailures());
+            fail("Unexpected failure: RELAX mode expects a success\n"
+                    + failures.toString());
         }
     }
 
@@ -156,19 +149,9 @@ public class RandomBugTest {
     }
 
     private void analyseResult(Result result, String testFailureDescription) {
-        List<Failure> failures = result.getFailures();
-        if (!failures.isEmpty()) {
-            for (Failure failure : failures) {
-                analyzeFailure(failure, testFailureDescription);
-            }
+        if (!result.wasSuccessful()) {
+            new Failures(result).fail(FAILURE_MESSAGE, testFailureDescription);
         }
     }
 
-    private void analyzeFailure(Failure failure, String testFailureDescription) {
-        String actualFailureMsg = failure.getMessage();
-        if (FAILURE_MESSAGE.equals(actualFailureMsg)) {
-            fail(testFailureDescription);
-        }
-        fail("Unexpected failure : " + actualFailureMsg);
-    }
 }

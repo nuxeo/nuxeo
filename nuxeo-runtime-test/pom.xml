@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -22,6 +23,8 @@
           <excludes>
             <exclude>**/ContributionTest*.java</exclude>
             <exclude>**/MyTestComponent.java</exclude>
+            <!-- Exclude inner classes -->
+            <exclude>**/*$*</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -46,8 +49,6 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
     </dependency>
-
-
 
     <dependency>
       <groupId>org.javasimon</groupId>
@@ -148,13 +149,6 @@
       <groupId>org.concordion</groupId>
       <artifactId>concordion</artifactId>
     </dependency>
-
-    <!-- disabled: nuxeo-distribution tools is generating classloader issue -->
-    <!-- <dependency> -->
-    <!-- <groupId>org.nuxeo.build</groupId> -->
-    <!-- <artifactId>ant-assembly-maven-plugin</artifactId> -->
-    <!-- <classifier>all</classifier> -->
-    <!-- </dependency> -->
 
     <dependency>
       <groupId>org.slf4j</groupId>
