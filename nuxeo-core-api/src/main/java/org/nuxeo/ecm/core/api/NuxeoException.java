@@ -7,28 +7,31 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Alexandre Russel
+ *     Bogdan Stefanescu
  *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.api;
 
-public class ClientRuntimeException extends NuxeoException {
+/**
+ * The most generic exception thrown by the Nuxeo Core.
+ */
+public class NuxeoException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public ClientRuntimeException() {
+    public NuxeoException() {
     }
 
-    public ClientRuntimeException(String message) {
+    public NuxeoException(String message) {
         super(message);
     }
 
-    public ClientRuntimeException(Throwable t) {
-        super(t);
+    public NuxeoException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public ClientRuntimeException(String message, Throwable t) {
-        super(message, t);
+    public NuxeoException(Throwable cause) {
+        super(cause);
     }
 
 }
