@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     bdelbosc
+ */
 package org.nuxeo.elasticsearch.test;
 
 import java.io.Serializable;
@@ -8,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +70,53 @@ public class TestTreeIndexing {
     protected ElasticSearchService ess;
 
     @Inject
-    protected ElasticSearchAdmin esa;
+    ElasticSearchAdmin esa;
+
+    private int commandProcessed;
+    private boolean syncMode = false;
+
+    public void startCountingCommandProcessed() {
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+        commandProcessed = esa.getTotalCommandProcessed();
+    }
+
+    public void assertNumberOfCommandProcessed(int processed) throws Exception {
+        Assert.assertEquals(processed, esa.getTotalCommandProcessed()
+                - commandProcessed);
+    }
+
+    /**
+     * Wait for sync and async job and refresh the index
+     */
+    public void waitForIndexing() throws Exception {
+        for (int i = 0; (i < 100) && esa.isIndexingInProgress(); i++) {
+            Thread.sleep(100);
+        }
+        Assert.assertFalse("Strill indexing in progress",
+                esa.isIndexingInProgress());
+        esa.refresh();
+    }
+
+    public void activateSynchronousMode() throws Exception {
+        ElasticSearchInlineListener.useSyncIndexing.set(true);
+        syncMode = true;
+    }
+
+    @After
+    public void disableSynchronousMode() {
+        ElasticSearchInlineListener.useSyncIndexing.set(false);
+        syncMode = false;
+    }
+
+    public void startTransaction() {
+        if (syncMode) {
+            ElasticSearchInlineListener.useSyncIndexing.set(true);
+        }
+        if (!TransactionHelper.isTransactionActive()) {
+            TransactionHelper.startTransaction();
+        }
+    }
 
     protected void buildTree() throws ClientException {
         String root = "/";
@@ -67,46 +130,28 @@ public class TestTreeIndexing {
         }
     }
 
-    protected void waitForAsyncIndexing() throws Exception {
-        // wait for indexing
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
-    }
-
     protected void buildAndIndexTree() throws Exception {
-
         if (!TransactionHelper.isTransactionActive()) {
             TransactionHelper.startTransaction();
         }
 
-        // build the tree
+        startCountingCommandProcessed();
         buildTree();
-
-        int n = esa.getTotalCommandProcessed();
-
         TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
+        assertNumberOfCommandProcessed(10);
 
-        waitForAsyncIndexing();
-
-        Assert.assertEquals(10, esa.getTotalCommandProcessed() - n);
-        esa.refresh();
-
-        TransactionHelper.startTransaction();
-
-        // check indexing
+        startTransaction();
+        // check indexing at ES level
         SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
                 .setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
-
     }
 
     @Test
     public void shouldIndexTree() throws Exception {
-
         buildAndIndexTree();
 
         // check sub tree search
@@ -120,61 +165,28 @@ public class TestTreeIndexing {
                                 "/folder0/folder1/folder2")).execute()
                 .actionGet();
         Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
-
     }
 
     @Test
     public void shouldUnIndexSubTree() throws Exception {
-
         buildAndIndexTree();
 
         DocumentRef ref = new PathRef("/folder0/folder1/folder2");
         Assert.assertTrue(session.exists(ref));
-        int n = esa.getTotalCommandProcessed();
+
+        startCountingCommandProcessed();
         session.removeDocument(ref);
-
         TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
+        assertNumberOfCommandProcessed(1);
 
-        // async command is not yet scheduled
-
-        waitForAsyncIndexing();
-        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
-        esa.refresh();
-
-        TransactionHelper.startTransaction();
-
+        startTransaction();
         SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
                 .setSize(60).execute().actionGet();
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
     }
-
-    @Test
-    public void shouldUnIndexSubTreeSync() throws Exception {
-        buildAndIndexTree();
-
-        DocumentRef ref = new PathRef("/folder0/folder1/folder2");
-        int n = esa.getTotalCommandProcessed();
-        // try to do it sync
-        // ElasticSearchInlineListener.useSyncIndexing.set(true);
-        session.removeDocument(ref);
-
-        TransactionHelper.commitOrRollbackTransaction();
-        waitForAsyncIndexing();
-
-        Assert.assertEquals(1, esa.getTotalCommandProcessed() - n);
-        esa.refresh();
-
-        TransactionHelper.startTransaction();
-
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
-                .setSize(60).execute().actionGet();
-        Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
-    }
-
 
     @Test
     public void shouldIndexMovedSubTree() throws Exception {
@@ -187,15 +199,20 @@ public class TestTreeIndexing {
 
         // move in the same folder : rename
         session.move(ref, doc.getParentRef(), "folderA");
-        int n = esa.getTotalCommandProcessed();
+
+        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
 
-        waitForAsyncIndexing();
+        waitForIndexing();
+        if (syncMode) {
+            // in sync we split recursive update into 2 commands:
+            // 1 sync non recurse + 1 async recursive
+            assertNumberOfCommandProcessed(9);
+        } else {
+            assertNumberOfCommandProcessed(8);
+        }
 
-        Assert.assertEquals(8, esa.getTotalCommandProcessed() - n);
-        esa.refresh();
-
-        TransactionHelper.startTransaction();
+        startTransaction();
 
         SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME)
@@ -259,57 +276,69 @@ public class TestTreeIndexing {
         // check for user with no rights
 
         CoreSession restrictedSession = getRestrictedSession("toto");
-        docs = ess.query(restrictedSession, "select * from Document", 10, 0);
-        Assert.assertEquals(0, docs.totalSize());
+        try {
+            docs = ess
+                    .query(restrictedSession, "select * from Document", 10, 0);
+            Assert.assertEquals(0, docs.totalSize());
 
-        // add READ rights and check that user now has access
+            // add READ rights and check that user now has access
 
-        DocumentRef ref = new PathRef("/folder0/folder1/folder2");
-        ACP acp = new ACPImpl();
-        ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
-        acl.add(new ACE("toto", SecurityConstants.READ, true));
-        acp.addACL(acl);
-        session.setACP(ref, acp, true);
-        int n = esa.getTotalCommandProcessed();
-        TransactionHelper.commitOrRollbackTransaction();
+            DocumentRef ref = new PathRef("/folder0/folder1/folder2");
+            ACP acp = new ACPImpl();
+            ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
+            acl.add(new ACE("toto", SecurityConstants.READ, true));
+            acp.addACL(acl);
+            session.setACP(ref, acp, true);
+            startCountingCommandProcessed();
+            TransactionHelper.commitOrRollbackTransaction();
 
-        waitForAsyncIndexing();
-        Assert.assertEquals(8, esa.getTotalCommandProcessed() - n);
+            waitForIndexing();
+            if (syncMode) {
+                // in sync we split recursive update into 2 commands:
+                // 1 sync non recurse + 1 async recursive
+                assertNumberOfCommandProcessed(9);
+            } else {
+                assertNumberOfCommandProcessed(8);
+            }
 
-        esa.refresh();
+            startTransaction();
+            docs = ess
+                    .query(restrictedSession, "select * from Document", 10, 0);
+            Assert.assertEquals(8, docs.totalSize());
 
-        TransactionHelper.startTransaction();
+            // block rights and check that blocking is taken into account
 
-        docs = ess.query(restrictedSession, "select * from Document", 10, 0);
-        Assert.assertEquals(8, docs.totalSize());
+            ref = new PathRef(
+                    "/folder0/folder1/folder2/folder3/folder4/folder5");
+            acp = new ACPImpl();
+            acl = ACPImpl.newACL(ACL.LOCAL_ACL);
 
-        // block rights and check that blocking is taken into account
+            acl.add(new ACE(SecurityConstants.EVERYONE,
+                    SecurityConstants.EVERYTHING, false));
+            acl.add(new ACE("Administrator", SecurityConstants.EVERYTHING, true));
+            acp.addACL(acl);
 
-        ref = new PathRef("/folder0/folder1/folder2/folder3/folder4/folder5");
-        acp = new ACPImpl();
-        acl = ACPImpl.newACL(ACL.LOCAL_ACL);
+            session.setACP(ref, acp, true);
 
-        acl.add(new ACE(SecurityConstants.EVERYONE,
-                SecurityConstants.EVERYTHING, false));
-        acl.add(new ACE("Administrator", SecurityConstants.EVERYTHING, true));
-        acp.addACL(acl);
+            session.save();
+            startCountingCommandProcessed();
+            TransactionHelper.commitOrRollbackTransaction();
 
-        session.setACP(ref, acp, true);
+            startTransaction();
 
-        session.save();
-        n = esa.getTotalCommandProcessed();
-        TransactionHelper.commitOrRollbackTransaction();
+            waitForIndexing();
+            if (syncMode) {
+                assertNumberOfCommandProcessed(6);
+            } else {
+                assertNumberOfCommandProcessed(5);
+            }
 
-        TransactionHelper.startTransaction();
-
-        waitForAsyncIndexing();
-        Assert.assertEquals(5, esa.getTotalCommandProcessed() - n);
-        esa.refresh();
-
-        docs = ess.query(restrictedSession, "select * from Document", 10, 0);
-        Assert.assertEquals(3, docs.totalSize());
-
-        CoreInstance.getInstance().close(restrictedSession);
+            docs = ess
+                    .query(restrictedSession, "select * from Document", 10, 0);
+            Assert.assertEquals(3, docs.totalSize());
+        } finally {
+            CoreInstance.getInstance().close(restrictedSession);
+        }
     }
 
     @Test
@@ -333,10 +362,9 @@ public class TestTreeIndexing {
         session.setACP(ref, acp, true);
 
         TransactionHelper.commitOrRollbackTransaction();
-        waitForAsyncIndexing();
-        esa.refresh();
+        waitForIndexing();
 
-        TransactionHelper.startTransaction();
+        startTransaction();
         docs = ess.query(restrictedSession,
                 "select * from Document order by dc:title", 10, 0);
         Assert.assertEquals(8, docs.totalSize());
@@ -351,10 +379,9 @@ public class TestTreeIndexing {
         session.setACP(ref, acp, true);
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
-        waitForAsyncIndexing();
-        esa.refresh();
+        waitForIndexing();
 
-        TransactionHelper.startTransaction();
+        startTransaction();
         docs = ess.query(restrictedSession,
                 "select * from Document order by dc:title", 10, 0);
         // can view folder2, folder3 and folder4
@@ -363,46 +390,34 @@ public class TestTreeIndexing {
         CoreInstance.getInstance().close(restrictedSession);
     }
 
-
-    @Test
-    public void shouldDenyAccessOnUnsupportedACLSync() throws Exception {
-        ElasticSearchInlineListener.useSyncIndexing.set(true);
-        shouldDenyAccessOnUnsupportedACL();
-    }
-
     @Test
     public void shouldReindexSubTreeInTrash() throws Exception {
-
         buildAndIndexTree();
 
         DocumentRef ref = new PathRef("/folder0/folder1/folder2");
         Assert.assertTrue(session.exists(ref));
         session.followTransition(ref, "delete");
-        int n = esa.getTotalCommandProcessed();
+        startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
+        // let the bulkLifeCycleChangeListener do its work
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
+        waitForIndexing();
+        assertNumberOfCommandProcessed(8);
 
-        waitForAsyncIndexing();
-        Assert.assertEquals(8, esa.getTotalCommandProcessed() - n);
-
-        esa.refresh();
-
-        TransactionHelper.startTransaction();
-
+        startTransaction();
         DocumentModelList docs = ess
                 .query(session,
                         "select * from Document where ecm:currentLifeCycleState != 'deleted'",
                         20, 0);
-
         // for (DocumentModel doc : docs) {
-            // System.out.println(doc.getPathAsString());
+        // System.out.println(doc.getPathAsString());
         // }
         Assert.assertEquals(2, docs.totalSize());
-
     }
 
     @Test
-    public void shouldIndexOnCopyAsync() throws Exception {
-
+    public void shouldIndexOnCopy() throws Exception {
         buildAndIndexTree();
 
         DocumentRef src = new PathRef("/folder0/folder1/folder2");
@@ -410,35 +425,11 @@ public class TestTreeIndexing {
         session.copy(src, dst, "folder2-copy");
 
         TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
 
-        waitForAsyncIndexing();
-        esa.refresh();
-
-        TransactionHelper.startTransaction();
-
-        DocumentModelList docs = ess.query(session, "select * from Document", 20, 0);
-        Assert.assertEquals(18, docs.totalSize());
-    }
-
-
-    @Test
-    public void shouldIndexOnCopySync() throws Exception {
-
-        buildAndIndexTree();
-
-        DocumentRef src = new PathRef("/folder0/folder1/folder2");
-        DocumentRef dst = new PathRef("/folder0");
-        DocumentModel doc = session.getDocument(dst);
-        ElasticSearchInlineListener.useSyncIndexing.set(true);
-        session.copy(src, dst, "folder2-copy");
-
-        TransactionHelper.commitOrRollbackTransaction();
-        waitForAsyncIndexing();
-        esa.refresh();
-
-        TransactionHelper.startTransaction();
-
-        DocumentModelList docs = ess.query(session, "select * from Document", 20, 0);
+        startTransaction();
+        DocumentModelList docs = ess.query(session, "select * from Document",
+                20, 0);
         Assert.assertEquals(18, docs.totalSize());
     }
 

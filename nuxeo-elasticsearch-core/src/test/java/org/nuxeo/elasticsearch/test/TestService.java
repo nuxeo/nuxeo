@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo
+ *     tiry
  */
 
 package org.nuxeo.elasticsearch.test;
@@ -31,39 +31,51 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import com.google.inject.Inject;
+
 @RunWith(FeaturesRunner.class)
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 @Features({ RepositoryElasticSearchFeature.class })
 public class TestService {
 
+    @Inject
+    ElasticSearchAdmin esa;
+
+    @Inject
+    ElasticSearchService ess;
+
+    @Inject
+    ElasticSearchIndexing esi;
 
     @Test
     public void checkDeclaredServices() throws Exception {
-
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
-
-        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
         Assert.assertNotNull(esi);
-
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
 
         Client client = esa.getClient();
         Assert.assertNotNull(client);
+
+        Assert.assertEquals(0, esa.getPendingDocs());
+        Assert.assertEquals(0, esa.getTotalCommandProcessed());
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getRunningCommands());
+        Assert.assertFalse(esa.isIndexingInProgress());
     }
 
     @Test
     public void verifyNodeStartedWithConfig() throws Exception {
 
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        ElasticSearchService ess = Framework
+                .getLocalService(ElasticSearchService.class);
         Assert.assertNotNull(ess);
 
-        ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
+        ElasticSearchAdmin esa = Framework
+                .getLocalService(ElasticSearchAdmin.class);
         Assert.assertNotNull(esa);
 
-        NodesInfoResponse nodeInfoResponse = esa.getClient().admin().cluster().nodesInfo(
-                new NodesInfoRequest()).actionGet();
+        NodesInfoResponse nodeInfoResponse = esa.getClient().admin().cluster()
+                .nodesInfo(new NodesInfoRequest()).actionGet();
 
         Assert.assertEquals(1, nodeInfoResponse.getNodes().length);
         Assert.assertTrue(nodeInfoResponse.getClusterNameAsString().startsWith(

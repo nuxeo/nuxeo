@@ -17,6 +17,7 @@
 
 package org.nuxeo.elasticsearch.work;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -37,7 +38,14 @@ public abstract class AbstractIndexingWorker extends AbstractWork {
 
     protected final String path;
 
+    private static final AtomicInteger activeWorker = new AtomicInteger(0);
+
+    public static int getRunningWorkers() {
+        return activeWorker.get();
+    }
+
     public AbstractIndexingWorker(IndexingCommand cmd) {
+        activeWorker.incrementAndGet();
         this.cmd = cmd;
         path = cmd.getTargetDocument().getPathAsString();
     }
@@ -49,10 +57,15 @@ public abstract class AbstractIndexingWorker extends AbstractWork {
 
     @Override
     public void work() throws Exception {
-        CoreSession session = initSession(repositoryName);
-        ElasticSearchIndexing esi = Framework.getLocalService(ElasticSearchIndexing.class);
-        cmd.refresh(session);
-        doIndexingWork(esi, cmd);
+        try {
+            CoreSession session = initSession(repositoryName);
+            ElasticSearchIndexing esi = Framework
+                    .getLocalService(ElasticSearchIndexing.class);
+            cmd.refresh(session);
+            doIndexingWork(esi, cmd);
+        } finally {
+            activeWorker.decrementAndGet();
+        }
     }
 
     protected abstract void doIndexingWork(ElasticSearchIndexing esi,

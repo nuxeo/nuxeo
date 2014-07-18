@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
-import org.nuxeo.elasticsearch.listener.EventConstants;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -72,254 +71,156 @@ public class TestAutomaticIndexing {
     protected CoreSession session;
 
     @Inject
-    ElasticSearchAdmin esa;
-
+    protected ElasticSearchService ess;
     @Inject
     protected TrashService trashService;
-
+    @Inject
+    ElasticSearchAdmin esa;
     private int commandProcessed;
+    private boolean syncMode = false;
+
+    public void startCountingCommandProcessed() {
+        Assert.assertEquals(0, esa.getPendingCommands());
+        Assert.assertEquals(0, esa.getPendingDocs());
+        commandProcessed = esa.getTotalCommandProcessed();
+    }
+
+    public void assertNumberOfCommandProcessed(int processed) throws Exception {
+        Assert.assertEquals(processed, esa.getTotalCommandProcessed()
+                - commandProcessed);
+    }
+
+    /**
+     * Wait for sync and async job and refresh the index
+     */
+    public void waitForIndexing() throws Exception {
+        for (int i = 0; (i < 100) && esa.isIndexingInProgress(); i++) {
+            Thread.sleep(100);
+        }
+        Assert.assertFalse("Strill indexing in progress",
+                esa.isIndexingInProgress());
+        esa.refresh();
+    }
+
+    public void activateSynchronousMode() throws Exception {
+        ElasticSearchInlineListener.useSyncIndexing.set(true);
+        syncMode = true;
+    }
+
+    @After
+    public void disableSynchronousMode() {
+        ElasticSearchInlineListener.useSyncIndexing.set(false);
+        syncMode = false;
+    }
+
+    public void startTransaction() {
+        if (syncMode) {
+            ElasticSearchInlineListener.useSyncIndexing.set(true);
+        }
+        if (!TransactionHelper.isTransactionActive()) {
+            TransactionHelper.startTransaction();
+        }
+    }
 
     @After
     public void cleanupIndexed() throws Exception {
         esa.initIndexes(true);
     }
 
-    private void startCountingCommandProcessed() {
-        Assert.assertNotNull(esa);
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
-        commandProcessed = esa.getTotalCommandProcessed();
-    }
-
-    private void assertNumberOfCommandProcessed(int processed)
-            throws InterruptedException {
-        Assert.assertNotNull(esa);
-        WorkManager wm = Framework.getLocalService(WorkManager.class);
-        Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
-        Assert.assertEquals(processed, esa.getTotalCommandProcessed() - commandProcessed);
-    }
-
     @Test
-    public void shouldIndexDocumentSynchronously() throws Exception {
-
-        Assert.assertTrue(TransactionHelper.isTransactionActive());
-
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        Assert.assertNotNull(ess);
-
-        Assert.assertNotNull(esa);
-        Assert.assertEquals(0, esa.getPendingDocs());
-
+    public void shouldIndexDocument() throws Exception {
+        startTransaction();
         // create 10 docs
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
                     "File");
             doc.setPropertyValue("dc:title", "TestMe" + i);
-            doc.getContextData().put(EventConstants.ES_SYNC_INDEXING_FLAG, true);
             doc = session.createDocument(doc);
-
         }
         // merge 5
         for (int i = 0; i < 5; i++) {
-            DocumentModel doc = session.getDocument(new PathRef("/testDoc" + i));
+            DocumentModel doc = session
+                    .getDocument(new PathRef("/testDoc" + i));
             doc.setPropertyValue("dc:description", "Description TestMe" + i);
             doc = session.saveDocument(doc);
         }
-
-        TransactionHelper.commitOrRollbackTransaction();
-
-        int nbTry = 0;
-        while (esa.getPendingCommands() > 0 && nbTry < 20) {
-            Thread.sleep(1000);
-            nbTry++;
-        }
-
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
-
-        TransactionHelper.startTransaction();
-
-        SearchResponse searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
-        Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
-
-    }
-
-    @Test
-    public void shouldNotIndexDocumentSynchronouslyBecauseOfRollback()
-            throws Exception {
-
-        Assert.assertTrue(TransactionHelper.isTransactionActive());
-
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        Assert.assertNotNull(ess);
-
-        Assert.assertNotNull(esa);
-        Assert.assertEquals(0, esa.getPendingDocs());
-
-        // create 10 docs
-        for (int i = 0; i < 10; i++) {
-            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
-                    "File");
-            doc.setPropertyValue("dc:title", "TestMe" + i);
-            doc.getContextData().put(EventConstants.ES_SYNC_INDEXING_FLAG, true);
-            doc = session.createDocument(doc);
-        }
-        // Save session to prevent NXP-14494
-        session.save();
-        TransactionHelper.setTransactionRollbackOnly();
-        TransactionHelper.commitOrRollbackTransaction();
-
-        int nbTry = 0;
-        while (esa.getPendingCommands() > 0 && nbTry < 20) {
-            Thread.sleep(1000);
-            nbTry++;
-        }
-
-        Assert.assertEquals(0, esa.getPendingCommands());
-        Assert.assertEquals(0, esa.getPendingDocs());
-
-        TransactionHelper.startTransaction();
-
-        SearchResponse searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
-        Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
-    }
-
-    @Test
-    public void shouldIndexDocumentAsynchronously() throws Exception {
-
-        Assert.assertTrue(TransactionHelper.isTransactionActive());
-
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        Assert.assertNotNull(ess);
-
-        Assert.assertNotNull(esa);
-        Assert.assertEquals(0, esa.getPendingDocs());
-        // create 10 docs
-        for (int i = 0; i < 10; i++) {
-            DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
-                    "File");
-            doc.setPropertyValue("dc:title", "TestMe" + i);
-            doc = session.createDocument(doc);
-
-        }
         startCountingCommandProcessed();
-
         TransactionHelper.commitOrRollbackTransaction();
-
+        waitForIndexing();
         assertNumberOfCommandProcessed(10);
 
-        TransactionHelper.startTransaction();
-
-        esa.refresh();
-
-        SearchResponse searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        startTransaction();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
-
     }
 
     @Test
-    public void shouldNotIndexDocumentAsynchronouslyBecauseOfRollback()
-            throws Exception {
-
-        Assert.assertTrue(TransactionHelper.isTransactionActive());
-
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        Assert.assertNotNull(ess);
-
-        Assert.assertNotNull(esa);
-        Assert.assertEquals(0, esa.getPendingDocs());
-        startCountingCommandProcessed();
+    public void shouldNotIndexDocumentBecauseOfRollback() throws Exception {
+        startTransaction();
         // create 10 docs
+        activateSynchronousMode();
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
                     "File");
             doc.setPropertyValue("dc:title", "TestMe" + i);
             doc = session.createDocument(doc);
-
         }
         // Save session to prevent NXP-14494
+        startCountingCommandProcessed();
         session.save();
         TransactionHelper.setTransactionRollbackOnly();
         TransactionHelper.commitOrRollbackTransaction();
-
+        waitForIndexing();
         assertNumberOfCommandProcessed(0);
 
-        TransactionHelper.startTransaction();
-
-        esa.refresh();
-
-        SearchResponse searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        startTransaction();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
-
     }
 
     @Test
-    public void shouldUnIndexDocumentAsynchronously() throws Exception {
-
-        Assert.assertTrue(TransactionHelper.isTransactionActive());
-
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        Assert.assertNotNull(ess);
-
-        Assert.assertNotNull(esa);
-        Assert.assertEquals(0, esa.getPendingDocs());
-
+    public void shouldUnIndexDocument() throws Exception {
+        startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         doc.setPropertyValue("dc:title", "TestMe");
         doc = session.createDocument(doc);
 
         startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
         assertNumberOfCommandProcessed(1);
 
-        TransactionHelper.startTransaction();
-
-        esa.refresh();
-
-        SearchResponse searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        startTransaction();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
         // now delete the document
         session.removeDocument(doc.getRef());
         startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
         assertNumberOfCommandProcessed(1);
 
-        TransactionHelper.startTransaction();
-
-        esa.refresh();
-
-        searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        startTransaction();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
-
     }
 
-
     @Test
-    public void shouldReIndexDocumentAsynchronously() throws Exception {
-
-        Assert.assertTrue(TransactionHelper.isTransactionActive());
-
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
-        Assert.assertNotNull(ess);
-
-        Assert.assertNotNull(esa);
-        Assert.assertEquals(0, esa.getPendingDocs());
-
+    public void shouldReIndexDocument() throws Exception {
+        startTransaction();
         // create 10 docs
         for (int i = 0; i < 10; i++) {
             DocumentModel doc = session.createDocumentModel("/", "testDoc" + i,
@@ -331,23 +232,22 @@ public class TestAutomaticIndexing {
         }
         startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
         assertNumberOfCommandProcessed(10);
 
-        TransactionHelper.startTransaction();
-        esa.refresh();
-
-        SearchResponse searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.matchQuery("dc:nature", "A")).setFrom(0).setSize(
-                60).execute().actionGet();
+        startTransaction();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setQuery(QueryBuilders.matchQuery("dc:nature", "A"))
+                .setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
         int i = 0;
         startCountingCommandProcessed();
         for (SearchHit hit : searchResponse.getHits()) {
             i++;
-            if (i> 8) {
+            if (i > 8) {
                 break;
             }
             DocumentModel doc = session.getDocument(new IdRef(hit.getId()));
@@ -356,31 +256,28 @@ public class TestAutomaticIndexing {
         }
 
         TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
         assertNumberOfCommandProcessed(8);
 
-        TransactionHelper.startTransaction();
-
-        esa.refresh();
-
-        searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.matchQuery("dc:nature", "A")).setFrom(0).setSize(
-                60).execute().actionGet();
+        startTransaction();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setQuery(QueryBuilders.matchQuery("dc:nature", "A"))
+                .setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.matchQuery("dc:nature", "B")).setFrom(0).setSize(
-                60).execute().actionGet();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                .setQuery(QueryBuilders.matchQuery("dc:nature", "B"))
+                .setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
-
     }
 
     @Test
     public void shouldIndexBinaryFulltext() throws Exception {
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
         holder.setBlob(new StringBlob("You know for search"));
@@ -388,22 +285,23 @@ public class TestAutomaticIndexing {
         session.save();
 
         TransactionHelper.commitOrRollbackTransaction();
+        // we need to wait for the async fulltext indexing
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
-        esa.refresh();
+        waitForIndexing();
 
-        TransactionHelper.startTransaction();
-        DocumentModelList ret = ess.query(session, "SELECT * FROM Document", 10, 0);
+        startTransaction();
+        DocumentModelList ret = ess.query(session, "SELECT * FROM Document",
+                10, 0);
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(session, "SELECT * FROM Document WHERE ecm:fulltext='search'", 10, 0);
+        ret = ess.query(session,
+                "SELECT * FROM Document WHERE ecm:fulltext='search'", 10, 0);
         Assert.assertEquals(1, ret.totalSize());
     }
 
     @Test
     public void shouldIndexOnPublishing() throws Exception {
-
-        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         DocumentModel folder = session.createDocumentModel("/", "folder",
                 "Folder");
         folder = session.createDocument(folder);
@@ -415,43 +313,41 @@ public class TestAutomaticIndexing {
 
         startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
         assertNumberOfCommandProcessed(4);
 
-        TransactionHelper.startTransaction();
-        esa.refresh();
-
-        SearchResponse searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        startTransaction();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).execute().actionGet();
         // folder, version, file and proxy
         Assert.assertEquals(4, searchResponse.getHits().getTotalHits());
 
         // unpublish
         startCountingCommandProcessed();
         session.removeDocument(proxy.getRef());
-        DocumentModelList docs = ess
-                .query(new NxQueryBuilder(session) // .fetchFromElasticsearch()
+        DocumentModelList docs = ess.query(
+                new NxQueryBuilder(session) // .fetchFromElasticsearch()
                         .nxql("SELECT * FROM Document"));
 
         Assert.assertEquals(4, docs.totalSize());
         TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
         assertNumberOfCommandProcessed(1);
 
-        TransactionHelper.startTransaction();
-
-        esa.refresh();
-
-        searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        startTransaction();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).execute().actionGet();
         Assert.assertEquals(3, searchResponse.getHits().getTotalHits());
 
     }
 
-
     @Test
     public void shouldUnIndexUsingTrashService() throws Exception {
-
+        startTransaction();
         DocumentModel folder = session.createDocumentModel("/", "folder",
                 "Folder");
         folder = session.createDocument(folder);
@@ -464,31 +360,32 @@ public class TestAutomaticIndexing {
 
         startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
         assertNumberOfCommandProcessed(2);
 
-        TransactionHelper.startTransaction();
-        esa.refresh();
+        startTransaction();
 
-        DocumentModelList ret = ess.query(new NxQueryBuilder(session)
-                .nxql("SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'deleted'"));
+        DocumentModelList ret = ess
+                .query(new NxQueryBuilder(session)
+                        .nxql("SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'deleted'"));
         Assert.assertEquals(1, ret.totalSize());
         trashService.undeleteDocuments(Arrays.asList(doc));
 
         startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
         assertNumberOfCommandProcessed(1);
 
-        TransactionHelper.startTransaction();
-
-        esa.refresh();
-        ret = ess.query(new NxQueryBuilder(session)
-                .nxql("SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'deleted'"));
+        startTransaction();
+        ret = ess
+                .query(new NxQueryBuilder(session)
+                        .nxql("SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'deleted'"));
         Assert.assertEquals(2, ret.totalSize());
 
-        SearchResponse searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60)
-                .execute().actionGet();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).execute().actionGet();
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
 
         trashService.purgeDocuments(session,
@@ -496,49 +393,45 @@ public class TestAutomaticIndexing {
 
         startCountingCommandProcessed();
         TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
         assertNumberOfCommandProcessed(1);
 
-        TransactionHelper.startTransaction();
-
-        esa.refresh();
-
-        searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60)
-                .execute().actionGet();
+        startTransaction();
+        searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
-
     }
 
     @Test
-    public void shouldIndexOnCopySync() throws Exception {
-        ElasticSearchInlineListener.useSyncIndexing.set(true);
+    public void shouldIndexOnCopy() throws Exception {
+        startTransaction();
+        startCountingCommandProcessed();
         DocumentModel folder = session.createDocumentModel("/", "folder",
                 "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         TransactionHelper.commitOrRollbackTransaction();
+        waitForIndexing();
         assertNumberOfCommandProcessed(2);
-        TransactionHelper.startTransaction();
-        esa.refresh();
 
-        // sync marker is reset after a commit
-        Assert.assertNull(ElasticSearchInlineListener.useSyncIndexing.get());
+        startTransaction();
         DocumentRef src = doc.getRef();
         DocumentRef dst = new PathRef("/");
         session.copy(src, dst, "file2");
         // turn the sync flag after the action
         ElasticSearchInlineListener.useSyncIndexing.set(true);
         TransactionHelper.commitOrRollbackTransaction();
-        esa.refresh();
+        waitForIndexing();
 
-        TransactionHelper.startTransaction();
-
-        SearchResponse searchResponse = esa.getClient().prepareSearch(
-                IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60)
-                .execute().actionGet();
+        startTransaction();
+        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME)
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setFrom(0)
+                .setSize(60).execute().actionGet();
         Assert.assertEquals(3, searchResponse.getHits().getTotalHits());
     }
+
 }

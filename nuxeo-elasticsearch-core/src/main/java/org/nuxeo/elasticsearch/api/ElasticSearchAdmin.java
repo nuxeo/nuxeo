@@ -57,9 +57,18 @@ public interface ElasticSearchAdmin {
     /**
      * Returns the number of indexing command that are waiting to be processed.
      *
+     * This does not include the recursive asynchronous activities.
+     *
      * @since 5.9.3
      */
     int getPendingCommands();
+
+    /**
+     * Returns the number of indexing command that are currently running
+     *
+     * @since 5.9.5
+     */
+    int getRunningCommands();
 
     /**
      * Returns the total number of command processed by Elasticsearch.
@@ -69,6 +78,16 @@ public interface ElasticSearchAdmin {
      * @since 5.9.4
      */
     int getTotalCommandProcessed();
+
+
+    /**
+     * Returns true if there are indexing activities.
+     *
+     * This include currently running, scheduled and asynchronous recursive jobs.
+     *
+     * @since 5.9.5
+     */
+    boolean isIndexingInProgress();
 
     /**
      * Refresh all document indexes, immediately after the operation occurs,
