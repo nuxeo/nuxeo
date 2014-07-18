@@ -83,6 +83,10 @@ public class TestSnapshoting extends AbstractTestSnapshot {
 
         // dumpVersionsContent();
 
+        // refetch the root document after snapshot
+        session.save();
+        root = session.getDocument(root.getRef());
+
         // redo a check in : should be identical
         snapshotable = root.getAdapter(Snapshotable.class);
         assertNotNull(snapshotable);

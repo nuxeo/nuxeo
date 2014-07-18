@@ -53,16 +53,12 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             throw new ClientException(
                     "Can not version a folder that has not snapshot schema");
         }
-        if (!targetDoc.isFolder() && !targetDoc.isProxy()
-                && !targetDoc.isCheckedOut()) {
-            if (targetDoc.isVersion()) {
-                return targetDoc.getRef();
-            }
-            return targetDoc.getCoreSession().getLastDocumentVersionRef(
-                    targetDoc.getRef());
-        }
         if (targetDoc.isVersion()) {
             return targetDoc.getRef();
+        }
+        if (!targetDoc.isProxy() && !targetDoc.isCheckedOut()) {
+            return targetDoc.getCoreSession().getLastDocumentVersionRef(
+                    targetDoc.getRef());
         }
         if (targetDoc.isProxy()) {
             DocumentModel proxyTarget = targetDoc.getCoreSession().getDocument(
