@@ -180,11 +180,8 @@ public class AuditPageProviderOperation {
             }
 
             PageProvider<LogEntry> pp = (PageProvider<LogEntry>) pps.getPageProvider(
-                    providerName, sortInfos, targetPageSize, targetPage, props,
-                    parameters);
-            if (searchDoc != null) {
-                pp.setSearchDocumentModel(searchDoc);
-            }
+                    providerName, searchDoc, sortInfos, targetPageSize,
+                    targetPage, props, parameters);
             //return new PaginablePageProvider<LogEntry>(pp);
             return new LogEntryList(pp);
         }
