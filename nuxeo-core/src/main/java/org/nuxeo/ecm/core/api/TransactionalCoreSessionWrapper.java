@@ -130,14 +130,21 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
         try {
             return method.invoke(session, args);
         } catch (Throwable t) {
-            if (TransactionHelper.isTransactionActive()
-                    && needsRollback(method, t)) {
-                TransactionHelper.setTransactionRollbackOnly();
-            }
             if (t instanceof InvocationTargetException) {
                 Throwable tt = ((InvocationTargetException) t).getTargetException();
                 if (tt != null) {
-                    throw tt;
+                    t = tt;
+                }
+            }
+            if (TransactionHelper.isTransactionActive()
+                    && needsRollback(method, t)) {
+                TransactionHelper.setTransactionRollbackOnly();
+                log.warn("Setting transaction rollback only due to exception"
+                        + " (check DEBUG logs for stacktrace): " + t);
+                if (log.isDebugEnabled()) {
+                    log.debug(
+                            "Setting transaction rollback only due to exception: "
+                                    + t, t);
                 }
             }
             throw t;

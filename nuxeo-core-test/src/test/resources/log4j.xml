@@ -9,7 +9,7 @@
     <param name="Threshold" value="WARN" />
 
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m %X%n" />
+      <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
     </layout>
   </appender>
 
