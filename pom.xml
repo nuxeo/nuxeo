@@ -137,6 +137,7 @@
     <module>nuxeo-box-api</module>
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-easyshare</module>
+    <module>nuxeo-elasticsearch</module>
   </modules>
 
   <dependencyManagement>
@@ -1178,6 +1179,19 @@
         <groupId>org.nuxeo.io</groupId>
         <artifactId>nuxeo-fsexporter</artifactId>
         <version>${nuxeo.fsexporter.version}</version>
+      </dependency>
+
+      <!-- Elasticsearch -->
+       <dependency>
+        <groupId>org.nuxeo.elasticsearch</groupId>
+        <artifactId>nuxeo-elasticsearch-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.elasticsearch</groupId>
+        <artifactId>nuxeo-elasticsearch-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
       </dependency>
 
       <!-- Audit Web Access -->
