@@ -19,29 +19,52 @@ package org.nuxeo.ecm.platform.audio.extension;
 
 import java.io.File;
 
+import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /*
  * Tests that the AudioImporter class works by importing a sample audio file
  */
-public class TestAudioImporter extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.types.api",
+        "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.platform.audio.core",
+        "org.nuxeo.ecm.platform.filemanager.api",
+        "org.nuxeo.ecm.platform.filemanager.core",
+        "org.nuxeo.ecm.platform.mimetype.api",
+        "org.nuxeo.ecm.platform.mimetype.core" })
+public class TestAudioImporter {
 
     protected static final String AUDIO_TYPE = "Audio";
 
+    @Inject
+    protected CoreSession session;
+
+    @Inject
     protected FileManager fileManagerService;
 
     protected DocumentModel root;
@@ -53,29 +76,11 @@ public class TestAudioImporter extends SQLRepositoryTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployBundle("org.nuxeo.ecm.platform.audio.core");
-
-        // use these to get the fileManagerService
-        deployBundle("org.nuxeo.ecm.platform.filemanager.api");
-        deployBundle("org.nuxeo.ecm.platform.filemanager.core");
-
-        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
-        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
-
-        openSession();
-
         root = session.getRootDocument();
-        fileManagerService = Framework.getService(FileManager.class);
     }
 
     @After
     public void tearDown() throws Exception {
-        super.tearDown();
-        fileManagerService = null;
         root = null;
     }
 
@@ -126,9 +131,6 @@ public class TestAudioImporter extends SQLRepositoryTestCase {
         assertNotNull(docModel);
         DocumentRef ref = docModel.getRef();
         session.save();
-
-        closeSession();
-        openSession();
 
         docModel = session.getDocument(ref);
         assertEquals("Audio", docModel.getType());
