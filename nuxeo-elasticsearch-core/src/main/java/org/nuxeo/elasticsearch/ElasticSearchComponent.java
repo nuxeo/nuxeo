@@ -958,7 +958,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public int getPendingCommands() {
-        return pendingCommands.size();
+        return pendingCommands.size() + ChildrenIndexingWorker.getRunningWorkers();
     }
 
     @Override
@@ -971,7 +971,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     @Override public boolean isIndexingInProgress() {
-        return (getRunningCommands() > 0 || getPendingCommands() > 0 || ChildrenIndexingWorker.getRunningWorkers() > 0);
+        return (getRunningCommands() > 0 || getPendingCommands() > 0);
     }
 
     public String[] getIncludeSourceFields() {
