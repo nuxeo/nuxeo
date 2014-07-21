@@ -248,8 +248,11 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         List<FileImporter> importers = new ArrayList<FileImporter>(
                 fileImporters.values());
         Collections.sort(importers);
+        String normalizedMimeType = getMimeService().getMimetypeEntryByMimeType(
+                input.getMimeType()).getNormalized();
         for (FileImporter importer : importers) {
-            if (importer.isEnabled() && importer.matches(input.getMimeType())) {
+            if (importer.isEnabled()
+                    && (importer.matches(normalizedMimeType) || importer.matches(input.getMimeType()))) {
                 DocumentModel doc = importer.create(documentManager, input,
                         path, overwrite, fullName, getTypeService());
                 if (doc != null) {
@@ -568,7 +571,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         DocumentModelList containers = new DocumentModelListImpl();
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+            try (CoreSession session = CoreInstance.openCoreSession(
+                    repositoryName, principal)) {
                 containers.addAll(getCreationContainers(session, docType));
             }
         }

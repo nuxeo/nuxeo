@@ -12,6 +12,12 @@
       <filter>text/plain</filter>
       <filter>text/rtf</filter>
     </plugin>
+
+    <plugin name="pluginToUseNormalizedMimeType"
+      class="org.nuxeo.ecm.platform.filemanager.service.extension.DefaultFileImporter"
+      docType="Note" order="20">
+      <filter>text/csv</filter>
+    </plugin>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService" point="plugins">

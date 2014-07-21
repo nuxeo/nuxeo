@@ -33,11 +33,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -59,7 +61,9 @@ import com.google.inject.Inject;
 @RepositoryConfig(init = RepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core",
-        "org.nuxeo.ecm.platform.filemanager.core" })
+        "org.nuxeo.ecm.platform.filemanager.core",
+        "org.nuxeo.ecm.platform.mimetype.api",
+        "org.nuxeo.ecm.platform.mimetype.core" })
 @LocalDeploy({
         FileManagerUTConstants.FILEMANAGER_BUNDLE
                 + ":ecm-types-test-contrib.xml",
@@ -294,6 +298,20 @@ public class TestFileManagerService {
         assertTrue(filters.contains("text/plain"));
         assertTrue(filters.contains("text/rtf"));
         assertTrue(filters.contains("text/xml"));
+    }
+
+    @Test
+    public void testCreateBlobWithNormalizedMimeType() throws Exception {
+        File file = getTestFile("test-data/hello.doc");
+        Blob blob = new FileBlob(file);
+        // should fore Note creation using 'pluginToUseNormalizedMimeType'
+        // plugin
+        blob.setMimeType("application/csv");
+
+        DocumentModel doc = service.createDocumentFromBlob(coreSession, blob,
+                workspace.getPathAsString(), true, "test-data/hello.csv");
+        assertNotNull(doc);
+        assertEquals("Note", doc.getType());
     }
 
 }

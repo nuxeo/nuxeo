@@ -55,7 +55,9 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.dublincore",
         "org.nuxeo.ecm.platform.versioning.api",
-        "org.nuxeo.ecm.platform.versioning" })
+        "org.nuxeo.ecm.platform.versioning",
+        "org.nuxeo.ecm.platform.mimetype.api",
+        "org.nuxeo.ecm.platform.mimetype.core" })
 @LocalDeploy("org.nuxeo.ecm.platform.types.core:ecm-types-test-contrib.xml")
 public class TestFileManagerVersioning {
 
