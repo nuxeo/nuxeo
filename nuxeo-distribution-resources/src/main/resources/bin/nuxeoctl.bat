@@ -1,6 +1,6 @@
 @echo off
 rem ##
-rem ## (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+rem ## (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
 rem ##
 rem ## All rights reserved. This program and the accompanying materials
 rem ## are made available under the terms of the GNU Lesser General Public License
@@ -177,11 +177,21 @@ goto END
 echo Found JAVA_HOME = %JAVA_HOME%
 set JAVA=%JAVA_HOME%\bin\java.exe
 if exist "%JAVA%" goto HAS_JAVA
-echo Could not find java.exe in JAVA_HOME\bin. Please fix or remove JAVA_HOME; ensure Java 6 is properly installed.
+echo Could not find java.exe in JAVA_HOME\bin. Please fix or remove JAVA_HOME; ensure Java is properly installed.
 goto END
 
 :HAS_JAVA
 echo Using JAVA = %JAVA%
+REM ***** Check Java version
+set REQUIRED_JAVA_VERSION=1.7
+for /f "tokens=3" %%g in ('java -version 2^>^&1 ^| findstr /i "version"') do (
+    set JAVA_VERSION=%%g
+)
+set JAVA_VERSION=%JAVA_VERSION:"=%
+if "%JAVA_VERSION%" lss "%REQUIRED_JAVA_VERSION%" (
+  echo Nuxeo requires Java %REQUIRED_JAVA_VERSION%+ ^(detected %JAVA_VERSION%^)
+  goto END
+)
 
 if "%JAVA_OPTS%" == "" set JAVA_OPTS=-Xms512m -Xmx1024m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8
 REM ***** Add third-party packages from the installer to the path *****

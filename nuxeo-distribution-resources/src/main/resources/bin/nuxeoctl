@@ -1,6 +1,6 @@
 #!/bin/bash
 ##
-## (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+## (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
 ##
 ## All rights reserved. This program and the accompanying materials
 ## are made available under the terms of the GNU Lesser General Public License
@@ -80,7 +80,7 @@ if [ -z "$JAVA" ]; then
   JAVA=java
 fi
 if [ -z "$JAVA_HOME" ]; then
-  JAVA=`which $JAVA`
+  JAVA=`command -v $JAVA`
   # follow symlinks
   while [ -h "$JAVA" ]; do
     ls=`ls -ld "$JAVA"`
@@ -94,6 +94,13 @@ if [ -z "$JAVA_HOME" ]; then
   JAVA_HOME=`dirname "$JAVA_HOME"`
 fi
 PATH="$JAVA_HOME/bin:$PATH"
+
+# Check Java version
+: ${REQUIRED_JAVA_VERSION:=1.7}
+JAVA_VERSION=`java -version 2>&1 | awk -F '"' '/version/{print $2}'`
+if [ "$JAVA_VERSION" \< "$REQUIRED_JAVA_VERSION" ]; then
+  die "Nuxeo requires Java $REQUIRED_JAVA_VERSION+ (detected $JAVA_VERSION)"
+fi
 
 ## Setup JAVA_OPTS
 while read line; do
