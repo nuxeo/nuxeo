@@ -63,6 +63,9 @@ public class TestAudioImporter extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.filemanager.api");
         deployBundle("org.nuxeo.ecm.platform.filemanager.core");
 
+        deployBundle("org.nuxeo.ecm.platform.mimetype.api");
+        deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+
         openSession();
 
         root = session.getRootDocument();
