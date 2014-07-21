@@ -40,12 +40,16 @@ public class GooglePlusUserInfo extends GenericJson implements OpenIDUserInfo {
 
     @Override
     public String getGivenName() {
-        return String.valueOf(getNameObject().get("givenName"));
+        ArrayMap<String, Object> nameObject = getNameObject();
+        return nameObject == null ? ""
+                : String.valueOf(nameObject.get("givenName"));
     }
 
     @Override
     public String getFamilyName() {
-        return String.valueOf(getNameObject().get("familyName"));
+        ArrayMap<String, Object> nameObject = getNameObject();
+        return nameObject == null ? ""
+                : String.valueOf(nameObject.get("familyName"));
     }
 
     @Override

@@ -214,6 +214,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
             HttpRequest request = requestFactory.buildGetRequest(url);
             HttpResponse response = request.execute();
             String body = IOUtils.toString(response.getContent(), "UTF-8");
+            log.debug(body);
             userInfo = parseUserInfo(body);
 
         } catch (IOException e) {

@@ -48,6 +48,7 @@
     </documentation>
 
     <specificAuthenticationChain name="Automation">
+
       <urlPatterns>
         <url>(.*)/automation.*</url>
       </urlPatterns>
