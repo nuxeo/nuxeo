@@ -17,14 +17,15 @@
 
 package org.nuxeo.ecm.platform.audio.extension;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.File;
 
-import com.google.inject.Inject;
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -34,16 +35,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.inject.Inject;
 
 /*
  * Tests that the AudioImporter class works by importing a sample audio file
@@ -90,10 +89,11 @@ public class TestAudioImporter {
         DocumentType audioType = session.getDocumentType(AUDIO_TYPE);
         assertNotNull("Does our type exist?", audioType);
 
-        //TODO: check get/set properties on common properties of audios
+        // TODO: check get/set properties on common properties of audios
 
         // Create a new DocumentModel of our type in memory
-        DocumentModel docModel = session.createDocumentModel("/", "doc", AUDIO_TYPE);
+        DocumentModel docModel = session.createDocumentModel("/", "doc",
+                AUDIO_TYPE);
         assertNotNull(docModel);
 
         assertNull(docModel.getPropertyValue("common:icon"));
@@ -109,10 +109,12 @@ public class TestAudioImporter {
         DocumentModel docModelResult = session.createDocument(docModel);
         assertNotNull(docModelResult);
 
-        assertEquals("/icons/audio.png", docModelResult.getPropertyValue("common:icon"));
+        assertEquals("/icons/audio.png",
+                docModelResult.getPropertyValue("common:icon"));
         assertEquals("testTitle", docModelResult.getPropertyValue("dc:title"));
         assertEquals("testUid", docModelResult.getPropertyValue("uid:uid"));
-        assertEquals("133", docModelResult.getPropertyValue("aud:duration").toString());
+        assertEquals("133",
+                docModelResult.getPropertyValue("aud:duration").toString());
     }
 
     @Test
@@ -140,13 +142,15 @@ public class TestAudioImporter {
         assertNotNull(contentBlob);
         assertEquals("sample.wav", docModel.getProperty("file", "filename"));
 
-        // check that we don't get PropertyExceptions when accessing the audio schema
+        // check that we don't get PropertyExceptions when accessing the audio
+        // schema
 
         // TODO: add duration detection
         assertNull(docModel.getPropertyValue("aud:duration"));
 
         // TODO: add thumbnail generation and picture metadata extraction where
-        // they make sense for audios (ie. extract these from the metadata already included in the audio
+        // they make sense for audios (ie. extract these from the metadata
+        // already included in the audio
         // and use them to set the appropriate schema properties)
     }
 
