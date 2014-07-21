@@ -41,6 +41,11 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
 
 /**
  *
@@ -65,23 +70,23 @@ public class ElasticSearchManager {
 
     protected List<ContentViewStatus> cvStatuses = null;
 
+    protected Timer indexTimer;
+
     public String getNodesInfo() {
-        NodesInfoResponse nodesInfo = esa.getClient().admin().cluster().prepareNodesInfo().execute().actionGet();
+        NodesInfoResponse nodesInfo = esa.getClient().admin().cluster()
+                .prepareNodesInfo().execute().actionGet();
         return nodesInfo.toString();
     }
 
     public String getNodesStats() {
-        NodesStatsResponse stats = esa.getClient().admin().cluster().prepareNodesStats().execute().actionGet();
+        NodesStatsResponse stats = esa.getClient().admin().cluster()
+                .prepareNodesStats().execute().actionGet();
         return stats.toString();
     }
 
-    public String getNodesTasks() {
-        PendingClusterTasksResponse tasks = esa.getClient().admin().cluster().preparePendingClusterTasks().execute().actionGet();
-        return tasks.pendingTasks().toString();
-    }
-
     public String getNodesHealth() {
-        ClusterHealthResponse health = esa.getClient().admin().cluster().prepareHealth().execute().actionGet();
+        ClusterHealthResponse health = esa.getClient().admin().cluster()
+                .prepareHealth().execute().actionGet();
         return health.toString();
     }
 
@@ -100,21 +105,22 @@ public class ElasticSearchManager {
 
         cvStatuses = new ArrayList<>();
 
-        ContentViewService cvs = Framework.getLocalService(ContentViewService.class);
+        ContentViewService cvs = Framework
+                .getLocalService(ContentViewService.class);
 
         for (String cvName : cvs.getContentViewNames()) {
             ContentView cv = cvs.getContentView(cvName);
             PageProviderDefinition def = cv.getPageProvider().getDefinition();
             if (def instanceof GenericPageProviderDescriptor) {
                 GenericPageProviderDescriptor gppd = (GenericPageProviderDescriptor) def;
-                if (gppd.getPageProviderClass().getName().contains(
-                        "elasticsearch")) {
+                if (gppd.getPageProviderClass().getName()
+                        .contains("elasticsearch")) {
                     cvStatuses.add(new ContentViewStatus(cvName,
                             gppd.getName(), "elasticsearch"));
                 } else {
                     cvStatuses.add(new ContentViewStatus(cvName,
-                            gppd.getName(),
-                            gppd.getPageProviderClass().getName()));
+                            gppd.getName(), gppd.getPageProviderClass()
+                                    .getName()));
                 }
             } else if (def instanceof CoreQueryPageProviderDescriptor) {
                 cvStatuses.add(new ContentViewStatus(cvName, def.getName(),
@@ -130,5 +136,50 @@ public class ElasticSearchManager {
             introspectPageProviders();
         }
         return cvStatuses;
+    }
+
+    public Boolean isIndexingInProgress() {
+        return esa.isIndexingInProgress();
+    }
+
+    public String getPendingCommands() {
+        return Integer.valueOf(esa.getPendingCommands()).toString();
+    }
+
+    public String getRunningCommands() {
+        return Integer.valueOf(esa.getRunningCommands()).toString();
+    }
+
+    public String getTotalCommandProcessed() {
+        return Integer.valueOf(esa.getTotalCommandProcessed()).toString();
+    }
+
+    public String getNumberOfDocuments() {
+        NodesStatsResponse stats = esa.getClient().admin().cluster()
+                .prepareNodesStats().execute().actionGet();
+        return Long.valueOf(
+                stats.getNodes()[0].getIndices().getDocs().getCount())
+                .toString();
+    }
+
+    public String getNumberOfDeletedDocuments() {
+        NodesStatsResponse stats = esa.getClient().admin().cluster()
+                .prepareNodesStats().execute().actionGet();
+        return Long.valueOf(
+                stats.getNodes()[0].getIndices().getDocs().getDeleted())
+                .toString();
+    }
+
+    public String getIndexingRates() {
+        if (indexTimer == null) {
+            MetricRegistry registry = SharedMetricRegistries
+                    .getOrCreate(MetricsService.class.getName());
+            indexTimer = registry.timer(MetricRegistry.name("nuxeo",
+                    "elasticsearch", "service", "index"));
+
+        }
+        return String.format("%.2f, %.2f, %.2f", indexTimer.getOneMinuteRate(),
+                indexTimer.getFiveMinuteRate(),
+                indexTimer.getFifteenMinuteRate());
     }
 }

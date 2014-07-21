@@ -57,7 +57,7 @@ public interface ElasticSearchAdmin {
     /**
      * Returns the number of indexing command that are waiting to be processed.
      *
-     * This does not include the recursive asynchronous activities.
+     * This include the recursive asynchronous activities.
      *
      * @since 5.9.3
      */
