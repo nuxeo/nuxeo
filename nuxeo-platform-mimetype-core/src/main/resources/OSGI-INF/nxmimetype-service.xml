@@ -740,10 +740,9 @@
       </extensions>
     </mimetype>
 
-    <!-- Adobe PostScript / Illustrator -->
+    <!-- Adobe Illustrator -->
    <mimetype normalized="application/illustrator" binary="false" iconPath="image.gif">
      <mimetypes>
-       <mimetype>application/postscript</mimetype>
        <mimetype>application/illustrator</mimetype>
      </mimetypes>
      <extensions>
@@ -752,12 +751,15 @@
    </mimetype>
 
    <!-- Adobe Photoshop -->
-   <mimetype normalized="image/photoshop" binary="false" iconPath="image.gif">
+   <mimetype normalized="application/photoshop" binary="false" iconPath="image.gif">
      <mimetypes>
+       <mimetype>application/photoshop</mimetype>
+       <mimetype>application/x-photoshop</mimetype>
        <mimetype>image/photoshop</mimetype>
        <mimetype>image/x-photoshop</mimetype>
        <mimetype>image/psd</mimetype>
-       <mimetype>application/photoshop</mimetype>
+       <mimetype>image/x-psd</mimetype>
+       <mimetype>image/vnd.adobe.photoshop</mimetype>
        <mimetype>application/psd</mimetype>
        <mimetype>zz-application</mimetype>
        <mimetype>zz-winassoc-psd</mimetype>
@@ -1123,7 +1125,6 @@
       <extensions>
         <extension>ps</extension>
         <extension>eps</extension>
-        <extension>ai</extension>
       </extensions>
     </mimetype>
 
