@@ -39,11 +39,8 @@
       <filter>image/raw</filter>
       <filter>image/x-raw</filter>
 
+      <filter>application/photoshop</filter>
       <filter>application/illustrator</filter>
-      <filter>image/photoshop</filter>
-      <filter>image/vnd.adobe.photoshop</filter>
-      <filter>image/x-photoshop</filter>
-      <filter>image/psd</filter>
       <filter>application/postscript</filter>
     </plugin>
   </extension>
