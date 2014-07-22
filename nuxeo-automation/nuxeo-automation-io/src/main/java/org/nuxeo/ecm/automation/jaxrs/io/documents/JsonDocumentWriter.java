@@ -63,7 +63,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
-import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -307,15 +306,15 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
         if (v == null) {
             jg.writeNull();
         } else {
-            if (BooleanType.class.equals(type.getClass())) {
+            if (type instanceof BooleanType) {
                 jg.writeBoolean((Boolean) v);
-            } else if (LongType.class.equals(type.getClass())) {
+            } else if (type instanceof LongType) {
                 jg.writeNumber((Long) v);
-            } else if (DoubleType.class.equals(type.getClass())) {
+            } else if (type instanceof DoubleType) {
                 jg.writeNumber((Double) v);
-            } else if (IntegerType.class.equals(type.getClass())) {
+            } else if (type instanceof IntegerType) {
                 jg.writeNumber((Integer) v);
-            } else if (BinaryType.class.equals(type.getClass())) {
+            } else if (type instanceof BinaryType) {
                 jg.writeBinary((byte[]) v);
             } else {
                 jg.writeString(type.encode(v));
