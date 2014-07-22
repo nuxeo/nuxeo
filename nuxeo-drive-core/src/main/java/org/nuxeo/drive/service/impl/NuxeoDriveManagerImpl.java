@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemChangeSummary;
 import org.nuxeo.drive.service.FileSystemItemChange;
@@ -44,7 +45,6 @@ import org.nuxeo.drive.service.TooManyChangesException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -121,15 +121,23 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                 // the only exception is when the right inheritance is blocked
                 // in the hierarchy
                 boolean rightInheritanceBlockedInTheHierarchy = false;
-                DocumentRef[] parents = session.getParentDocumentRefs(newRootContainer.getRef());
-                for (DocumentRef parentRef : parents) {
+                // should get only parents up to the sync root
+
+                Path parentPath = newRootContainer.getPath().removeLastSegments(
+                        1);
+                while (!"/".equals(parentPath.toString())) {
+                    String parentPathAsString = parentPath.toString() + "/";
+                    if (!parentPathAsString.startsWith(syncRootPrefixedPath)) {
+                        break;
+                    }
+                    PathRef parentRef = new PathRef(parentPathAsString);
                     if (!session.hasPermission(principal, parentRef,
                             SecurityConstants.READ)) {
                         rightInheritanceBlockedInTheHierarchy = true;
                         break;
                     }
+                    parentPath = parentPath.removeLastSegments(1);
                 }
-
                 if (!rightInheritanceBlockedInTheHierarchy) {
                     return;
                 }
