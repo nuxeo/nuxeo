@@ -100,7 +100,7 @@ public class SendMail {
     @Param(name = "subject")
     protected String subject;
 
-    @Param(name = "message", widget = Constants.W_MULTILINE_TEXT)
+    @Param(name = "message", widget = Constants.W_MAIL_TEMPLATE)
     protected String message;
 
     @Param(name = "HTML", required = false, values = { "false" })
