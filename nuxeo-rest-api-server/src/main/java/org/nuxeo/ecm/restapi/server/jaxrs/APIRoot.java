@@ -69,7 +69,7 @@ public class APIRoot extends ModuleRoot {
 
     @Path("/automation")
     public Object getAutomationEndPoint() throws Exception {
-        return new AutomationResource();
+        return newObject("automation");
     }
 
     @Path("/directory")
