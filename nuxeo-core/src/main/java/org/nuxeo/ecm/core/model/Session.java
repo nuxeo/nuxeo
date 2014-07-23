@@ -227,7 +227,7 @@ public interface Session {
     ACP getMergedACP(Document doc) throws SecurityException;
 
     void setACP(Document doc, ACP acp, boolean overwrite)
-            throws SecurityException;
+            throws DocumentException;
 
     /**
      * Gets the fulltext extracted from the binary fields.

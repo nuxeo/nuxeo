@@ -21,6 +21,7 @@ import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.State;
+import org.nuxeo.ecm.core.storage.State.Diff;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 
 /**
@@ -80,18 +81,18 @@ public interface DBSRepository extends Repository {
     /**
      * Updates a document.
      *
-     * @param state the document state
+     * @param id the document id
+     * @param diff the diff to apply
      * @throws DocumentException if the document does not exist
      */
-    void updateState(State state) throws DocumentException;
+    void updateState(String id, Diff diff) throws DocumentException;
 
     /**
-     * Deletes a document.
+     * Deletes a set of document.
      *
-     * @param id the document id
-     * @throws DocumentException if the document does not exist
+     * @param ids the document ids
      */
-    void deleteState(String id) throws DocumentException;
+    void deleteStates(Set<String> ids) throws DocumentException;
 
     /**
      * Reads the state of a child document.
@@ -133,11 +134,10 @@ public interface DBSRepository extends Repository {
      *            found
      * @param targetProxies returns a map of target to proxies among the
      *            document found
-     * @param ignored a set of document ids that should not be considered
      */
     void queryKeyValueArray(String key, Object value, Set<String> ids,
             Map<String, String> proxyTargets,
-            Map<String, Object[]> targetProxies, Set<String> ignored);
+            Map<String, Object[]> targetProxies);
 
     /**
      * Queries the repository to check if there are documents having key =
@@ -166,13 +166,11 @@ public interface DBSRepository extends Repository {
      *            If {@code n}, count the total number if there are less than n
      *            documents otherwise set the total size to {@code -2}.
      * @param deepCopy whether returned state should be a copy
-     * @param ignored a set of document ids that should not be considered
      * @return a partial list containing the limited documents required, and the
      *         total size according to countUpTo
      */
     PartialList<State> queryAndFetch(Expression expression,
             DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
-            int limit, int offset, int countUpTo, boolean deepCopy,
-            Set<String> ignored);
+            int limit, int offset, int countUpTo, boolean deepCopy);
 
 }

@@ -63,7 +63,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.core.storage.CopyHelper;
+import org.nuxeo.ecm.core.storage.State.Diff;
+import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.FulltextParser;
@@ -76,20 +77,15 @@ import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Transactional state for a session: data that has been modified in the
- * session, but is not yet committed and therefore should not be seen by other
- * sessions.
+ * Transactional state for a session.
  * <p>
- * There are two kinds of data persistence, that have different interactions
- * with searches:
- * <ul>
- * <li>the "transient" data is data modified by saveDocument and createDocument,
- * which is not yet visible to a search,
- * <li>the "saved" data is all the transient data flushed by save, move, copy,
- * remove, checkIn, and is visible to a search.
- * </ul>
- * On commit, the saved state state is written to the repository. On rollback,
- * it's forgotten.
+ * Until {@code save()} is called, data lives in the transient map.
+ * <p>
+ * Upon save, data is written to the repository, even though it has not yet been
+ * committed (this means that other sessions can read uncommitted data). It's
+ * also kept in an undo log in order for rollback to be possible.
+ * <p>
+ * On commit, the undo log is forgotten. On rollback, the undo log is replayed.
  *
  * @since 5.9.4
  */
@@ -107,14 +103,7 @@ public class DBSTransactionState {
     /** Ids of documents created but not yet saved. */
     protected Set<String> transientCreated = new LinkedHashSet<String>();
 
-    /** Saved documents. */
-    protected Map<String, DBSDocumentState> savedStates = new HashMap<String, DBSDocumentState>();
-
-    /** Ids of documents created. */
-    protected Set<String> savedCreated = new LinkedHashSet<String>();
-
-    /** Ids of documents deleted. */
-    protected Set<String> savedDeleted = new HashSet<String>();
+    /* TODO undo log */
 
     protected final Set<String> browsePermissions;
 
@@ -134,17 +123,13 @@ public class DBSTransactionState {
         return fulltextConfiguration;
     }
 
-    protected DBSDocumentState makeTransient(DBSDocumentState docState) {
-        String id = docState.getId();
-        if (transientStates.containsKey(id)) {
-            throw new IllegalStateException("Already transient: " + id);
+    /**
+     * New transient state for something just read from the repository.
+     */
+    protected DBSDocumentState newTransientState(State state) {
+        if (state == null) {
+            return null;
         }
-        docState = new DBSDocumentState(docState); // copy
-        transientStates.put(id, docState);
-        return docState;
-    }
-
-    protected DBSDocumentState returnTransient(State state) {
         String id = (String) state.get(KEY_ID);
         if (transientStates.containsKey(id)) {
             throw new IllegalStateException("Already transient: " + id);
@@ -152,18 +137,6 @@ public class DBSTransactionState {
         DBSDocumentState docState = new DBSDocumentState(state); // copy
         transientStates.put(id, docState);
         return docState;
-    }
-
-    public void removeState(String id) {
-        transientStates.remove(id);
-        if (transientCreated.remove(id)) {
-            return;
-        }
-        savedStates.remove(id);
-        if (savedCreated.remove(id)) {
-            return;
-        }
-        savedDeleted.add(id);
     }
 
     /**
@@ -176,43 +149,9 @@ public class DBSTransactionState {
         if (docState != null) {
             return docState;
         }
-        // check saved state
-        if (savedDeleted.contains(id)) {
-            return null;
-        }
-        docState = savedStates.get(id);
-        if (docState != null) {
-            return makeTransient(docState);
-        }
         // fetch from repository
         State state = repository.readState(id);
-        if (state != null) {
-            return returnTransient(state);
-        }
-        return null;
-    }
-
-    /**
-     * Returns a saved state.
-     */
-    public DBSDocumentState getStateForNonTransientUpdate(String id) {
-        // check saved state
-        if (savedDeleted.contains(id)) {
-            return null;
-        }
-        DBSDocumentState docState = savedStates.get(id);
-        if (docState != null) {
-            return docState;
-        }
-        // fetch from repository
-        State state = repository.readState(id);
-        if (state != null) {
-            // keep as saved state, as we'll want to flush it after updates
-            docState = new DBSDocumentState(state);
-            savedStates.put(id, docState);
-            return docState;
-        }
-        return null;
+        return newTransientState(state);
     }
 
     /**
@@ -227,20 +166,8 @@ public class DBSTransactionState {
         if (docState != null) {
             return docState.getState();
         }
-        // check saved state
-        if (savedDeleted.contains(id)) {
-            return null;
-        }
-        docState = savedStates.get(id);
-        if (docState != null) {
-            return docState.getState();
-        }
         // fetch from repository
-        State state = repository.readState(id);
-        if (state != null) {
-            return state;
-        }
-        return null;
+        return repository.readState(id);
     }
 
     /**
@@ -256,24 +183,13 @@ public class DBSTransactionState {
             if (docState != null) {
                 continue;
             }
-            // check saved state
-            if (savedDeleted.contains(id)) {
-                continue;
-            }
-            docState = savedStates.get(id);
-            if (docState != null) {
-                makeTransient(docState);
-                continue;
-            }
             // will have to fetch it
             idsToFetch.add(id);
         }
         if (!idsToFetch.isEmpty()) {
             List<State> states = repository.readStates(idsToFetch);
             for (State state : states) {
-                if (state != null) {
-                    returnTransient(state);
-                }
+                newTransientState(state);
             }
         }
         // everything now fetched in transient
@@ -293,10 +209,8 @@ public class DBSTransactionState {
 
     // XXX TODO for update or for read?
     public DBSDocumentState getChildState(String parentId, String name) {
-        if (savedDeleted.contains(parentId)) {
-            return null;
-        }
         Set<String> seen = new HashSet<String>();
+        // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
             seen.add(docState.getId());
             if (!parentId.equals(docState.getParentId())) {
@@ -307,31 +221,14 @@ public class DBSTransactionState {
             }
             return docState;
         }
-        for (DBSDocumentState docState : savedStates.values()) {
-            if (!seen.add(docState.getId())) {
-                // already seen
-                continue;
-            }
-            if (!parentId.equals(docState.getParentId())) {
-                continue;
-            }
-            if (!name.equals(docState.getName())) {
-                continue;
-            }
-            return makeTransient(docState);
-        }
+        // fetch from repository
         State state = repository.readChildState(parentId, name, seen);
-        if (state != null) {
-            return returnTransient(state);
-        }
-        return null;
+        return newTransientState(state);
     }
 
     public boolean hasChild(String parentId, String name) {
-        if (savedDeleted.contains(parentId)) {
-            return false;
-        }
         Set<String> seen = new HashSet<String>();
+        // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
             seen.add(docState.getId());
             if (!parentId.equals(docState.getParentId())) {
@@ -342,61 +239,34 @@ public class DBSTransactionState {
             }
             return true;
         }
-        for (DBSDocumentState docState : savedStates.values()) {
-            if (!seen.add(docState.getId())) {
-                // already seen
-                continue;
-            }
-            if (!parentId.equals(docState.getParentId())) {
-                continue;
-            }
-            if (!name.equals(docState.getName())) {
-                continue;
-            }
-            return true;
-        }
+        // check repository
         return repository.hasChild(parentId, name, seen);
     }
 
     public List<DBSDocumentState> getChildrenStates(String parentId) {
-        if (savedDeleted.contains(parentId)) {
-            return Collections.emptyList();
-        }
-        List<DBSDocumentState> children = new LinkedList<DBSDocumentState>();
+        List<DBSDocumentState> docStates = new LinkedList<DBSDocumentState>();
         Set<String> seen = new HashSet<String>();
+        // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
             seen.add(docState.getId());
             if (!parentId.equals(docState.getParentId())) {
                 continue;
             }
-            children.add(docState);
+            docStates.add(docState);
         }
-        for (DBSDocumentState docState : savedStates.values()) {
-            if (!seen.add(docState.getId())) {
-                // already seen
-                continue;
-            }
-            if (!parentId.equals(docState.getParentId())) {
-                continue;
-            }
-            docState = makeTransient(docState);
-            children.add(docState);
-        }
+        // fetch from repository
         List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId,
                 seen);
         for (State state : states) {
-            DBSDocumentState docState = returnTransient(state);
-            children.add(docState);
+            docStates.add(newTransientState(state));
         }
-        return children;
+        return docStates;
     }
 
     public List<String> getChildrenIds(String parentId) {
-        if (savedDeleted.contains(parentId)) {
-            return Collections.emptyList();
-        }
         List<String> children = new ArrayList<String>();
         Set<String> seen = new HashSet<String>();
+        // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
             String id = docState.getId();
             seen.add(id);
@@ -405,17 +275,7 @@ public class DBSTransactionState {
             }
             children.add(id);
         }
-        for (DBSDocumentState docState : savedStates.values()) {
-            String id = docState.getId();
-            if (!seen.add(id)) {
-                // already seen
-                continue;
-            }
-            if (!parentId.equals(docState.getParentId())) {
-                continue;
-            }
-            children.add(id);
-        }
+        // fetch from repository
         List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId,
                 seen);
         for (State state : states) {
@@ -425,10 +285,8 @@ public class DBSTransactionState {
     }
 
     public boolean hasChildren(String parentId) {
-        if (savedDeleted.contains(parentId)) {
-            return false;
-        }
         Set<String> seen = new HashSet<String>();
+        // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
             seen.add(docState.getId());
             if (!parentId.equals(docState.getParentId())) {
@@ -436,23 +294,16 @@ public class DBSTransactionState {
             }
             return true;
         }
-        for (DBSDocumentState docState : savedStates.values()) {
-            if (!seen.add(docState.getId())) {
-                // already seen
-                continue;
-            }
-            if (!parentId.equals(docState.getParentId())) {
-                continue;
-            }
-            return true;
-        }
+        // check repository
         return repository.queryKeyValuePresence(KEY_PARENT_ID, parentId, seen);
     }
 
-    // id may be not-null for import
     public DBSDocumentState createChild(String id, String parentId,
             String name, Long pos, String typeName) {
-        id = generateNewId(id);
+        // id may be not-null for import
+        if (id == null) {
+            id = repository.generateNewId();
+        }
         transientCreated.add(id);
         DBSDocumentState docState = new DBSDocumentState();
         transientStates.put(id, docState);
@@ -490,16 +341,15 @@ public class DBSTransactionState {
     /**
      * Copies the document into a newly-created object.
      * <p>
-     * Doesn't check transient (assumes save is done). The copy is automatically
-     * saved.
+     * The copy is automatically saved.
      */
     public DBSDocumentState copy(String id) {
         DBSDocumentState copyState = new DBSDocumentState(getStateForRead(id));
-        String copyId = generateNewId(null);
+        String copyId = repository.generateNewId();
         copyState.put(KEY_ID, copyId);
         // other fields updated by the caller
-        savedStates.put(copyId, copyState);
-        savedCreated.add(copyId);
+        transientStates.put(copyId, copyState);
+        transientCreated.add(copyId);
         return copyState;
     }
 
@@ -613,48 +463,16 @@ public class DBSTransactionState {
             Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies) {
         Set<String> ids = new HashSet<String>();
-        Set<String> seen = new HashSet<String>(savedDeleted);
-        DOC: //
-        for (DBSDocumentState docState : savedStates.values()) {
-            String oid = docState.getId();
-            seen.add(oid);
-            Object[] ancestors = (Object[]) docState.get(KEY_ANCESTOR_IDS);
-            if (ancestors != null) {
-                for (Object aid : ancestors) {
-                    if (id.equals(aid)) {
-                        ids.add(oid);
-                        if (proxyTargets != null
-                                && TRUE.equals(docState.get(KEY_IS_PROXY))) {
-                            String targetId = (String) docState.get(KEY_PROXY_TARGET_ID);
-                            proxyTargets.put(oid, targetId);
-                        }
-                        if (targetProxies != null) {
-                            Object[] proxyIds = (Object[]) docState.get(KEY_PROXY_IDS);
-                            if (proxyIds != null) {
-                                targetProxies.put(oid, proxyIds);
-                            }
-                        }
-                        continue DOC;
-                    }
-                }
-            }
-        }
-        // check repository as well
+        // check repository
         repository.queryKeyValueArray(KEY_ANCESTOR_IDS, id, ids, proxyTargets,
-                targetProxies, seen);
+                targetProxies);
         return ids;
-    }
-
-    protected String generateNewId(String id) {
-        if (id == null) {
-            id = repository.generateNewId();
-        }
-        return id;
     }
 
     public List<DBSDocumentState> getKeyValuedStates(String key, String value) {
         List<DBSDocumentState> docStates = new LinkedList<DBSDocumentState>();
         Set<String> seen = new HashSet<String>();
+        // check transient state
         for (DBSDocumentState docState : transientStates.values()) {
             seen.add(docState.getId());
             if (!value.equals(docState.get(key))) {
@@ -662,48 +480,51 @@ public class DBSTransactionState {
             }
             docStates.add(docState);
         }
-        for (DBSDocumentState docState : savedStates.values()) {
-            if (!seen.add(docState.getId())) {
-                // already seen
-                continue;
-            }
-            if (!value.equals(docState.get(key))) {
-                continue;
-            }
-            docState = makeTransient(docState);
-            docStates.add(docState);
-        }
+        // fetch from repository
         List<State> states = repository.queryKeyValue(key, value, seen);
         for (State state : states) {
-            DBSDocumentState docState = returnTransient(state);
-            docStates.add(docState);
+            docStates.add(newTransientState(state));
         }
         return docStates;
     }
 
     /**
-     * Saves transient state to saved state.
+     * Removes a list of documents.
      * <p>
-     * Dirty states are saved, all states are kept in transient because there
-     * may be references to them.
+     * Called after a {@link #save} has been done.
      */
-    public void save() {
-        List<Work> works = getFulltextWorks();
+    public void removeStates(Set<String> ids) throws DocumentException {
+        for (String id : ids) {
+            transientStates.remove(id);
+        }
+        repository.deleteStates(ids);
+    }
+
+    /**
+     * Writes transient state to database.
+     * <p>
+     * An undo log is kept in order to rollback the transaction later if needed.
+     */
+    public void save() throws DocumentException {
         updateProxies();
+        // TODO getting fulltext already does a getStateChange
+        List<Work> works = getFulltextWorks();
         for (String id : transientCreated) { // ordered
             DBSDocumentState docState = transientStates.get(id);
             docState.setNotDirty();
-            savedStates.put(id, new DBSDocumentState(docState)); // copy
-            savedCreated.add(id);
+            repository.createState(docState.getState());
+            // TODO undo log
         }
         for (DBSDocumentState docState : transientStates.values()) {
             String id = docState.getId();
             if (transientCreated.contains(id)) {
                 continue; // already done
             }
-            if (docState.isDirty()) {
-                docState.setNotDirty();
-                savedStates.put(id, new DBSDocumentState(docState)); // copy
+            Diff diff = docState.getStateChange();
+            docState.setNotDirty();
+            if (diff != null) {
+                repository.updateState(id, diff);
+                // TODO undo log
             }
         }
         transientCreated.clear();
@@ -751,23 +572,23 @@ public class DBSTransactionState {
         }
         // clear all proxy data
         for (String key : proxy.getState().keySet().toArray(new String[0])) {
-            if (!proxySpecific(key)) {
+            if (!isProxySpecific(key)) {
                 proxy.put(key, null);
             }
         }
         // copy from target
         for (Entry<String, Serializable> en : target.getState().entrySet()) {
             String key = en.getKey();
-            if (!proxySpecific(key)) {
-                proxy.put(key, CopyHelper.deepCopy(en.getValue()));
+            if (!isProxySpecific(key)) {
+                proxy.put(key, StateHelper.deepCopy(en.getValue()));
             }
         }
     }
 
     /**
-     * Things that we don't touch on a proxy.
+     * Things that we don't touch on a proxy when updating it.
      */
-    protected boolean proxySpecific(String key) {
+    protected boolean isProxySpecific(String key) {
         switch (key) {
         // these are placeful stuff
         case KEY_ID:
@@ -791,53 +612,35 @@ public class DBSTransactionState {
     }
 
     /**
-     * Flushes saved state to database.
-     */
-    protected void flush() throws DocumentException {
-        for (String id : savedCreated) { // ordered
-            DBSDocumentState docState = savedStates.get(id);
-            repository.createState(docState.getState());
-        }
-        for (DBSDocumentState docState : savedStates.values()) {
-            if (savedCreated.contains(docState.getId())) {
-                continue; // already done
-            }
-            repository.updateState(docState.getState());
-        }
-        for (String id : savedDeleted) {
-            repository.deleteState(id);
-        }
-        // clear transient, this means that after this references to states
-        // will be stale TODO mark state as invalid
-        clearTransient();
-        clearSaved();
-    }
-
-    /**
      * Saves and flushes to database.
      */
     public void commit() throws DocumentException {
         save();
-        flush();
+        commitSave();
     }
 
     /**
-     * Forgets all changes.
+     * Commits the saved state to the database.
+     */
+    protected void commitSave() throws DocumentException {
+        // clear transient, this means that after this references to states
+        // will be stale
+        // TODO mark states as invalid
+        clearTransient();
+        // TODO clear undo log
+    }
+
+    /**
+     * Rolls back the save state by applying the undo log.
      */
     public void rollback() {
         clearTransient();
-        clearSaved();
+        // TODO apply undo log
     }
 
     protected void clearTransient() {
         transientStates.clear();
         transientCreated.clear();
-    }
-
-    protected void clearSaved() {
-        savedStates.clear();
-        savedCreated.clear();
-        savedDeleted.clear();
     }
 
     /**
@@ -852,7 +655,6 @@ public class DBSTransactionState {
         if (docsWithDirtyStrings.isEmpty() && docsWithDirtyBinaries.isEmpty()) {
             return Collections.emptyList();
         }
-
         List<Work> works = new LinkedList<Work>();
         getFulltextSimpleWorks(works, docsWithDirtyStrings);
         getFulltextBinariesWorks(works, docsWithDirtyBinaries);

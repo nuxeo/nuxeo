@@ -34,7 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
@@ -987,9 +986,17 @@ public class DBSDocument implements Document {
 
     @Override
     public void writeDocumentPart(DocumentPart dp) throws PropertyException {
-        DBSDocumentState docState = getStateMaybeProxyTarget(dp.getType());
+        final DBSDocumentState docState = getStateMaybeProxyTarget(dp.getType());
+        // markDirty callback, which has to be called *before*
+        // we change the state
+        Runnable markDirty = new Runnable() {
+            @Override
+            public void run() {
+                docState.markDirty();
+            }
+        };
         writeComplexProperty((ComplexProperty) dp, docState.getState(),
-                docState.getDirty());
+                markDirty);
         clearDirtyFlags(dp);
     }
 
@@ -1003,7 +1010,7 @@ public class DBSDocument implements Document {
     }
 
     protected void writeComplexProperty(ComplexProperty complexProperty,
-            State state, AtomicBoolean dirty) throws PropertyException {
+            State state, Runnable markDirty) throws PropertyException {
         if (complexProperty instanceof BlobProperty) {
             writeBlobProperty((BlobProperty) complexProperty, state);
             return;
@@ -1019,8 +1026,8 @@ public class DBSDocument implements Document {
             if (type.isSimpleType()) {
                 // simple property
                 Serializable value = property.getValueForWrite();
+                markDirty.run();
                 state.put(name, value);
-                dirty.set(true);
             } else if (type.isListType()) {
                 ListType listType = (ListType) type;
                 if (listType.getFieldType().isSimpleType()) {
@@ -1031,8 +1038,8 @@ public class DBSDocument implements Document {
                     } else if (!(value == null || value instanceof Object[])) {
                         throw new IllegalStateException(value.toString());
                     }
+                    markDirty.run();
                     state.put(name, value);
-                    dirty.set(true);
                 } else {
                     // complex list
                     Collection<Property> children = property.getChildren();
@@ -1041,22 +1048,22 @@ public class DBSDocument implements Document {
                     for (Property childProperty : children) {
                         State childMap = new State();
                         writeComplexProperty((ComplexProperty) childProperty,
-                                childMap, dirty);
+                                childMap, markDirty);
                         childMaps.add(childMap);
                     }
+                    markDirty.run();
                     state.put(name, (Serializable) childMaps);
-                    dirty.set(true);
                 }
             } else {
                 // complex property
                 State childMap = (State) state.get(name);
                 if (childMap == null) {
                     childMap = new State();
+                    markDirty.run();
                     state.put(name, childMap);
-                    dirty.set(true);
                 }
                 writeComplexProperty((ComplexProperty) property, childMap,
-                        dirty);
+                        markDirty);
             }
         }
     }

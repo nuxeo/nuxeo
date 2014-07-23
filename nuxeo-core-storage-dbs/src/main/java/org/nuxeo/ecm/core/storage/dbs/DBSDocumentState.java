@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
@@ -23,10 +26,10 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.storage.CopyHelper;
+import org.nuxeo.ecm.core.storage.State.Diff;
+import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.State;
 
 /**
@@ -38,53 +41,88 @@ import org.nuxeo.ecm.core.storage.State;
  */
 public class DBSDocumentState {
 
+    /**
+     * The current state.
+     */
     protected State state;
 
-    // dirty, but not including fulltext
-    protected AtomicBoolean dirty = new AtomicBoolean(false);
-
-    protected boolean dirtyFulltext;
+    /**
+     * When non-null, the original state (otherwise the state hasn't been
+     * modified).
+     */
+    protected State originalState;
 
     /**
      * Constructs an empty state.
      */
     public DBSDocumentState() {
         state = new State();
+        originalState = null;
     }
 
     /**
-     * Constructs a state from an existing base map.
+     * Constructs a document state from the copy of an existing base state.
      */
     public DBSDocumentState(State base) {
-        state = CopyHelper.deepCopy(base);
+        state = StateHelper.deepCopy(base);
+        originalState = null;
     }
 
     /**
-     * Copy constructor.
+     * This must be called if we're about to directly change the internal state.
      */
-    public DBSDocumentState(DBSDocumentState docState) {
-        this(docState.state);
+    public void markDirty() {
+        if (originalState == null) {
+            originalState = StateHelper.deepCopy(state);
+        }
     }
 
-    public AtomicBoolean getDirty() {
-        return dirty;
-    }
-
+    /**
+     * Checks if the document state has been changed since its construction or
+     * the last call to {@link #setNotDirty}.
+     */
     public boolean isDirty() {
-        return dirty.get() || dirtyFulltext;
+        return originalState != null;
     }
 
     public boolean isDirtyIgnoringFulltext() {
-        return dirty.get();
+        Diff diff = getStateChange();
+        if (diff == null) {
+            return false;
+        }
+        diff.remove(KEY_FULLTEXT_SIMPLE);
+        diff.remove(KEY_FULLTEXT_BINARY);
+        diff.remove(KEY_FULLTEXT_JOBID);
+        return !diff.isEmpty();
     }
 
     public void setNotDirty() {
-        dirty.set(false);
-        dirtyFulltext = false;
+        originalState = null;
     }
 
+    /**
+     * Gets the state. If the caller changes the state, it must also call
+     * {@link #dirty} to inform this object that the state is dirtied.
+     */
     public State getState() {
         return state;
+    }
+
+    /**
+     * Gets a diff of what changed since this document state was read from
+     * database or saved.
+     *
+     * @return {@code null} if there was no change, or a {@link Diff}
+     */
+    public Diff getStateChange() {
+        if (originalState == null) {
+            return null;
+        }
+        Diff diff = StateHelper.diff(originalState, state);
+        if (diff.isEmpty()) {
+            return null;
+        }
+        return diff;
     }
 
     public Serializable get(String key) {
@@ -92,16 +130,8 @@ public class DBSDocumentState {
     }
 
     public void put(String key, Serializable value) {
+        markDirty();
         state.put(key, value);
-        switch (key) {
-        case DBSDocument.KEY_FULLTEXT_SIMPLE:
-        case DBSDocument.KEY_FULLTEXT_BINARY:
-        case DBSDocument.KEY_FULLTEXT_JOBID:
-            dirtyFulltext = true;
-            break;
-        default:
-            dirty.set(true);
-        }
     }
 
     public boolean containsKey(String key) {
@@ -130,7 +160,7 @@ public class DBSDocumentState {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(dirty=" + dirty + ','
+        return getClass().getSimpleName() + '(' + (isDirty() ? "dirty," : "")
                 + state.toString() + ')';
     }
 

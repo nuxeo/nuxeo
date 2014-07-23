@@ -115,7 +115,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityException;
-import org.nuxeo.ecm.core.storage.CopyHelper;
+import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.QueryOptimizer;
@@ -376,7 +376,8 @@ public class DBSSession implements Session {
     }
 
     protected Document getDocument(String id) throws DocumentException {
-        return getDocument(id, true);
+        DBSDocumentState docState = transaction.getStateForUpdate(id);
+        return getDocument(docState);
     }
 
     protected List<Document> getDocuments(List<String> ids)
@@ -384,15 +385,9 @@ public class DBSSession implements Session {
         List<DBSDocumentState> docStates = transaction.getStatesForUpdate(ids);
         List<Document> docs = new ArrayList<Document>(ids.size());
         for (DBSDocumentState docState : docStates) {
-            docs.add(getDocument(docState, true));
+            docs.add(getDocument(docState));
         }
         return docs;
-    }
-
-    protected Document getDocument(String id, boolean readonly)
-            throws DocumentException {
-        DBSDocumentState docState = transaction.getStateForUpdate(id);
-        return getDocument(docState, readonly);
     }
 
     protected Document getDocument(DBSDocumentState docState)
@@ -429,7 +424,7 @@ public class DBSSession implements Session {
             Long pos, String typeName) throws DocumentException {
         DBSDocumentState docState = createChildState(id, parentId, name, pos,
                 typeName);
-        return getDocument(docState, true);
+        return getDocument(docState);
     }
 
     protected DBSDocumentState createChildState(String id, String parentId,
@@ -601,7 +596,7 @@ public class DBSSession implements Session {
         for (Entry<String, Serializable> en : versionState.entrySet()) {
             String key = en.getKey();
             if (!keepWhenRestore(key)) {
-                docState.put(key, CopyHelper.deepCopy(en.getValue()));
+                docState.put(key, StateHelper.deepCopy(en.getValue()));
             }
         }
         docState.put(KEY_IS_VERSION, null);
@@ -862,9 +857,7 @@ public class DBSSession implements Session {
         }
 
         // remove all docs
-        for (String cid : removedIds) {
-            transaction.removeState(cid);
-        }
+        transaction.removeStates(removedIds);
 
         // fix proxies back-pointers on proxy targets
         Set<String> targetIds = new HashSet<>(proxyTargets.values());
@@ -1292,7 +1285,7 @@ public class DBSSession implements Session {
 
     @Override
     public void setACP(Document doc, ACP acp, boolean overwrite)
-            throws SecurityException {
+            throws DocumentException {
         if (!overwrite) {
             if (acp == null) {
                 return;
@@ -1358,13 +1351,13 @@ public class DBSSession implements Session {
             List<Serializable> aceList = new ArrayList<Serializable>(
                     aces.length);
             for (ACE ace : aces) {
-                State aceMap = new State();
+                State aceMap = new State(3);
                 aceMap.put(KEY_ACE_USER, ace.getUsername());
                 aceMap.put(KEY_ACE_PERMISSION, ace.getPermission());
                 aceMap.put(KEY_ACE_GRANT, Boolean.valueOf(ace.isGranted()));
                 aceList.add(aceMap);
             }
-            State aclMap = new State();
+            State aclMap = new State(2);
             aclMap.put(KEY_ACL_NAME, name);
             aclMap.put(KEY_ACL, (Serializable) aceList);
             aclList.add(aclMap);
@@ -1436,29 +1429,30 @@ public class DBSSession implements Session {
 
     protected PartialList<String> doQuery(String query, String queryType,
             QueryFilter queryFilter, int countUpTo) throws QueryException {
-        PartialList<State> pl = doQueryAndFetch(query, queryType, queryFilter,
-                countUpTo, true);
+        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query,
+                queryType, queryFilter, countUpTo, true);
         List<String> ids = new ArrayList<String>(pl.list.size());
-        for (State state : pl.list) {
-            String id = (String) state.get(NXQL.ECM_UUID);
+        for (Map<String, Serializable> map : pl.list) {
+            String id = (String) map.get(NXQL.ECM_UUID);
             ids.add(id);
         }
         return new PartialList<String>(ids, pl.totalSize);
     }
 
-    protected PartialList<State> doQueryAndFetch(String query,
-            String queryType, QueryFilter queryFilter, int countUpTo)
-            throws QueryException {
+    protected PartialList<Map<String, Serializable>> doQueryAndFetch(
+            String query, String queryType, QueryFilter queryFilter,
+            int countUpTo) throws QueryException {
         return doQueryAndFetch(query, queryType, queryFilter, countUpTo, false);
     }
 
-    protected PartialList<State> doQueryAndFetch(String query,
-            String queryType, QueryFilter queryFilter, int countUpTo,
-            boolean onlyId) throws QueryException {
+    protected PartialList<Map<String, Serializable>> doQueryAndFetch(
+            String query, String queryType, QueryFilter queryFilter,
+            int countUpTo, boolean onlyId) throws QueryException {
         if ("NXTAG".equals(queryType)) {
             // for now don't try to implement tags
             // and return an empty list
-            return new PartialList<State>(Collections.<State> emptyList(), 0);
+            return new PartialList<Map<String, Serializable>>(
+                    Collections.<Map<String, Serializable>> emptyList(), 0);
         }
         if (!NXQL.NXQL.equals(queryType)) {
             throw new QueryException("No QueryMaker accepts query type: "
@@ -1483,22 +1477,6 @@ public class DBSSession implements Session {
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this,
                 expression, queryFilter.getPrincipals());
 
-        // query in-memory in saved state
-        List<State> states = new ArrayList<>();
-        Set<String> done = new HashSet<>();
-        for (DBSDocumentState docState : transaction.savedStates.values()) {
-            String id = docState.getId();
-            done.add(id);
-            if (transaction.savedDeleted.contains(id)) {
-                // deleted
-                continue;
-            }
-            if (evaluator.matches(docState)) {
-                states.add(docState.getState());
-            }
-        }
-        boolean postFilter = !states.isEmpty() || isOrderByPath(orderByClause);
-
         int limit = (int) queryFilter.getLimit();
         int offset = (int) queryFilter.getOffset();
         if (offset < 0) {
@@ -1511,6 +1489,7 @@ public class DBSSession implements Session {
         int repoLimit;
         int repoOffset;
         OrderByClause repoOrderByClause;
+        boolean postFilter = isOrderByPath(orderByClause);
         if (postFilter) {
             // we have to merge ordering and batching between memory and
             // repository
@@ -1527,14 +1506,11 @@ public class DBSSession implements Session {
         // query the repository
         boolean deepCopy = !onlyId;
         PartialList<State> pl = repository.queryAndFetch(expression, evaluator,
-                repoOrderByClause, repoLimit, repoOffset, countUpTo, deepCopy,
-                done);
+                repoOrderByClause, repoLimit, repoOffset, countUpTo, deepCopy);
 
-        long totalSize;
-        if (pl.totalSize < 0) {
-            totalSize = pl.totalSize;
-        } else {
-            totalSize = states.size() + pl.totalSize;
+        List<State> states = pl.list;
+        long totalSize = pl.totalSize;
+        if (totalSize >= 0) {
             if (countUpTo == -1) {
                 // count full size
             } else if (countUpTo == 0) {
@@ -1546,12 +1522,6 @@ public class DBSSession implements Session {
                     totalSize = -2; // truncated
                 }
             }
-        }
-
-        if (states.isEmpty()) {
-            states = pl.list;
-        } else {
-            states.addAll(pl.list);
         }
 
         if (postFilter) {
@@ -1570,18 +1540,19 @@ public class DBSSession implements Session {
             }
         }
 
-        List<State> flatList;
+        List<Map<String, Serializable>> flatList;
         if (onlyId) {
             // optimize because we just need the id
             flatList = new ArrayList<>(states.size());
             for (State state : states) {
-                flatList.add(State.singleton(NXQL.ECM_UUID, state.get(KEY_ID)));
+                flatList.add(Collections.singletonMap(NXQL.ECM_UUID,
+                        state.get(KEY_ID)));
             }
         } else {
             flatList = flatten(states);
         }
 
-        return new PartialList<State>(flatList, totalSize);
+        return new PartialList<Map<String, Serializable>>(flatList, totalSize);
     }
 
     /** Does an ORDER BY clause include ecm:path */
@@ -1598,25 +1569,24 @@ public class DBSSession implements Session {
     }
 
     protected String getPath(State state) {
-        String name = (String) state.get(KEY_NAME);
-        String parentId = (String) state.get(KEY_PARENT_ID);
-        state = transaction.getStateForRead(parentId);
-        if (state == null) {
-            if ("".equals(name)) {
-                return "/"; // root
-            } else {
-                return name; // placeless, no slash
+        LinkedList<String> list = new LinkedList<String>();
+        for (boolean first = true;; first = false) {
+            String name = (String) state.get(KEY_NAME);
+            String parentId = (String) state.get(KEY_PARENT_ID);
+            list.addFirst(name);
+            if (parentId == null
+                    || (state = transaction.getStateForRead(parentId)) == null) {
+                if (first) {
+                    if ("".equals(name)) {
+                        return "/"; // root
+                    } else {
+                        return name; // placeless, no slash
+                    }
+                } else {
+                    return StringUtils.join(list, '/');
+                }
             }
         }
-        LinkedList<String> list = new LinkedList<String>();
-        list.addFirst(name);
-        while (state != null) {
-            name = (String) state.get(KEY_NAME);
-            parentId = (String) state.get(KEY_PARENT_ID);
-            list.addFirst(name);
-            state = transaction.getStateForRead(parentId);
-        }
-        return StringUtils.join(list, '/');
     }
 
     protected void doOrderBy(List<State> states, OrderByClause orderByClause,
@@ -1634,16 +1604,17 @@ public class DBSSession implements Session {
     /**
      * Flatten and convert from internal names to NXQL.
      */
-    protected List<State> flatten(List<State> states) {
-        List<State> flatList = new ArrayList<>(states.size());
+    protected List<Map<String, Serializable>> flatten(List<State> states) {
+        List<Map<String, Serializable>> flatList = new ArrayList<>(
+                states.size());
         for (State state : states) {
             flatList.add(flatten(state));
         }
         return flatList;
     }
 
-    protected State flatten(State state) {
-        State flat = new State();
+    protected Map<String, Serializable> flatten(State state) {
+        Map<String, Serializable> flat = new HashMap<>();
         for (Entry<String, Serializable> en : state.entrySet()) {
             String key = en.getKey();
             Serializable value = en.getValue();
@@ -1667,8 +1638,8 @@ public class DBSSession implements Session {
     public IterableQueryResult queryAndFetch(String query, String queryType,
             QueryFilter queryFilter, Object[] params) throws QueryException {
         int countUpTo = -1;
-        PartialList<State> pl = doQueryAndFetch(query, queryType, queryFilter,
-                countUpTo);
+        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query,
+                queryType, queryFilter, countUpTo);
         return new DBSQueryResult(pl);
     }
 
@@ -1677,15 +1648,15 @@ public class DBSSession implements Session {
 
         boolean closed;
 
-        protected List<State> states;
+        protected List<Map<String, Serializable>> maps;
 
         protected long totalSize;
 
         protected long pos;
 
-        protected DBSQueryResult(PartialList<State> states) {
-            this.states = states.list;
-            this.totalSize = states.totalSize;
+        protected DBSQueryResult(PartialList<Map<String, Serializable>> pl) {
+            this.maps = pl.list;
+            this.totalSize = pl.totalSize;
         }
 
         @Override
@@ -1730,13 +1701,13 @@ public class DBSSession implements Session {
         }
 
         @Override
-        public State next() {
+        public Map<String, Serializable> next() {
             if (closed || pos == totalSize) {
                 throw new NoSuchElementException();
             }
-            State state = states.get((int) pos);
+            Map<String, Serializable> map = maps.get((int) pos);
             pos++;
-            return state;
+            return map;
         }
 
         @Override

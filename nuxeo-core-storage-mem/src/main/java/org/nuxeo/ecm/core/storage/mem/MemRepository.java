@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,7 +35,8 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
-import org.nuxeo.ecm.core.storage.CopyHelper;
+import org.nuxeo.ecm.core.storage.State.Diff;
+import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
@@ -120,21 +120,23 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void updateState(State state) throws DocumentException {
-        String id = (String) state.get(KEY_ID);
-        log.trace("update " + id + ": " + state);
-        State oldState = states.get(id);
-        if (oldState == null) {
+    public void updateState(String id, Diff diff) throws DocumentException {
+        log.trace("update " + id + ": " + diff);
+        State state = states.get(id);
+        if (state == null) {
             throw new ConcurrentUpdateDocumentException("Missing: " + id);
         }
-        oldState.putAll(state);
+        // TODO must use thread-safe datastructures for shared state
+        StateHelper.applyDiff(state, diff);
     }
 
     @Override
-    public void deleteState(String id) throws DocumentException {
-        log.trace("delete " + id);
-        if (states.remove(id) == null) {
-            throw new DocumentException("Missing: " + id);
+    public void deleteStates(Set<String> ids) throws DocumentException {
+        log.trace("delete " + ids);
+        for (String id : ids) {
+            if (states.remove(id) == null) {
+                log.debug("Missing on remove: " + id);
+            }
         }
     }
 
@@ -182,13 +184,10 @@ public class MemRepository extends DBSRepositoryBase {
     @Override
     public void queryKeyValueArray(String key, Object value, Set<String> ids,
             Map<String, String> proxyTargets,
-            Map<String, Object[]> targetProxies, Set<String> ignored) {
+            Map<String, Object[]> targetProxies) {
         STATE: for (State state : states.values()) {
             Object[] array = (Object[]) state.get(key);
             String id = (String) state.get(KEY_ID);
-            if (ignored.contains(id)) {
-                continue;
-            }
             if (array != null) {
                 for (Object v : array) {
                     if (value.equals(v)) {
@@ -229,18 +228,12 @@ public class MemRepository extends DBSRepositoryBase {
     @Override
     public PartialList<State> queryAndFetch(Expression expression,
             DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
-            int limit, int offset, int countUpTo, boolean deepCopy,
-            Set<String> ignored) {
+            int limit, int offset, int countUpTo, boolean deepCopy) {
         List<State> maps = new ArrayList<>();
-        for (Entry<String, State> en : states.entrySet()) {
-            String id = en.getKey();
-            if (ignored.contains(id)) {
-                continue;
-            }
-            State state = en.getValue();
+        for (State state : states.values()) {
             if (evaluator.matches(state)) {
                 if (deepCopy) {
-                    state = CopyHelper.deepCopy(state);
+                    state = StateHelper.deepCopy(state);
                 }
                 maps.add(state);
             }

@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import java.io.Serializable;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +43,8 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.State;
+import org.nuxeo.ecm.core.storage.State.Diff;
+import org.nuxeo.ecm.core.storage.State.DiffOp;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
@@ -76,6 +79,16 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public static final String MONGODB_ID = "_id";
 
     public static final String MONGODB_INC = "$inc";
+
+    public static final String MONGODB_SET = "$set";
+
+    public static final String MONGODB_UNSET = "$unset";
+
+    public static final String MONGODB_PUSH = "$push";
+
+    public static final String MONGODB_EACH = "$each";
+
+    public static final String MONGODB_POP = "$pop";
 
     private static final String MONGODB_INDEX_TEXT = "text";
 
@@ -137,44 +150,44 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return getCollection(mongoClient, descriptor.name + ".counters");
     }
 
-    protected DBObject stateToBson(State state, boolean skipNull) {
+    protected Object valueToBson(Object value) {
+        if (value instanceof State) {
+            return stateToBson((State) value);
+        } else if (value instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Object> values = (List<Object>) value;
+            return listToBson(values);
+        } else if (value instanceof Object[]) {
+            return listToBson(Arrays.asList((Object[]) value));
+        } else {
+            return serializableToBson(value);
+        }
+    }
+
+    protected DBObject stateToBson(State state) {
         DBObject ob = new BasicDBObject();
         for (Entry<String, Serializable> en : state.entrySet()) {
-            String key = en.getKey();
-            Serializable value = en.getValue();
-            Object val;
-            if (value instanceof State) {
-                val = stateToBson((State) value, skipNull);
-            } else if (value instanceof List) {
-                @SuppressWarnings("unchecked")
-                List<Serializable> states = (List<Serializable>) value;
-                ArrayList<DBObject> obs = new ArrayList<DBObject>(states.size());
-                for (Serializable state1 : states) {
-                    obs.add(stateToBson((State) state1, skipNull));
-                }
-                val = obs;
-            } else if (value instanceof Object[]) {
-                Object[] ar = (Object[]) value;
-                List<Object> list = new ArrayList<>(ar.length);
-                for (Object v : ar) {
-                    list.add(serializableToScalar((Serializable) v));
-                }
-                val = list;
-            } else {
-                val = serializableToScalar(value);
-            }
-            if (val != null || !skipNull) {
-                ob.put(key, val);
+            Object val = valueToBson(en.getValue());
+            if (val != null) {
+                ob.put(en.getKey(), val);
             }
         }
         return ob;
+    }
+
+    protected List<Object> listToBson(List<Object> values) {
+        ArrayList<Object> objects = new ArrayList<Object>(values.size());
+        for (Object value : values) {
+            objects.add(valueToBson(value));
+        }
+        return objects;
     }
 
     protected State bsonToState(DBObject ob) {
         if (ob == null) {
             return null;
         }
-        State state = new State();
+        State state = new State(ob.keySet().size());
         for (String key : ob.keySet()) {
             Object val = ob.get(key);
             Serializable value;
@@ -213,7 +226,85 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return state;
     }
 
-    protected Object serializableToScalar(Serializable value) {
+    /**
+     * Constructs a MongoDB update from the given {@link Diff}.
+     */
+    protected DBObject diffToBson(Diff diff) {
+        BasicDBObject set = new BasicDBObject();
+        BasicDBObject unset = new BasicDBObject();
+        BasicDBObject push = new BasicDBObject();
+        BasicDBObject pop = new BasicDBObject();
+        diffToUpdate(diff, "", set, unset, push, pop);
+        DBObject update = new BasicDBObject();
+        if (!set.isEmpty()) {
+            update.put(MONGODB_SET, set);
+        }
+        if (!unset.isEmpty()) {
+            update.put(MONGODB_UNSET, unset);
+        }
+        if (!push.isEmpty()) {
+            update.put(MONGODB_PUSH, push);
+        }
+        if (!pop.isEmpty()) {
+            update.put(MONGODB_POP, pop);
+        }
+        return update;
+    }
+
+    protected void diffToUpdate(Diff diff, String prefix, DBObject set,
+            DBObject unset, DBObject push, DBObject pop) {
+        for (Entry<String, Serializable> en : diff.entrySet()) {
+            String name = prefix + '.' + en.getKey();
+            Serializable value = en.getValue();
+            if (value instanceof Diff) {
+                diffToUpdate((Diff) value, name, set, unset, push, pop);
+            } else if (value instanceof Object[]) {
+                Object[] array = (Object[]) value;
+                diffOrListToUpdate(Arrays.asList(array), name, set, push, pop);
+            } else if (value instanceof List) {
+                @SuppressWarnings("unchecked")
+                List<Object> list = (List<Object>) value;
+                diffOrListToUpdate(list, name, set, push, pop);
+            } else {
+                // not a diff
+                set.put(name, valueToBson(value));
+            }
+        }
+    }
+
+    protected void diffOrListToUpdate(List<Object> list, String name,
+            DBObject set, DBObject push, DBObject pop) throws AssertionError {
+        if (!list.isEmpty() && list.get(0) instanceof DiffOp) {
+            // list diff
+            DiffOp op = (DiffOp) list.get(0);
+            switch (op) {
+            case RPUSH:
+                Object pushed;
+                if (list.size() == 2) {
+                    // no need to use $each for one element
+                    pushed = valueToBson(list.get(1));
+                } else {
+                    List<Object> values = new ArrayList<Object>(list.size() - 1);
+                    for (int i = 1; i < list.size(); i++) {
+                        values.add(valueToBson(list.get(i)));
+                    }
+                    pushed = new BasicDBObject(MONGODB_EACH, values);
+                }
+                push.put(name, pushed);
+                break;
+            case RPOP:
+                pop.put(name, ONE);
+                break;
+            default:
+                throw new AssertionError(op.toString());
+            }
+        } else {
+            // not a diff
+            set.put(name, valueToBson(list));
+        }
+    }
+
+    protected Object serializableToBson(Object value) {
         if (value instanceof Calendar) {
             return ((Calendar) value).getTime();
         }
@@ -278,7 +369,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public void createState(State state) throws DocumentException {
-        DBObject ob = stateToBson(state, true);
+        DBObject ob = stateToBson(state);
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: CREATE " + ob);
         }
@@ -301,27 +392,28 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void updateState(State state) throws DocumentException {
-        String id = (String) state.get(KEY_ID);
+    public void updateState(String id, Diff diff) throws DocumentException {
         DBObject query = new BasicDBObject(KEY_ID, id);
-        DBObject ob = stateToBson(state, false);
+        DBObject update = diffToBson(diff);
         if (log.isTraceEnabled()) {
-            log.trace("MongoDB: UPDATE " + query + " <- " + ob);
+            log.trace("MongoDB: UPDATE " + id + ": " + update);
         }
-        coll.update(query, ob);
+        coll.update(query, update);
         // TODO dupe exception
         // throw new DocumentException("Missing: " + id);
     }
 
     @Override
-    public void deleteState(String id) throws DocumentException {
-        DBObject query = new BasicDBObject(KEY_ID, id);
+    public void deleteStates(Set<String> ids) throws DocumentException {
+        DBObject query = new BasicDBObject(KEY_ID, new BasicDBObject(
+                QueryOperators.IN, ids));
         if (log.isTraceEnabled()) {
-            log.trace("MongoDB: REMOVE " + query);
+            log.trace("MongoDB: REMOVE " + ids);
         }
         WriteResult w = coll.remove(query);
-        if (w.getN() != 1) {
-            log.error("Removed " + w.getN() + " docs for id: " + id);
+        if (w.getN() != ids.size()) {
+            log.error("Removed " + w.getN() + " docs for " + ids.size()
+                    + " ids: " + ids);
         }
     }
 
@@ -366,9 +458,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public void queryKeyValueArray(String key, Object value, Set<String> ids,
             Map<String, String> proxyTargets,
-            Map<String, Object[]> targetProxies, Set<String> ignored) {
+            Map<String, Object[]> targetProxies) {
         DBObject query = new BasicDBObject(key, value);
-        addIgnoredIds(query, ignored);
         DBObject fields = new BasicDBObject();
         fields.put(MONGODB_ID, ZERO);
         fields.put(KEY_ID, ONE);
@@ -428,12 +519,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public PartialList<State> queryAndFetch(Expression expression,
             DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
-            int limit, int offset, int countUpTo, boolean deepCopy,
-            Set<String> ignored) {
+            int limit, int offset, int countUpTo, boolean deepCopy) {
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(
                 evaluator.pathResolver);
         DBObject query = builder.walkExpression(expression);
-        addIgnoredIds(query, ignored);
         addPrincipals(query, evaluator.principals);
         List<State> list;
         if (log.isTraceEnabled()) {

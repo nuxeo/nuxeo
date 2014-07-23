@@ -19,10 +19,7 @@ package org.nuxeo.ecm.core.storage;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,34 +30,142 @@ import java.util.Set;
  *
  * @since 5.9.5
  */
-public class State extends HashMap<String, Serializable> {
+public class State implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final int HASHMAP_DEFAULT_INITIAL_CAPACITY = 16;
+
+    private static final float HASHMAP_DEFAULT_LOAD_FACTOR = 0.75f;
 
     private static final int DEBUG_MAX_STRING = 100;
 
     private static final int DEBUG_MAX_ARRAY = 10;
 
-    private static final Set<String> KEY_ORDER = new LinkedHashSet<>(
+    /** Initial key order for the {@link #toString} method. */
+    private static final Set<String> TO_STRING_KEY_ORDER = new LinkedHashSet<>(
             Arrays.asList(new String[] { "ecm:id", "ecm:primaryType",
                     "ecm:name", "ecm:parentId", "ecm:isVersion", "ecm:isProxy" }));
 
-    /** Empty constructor. */
+    /**
+     * A {@link State} actually containing a diff.
+     * <p>
+     * Values can be regular values, or:
+     * <ul>
+     * <li>a sub-{@link Diff},
+     * <li>an array or List containing a {@link DiffOp} as its first element.
+     * </ul>
+     *
+     * @since 5.9.5
+     */
+    public static class Diff extends State {
+
+        private static final long serialVersionUID = 1L;
+
+    }
+
+    /**
+     * Diff operation markers for arrays or Lists.
+     *
+     * @since 5.9.5
+     */
+    public static enum DiffOp {
+        /**
+         * When used as the first element of an array or List, means that the
+         * rest of the array/list should be appended to the right of the
+         * existing array/List.
+         */
+        RPUSH,
+
+        /**
+         * When used as an array or List, means that one element should be
+         * removed from the right of the array/List.
+         */
+        RPOP
+    }
+
+    protected final Map<String, Serializable> map;
+
+    /**
+     * Constructor with default capacity.
+     */
     public State() {
-        super();
+        map = new HashMap<>();
     }
 
-    /** Copy constructor. */
-    public State(State state) {
-        super(state);
+    /**
+     * Constructor for a given default size.
+     */
+    public State(int size) {
+        map = new HashMap<>(Math.max(
+                (int) (size / HASHMAP_DEFAULT_LOAD_FACTOR) + 1,
+                HASHMAP_DEFAULT_INITIAL_CAPACITY), HASHMAP_DEFAULT_LOAD_FACTOR);
     }
 
-    private State(Map<String, Serializable> map) {
-        super(map);
+    /**
+     * Gets the number of elements.
+     */
+    public int size() {
+        return map.size();
     }
 
-    public static State singleton(String key, Serializable value) {
-        return new State(Collections.singletonMap(key, value));
+    /**
+     * Checks if the state is empty.
+     */
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+
+    /**
+     * Gets a value for a key, or {@code null} if the key is not present.
+     */
+    public Serializable get(Object key) {
+        return map.get(key);
+    }
+
+    /**
+     * Sets a key/value.
+     */
+    public Serializable put(String key, Serializable value) {
+        return map.put(key, value);
+    }
+
+    /**
+     * Sets all the key/values from the passed {@link State}.
+     */
+    public void putAll(State state) {
+        map.putAll(state.map);
+    }
+
+    /**
+     * Removes the mapping for a key.
+     *
+     * @return the previous value associated with the key, or {@code null} if
+     *         there was no mapping for the key
+     */
+    public Serializable remove(Object key) {
+        return map.remove(key);
+    }
+
+    /**
+     * Gets the key set. IT MUST NOT BE MODIFIED.
+     */
+    public Set<String> keySet() {
+        return map.keySet();
+    }
+
+    /**
+     * Checks if there is a mapping for the given key.
+     */
+    public boolean containsKey(Object key) {
+        return map.containsKey(key);
+    }
+
+    /**
+     * Gets the entry set. IT MUST NOT BE MODIFIED.
+     */
+    public Set<Entry<String, Serializable>> entrySet() {
+        return map.entrySet();
     }
 
     /**
@@ -78,7 +183,7 @@ public class State extends HashMap<String, Serializable> {
         buf.append('{');
         boolean empty = true;
         // some keys go first
-        for (String key : KEY_ORDER) {
+        for (String key : TO_STRING_KEY_ORDER) {
             if (containsKey(key)) {
                 if (!empty) {
                     buf.append(", ");
@@ -93,7 +198,7 @@ public class State extends HashMap<String, Serializable> {
         String[] keys = keySet().toArray(new String[0]);
         Arrays.sort(keys);
         for (String key : keys) {
-            if (KEY_ORDER.contains(key)) {
+            if (TO_STRING_KEY_ORDER.contains(key)) {
                 // already done
                 continue;
             }
