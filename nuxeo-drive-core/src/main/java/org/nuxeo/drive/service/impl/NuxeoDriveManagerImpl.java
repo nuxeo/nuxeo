@@ -354,15 +354,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         String userName = principal.getName().intern();
         Map<String, SynchronizationRoots> syncRoots = cache.getIfPresent(userName);
         if (syncRoots == null) {
-            String query = String.format(
-                    "SELECT ecm:uuid FROM Document WHERE %s/*1/username = %s"
-                            + " AND %s/*1/enabled = 1"
-                            + " AND ecm:currentLifeCycleState <> 'deleted'"
-                            + " ORDER BY dc:title, dc:created DESC",
-                    DRIVE_SUBSCRIPTIONS_PROPERTY,
-                    NXQLQueryBuilder.prepareStringLiteral(userName, true, true),
-                    DRIVE_SUBSCRIPTIONS_PROPERTY);
-            syncRoots = computeSynchronizationRoots(query, principal);
+            syncRoots = computeSynchronizationRoots(
+                    computeSyncRootsQuery(userName), principal);
             cache.put(userName, syncRoots);
         }
         return syncRoots;
@@ -440,4 +433,17 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         this.changeFinder = changeFinder;
     }
 
+    /**
+     * @since 5.9.5
+     */
+    protected String computeSyncRootsQuery(String username) {
+        return String.format(
+                "SELECT ecm:uuid FROM Document WHERE %s/*1/username = %s"
+                        + " AND %s/*1/enabled = 1"
+                        + " AND ecm:currentLifeCycleState <> 'deleted'"
+                        + " ORDER BY dc:title, dc:created DESC",
+                DRIVE_SUBSCRIPTIONS_PROPERTY,
+                NXQLQueryBuilder.prepareStringLiteral(username, true, true),
+                DRIVE_SUBSCRIPTIONS_PROPERTY);
+    }
 }
