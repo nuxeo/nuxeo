@@ -147,10 +147,19 @@ public abstract class BaseVideoConversionConverter extends
         return value;
     }
 
+    /**
+     * Returns the video mime type to use for this converter.
+     */
     protected abstract String getVideoMimeType();
 
+    /**
+     * Returns the video extension, always prefixed by '.'.
+     */
     protected abstract String getVideoExtension();
 
+    /**
+     * Returns the temporary directory prefix to use for this converter.
+     */
     protected abstract String getTmpDirectoryPrefix();
 
 }

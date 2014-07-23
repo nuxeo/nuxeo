@@ -22,7 +22,9 @@ package org.nuxeo.ecm.platform.video.convert;
  *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
+ * @deprecated since 5.9.5. Use {@link org.nuxeo.ecm.platform.video.convert.VideoConversionConverter}.
  */
+@Deprecated
 public class OggConverter extends BaseVideoConversionConverter {
 
     public static final String OGG_VIDEO_MIMETYPE = "video/ogg";
