@@ -82,6 +82,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, EmbeddedAutomationServerFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.filemanager.core",
+        "org.nuxeo.ecm.platform.mimetype.api",
+        "org.nuxeo.ecm.platform.mimetype.core",
         "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
         "org.nuxeo.drive.core", "org.nuxeo.drive.operations" })
