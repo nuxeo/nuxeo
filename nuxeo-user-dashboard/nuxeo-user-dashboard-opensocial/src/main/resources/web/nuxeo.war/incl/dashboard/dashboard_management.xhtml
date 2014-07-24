@@ -1,24 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:a4j="http://richfaces.org/a4j">
-
-     <h:panelGroup id="admin_subtab">
-
-      <ui:include src="/incl/message_banner.xhtml"/>
-      <ui:include src="/incl/dashboard/dashboard_management_subview_selector.xhtml"/>
-
-      <div style="clear:both"></div>
-      <div class="tabsContent">
-        <ui:include src="#{currentAdminSubView.link}"/>
-      </div>
-
-   </h:panelGroup>
-
-</div>
+<ui:include src="/view_admin-fragment.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets" />
