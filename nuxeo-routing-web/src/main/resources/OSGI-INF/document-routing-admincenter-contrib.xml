@@ -5,7 +5,7 @@
     point="actions">
 
     <action id="tab.admin.workflow" link="/incl/admin/adminWorkflow.xhtml"
-      label="tab.admin.workflow" order="80">
+      type="admin_rest_document_link" label="tab.admin.workflow" order="80">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
@@ -36,8 +36,7 @@
       <resultLayouts>
         <layout name="document_route_models_listing_ajax" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showPDFExport="true"
-          showSyndicationLinks="true" />
+          showCSVExport="true" showPDFExport="true" showSyndicationLinks="true" />
       </resultLayouts>
       <selectionList>CURRENT_SELECTION</selectionList>
       <actions category="CURRENT_SELECTION_LIST" />
