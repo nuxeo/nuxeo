@@ -20,44 +20,8 @@
 
   <ui:define name="body">
 
-     <a4j:outputPanel id="admin_divtab" layout="block">
-
-      <table class="adminViewContent">
-      <tr>
-        <td class="adminTabsColumn">
-          <ui:include src="/incl/admin_view_selector.xhtml"/>
-        </td>
-        <td class="adminContentColumn">
-
-          <c:if test="#{adminViews.productionServer}">
-            <div class="processMessage completeWarning">
-              #{messages['label.admin.productionWarning']}
-            </div>
-          </c:if>
-
-          <a4j:outputPanel id="setupRequiresRestartPanel"
-            layout="block"
-            ajaxRendered="true">
-            <c:if test="#{setupRequiresRestart}">
-              <div class="processMessage completeWarning">
-                <h:form id="restartRequiredForm">
-                  <h:outputText value="#{messages['label.setup.restartNeeded']} " />
-                  <h:commandButton onclick="return confirmRestart();"
-                    action="#{systemInfo.restartServer()}"
-                    value="#{messages['label.action.restart']}"
-                    styleClass="button" />
-                </h:form>
-              </div>
-            </c:if>
-          </a4j:outputPanel>
-
-          <ui:include src="#{currentAdminView.link}"/>
-        </td>
-      </tr>
-      </table>
-   </a4j:outputPanel>
+    <nxl:widget name="adminCenterTabs" mode="view" value="#{currentDocument}" />
 
   </ui:define>
 
 </nxthemes:composition>
-

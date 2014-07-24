@@ -1,0 +1,54 @@
+<component name="org.nuxeo.ecm.platform.admin.center.actions.widgets">
+
+  <documentation>
+    @since 5.9.4-JSF2, global widgets used to render actions/tabs
+    in Admin Center.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="adminCenterTabs" type="tabs">
+      <properties mode="view">
+        <property name="actionsDisplay">links</property>
+        <property name="addForm">true</property>
+        <!-- no ajax for now: opensocial dashboard action does not support it anyway -->
+        <property name="useAjaxForm">false</property>
+        <property name="category">NUXEO_ADMIN</property>
+        <property name="actions">#{adminViews.availableActions}</property>
+        <property name="currentTabAction">#{adminViews.currentView}</property>
+        <property name="overallDisplay">vertical_block</property>
+      </properties>
+    </widget>
+
+    <widget name="adminCenterSubTabs" type="tabs">
+      <properties mode="view">
+        <property name="actionsDisplay">links</property>
+        <property name="addForm">true</property>
+        <!-- use ajax only if bookmarkable URLs can be preserved -->
+        <property name="useAjaxForm">#{canUseAjaxTabs}</property>
+        <property name="actions">#{adminViews.availableSubActions}</property>
+        <property name="currentTabAction">#{adminViews.currentSubView}</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="typeCompatibility">
+
+    <typeCompatibility type="admin_rest_document_link">
+      <category>NUXEO_ADMIN</category>
+      <category>SystemInfo_sub_tab</category>
+      <category>UsersActivity_sub_tab</category>
+      <category>ConnectClient_sub_tab</category>
+      <category>ConnectApps_sub_tab</category>
+      <category>UsersGroupsManager_sub_tab</category>
+      <category>Monitoring_sub_tab</category>
+      <category>DashboardManagement_sub_tab</category>
+      <category>OAuthOpensocial_sub_tab</category>
+    </typeCompatibility>
+
+  </extension>
+
+</component>
