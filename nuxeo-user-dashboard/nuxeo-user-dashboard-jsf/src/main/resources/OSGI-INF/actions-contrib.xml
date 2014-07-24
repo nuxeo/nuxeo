@@ -7,7 +7,8 @@
       <category>USER_CENTER</category>
     </action>
 
-    <action id="DashboardMain" link="/incl/dashboard/user_jsf_dashboard.xhtml" label="" order="10">
+    <action id="DashboardMain" link="/incl/dashboard/user_jsf_dashboard.xhtml" label="" order="10"
+      type="admin_rest_document_link">
       <category>Dashboard_sub_tab</category>
     </action>
 

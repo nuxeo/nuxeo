@@ -5,58 +5,61 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="Dashboard" link="user_center_fragment.xhtml"
-      label="user.center.dashboard"
+    <action id="Dashboard" link="user_center_fragment.xhtml" label="user.center.dashboard"
       order="10">
       <category>USER_CENTER</category>
+      <properties>
+        <property name="ajaxSupport">false</property>
+      </properties>
     </action>
 
     <action id="DashboardMain" link="/incl/dashboard/user_opensocial_dashboard.xhtml"
-      label=""
-      order="10">
+      type="home_rest_document_link" label="" order="10">
       <category>Dashboard_sub_tab</category>
-      <filter id="notForMSIE7">
-        <rule grant="false">
-          <condition>#{isMSIE6or7}</condition>
-        </rule>
-      </filter>
+      <filter-id>notForMSIE7</filter-id>
+      <properties>
+        <property name="ajaxSupport">false</property>
+      </properties>
     </action>
 
     <action id="DashboardMain_MSIE7" link="/incl/dashboard/user_jsf_dashboard.xhtml"
-      label=""
-      order="10">
+      type="home_rest_document_link" label="" order="10">
       <category>Dashboard_sub_tab</category>
-      <filter id="fallBackForMSIE7">
-        <rule grant="true">
-          <condition>#{isMSIE6or7}</condition>
-        </rule>
-      </filter>
+      <filter-id>fallBackForMSIE7</filter-id>
     </action>
 
     <action id="DashboardManagement" link="/incl/dashboard/dashboard_management.xhtml"
-      label="admcommand.DashboardManagement" order="70">
+      type="admin_rest_document_link" label="admcommand.DashboardManagement"
+      order="70">
       <category>NUXEO_ADMIN</category>
       <filter-id>dashboardManagementAccess</filter-id>
+      <properties>
+        <property name="ajaxSupport">false</property>
+      </properties>
     </action>
 
     <action id="DefaultDashboardManagement" link="/incl/dashboard/default_dashboard_management.xhtml"
-      label="tab.dashboard.management.default" order="10">
+      type="admin_rest_document_link" label="tab.dashboard.management.default"
+      order="10">
       <category>DashboardManagement_sub_tab</category>
       <filter-id>dashboardManagementAccess</filter-id>
+      <properties>
+        <property name="ajaxSupport">false</property>
+      </properties>
     </action>
 
     <action id="AnonymousDashboardManagement" link="/incl/dashboard/anonymous_dashboard_management.xhtml"
-      label="tab.dashboard.management.anonymous" order="20">
+      type="admin_rest_document_link" label="tab.dashboard.management.anonymous"
+      order="20">
       <category>DashboardManagement_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
-      <filter id="isAnonymousUserDefined">
-        <rule grant="true">
-          <condition>#{anonymousUserDefined}</condition>
-        </rule>
-      </filter>
+      <filter-id>isAnonymousUserDefined</filter-id>
+      <properties>
+        <property name="ajaxSupport">false</property>
+      </properties>
     </action>
 
-    <action id="ExternalGadgets">
+    <action id="ExternalGadgets" type="admin_rest_document_link">
       <category>DashboardManagement_sub_tab</category>
     </action>
 
@@ -64,6 +67,24 @@
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="filters">
+
+    <filter id="notForMSIE7">
+      <rule grant="false">
+        <condition>#{isMSIE6or7}</condition>
+      </rule>
+    </filter>
+
+    <filter id="fallBackForMSIE7">
+      <rule grant="true">
+        <condition>#{isMSIE6or7}</condition>
+      </rule>
+    </filter>
+
+    <filter id="isAnonymousUserDefined">
+      <rule grant="true">
+        <condition>#{anonymousUserDefined}</condition>
+      </rule>
+    </filter>
 
     <filter id="dashboardManagementAccess">
       <rule grant="true">
