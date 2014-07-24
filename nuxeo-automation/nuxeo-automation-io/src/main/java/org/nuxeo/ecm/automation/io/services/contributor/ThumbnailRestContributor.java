@@ -22,7 +22,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.runtime.api.Framework;
 
 import java.io.IOException;
 
@@ -51,10 +53,11 @@ public class ThumbnailRestContributor implements RestContributor {
                 Blob thumbnail = thumbnailAdapter.getThumbnail(doc
                         .getCoreSession());
                 if (thumbnail != null) {
-                    String url = VirtualHostHelper.getContextPathProperty()
-                            + "/" + DocumentModelFunctions.fileUrl
-                            (DOWNLOAD_THUMBNAIL, doc, THUMB_THUMBNAIL,
-                                    thumbnail.getFilename());
+                    String url = Framework.getProperty("nuxeo.url") + "/" +
+                            DocumentModelFunctions.fileUrl
+                                    (DOWNLOAD_THUMBNAIL, doc,
+                                            THUMB_THUMBNAIL,
+                                            thumbnail.getFilename());
                     jg.writeStringField(THUMBNAIL_URL_LABEL, url);
                 } else {
                     writeEmptyThumbnail(jg);
