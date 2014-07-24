@@ -42,7 +42,11 @@
           </c:forEach>
           <div class="dueDate warningLabel">
             <h:outputText value=" #{messages['label.route.task.due.date']} " />
-            <h:outputText value="#{task.dueDate}" />
+            <h:outputText value="#{task.dueDate}">
+              <f:convertDateTime
+                pattern="#{nxu:dateFormater()}"
+                timeZone="#{timeZone}" />
+            </h:outputText>
           </div>
           <div class="directive quote">
             <h:outputText value="#{messages[task.directive]}" />
