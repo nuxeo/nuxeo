@@ -57,6 +57,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.NullEnumeration;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.commons.text.TextTemplate;
@@ -288,7 +289,7 @@ public class ConfigurationGenerator {
     @SuppressWarnings("serial")
     protected static final Map<String, String> parametersMigration = new HashMap<String, String>() {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 1L;
 
@@ -417,8 +418,8 @@ public class ConfigurationGenerator {
                 generateFiles();
             } else if (forceGeneration) {
                 log.info("Configuration files generation (nuxeo.force.generation="
-                        + userConfig.getProperty(PARAM_FORCE_GENERATION,
-                                "false") + ")...");
+                        + userConfig.getProperty(PARAM_FORCE_GENERATION)
+                        + ")...");
                 generateFiles();
             } else {
                 log.info("Server already configured (set nuxeo.force.generation=true to force configuration files generation).");
@@ -1108,12 +1109,12 @@ public class ConfigurationGenerator {
                         if (line.trim().startsWith("#")) {
                             String key = line.substring(1, equalIdx).trim();
                             String value = line.substring(equalIdx + 1).trim();
-                            storedConfig.setProperty(key, value);
+                            getStoredConfig().setProperty(key, value);
                         } else {
                             String key = line.substring(0, equalIdx).trim();
                             String value = line.substring(equalIdx + 1).trim();
                             if (!value.equals(userConfig.getProperty(key))) {
-                                storedConfig.setProperty(key, value);
+                                getStoredConfig().setProperty(key, value);
                             }
                         }
                     } else {
