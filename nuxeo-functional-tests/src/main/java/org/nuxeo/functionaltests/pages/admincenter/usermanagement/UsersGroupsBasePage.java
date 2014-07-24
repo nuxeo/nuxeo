@@ -30,11 +30,12 @@ import org.openqa.selenium.support.FindBy;
  * @since 5.4.2
  */
 public class UsersGroupsBasePage extends AdminCenterBasePage {
-    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li[@class=\"selected\"]/a[text()=\"Users\" or text()=\"Groups\"]")
+
+    @FindBy(xpath = "//div[@id=\"nxw_adminCenterSubTabs_panel\"]/ul/li[@class=\"selected\"]/form/a")
     public WebElement selectedTab;
 
     @Required
-    @FindBy(xpath = "//div[@class=\"tabsBar\"]/form/ul/li/a[text()=\"Users\"]")
+    @FindBy(xpath = "//a[@id=\"nxw_UsersManager_form:nxw_UsersManager\"]")
     public WebElement usersTabLink;
 
     protected void clickOnLinkIfNotSelected(WebElement tabLink) {
