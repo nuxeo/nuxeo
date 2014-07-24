@@ -12,6 +12,14 @@ author: lkemen@nuxeo.com
 /*A .gridContainer contains several .gridRow. vertically
 Each .gridRow contains several .gridBox horizontally
 A .gridBox may contain several .widgetPanel vertically. */
+.gridContainer:before, .gridContainer:after,
+.gridRow:before, .gridRow:after {
+  content: " ";
+  display: table }
+
+.gridContainer:after, .gridRow:after {
+  clear: both }
+
 .gridRow {
   clear: both;
   padding: 0 }
@@ -23,15 +31,17 @@ A .gridBox may contain several .widgetPanel vertically. */
 /*The .gridStyle** classes represent the width of each .gridBox container.
 The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .gridStyle12 { width: 100% }
-.gridStyle10 { width: 84% }
+.gridStyle11 { width: 91.66% }
+.gridStyle10 { width: 83.33% }
 .gridStyle9  { width: 75% }
-.gridStyle8  { width: 66% }
-.gridStyle7  { width: 58% }
+.gridStyle8  { width: 66.66% }
+.gridStyle7  { width: 58.33% }
 .gridStyle6  { width: 50% }
-.gridStyle5  { width: 42% }
-.gridStyle4  { width: 33% }
+.gridStyle5  { width: 41.66% }
+.gridStyle4  { width: 33.33% }
 .gridStyle3  { width: 25% }
-.gridStyle2  { width: 16% }
+.gridStyle2  { width: 16.66% }
+.gridStyle1  { width: 8.33% }
 
 .gridBox h3,
 .gridBox h4 {
