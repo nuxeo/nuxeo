@@ -123,11 +123,12 @@
             ajaxNodeSelectionEncodeBehavior="none"
             id="#{widget.id}_treeId"
             iconExpanded="/icons/toggle_minus.png"
-            iconCollapsed="/icons/toggle_plus.png">
+            iconCollapsed="/icons/toggle_plus.png"
+            var="node">
             <rich:treeModelRecursiveAdaptor
               id="#{widget.id}_recursiveTreeNodesAdaptorId"
               roots="#{vocabularyTreeActions.getRoots(widgetProperty_directoryName, widgetProperty_displayObsoleteEntries, keySeparator, widgetProperty_ordering)}"
-              nodes="#{node.children}" var="node">
+              nodes="#{node.children}">
               <rich:treeNode id="#{widget.id}_treeNodeId"
                 highlightedClass="treeNodeHighlightedClass"
                 selectedClass="treeNodeSelectedClass">

@@ -84,13 +84,13 @@
         iconCollapsed="/icons/toggle_plus.png"
         rowKeyVar="rowKey"
         styleClass="labelTool"
-        stateVar="nodeState">
+        stateVar="nodeState"
+        var="node">
         <rich:treeModelRecursiveAdaptor
           id="#{widget.id}_recursiveTreeNodesAdaptorId"
           roots="#{widget.properties.showAllDomains ? reducedTreeActions.rootNode : reducedTreeActions.treeRoots}"
           nodes="#{node.children}"
-          styleClass="labelTool"
-          var="node">
+          styleClass="labelTool">
           <rich:treeNode
             id="#{widget.id}_treeNodeId"
             highlightedClass="treeNodeHighlightedClass"
