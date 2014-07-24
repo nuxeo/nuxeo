@@ -32,7 +32,10 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.DefaultQueryVisitor;
@@ -60,6 +63,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class NxqlQueryConverter {
+    private static final Log log = LogFactory.getLog(NxqlQueryConverter.class);
 
     private NxqlQueryConverter() {
     }
@@ -161,7 +165,15 @@ public class NxqlQueryConverter {
         } else if (!query.toLowerCase().startsWith("select ")) {
             query = SELECT_ALL_WHERE + nxql;
         }
-        SQLQuery nxqlQuery = SQLQueryParser.parse(new StringReader(query));
+        SQLQuery nxqlQuery;
+        try {
+            nxqlQuery = SQLQueryParser.parse(new StringReader(query));
+        } catch (QueryParseException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage() + " for query:\n" + query);
+            }
+            throw e;
+        }
         final ExpressionBuilder ret = new ExpressionBuilder(null);
         builders.add(ret);
         final ArrayList<String> fromList = new ArrayList<String>();
