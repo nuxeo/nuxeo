@@ -923,9 +923,13 @@ public abstract class NuxeoLauncher {
             launcher.checkNoRunningServer();
         }
         if ("status".equalsIgnoreCase(launcher.command)) {
-            log.warn(launcher.status());
-            if (launcher.isStarted()) {
-                log.info(launcher.getStartupSummary());
+            String statusMsg = launcher.status();
+            if (!quiet) {
+                log.warn(statusMsg);
+                if (launcher.isStarted()) {
+                    log.info("Go to " + launcher.getURL());
+                    log.info(launcher.getStartupSummary());
+                }
             }
             exitStatus = launcher.status;
         } else if ("startbg".equalsIgnoreCase(launcher.command)) {
@@ -945,6 +949,8 @@ public abstract class NuxeoLauncher {
                         if (!launcher.doStart(true)) {
                             launcher.removeShutdownHook();
                             System.exit(1);
+                        } else if (!quiet) {
+                            log.info("Go to " + launcher.getURL());
                         }
                     } catch (PackageException e) {
                         log.error(
@@ -1024,7 +1030,8 @@ public abstract class NuxeoLauncher {
                 commandSucceeded = launcher.pkgCompoundRequest(Arrays.asList(params));
             }
         } else if ("mp-set".equalsIgnoreCase(launcher.command)) {
-            commandSucceeded = launcher.pkgSetRequest(Arrays.asList(params), launcher.hasOption(OPTION_NODEPS));
+            commandSucceeded = launcher.pkgSetRequest(Arrays.asList(params),
+                    launcher.hasOption(OPTION_NODEPS));
         } else if ("mp-hotfix".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgHotfix();
         } else if ("mp-upgrade".equalsIgnoreCase(launcher.command)) {
@@ -1153,7 +1160,11 @@ public abstract class NuxeoLauncher {
      * @see #doStartAndWait(boolean)
      */
     public boolean doStartAndWait() throws PackageException {
-        return doStartAndWait(false);
+        boolean started = doStartAndWait(false);
+        if (started && !quiet) {
+            log.info("Go to " + getURL());
+        }
+        return started;
     }
 
     /**
@@ -1171,7 +1182,11 @@ public abstract class NuxeoLauncher {
      * @throws PackageException
      */
     public boolean doStart() throws PackageException {
-        return doStart(false);
+        boolean started = doStart(false);
+        if (started && !quiet) {
+            log.info("Go to " + getURL());
+        }
+        return started;
     }
 
     /**
