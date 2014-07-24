@@ -71,6 +71,10 @@ import org.artofsolving.jodconverter.process.WindowsProcessManager;
 import org.artofsolving.jodconverter.util.PlatformUtils;
 import org.json.JSONException;
 import org.json.XML;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.update.LocalPackage;
@@ -93,9 +97,6 @@ import org.nuxeo.launcher.info.PackageInfo;
 import org.nuxeo.launcher.monitoring.StatusServletClient;
 import org.nuxeo.log4j.Log4JHelper;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  * @author jcarsique
@@ -256,11 +257,13 @@ public abstract class NuxeoLauncher {
     private static final String[] COMMANDS_NO_GUI = { "configure", "mp-init",
             "mp-purge", "mp-add", "mp-install", "mp-uninstall", "mp-request",
             "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list",
-            "mp-listall", "mp-update", "status", "showconf", "mp-show", "mp-set" };
+            "mp-listall", "mp-update", "status", "showconf", "mp-show",
+            "mp-set" };
 
     private static final String[] COMMANDS_NO_RUNNING_SERVER = { "mp-init",
             "mp-purge", "mp-add", "mp-install", "mp-uninstall", "mp-request",
-            "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-update", "mp-set" };
+            "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-update",
+            "mp-set" };
 
     /**
      * Program is running or service is OK.
@@ -2316,11 +2319,13 @@ public abstract class NuxeoLauncher {
         return pkgRequest(add, install, uninstall, null);
     }
 
-    protected boolean pkgSetRequest(List<String> request, boolean nodeps) throws IOException, PackageException {
+    protected boolean pkgSetRequest(List<String> request, boolean nodeps)
+            throws IOException, PackageException {
         if (nodeps) {
             return getConnectBroker().pkgSet(request);
         } else {
-            return getConnectBroker().pkgRequest(null, request, null, null, false);
+            return getConnectBroker().pkgRequest(null, request, null, null,
+                    false);
         }
     }
 
