@@ -53,6 +53,9 @@ author: lkemen@nuxeo.com
   border-color: "color.major.stronger (__FLAVOR__ border)";
   color: "tabs.selected (__FLAVOR__ color)" }
 
+.tabsBar li:first-child a,
+.modularTabs li:first-child a {
+  border-radius: 3px 0 0 }
 
 .tabsBar li.selected a {
   font-weight: bold }
