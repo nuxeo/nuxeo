@@ -942,17 +942,12 @@
         <category>Navigation and arrows</category>
       </categories>
     </icon>
-    <icon path="/icons/arrow_blue.gif">
-      <categories>
-        <category>Navigation and arrows</category>
-      </categories>
-    </icon>
     <icon path="/icons/arrow_down.gif">
       <categories>
         <category>Navigation and arrows</category>
       </categories>
     </icon>
-    <icon path="/icons/arrow_folded.gif">
+    <icon path="/icons/fold.png">
       <categories>
         <category>Navigation and arrows</category>
       </categories>
@@ -962,7 +957,7 @@
         <category>Navigation and arrows</category>
       </categories>
     </icon>
-    <icon path="/icons/arrow_unfolded.gif">
+    <icon path="/icons/unfolded.png">
       <categories>
         <category>Navigation and arrows</category>
       </categories>
@@ -1383,7 +1378,7 @@
         <category>Search and help</category>
       </categories>
     </icon>
-    <icon path="/icons/lightbulb.png">
+    <icon path="/icons/help.png">
       <categories>
         <category>Search and help</category>
       </categories>
