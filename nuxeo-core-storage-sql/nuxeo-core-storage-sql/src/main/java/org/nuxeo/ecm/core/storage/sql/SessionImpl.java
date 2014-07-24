@@ -1639,6 +1639,9 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public Map<String, String> getBinaryFulltext(Serializable id)
             throws StorageException {
+        if (repository.getRepositoryDescriptor().getFulltextDisabled()) {
+            return null;
+        }
         RowId rowId = new RowId(Model.FULLTEXT_TABLE_NAME, id);
         return mapper.getBinaryFulltext(rowId);
     }
