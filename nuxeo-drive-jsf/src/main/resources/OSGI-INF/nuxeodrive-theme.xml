@@ -5,20 +5,22 @@
 
   <extension point="applications" target="org.nuxeo.theme.services.ThemeService">
 
-    <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
+    <application root="${org.nuxeo.ecm.contextPath}"
+      template-engine="jsf-facelets">
 
-	    <!-- Cache control for theme resources (/nxthemes-lib/) -->
-	    <resource-caching>
-	      <lifetime>36000</lifetime>
-	    </resource-caching>
-	    <!-- Cache control for theme styles (/nxthemes-css/) -->
-	    <style-caching>
-	      <lifetime>900</lifetime>
-	    </style-caching>
+      <!-- Cache control for theme resources (/nxthemes-lib/) -->
+      <resource-caching>
+        <lifetime>36000</lifetime>
+      </resource-caching>
+      <!-- Cache control for theme styles (/nxthemes-css/) -->
+      <style-caching>
+        <lifetime>900</lifetime>
+      </style-caching>
 
-		<view id="/drive/drive_edit.xhtml">l
-		  <theme>galaxy/popup</theme>
-		</view>
+      <view id="/drive/drive_edit.xhtml">
+        l
+        <theme>galaxy/popup</theme>
+      </view>
 
     </application>
   </extension>

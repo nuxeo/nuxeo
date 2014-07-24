@@ -54,11 +54,8 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityException;
-import org.nuxeo.ecm.platform.types.TypeView;
-import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -105,7 +102,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     public static final String OSX_PLATFORM = "osx";
 
-	private static final String MODE_DRIVE_VIEW = "view_drive_metadata";
+    private static final String MODE_DRIVE_VIEW = "view_drive_metadata";
 
     protected FileSystemItem currentFileSystemItem;
 
@@ -396,21 +393,17 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         }
         return currentFileSystemItem;
     }
-    
-    
-     /*
-     * update document model and redirect to drive view
+
+    /**
+     * Update document model and redirect to drive view.
      */
     public String updateCurrentDocument() throws ClientException {
-    	
         DocumentModel doc = navigationContext.getCurrentDocument();
-        
         try {
-
             Events.instance().raiseEvent(EventNames.BEFORE_DOCUMENT_CHANGED,
                     doc);
             doc = documentManager.saveDocument(doc);
-           // throwUpdateComments(doc);
+            // throwUpdateComments(doc);
             documentManager.save();
             // some changes (versioning) happened server-side, fetch new one
             navigationContext.invalidateCurrentDocument();
@@ -419,7 +412,9 @@ public class NuxeoDriveActions extends InputController implements Serializable {
                     resourcesAccessor.getMessages().get(doc.getType()));
             EventManager.raiseEventsOnDocumentChange(doc);
 
-            Events.instance().raiseEvent(org.nuxeo.ecm.webapp.helpers.EventNames.NAVIGATE_TO_DOCUMENT, doc);
+            Events.instance().raiseEvent(
+                    org.nuxeo.ecm.webapp.helpers.EventNames.NAVIGATE_TO_DOCUMENT,
+                    doc);
 
             return MODE_DRIVE_VIEW;
 

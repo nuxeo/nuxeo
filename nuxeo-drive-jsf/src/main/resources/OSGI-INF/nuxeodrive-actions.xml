@@ -3,10 +3,9 @@
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
-    
+
     <action id="driveUpdateDocument" link="#{nuxeoDriveActions.updateCurrentDocument}"
-      order="10" label="command.save" type="link"
-      icon="/icons/update.png">
+      order="10" label="command.save" type="link" icon="/icons/update.png">
       <category>DRIVE_ACTION_VIEW</category>
     </action>
 
@@ -41,8 +40,7 @@
     </action>
 
     <action id="userCenterNuxeoDrive" link="/incl/nuxeodrive/user_center_nuxeo_drive.xhtml"
-      label="user.center.nuxeoDrive" icon="/icons/drive_tab.png"
-      order="100">
+      label="user.center.nuxeoDrive" icon="/icons/drive_tab.png" order="100">
       <category>USER_CENTER</category>
     </action>
 
@@ -59,7 +57,8 @@
         <type>WorkspaceRoot</type>
         <type>Forum</type>
 
-        <!-- Section sync is disabled until we implement proper support for proxies sync -->
+        <!-- Section sync is disabled until we implement proper support for 
+          proxies sync -->
         <type>Section</type>
       </rule>
       <rule grant="true">
