@@ -4,19 +4,22 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="UserRegistration" link="view_admin-fragment.xhtml" label="admcommand.userregistration"
+    <action id="UserRegistration" link="/view_admin-fragment.xhtml" label="admcommand.userregistration"
+      type="admin_rest_document_link"
       order="55">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="UserRegistrationRequests" link="/incl/userregistration/requests_listing_all.xhtml"
+      type="admin_rest_document_link"
       label="tab.userregistration.requests" order="10">
       <category>UserRegistration_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="UserRegistrationConfiguration" link="/incl/userregistration/requests_configuration.xhtml"
+      type="admin_rest_document_link"
       label="tab.userregistration.configuration" order="20">
       <category>UserRegistration_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
