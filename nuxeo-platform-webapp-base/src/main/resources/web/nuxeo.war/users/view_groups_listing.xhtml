@@ -12,8 +12,6 @@
       <a4j:region id="search_groups_region">
         <!-- search form -->
         <h:form id="searchForm" ajaxSubmit="true"
-          ignoreDupResponses="true"
-          render="groupsPanel,searchForm"
           onsubmit="document.getElementById('groupsListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('groupsListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');">
           <script>
             jQuery(document).ready(function() {
@@ -27,11 +25,15 @@
           <h:commandButton id="searchButton"
             value="#{messages['command.search']}"
             action="#{contentViewActions.refreshAndRewind(contentViewName)}"
-            styleClass="button" />
-          <a4j:commandButton id="clearButton"
+            styleClass="button">
+            <f:ajax execute="@form" render="groupsPanel searchForm" />
+          </h:commandButton>
+          <h:commandButton id="clearButton"
             value="#{messages['command.clearSearch']}"
             action="#{groupManagementActions.clearSearch}"
-            styleClass="button" />
+            styleClass="button">
+            <f:ajax execute="@form" render="groupsPanel searchForm" />
+          </h:commandButton>
           <a4j:status>
             <f:facet name="start">
               <h:graphicImage value="/img/standart_waiter.gif" />

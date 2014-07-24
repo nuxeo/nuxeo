@@ -19,18 +19,15 @@
         jQuery('#createUserView\\:createUser').focusFirst();
       });
     </script>
-
-    <a4j:region id="immediate_creation_region">
-      <h:selectBooleanCheckbox id="immediate_creation"
-        title="#{messages['label.immediateCreation']}"
-        valueChangeListener="#{userManagementActions.changeTypeUserModel}"
-        value="#{userManagementActions.immediateCreation}">
-        <a4j:ajax event="change"
-          render="usersPanel"
-          execute="@this" />
-      </h:selectBooleanCheckbox>
-      <h:outputLabel for="immediate_creation" value="#{messages['label.immediateCreation']}" />
-    </a4j:region>
+    <h:selectBooleanCheckbox id="immediate_creation"
+      title="#{messages['label.immediateCreation']}"
+      valueChangeListener="#{userManagementActions.changeTypeUserModel}"
+      value="#{userManagementActions.immediateCreation}">
+      <f:ajax event="change"
+        render="createUser"
+        execute="@this" />
+    </h:selectBooleanCheckbox>
+    <h:outputLabel for="immediate_creation" value="#{messages['label.immediateCreation']}" />
 
     <nxl:layout name="#{userManagementActions.immediateCreation ? 'user' : 'user_registration'}"
       mode="create" value="#{userManagementActions.newUser}" />
@@ -40,37 +37,42 @@
         <tr>
           <td>
             <c:if test="#{!userManagementActions.immediateCreation}">
-              <a4j:commandButton
+              <h:commandButton
                 id="button_save_and_invite"
                 value="#{messages['command.saveAndInvite']}"
                 action="#{userManagementActions.inviteUser(true)}"
-                styleClass="button"
-                render="usersPanel,facesStatusMessagePanel" />
-              <a4j:commandButton
+                styleClass="button">
+                <f:ajax execute="@form" render="usersPanel facesStatusMessagePanel" />
+              </h:commandButton>
+              <h:commandButton
                 id="button_invite"
                 value="#{messages['command.invite']}"
                 action="#{userManagementActions.inviteUser(false)}"
-                styleClass="button"
-                render="usersPanel,facesStatusMessagePanel" />
+                styleClass="button">
+                <f:ajax execute="@form" render="usersPanel facesStatusMessagePanel" />
+              </h:commandButton>
             </c:if>
             <c:if test="#{userManagementActions.immediateCreation}">
-              <a4j:commandButton
+              <h:commandButton
                 id="button_save_and_create"
                 value="#{messages['command.saveAndCreate']}"
                 action="#{userManagementActions.createUser(true)}"
-                styleClass="button"
-                render="usersPanel,facesStatusMessagePanel" />
-              <a4j:commandButton
+                styleClass="button">
+                <f:ajax execute="@form" render="usersPanel facesStatusMessagePanel" />
+              </h:commandButton>
+              <h:commandButton
                 id="button_save"
                 value="#{messages['command.save']}"
                 action="#{userManagementActions.createUser}"
-                styleClass="button"
-                render="usersPanel,facesStatusMessagePanel" />
+                styleClass="button">
+                <f:ajax execute="@form" render="usersPanel facesStatusMessagePanel" />
+              </h:commandButton>
             </c:if>
-            <a4j:commandButton
+            <h:commandButton
               action="#{userManagementActions.toggleShowCreateForm}" immediate="true"
-              value="#{messages['command.cancel']}" styleClass="button"
-              render="usersPanel" />
+              value="#{messages['command.cancel']}" styleClass="button">
+              <f:ajax execute="@this" render="usersPanel facesStatusMessagePanel" />
+            </h:commandButton>
           </td>
         </tr>
       </tbody>

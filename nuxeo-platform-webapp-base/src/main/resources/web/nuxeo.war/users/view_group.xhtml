@@ -12,13 +12,13 @@
 
   <h:form>
     <p class="action_bar directoryBack">
-      <a4j:commandLink immediate="true"
-        action="#{groupManagementActions.toggleShowUserOrGroup}"
-        actionListener="#{jsfResetActions.resetComponents}"
-        render="groupsPanel">
+      <h:commandLink immediate="true"
+        action="#{groupManagementActions.toggleShowUserOrGroup}">
         <h:graphicImage value="/icons/arrow_left.gif" />
         <h:outputText value="#{messages['command.directoryBack']}" />
-      </a4j:commandLink>
+        <f:ajax execute="@this" render="groupsPanel"
+          actionListener="#{jsfResetActions.resetComponents}" />
+      </h:commandLink>
     </p>
   </h:form>
 
@@ -31,13 +31,13 @@
     <div class="action_bar">
       <ul>
         <li class="selected">
-          <a4j:commandLink
+          <h:commandLink
             action="#{groupManagementActions.deleteGroup}"
-            onclick="if (!confirmDeleteGroup()) { return false; }"
-            render="groupsPanel">
+            onclick="if (!confirmDeleteGroup()) { return false; }">
             <h:graphicImage value="/icons/delete.png" />
             <h:outputText value="#{messages['command.delete']}" />
-          </a4j:commandLink>
+            <f:ajax execute="@this" render="groupsPanel" />
+          </h:commandLink>
         </li>
       </ul>
     </div>
@@ -48,19 +48,20 @@
     <h:form>
       <ul>
         <li class="#{nxu:test(groupManagementActions.detailsMode == 'view', 'selected', '')}">
-          <a4j:commandLink action="#{groupManagementActions.setDetailsMode('view')}"
-            immediate="true" render="groupDetailsPanel">
+          <h:commandLink action="#{groupManagementActions.setDetailsMode('view')}"
+            immediate="true">
             <h:outputText value="#{messages['label.groupManager.viewGroup']}" />
-          </a4j:commandLink>
+            <f:ajax execute="@this" render=":viewGroupView:groupDetailsPanel" />
+          </h:commandLink>
         </li>
 
         <f:subview rendered="#{groupManagementActions.allowEditGroup and notReadOnly}">
           <li class="#{nxu:test(groupManagementActions.detailsMode == 'edit', 'selected', '')}">
-            <a4j:commandLink
-              action="#{groupManagementActions.setDetailsMode('edit')}" immediate="true"
-              render="groupDetailsPanel">
+            <h:commandLink
+              action="#{groupManagementActions.setDetailsMode('edit')}" immediate="true">
               <h:outputText value="#{messages['label.groupManager.editGroup']}" />
-            </a4j:commandLink>
+              <f:ajax execute="@this" render=":viewGroupView:groupDetailsPanel" />
+            </h:commandLink>
           </li>
         </f:subview>
       </ul>
@@ -86,11 +87,13 @@
           <tr>
             <td class="iconColumn"></td>
             <td class="labelColumn">
-              <a4j:commandButton
+              <h:commandButton
                 value="#{messages['command.save']}"
                 action="#{groupManagementActions.updateGroup}"
                 styleClass="button"
-                render="groupDetailsPanel,facesStatusMessagePanel" />
+                render="groupDetailsPanel,facesStatusMessagePanel">
+                <f:ajax execute="@form" render=":viewGroupView:groupDetailsPanel facesStatusMessagePanel" />
+              </h:commandButton>
             </td>
             <td class="fieldColumn"></td>
           </tr>

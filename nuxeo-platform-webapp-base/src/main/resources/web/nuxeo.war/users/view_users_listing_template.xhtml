@@ -22,11 +22,12 @@
             <div class="action_bar">
               <ul>
                 <li class="selected">
-                  <a4j:commandLink action="#{userManagementActions.toggleShowCreateForm}"
-                    immediate="true" id="createUserButton" render="usersPanel">
+                  <h:commandLink action="#{userManagementActions.toggleShowCreateForm}"
+                    immediate="true" id="createUserButton">
                     <h:graphicImage value="/icons/action_add_user.png" />
                     <h:outputText value="#{messages['command.createUser']}"  />
-                  </a4j:commandLink>
+                    <f:ajax execute="@this" render="usersPanel" />
+                  </h:commandLink>
                 </li>
               </ul>
             </div>

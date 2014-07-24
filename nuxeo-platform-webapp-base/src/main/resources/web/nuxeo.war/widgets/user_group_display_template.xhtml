@@ -3,7 +3,6 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:a4j="http://richfaces.org/a4j"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 <c:if test="false">
@@ -33,7 +32,7 @@
 <c:set var="userSchema" value="#{userManager.userSchemaName}" />
 <c:set var="groupSchema" value="#{userManager.groupSchemaName}" />
 <c:set var="firstNameField" value="#{nxu:test(showEmail and hideFirstLabel and hideSecondLabel, thirdLabelField, firstLabelField)}" />
-<h:outputText rendered="#{info.type == 'USER_TYPE'}">
+<ui:fragment rendered="#{info.type == 'USER_TYPE'}">
   <c:if test="#{showEmail}">
     <c:set var="userDisplayName"
       value="#{nxu:userDisplayNameAndEmail(info.id, info.entry[userSchema][firstNameField], nxu:test(hideSecondLabel, null, info.entry[userSchema][secondLabelField]), nxu:test(hideThirdLabel or not showEmail, null, info.entry[userSchema][thirdLabelField]))}" />
@@ -59,18 +58,18 @@
     </h:outputLink>
   </c:if>
   <c:if test="#{displayAction == 'edit'}">
-    <a4j:commandLink action="#{userManagementActions.setSelectedUser(info.id)}"
-      actionListener="#{userManagementActions.toggleShowUserOrGroup}"
-      render="usersPanel">
+    <h:commandLink action="#{userManagementActions.setSelectedUser(info.id)}"
+      actionListener="#{userManagementActions.toggleShowUserOrGroup}">
+      <f:ajax execute="@this" render="usersPanel" />
       <ui:include src="/widgets/user_group_output_template.xhtml">
         <ui:param name="hideIcon" value="#{hideIcon}" />
         <ui:param name="displayName" value="#{userDisplayName}" />
         <ui:param name="tagType" value="user" />
       </ui:include>
-    </a4j:commandLink>
+    </h:commandLink>
   </c:if>
-</h:outputText>
-<h:outputText rendered="#{info.type == 'GROUP_TYPE'}">
+</ui:fragment>
+<ui:fragment rendered="#{info.type == 'GROUP_TYPE'}">
   <c:set var="groupDisplayName"
     value="#{nxu:groupDisplayName(info.id, nxu:test(hideFirstLabel, null, info.entry[groupSchema].grouplabel))}" />
   <c:if test="#{displayAction == 'nothing' or empty displayAction}">
@@ -90,18 +89,16 @@
     </h:commandLink>
   </c:if>
   <c:if test="#{displayAction == 'edit'}">
-    <a4j:commandLink action="#{groupManagementActions.setSelectedGroup(info.id)}"
-      actionListener="#{groupManagementActions.toggleShowUserOrGroup}"
-      render="groupsPanel">
+    <h:commandLink action="#{groupManagementActions.setSelectedGroup(info.id)}"
+      actionListener="#{groupManagementActions.toggleShowUserOrGroup}">
+      <f:ajax execute="@this" render="groupsPanel" />
       <ui:include src="/widgets/user_group_output_template.xhtml">
         <ui:param name="hideIcon" value="#{hideIcon}" />
         <ui:param name="displayName" value="#{groupDisplayName}" />
         <ui:param name="tagType" value="group" />
       </ui:include>
-    </a4j:commandLink>
+    </h:commandLink>
   </c:if>
-</h:outputText>
-<h:outputText rendered="#{empty info.type}">
-  <h:outputText value="#{item}" />
-</h:outputText>
+</ui:fragment>
+<h:outputText rendered="#{empty info.type}" value="#{item}" />
 </c:if>

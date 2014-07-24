@@ -24,22 +24,25 @@
       <tbody>
         <tr>
           <td>
-            <a4j:commandButton
+            <h:commandButton
               id="button_save_and_create"
               value="#{messages['command.saveAndCreate']}"
               action="#{groupManagementActions.createGroup(true)}"
-              styleClass="button"
-              render="groupsPanel,facesStatusMessagePanel" />
-            <a4j:commandButton
+              styleClass="button">
+              <f:ajax execute="@form" render="groupsPanel facesStatusMessagePanel" />
+            </h:commandButton>
+            <h:commandButton
               id="button_save"
               value="#{messages['command.save']}"
               action="#{groupManagementActions.createGroup}"
-              styleClass="button"
-              render="groupsPanel,facesStatusMessagePanel" />
-            <a4j:commandButton
+              styleClass="button">
+              <f:ajax execute="@form" render="groupsPanel facesStatusMessagePanel" />
+            </h:commandButton>
+            <h:commandButton
               action="#{groupManagementActions.toggleShowCreateForm}" immediate="true"
-              value="#{messages['command.cancel']}" styleClass="button"
-              render="groupsPanel" />
+              value="#{messages['command.cancel']}" styleClass="button">
+              <f:ajax execute="@this" render="groupsPanel facesStatusMessagePanel" />
+            </h:commandButton>
           </td>
         </tr>
       </tbody>

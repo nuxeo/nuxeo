@@ -9,9 +9,7 @@
     <ui:define name="users_search_method">
       <a4j:region id="search_users_region">
         <!-- search form -->
-        <h:form id="searchForm" ajaxSubmit="true"
-          ignoreDupResponses="true"
-          render="usersListingPanel,searchForm"
+        <h:form id="searchForm"
           onsubmit="document.getElementById('usersListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('usersListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');">
           <script>
             jQuery(document).ready(function() {
@@ -25,11 +23,15 @@
           <h:commandButton id="searchButton"
             value="#{messages['command.search']}"
             action="#{contentViewActions.refreshAndRewind(contentViewName)}"
-            styleClass="button" />
-          <a4j:commandButton id="clearButton"
+            styleClass="button">
+            <f:ajax execute="@form" render="usersPanel searchForm" />
+          </h:commandButton>
+          <h:commandButton id="clearButton"
             value="#{messages['command.clearSearch']}"
             action="#{userManagementActions.clearSearch}"
-            styleClass="button" />
+            styleClass="button">
+            <f:ajax execute="@form" render="usersPanel searchForm" />
+          </h:commandButton>
           <a4j:status>
             <f:facet name="start">
               <h:graphicImage value="/img/standart_waiter.gif" />
@@ -40,11 +42,12 @@
     </ui:define>
 
     <ui:define name="empty_content_view_label">
-            <c:set var="emptySentence"
-              value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
-              <a4j:outputPanel>
-            <h:outputText value="#{emptySentence}"
-              rendered="#{not empty userManagementActions.searchString and not empty emptySentence and documents.rowCount == 0 and not provider.hasError()}" styleClass="emptyResult emptyResultBig" /></a4j:outputPanel>
+      <c:set var="emptySentence"
+        value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
+      <a4j:outputPanel>
+        <h:outputText value="#{emptySentence}"
+          rendered="#{not empty userManagementActions.searchString and not empty emptySentence and documents.rowCount == 0 and not provider.hasError()}" styleClass="emptyResult emptyResultBig" />
+      </a4j:outputPanel>
     </ui:define>
 
   </ui:composition>

@@ -22,11 +22,12 @@
             <div class="action_bar">
               <ul>
                 <li class="selected">
-                  <a4j:commandLink action="#{groupManagementActions.toggleShowCreateForm}"
-                    immediate="true" id="createGroupButton" render="groupsPanel">
+                  <h:commandLink action="#{groupManagementActions.toggleShowCreateForm}"
+                    immediate="true" id="createGroupButton">
                     <h:graphicImage value="/icons/action_add_group.png" />
                     <h:outputText value="#{messages['command.createGroup']}" />
-                  </a4j:commandLink>
+                    <f:ajax execute="@this" render="groupsPanel" />
+                  </h:commandLink>
                 </li>
               </ul>
             </div>

@@ -1,4 +1,6 @@
-<div xmlns:ui="http://java.sun.com/jsf/facelets"
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
@@ -12,13 +14,13 @@
 
   <h:form>
     <p class="action_bar directoryBack">
-      <a4j:commandLink immediate="true"
-        action="#{userManagementActions.toggleShowUserOrGroup}"
-        actionListener="#{jsfResetActions.resetComponents}"
-        render="usersPanel">
+      <h:commandLink immediate="true"
+        action="#{userManagementActions.toggleShowUserOrGroup}">
         <h:graphicImage value="/icons/arrow_left.gif" />
         <h:outputText value="#{messages['command.directoryBack']}" />
-      </a4j:commandLink>
+        <f:ajax execute="@this" render="usersPanel"
+          actionListener="#{jsfResetActions.resetComponents}" />
+      </h:commandLink>
     </p>
   </h:form>
 
@@ -31,13 +33,14 @@
     <div class="action_bar">
       <ul>
         <li class="selected">
-          <a4j:commandLink
+          <h:commandLink
             action="#{userManagementActions.deleteUser}"
             onclick="if (!confirmDeleteUser()) { return false; }"
             render="usersPanel">
             <h:graphicImage value="/icons/delete.png" />
             <h:outputText value="#{messages['command.delete']}" />
-          </a4j:commandLink>
+            <f:ajax execute="@this" render="usersPanel" />
+          </h:commandLink>
         </li>
       </ul>
     </div>
@@ -48,29 +51,30 @@
     <h:form>
       <ul>
         <li class="#{nxu:test(userManagementActions.detailsMode == 'view', 'selected', '')}">
-          <a4j:commandLink action="#{userManagementActions.setDetailsMode('view')}"
-            immediate="true" render="userDetailsPanel">
+          <h:commandLink action="#{userManagementActions.setDetailsMode('view')}"
+            immediate="true">
             <h:outputText value="#{messages['label.userManager.viewUser']}" />
-          </a4j:commandLink>
+            <f:ajax execute="@this" render=":viewUserView:userDetailsPanel " />
+          </h:commandLink>
         </li>
 
         <f:subview rendered="#{userManagementActions.allowEditUser and notReadOnly}">
           <li class="#{nxu:test(userManagementActions.detailsMode == 'edit', 'selected', '')}">
-            <a4j:commandLink
-              action="#{userManagementActions.setDetailsMode('edit')}" immediate="true"
-              render="userDetailsPanel">
+            <h:commandLink
+              action="#{userManagementActions.setDetailsMode('edit')}" immediate="true">
               <h:outputText value="#{messages['label.userManager.editUser']}" />
-            </a4j:commandLink>
+              <f:ajax execute="@this" render=":viewUserView:userDetailsPanel" />
+            </h:commandLink>
           </li>
         </f:subview>
 
         <f:subview rendered="#{userManagementActions.allowChangePassword and notReadOnly}">
           <li class="#{nxu:test(userManagementActions.detailsMode == 'editPassword', 'selected', '')}">
-            <a4j:commandLink action="#{userManagementActions.setDetailsMode('editPassword')}"
-              immediate="true"
-              render="userDetailsPanel">
+            <h:commandLink action="#{userManagementActions.setDetailsMode('editPassword')}"
+              immediate="true">
               <h:outputText value="#{messages['command.change.password']}" />
-            </a4j:commandLink>
+              <f:ajax execute="@this" render=":viewUserView:userDetailsPanel" />
+            </h:commandLink>
           </li>
         </f:subview>
 
@@ -99,11 +103,12 @@
             <tr>
               <td class="iconColumn"></td>
               <td class="labelColumn">
-                <a4j:commandButton
+                <h:commandButton
                   value="#{messages['command.save']}"
                   action="#{userManagementActions.updateUser}"
-                  styleClass="button"
-                  render="userDetailsPanel,facesStatusMessagePanel" />
+                  styleClass="button">
+                  <f:ajax execute="@form" render=":viewUserView:userDetailsPanel facesStatusMessagePanel" />
+                </h:commandButton>
               </td>
               <td class="fieldColumn"></td>
             </tr>
@@ -126,11 +131,12 @@
             <tr>
               <td class="iconColumn"></td>
               <td class="labelColumn">
-                <a4j:commandButton
+                <h:commandButton
                   value="#{messages['command.save']}"
                   action="#{userManagementActions.changePassword}"
-                  styleClass="button"
-                  render="userDetailsPanel,facesStatusMessagePanel" />
+                  styleClass="button">
+                  <f:ajax execute="@form" render=":viewUserView:userDetailsPanel facesStatusMessagePanel" />
+                </h:commandButton>
               </td>
               <td class="fieldColumn"></td>
             </tr>
@@ -142,4 +148,4 @@
   </div>
   </a4j:outputPanel>
 
-</div>
+</ui:composition>

@@ -20,11 +20,10 @@
                 </c:if>
 
                 <li class="#{cssClass}">
-                  <a4j:commandLink action="#{userManagementActions.setSelectedLetter(letter)}"
-                    execute="@this"
-                    render="usersListingPanel">
+                  <h:commandLink action="#{userManagementActions.setSelectedLetter(letter)}">
+                    <f:ajax execute="@this" render="usersListingPanel" />
                     <h:outputText value="#{letter}" />
-                  </a4j:commandLink>
+                  </h:commandLink>
                 </li>
              </c:forEach>
             </ul>
