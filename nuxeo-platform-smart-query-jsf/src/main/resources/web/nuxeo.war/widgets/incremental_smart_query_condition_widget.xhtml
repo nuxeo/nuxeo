@@ -47,12 +47,12 @@
         <c:if test="#{!empty widget.helpLabel}">
           <c:choose>
             <c:when test="#{widget.translated}">
-              <h:graphicImage value="/icons/lightbulb.png"
+              <h:graphicImage value="/icons/help.png"
                 styleClass="tipsyShow layoutHelpLabel"
                 title="#{messages[widget.helpLabel]}" />
             </c:when>
             <c:otherwise>
-              <h:graphicImage value="/icons/lightbulb.png"
+              <h:graphicImage value="/icons/help.png"
                 styleClass="tipsyShow layoutHelpLabel"
                 title="#{widget.helpLabel}" />
             </c:otherwise>
