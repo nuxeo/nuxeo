@@ -19,6 +19,7 @@ package org.nuxeo.elasticsearch.query;
 
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -30,6 +31,7 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 
 /**
  * Elasticsearch query builder for Page provider.
@@ -132,6 +134,10 @@ public class PageProviderQueryBuilder {
         String ret;
         if (param == null) {
             ret = "";
+        } else if (param instanceof List<?>) {
+           StringBuilder stringBuilder =  new StringBuilder("");
+           NXQLQueryBuilder.appendStringList(stringBuilder, (List<?>) param, quote, true);
+           return stringBuilder.toString();
         } else if (param instanceof Calendar) {
             ret = DateParser.formatW3CDateTime(((Calendar) param).getTime());
         } else {
