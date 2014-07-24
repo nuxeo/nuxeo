@@ -111,17 +111,10 @@ public class ActionRegistry implements Serializable {
                 Action action = actions.get(id);
                 if (action != null && action.isEnabled()) {
                     // UI type action compat check
-                    if (action.getType() == null) {
-                        for (TypeCompatibility compat : typeCategoryRelations) {
-                            for (String categoryCompat : compat.getCategories()) {
-                                if (StringUtils.equals(categoryCompat, category)) {
-                                    action.setType(compat.getType());
-                                }
-                            }
-                        }
-                    }
+                    Action finalAction = getClonedAction(action);
+                    applyCompatibility(category, finalAction);
                     // return only enabled actions
-                    result.add(getClonedAction(action));
+                    result.add(finalAction);
                 }
             }
         }
@@ -129,9 +122,76 @@ public class ActionRegistry implements Serializable {
         return result;
     }
 
+    protected void applyCompatibility(Action finalAction) {
+        if (finalAction.getType() == null) {
+            // iterate over all categories to apply compat
+            String[] cats = finalAction.getCategories();
+            if (cats != null) {
+                for (String cat : cats) {
+                    if (applyCompatibility(cat, finalAction)) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    protected boolean applyCompatibility(String category, Action finalAction) {
+        if (finalAction.getType() == null) {
+            for (TypeCompatibility compat : typeCategoryRelations) {
+                for (String compatCategory : compat.getCategories()) {
+                    if (StringUtils.equals(compatCategory, category)) {
+                        finalAction.setType(compat.getType());
+                        if (applyCustomCompatibility(compat.getType(),
+                                finalAction)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Helper for migration of specific actions.
+     *
+     * @since 5.9.4-JSF2
+     */
+    protected boolean applyCustomCompatibility(String compatType, Action action) {
+        if ("admin_rest_document_link".equals(compatType)) {
+            boolean applied = false;
+            String link = action.getLink();
+            if (link != null && !link.startsWith("/")) {
+                action.setLink("/" + link);
+                applied = true;
+            }
+            Map<String, Serializable> props = action.getProperties();
+            if (props == null) {
+                props = new HashMap<>();
+            }
+            if (!props.containsKey("view")) {
+                props.put("view", "view_admin");
+                action.setProperties(props);
+                applied = true;
+            }
+            if (applied) {
+                log.warn(String.format(
+                        "Applied compatibility to action '%s': its configuration "
+                                + "should be changed, make sure the link references an "
+                                + "absolute path, and set the property 'view' to 'view_admin'",
+                        action.getId()));
+                return true;
+            }
+        }
+        return false;
+    }
+
     public synchronized Action getAction(String id) {
         Action action = actions.get(id);
-        return getClonedAction(action);
+        Action finalAction = getClonedAction(action);
+        applyCompatibility(finalAction);
+        return finalAction;
     }
 
     protected Action getClonedAction(Action action) {
