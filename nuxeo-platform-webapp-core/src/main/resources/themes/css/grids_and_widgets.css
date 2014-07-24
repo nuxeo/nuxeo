@@ -16,6 +16,7 @@ A .gridBox may contain several .widgetPanel vertically. */
   clear: both;
   padding: 0 }
 .gridBox {
+  box-sizing: border-box;
   float: left;
   margin: 0 }
 
