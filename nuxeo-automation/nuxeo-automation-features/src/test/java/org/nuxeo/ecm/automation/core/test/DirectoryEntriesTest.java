@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,13 +11,14 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
-import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FIELD;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
+
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -33,12 +34,12 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.nuxeo.runtime.test.runner.RandomBug;
 
 import com.google.inject.Inject;
 
@@ -54,6 +55,7 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.automation.features" })
 @LocalDeploy("org.nuxeo.ecm.automation.features:test-directories-sql-contrib.xml")
 public class DirectoryEntriesTest {
+    public static final String NXP14735 = "NXP-14735: local configuration issue";
 
     @Inject
     protected CoreSession session;
@@ -83,6 +85,7 @@ public class DirectoryEntriesTest {
             + "{\"id\":\"mu\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Mu\"}]";
 
     @Test
+    @RandomBug.Repeat(issue = NXP14735)
     public void testGlobalDirectoryEntries() throws Exception {
         StringBlob result = getDirectoryEntries(session.getDocument(new PathRef(
                 "/default-domain/workspaces/test")));
@@ -94,7 +97,9 @@ public class DirectoryEntriesTest {
     public void testLocalDirectoryEntries() throws Exception {
         DocumentModel doc = session.getDocument(new PathRef(
                 "/default-domain/workspaces/test"));
-        doc.setPropertyValue(DIRECTORY_CONFIGURATION_FIELD, "local");
+        doc.setPropertyValue(
+                DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FIELD,
+                "local");
         doc = session.saveDocument(doc);
         session.save();
 
