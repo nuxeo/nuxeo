@@ -62,7 +62,6 @@ public class VocabulariesPage extends AdminCenterBasePage {
             final String entryFrenchLabel, final boolean obsolete,
             final int order) {
         addNewEntryLink.click();
-        //waitForLoading();
         NewVocabularyEntryForm newVocabularyEntryForm = getWebFragment(
                 By.id("addEntryView:addEntryForm"),
                 NewVocabularyEntryForm.class);
@@ -73,7 +72,8 @@ public class VocabulariesPage extends AdminCenterBasePage {
         newVocabularyEntryForm.setNewVocabularyOrder(order);
         newVocabularyEntryForm.setNewVocabularyParentId(parentId);
         newVocabularyEntryForm.save();
-        waitForLoading();
+        Locator.waitForTextPresent(By.id("ambiance-notification"),
+                "Vocabulary entry added");
         return asPage(VocabulariesPage.class);
     }
 
@@ -86,13 +86,13 @@ public class VocabulariesPage extends AdminCenterBasePage {
         entryDeleteButton.click();
         Alert confirmRemove = driver.switchTo().alert();
         confirmRemove.accept();
-        waitForLoading();
+        Locator.waitForTextPresent(By.id("ambiance-notification"),
+                "Vocabulary entry deleted");
         return asPage(VocabulariesPage.class);
     }
 
     /**
      * Return the list of directories in the select box
-     *
      */
     public List<String> getDirectoriesList() {
         Select directoriesListSelect = new Select(directoriesListSelectElement);
@@ -142,7 +142,7 @@ public class VocabulariesPage extends AdminCenterBasePage {
         for (WebElement webElement : list) {
             if (directoryName.trim().equals(webElement.getText().trim())) {
                 directoriesListSelect.selectByVisibleText(webElement.getText());
-                waitForLoading();
+                waitForLoading("selectDirectoryForm:selectDirectoryStatus");
                 return asPage(VocabulariesPage.class);
             }
         }
@@ -152,14 +152,18 @@ public class VocabulariesPage extends AdminCenterBasePage {
 
     /**
      * @since 5.9.3
+     * @since 5.9.4-JSF2: specify the waiter id
      */
-    protected void waitForLoading() {
+    protected void waitForLoading(String waiterId) {
+        String waiterPath = String.format("//span[@id=\"%s\"]", waiterId);
+        final String startWaiter = waiterPath
+                + "//span[@class=\"rf-st-start\"]";
+        final String stopWaiter = waiterPath + "//span[@class=\"rf-st-stop\"]";
         try {
             Locator.waitUntilGivenFunctionIgnoring(
                     new Function<WebDriver, Boolean>() {
                         public Boolean apply(WebDriver driver) {
-                            return driver.findElement(
-                                    By.id("_viewRoot:status.stop")).getAttribute(
+                            return driver.findElement(By.xpath(stopWaiter)).getAttribute(
                                     "style").equals("display: none;");
                         }
                     }, StaleElementReferenceException.class);
@@ -170,11 +174,9 @@ public class VocabulariesPage extends AdminCenterBasePage {
         Locator.waitUntilGivenFunctionIgnoring(
                 new Function<WebDriver, Boolean>() {
                     public Boolean apply(WebDriver driver) {
-                        return driver.findElement(
-                                By.id("_viewRoot:status.start")).getAttribute(
+                        return driver.findElement(By.xpath(startWaiter)).getAttribute(
                                 "style").equals("display: none;");
                     }
                 }, StaleElementReferenceException.class);
     }
-
 }
