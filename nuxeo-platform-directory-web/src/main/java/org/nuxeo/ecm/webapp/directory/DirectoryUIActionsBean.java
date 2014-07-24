@@ -116,7 +116,11 @@ public class DirectoryUIActionsBean implements Serializable {
         if (directoryNames == null) {
             directoryNames = directoryUIManager.getDirectoryNames();
             if (directoryNames.size() > 0) {
-                selectedDirectoryName = directoryNames.get(0);
+                // preserve selected directory if present
+                if (selectedDirectoryName == null
+                        || !directoryNames.contains(selectedDirectoryName)) {
+                    selectedDirectoryName = directoryNames.get(0);
+                }
                 selectDirectory();
             }
         }

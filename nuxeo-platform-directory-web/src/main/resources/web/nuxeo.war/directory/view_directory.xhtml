@@ -27,15 +27,16 @@
 
       <h:form id="showHideAddDirectoryEntry">
         <h4>
-          <a4j:commandLink
-            action="#{directoryUIActions.toggleShowAddForm}" render="addDirectoryEntryPanel">
+          <h:commandLink
+            action="#{directoryUIActions.toggleShowAddForm}">
             <h:graphicImage url="/icons/toggle_plus.png"
               rendered="#{!directoryUIActions.showAddForm}" />
             <h:graphicImage url="/icons/toggle_minus.png"
               rendered="#{directoryUIActions.showAddForm}" />
             <h:outputText
               value="#{messages['title.create.vocabulary.entry']}" />
-          </a4j:commandLink>
+            <f:ajax execute="@this" render="addDirectoryEntryPanel" />
+          </h:commandLink>
         </h4>
       </h:form>
 
@@ -61,17 +62,24 @@
             value="#{directoryUIActions.selectedDirectoryEntry}" />
 
           <div class="buttons">
-            <a4j:commandButton value="#{messages['command.save']}"
+            <h:commandButton value="#{messages['command.save']}"
               id="editDirectoryEntryButton"
               styleClass="button"
-              action="#{directoryUIActions.editSelectedDirectoryEntry}"
-              render="viewDirectoryPanel" />
-            <a4j:commandButton value="#{messages['command.cancel']}"
+              action="#{directoryUIActions.editSelectedDirectoryEntry}">
+              <f:ajax execute="@form" render="viewDirectoryPanel" />
+            </h:commandButton>
+            <h:commandButton value="#{messages['command.cancel']}"
               id="cancelEditingDirectoryEntryButton"
               styleClass="button"
               action="#{directoryUIActions.resetSelectedDirectoryEntry}"
-              immediate="true"
-              render="viewDirectoryPanel" />
+              immediate="true">
+              <f:ajax execute="@this" render="viewDirectoryPanel" />
+            </h:commandButton>
+            <a4j:status id="editDirectoryEntryStatus">
+              <f:facet name="start">
+                <h:graphicImage value="/img/standart_waiter.gif" />
+              </f:facet>
+            </a4j:status>
           </div>
 
         </h:form>

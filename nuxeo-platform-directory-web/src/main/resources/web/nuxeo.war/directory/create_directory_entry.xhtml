@@ -20,15 +20,22 @@
         mode="create" value="#{directoryUIActions.creationDirectoryEntry}" />
 
       <div class="buttons">
-        <a4j:commandButton value="#{messages['command.create']}"
+        <h:commandButton value="#{messages['command.create']}"
           styleClass="button"
-          action="#{directoryUIActions.createDirectoryEntry}"
-          render="viewDirectoryPanel" />
-        <a4j:commandButton value="#{messages['command.cancel']}"
+          action="#{directoryUIActions.createDirectoryEntry}">
+          <f:ajax execute="@form" render="viewDirectoryPanel" />
+        </h:commandButton>
+        <h:commandButton value="#{messages['command.cancel']}"
           styleClass="button"
           action="#{directoryUIActions.resetCreateDirectoryEntry}"
-          immediate="true"
-          render="viewDirectoryPanel" />
+          immediate="true">
+          <f:ajax execute="@this" render="viewDirectoryPanel" />
+        </h:commandButton>
+        <a4j:status id="createDirectoryEntryStatus">
+          <f:facet name="start">
+            <h:graphicImage value="/img/standart_waiter.gif" />
+          </f:facet>
+        </a4j:status>
       </div>
 
     </div>

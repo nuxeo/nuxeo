@@ -41,21 +41,23 @@
 
     <c:if test="#{!isReadOnly}">
       <td class="fieldColumn">
-        <a4j:commandButton value="#{messages['command.edit']}"
+        <h:commandButton value="#{messages['command.edit']}"
           id="#{layout.id}_editButton"
           styleClass="button"
           action="#{directoryUIActions.selectDirectoryEntry(value.id)}"
-          immediate="true"
-          render="editDirectoryEntryPanel" />
+          immediate="true">
+          <f:ajax execute="@this" render="editDirectoryEntryPanel" />
+        </h:commandButton>
       </td>
       <td class="fieldColumn">
-        <a4j:commandButton value="#{messages['command.delete']}"
+        <h:commandButton value="#{messages['command.delete']}"
           id="#{layout.id}_deleteButton"
           styleClass="button"
           action="#{directoryUIActions.deleteDirectoryEntry(value.id)}"
           onclick="if (!confirmDeleteDirectoryEntry()) { return false; }"
-          immediate="true"
-          render="viewDirectoryPanel" />
+          immediate="true">
+          <f:ajax execute="@this" render="viewDirectoryPanel" />
+        </h:commandButton>
       </td>
     </c:if>
 
@@ -75,21 +77,23 @@
     </nxl:layoutRow>
       <c:if test="#{!isReadOnly}">
         <td class="fieldColumn">
-          <a4j:commandButton value="#{messages['command.edit']}"
+          <h:commandButton value="#{messages['command.edit']}"
             id="#{layout.id}_editButton"
             styleClass="button"
             action="#{directoryUIActions.selectDirectoryEntry(value.id)}"
-            immediate="true"
-            render="editDirectoryEntryPanel" />
+            immediate="true">
+            <f:ajax execute="@this" render="editDirectoryEntryPanel" />
+          </h:commandButton>
         </td>
         <td class="fieldColumn">
-          <a4j:commandButton value="#{messages['command.delete']}"
+          <h:commandButton value="#{messages['command.delete']}"
             id="#{layout.id}_deleteButton"
             styleClass="button"
             action="#{directoryUIActions.deleteDirectoryEntry(value.id)}"
             onclick="if (!confirmDeleteDirectoryEntry()) { return false; }"
-            immediate="true"
-            render="viewDirectoryPanel" />
+            immediate="true">
+            <f:ajax execute="@this" render="viewDirectoryPanel" />
+          </h:commandButton>
         </td>
       </c:if>
   </tr>
