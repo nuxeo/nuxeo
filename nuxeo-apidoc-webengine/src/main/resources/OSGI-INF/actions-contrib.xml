@@ -6,30 +6,35 @@
     point="actions">
 
     <action id="PlatformExplorer" link="/view_admin-fragment.xhtml"
+      type="admin_rest_document_link"
       label="admcommand.explorer" order="40">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="PlatformExplorerBrowse" link="/incl/apidoc/browse.xhtml"
+      type="admin_rest_document_link"
       label="tab.explorer.browse" order="20">
       <category>PlatformExplorer_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="PlatformExplorerXP" link="/incl/apidoc/xp.xhtml" label="tab.explorer.xp"
+      type="admin_rest_document_link"
       order="30">
       <category>PlatformExplorer_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="PlatformExplorerSeam" link="/incl/apidoc/seamcomponents.xhtml"
+      type="admin_rest_document_link"
       label="tab.explorer.seam" order="40">
       <category>PlatformExplorer_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="PlatformExplorerOp" link="/incl/apidoc/operations.xhtml"
+      type="admin_rest_document_link"
       label="tab.explorer.operations" order="50">
       <category>PlatformExplorer_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
