@@ -44,7 +44,7 @@
             <h:outputText value=" #{messages['label.route.task.due.date']} " />
             <h:outputText value="#{task.dueDate}">
               <f:convertDateTime
-                pattern="#{nxu:dateFormater()}"
+                pattern="#{nxu:basicDateFormater()}"
                 timeZone="#{timeZone}" />
             </h:outputText>
           </div>
