@@ -575,7 +575,7 @@ public class Select2ActionsBean implements Serializable {
 
     public boolean mustIncludeResources() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        if (facesContext != null && facesContext.getRenderResponse()) {
+        if (facesContext != null) {
             PhaseId currentPhaseId = FacesLifecycle.getPhaseId();
             if (currentPhaseId.equals(PhaseId.RENDER_RESPONSE)) {
                 HttpServletRequest request = (HttpServletRequest) facesContext.getExternalContext().getRequest();
