@@ -1,0 +1,20 @@
+<component name="org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService">
+
+  <implementation class="org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherServiceImpl"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService" />
+  </service>
+
+
+  <extension-point name="enricher">
+    <documentation>
+      <code>
+        <enricher name="children" class="org.nuxeo.ecm.automation.rest.test.service.SampleChildrenContributor">
+        </enricher>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherDescriptor"/>
+  </extension-point>
+
+</component>

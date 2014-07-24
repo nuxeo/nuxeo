@@ -1,31 +1,31 @@
 <component name="testrestcontrib">
 
   <extension
-    target="org.nuxeo.ecm.automation.io.services.contributor.RestContributorService"
-    point="contributor">
+    target="org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService"
+    point="enricher">
 
-    <contributor name="children"
-      class="org.nuxeo.ecm.automation.io.services.contributor.ChildrenContributor">
+    <enricher name="children"
+      class="org.nuxeo.ecm.automation.io.services.enricher.ChildrenEnricher">
       <category>test</category>
       <filter-id>onlyfolderish</filter-id>
-    </contributor>
+    </enricher>
 
-    <contributor name="children1"
-      class="org.nuxeo.ecm.automation.io.services.contributor.ChildrenContributor">
+    <enricher name="children1"
+      class="org.nuxeo.ecm.automation.io.services.enricher.ChildrenEnricher">
       <category>anothertest</category>
 
-    </contributor>
+    </enricher>
 
-    <contributor name="children2"
-      class="org.nuxeo.ecm.automation.io.services.contributor.ChildrenContributor">
+    <enricher name="children2"
+      class="org.nuxeo.ecm.automation.io.services.enricher.ChildrenEnricher">
       <category>anothertest</category>
       <category>yetanothertest</category>
-    </contributor>
+    </enricher>
 
-    <contributor name="breadcrumb"
-      class="org.nuxeo.ecm.automation.io.services.contributor.BreadcrumbContributor">
+    <enricher name="breadcrumb"
+      class="org.nuxeo.ecm.automation.io.services.enricher.BreadcrumbEnricher">
       <category>breadcrumb</category>
-    </contributor>
+    </enricher>
 
 
   </extension>

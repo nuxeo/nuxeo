@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.io.services.contributor;
+package org.nuxeo.ecm.automation.io.services.enricher;
 
 import java.io.IOException;
 
@@ -22,11 +22,11 @@ import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
- * A Rest contributors knows how to contribute to some Json serialization.
+ * A Content Enricher knows how to enrich to some Json serialization.
  *
  * @since 5.7.3
  */
-public interface RestContributor {
+public interface ContentEnricher {
     /**
      *
      * @param jg
@@ -35,7 +35,7 @@ public interface RestContributor {
      * @throws IOException
      *
      */
-    void contribute(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException;
+    void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException;
 
 
 }

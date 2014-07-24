@@ -26,11 +26,13 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.io.services.contributor.HeaderDocEvaluationContext;
-import org.nuxeo.ecm.automation.io.services.contributor.RestContributor;
-import org.nuxeo.ecm.automation.io.services.contributor.RestContributorService;
-import org.nuxeo.ecm.automation.io.services.contributor.RestContributorServiceImpl;
-import org.nuxeo.ecm.automation.io.services.contributor.RestEvaluationContext;
+import org.nuxeo.ecm.automation.io.services.enricher.ContentEnricher;
+import org.nuxeo.ecm.automation.io.services.enricher
+        .ContentEnricherServiceImpl;
+import org.nuxeo.ecm.automation.io.services.enricher.HeaderDocEvaluationContext;
+
+import org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService;
+import org.nuxeo.ecm.automation.io.services.enricher.RestEvaluationContext;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentListWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -72,7 +74,7 @@ public class RestServiceTest {
     private static final String[] NO_SCHEMA = new String[] {};
 
     @Inject
-    RestContributorService rcs;
+    ContentEnricherService rcs;
 
     @Inject
     CoreSession session;
@@ -95,19 +97,19 @@ public class RestServiceTest {
     }
 
     @Test
-    public void itCanGetTheRestContributorService() throws Exception {
+    public void itCanGetTheContentEnricherService() throws Exception {
         assertNotNull(rcs);
     }
 
     @Test
-    public void itCanGetContributorsFromTheService() throws Exception {
-        List<RestContributor> cts = rcs.getContributors("test", null);
+    public void itCanGetEnrichersFromTheService() throws Exception {
+        List<ContentEnricher> cts = rcs.getEnrichers("test", null);
         assertEquals(1, cts.size());
     }
 
     @Test
-    public void itCanFilterContributorsByCategory() throws Exception {
-        List<RestContributor> cts = rcs.getContributors("anothertest", null);
+    public void itCanFilterEnrichersByCategory() throws Exception {
+        List<ContentEnricher> cts = rcs.getEnrichers("anothertest", null);
         assertEquals(2, cts.size());
     }
 
@@ -127,7 +129,7 @@ public class RestServiceTest {
         jg.writeEndObject();
         jg.flush();
 
-        // Then it is filled with children contributor
+        // Then it is filled with children enricher
         String jsonFolder = out.toString();
         JsonNode node = parseJson(jsonFolder);
         assertEquals("documents",
@@ -204,7 +206,7 @@ public class RestServiceTest {
     }
 
     @Test
-    public void itHasContributorFilteredWithActionFilters() throws Exception {
+    public void itHasEnricherFilteredWithActionFilters() throws Exception {
         // Given a folder and a doc
         DocumentModel folder = session.getDocument(new PathRef("/folder1"));
         DocumentModel note = session.getDocument(new PathRef("/folder1/doc0"));
@@ -253,7 +255,7 @@ public class RestServiceTest {
 
     /**
      * Returns the JSON representation of the document. A category may be passed
-     * to have impact on the Rest contributors
+     * to have impact on the Content Enrichers
      *
      * @param doc
      * @param category
@@ -274,7 +276,7 @@ public class RestServiceTest {
 
     /**
      * Returns the JSON representation of these docs. A category may be passed
-     * to have impact on the Rest contributors
+     * to have impact on the Content Enrichers
      *
      * @param doc
      * @param category
@@ -321,7 +323,7 @@ public class RestServiceTest {
                 Arrays.asList(NO_SCHEMA));
 
         when(
-                headers.getRequestHeader(RestContributorServiceImpl.NXCONTENT_CATEGORY_HEADER)).thenReturn(
+                headers.getRequestHeader(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER)).thenReturn(
                 Arrays.asList(new String[] { category == null ? "test"
                         : category }));
         return headers;

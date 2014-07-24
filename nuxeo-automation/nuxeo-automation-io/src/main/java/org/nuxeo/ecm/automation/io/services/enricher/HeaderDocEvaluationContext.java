@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.io.services.contributor;
+package org.nuxeo.ecm.automation.io.services.enricher;
 
 import javax.servlet.ServletRequest;
 import javax.ws.rs.core.HttpHeaders;

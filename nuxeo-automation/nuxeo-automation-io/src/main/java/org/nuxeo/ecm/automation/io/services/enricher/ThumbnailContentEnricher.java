@@ -14,7 +14,7 @@
  * Contributors:
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.ecm.automation.io.services.contributor;
+package org.nuxeo.ecm.automation.io.services.enricher;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.Blob;
@@ -22,8 +22,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 import java.io.IOException;
@@ -33,7 +31,7 @@ import java.io.IOException;
  *
  * @since 5.9.5
  */
-public class ThumbnailRestContributor implements RestContributor {
+public class ThumbnailContentEnricher implements ContentEnricher {
 
     public static final String THUMBNAIL_URL_LABEL = "url";
 
@@ -42,7 +40,7 @@ public class ThumbnailRestContributor implements RestContributor {
     public static final String DOWNLOAD_THUMBNAIL = "downloadThumbnail";
 
     @Override
-    public void contribute(JsonGenerator jg, RestEvaluationContext ec)
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec)
             throws ClientException, IOException {
         DocumentModel doc = ec.getDocumentModel();
         ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter

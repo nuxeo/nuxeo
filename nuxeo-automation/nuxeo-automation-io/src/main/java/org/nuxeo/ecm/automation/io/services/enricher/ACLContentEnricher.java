@@ -14,7 +14,7 @@
  * Contributors:
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
-package org.nuxeo.ecm.automation.io.services.contributor;
+package org.nuxeo.ecm.automation.io.services.enricher;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -26,14 +26,14 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import java.io.IOException;
 
 /**
- * This contributor adds a document ACLs
+ * This enricher adds a document ACLs
  *
  * @since 5.9.5
  */
-public class ACLRestContributor implements RestContributor {
+public class ACLContentEnricher implements ContentEnricher {
 
     @Override
-    public void contribute(JsonGenerator jg, RestEvaluationContext ec)
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec)
             throws ClientException, IOException {
         DocumentModel doc = ec.getDocumentModel();
         ACP item = doc.getACP();

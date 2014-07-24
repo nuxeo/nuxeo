@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.io.services.contributor;
+package org.nuxeo.ecm.automation.io.services.enricher;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,25 +48,29 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * @since 5.7.3
  */
-public class RestContributorServiceImpl extends DefaultComponent implements
-        RestContributorService {
+public class ContentEnricherServiceImpl extends DefaultComponent implements
+        ContentEnricherService {
 
     /**
     *
     */
     public static final String NXCONTENT_CATEGORY_HEADER = "X-NXContext-Category";
 
-    protected static final Log log = LogFactory.getLog(RestContributorServiceImpl.class);
 
-    private Map<String, ContributorDescriptor> descriptorRegistry = new ConcurrentHashMap<>();
+
+    protected static final Log log = LogFactory.getLog(ContentEnricherServiceImpl.class);
+
+    public static final String ENRICHER = "enricher";
+
+    private Map<String, ContentEnricherDescriptor> descriptorRegistry = new ConcurrentHashMap<>();
 
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
 
-        if ("contributor".equals(extensionPoint)) {
-            ContributorDescriptor cd = (ContributorDescriptor) contribution;
+        if (ENRICHER.equals(extensionPoint)) {
+            ContentEnricherDescriptor cd = (ContentEnricherDescriptor) contribution;
             descriptorRegistry.put(cd.name, cd);
         }
 
@@ -76,8 +80,8 @@ public class RestContributorServiceImpl extends DefaultComponent implements
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if ("contributor".equals(extensionPoint)) {
-            ContributorDescriptor cd = (ContributorDescriptor) contribution;
+        if (ENRICHER.equals(extensionPoint)) {
+            ContentEnricherDescriptor cd = (ContentEnricherDescriptor) contribution;
             if (descriptorRegistry.containsKey(cd.name)) {
                 descriptorRegistry.remove(cd.name);
             }
@@ -85,24 +89,24 @@ public class RestContributorServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<RestContributor> getContributors(String category,
+    public List<ContentEnricher> getEnrichers(String category,
             RestEvaluationContext context) {
-        List<RestContributor> result = new ArrayList<>();
-        for (ContributorDescriptor descriptor : getContributorDescriptors(
+        List<ContentEnricher> result = new ArrayList<>();
+        for (ContentEnricherDescriptor descriptor : getEnricherDescriptors(
                 category, context)) {
 
-            RestContributor restContributor = descriptor.getRestContributor();
-            result.add(restContributor);
+            ContentEnricher contentEnricher = descriptor.getContentEnricher();
+            result.add(contentEnricher);
         }
 
         return result;
     }
 
-    private List<ContributorDescriptor> getContributorDescriptors(
+    private List<ContentEnricherDescriptor> getEnricherDescriptors(
             String category, RestEvaluationContext context) {
-        List<ContributorDescriptor> result = new ArrayList<>();
-        for (Entry<String, ContributorDescriptor> entry : descriptorRegistry.entrySet()) {
-            ContributorDescriptor descriptor = entry.getValue();
+        List<ContentEnricherDescriptor> result = new ArrayList<>();
+        for (Entry<String, ContentEnricherDescriptor> entry : descriptorRegistry.entrySet()) {
+            ContentEnricherDescriptor descriptor = entry.getValue();
             if (descriptor.categories.contains(category)) {
                 result.add(descriptor);
             }
@@ -115,11 +119,11 @@ public class RestContributorServiceImpl extends DefaultComponent implements
             throws JsonGenerationException, IOException, ClientException {
 
         for (String category : getCategoriesToActivate(ec)) {
-            for (ContributorDescriptor descriptor : getContributorDescriptors(
+            for (ContentEnricherDescriptor descriptor : getEnricherDescriptors(
                     category, ec)) {
                 if (evaluateFilter(ec, descriptor)) {
                     jg.writeFieldName(descriptor.name);
-                    descriptor.getRestContributor().contribute(jg, ec);
+                    descriptor.getContentEnricher().enrich(jg, ec);
                 }
             }
         }
@@ -133,7 +137,7 @@ public class RestContributorServiceImpl extends DefaultComponent implements
      *
      */
     private boolean evaluateFilter(RestEvaluationContext ec,
-            ContributorDescriptor descriptor) {
+            ContentEnricherDescriptor descriptor) {
         for (String filterId : descriptor.filterIds) {
             ActionManager as = Framework.getLocalService(ActionManager.class);
             if (!as.checkFilter(filterId, createActionContext(ec))) {

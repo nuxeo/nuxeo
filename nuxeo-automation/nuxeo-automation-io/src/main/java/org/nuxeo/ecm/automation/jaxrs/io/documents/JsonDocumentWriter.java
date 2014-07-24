@@ -41,9 +41,9 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.automation.io.services.contributor.HeaderDocEvaluationContext;
-import org.nuxeo.ecm.automation.io.services.contributor.RestContributorService;
-import org.nuxeo.ecm.automation.io.services.contributor.RestEvaluationContext;
+import org.nuxeo.ecm.automation.io.services.enricher.HeaderDocEvaluationContext;
+import org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService;
+import org.nuxeo.ecm.automation.io.services.enricher.RestEvaluationContext;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -243,7 +243,7 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
     protected static void writeRestContributions(JsonGenerator jg,
             DocumentModel doc, HttpHeaders headers, ServletRequest request)
             throws JsonGenerationException, IOException, ClientException {
-        RestContributorService rcs = Framework.getLocalService(RestContributorService.class);
+        ContentEnricherService rcs = Framework.getLocalService(ContentEnricherService.class);
         RestEvaluationContext ec = new HeaderDocEvaluationContext(doc, headers,
                 request);
         rcs.writeContext(jg, ec);

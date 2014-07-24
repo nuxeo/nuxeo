@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.io.services.contributor;
+package org.nuxeo.ecm.automation.io.services.enricher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +31,8 @@ import org.nuxeo.ecm.platform.actions.DefaultActionFilter;
  *
  * @since 5.7.3
  */
-@XObject("contributor")
-public class ContributorDescriptor {
+@XObject("enricher")
+public class ContentEnricherDescriptor {
 
     @XNode("@name")
     public String name;
@@ -42,7 +42,7 @@ public class ContributorDescriptor {
 
 
     @XNode("@class")
-    public Class<? extends RestContributor> klass;
+    public Class<? extends ContentEnricher> klass;
 
     @XNodeList(value = "filter-id", type = ArrayList.class, componentType = String.class)
     protected List<String> filterIds;
@@ -56,7 +56,7 @@ public class ContributorDescriptor {
      * @return
      *
      */
-    public RestContributor getRestContributor() {
+    public ContentEnricher getContentEnricher() {
         try {
             return klass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {

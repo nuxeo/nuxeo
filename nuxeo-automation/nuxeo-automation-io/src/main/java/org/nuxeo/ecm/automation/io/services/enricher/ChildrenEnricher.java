@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.io.services.contributor;
+package org.nuxeo.ecm.automation.io.services.enricher;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,16 +29,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- * This contributor adds a document list with all children to the
+ * This enricher adds a document list with all children to the
  * contextParameters map. It is provided as sample and may not be used directly.
  * For instance if you have millions of children, it will get all of them.
  *
  * @since 5.7.3
  */
-public class ChildrenContributor implements RestContributor {
+public class ChildrenEnricher implements ContentEnricher {
 
     @Override
-    public void contribute(JsonGenerator jg, RestEvaluationContext ec)
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec)
             throws ClientException, IOException {
         DocumentModel doc = ec.getDocumentModel();
         CoreSession session = doc.getCoreSession();

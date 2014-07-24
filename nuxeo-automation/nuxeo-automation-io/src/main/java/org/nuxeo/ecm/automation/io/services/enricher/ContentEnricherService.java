@@ -14,7 +14,7 @@
  * Contributors:
  *     dmetzler
  */
-package org.nuxeo.ecm.automation.io.services.contributor;
+package org.nuxeo.ecm.automation.io.services.enricher;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,14 +28,14 @@ import org.nuxeo.ecm.core.api.ClientException;
  *
  * @since 5.7.3
  */
-public interface RestContributorService {
+public interface ContentEnricherService {
 
     /**
      * Gets contributors for a category
      * <p>
      * Only contributors available in the given context are returned
      */
-    List<RestContributor> getContributors(String category,
+    List<ContentEnricher> getEnrichers(String category,
             RestEvaluationContext context);
 
     /**
