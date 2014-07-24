@@ -24,11 +24,31 @@ author: lkemen@nuxeo.com
   margin: 0;
   padding: 0 1em 0 0 }
 
+.tabsBar.vertical ul {
+  list-style: none outside none;
+  margin: 0 -1px 0 8px;
+  padding: 2em 0; }
+
+.verticalTabsColumn {
+  background: transparent url('${basePath}/img/nxbg.png') repeat left top;
+  padding: 0;
+  border-right: 1px solid #eee; }
+
+.verticalTabsContent {
+  padding: 2em; }
+
 .tabsBar li {
   border-width: 1px;
   border-style: none solid none none;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   float: left;
+  padding: 0 }
+
+.tabsBar.vertical li {
+  border-width: 1px;
+  border-style: none solid none none;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
+  float: none;
   padding: 0 }
 
 .tabsBar a,
@@ -38,6 +58,16 @@ author: lkemen@nuxeo.com
   color: "gray.dark (__FLAVOR__ color)";
   display: block;
   float: left;
+  padding: .3em .5em .6em;
+  text-decoration: none }
+
+.tabsBar.vertical a,
+.tabsBar.vertical a:visited {
+  background: transparent;
+  border-top: 4px solid transparent;
+  color: "gray.dark (__FLAVOR__ color)";
+  display: block;
+  float: none;
   padding: .3em .5em .6em;
   text-decoration: none }
 
