@@ -128,25 +128,25 @@ public class PageProviderQueryBuilder {
     }
 
     /**
-     * Convert a param for a query_string style
+     * Convert a params for fixed part
      */
     protected static String convertParam(final Object param, boolean quote) {
         String ret;
         if (param == null) {
             ret = "";
         } else if (param instanceof List<?>) {
-           StringBuilder stringBuilder =  new StringBuilder("");
-           NXQLQueryBuilder.appendStringList(stringBuilder, (List<?>) param, quote, true);
-           ret = stringBuilder.toString();
+            StringBuilder stringBuilder =  new StringBuilder("");
+            NXQLQueryBuilder.appendStringList(stringBuilder, (List<?>) param, quote, true);
+            ret = stringBuilder.toString();
+            // quote is already taken in account
+            quote = false;
         } else if (param instanceof Calendar) {
             ret = DateParser.formatW3CDateTime(((Calendar) param).getTime());
         } else {
             ret = param.toString();
         }
-        if (param instanceof String) {
-            if (quote) {
-                ret = "\"" + ret + "\"";
-            }
+        if (quote && param instanceof String) {
+            ret = "\"" + ret + "\"";
         }
         return ret;
     }

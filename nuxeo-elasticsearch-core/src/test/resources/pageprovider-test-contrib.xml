@@ -99,6 +99,31 @@
       <pageSize>20</pageSize>
     </genericPageProvider>
 
+    <genericPageProvider name="ADVANCED_SEARCH_NXQL"
+                         class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <property name="coreSession">#{documentManager}</property>
+      <whereClause docType="AdvancedSearch">
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="advanced_search" name="fulltext_all" />
+        </predicate>
+        <predicate parameter="dc:title" operator="LIKE">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+        <predicate parameter="dc:modified" operator="IS NULL">
+          <field schema="advanced_search" name="isPresent" />
+        </predicate>
+        <predicate parameter="dc:subjects" operator="IN">
+          <field schema="advanced_search" name="subjects" />
+        </predicate>
+        <fixedPart>
+          ecm:parentId = ? AND dc:subject IN ?
+        </fixedPart>
+      </whereClause>
+      <parameter>#{currentDocument.id}</parameter>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>20</pageSize>
+    </genericPageProvider>
+
     <genericPageProvider name="CUSTOM_SELECT_STATEMENT">
       class="org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider">
       <property name="coreSession">#{documentManager}</property>
@@ -150,5 +175,6 @@
 
 
   </extension>
+
 
 </component>

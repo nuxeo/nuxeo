@@ -349,7 +349,6 @@ public class TestPageProvider {
         PageProviderService pps = Framework
                 .getService(PageProviderService.class);
         Assert.assertNotNull(pps);
-
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
                 "ADVANCED_SEARCH").getWhereClause();
         String[] params = { "foo" };
@@ -393,8 +392,57 @@ public class TestPageProvider {
         assertEqualsEvenUnderWindows("{\n" +
                 "  \"match_all\" : { }\n" +
                 "}", qb.toString());
+    }
 
-
+    @Test
+    public void testBuildInStringListNxqlQuery() throws Exception {
+        QueryBuilder qb;
+        PageProviderService pps = Framework
+                .getService(PageProviderService.class);
+        Assert.assertNotNull(pps);
+        WhereClauseDefinition whereClause = pps.getPageProviderDefinition(
+                "ADVANCED_SEARCH_NXQL").getWhereClause();
+        DocumentModel model = new DocumentModelImpl("/", "doc",
+                "AdvancedSearch");
+        String[] arrayString = new String[] { "1", "2", "3" };
+        Object[] params = { "foo", Arrays.asList(arrayString) };
+        model.setPropertyValue("search:subjects", arrayString);
+        qb = PageProviderQueryBuilder
+                .makeQuery(model, whereClause, params, false);
+        String json = qb.toString();
+        assertEqualsEvenUnderWindows("{\n"
+                        + "  \"bool\" : {\n"
+                        + "    \"must\" : [ {\n"
+                        + "      \"bool\" : {\n"
+                        + "        \"must\" : [ {\n"
+                        + "          \"constant_score\" : {\n"
+                        + "            \"filter\" : {\n"
+                        + "              \"term\" : {\n"
+                        + "                \"ecm:parentId\" : \"foo\"\n"
+                        + "              }\n"
+                        + "            }\n"
+                        + "          }\n"
+                        + "        }, {\n"
+                        + "          \"constant_score\" : {\n"
+                        + "            \"filter\" : {\n"
+                        + "              \"terms\" : {\n"
+                        + "                \"dc:subject\" : [ \"1\", \"2\", \"3\" ]\n"
+                        + "              }\n"
+                        + "            }\n"
+                        + "          }\n"
+                        + "        } ]\n"
+                        + "      }\n"
+                        + "    }, {\n"
+                        + "      \"constant_score\" : {\n"
+                        + "        \"filter\" : {\n"
+                        + "          \"terms\" : {\n"
+                        + "            \"dc:subjects\" : [ \"1\", \"2\", \"3\" ]\n"
+                        + "          }\n"
+                        + "        }\n"
+                        + "      }\n"
+                        + "    } ]\n"
+                        + "  }\n"
+                        + "}", qb.toString());
     }
 
     @Test
