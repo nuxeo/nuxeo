@@ -37,8 +37,7 @@ public class ACLContentEnricher implements ContentEnricher {
             throws ClientException, IOException {
         DocumentModel doc = ec.getDocumentModel();
         ACP item = doc.getACP();
-        jg.writeStartObject();
-        jg.writeArrayFieldStart("acl");
+        jg.writeStartArray();
         for (ACL acl : item.getACLs()) {
             jg.writeStartObject();
             jg.writeStringField("name", acl.getName());
@@ -57,7 +56,6 @@ public class ACLContentEnricher implements ContentEnricher {
             jg.writeEndObject();
         }
         jg.writeEndArray();
-        jg.writeEndObject();
         jg.flush();
     }
 
