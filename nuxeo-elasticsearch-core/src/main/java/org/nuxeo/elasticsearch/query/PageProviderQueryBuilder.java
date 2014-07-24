@@ -137,7 +137,7 @@ public class PageProviderQueryBuilder {
         } else if (param instanceof List<?>) {
            StringBuilder stringBuilder =  new StringBuilder("");
            NXQLQueryBuilder.appendStringList(stringBuilder, (List<?>) param, quote, true);
-           return stringBuilder.toString();
+           ret = stringBuilder.toString();
         } else if (param instanceof Calendar) {
             ret = DateParser.formatW3CDateTime(((Calendar) param).getTime());
         } else {
