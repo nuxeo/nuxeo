@@ -339,7 +339,8 @@ class Repository(object):
             profiles_param = " -P" + ','.join(profiles_param)
         else:
             profiles_param = ""
-        system("mvn %s %s%s" % (commands, skip_tests_param, profiles_param),
+        system("mvn %s %s%s -Dnuxeo.tests.random.mode=BYPASS" % (commands,
+                                            skip_tests_param, profiles_param),
                delay_stdout=False, run=(not dryrun))
 
 
