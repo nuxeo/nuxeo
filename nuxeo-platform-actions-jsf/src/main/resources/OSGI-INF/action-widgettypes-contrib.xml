@@ -439,6 +439,24 @@
       </fields>
     </widget>
 
+    <widget name="rest_document_link_view" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">View</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Specific view to use for the rest document link.
+          Available since 5.9.4-JSF2.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>view</field>
+      </fields>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
@@ -747,6 +765,9 @@
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">rest_document_link_view</widget>
                 </row>
               </rows>
             </layout>

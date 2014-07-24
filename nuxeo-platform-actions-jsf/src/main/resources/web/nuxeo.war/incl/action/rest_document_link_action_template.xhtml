@@ -22,6 +22,7 @@
 <c:if test="#{not useAjaxForm}">
   <nxd:restDocumentLink
     document="#{fieldOrValue}"
+    view="#{action.properties.view}"
     tabs="#{tabIds}"
     addTabInfo="false"
     accesskey="#{action.accessKey}"
@@ -44,6 +45,7 @@
 
     <nxd:restDocumentLink
       document="#{fieldOrValue}"
+      view="#{action.properties.view}"
       tabs="#{tabIds}"
       addTabInfo="false"
       accesskey="#{action.accessKey}"
