@@ -18,6 +18,16 @@
       </properties>
     </widget>
 
+    <widget name="documentSubTabs" type="tabs">
+      <properties mode="view">
+        <property name="actionsDisplay">links</property>
+        <property name="addForm">true</property>
+        <property name="useAjaxForm">#{useAjaxTabs}</property>
+        <property name="actions">#{subTabsActionsList}</property>
+        <property name="currentTabAction">#{webActions.currentSubTabAction}</property>
+      </properties>
+    </widget>
+
     <widget name="documentActionsUpperButtons" type="documentActionsWithForms">
       <properties mode="view">
         <property name="category">DOCUMENT_UPPER_ACTION</property>
