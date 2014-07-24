@@ -3,7 +3,8 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="DirectoriesManager" link="directory/view_directories.xhtml" label="title.vocabularies"
+    <action id="DirectoriesManager" link="/directory/view_directories.xhtml" label="title.vocabularies"
+      type="admin_rest_document_link"
       order="50">
       <category>NUXEO_ADMIN</category>
       <filter-id>directoriesManagementAccess</filter-id>

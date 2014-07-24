@@ -9,71 +9,89 @@
       <filter-id>adminCenterAccess</filter-id>
     </action>
 
-    <action id="SystemInfo" link="view_admin-fragment.xhtml" label="admcommand.systeminfo"
+    <action id="SystemInfo" link="/view_admin-fragment.xhtml" label="admcommand.systeminfo"
+      type="admin_rest_document_link"
       order="10">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="HostInfo" link="/incl/sysinfo/hostInfo.xhtml" label="tab.sysinfo.host"
+      type="admin_rest_document_link"
       order="20">
       <category>SystemInfo_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="NuxeoInfo" link="/incl/sysinfo/nuxeoInfo.xhtml" label="tab.sysinfo.nuxeo"
+      type="admin_rest_document_link"
       order="30">
       <category>SystemInfo_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="Setup" link="/incl/sysinfo/setup.xhtml" label="tab.sysinfo.setup"
+      type="admin_rest_document_link"
       order="40">
       <category>SystemInfo_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ReposInfo" link="/incl/sysinfo/reposInfo.xhtml" label="tab.sysinfo.reposInfo"
+      type="admin_rest_document_link"
       order="50">
       <category>SystemInfo_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="BinariesInfo" link="/incl/sysinfo/binariesInfo.xhtml"
+      type="admin_rest_document_link"
       label="tab.sysinfo.binariesInfo" order="60">
       <category>SystemInfo_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <!-- <action id="ReposUsage" link="/incl/sysinfo/reposUsage.xhtml" label="tab.sysinfo.reposStats"
-      order="60"> <category>NUXEO_ADMIN_SystemInfo</category> <filter-id>only_for_manager</filter-id>
-      </action> -->
+    <!--
+      <action id="ReposUsage"
+      link="/incl/sysinfo/reposUsage.xhtml"
+      label="tab.sysinfo.reposStats"
+      type="admin_rest_document_link"
+      order="60">
+      <category>NUXEO_ADMIN_SystemInfo</category>
+      <filter-id>only_for_manager</filter-id>
+      </action>
+    -->
 
-    <action id="UsersActivity" link="view_admin-fragment.xhtml" label="admcommand.useractivity"
+    <action id="UsersActivity" link="/view_admin-fragment.xhtml" label="admcommand.useractivity"
+      type="admin_rest_document_link"
       order="15">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="UsersSessions" link="/incl/usersActivity/usersSessions.xhtml"
+      type="admin_rest_document_link"
       label="tab.useractivity.usersSessions" order="10">
       <category>UsersActivity_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="EventActivity" link="/incl/usersActivity/usersActivity.xhtml"
+      type="admin_rest_document_link"
       label="tab.useractivity.usersActivity" order="20">
       <category>UsersActivity_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="WorkManagerStatus" link="/incl/usersActivity/workmanager.xhtml"
+      type="admin_rest_document_link"
       label="Background work" order="30">
       <category>UsersActivity_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ActivityCharts" link="/incl/usersActivity/activityCharts.xhtml"
+      type="admin_rest_document_link"
       label="tab.useractivity.charts" order="40">
       <category>UsersActivity_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
@@ -85,76 +103,90 @@
       </filter>
     </action>
 
-    <action id="ConnectClient" link="view_admin-fragment.xhtml" label="admcommand.nuxeoconnect"
+    <action id="ConnectClient" link="/view_admin-fragment.xhtml" label="admcommand.nuxeoconnect"
+      type="admin_rest_document_link"
       order="20">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ConnectClientStatus" link="/incl/connect/connectStatus.xhtml"
+      type="admin_rest_document_link"
       label="tab.nuxeoconnect.status" order="20">
       <category>ConnectClient_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ConnectClientTickets" link="/incl/connect/connectTickets.xhtml"
+      type="admin_rest_document_link"
       label="tab.nuxeoconnect.tickets" order="30">
       <category>ConnectClient_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="ConnectApps" link="view_updatecenter-fragment.xhtml"
+    <action id="ConnectApps" link="/view_updatecenter-fragment.xhtml"
+      type="admin_rest_document_link"
       label="admcommand.appstore" order="30">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ConnectAppsUpdates" link="/incl/appcenter/connectUpdates.xhtml"
+      type="admin_rest_document_link"
       label="tab.appstore.updates" order="30">
       <category>ConnectApps_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ConnectAppsStudio" link="/incl/appcenter/studio.xhtml"
+      type="admin_rest_document_link"
       label="tab.appstore.studio" order="20">
       <category>ConnectApps_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ConnectAppsPrivate" link="/incl/appcenter/connectPrivate.xhtml"
+      type="admin_rest_document_link"
       label="tab.appstore.private" order="40">
       <category>ConnectApps_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ConnectAppsRemote" link="/incl/appcenter/connectRemote.xhtml"
+      type="admin_rest_document_link"
       label="tab.appstore.remote" order="40">
       <category>ConnectApps_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ConnectAppsLocal" link="/incl/appcenter/connectLocal.xhtml"
+      type="admin_rest_document_link"
       label="tab.appstore.local" order="50">
       <category>ConnectApps_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <!-- Users and Groups management -->
-    <action id="UsersGroupsManager" link="view_admin-fragment.xhtml"
+    <action id="UsersGroupsManager" link="/view_admin-fragment.xhtml"
+      type="admin_rest_document_link"
       label="command.manageMembers" order="45">
       <category>NUXEO_ADMIN</category>
       <filter-id>usersGroupsManagementAccess</filter-id>
       <filter-id>user_manager</filter-id>
       <filter-id>not_readonly</filter-id>
     </action>
-    <action id="UsersManager" link="users/view_users.xhtml" label="label.userManager.users"
+
+    <action id="UsersManager" link="/users/view_users.xhtml" label="label.userManager.users"
+      type="admin_rest_document_link"
       order="10">
       <category>UsersGroupsManager_sub_tab</category>
       <filter-id>usersGroupsManagementAccess</filter-id>
       <filter-id>user_manager</filter-id>
       <filter-id>not_readonly</filter-id>
     </action>
-    <action id="GroupsManager" link="users/view_groups.xhtml" label="label.groupManager.groups"
+
+    <action id="GroupsManager" link="/users/view_groups.xhtml" label="label.groupManager.groups"
+      type="admin_rest_document_link"
       order="20">
       <category>UsersGroupsManager_sub_tab</category>
       <filter-id>usersGroupsManagementAccess</filter-id>

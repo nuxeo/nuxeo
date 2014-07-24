@@ -34,6 +34,79 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgettypes">
+
+    <widgetType name="admin_rest_document_link">
+      <categories>
+        <category>jsfAction</category>
+      </categories>
+      <configuration>
+        <sinceVersion>5.9.4-JSF2</sinceVersion>
+        <title>Document Admin Rest Link</title>
+        <description>
+          Widget displaying a restful document link for an action
+          (typically a tab link). Useful for Admin Center tabs migration to tabs
+          widget, to apply compatibility changes on existing actions.
+        </description>
+        <categories>
+          <category>action</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <defaultValues mode="any">
+            <property name="discardSurroundingForm">true</property>
+            <property name="supportAjax">#{canUseAjaxTabs}</property>
+            <property name="view">view_admin</property>
+            <property name="pattern">admin</property>
+          </defaultValues>
+          <layouts mode="view">
+            <layout name="rest_document_link_action_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="actionWidgetTypeConf">label</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">icon</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">ajaxSupport</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">onclick</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">target</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirm</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessage</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">confirmMessageArgs</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">rest_document_link_view</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /incl/action/rest_document_link_action_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="typeCompatibility">
 
@@ -47,6 +120,7 @@
       <category>Monitoring_sub_tab</category>
       <category>DashboardManagement_sub_tab</category>
       <category>OAuthOpensocial_sub_tab</category>
+      <category>ElasticSearch_sub_tab</category>
     </typeCompatibility>
 
   </extension>

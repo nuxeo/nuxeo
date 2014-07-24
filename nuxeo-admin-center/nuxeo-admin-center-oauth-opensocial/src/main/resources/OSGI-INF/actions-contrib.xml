@@ -5,43 +5,50 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
-    <action id="OAuthOpensocial" link="view_admin-fragment.xhtml"
+    <action id="OAuthOpensocial" link="/view_admin-fragment.xhtml"
+      type="admin_rest_document_link"
       label="admcommand.OAuthOpensocial" order="40">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="NuxeoServerKey" link="/incl/oauth/serverkey.xhtml"
+      type="admin_rest_document_link"
       label="tab.oauth.serverkey" order="10">
       <category>OAuthOpensocial_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ServiceProvides" link="/incl/oauth/providers.xhtml"
+      type="admin_rest_document_link"
       label="tab.oauth.providers" order="20">
       <category>OAuthOpensocial_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="GrantedTokensToMe" link="/incl/oauth/providersTokens.xhtml"
+      type="admin_rest_document_link"
       label="tab.oauth.grantedTokenSP" order="25">
       <category>OAuthOpensocial_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="Consumers" link="/incl/oauth/consumers.xhtml"
+      type="admin_rest_document_link"
       label="tab.oauth.consumers" order="30">
       <category>OAuthOpensocial_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="GrantedTokensByMe" link="/incl/oauth/consumersTokens.xhtml"
+      type="admin_rest_document_link"
       label="tab.oauth.grantedTokenConsumers" order="35">
       <category>OAuthOpensocial_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
     <action id="ExternalGadgets" link="/incl/oauth/externalGadgets.xhtml"
+      type="admin_rest_document_link"
       label="tab.oauth.externalGadgets" order="40">
       <category>OAuthOpensocial_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
