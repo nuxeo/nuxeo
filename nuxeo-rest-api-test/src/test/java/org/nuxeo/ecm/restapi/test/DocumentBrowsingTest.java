@@ -30,8 +30,8 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.io.services.contributor
-        .RestContributorServiceImpl;
+import org.nuxeo.ecm.automation.io.services.enricher
+        .ContentEnricherServiceImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -257,8 +257,6 @@ public class DocumentBrowsingTest extends BaseTest {
     public void iCanGetTheACLsOnADocumentThroughAdapter() throws Exception {
         // Given an existing document
         DocumentModel note = RestServerInit.getNote(0, session);
-        Map<String,String> headers = new HashMap<>();
-        headers.put(RestContributorServiceImpl.NXCONTENT_CATEGORY_HEADER, "acl");
 
         // When i do a GET Request on the note repository
         ClientResponse response = getResponse(
@@ -279,7 +277,7 @@ public class DocumentBrowsingTest extends BaseTest {
         // Given an existing document
         DocumentModel note = RestServerInit.getNote(0, session);
         Map<String,String> headers = new HashMap<>();
-        headers.put(RestContributorServiceImpl.NXCONTENT_CATEGORY_HEADER, "acl");
+        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER, "acls");
 
         // When i do a GET Request on the note repository
         ClientResponse response = getResponse(
@@ -291,7 +289,7 @@ public class DocumentBrowsingTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals("inherited", node.get(RestConstants
-                .CONTRIBUTOR_CTX_PARAMETERS).get("acl").get("acl").get(0).get
+                .CONTRIBUTOR_CTX_PARAMETERS).get("acls").get("acl").get(0).get
                 ("name").getTextValue());
 
     }
@@ -320,7 +318,7 @@ public class DocumentBrowsingTest extends BaseTest {
         //("thumbnailUrl").getTextValue());
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(RestContributorServiceImpl.NXCONTENT_CATEGORY_HEADER,
+        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER,
                 "thumbnail");
 
         // Given an existing document

@@ -27,7 +27,7 @@ public class RestConstants {
     public static final String X_VERSIONING_OPTION = "X-Versioning-Option";
 
     /**
-     * Rest Contributor Context Parameters Json Label Entry
+     * Content Enricher Context Parameters Json Label Entry
      */
     public static final String CONTRIBUTOR_CTX_PARAMETERS = "contextParameters";
 }
