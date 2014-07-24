@@ -1,24 +1,3 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxd="http://nuxeo.org/nxweb/document">
-
-  <div class="tabsBar subtabsBar">
-    <h:form id="route_workflow">
-      <nxu:dataList layout="unorderedList" var="subTab"
-        value="#{subTabsActionsList}"
-        itemStyleClass="#{nxu:test(webActions.currentSubTabId == subTab.id, 'selected', '')}">
-        <nxd:restDocumentLink document="#{currentDocument}"
-          tab="#{webActions.currentTabId}" subTab="#{subTab.id}">
-          <h:outputText value="#{messages[subTab.label]}" />
-        </nxd:restDocumentLink>
-      </nxu:dataList>
-    </h:form>
-  </div>
-  <div style="clear: both"></div>
-
-  <div class="tabsContent">
-    <ui:include src="#{webActions.currentSubTabAction.link}" />
-  </div>
-
-</div>
+<ui:include src="/incl/tabs/document_sub_tabs.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets" />
