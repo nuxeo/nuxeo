@@ -63,7 +63,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.core.storage.State.Diff;
+import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
@@ -520,7 +520,7 @@ public class DBSTransactionState {
             if (transientCreated.contains(id)) {
                 continue; // already done
             }
-            Diff diff = docState.getStateChange();
+            StateDiff diff = docState.getStateChange();
             docState.setNotDirty();
             if (diff != null) {
                 repository.updateState(id, diff);

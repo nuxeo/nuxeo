@@ -13,8 +13,7 @@ package org.nuxeo.ecm.core.storage;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.storage.State.DiffOp.RPOP;
-import static org.nuxeo.ecm.core.storage.State.DiffOp.RPUSH;
+import static org.nuxeo.ecm.core.storage.State.NOP;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,35 +21,57 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.nuxeo.ecm.core.storage.State.Diff;
+import org.nuxeo.ecm.core.storage.State.ListDiff;
+import org.nuxeo.ecm.core.storage.State.StateDiff;
 
 public class TestStateHelper {
 
-    // more compact syntax
-    private static final Object[] asArray(Object... objects) {
-        return objects;
+    // always return a List<Serializable> that is Serializable
+    private static final ArrayList<Object> list(Object... strings) {
+        return new ArrayList<>(Arrays.asList(strings));
     }
 
-    // de-genericize Arrays.asList to always return List<Serializable>
-    private static final List<Serializable> asList(Serializable... strings) {
-        return Arrays.asList(strings);
-    }
-
-    private static final Diff asDiff(Serializable... values) {
+    private static final StateDiff stateDiff(Serializable... values) {
         assertTrue(values.length % 2 == 0);
-        Diff diff = new Diff();
+        StateDiff diff = new StateDiff();
         for (int i = 0; i < values.length; i += 2) {
             diff.put((String) values[i], values[i + 1]);
         }
         return diff;
     }
 
-    private static final State asState(Serializable... values) {
-        return asDiff(values);
+    private static final ListDiff listDiff(List<Object> diff,
+            List<Object> rpush, boolean rpop) {
+        ListDiff listDiff = new ListDiff();
+        listDiff.diff = diff;
+        listDiff.rpush = rpush;
+        listDiff.rpop = rpop;
+        return listDiff;
+    }
+
+    private static final ListDiff listDiff(Object... diffs) {
+        return listDiff(list(diffs), null, false);
+    }
+
+    private static final ListDiff rpush(Object... values) {
+        return listDiff(null, list(values), false);
+    }
+
+    private static final ListDiff rpop() {
+        return listDiff(null, null, true);
+    }
+
+    private static final State state(Serializable... values) {
+        return stateDiff(values);
     }
 
     private static void assertEquals(Serializable a, Serializable b) {
-        assertTrue(StateHelper.equals(a, b));
+        assertEquals(null, a, b);
+    }
+
+    private static void assertEquals(String message, Serializable a,
+            Serializable b) {
+        assertTrue(message, StateHelper.equals(a, b));
     }
 
     private static void assertNotEquals(Serializable a, Serializable b) {
@@ -111,155 +132,125 @@ public class TestStateHelper {
         assertNotEquals(la, lb);
     }
 
-    private static void assertDiffArray(Object[] expected, Object[] a,
-            Object[] b) {
-        Object[] diff = StateHelper.diff(a, b);
-        assertTrue(Arrays.equals(expected, diff));
-    }
-
-    private static void assertDiffList(List<Serializable> expected,
-            List<Serializable> a, List<Serializable> b) {
-        List<Serializable> diff = StateHelper.diff(a, b);
-        assertEquals((Serializable) expected, (Serializable) diff);
-    }
-
-    private static void assertDiffState(Diff expected, State a, State b) {
-        Diff diff = StateHelper.diff(a, b);
-        assertEquals(expected, diff);
-    }
-
-    @Test
-    public void testDiffArray() {
-        assertDiffArray(asArray(), //
-                asArray(), asArray());
-        // overwrite
-        assertDiffArray(asArray("B"), //
-                asArray("A"), asArray("B"));
-        assertDiffArray(asArray("B", "C"), //
-                asArray("A"), asArray("B", "C"));
-        // RPUSH
-        assertDiffArray(asArray(RPUSH, "B"), //
-                asArray("A"), asArray("A", "B"));
-        assertDiffArray(asArray(RPUSH, "C", "D"), asArray("A", "B"),
-                asArray("A", "B", "C", "D"));
-        // overwrite for zero-length "a"
-        assertDiffArray(asArray("A"), //
-                asArray(), asArray("A"));
-        assertDiffArray(asArray("A", "B"), //
-                asArray(), asArray("A", "B"));
-        // RPOP
-        assertDiffArray(asArray(RPOP), //
-                asArray("A", "B"), asArray("A"));
-        assertDiffArray(asArray(RPOP), //
-                asArray("A", "B", "C"), asArray("A", "B"));
-        // overwrite for zero-length "b"
-        assertDiffArray(asArray(), //
-                asArray("A"), asArray());
+    private static void assertDiff(Serializable expected, Serializable a,
+            Serializable b) {
+        Serializable diff = StateHelper.diff(a, b);
+        assertEquals(diff.toString(), expected, diff);
     }
 
     @Test
     public void testDiffList() {
-        assertDiffList(asList(), //
-                asList(), asList());
+        assertDiff(NOP, //
+                list(), list());
         // overwrite
-        assertDiffList(asList("B"), //
-                asList("A"), asList("B"));
-        assertDiffList(asList("B", "C"), //
-                asList("A"), asList("B", "C"));
-        // RPUSH
-        assertDiffList(asList(RPUSH, "B"), //
-                asList("A"), asList("A", "B"));
-        assertDiffList(asList(RPUSH, "C", "D"), asList("A", "B"),
-                asList("A", "B", "C", "D"));
+        assertDiff(list("B"), //
+                list("A"), list("B"));
+        assertDiff(list("B", "C"), //
+                list("A"), list("B", "C"));
+        // "RPUSH"
+        assertDiff(rpush("B"), //
+                list("A"), list("A", "B"));
+        assertDiff(rpush("C", "D"), //
+                list("A", "B"), list("A", "B", "C", "D"));
         // overwrite for zero-length "a"
-        assertDiffList(asList("A"), //
-                asList(), asList("A"));
-        assertDiffList(asList("A", "B"), //
-                asList(), asList("A", "B"));
-        // RPOP
-        assertDiffList(asList(RPOP), //
-                asList("A", "B"), asList("A"));
-        assertDiffList(asList(RPOP), //
-                asList("A", "B", "C"), asList("A", "B"));
+        assertDiff(list("A"), //
+                list(), list("A"));
+        assertDiff(list("A", "B"), //
+                list(), list("A", "B"));
+        // "RPOP"
+        assertDiff(rpop(), //
+                list("A", "B"), list("A"));
+        assertDiff(rpop(), //
+                list("A", "B", "C"), list("A", "B"));
         // overwrite for zero-length "b"
-        assertDiffList(asList(), //
-                asList("A"), asList());
+        assertDiff(list(), //
+                list("A"), list());
+    }
+
+    @Test
+    public void testDiffListComplex() {
+        assertDiff(NOP, //
+                list(state("A", "B"), state("C", "D")), //
+                list(state("A", "B"), state("C", "D")));
+        assertDiff(rpush(state("C", "D")), //
+                list(state("A", "B")), //
+                list(state("A", "B"), state("C", "D")));
+
+        // TODO check this
+        assertDiff(listDiff(state("A", "B")), //
+                list(state()), //
+                list(state("A", "B")));
+
+        assertDiff(
+                listDiff(list(state("C", "D")), list(state("E", "F")), false), //
+                list(state("A", "B")), //
+                list(state("A", "B", "C", "D"), state("E", "F")));
     }
 
     @Test
     public void testDiffState() {
-        assertDiffState(asDiff(), asState(), asState());
+        assertDiff(NOP, state(), state());
 
         // added keys
-        assertDiffState(asDiff(), //
-                asState("A", "B"), asState("A", "B"));
-        assertDiffState(asDiff("A", "B"), //
-                asState(), asState("A", "B"));
-        assertDiffState(asDiff("C", "D"), //
-                asState("A", "B"), asState("A", "B", "C", "D"));
+        assertDiff(NOP, //
+                state("A", "B"), state("A", "B"));
+        assertDiff(stateDiff("A", "B"), //
+                state(), state("A", "B"));
+        assertDiff(stateDiff("C", "D"), //
+                state("A", "B"), state("A", "B", "C", "D"));
         // removed keys
-        assertDiffState(asDiff("A", null), //
-                asState("A", "B"), asState());
-        assertDiffState(asDiff("A", null), //
-                asState("A", "B", "C", "D"), asState("C", "D"));
+        assertDiff(stateDiff("A", null), //
+                state("A", "B"), state());
+        assertDiff(stateDiff("A", null), //
+                state("A", "B", "C", "D"), state("C", "D"));
 
         // changed values
-        assertDiffState(asDiff("A", "C"), //
-                asState("A", "B"), asState("A", "C"));
-        assertDiffState(asDiff("A", "C"), //
-                asState("1", "2", "A", "B"), asState("1", "2", "A", "C"));
+        assertDiff(stateDiff("A", "C"), //
+                state("A", "B"), state("A", "C"));
+        assertDiff(stateDiff("A", "C"), //
+                state("1", "2", "A", "B"), state("1", "2", "A", "C"));
         // changed values which are diffs
-        assertDiffState(asDiff("A", asArray(RPUSH, "C")), //
-                asState("A", asArray("B")), asState("A", asArray("B", "C")));
-        assertDiffState(asDiff("A", asArray(RPOP)), //
-                asState("A", asArray("B", "C")), asState("A", asArray("B")));
-        assertDiffState(
-                asDiff("A", (Serializable) asList(RPUSH, "C")), //
-                asState("A", (Serializable) asList("B")),
-                asState("A", (Serializable) asList("B", "C")));
-        assertDiffState(asDiff("A", asArray(RPOP)), //
-                asState("A", asArray("B", "C")), asState("A", asArray("B")));
-        assertDiffState(
-                asDiff("A", asDiff("B", "D")), //
-                asState("A", asState("1", "2", "B", "C")),
-                asState("A", asState("1", "2", "B", "D")));
+        assertDiff(
+                stateDiff("A", rpush("C")), //
+                state("A", (Serializable) list("B")),
+                state("A", (Serializable) list("B", "C")));
+        assertDiff(stateDiff("A", rpop()), //
+                state("A", list("B", "C")), state("A", list("B")));
+        assertDiff(
+                stateDiff("A", stateDiff("B", "D")), //
+                state("A", state("1", "2", "B", "C")),
+                state("A", state("1", "2", "B", "D")));
     }
 
-    private static void assertApplyDiff(State expected, State state, Diff diff) {
+    private static void assertApplyDiff(State expected, State state,
+            StateDiff diff) {
         StateHelper.applyDiff(state, diff);
-        assertEquals(expected, state);
+        assertEquals(state.toString(), expected, state);
     }
 
     @Test
     public void testApplyDiff() {
-        assertApplyDiff(asState("A", "B"), //
-                asState("A", "B"), //
-                asDiff());
-        assertApplyDiff(asState("A", "B"), //
-                asState(), //
-                asDiff("A", "B"));
+        assertApplyDiff(state("A", "B"), //
+                state("A", "B"), //
+                stateDiff());
+        assertApplyDiff(state("A", "B"), //
+                state(), //
+                stateDiff("A", "B"));
 
-        assertApplyDiff(asState("A", asState("B", "D")), //
-                asState("A", asState("B", "C")), //
-                asDiff("A", asDiff("B", "D")));
+        assertApplyDiff(state("A", state("B", "D")), //
+                state("A", state("B", "C")), //
+                stateDiff("A", stateDiff("B", "D")));
 
-        assertApplyDiff(asState("A", asState("B", "C", "D", "E")), //
-                asState("A", asState("B", "C")), //
-                asDiff("A", asDiff("D", "E")));
+        assertApplyDiff(state("A", state("B", "C", "D", "E")), //
+                state("A", state("B", "C")), //
+                stateDiff("A", stateDiff("D", "E")));
 
-        assertApplyDiff(asState("A", asArray("B", "C")), //
-                asState("A", asArray("B")), //
-                asDiff("A", asArray(RPUSH, "C")));
-        assertApplyDiff(asState("A", asArray("B")), //
-                asState("A", asArray("B", "C")), //
-                asDiff("A", asArray(RPOP)));
-
-        assertApplyDiff(asState("A", (Serializable) asList("B", "C")),
-                asState("A", (Serializable) asList("B")),
-                asDiff("A", (Serializable) asList(RPUSH, "C")));
-        assertApplyDiff(asState("A", (Serializable) asList("B")),
-                asState("A", (Serializable) asList("B", "C")),
-                asDiff("A", (Serializable) asList(RPOP)));
+        assertApplyDiff(state("A", list("B", "C")), //
+                state("A", list("B")), //
+                stateDiff("A", rpush("C")));
+        assertApplyDiff(state("A", list("B")), //
+                state("A", list("B", "C")), //
+                stateDiff("A", rpop()));
     }
 
 }

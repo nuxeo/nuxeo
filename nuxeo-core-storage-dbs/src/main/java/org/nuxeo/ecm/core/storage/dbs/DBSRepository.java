@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.State;
-import org.nuxeo.ecm.core.storage.State.Diff;
+import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 
 /**
@@ -85,7 +85,7 @@ public interface DBSRepository extends Repository {
      * @param diff the diff to apply
      * @throws DocumentException if the document does not exist
      */
-    void updateState(String id, Diff diff) throws DocumentException;
+    void updateState(String id, StateDiff diff) throws DocumentException;
 
     /**
      * Deletes a set of document.

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -48,40 +49,87 @@ public class State implements Serializable {
                     "ecm:name", "ecm:parentId", "ecm:isVersion", "ecm:isProxy" }));
 
     /**
-     * A {@link State} actually containing a diff.
+     * A diff for a {@link State}.
      * <p>
-     * Values can be regular values, or:
+     * Each value is applied to the existing {@link State}. An element can be:
      * <ul>
-     * <li>a sub-{@link Diff},
-     * <li>an array or List containing a {@link DiffOp} as its first element.
+     * <li>a {@link StateDiff}, to be applied on a {@link State},
+     * <li>a {@link ListDiff}, to be applied on an array/{@link List},
+     * <li>an actual value to be set (including {@code null}).
      * </ul>
      *
      * @since 5.9.5
      */
-    public static class Diff extends State {
-
+    public static class StateDiff extends State {
         private static final long serialVersionUID = 1L;
-
     }
 
     /**
-     * Diff operation markers for arrays or Lists.
+     * Singleton marker.
+     */
+    private static enum Nop {
+        NOP
+    }
+
+    /**
+     * Denotes no change to an element.
+     */
+    public static final Nop NOP = Nop.NOP;
+
+    /**
+     * A diff for an array or {@link List}.
+     * <p>
+     * This diff is applied onto an existing array/{@link List} in the following
+     * manner:
+     * <ul>
+     * <li>{@link #diff}, if any, is applied,
+     * <li>{@link #rpush}, if any, is applied,
+     * <li>{@link #rpop}, if any, is applied.
+     * </ul>
      *
      * @since 5.9.5
      */
-    public static enum DiffOp {
-        /**
-         * When used as the first element of an array or List, means that the
-         * rest of the array/list should be appended to the right of the
-         * existing array/List.
-         */
-        RPUSH,
+    public static class ListDiff implements Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         /**
-         * When used as an array or List, means that one element should be
-         * removed from the right of the array/List.
+         * Whether this {@link ListDiff} applies to an array ({@code true}) or a
+         * {@link List} ({@code false}).
          */
-        RPOP
+        public boolean isArray;
+
+        /**
+         * If diff is not {@code null}, each element of the list is applied to
+         * the existing array/{@link List}. An element can be:
+         * <ul>
+         * <li>a {@link StateDiff}, to be applied on a {@link State},
+         * <li>an actual value to be set (including {@code null}),
+         * <li>{@link #NOP} if no change is needed.
+         * </ul>
+         */
+        public List<Object> diff;
+
+        /**
+         * If rpush is not {@code null}, this is appended to the right of the
+         * existing array/{@link List}.
+         */
+        public List<Object> rpush;
+
+        /**
+         * If rpop is {@code true}, one element is removed from the right of the
+         * array/ {@link List}.
+         */
+        public boolean rpop;
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + '('
+                    + (isArray ? "array" : "list")
+                    + (diff == null ? "" : ", DIFF " + diff)
+                    + (rpush == null ? "" : ", RPUSH " + rpush)
+                    + (rpop ? ", RPOP" : "") + ')';
+        }
     }
 
     protected final Map<String, Serializable> map;

@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
@@ -43,8 +44,8 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.State;
-import org.nuxeo.ecm.core.storage.State.Diff;
-import org.nuxeo.ecm.core.storage.State.DiffOp;
+import org.nuxeo.ecm.core.storage.State.ListDiff;
+import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
@@ -226,81 +227,143 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return state;
     }
 
-    /**
-     * Constructs a MongoDB update from the given {@link Diff}.
-     */
-    protected DBObject diffToBson(Diff diff) {
-        BasicDBObject set = new BasicDBObject();
-        BasicDBObject unset = new BasicDBObject();
-        BasicDBObject push = new BasicDBObject();
-        BasicDBObject pop = new BasicDBObject();
-        diffToUpdate(diff, "", set, unset, push, pop);
-        DBObject update = new BasicDBObject();
-        if (!set.isEmpty()) {
-            update.put(MONGODB_SET, set);
-        }
-        if (!unset.isEmpty()) {
-            update.put(MONGODB_UNSET, unset);
-        }
-        if (!push.isEmpty()) {
-            update.put(MONGODB_PUSH, push);
-        }
-        if (!pop.isEmpty()) {
-            update.put(MONGODB_POP, pop);
-        }
-        return update;
+    public static class Updates {
+        public BasicDBObject set = new BasicDBObject();
+
+        public BasicDBObject unset = new BasicDBObject();
+
+        public BasicDBObject push = new BasicDBObject();
+
+        public BasicDBObject pop = new BasicDBObject();
     }
 
-    protected void diffToUpdate(Diff diff, String prefix, DBObject set,
-            DBObject unset, DBObject push, DBObject pop) {
+    /**
+     * Constructs a list of MongoDB updates from the given {@link StateDiff}.
+     * <p>
+     * We need a list because some cases need two operations to avoid conflicts.
+     */
+    protected List<DBObject> diffToBson(StateDiff diff) {
+        Updates updates = new Updates();
+        diffToUpdates(diff, null, updates);
+        UpdateListBuilder builder = new UpdateListBuilder();
+        for (Entry<String, Object> en : updates.set.entrySet()) {
+            builder.update(MONGODB_SET, en.getKey(), en.getValue());
+        }
+        for (Entry<String, Object> en : updates.unset.entrySet()) {
+            builder.update(MONGODB_UNSET, en.getKey(), en.getValue());
+        }
+        for (Entry<String, Object> en : updates.push.entrySet()) {
+            builder.update(MONGODB_PUSH, en.getKey(), en.getValue());
+        }
+        for (Entry<String, Object> en : updates.pop.entrySet()) {
+            builder.update(MONGODB_POP, en.getKey(), en.getValue());
+        }
+        return builder.updateList;
+    }
+
+    /**
+     * Update list builder to prevent several updates of the same field.
+     * <p>
+     * This happens if two operations act on two fields where one is a prefix of
+     * the other.
+     * <p>
+     * Example: Cannot update 'mylist.0.string' and 'mylist' at the same time
+     * (error 16837)
+     *
+     * @since 5.9.5
+     */
+    protected static class UpdateListBuilder {
+
+        protected List<DBObject> updateList = new ArrayList<>(1);
+
+        protected DBObject update;
+
+        protected List<String> keys;
+
+        protected UpdateListBuilder() {
+            newUpdate();
+        }
+
+        protected void newUpdate() {
+            updateList.add(update = new BasicDBObject());
+            keys = new ArrayList<>();
+        }
+
+        protected void update(String op, String key, Object value) {
+            if (conflicts(key, keys)) {
+                newUpdate();
+            }
+            keys.add(key);
+            DBObject map = (DBObject) update.get(op);
+            if (map == null) {
+                update.put(op, map = new BasicDBObject());
+            }
+            map.put(key, value);
+        }
+
+        /**
+         * Checks if the key conflicts with one of the previous keys.
+         * <p>
+         * A conflict occurs if one key is equals to or is a prefix of the
+         * other.
+         */
+        protected boolean conflicts(String key, List<String> previousKeys) {
+            String keydot = key + '.';
+            for (String prev : previousKeys) {
+                if (prev.equals(key) || prev.startsWith(keydot)
+                        || key.startsWith(prev + '.')) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    protected void diffToUpdates(StateDiff diff, String prefix, Updates updates) {
+        String elemPrefix = prefix == null ? "" : prefix + '.';
         for (Entry<String, Serializable> en : diff.entrySet()) {
-            String name = prefix + '.' + en.getKey();
+            String name = elemPrefix + en.getKey();
             Serializable value = en.getValue();
-            if (value instanceof Diff) {
-                diffToUpdate((Diff) value, name, set, unset, push, pop);
-            } else if (value instanceof Object[]) {
-                Object[] array = (Object[]) value;
-                diffOrListToUpdate(Arrays.asList(array), name, set, push, pop);
-            } else if (value instanceof List) {
-                @SuppressWarnings("unchecked")
-                List<Object> list = (List<Object>) value;
-                diffOrListToUpdate(list, name, set, push, pop);
+            if (value instanceof StateDiff) {
+                diffToUpdates((StateDiff) value, name, updates);
+            } else if (value instanceof ListDiff) {
+                diffToUpdates((ListDiff) value, name, updates);
             } else {
                 // not a diff
-                set.put(name, valueToBson(value));
+                updates.set.put(name, valueToBson(value));
             }
         }
     }
 
-    protected void diffOrListToUpdate(List<Object> list, String name,
-            DBObject set, DBObject push, DBObject pop) throws AssertionError {
-        if (!list.isEmpty() && list.get(0) instanceof DiffOp) {
-            // list diff
-            DiffOp op = (DiffOp) list.get(0);
-            switch (op) {
-            case RPUSH:
-                Object pushed;
-                if (list.size() == 2) {
-                    // no need to use $each for one element
-                    pushed = valueToBson(list.get(1));
-                } else {
-                    List<Object> values = new ArrayList<Object>(list.size() - 1);
-                    for (int i = 1; i < list.size(); i++) {
-                        values.add(valueToBson(list.get(i)));
-                    }
-                    pushed = new BasicDBObject(MONGODB_EACH, values);
+    protected void diffToUpdates(ListDiff listDiff, String prefix,
+            Updates updates) {
+        if (listDiff.diff != null) {
+            String elemPrefix = prefix == null ? "" : prefix + '.';
+            int i = 0;
+            for (Object value : listDiff.diff) {
+                String name = elemPrefix + i;
+                if (value instanceof StateDiff) {
+                    diffToUpdates((StateDiff) value, name, updates);
+                } else if (value != NOP) {
+                    // set value
+                    updates.set.put(name, valueToBson(value));
                 }
-                push.put(name, pushed);
-                break;
-            case RPOP:
-                pop.put(name, ONE);
-                break;
-            default:
-                throw new AssertionError(op.toString());
+                i++;
             }
-        } else {
-            // not a diff
-            set.put(name, valueToBson(list));
+        }
+        if (listDiff.rpush != null) {
+            Object pushed;
+            if (listDiff.rpush.size() == 1) {
+                // no need to use $each for one element
+                pushed = valueToBson(listDiff.rpush.get(0));
+            } else {
+                pushed = new BasicDBObject(MONGODB_EACH,
+                        listToBson(listDiff.rpush));
+            }
+            updates.push.put(prefix, pushed);
+        }
+        if (listDiff.rpop) {
+            updates.pop.put(prefix, ONE);
         }
     }
 
@@ -392,15 +455,16 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void updateState(String id, Diff diff) throws DocumentException {
+    public void updateState(String id, StateDiff diff) throws DocumentException {
         DBObject query = new BasicDBObject(KEY_ID, id);
-        DBObject update = diffToBson(diff);
-        if (log.isTraceEnabled()) {
-            log.trace("MongoDB: UPDATE " + id + ": " + update);
+        for (DBObject update : diffToBson(diff)) {
+            if (log.isTraceEnabled()) {
+                log.trace("MongoDB: UPDATE " + id + ": " + update);
+            }
+            coll.update(query, update);
+            // TODO dupe exception
+            // throw new DocumentException("Missing: " + id);
         }
-        coll.update(query, update);
-        // TODO dupe exception
-        // throw new DocumentException("Missing: " + id);
     }
 
     @Override

@@ -28,7 +28,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 import java.io.Serializable;
 
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.storage.State.Diff;
+import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.State;
 
@@ -86,7 +86,7 @@ public class DBSDocumentState {
     }
 
     public boolean isDirtyIgnoringFulltext() {
-        Diff diff = getStateChange();
+        StateDiff diff = getStateChange();
         if (diff == null) {
             return false;
         }
@@ -112,13 +112,13 @@ public class DBSDocumentState {
      * Gets a diff of what changed since this document state was read from
      * database or saved.
      *
-     * @return {@code null} if there was no change, or a {@link Diff}
+     * @return {@code null} if there was no change, or a {@link StateDiff}
      */
-    public Diff getStateChange() {
+    public StateDiff getStateChange() {
         if (originalState == null) {
             return null;
         }
-        Diff diff = StateHelper.diff(originalState, state);
+        StateDiff diff = StateHelper.diff(originalState, state);
         if (diff.isEmpty()) {
             return null;
         }

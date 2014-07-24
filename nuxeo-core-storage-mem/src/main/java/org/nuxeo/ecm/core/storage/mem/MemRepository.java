@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
-import org.nuxeo.ecm.core.storage.State.Diff;
+import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.State;
@@ -120,7 +120,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void updateState(String id, Diff diff) throws DocumentException {
+    public void updateState(String id, StateDiff diff) throws DocumentException {
         log.trace("update " + id + ": " + diff);
         State state = states.get(id);
         if (state == null) {

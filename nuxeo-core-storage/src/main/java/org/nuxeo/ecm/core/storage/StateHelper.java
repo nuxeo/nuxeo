@@ -11,8 +11,7 @@
  */
 package org.nuxeo.ecm.core.storage;
 
-import static org.nuxeo.ecm.core.storage.State.DiffOp.RPOP;
-import static org.nuxeo.ecm.core.storage.State.DiffOp.RPUSH;
+import static org.nuxeo.ecm.core.storage.State.NOP;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,7 +23,8 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.nuxeo.ecm.core.storage.State.Diff;
+import org.nuxeo.ecm.core.storage.State.ListDiff;
+import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 
 /**
@@ -40,7 +40,7 @@ public class StateHelper {
      * Checks if we have a base type compatible with {@link State} helper
      * processing.
      */
-    public static boolean isScalar(Serializable value) {
+    public static boolean isScalar(Object value) {
         return value instanceof String //
                 || value instanceof Boolean //
                 || value instanceof Long //
@@ -52,7 +52,7 @@ public class StateHelper {
     /**
      * Compares two values.
      */
-    public static boolean equals(Serializable a, Serializable b) {
+    public static boolean equals(Object a, Object b) {
         if (a == b) {
             return true;
         } else if (a == null || b == null) {
@@ -68,6 +68,11 @@ public class StateHelper {
         } else if (a instanceof Object[] && b instanceof Object[]) {
             // array values are supposed to be scalars
             return Arrays.equals((Object[]) a, (Object[]) b);
+        } else if (a instanceof ListDiff && b instanceof ListDiff) {
+            ListDiff lda = (ListDiff) a;
+            ListDiff ldb = (ListDiff) b;
+            return lda.isArray == ldb.isArray && equals(lda.diff, ldb.diff)
+                    && equals(lda.rpush, ldb.rpush) && lda.rpop == ldb.rpop;
         } else if (isScalar(a) && isScalar(b)) {
             return a.equals(b);
         } else {
@@ -100,6 +105,12 @@ public class StateHelper {
      * Compares two {@link List}s.
      */
     public static boolean equals(List<Serializable> a, List<Serializable> b) {
+        if (a == null && b == null) {
+            return true;
+        }
+        if (a == null || b == null) {
+            return false;
+        }
         if (a.size() != b.size()) {
             return false;
         }
@@ -127,28 +138,11 @@ public class StateHelper {
     }
 
     /**
-     * Compare the first size elements of two lists.
-     * <p>
-     * The lists are assumed to have at least size elements.
-     */
-    public static boolean equals(List<Serializable> a, List<Serializable> b,
-            int size) {
-        Iterator<Serializable> ita = a.iterator();
-        Iterator<Serializable> itb = b.iterator();
-        for (int i = 0; i < size; i++) {
-            if (!equals(ita.next(), itb.next())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * Makes a deep copy of a value.
      */
-    public static Serializable deepCopy(Serializable value) {
+    public static Serializable deepCopy(Object value) {
         if (value == null) {
-            return value;
+            return (Serializable) value;
         } else if (value instanceof State) {
             return deepCopy((State) value);
         } else if (value instanceof List) {
@@ -164,7 +158,7 @@ public class StateHelper {
             throw new UnsupportedOperationException("Cannot deep copy: "
                     + value.getClass().getName());
         }
-        return value;
+        return (Serializable) value;
     }
 
     /**
@@ -189,79 +183,95 @@ public class StateHelper {
         return copy;
     }
 
-    private static final Object[] ARRAY_RPOP = new Object[] { RPOP };
-
-    private static final List<Serializable> LIST_RPOP = Collections.<Serializable> singletonList(RPOP);
-
-    public static Serializable diff(Serializable a, Serializable b) {
+    /**
+     * Does a diff of two values.
+     *
+     * @return a {@link StateDiff}, a {@link ListDiff}, {@link #NOP}, or an
+     *         actual value (including {@code null})
+     */
+    public static Serializable diff(Object a, Object b) {
+        if (equals(a, b)) {
+            return NOP;
+        }
         if (a instanceof Object[] && b instanceof Object[]) {
             return diff((Object[]) a, (Object[]) b);
         }
         if (a instanceof List && b instanceof List) {
             @SuppressWarnings("unchecked")
-            List<Serializable> la = (List<Serializable>) a;
+            List<Object> la = (List<Object>) a;
             @SuppressWarnings("unchecked")
-            List<Serializable> lb = (List<Serializable>) b;
+            List<Object> lb = (List<Object>) b;
             return (Serializable) diff(la, lb);
         }
         if (a instanceof State && b instanceof State) {
             return diff((State) a, (State) b);
         }
-        return b;
+        return (Serializable) b;
     }
 
-    public static Object[] diff(Object[] a, Object[] b) {
-        // check for RPUSH of one or more element
-        // TODO configure zero-length "a" case
-        if (a.length > 0 && b.length > a.length) {
-            // compare initial segments
-            if (!equals(a, b, a.length)) {
-                return b;
-            }
-            Object[] diff = new Object[b.length - a.length + 1];
-            diff[0] = RPUSH;
-            System.arraycopy(b, a.length, diff, 1, b.length - a.length);
-            return diff;
+    public static Serializable diff(Object[] a, Object[] b) {
+        List<Object> la = Arrays.asList(a);
+        List<Object> lb = Arrays.asList(b);
+        Serializable diff = diff(la, lb);
+        if (diff instanceof List) {
+            return b;
         }
-        // check for RPOP
-        // TODO configure zero-length "b" case
-        if (b.length > 0 && a.length == b.length + 1) {
-            // compare initial segments
-            if (!equals(a, b, b.length)) {
-                return b;
-            }
-            return ARRAY_RPOP;
-        }
-        return b;
+        ListDiff listDiff = (ListDiff) diff;
+        listDiff.isArray = true;
+        return listDiff;
     }
 
-    public static List<Serializable> diff(List<Serializable> a,
-            List<Serializable> b) {
-        // check for RPUSH of one or more element
+    public static Serializable diff(List<Object> a, List<Object> b) {
+        ListDiff listDiff = new ListDiff();
+        listDiff.isArray = false;
+        int aSize = a.size();
+        int bSize = b.size();
         // TODO configure zero-length "a" case
-        if (a.size() > 0 && b.size() > a.size()) {
-            // compare initial segments
-            if (!equals(a, b, a.size())) {
-                return b;
-            }
-            ArrayList<Serializable> diff = new ArrayList<>(b.size() - a.size()
-                    + 1);
-            diff.add(RPUSH);
-            for (int i = a.size(); i < b.size(); i++) {
-                diff.add(b.get(i));
-            }
-            return diff;
-        }
-        // check for RPOP
+        boolean doRPush = aSize > 0 && aSize < bSize;
         // TODO configure zero-length "b" case
-        if (b.size() > 0 && a.size() == b.size() + 1) {
-            // compare initial segments
-            if (!equals(a, b, b.size())) {
-                return b;
-            }
-            return LIST_RPOP;
+        boolean doRPop = bSize > 0 && aSize - 1 == bSize;
+        // we can use a list diff if lists are the same size,
+        // or we have a rpush or rpop
+        boolean doDiff = aSize == bSize || doRPush || doRPop;
+        if (!doDiff) {
+            return (Serializable) b;
         }
-        return b;
+        int len = Math.min(aSize, bSize);
+        List<Object> diff = new ArrayList<>(len);
+        int nops = 0;
+        int diffs = 0;
+        for (int i = 0; i < len; i++) {
+            Serializable elemDiff = diff(a.get(i), b.get(i));
+            if (elemDiff == NOP) {
+                nops++;
+            } else if (elemDiff instanceof StateDiff) {
+                diffs++;
+            }
+            // TODO if the individual element diffs are big StateDiffs,
+            // do a full State replacement instead
+            diff.add(elemDiff);
+        }
+        if (nops == len) {
+            // only nops
+            diff = null;
+        } else if (diffs == 0) {
+            // only setting elements or nops
+            // TODO use a higher ratio than 0% of diffs
+            return (Serializable) b;
+        }
+        listDiff.diff = diff;
+        if (doRPush) {
+            List<Object> rpush = new ArrayList<>(bSize - aSize);
+            for (int i = aSize; i < bSize; i++) {
+                rpush.add(b.get(i));
+            }
+            listDiff.rpush = rpush;
+        }
+        if (doRPop) {
+            listDiff.rpop = true;
+        }
+
+        return listDiff;
     }
 
     /**
@@ -275,12 +285,12 @@ public class StateHelper {
      * if only tail additions have been made, or the RPOP operator is used if
      * only a single tail removal was done.
      * <p>
-     * For sub-documents, a recursive diff is returned using a {@link Diff}.
+     * For sub-documents, a recursive diff is returned using a {@link StateDiff}.
      *
      * @return a {@link map} which, when applied to a, gives b.
      */
-    public static Diff diff(State a, State b) {
-        Diff diff = new Diff();
+    public static StateDiff diff(State a, State b) {
+        StateDiff diff = new StateDiff();
         for (Entry<String, Serializable> en : a.entrySet()) {
             String key = en.getKey();
             if (!b.containsKey(key)) {
@@ -288,10 +298,9 @@ public class StateHelper {
                 diff.put(key, null);
             } else {
                 // compare values
-                Serializable va = en.getValue();
-                Serializable vb = b.get(key);
-                if (!equals(va, vb)) {
-                    diff.put(key, diff(va, vb));
+                Serializable elemDiff = diff(en.getValue(), b.get(key));
+                if (elemDiff != NOP) {
+                    diff.put(key, elemDiff);
                 }
             }
         }
@@ -306,110 +315,87 @@ public class StateHelper {
     }
 
     /**
-     * Applies a diff onto a base state.
+     * Applies a {@link StateDiff} in-place onto a base {@link State}.
      */
-    public static void applyDiff(State state, Diff diff) {
-        for (Entry<String, Serializable> en : diff.entrySet()) {
+    public static void applyDiff(State state, StateDiff stateDiff) {
+        for (Entry<String, Serializable> en : stateDiff.entrySet()) {
             String key = en.getKey();
-            Serializable value = en.getValue();
-            if (value instanceof Diff) {
+            Serializable diffElem = en.getValue();
+            if (diffElem instanceof StateDiff) {
                 Serializable old = state.get(key);
                 if (old == null) {
                     old = new State();
                     state.put(key, old);
                     // enter the next if
                 }
-                if (old instanceof State) {
-                    applyDiff((State) old, (Diff) value);
-                    continue;
+                if (!(old instanceof State)) {
+                    throw new UnsupportedOperationException(
+                            "Cannot apply StateDiff on non-State: " + old);
                 }
+                applyDiff((State) old, (StateDiff) diffElem);
+            } else if (diffElem instanceof ListDiff) {
+                state.put(key, applyDiff(state.get(key), (ListDiff) diffElem));
+            } else {
+                state.put(key, diffElem);
+            }
+        }
+    }
+
+    /**
+     * Applies a {@link ListDiff} onto an array or {@link List}, and returns the
+     * resulting value.
+     */
+    public static Serializable applyDiff(Serializable value, ListDiff listDiff) {
+        // internally work on a list
+        if (listDiff.isArray && value != null) {
+            if (!(value instanceof Object[])) {
                 throw new UnsupportedOperationException(
-                        "Cannot apply Diff non-State: " + old);
-            } else if (value instanceof Object[]) {
-                Object[] array = (Object[]) value;
-                if (array.length > 0) {
-                    if (array[0] == RPUSH) {
-                        state.put(key, applyRPush(state.get(key), array));
-                        continue;
-                    } else if (array[0] == RPOP) {
-                        state.put(key, applyRPop(state.get(key)));
-                        continue;
-                    }
+                        "Cannot apply ListDiff on non-array: " + value);
+            }
+            value = new ArrayList<Object>(Arrays.asList((Object[]) value));
+        }
+        if (value == null) {
+            value = (Serializable) Collections.emptyList();
+        }
+        if (!(value instanceof List)) {
+            throw new UnsupportedOperationException(
+                    "Cannot apply ListDiff on non-List: " + value);
+        }
+        @SuppressWarnings("unchecked")
+        List<Serializable> list = (List<Serializable>) value;
+        if (listDiff.diff != null) {
+            int i = 0;
+            for (Object diffElem : listDiff.diff) {
+                if (i >= list.size()) {
+                    // TODO log error applying diff to shorter list
+                    break;
                 }
-            } else if (value instanceof List) {
-                @SuppressWarnings("unchecked")
-                List<Serializable> list = (List<Serializable>) value;
-                if (list.size() > 0) {
-                    if (list.get(0) == RPUSH) {
-                        state.put(key, applyRPush(state.get(key), list));
-                        continue;
-                    } else if (list.get(0) == RPOP) {
-                        state.put(key, applyRPop(state.get(key)));
-                        continue;
-                    }
+                if (diffElem instanceof StateDiff) {
+                    applyDiff((State) list.get(i), (StateDiff) diffElem);
+                } else if (diffElem != NOP) {
+                    list.set(i, deepCopy(diffElem));
                 }
+                i++;
             }
-            state.put(key, value);
         }
-    }
-
-    public static Serializable applyRPush(Serializable old,
-            List<Serializable> list) {
-        if (old == null) {
-            old = (Serializable) Collections.emptyList();
-        }
-        if (old instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<Serializable> oldList = (List<Serializable>) old;
-            ArrayList<Serializable> newList = new ArrayList<>(oldList.size()
-                    + list.size() - 1);
-            newList.addAll(oldList);
-            for (int i = 1; i < list.size(); i++) {
-                newList.add(list.get(i));
+        if (listDiff.rpush != null) {
+            List<Serializable> newList = new ArrayList<>(list.size()
+                    + listDiff.rpush.size());
+            newList.addAll(list);
+            for (Object v : listDiff.rpush) {
+                newList.add(deepCopy(v));
             }
-            return newList;
+            list = newList;
         }
-        throw new UnsupportedOperationException(
-                "Cannot apply RPUSH of list on non-list: " + old);
-    }
-
-    public static Serializable applyRPush(Serializable old, Object[] array) {
-        if (old == null) {
-            old = new Object[0];
+        if (listDiff.rpop) {
+            list = new ArrayList<>(list.subList(0, list.size() - 1));
         }
-        if (old instanceof Object[]) {
-            Object[] oldArray = (Object[]) old;
-            Object[] newArray = new Object[oldArray.length + array.length - 1];
-            System.arraycopy(oldArray, 0, newArray, 0, oldArray.length);
-            System.arraycopy(array, 1, newArray, oldArray.length,
-                    array.length - 1);
-            return newArray;
+        // convert back to array if needed
+        if (listDiff.isArray) {
+            return list.toArray(new Object[0]);
+        } else {
+            return (Serializable) list;
         }
-        throw new UnsupportedOperationException(
-                "Cannot apply RPUSH of array on non-array: " + old);
-    }
-
-    public static Serializable applyRPop(Serializable old) {
-        if (old instanceof Object[]) {
-            Object[] oldArray = (Object[]) old;
-            if (oldArray.length == 0) {
-                // RPOP on empty array returns empty array
-                return oldArray;
-            }
-            Object[] newArray = new Object[oldArray.length - 1];
-            System.arraycopy(oldArray, 0, newArray, 0, newArray.length);
-            return newArray;
-        }
-        if (old instanceof List) {
-            @SuppressWarnings("unchecked")
-            List<Serializable> oldList = (List<Serializable>) old;
-            if (oldList.size() == 0) {
-                // RPOP on empty list returns empty list
-                return (Serializable) oldList;
-            }
-            return new ArrayList<>(oldList.subList(0, oldList.size() - 1));
-        }
-        throw new UnsupportedOperationException("Cannot apply RPOP on: " + old);
     }
 
 }
