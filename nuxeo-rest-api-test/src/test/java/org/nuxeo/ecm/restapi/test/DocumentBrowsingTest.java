@@ -289,7 +289,7 @@ public class DocumentBrowsingTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals("inherited", node.get(RestConstants
-                .CONTRIBUTOR_CTX_PARAMETERS).get("acls").get("acl").get(0).get
+                .CONTRIBUTOR_CTX_PARAMETERS).get("acls").get(0).get
                 ("name").getTextValue());
 
     }
