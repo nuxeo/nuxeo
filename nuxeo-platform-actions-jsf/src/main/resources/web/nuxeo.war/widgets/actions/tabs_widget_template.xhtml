@@ -18,66 +18,49 @@
 <nxu:set var="formAdded" value="#{widgetProperty_addForm}" cache="true">
 <nxu:set var="tabsPanelId" value="#{widget.id}_panel" cache="true">
 <nxu:set var="tabContentPanelId" value="#{widget.id}_tab_content" cache="true">
+<nxu:set var="verticalTabs" value="#{widgetProperty_overallDisplay == 'vertical_block'}" cache="true">
 <nxu:valueHolder id="#{clickedActionIdHolder}"
   var="clickedActionId"
   defaultValue="#{widgetProperty_currentTabAction.id}">
 
-  <a4j:outputPanel id="#{tabsPanelId}" layout="block"
-    styleClass="tabsBar #{widgetProperty_styleClass}">
+<c:choose>
 
-    <ul>
-      <nxu:repeat var="action" items="#{widgetProperty_actions}">
-        <li class="#{nxu:test(widgetProperty_currentTabAction.id == action.id, 'selected', '')}">
-          <ui:decorate template="/incl/action/action_template.xhtml">
-            <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
-            <ui:param name="parentTabActionCategory" value="#{nxu:test(empty parentTabActionCategory, widgetProperty_category, parentTabActionCategory)}" />
-            <ui:param name="ajaxReRender" value="#{nxu:joinRender(tabsPanelId, nxu:joinRender(tabContentPanelId, widgetProperty_ajaxReRender))}" />
-            <ui:param name="addForm" value="#{widgetProperty_addForm}" />
-            <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
-            <ui:param name="formStyleClass" value="subWidgetForm" />
-            <ui:param name="mode" value="#{widget.mode}" />
-          </ui:decorate>
-        </li>
-      </nxu:repeat>
-    </ul>
+  <c:when test="#{verticalTabs}">
+    <div class="gridContainer">
+      <div class="gridRow">
+        <div class="gridBox verticalTabsColumn gridStyle2">
+          <a4j:outputPanel id="#{tabsPanelId}" layout="block"
+            styleClass="tabsBar vertical #{widgetProperty_styleClass}">
+            <ui:include src="/widgets/actions/tabs_widget_bar_template.xhtml" />
+          </a4j:outputPanel>
+          <div class="clear" />
+        </div>
+        <div class="gridBox verticalTabsContent gridStyle10">
+          <a4j:outputPanel id="#{tabContentPanelId}" layout="block"
+            styleClass="tabsContent ">
+            <ui:include src="/widgets/actions/tabs_widget_content_template.xhtml" />
+          </a4j:outputPanel>
+        </div>
+      </div>
+    </div>
+  </c:when>
 
-    <nxu:repeat var="action" items="#{widgetProperty_actions}">
-      <ui:include src="/incl/action/generic_mode_action_template.xhtml">
-        <ui:param name="mode" value="after_view" />
-      </ui:include>
-    </nxu:repeat>
+  <c:otherwise>
+    <a4j:outputPanel id="#{tabsPanelId}" layout="block"
+      styleClass="tabsBar #{widgetProperty_styleClass}">
+      <ui:include src="/widgets/actions/tabs_widget_bar_template.xhtml" />
+    </a4j:outputPanel>
+    <div class="clear" />
+    <a4j:outputPanel id="#{tabContentPanelId}" layout="block"
+      styleClass="tabsContent">
+      <ui:include src="/widgets/actions/tabs_widget_content_template.xhtml" />
+    </a4j:outputPanel>
+  </c:otherwise>
 
-  </a4j:outputPanel>
-  <div class="clear" />
-
-  <a4j:outputPanel id="#{tabContentPanelId}" layout="block"
-    styleClass="tabsContent">
-
-    <ui:insert name="tab_content">
-      <c:if test="#{not empty widgetProperty_currentTabAction.link}">
-        <nxu:set var="action" value="#{widgetProperty_currentTabAction}">
-        <nxu:set var="defaultParentTabActionCategoryPrefix"
-          value="#{nxu:test(empty parentTabActionCategory, widgetProperty_category, parentTabActionCategory)}"
-          cache="true">
-        <nxu:set var="parentTabActionCategoryPrefix"
-          value="#{nxu:test(empty parentTabActionCategory, defaultParentTabActionCategoryPrefix, parentTabActionCategory)}"
-          cache="true">
-        <nxu:set var="parentTabActionCategory"
-          value="#{parentTabActionCategoryPrefix}:#{action.id}"
-          cache="true">
-          <ui:include src="/incl/action/generic_mode_action_template.xhtml">
-            <ui:param name="mode" value="tab_content" />
-          </ui:include>
-        </nxu:set>
-        </nxu:set>
-        </nxu:set>
-        </nxu:set>
-      </c:if>
-    </ui:insert>
-
-  </a4j:outputPanel>
+</c:choose>
 
 </nxu:valueHolder>
+</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>

@@ -1,0 +1,33 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:if test="#{not empty action.properties.tabContentBeforeInclude}">
+    <ui:include src="#{action.properties.tabContentBeforeInclude}" />
+  </c:if>
+  <c:if test="#{not empty widgetProperty_currentTabAction.link}">
+    <nxu:set var="action" value="#{widgetProperty_currentTabAction}">
+    <nxu:set var="defaultParentTabActionCategoryPrefix"
+      value="#{nxu:test(empty parentTabActionCategory, widgetProperty_category, parentTabActionCategory)}"
+      cache="true">
+    <nxu:set var="parentTabActionCategoryPrefix"
+      value="#{nxu:test(empty parentTabActionCategory, defaultParentTabActionCategoryPrefix, parentTabActionCategory)}"
+      cache="true">
+    <nxu:set var="parentTabActionCategory"
+      value="#{parentTabActionCategoryPrefix}:#{action.id}"
+      cache="true">
+      <ui:include src="/incl/action/generic_mode_action_template.xhtml">
+        <ui:param name="mode" value="tab_content" />
+      </ui:include>
+    </nxu:set>
+    </nxu:set>
+    </nxu:set>
+    </nxu:set>
+  </c:if>
+  <c:if test="#{not empty action.properties.tabContentAfterInclude}">
+    <ui:include src="#{action.properties.tabContentAfterInclude}" />
+  </c:if>
+
+</ui:composition>

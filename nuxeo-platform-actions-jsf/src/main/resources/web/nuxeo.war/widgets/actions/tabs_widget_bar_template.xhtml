@@ -1,0 +1,28 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<ul>
+  <nxu:repeat var="action" items="#{widgetProperty_actions}">
+    <li class="#{nxu:test(widgetProperty_currentTabAction.id == action.id, 'selected', '')}">
+      <ui:decorate template="/incl/action/action_template.xhtml">
+        <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+        <ui:param name="parentTabActionCategory" value="#{nxu:test(empty parentTabActionCategory, widgetProperty_category, parentTabActionCategory)}" />
+        <ui:param name="ajaxReRender" value="#{nxu:joinRender(tabsPanelId, nxu:joinRender(tabContentPanelId, widgetProperty_ajaxReRender))}" />
+        <ui:param name="addForm" value="#{widgetProperty_addForm}" />
+        <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
+        <ui:param name="formStyleClass" value="subWidgetForm" />
+        <ui:param name="mode" value="#{widget.mode}" />
+      </ui:decorate>
+    </li>
+  </nxu:repeat>
+</ul>
+
+<nxu:repeat var="action" items="#{widgetProperty_actions}">
+  <ui:include src="/incl/action/generic_mode_action_template.xhtml">
+    <ui:param name="mode" value="after_view" />
+  </ui:include>
+</nxu:repeat>
+
+</ui:composition>

@@ -225,6 +225,27 @@
       </selectOptions>
     </widget>
 
+    <widget name="tabs_overallDisplay" type="selectOneListbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Overall display</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Overall display of tabs.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>overallDisplay</field>
+      </fields>
+      <selectOptions>
+        <option itemLabel="Horizontal block (default)" itemValue="" />
+        <option itemLabel="Vertical block" itemValue="vertical_block" />
+      </selectOptions>
+    </widget>
+
     <widget name="actions_maxActionsNumber" type="int">
       <categories>
         <category>widgetTypeConf</category>
@@ -467,6 +488,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">actions_styleClass</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">tabs_overallDisplay</widget>
                 </row>
               </rows>
               <widget name="actions" type="actions">
