@@ -10,6 +10,7 @@
 
     <!-- Admin Center -->
     <action id="TenantAdministration" link="/incl/tenant/tenant_administration.xhtml"
+      type="admin_rest_document_link"
       label="label.multi.tenant.isolation" order="150">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
