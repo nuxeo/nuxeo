@@ -97,7 +97,7 @@ public class TestStateHelper {
         assertNotEquals(new State(), new ArrayList<Serializable>());
 
         // Arrays
-        assertEquals(new String[] {}, new String[] {});
+        assertEquals(new String[0], new String[0]);
         assertEquals(new String[] { "foo" }, new String[] { "foo" });
         assertNotEquals(new String[] { "foo" }, new String[] { "bar" });
 
@@ -130,6 +130,42 @@ public class TestStateHelper {
         assertEquals(la, lb);
         ((State) lb.get(0)).put("foo", "moo");
         assertNotEquals(la, lb);
+    }
+
+    @Test
+    public void testEqualsNulls() {
+        // Arrays
+        assertEquals(null, new String[0]);
+        assertEquals(new String[0], null);
+
+        // Lists
+        assertEquals(null, new ArrayList<Serializable>());
+        assertEquals(new ArrayList<Serializable>(), null);
+
+        // States
+        assertEquals(new State(), null);
+        assertEquals(null, new State());
+
+        State a = new State();
+        State b = new State();
+        assertEquals(a, b);
+
+        a.put("foo", null);
+        a.put("bar", null);
+        assertEquals(a, b);
+
+        a.put("foo", "bar");
+        b.put("foo", "bar");
+        assertEquals(a, b);
+
+        b.put("gee", null);
+        assertEquals(a, b);
+
+        // empty elements considered null
+        State c = new State();
+        assertEquals(c, null);
+        c.put("foo", list());
+        assertEquals(c, null);
     }
 
     private static void assertDiff(Serializable expected, Serializable a,
@@ -220,6 +256,17 @@ public class TestStateHelper {
                 stateDiff("A", stateDiff("B", "D")), //
                 state("A", state("1", "2", "B", "C")),
                 state("A", state("1", "2", "B", "D")));
+    }
+
+    @Test
+    public void testDiffStateNulls() {
+        assertDiff(NOP, state("X", null), state());
+        assertDiff(NOP, state(), state("X", null));
+
+        assertDiff(stateDiff("A", "B"), //
+                state("X", null), state("A", "B"));
+        assertDiff(stateDiff("A", "B"), //
+                state(), state("A", "B", "X", null));
     }
 
     private static void assertApplyDiff(State expected, State state,

@@ -55,19 +55,22 @@ public class StateHelper {
     public static boolean equals(Object a, Object b) {
         if (a == b) {
             return true;
-        } else if (a == null || b == null) {
-            return false;
-        } else if (a instanceof State && b instanceof State) {
+        } else if (a instanceof State && b instanceof State //
+                || a instanceof State && b == null //
+                || a == null && b instanceof State) {
             return equals((State) a, (State) b);
-        } else if (a instanceof List && b instanceof List) {
+        } else if (a instanceof List && b instanceof List //
+                || a instanceof List && b == null //
+                || a == null && b instanceof List) {
             @SuppressWarnings("unchecked")
             List<Serializable> la = (List<Serializable>) a;
             @SuppressWarnings("unchecked")
             List<Serializable> lb = (List<Serializable>) b;
             return equals(la, lb);
-        } else if (a instanceof Object[] && b instanceof Object[]) {
-            // array values are supposed to be scalars
-            return Arrays.equals((Object[]) a, (Object[]) b);
+        } else if (a instanceof Object[] && b instanceof Object[] //
+                || a instanceof Object[] && b == null //
+                || a == null && b instanceof Object[]) {
+            return equals((Object[]) a, (Object[]) b);
         } else if (a instanceof ListDiff && b instanceof ListDiff) {
             ListDiff lda = (ListDiff) a;
             ListDiff ldb = (ListDiff) b;
@@ -82,19 +85,39 @@ public class StateHelper {
 
     /**
      * Compares two {@link State}s.
+     * <p>
+     * A {@code null} value or an empty array or {@code List} is equivalent to
+     * an absent value. A {@code null} {@link State} is equivalent to an empty
+     * {@link State} (or a {@link State} containing only absent values).
      */
     public static boolean equals(State a, State b) {
-        if (a.size() != b.size()) {
-            return false;
+        if (a == null) {
+            a = State.EMPTY;
         }
-        if (!a.keySet().equals(b.keySet())) {
-            return false;
+        if (b == null) {
+            b = State.EMPTY;
         }
         for (Entry<String, Serializable> en : a.entrySet()) {
-            String key = en.getKey();
             Serializable va = en.getValue();
+            if (va == null) {
+                // checked by loop on b
+                continue;
+            }
+            String key = en.getKey();
             Serializable vb = b.get(key);
             if (!equals(va, vb)) {
+                return false;
+            }
+        }
+        for (Entry<String, Serializable> en : b.entrySet()) {
+            String key = en.getKey();
+            Serializable va = a.get(key);
+            if (va != null) {
+                // already checked by loop on a
+                continue;
+            }
+            Serializable vb = en.getValue();
+            if (!equals(null, vb)) {
                 return false;
             }
         }
@@ -102,10 +125,34 @@ public class StateHelper {
     }
 
     /**
+     * Compares two arrays of scalars.
+     * <p>
+     * {@code null} values are equivalent to empty arrays.
+     */
+    public static boolean equals(Object[] a, Object[] b) {
+        if (a != null && a.length == 0) {
+            a = null;
+        }
+        if (b != null && b.length == 0) {
+            b = null;
+        }
+        // we have scalars, Arrays.equals() is enough
+        return Arrays.equals(a, b);
+    }
+
+    /**
      * Compares two {@link List}s.
+     * <p>
+     * {@code null} values are equivalent to empty lists.
      */
     public static boolean equals(List<Serializable> a, List<Serializable> b) {
-        if (a == null && b == null) {
+        if (a != null && a.isEmpty()) {
+            a = null;
+        }
+        if (b != null && b.isEmpty()) {
+            b = null;
+        }
+        if (a == b) {
             return true;
         }
         if (a == null || b == null) {
@@ -116,21 +163,6 @@ public class StateHelper {
         }
         for (Iterator<Serializable> ita = a.iterator(), itb = b.iterator(); ita.hasNext();) {
             if (!equals(ita.next(), itb.next())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Compare the first length elements of two arrays.
-     * <p>
-     * The arrays are assumed to have at least length elements.
-     */
-    public static boolean equals(Object[] a, Object[] b, int length) {
-        for (int i = 0; i < length; i++) {
-            // basic scalar equals
-            if (!ObjectUtils.equals(a[i], b[i])) {
                 return false;
             }
         }
@@ -204,7 +236,8 @@ public class StateHelper {
             return (Serializable) diff(la, lb);
         }
         if (a instanceof State && b instanceof State) {
-            return diff((State) a, (State) b);
+            StateDiff diff = diff((State) a, (State) b);
+            return diff.isEmpty() ? NOP : diff;
         }
         return (Serializable) b;
     }
@@ -270,7 +303,6 @@ public class StateHelper {
         if (doRPop) {
             listDiff.rpop = true;
         }
-
         return listDiff;
     }
 
@@ -278,27 +310,30 @@ public class StateHelper {
      * Makes a diff copy of two {@link State} maps.
      * <p>
      * The returned diff state contains only the key/values that changed.
+     * {@code null} values are equivalent to absent values.
      * <p>
      * For values set to null or removed, the value is null.
      * <p>
-     * For arrays, either a new array is passed, or the RPUSH operator is used
-     * if only tail additions have been made, or the RPOP operator is used if
-     * only a single tail removal was done.
-     * <p>
-     * For sub-documents, a recursive diff is returned using a {@link StateDiff}.
+     * For sub-documents, a recursive diff is returned.
      *
-     * @return a {@link map} which, when applied to a, gives b.
+     * @return a {@link StateDiff} which, when applied to a, gives b.
      */
     public static StateDiff diff(State a, State b) {
         StateDiff diff = new StateDiff();
         for (Entry<String, Serializable> en : a.entrySet()) {
+            Serializable va = en.getValue();
+            if (va == null) {
+                // checked by loop on b
+                continue;
+            }
             String key = en.getKey();
-            if (!b.containsKey(key)) {
+            Serializable vb = b.get(key);
+            if (vb == null) {
                 // value must be cleared
                 diff.put(key, null);
             } else {
                 // compare values
-                Serializable elemDiff = diff(en.getValue(), b.get(key));
+                Serializable elemDiff = diff(va, vb);
                 if (elemDiff != NOP) {
                     diff.put(key, elemDiff);
                 }
@@ -306,9 +341,15 @@ public class StateHelper {
         }
         for (Entry<String, Serializable> en : b.entrySet()) {
             String key = en.getKey();
-            if (!a.containsKey(key)) {
+            Serializable va = a.get(key);
+            if (va != null) {
+                // already checked by loop on a
+                continue;
+            }
+            Serializable vb = en.getValue();
+            if (!equals(null, vb)) {
                 // value must be added
-                diff.put(key, en.getValue());
+                diff.put(key, vb);
             }
         }
         return diff;

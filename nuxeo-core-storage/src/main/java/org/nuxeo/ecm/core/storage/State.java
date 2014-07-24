@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.storage;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -42,6 +43,9 @@ public class State implements Serializable {
     private static final int DEBUG_MAX_STRING = 100;
 
     private static final int DEBUG_MAX_ARRAY = 10;
+
+    public static final State EMPTY = new State(
+            Collections.<String, Serializable> emptyMap());
 
     /** Initial key order for the {@link #toString} method. */
     private static final Set<String> TO_STRING_KEY_ORDER = new LinkedHashSet<>(
@@ -148,6 +152,13 @@ public class State implements Serializable {
         map = new HashMap<>(Math.max(
                 (int) (size / HASHMAP_DEFAULT_LOAD_FACTOR) + 1,
                 HASHMAP_DEFAULT_INITIAL_CAPACITY), HASHMAP_DEFAULT_LOAD_FACTOR);
+    }
+
+    /**
+     * Private constructor for {@link #EMPTY}.
+     */
+    private State(Map<String, Serializable> map) {
+        this.map = map;
     }
 
     /**
