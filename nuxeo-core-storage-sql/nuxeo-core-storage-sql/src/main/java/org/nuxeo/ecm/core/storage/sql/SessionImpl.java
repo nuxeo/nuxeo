@@ -1263,8 +1263,13 @@ public class SessionImpl implements Session, XAResource {
         } finally {
             long duration = timerContext.stop();
             if ((LOG_MIN_DURATION_NS >= 0) && (duration > LOG_MIN_DURATION_NS)) {
-                log.info(String.format("duration_ms:\t%.2f\t%s %s\tquery\t%s",
-                        duration/1000000.0, queryFilter, countUpToAsString(countUpTo), query));
+                String msg = String.format("duration_ms:\t%.2f\t%s %s\tquery\t%s",
+                        duration/1000000.0, queryFilter, countUpToAsString(countUpTo), query);
+                if (log.isTraceEnabled()) {
+                    log.info(msg, new Throwable("Slow query stack trace"));
+                } else {
+                    log.info(msg);
+                }
             }
         }
     }
@@ -1284,8 +1289,13 @@ public class SessionImpl implements Session, XAResource {
         } finally {
             long duration = timerContext.stop();
             if ((LOG_MIN_DURATION_NS >= 0) && (duration > LOG_MIN_DURATION_NS)) {
-                log.info(String.format("duration_ms:\t%.2f\t%s\tqueryAndFetch\t%s",
-                        duration/1000000.0, queryFilter, query));
+                String msg = String.format("duration_ms:\t%.2f\t%s\tqueryAndFetch\t%s",
+                        duration/1000000.0, queryFilter, query);
+                if (log.isTraceEnabled()) {
+                    log.info(msg, new Throwable("Slow query stack trace"));
+                } else {
+                    log.info(msg);
+                }
             }
         }
     }
