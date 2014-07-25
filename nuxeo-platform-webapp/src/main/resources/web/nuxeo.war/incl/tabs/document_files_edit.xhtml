@@ -16,7 +16,7 @@
   id="document_files_edit" disableDoubleClickShield="true">
 
   <a4j:jsFunction name="clearUpload" render="validateMultiplesUploadDiv" >
-    <a4j:actionparam name="param1" assignTo="#{FileManageActions.fileToRemove}"  />
+    <a4j:param name="param1" assignTo="#{FileManageActions.fileToRemove}"  />
     <nxu:actionListenerMethod value="#{FileManageActions.removeOneOrAllUploadedFiles}" />
   </a4j:jsFunction>
   <a4j:jsFunction name="clearAllUpload" render="validateMultiplesUploadDiv">
