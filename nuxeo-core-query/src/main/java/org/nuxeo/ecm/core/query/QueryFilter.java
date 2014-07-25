@@ -110,4 +110,8 @@ public class QueryFilter implements Serializable {
         return offset;
     }
 
+    @Override
+    public String toString() {
+        return String.format("filter as %s limit %d offset %d", principal, limit, offset);
+    }
 }
