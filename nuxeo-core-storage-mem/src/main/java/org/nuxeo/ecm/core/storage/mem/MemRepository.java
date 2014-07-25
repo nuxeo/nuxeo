@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.storage.mem;
 
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
@@ -19,13 +20,17 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
@@ -35,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
+import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.PartialList;
@@ -116,7 +122,7 @@ public class MemRepository extends DBSRepositoryBase {
         if (states.containsKey(id)) {
             throw new DocumentException("Already exists: " + id);
         }
-        states.put(id, state);
+        states.put(id, StateHelper.deepCopy(state, true)); // thread-safe
     }
 
     @Override
@@ -126,8 +132,7 @@ public class MemRepository extends DBSRepositoryBase {
         if (state == null) {
             throw new ConcurrentUpdateDocumentException("Missing: " + id);
         }
-        // TODO must use thread-safe datastructures for shared state
-        StateHelper.applyDiff(state, diff);
+        applyDiff(state, diff);
     }
 
     @Override
@@ -267,6 +272,92 @@ public class MemRepository extends DBSRepositoryBase {
         // TODO DISTINCT
 
         return new PartialList<>(maps, totalSize);
+    }
+
+    /**
+     * Applies a {@link StateDiff} in-place onto a base {@link State}.
+     * <p>
+     * Uses thread-safe datastructures.
+     */
+    public static void applyDiff(State state, StateDiff stateDiff) {
+        for (Entry<String, Serializable> en : stateDiff.entrySet()) {
+            String key = en.getKey();
+            Serializable diffElem = en.getValue();
+            if (diffElem instanceof StateDiff) {
+                Serializable old = state.get(key);
+                if (old == null) {
+                    old = new State(true); // thread-safe
+                    state.put(key, old);
+                    // enter the next if
+                }
+                if (!(old instanceof State)) {
+                    throw new UnsupportedOperationException(
+                            "Cannot apply StateDiff on non-State: " + old);
+                }
+                applyDiff((State) old, (StateDiff) diffElem);
+            } else if (diffElem instanceof ListDiff) {
+                state.put(key, applyDiff(state.get(key), (ListDiff) diffElem));
+            } else {
+                state.put(key, diffElem);
+            }
+        }
+    }
+
+    /**
+     * Applies a {@link ListDiff} onto an array or {@link List}, and returns the
+     * resulting value.
+     * <p>
+     * Uses thread-safe datastructures.
+     */
+    public static Serializable applyDiff(Serializable value, ListDiff listDiff) {
+        // internally work on a list
+        // TODO this is costly, use a separate code path for arrays
+        if (listDiff.isArray && value != null) {
+            if (!(value instanceof Object[])) {
+                throw new UnsupportedOperationException(
+                        "Cannot apply ListDiff on non-array: " + value);
+            }
+            value = new CopyOnWriteArrayList<>(Arrays.asList((Object[]) value));
+        }
+        if (value == null) {
+            value = new CopyOnWriteArrayList<>();
+        }
+        if (!(value instanceof List)) {
+            throw new UnsupportedOperationException(
+                    "Cannot apply ListDiff on non-List: " + value);
+        }
+        @SuppressWarnings("unchecked")
+        List<Serializable> list = (List<Serializable>) value;
+        if (listDiff.diff != null) {
+            int i = 0;
+            for (Object diffElem : listDiff.diff) {
+                if (i >= list.size()) {
+                    // TODO log error applying diff to shorter list
+                    break;
+                }
+                if (diffElem instanceof StateDiff) {
+                    applyDiff((State) list.get(i), (StateDiff) diffElem);
+                } else if (diffElem != NOP) {
+                    list.set(i, StateHelper.deepCopy(diffElem, true)); // thread-safe
+                }
+                i++;
+            }
+        }
+        if (listDiff.rpush != null) {
+            // deepCopy of what we'll add
+            List<Serializable> add = new ArrayList<>(listDiff.rpush.size());
+            for (Object v : listDiff.rpush) {
+                add.add(StateHelper.deepCopy(v, true)); // thread-safe
+            }
+            // update CopyOnWriteArrayList in one step
+            list.addAll(add);
+        }
+        // convert back to array if needed
+        if (listDiff.isArray) {
+            return list.isEmpty() ? null : list.toArray(new Object[0]);
+        } else {
+            return list.isEmpty() ? null : (Serializable) list;
+        }
     }
 
 }

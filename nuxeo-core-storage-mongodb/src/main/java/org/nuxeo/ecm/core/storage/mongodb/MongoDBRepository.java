@@ -89,8 +89,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     public static final String MONGODB_EACH = "$each";
 
-    public static final String MONGODB_POP = "$pop";
-
     private static final String MONGODB_INDEX_TEXT = "text";
 
     private static final String MONGODB_INDEX_NAME = "name";
@@ -233,8 +231,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
         public BasicDBObject unset = new BasicDBObject();
 
         public BasicDBObject push = new BasicDBObject();
-
-        public BasicDBObject pop = new BasicDBObject();
     }
 
     /**
@@ -254,9 +250,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
         for (Entry<String, Object> en : updates.push.entrySet()) {
             builder.update(MONGODB_PUSH, en.getKey(), en.getValue());
-        }
-        for (Entry<String, Object> en : updates.pop.entrySet()) {
-            builder.update(MONGODB_POP, en.getKey(), en.getValue());
         }
         return builder.updateList;
     }
@@ -361,9 +354,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
                         listToBson(listDiff.rpush));
             }
             updates.push.put(prefix, pushed);
-        }
-        if (listDiff.rpop) {
-            updates.pop.put(prefix, ONE);
         }
     }
 

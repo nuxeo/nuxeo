@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstraction for a Map<String, Serializable> that is Serializable.
@@ -66,6 +67,13 @@ public class State implements Serializable {
      */
     public static class StateDiff extends State {
         private static final long serialVersionUID = 1L;
+
+        @Override
+        public void put(String key, Serializable value) {
+            // for a StateDiff, we don't have concurrency problems
+            // and we want to store nulls explicitly
+            map.put(key, value);
+        }
     }
 
     /**
@@ -87,8 +95,7 @@ public class State implements Serializable {
      * manner:
      * <ul>
      * <li>{@link #diff}, if any, is applied,
-     * <li>{@link #rpush}, if any, is applied,
-     * <li>{@link #rpop}, if any, is applied.
+     * <li>{@link #rpush}, if any, is applied.
      * </ul>
      *
      * @since 5.9.5
@@ -120,45 +127,65 @@ public class State implements Serializable {
          */
         public List<Object> rpush;
 
-        /**
-         * If rpop is {@code true}, one element is removed from the right of the
-         * array/ {@link List}.
-         */
-        public boolean rpop;
-
         @Override
         public String toString() {
             return getClass().getSimpleName() + '('
                     + (isArray ? "array" : "list")
                     + (diff == null ? "" : ", DIFF " + diff)
-                    + (rpush == null ? "" : ", RPUSH " + rpush)
-                    + (rpop ? ", RPOP" : "") + ')';
+                    + (rpush == null ? "" : ", RPUSH " + rpush) + ')';
         }
     }
 
     protected final Map<String, Serializable> map;
 
     /**
+     * Private constructor with explicit map.
+     */
+    private State(Map<String, Serializable> map) {
+        this.map = map;
+    }
+
+    /**
      * Constructor with default capacity.
      */
     public State() {
-        map = new HashMap<>();
+        this(0, false);
+    }
+
+    /**
+     * Constructor with default capacity, optionally thread-safe.
+     *
+     * @param threadSafe if {@code true}, then a {@link ConcurrentHashMap} is
+     *            used
+     */
+    public State(boolean threadSafe) {
+        this(0, threadSafe);
     }
 
     /**
      * Constructor for a given default size.
      */
     public State(int size) {
-        map = new HashMap<>(Math.max(
-                (int) (size / HASHMAP_DEFAULT_LOAD_FACTOR) + 1,
-                HASHMAP_DEFAULT_INITIAL_CAPACITY), HASHMAP_DEFAULT_LOAD_FACTOR);
+        this(size, false);
     }
 
     /**
-     * Private constructor for {@link #EMPTY}.
+     * Constructor for a given default size, optionally thread-safe.
+     *
+     * @param threadSafe if {@code true}, then a {@link ConcurrentHashMap} is
+     *            used
      */
-    private State(Map<String, Serializable> map) {
-        this.map = map;
+    public State(int size, boolean threadSafe) {
+        int initialCapacity = Math.max(
+                (int) (size / HASHMAP_DEFAULT_LOAD_FACTOR) + 1,
+                HASHMAP_DEFAULT_INITIAL_CAPACITY);
+        float loadFactor = HASHMAP_DEFAULT_LOAD_FACTOR;
+        if (threadSafe) {
+            map = new ConcurrentHashMap<String, Serializable>(initialCapacity,
+                    loadFactor);
+        } else {
+            map = new HashMap<>(initialCapacity, loadFactor);
+        }
     }
 
     /**
@@ -185,15 +212,15 @@ public class State implements Serializable {
     /**
      * Sets a key/value.
      */
-    public Serializable put(String key, Serializable value) {
-        return map.put(key, value);
-    }
-
-    /**
-     * Sets all the key/values from the passed {@link State}.
-     */
-    public void putAll(State state) {
-        map.putAll(state.map);
+    public void put(String key, Serializable value) {
+        if (value == null) {
+            // if we're using a ConcurrentHashMap
+            // then null values are forbidden
+            // this is ok given our semantics of null vs absent key
+            map.remove(key);
+        } else {
+            map.put(key, value);
+        }
     }
 
     /**

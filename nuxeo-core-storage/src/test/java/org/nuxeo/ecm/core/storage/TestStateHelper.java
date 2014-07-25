@@ -40,138 +40,141 @@ public class TestStateHelper {
         return diff;
     }
 
-    private static final ListDiff listDiff(List<Object> diff,
-            List<Object> rpush, boolean rpop) {
+    private static final ListDiff listDiff(List<Object> diff, List<Object> rpush) {
         ListDiff listDiff = new ListDiff();
         listDiff.diff = diff;
         listDiff.rpush = rpush;
-        listDiff.rpop = rpop;
         return listDiff;
     }
 
     private static final ListDiff listDiff(Object... diffs) {
-        return listDiff(list(diffs), null, false);
+        return listDiff(list(diffs), null);
     }
 
     private static final ListDiff rpush(Object... values) {
-        return listDiff(null, list(values), false);
-    }
-
-    private static final ListDiff rpop() {
-        return listDiff(null, null, true);
+        return listDiff(null, list(values));
     }
 
     private static final State state(Serializable... values) {
         return stateDiff(values);
     }
 
-    private static void assertEquals(Serializable a, Serializable b) {
-        assertEquals(null, a, b);
+    private static void assertEqualsStrict(Serializable a, Serializable b) {
+        assertEqualsStrict(a + "!=" + b, a, b);
     }
 
-    private static void assertEquals(String message, Serializable a,
+    private static void assertEqualsStrict(String message, Serializable a,
             Serializable b) {
-        assertTrue(message, StateHelper.equals(a, b));
+        assertTrue(message, StateHelper.equalsStrict(a, b));
     }
 
-    private static void assertNotEquals(Serializable a, Serializable b) {
-        assertFalse(StateHelper.equals(a, b));
+    private static void assertNotEqualsStrict(Serializable a, Serializable b) {
+        assertFalse(StateHelper.equalsStrict(a, b));
     }
 
+    private static void assertEqualsLoose(Serializable a, Serializable b) {
+        assertTrue(a + "!=" + b, StateHelper.equalsLoose(a, b));
+    }
+
+    /**
+     * StateHelper.equals is used internally for the tests.
+     *
+     * @since 5.9.5
+     */
     @Test
-    public void testEquals() {
+    public void testEqualsStrict() {
         // null
-        assertEquals((Serializable) null, (Serializable) null);
-        assertNotEquals((Serializable) null, "foo");
+        assertEqualsStrict((Serializable) null, (Serializable) null);
+        assertNotEqualsStrict((Serializable) null, "foo");
 
         // Serializable
-        assertEquals("foo", "foo");
-        assertNotEquals("foo", "bar");
-        assertEquals(Long.valueOf(123456), Long.valueOf(123456));
-        assertNotEquals(Long.valueOf(123456), Long.valueOf(789123));
-        assertNotEquals("foo", Long.valueOf(123456));
+        assertEqualsStrict("foo", "foo");
+        assertNotEqualsStrict("foo", "bar");
+        assertEqualsStrict(Long.valueOf(123456), Long.valueOf(123456));
+        assertNotEqualsStrict(Long.valueOf(123456), Long.valueOf(789123));
+        assertNotEqualsStrict("foo", Long.valueOf(123456));
 
         // mixed
-        assertNotEquals("foo", new State());
-        assertNotEquals("foo", new ArrayList<Serializable>());
-        assertNotEquals(new State(), new ArrayList<Serializable>());
+        assertNotEqualsStrict("foo", new State());
+        assertNotEqualsStrict("foo", new ArrayList<Serializable>());
+        assertNotEqualsStrict(new State(), new ArrayList<Serializable>());
 
         // Arrays
-        assertEquals(new String[0], new String[0]);
-        assertEquals(new String[] { "foo" }, new String[] { "foo" });
-        assertNotEquals(new String[] { "foo" }, new String[] { "bar" });
+        assertEqualsStrict(new String[0], new String[0]);
+        assertEqualsStrict(new String[] { "foo" }, new String[] { "foo" });
+        assertNotEqualsStrict(new String[] { "foo" }, new String[] { "bar" });
 
         // States
         State a = new State();
         State b = new State();
-        assertEquals(a, b);
+        assertEqualsStrict(a, b);
         a.put("foo", "bar");
-        assertNotEquals(a, b);
+        assertNotEqualsStrict(a, b);
         b.put("foo", "bar");
-        assertEquals(a, b);
+        assertEqualsStrict(a, b);
         b.put("foo", "moo");
-        assertNotEquals(a, b);
+        assertNotEqualsStrict(a, b);
 
         a.put("foo", new State());
         b.put("foo", new State());
-        assertEquals(a, b);
+        assertEqualsStrict(a, b);
 
         // Lists
         ArrayList<Serializable> la = new ArrayList<Serializable>();
         ArrayList<Serializable> lb = new ArrayList<Serializable>();
-        assertEquals(la, lb);
+        assertEqualsStrict(la, lb);
         la.add(new State());
-        assertNotEquals(la, lb);
+        assertNotEqualsStrict(la, lb);
         lb.add(new State());
-        assertEquals(la, lb);
+        assertEqualsStrict(la, lb);
         ((State) la.get(0)).put("foo", "bar");
-        assertNotEquals(la, lb);
+        assertNotEqualsStrict(la, lb);
         ((State) lb.get(0)).put("foo", "bar");
-        assertEquals(la, lb);
+        assertEqualsStrict(la, lb);
         ((State) lb.get(0)).put("foo", "moo");
-        assertNotEquals(la, lb);
+        assertNotEqualsStrict(la, lb);
     }
 
     @Test
-    public void testEqualsNulls() {
+    public void testEqualsLoose() {
         // Arrays
-        assertEquals(null, new String[0]);
-        assertEquals(new String[0], null);
+        assertEqualsLoose(null, new String[0]);
+        assertEqualsLoose(new String[0], null);
 
         // Lists
-        assertEquals(null, new ArrayList<Serializable>());
-        assertEquals(new ArrayList<Serializable>(), null);
+        assertEqualsLoose(null, new ArrayList<Serializable>());
+        assertEqualsLoose(new ArrayList<Serializable>(), null);
 
         // States
-        assertEquals(new State(), null);
-        assertEquals(null, new State());
+        assertEqualsLoose(new State(), null);
+        assertEqualsLoose(null, new State());
 
         State a = new State();
         State b = new State();
-        assertEquals(a, b);
+        assertEqualsLoose(a, b);
 
         a.put("foo", null);
         a.put("bar", null);
-        assertEquals(a, b);
+        assertEqualsLoose(a, b);
 
         a.put("foo", "bar");
         b.put("foo", "bar");
-        assertEquals(a, b);
+        assertEqualsLoose(a, b);
 
         b.put("gee", null);
-        assertEquals(a, b);
+        assertEqualsLoose(a, b);
 
         // empty elements considered null
         State c = new State();
-        assertEquals(c, null);
+        assertEqualsLoose(c, null);
         c.put("foo", list());
-        assertEquals(c, null);
+        assertEqualsLoose(c, null);
     }
 
     private static void assertDiff(Serializable expected, Serializable a,
             Serializable b) {
         Serializable diff = StateHelper.diff(a, b);
-        assertEquals(diff.toString(), expected, diff);
+        assertEqualsStrict(diff.toString(), expected, diff);
     }
 
     @Test
@@ -193,11 +196,6 @@ public class TestStateHelper {
                 list(), list("A"));
         assertDiff(list("A", "B"), //
                 list(), list("A", "B"));
-        // "RPOP"
-        assertDiff(rpop(), //
-                list("A", "B"), list("A"));
-        assertDiff(rpop(), //
-                list("A", "B", "C"), list("A", "B"));
         // overwrite for zero-length "b"
         assertDiff(list(), //
                 list("A"), list());
@@ -217,8 +215,7 @@ public class TestStateHelper {
                 list(state()), //
                 list(state("A", "B")));
 
-        assertDiff(
-                listDiff(list(state("C", "D")), list(state("E", "F")), false), //
+        assertDiff(listDiff(list(state("C", "D")), list(state("E", "F"))), //
                 list(state("A", "B")), //
                 list(state("A", "B", "C", "D"), state("E", "F")));
     }
@@ -250,8 +247,6 @@ public class TestStateHelper {
                 stateDiff("A", rpush("C")), //
                 state("A", (Serializable) list("B")),
                 state("A", (Serializable) list("B", "C")));
-        assertDiff(stateDiff("A", rpop()), //
-                state("A", list("B", "C")), state("A", list("B")));
         assertDiff(
                 stateDiff("A", stateDiff("B", "D")), //
                 state("A", state("1", "2", "B", "C")),
@@ -267,37 +262,6 @@ public class TestStateHelper {
                 state("X", null), state("A", "B"));
         assertDiff(stateDiff("A", "B"), //
                 state(), state("A", "B", "X", null));
-    }
-
-    private static void assertApplyDiff(State expected, State state,
-            StateDiff diff) {
-        StateHelper.applyDiff(state, diff);
-        assertEquals(state.toString(), expected, state);
-    }
-
-    @Test
-    public void testApplyDiff() {
-        assertApplyDiff(state("A", "B"), //
-                state("A", "B"), //
-                stateDiff());
-        assertApplyDiff(state("A", "B"), //
-                state(), //
-                stateDiff("A", "B"));
-
-        assertApplyDiff(state("A", state("B", "D")), //
-                state("A", state("B", "C")), //
-                stateDiff("A", stateDiff("B", "D")));
-
-        assertApplyDiff(state("A", state("B", "C", "D", "E")), //
-                state("A", state("B", "C")), //
-                stateDiff("A", stateDiff("D", "E")));
-
-        assertApplyDiff(state("A", list("B", "C")), //
-                state("A", list("B")), //
-                stateDiff("A", rpush("C")));
-        assertApplyDiff(state("A", list("B")), //
-                state("A", list("B", "C")), //
-                stateDiff("A", rpop()));
     }
 
 }

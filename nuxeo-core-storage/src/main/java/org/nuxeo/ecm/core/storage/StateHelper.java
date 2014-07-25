@@ -17,12 +17,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.binary.Binary;
@@ -52,13 +51,105 @@ public class StateHelper {
     /**
      * Compares two values.
      */
-    public static boolean equals(Object a, Object b) {
+    public static boolean equalsStrict(Object a, Object b) {
+        if (a == b) {
+            return true;
+        } else if (a == null || b == null) {
+            return false;
+        } else if (a instanceof State && b instanceof State) {
+            return equalsStrict((State) a, (State) b);
+        } else if (a instanceof List && b instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Serializable> la = (List<Serializable>) a;
+            @SuppressWarnings("unchecked")
+            List<Serializable> lb = (List<Serializable>) b;
+            return equalsStrict(la, lb);
+        } else if (a instanceof Object[] && b instanceof Object[]) {
+            return equalsStrict((Object[]) a, (Object[]) b);
+        } else if (a instanceof ListDiff && b instanceof ListDiff) {
+            ListDiff lda = (ListDiff) a;
+            ListDiff ldb = (ListDiff) b;
+            return lda.isArray == ldb.isArray
+                    && equalsStrict(lda.diff, ldb.diff)
+                    && equalsStrict(lda.rpush, ldb.rpush);
+        } else if (isScalar(a) && isScalar(b)) {
+            return a.equals(b);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Compares two {@link State}s.
+     */
+    public static boolean equalsStrict(State a, State b) {
+        if (a == b) {
+            return true;
+        }
+        if (a == null || b == null) {
+            return false;
+        }
+        if (a.size() != b.size()) {
+            return false;
+        }
+        if (!a.keySet().equals(b.keySet())) {
+            return false;
+        }
+        for (Entry<String, Serializable> en : a.entrySet()) {
+            String key = en.getKey();
+            Serializable va = en.getValue();
+            Serializable vb = b.get(key);
+            if (!equalsStrict(va, vb)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Compares two arrays of scalars.
+     */
+    public static boolean equalsStrict(Object[] a, Object[] b) {
+        // we have scalars, Arrays.equals() is enough
+        return Arrays.equals(a, b);
+    }
+
+    /**
+     * Compares two {@link List}s.
+     */
+    public static boolean equalsStrict(List<Serializable> a,
+            List<Serializable> b) {
+        if (a == b) {
+            return true;
+        }
+        if (a == null || b == null) {
+            return false;
+        }
+        if (a.size() != b.size()) {
+            return false;
+        }
+        for (Iterator<Serializable> ita = a.iterator(), itb = b.iterator(); ita.hasNext();) {
+            if (!equalsStrict(ita.next(), itb.next())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Compares two values.
+     * <p>
+     * A {@code null} value or an empty array or {@code List} is equivalent to
+     * an absent value. A {@code null} {@link State} is equivalent to an empty
+     * {@link State} (or a {@link State} containing only absent values).
+     */
+    public static boolean equalsLoose(Object a, Object b) {
         if (a == b) {
             return true;
         } else if (a instanceof State && b instanceof State //
                 || a instanceof State && b == null //
                 || a == null && b instanceof State) {
-            return equals((State) a, (State) b);
+            return equalsLoose((State) a, (State) b);
         } else if (a instanceof List && b instanceof List //
                 || a instanceof List && b == null //
                 || a == null && b instanceof List) {
@@ -66,16 +157,17 @@ public class StateHelper {
             List<Serializable> la = (List<Serializable>) a;
             @SuppressWarnings("unchecked")
             List<Serializable> lb = (List<Serializable>) b;
-            return equals(la, lb);
+            return equalsLoose(la, lb);
         } else if (a instanceof Object[] && b instanceof Object[] //
                 || a instanceof Object[] && b == null //
                 || a == null && b instanceof Object[]) {
-            return equals((Object[]) a, (Object[]) b);
+            return equalsLoose((Object[]) a, (Object[]) b);
         } else if (a instanceof ListDiff && b instanceof ListDiff) {
             ListDiff lda = (ListDiff) a;
             ListDiff ldb = (ListDiff) b;
-            return lda.isArray == ldb.isArray && equals(lda.diff, ldb.diff)
-                    && equals(lda.rpush, ldb.rpush) && lda.rpop == ldb.rpop;
+            return lda.isArray == ldb.isArray
+                    && equalsLoose(lda.diff, ldb.diff)
+                    && equalsLoose(lda.rpush, ldb.rpush);
         } else if (isScalar(a) && isScalar(b)) {
             return a.equals(b);
         } else {
@@ -90,7 +182,7 @@ public class StateHelper {
      * an absent value. A {@code null} {@link State} is equivalent to an empty
      * {@link State} (or a {@link State} containing only absent values).
      */
-    public static boolean equals(State a, State b) {
+    public static boolean equalsLoose(State a, State b) {
         if (a == null) {
             a = State.EMPTY;
         }
@@ -105,7 +197,7 @@ public class StateHelper {
             }
             String key = en.getKey();
             Serializable vb = b.get(key);
-            if (!equals(va, vb)) {
+            if (!equalsLoose(va, vb)) {
                 return false;
             }
         }
@@ -117,7 +209,7 @@ public class StateHelper {
                 continue;
             }
             Serializable vb = en.getValue();
-            if (!equals(null, vb)) {
+            if (!equalsLoose(null, vb)) {
                 return false;
             }
         }
@@ -129,7 +221,7 @@ public class StateHelper {
      * <p>
      * {@code null} values are equivalent to empty arrays.
      */
-    public static boolean equals(Object[] a, Object[] b) {
+    public static boolean equalsLoose(Object[] a, Object[] b) {
         if (a != null && a.length == 0) {
             a = null;
         }
@@ -145,7 +237,7 @@ public class StateHelper {
      * <p>
      * {@code null} values are equivalent to empty lists.
      */
-    public static boolean equals(List<Serializable> a, List<Serializable> b) {
+    public static boolean equalsLoose(List<Serializable> a, List<Serializable> b) {
         if (a != null && a.isEmpty()) {
             a = null;
         }
@@ -162,7 +254,7 @@ public class StateHelper {
             return false;
         }
         for (Iterator<Serializable> ita = a.iterator(), itb = b.iterator(); ita.hasNext();) {
-            if (!equals(ita.next(), itb.next())) {
+            if (!equalsLoose(ita.next(), itb.next())) {
                 return false;
             }
         }
@@ -173,14 +265,23 @@ public class StateHelper {
      * Makes a deep copy of a value.
      */
     public static Serializable deepCopy(Object value) {
+        return deepCopy(value, false);
+    }
+
+    /**
+     * Makes a deep copy of a value, optionally thread-safe.
+     *
+     * @param threadSafe if {@code true}, then thread-safe datastructures are used
+     */
+    public static Serializable deepCopy(Object value, boolean threadSafe) {
         if (value == null) {
             return (Serializable) value;
         } else if (value instanceof State) {
-            return deepCopy((State) value);
+            return deepCopy((State) value, threadSafe);
         } else if (value instanceof List) {
             @SuppressWarnings("unchecked")
             List<Serializable> list = (List<Serializable>) value;
-            return (Serializable) deepCopy(list);
+            return (Serializable) deepCopy(list, threadSafe);
         } else if (value instanceof Object[]) {
             // array values are supposed to be scalars
             return ((Object[]) value).clone();
@@ -197,9 +298,19 @@ public class StateHelper {
      * Makes a deep copy of a {@link State} map.
      */
     public static State deepCopy(State state) {
-        State copy = new State(state.size());
+        return deepCopy(state, false);
+    }
+
+    /**
+     * Makes a deep copy of a {@link State} map, optionally thread-safe.
+     *
+     * @param threadSafe if {@code true}, then thread-safe datastructures are
+     *            used
+     */
+    public static State deepCopy(State state, boolean threadSafe) {
+        State copy = new State(state.size(), threadSafe);
         for (Entry<String, Serializable> en : state.entrySet()) {
-            copy.put(en.getKey(), deepCopy(en.getValue()));
+            copy.put(en.getKey(), deepCopy(en.getValue(), threadSafe));
         }
         return copy;
     }
@@ -208,9 +319,21 @@ public class StateHelper {
      * Makes a deep copy of a {@link List}.
      */
     public static List<Serializable> deepCopy(List<Serializable> list) {
-        List<Serializable> copy = new ArrayList<Serializable>(list.size());
+        return deepCopy(list, false);
+    }
+
+    /**
+     * Makes a deep copy of a {@link List}, optionally thread-safe.
+     *
+     * @param threadSafe if {@code true}, then thread-safe datastructures are
+     *            used
+     */
+    public static List<Serializable> deepCopy(List<Serializable> list,
+            boolean threadSafe) {
+        List<Serializable> copy = threadSafe ? new CopyOnWriteArrayList<Serializable>()
+                : new ArrayList<Serializable>(list.size());
         for (Serializable v : list) {
-            copy.add(deepCopy(v));
+            copy.add(deepCopy(v, threadSafe));
         }
         return copy;
     }
@@ -222,7 +345,7 @@ public class StateHelper {
      *         actual value (including {@code null})
      */
     public static Serializable diff(Object a, Object b) {
-        if (equals(a, b)) {
+        if (equalsLoose(a, b)) {
             return NOP;
         }
         if (a instanceof Object[] && b instanceof Object[]) {
@@ -261,11 +384,9 @@ public class StateHelper {
         int bSize = b.size();
         // TODO configure zero-length "a" case
         boolean doRPush = aSize > 0 && aSize < bSize;
-        // TODO configure zero-length "b" case
-        boolean doRPop = bSize > 0 && aSize - 1 == bSize;
         // we can use a list diff if lists are the same size,
-        // or we have a rpush or rpop
-        boolean doDiff = aSize == bSize || doRPush || doRPop;
+        // or we have a rpush
+        boolean doDiff = aSize == bSize || doRPush;
         if (!doDiff) {
             return (Serializable) b;
         }
@@ -299,9 +420,6 @@ public class StateHelper {
                 rpush.add(b.get(i));
             }
             listDiff.rpush = rpush;
-        }
-        if (doRPop) {
-            listDiff.rpop = true;
         }
         return listDiff;
     }
@@ -347,96 +465,12 @@ public class StateHelper {
                 continue;
             }
             Serializable vb = en.getValue();
-            if (!equals(null, vb)) {
+            if (!equalsLoose(null, vb)) {
                 // value must be added
                 diff.put(key, vb);
             }
         }
         return diff;
-    }
-
-    /**
-     * Applies a {@link StateDiff} in-place onto a base {@link State}.
-     */
-    public static void applyDiff(State state, StateDiff stateDiff) {
-        for (Entry<String, Serializable> en : stateDiff.entrySet()) {
-            String key = en.getKey();
-            Serializable diffElem = en.getValue();
-            if (diffElem instanceof StateDiff) {
-                Serializable old = state.get(key);
-                if (old == null) {
-                    old = new State();
-                    state.put(key, old);
-                    // enter the next if
-                }
-                if (!(old instanceof State)) {
-                    throw new UnsupportedOperationException(
-                            "Cannot apply StateDiff on non-State: " + old);
-                }
-                applyDiff((State) old, (StateDiff) diffElem);
-            } else if (diffElem instanceof ListDiff) {
-                state.put(key, applyDiff(state.get(key), (ListDiff) diffElem));
-            } else {
-                state.put(key, diffElem);
-            }
-        }
-    }
-
-    /**
-     * Applies a {@link ListDiff} onto an array or {@link List}, and returns the
-     * resulting value.
-     */
-    public static Serializable applyDiff(Serializable value, ListDiff listDiff) {
-        // internally work on a list
-        if (listDiff.isArray && value != null) {
-            if (!(value instanceof Object[])) {
-                throw new UnsupportedOperationException(
-                        "Cannot apply ListDiff on non-array: " + value);
-            }
-            value = new ArrayList<Object>(Arrays.asList((Object[]) value));
-        }
-        if (value == null) {
-            value = (Serializable) Collections.emptyList();
-        }
-        if (!(value instanceof List)) {
-            throw new UnsupportedOperationException(
-                    "Cannot apply ListDiff on non-List: " + value);
-        }
-        @SuppressWarnings("unchecked")
-        List<Serializable> list = (List<Serializable>) value;
-        if (listDiff.diff != null) {
-            int i = 0;
-            for (Object diffElem : listDiff.diff) {
-                if (i >= list.size()) {
-                    // TODO log error applying diff to shorter list
-                    break;
-                }
-                if (diffElem instanceof StateDiff) {
-                    applyDiff((State) list.get(i), (StateDiff) diffElem);
-                } else if (diffElem != NOP) {
-                    list.set(i, deepCopy(diffElem));
-                }
-                i++;
-            }
-        }
-        if (listDiff.rpush != null) {
-            List<Serializable> newList = new ArrayList<>(list.size()
-                    + listDiff.rpush.size());
-            newList.addAll(list);
-            for (Object v : listDiff.rpush) {
-                newList.add(deepCopy(v));
-            }
-            list = newList;
-        }
-        if (listDiff.rpop) {
-            list = new ArrayList<>(list.subList(0, list.size() - 1));
-        }
-        // convert back to array if needed
-        if (listDiff.isArray) {
-            return list.toArray(new Object[0]);
-        } else {
-            return (Serializable) list;
-        }
     }
 
 }
