@@ -137,6 +137,11 @@ public class SessionImpl implements Session, XAResource {
 
     private final Timer aclrUpdateTimer;
 
+    private static final java.lang.String LOG_MIN_DURATION_KEY = "org.nuxeo.vcs.query.log_min_duration_ms";
+    private static final long LOG_MIN_DURATION_MS = Long.parseLong(Framework.getProperty(
+            LOG_MIN_DURATION_KEY, "-1")) * 1000000;
+
+
     public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper)
             throws StorageException {
         this.repository = repository;
@@ -1356,8 +1361,18 @@ public class SessionImpl implements Session, XAResource {
         try {
             return mapper.query(query, queryType, queryFilter, countUpTo);
         } finally {
-            timerContext.stop();
+            long duration = timerContext.stop();
+            if ((LOG_MIN_DURATION_MS >= 0) && (duration > LOG_MIN_DURATION_MS)) {
+                log.info(String.format("duration_ms:\t%.2f\t%s %s\tquery\t%s",
+                        duration/1000000.0, queryFilter, countUpToAsString(countUpTo), query));
+            }
         }
+    }
+
+    private String countUpToAsString(long countUpTo) {
+        if (countUpTo > 0)
+            return String.format("count total results up to %d", countUpTo);
+        return countUpTo == -1 ? "count total size" : "";
     }
 
     @Override
@@ -1367,7 +1382,11 @@ public class SessionImpl implements Session, XAResource {
         try {
             return mapper.queryAndFetch(query, queryType, queryFilter, params);
         } finally {
-            timerContext.stop();
+            long duration = timerContext.stop();
+            if ((LOG_MIN_DURATION_MS >= 0) && (duration > LOG_MIN_DURATION_MS)) {
+                log.info(String.format("duration_ms:\t%.2f\t%s\tqueryAndFetch\t%s",
+                        duration/1000000.0, queryFilter, query));
+            }
         }
     }
 
