@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@page import="org.nuxeo.wizard.context.Context"%>
@@ -24,6 +25,8 @@ SimpleNavigationHandler nav = SimpleNavigationHandler.instance();
 
 <head>
 <title><fmt:message key="label.nuxeo.wizard" /></title>
+<link rel="shortcut icon" href="<%=contextPath%>/images/favicon.ico"/>
+<link rel="icon" href="<%=contextPath%>/images/favicon.png"/>
 <link rel="stylesheet" href="<%=contextPath%>/css/nuxeo.css" type="text/css" media="screen" charset="utf-8" />
 <script src="<%=contextPath%>/scripts/jquery-1.4.3.min.js"></script>
 <script>
