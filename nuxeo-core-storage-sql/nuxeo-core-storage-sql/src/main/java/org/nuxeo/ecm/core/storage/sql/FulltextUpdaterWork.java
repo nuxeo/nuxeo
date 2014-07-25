@@ -12,6 +12,7 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +57,9 @@ public class FulltextUpdaterWork extends AbstractWork {
     /** The indexes and text to be updated. */
     protected final List<IndexAndText> indexesAndText;
 
-    public static class IndexAndText {
+    public static class IndexAndText implements Serializable {
+        private static final long serialVersionUID = 1L;
+
         public String indexName;
 
         public String text;
