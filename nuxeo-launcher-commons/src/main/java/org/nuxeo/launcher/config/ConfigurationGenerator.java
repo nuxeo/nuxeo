@@ -58,6 +58,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.NullEnumeration;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.commons.text.TextTemplate;
@@ -286,8 +287,8 @@ public class ConfigurationGenerator {
         return storedConfig;
     }
 
-    @SuppressWarnings("serial")
     protected static final Map<String, String> parametersMigration = new HashMap<String, String>() {
+        private static final long serialVersionUID = 1L;
         {
             put(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS,
                     PARAM_TEMPLATES_PARSING_EXTENSIONS);
@@ -657,7 +658,8 @@ public class ConfigurationGenerator {
                         + bindAddress);
             }
         } catch (UnknownHostException e) {
-            log.error(e);
+            log.debug(e, e);
+            log.error(e.getMessage());
         }
 
         String httpPort = userConfig.getProperty(PARAM_HTTP_PORT);
@@ -1249,11 +1251,13 @@ public class ConfigurationGenerator {
             } catch (IOException e) {
                 throw new ConfigurationException(e);
             } catch (DatabaseDriverException e) {
-                log.error(e);
+                log.debug(e, e);
+                log.error(e.getMessage());
                 throw new ConfigurationException(
                         "Could not find database driver: " + e.getMessage());
             } catch (SQLException e) {
-                log.error(e);
+                log.debug(e, e);
+                log.error(e.getMessage());
                 throw new ConfigurationException(
                         "Failed to connect on database: " + e.getMessage());
             }
@@ -1352,8 +1356,9 @@ public class ConfigurationGenerator {
     public static void checkPortAvailable(InetAddress address, int port)
             throws ConfigurationException {
         if ((port == 0) || (port == -1)) {
-            log.warn("Port is set to " + Integer.toString(port) +
-                     " - assuming it is disabled - skipping availability check");
+            log.warn("Port is set to "
+                    + Integer.toString(port)
+                    + " - assuming it is disabled - skipping availability check");
             return;
         }
         if (port < MIN_PORT || port > MAX_PORT) {
@@ -1752,7 +1757,6 @@ public class ConfigurationGenerator {
         }
         Properties p = new Properties();
         p.load(propsIS);
-        @SuppressWarnings("unchecked")
         Enumeration<String> pEnum = (Enumeration<String>) p.propertyNames();
         while (pEnum.hasMoreElements()) {
             String key = pEnum.nextElement();
