@@ -10,11 +10,13 @@ def extractToken(text, tag_start, tag_end):
 
 def extractJsfState(html):
     state = extractToken(html, '<input type="hidden" name="javax.faces.ViewState"'\
-                             ' id="javax.faces.ViewState" value="', '"')
+                             ' id="j_id1:javax.faces.ViewState:0" value="', '"')
+    if not state:
+        # try to extract state from partial ajax response
+        state = extractToken(html, '<update id="j_id1:javax.faces.ViewState:0"><![CDATA[',
+                             ']]></update>')
     if not state:
         raise ValueError('No JSF state found in the page.')
-    if not state.startswith('j_id') or len(state) > 10:
-        raise ValueError('Invalid JSF State found: %s.' % str(state))
     return state
 
 
