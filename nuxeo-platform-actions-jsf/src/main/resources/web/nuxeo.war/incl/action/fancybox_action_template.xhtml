@@ -138,7 +138,7 @@
           value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}"
           cache="false">
 
-          <f:subview rendered="#{actionClicked}">
+          <f:subview rendered="#{actionClicked}" id="#{fancyboxIdPrefix}fancy_subview">
 
             <h:form>
               <a4j:jsFunction name="#{fancyboxIdPrefix}closeFancybox"
