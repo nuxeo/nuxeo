@@ -65,7 +65,8 @@ public class StaticNavigationHandler {
                 // viewIdToOutcome.put(toViewId, fromOutcome);
             }
         }
-        if (Framework.isDevModeSet()) {
+        // FIXME: disable this when not in dev mode, until above nav is fixed
+        if (Framework.isDevModeSet() || true) {
             handleHotReloadResources(context);
         }
     }
