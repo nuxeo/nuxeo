@@ -298,6 +298,25 @@ public class PublishActionsBean extends AbstractPublishActions implements
         return currentPublicationTreeNameForPublishing;
     }
 
+    /**
+     * Returns a list of publication trees.
+     * <p>
+     * Needed on top of {@link #getCurrentPublicationTreeForPublishing()}
+     * because RichFaces tree now requires roots to be a list.
+     *
+     * @since 5.9.4-JSF2
+     * @throws ClientException
+     */
+    public List<PublicationTree> getCurrentPublicationTreesForPublishing()
+            throws ClientException {
+        List<PublicationTree> trees = new ArrayList<>();
+        PublicationTree tree = getCurrentPublicationTreeForPublishing();
+        if (tree != null) {
+            trees.add(tree);
+        }
+        return trees;
+    }
+
     public PublicationTree getCurrentPublicationTreeForPublishing()
             throws ClientException {
         if (currentPublicationTree == null) {
