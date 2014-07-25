@@ -112,6 +112,7 @@ public class QueryFilter implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("filter as %s limit %d offset %d", principal, limit, offset);
+        return String.format("QueryFilter(principal=%s, limit=%d, offset=%d)",
+                principal, limit, offset);
     }
 }
