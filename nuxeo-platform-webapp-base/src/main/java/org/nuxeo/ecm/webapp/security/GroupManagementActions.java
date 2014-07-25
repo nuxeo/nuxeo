@@ -170,8 +170,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement
     }
 
     public boolean getAllowDeleteGroup() throws ClientException {
-        if (getAllAdminGroups().contains(
-                selectedGroup.getId())) {
+        if (getAllAdminGroups().contains(selectedGroup.getId())) {
             return ((NuxeoPrincipal) currentUser).isAdministrator();
         }
 
@@ -183,8 +182,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement
         // Changing administrator group is only given to administrators (not
         // powerusers)
         // NXP-10584
-        if (getAllAdminGroups().contains(
-                selectedGroup.getId())) {
+        if (getAllAdminGroups().contains(selectedGroup.getId())) {
             return ((NuxeoPrincipal) currentUser).isAdministrator();
         }
 
@@ -243,7 +241,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement
             CURRENT_TAB_SELECTED_EVENT + "_" + NUXEO_ADMIN_CATEGORY,
             CURRENT_TAB_SELECTED_EVENT + "_" + USER_CENTER_CATEGORY,
             CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_MANAGER_SUB_TAB,
-            CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB })
+            CURRENT_TAB_SELECTED_EVENT + "_" + USERS_GROUPS_HOME_SUB_TAB }, create = false)
     public void resetState() {
         if (shouldResetStateOnTabChange) {
             newGroup = null;
