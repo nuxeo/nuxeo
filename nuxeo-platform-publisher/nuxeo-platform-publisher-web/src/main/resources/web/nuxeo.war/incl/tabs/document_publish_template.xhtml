@@ -29,7 +29,7 @@
                 var="tree" itemValue="#{tree.name}"
                 itemLabel="#{messages[tree.title]}#{publishActions.getDomainName(tree.name)}" />
               <a4j:ajax event="change"
-                render="sectionTree,publishingInfoList">
+                render=":publishTreeForm:sectionTree :publishTreeForm:publishingInfoList">
                 <a4j:attachQueue ignoreDupResponses="true" />
               </a4j:ajax>
             </h:selectOneListbox>
@@ -61,15 +61,15 @@
                     selectedClass="treeNodeSelectedClass"
                     id="publishTreeNode">
                     <h:outputText value="#{node.title}" />
-                    <a4j:commandLink immediate="true"
+                    <h:commandLink immediate="true"
                       action="#{publishActions.doPublish(node)}"
                       rendered="#{publishActions.canPublishTo(node)}"
-                      render="publishingInfoList,facesStatusMessagePanel"
                       id="publishCommandLink">
+                      <f:ajax execute="@this" render=":publishTreeForm:publishingInfoList facesStatusMessagePanel" />
                       <h:graphicImage value="/icons/back.png" />
                       <h:outputText
                         value="#{messages['label.publish.publish']}" />
-                    </a4j:commandLink>
+                    </h:commandLink>
                   </rich:treeNode>
                 </rich:treeModelRecursiveAdaptor>
               </rich:tree>
@@ -140,18 +140,18 @@
             <f:facet name="header">
               <h:outputText value="Action" />
             </f:facet>
-            <a4j:commandLink immediate="true" styleClass="button"
+            <h:commandLink immediate="true" styleClass="button"
               value="#{messages['command.document.unpublish']}"
               action="#{publishActions.unPublish(publishedDocument)}"
-              rendered="#{publishActions.canUnpublish(publishedDocument)}"
-              render="publishingInfoList" ignoreDupResponses="true">
-            </a4j:commandLink>
-            <a4j:commandLink immediate="true" styleClass="button"
+              rendered="#{publishActions.canUnpublish(publishedDocument)}">
+              <f:ajax execute="@this" render=":publishTreeForm:publishingInfoList facesStatusMessagePanel" />
+            </h:commandLink>
+            <h:commandLink immediate="true" styleClass="button"
               value="#{messages['command.document.republish']}"
               action="#{publishActions.rePublish(publishedDocument)}"
-              rendered="#{publishActions.canRepublish(publishedDocument)}"
-              render="publishingInfoList" ignoreDupResponses="true">
-            </a4j:commandLink>
+              rendered="#{publishActions.canRepublish(publishedDocument)}">
+              <f:ajax execute="@this" render=":publishTreeForm:publishingInfoList facesStatusMessagePanel" />
+            </h:commandLink>
           </h:column>
         </nxu:dataTable>
       </a4j:outputPanel>
