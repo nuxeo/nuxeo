@@ -1,4 +1,5 @@
 <c:if test="true"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
@@ -13,8 +14,6 @@ Accepted parameters:
 - addForm: boolean stating if a form should be added (optional, defaults to false)
 - formId: the form id (required if addForm is true)
 - useAjaxForm: boolean stating if form should be ajaxified (optional, defaults to false)
-- eventsQueueId: id for events queue of the ajax form (optional, defaults to
-  the form id suffixed by _eventsQueue)
 - reRender: ajax elements ids to rerender (optional)
 - formStyleClass: style class to put on the form (optional)
 
@@ -25,22 +24,25 @@ Templating zone to define:
 
 <c:if test="#{addForm}">
   <c:if test="#{not useAjaxForm}">
+
     <h:form id="#{formId}" enctype="multipart/form-data"
       styleClass="#{formStyleClass}">
       <ui:insert name="form_template_content" />
     </h:form>
+
   </c:if>
   <c:if test="#{useAjaxForm}">
 
-    <nxu:set var="defaultEventsId" value="#{formId}_eventsQueue">
-      <h:form id="#{formId}"
-        eventsQueue="#{nxu:test(empty eventsQueueId, defaultEventsId, eventsQueueId)}"
-        render="#{reRender}"
-        styleClass="#{formStyleClass}"
-        onsubmit="removeAllTinyMCEEditors(); return true;">
-        <ui:insert name="form_template_content" />
-      </h:form>
-    </nxu:set>
+    <h:form id="#{formId}"
+      render="#{reRender}"
+      styleClass="#{formStyleClass}"
+      onsubmit="removeAllTinyMCEEditors(); return true;">
+      <c:if test="#{not empty render}">
+        <f:ajax execute="@form" render="#{reRender}" />
+      </c:if>
+      <ui:insert name="form_template_content" />
+    </h:form>
+
   </c:if>
 </c:if>
 
