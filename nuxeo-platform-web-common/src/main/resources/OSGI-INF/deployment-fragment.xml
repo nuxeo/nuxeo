@@ -96,6 +96,12 @@
     </filter-mapping>
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nxbigblob/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
       <url-pattern>/nxbigzipfile/*</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
@@ -154,7 +160,10 @@
       <servlet-name>Nuxeo Downloader</servlet-name>
       <url-pattern>/nxbigfile/*</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+      <servlet-name>Nuxeo Downloader</servlet-name>
+      <url-pattern>/nxbigblob/*</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
       <servlet-name>Nuxeo Downloader</servlet-name>
       <url-pattern>/nxbigzipfile/*</url-pattern>

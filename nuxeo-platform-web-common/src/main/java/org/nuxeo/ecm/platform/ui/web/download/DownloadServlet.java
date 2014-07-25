@@ -31,6 +31,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,14 +55,16 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * Simple download servlet used for big files that can not be downloaded from
  * within the JSF context (because of buffered ResponseWrapper).
- *
+ * 
  * @author tiry
  */
 public class DownloadServlet extends HttpServlet {
 
-    private static final String NXDOWNLOADINFO_PREFIX = "nxdownloadinfo";
+    protected static final String NXDOWNLOADINFO_PREFIX = "nxdownloadinfo";
 
-    private static final String NXBIGFILE_PREFIX = "nxbigfile";
+    protected static final String NXBIGFILE_PREFIX = "nxbigfile";
+
+    protected static final String NXBIGBLOB_PREFIX = "nxbigblob";
 
     protected static final int BUFFER_SIZE = 1024 * 512;
 
@@ -92,11 +95,15 @@ public class DownloadServlet extends HttpServlet {
             // handle the download for a big zip created in the tmp directory;
             // the name of this zip is sent in the request
             handleDownloadTemporaryZip(req, resp, requestURI);
+        } else if (requestURI.contains("/" + NXBIGBLOB_PREFIX + "/")) {
+            // handle the download of a Blob referenced in Http Session
+            handleDownloadSingleBlob(req, resp, requestURI);
         }
     }
 
-    private Blob resolveBlob(HttpServletRequest req, HttpServletResponse resp,
-            String requestURI) throws ServletException {
+    protected Blob resolveBlob(HttpServletRequest req,
+            HttpServletResponse resp, String requestURI)
+            throws ServletException {
 
         String filePath = requestURI.replace(
                 VirtualHostHelper.getContextPath(req) + "/" + NXBIGFILE_PREFIX
@@ -185,7 +192,7 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    private void handleGetDownloadInfo(HttpServletRequest req,
+    protected void handleGetDownloadInfo(HttpServletRequest req,
             HttpServletResponse resp, String requestURI)
             throws ServletException {
 
@@ -234,7 +241,7 @@ public class DownloadServlet extends HttpServlet {
         return true;
     }
 
-    private void handleDownloadSingleDocument(HttpServletRequest req,
+    protected void handleDownloadSingleDocument(HttpServletRequest req,
             HttpServletResponse resp, String requestURI)
             throws ServletException {
         Blob blob = resolveBlob(req, resp, requestURI);
@@ -249,8 +256,33 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    void downloadBlob(HttpServletRequest req, HttpServletResponse resp,
-            Blob blob, String fileName) throws IOException, ServletException {
+    protected void handleDownloadSingleBlob(HttpServletRequest req,
+            HttpServletResponse resp, String requestURI)
+            throws ServletException {
+
+        String blobId = requestURI.replace(
+                VirtualHostHelper.getContextPath(req) + "/" + NXBIGBLOB_PREFIX
+                        + "/", "");
+        HttpSession session = req.getSession(false);
+        if (session == null) {
+            log.error("Unable to download blob since the holding http session does not exist");
+            return;
+        }
+
+        Blob blob = (Blob) session.getAttribute(blobId);
+        if (blob != null) {
+            session.removeAttribute(blobId);
+            try {
+                downloadBlob(req, resp, blob, null);
+            } catch (IOException e) {
+                throw new ServletException(e);
+            }
+        }
+    }
+
+    protected void downloadBlob(HttpServletRequest req,
+            HttpServletResponse resp, Blob blob, String fileName)
+            throws IOException, ServletException {
         InputStream in = blob.getStream();
         OutputStream out = resp.getOutputStream();
         try {
@@ -338,7 +370,7 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    private void handleDownloadTemporaryZip(HttpServletRequest req,
+    protected void handleDownloadTemporaryZip(HttpServletRequest req,
             HttpServletResponse resp, String requestURI) throws IOException,
             ServletException {
         String filePath = requestURI.replace(
