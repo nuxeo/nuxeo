@@ -114,7 +114,7 @@ public abstract class AbstractWork implements Work {
 
     protected transient CoreSession session;
 
-    protected transient WorkSchedulePath schedulePath = WorkSchedulePath.EMPTY;
+    protected transient WorkSchedulePath schedulePath;
 
     /**
      * Constructs a {@link Work} instance with a unique id.
@@ -139,7 +139,8 @@ public abstract class AbstractWork implements Work {
 
     @Override
     public WorkSchedulePath getSchedulePath() {
-        return schedulePath;
+        // schedulePath is transient so will become null after deserialization
+        return schedulePath == null ? WorkSchedulePath.EMPTY : schedulePath;
     }
 
     @Override
@@ -352,7 +353,8 @@ public abstract class AbstractWork implements Work {
             } else {
                 log.error("Exception during work: " + this, e);
                 if (WorkSchedulePath.captureStack) {
-                    WorkSchedulePath.log.error("Work schedule path", schedulePath.getStack());
+                    WorkSchedulePath.log.error("Work schedule path",
+                            getSchedulePath().getStack());
                 }
             }
         }
