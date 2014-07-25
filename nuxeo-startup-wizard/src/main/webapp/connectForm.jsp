@@ -7,11 +7,9 @@ String connectUrl = collector.getConfigurationParam("org.nuxeo.connect.url");
 if (connectUrl.equals("")) {
     connectUrl = "https://connect.nuxeo.com/nuxeo/site/";
 }
-//String formUrl = connectUrl + "connect/embeddedTrial/form";
-//String formUrl = "../../register/embedded";
-String formUrl = connectUrl + "../../register/#/embedded";
-formUrl = formUrl + "?wizardCallbackUrl=" + cbUrl;
-formUrl = formUrl + "&pkg=" + ctx.getDistributionKey();
+String formUrl = connectUrl + "connect/embeddedTrial/form";
+formUrl = formUrl + "?WizardCB=" + cbUrl;
+formUrl = formUrl + "&source=wizard&pkg=" + ctx.getDistributionKey();
 
 boolean showRegistrationForm = !ctx.isConnectRegistrationDone();
 
@@ -37,6 +35,7 @@ function handleFallbackIfNeeded() {
 window.setTimeout(handleFallbackIfNeeded, 25000);
 
 </script>
+
 <% if (showRegistrationForm) { %>
 
 <iframe id="connectForm" src="<%=formUrl%>" onload="setSize()" width="100%" marginwidth="0" marginheight="0" frameborder="0" vspace="0" hspace="0" style="overflow:auto; width:100%; display:none"></iframe>
