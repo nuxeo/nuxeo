@@ -48,11 +48,11 @@ from utils import extractToken, extractJsfState, extractIframes, extractJsession
 from funkload.utils import Data
 
 
-def getTabParams(tab, subtab=None):
+def getTabParams(tab, subtab=None, category=''):
     """Return nuxeo tabids parameters"""
     if tab is None:
         return ''
-    ret = "&tabIds=%3A" + tab
+    ret = "&tabIds=" + category + "%3A" + tab
     if subtab:
         ret += '%3A' + subtab
     return ret
@@ -128,7 +128,7 @@ class BasePage:
         return self
 
     def viewDocumentPath(self, path, description=None, raiseOn404=True,
-                         tab='', subtab=None, outcome=None):
+                         category='', tab='', subtab=None, outcome=None):
         """This method return None when raiseOn404 is False and the document
         does not exist"""
         fl = self.fl
@@ -140,23 +140,24 @@ class BasePage:
         if not outcome:
             outcome = "view_documents"
         resp = fl.get(fl.server_url + "/nxpath/default/default-domain/" +
-                      quote(path) + "@" + outcome + '?conversationId=0NXMAIN1' + getTabParams(tab, subtab),
+                      quote(path) + "@" + outcome + '?conversationId=0NXMAIN1' +
+                      getTabParams(tab, subtab=subtab, category=category),
                       description=description, ok_codes=ok_codes)
         if resp.code == 404:
             fl.logi('Document ' + path + ' does not exists.')
             return None
         return self
 
-    def viewDocumentUid(self, uid, tab=None, subtab=None, description=None,
+    def viewDocumentUid(self, uid, category='', tab=None, subtab=None, description=None,
                         outcome=None):
         fl = self.fl
         if not description:
-            description = "View document uid:" + uid + ' ' + getTabParams(tab, subtab)
+            description = "View document uid:" + uid + ' ' + getTabParams(tab, subtab=subtab, category=category)
         if not outcome:
             outcome = "view_documents"
 
         url = '/nxdoc/default/' + uid + '/' + outcome
-        url += '?conversationId=0NXMAIN1' + getTabParams(tab, subtab)
+        url += '?conversationId=0NXMAIN1' + getTabParams(tab, subtab=subtab, category=category)
         fl.get(fl.server_url + url,
                description=description)
         return self
@@ -174,7 +175,7 @@ class BasePage:
             return self
         self.viewDocumentUid(self.getDocUid(), outcome="view_admin",
                              description="Admin center page")
-        fl.assert_("adminSelectorForm" in fl.getBody(),
+        fl.assert_("adminCenterTabs" in fl.getBody(),
                    "Wrong admin center page")
         return self
 
@@ -183,9 +184,9 @@ class BasePage:
         if not "@view_admin" in fl.getLastUrl():
             # not in admin center
             return self
-        self.viewDocumentUid(self.getDocUid(), outcome="view_document",
+        self.viewDocumentUid(self.getDocUid(), outcome="view_documents",
                              description="Document Management")
-        fl.assert_('id="document_content"' not in fl.getBody(),
+        fl.assert_('id="document_content"' in fl.getBody(),
                    "Fail to exit admin center")
         return self
 
@@ -193,12 +194,11 @@ class BasePage:
         fl = self.fl
         if not "Exit admin center" in fl.getBody():
             self.adminCenter()
-        fl.post(fl.server_url + "/view_admin.faces", params=[
-            ['adminSelectorForm', 'adminSelectorForm'],
-            ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['adminSelectorForm:adminSelectorList:6:item',
-             'adminSelectorForm:adminSelectorList:6:item']],
-            description="Users and groups page")
+
+        self.viewDocumentUid(self.getDocUid(), category="NUXEO_ADMIN",
+                             tab="UsersGroupsManager", outcome="view_admin",
+                             description="Users and groups page")
+
         fl.assert_('usersListingView' in fl.getBody(),
                    "Wrong user page")
         return self
@@ -210,42 +210,56 @@ class BasePage:
         if (not 'createUser:button_save_and_create' in fl.getBody() and not 'createUser:button_save_and_invite' in fl.getBody()):
             fl.assert_('createUserButton' in fl.getBody(),
                        "You should call usersAndGroupsPage first")
-            fl.post(fl.server_url + "/view_admin.faces", params=[
-                    ['AJAXREQUEST', 'usersListingView:cv_users_listing_search_only__region'],
+            fl.post(fl.server_url + "/view_admin.faces?conversationId=0NXMAIN1", params=[
                     ['usersListingView:createUserActionsForm', 'usersListingView:createUserActionsForm'],
                     ['javax.faces.ViewState', fl.getLastJsfState()],
-                    ['usersListingView:createUserActionsForm:createUserButton', 'usersListingView:createUserActionsForm:createUserButton']],
+                    ['javax.faces.source', 'usersListingView:createUserActionsForm:createUserButton'],
+                    ['javax.faces.partial.event', 'click'],
+                    ['javax.faces.partial.execute', 'usersListingView:createUserActionsForm:createUserButton'],
+                    ['javax.faces.partial.render', 'usersPanel'],
+                    ['javax.faces.behavior.event', 'action'],
+                    ['AJAX:EVENTS_COUNT', '1'],
+                    ['rfExt', 'null'],
+                    # FIXME: for some unknown reason, funkload needs this param for request to be ajaxified
+                    ['Faces-Request', 'partial/ajax'],
+                    ['javax.faces.partial.ajax', 'true']],
                     description="View user creation form")
             fl.assert_('createUser:immediate_creation' in fl.getBody(),
-                   'Wrong page')
+                   'Wrong user creation page')
+
 	if (not 'createUser:button_save_and_create' in fl.getBody()):
             fl.post(fl.server_url + "/view_admin.faces", params=[
-            		['createUserView:createUser:nxl_user_registration:nxw_username', ''],
-            		['createUserView:createUser:nxl_user_registration:nxw_firstname', ''],
-		        ['createUserView:createUser:nxl_user_registration:nxw_lastname', ''],
-		        ['createUserView:createUser:nxl_user_registration:nxw_company', ''],
-		        ['createUserView:createUser:nxl_user_registration:nxw_email', ''],
-		        ['createUserView:createUser', 'createUserView:createUser'],
-		        ['autoScroll', ''],
-		        ['javax.faces.ViewState', fl.getLastJsfState()],
             		['createUserView:createUser:immediate_creation','on'],
             		['ajaxSingle', 'createUserView:createUser:immediate_creation'],
-            		['AJAX:EVENTS_COUNT', '1']],
-            		description="Immediate creation")
-	# The assert is removed because the body contains now the Ajax response and not the body of the page so the assert will always fail
-        #fl.assert_('createUser:button_save_and_create' in fl.getBody(),
-        #           'Wrong page')
+                        ['AJAX:EVENTS_COUNT', '1'],
+                        ['createUserView:createUser', 'createUserView:createUser'],
+                        ['createUserView:createUser:immediate_creation', 'on'],
+                        ['javax.faces.ViewState', fl.getLastJsfState()],
+                        ['javax.faces.source', 'createUserView:createUser:immediate_creation'],
+                        ['javax.faces.partial.event', 'change'],
+                        ['javax.faces.partial.execute', 'createUserView:createUser:immediate_creation'],
+                        ['javax.faces.partial.render', 'createUserView:createUser'],
+                        ['javax.faces.behavior.event', 'change'],
+                        ['AJAX:EVENTS_COUNT', '1'],
+                        ['rfExt', 'null'],
+                        ['javax.faces.partial.ajax', 'true']],
+                    description="Set immediate user creation")
+
+	# The assert is removed because the body contains now the Ajax
+        # response and not the body of the page so the assert will
+        # always fail:
+        #fl.assert_('createUser:button_save_and_create' in
+        #fl.getBody(), 'Wrong page')
 
         jsfState = fl.getLastJsfState()
         fl.post(fl.server_url + "/site/automation/UserGroup.Suggestion",
                 Data('application/json+nxrequest; charset=UTF-8',
-                     '{"params":{"prefix":"' + groups + '"},"context":{}}'),
+                     '{"params":{"searchTerm":"' + groups + '"},"context":{}}'),
                 description="Search group")
         fl.assert_(groups in fl.getBody(), "Group not found")
 
-        # /tmp/tmp2uCzyC_funkload/watch0001.request
         fl.post(fl.server_url + "/view_admin.faces", params=[
-            ['AJAXREQUEST', '_viewRoot'],
+            ['createUserView:createUser', 'createUserView:createUser'],
             ['createUserView:createUser:immediate_creation', 'on'],
             ['createUserView:createUser:nxl_user:nxw_username', username],
             ['createUserView:createUser:nxl_user:nxw_firstname', firstname],
@@ -255,14 +269,16 @@ class BasePage:
             ['createUserView:createUser:nxl_user:nxw_firstPassword', password],
             ['createUserView:createUser:nxl_user:nxw_secondPassword', password],
             ['createUserView:createUser:nxl_user:nxw_passwordMatcher', 'needed'],
-            # ['createUserView:createUser:nxl_user:nxw_groups_select2_init', '[{"parentGroups":[],"grouplabel":"Members group","label":"Members group","description":"Group of users with read access rights","groupname":"members","subGroups":[],"members":[],"id":"members","type":"group","prefixed_id":"group:members"}]'],
             ['createUserView:createUser:nxl_user:nxw_groups_select2', groups],
-            # ['createUserView:createUser:nxl_user:nxw_groups_select2_params', '{"multiple":"true","translateLabels":"true","template":"/select2/select2_multiple_user_widget_template.xhtml","hideVirtualGroups":"true","userSuggestionSearchType":"GROUP_TYPE","inlinejs":"function userformater(entry) {\\n   var markup = \\"<table><tr>\\";\\n   markup += \\"<td><img src=\'/nuxeo/icons/\\" + entry.type + \\".png\'/></td>\\";\\n   markup += \\"<td style=\'padding:2px\'>\\" + entry.label + \\"</td>\\";\\n   markup += \\"</tr></table>\\";\\n   return markup;\\n  }","minimumInputLength":"3","width":"300","searchType":"group","customFormater":"userformater","operationId":"UserGroup.Suggestion","placeholder":"S\xc3\xa9lectionnez une valeur."}'],
-            ['createUserView:createUser', 'createUserView:createUser'],
-            ['autoScroll', ''],
             ['javax.faces.ViewState', jsfState],
-            ['createUserView:createUser:button_save_and_create', 'createUserView:createUser:button_save_and_create'],
-            ['AJAX:EVENTS_COUNT', '1']],
+            ['javax.faces.source', 'createUserView:createUser:button_save_and_create'],
+            ['javax.faces.partial.event', 'click'],
+            ['javax.faces.partial.execute', 'createUserView:createUser:button_save_and_create createUserView:createUser'],
+            ['javax.faces.partial.render', 'usersPanel facesStatusMessagePanel'],
+            ['javax.faces.behavior.event', 'action'],
+            ['AJAX:EVENTS_COUNT', '1'],
+            ['rfExt', 'null'],
+            ['javax.faces.partial.ajax', 'true']],
             description="Create user")
         
         fl.assert_('User already exists' in fl.getBody() or
@@ -422,24 +438,35 @@ class BasePage:
         """Publish in the first section"""
         fl = self.fl
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['AJAXREQUEST', '_viewRoot'],
-            ['publishTreeForm:publishSelectTreeName', 'DefaultSectionsTree-default-domain'],
-            ['publishTreeForm:publishTree:input', ''],
             ['publishTreeForm', 'publishTreeForm'],
-            ['autoScroll', ''],
+            ['publishTreeForm:publishSelectTreeName', 'DefaultSectionsTree-default-domain'],
+            ['publishTreeForm:publishTree__SELECTION_STATE', ''],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['publishTreeForm:publishTree:publishRecursiveAdaptor:0::publishTreeNodeAjaxExpanded', 'true'],
-            ['publishTreeForm:publishTree:publishRecursiveAdaptor:0::publishTreeNodeNodeExpanded', 'true']],
+            ['javax.faces.source', 'publishTreeForm:publishTree:publishRecursiveAdaptor.0:publishTreeNode'],
+            ['javax.faces.partial.execute', 'publishTreeForm:publishTree:publishRecursiveAdaptor.0:publishTreeNode @component'],
+            ['javax.faces.partial.render', '@component'],
+            ['publishTreeForm:publishTree:publishRecursiveAdaptor.0:publishTreeNode__NEW_NODE_TOGGLE_STATE', 'true'],
+            ['publishTreeForm:publishTree:publishRecursiveAdaptor.0:publishTreeNode__TRIGGER_NODE_AJAX_UPDATE', 'true'],
+            ['org.richfaces.ajax.component', 'publishTreeForm:publishTree:publishRecursiveAdaptor.0:publishTreeNode'],
+            ['publishTreeForm:publishTree:publishRecursiveAdaptor.0:publishTreeNode', 'publishTreeForm:publishTree:publishRecursiveAdaptor.0:publishTreeNode'],
+            ['rfExt', 'null'],
+            ['AJAX:EVENTS_COUNT', '1'],
+            ['javax.faces.partial.ajax', 'true']],
             description="Publish view section root")
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['AJAXREQUEST', '_viewRoot'],
-            ['publishTreeForm:publishSelectTreeName', 'DefaultSectionsTree-default-domain'],
-            ['publishTreeForm:publishTree:input', 'publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishTreeNode'],
             ['publishTreeForm', 'publishTreeForm'],
-            ['autoScroll', ''],
+            ['publishTreeForm:publishSelectTreeName', 'DefaultSectionsTree-default-domain'],
+            ['publishTreeForm:publishTree__SELECTION_STATE', 'publishTreeForm:publishTree:publishRecursiveAdaptor.0.publishRecursiveAdaptor.0:publishTreeNode'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishCommandLink', 'publishTreeForm:publishTree:publishRecursiveAdaptor:0:publishRecursiveAdaptor:0::publishCommandLink']],
+            ['javax.faces.source', 'publishTreeForm:publishTree:publishRecursiveAdaptor.0.publishRecursiveAdaptor.0:publishCommandLink'],
+            ['javax.faces.partial.event', 'click'],
+            ['javax.faces.partial.execute', 'publishTreeForm:publishTree:publishRecursiveAdaptor.0.publishRecursiveAdaptor.0:publishCommandLink'],
+            ['javax.faces.partial.render', ':publishTreeForm:publishingInfoList facesStatusMessagePanel'],
+            ['javax.faces.behavior.event', 'action'],
+            ['AJAX:EVENTS_COUNT', '1'],
+            ['rfExt', 'null'],
+            ['javax.faces.partial.ajax', 'true']],
             description="Publish document")
 
         fl.assert_("Unpublish" in fl.getBody())
@@ -555,19 +582,23 @@ class FolderPage(BasePage):
         fl = self.fl
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['AJAXREQUEST', '_viewRoot'],
             ['nxw_newDocument_form', 'nxw_newDocument_form'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['ajaxSingle', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
-            ['nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
-            ['AJAX:EVENTS_COUNT', '1']],
+            ['Faces-Request', 'partial/ajax'],
+            ['javax.faces.source', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
+            ['javax.faces.partial.event', 'click'],
+            ['javax.faces.partial.execute', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
+            ['javax.faces.partial.render', 'nxw_documentActionSubviewUpperList_newDocument_ajax_panel nxw_documentActionSubviewUpperList_panel'],
+            ['javax.faces.behavior.event', 'action'],
+            ['javax.faces.partial.ajax', 'true']],
             description="Click on 'New' action")
+
         fl.assert_('Available document types' in fl.getBody())
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['nxw_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_documentActionSubviewUpperList_newDocument_fancyform'],
+            ['nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['nxw_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink', 'nxw_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:1:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink']],
+            ['nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform:Folder', 'nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform:Folder']],
             description="Create folder: New Folder")
 
         fl.assert_('document_create' in fl.getBody(),
@@ -587,19 +618,22 @@ class FolderPage(BasePage):
         fl = self.fl
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['AJAXREQUEST', '_viewRoot'],
             ['nxw_newDocument_form', 'nxw_newDocument_form'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['ajaxSingle', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
-            ['nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
-            ['AJAX:EVENTS_COUNT', '1']],
+            ['Faces-Request', 'partial/ajax'],
+            ['javax.faces.source', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
+            ['javax.faces.partial.event', 'click'],
+            ['javax.faces.partial.execute', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
+            ['javax.faces.partial.render', 'nxw_documentActionSubviewUpperList_newDocument_ajax_panel nxw_documentActionSubviewUpperList_panel'],
+            ['javax.faces.behavior.event', 'action'],
+            ['javax.faces.partial.ajax', 'true']],
             description="Click on 'New' action")
         fl.assert_('Available document types' in fl.getBody())
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['nxw_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_documentActionSubviewUpperList_newDocument_fancyform'],
+            ['nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['nxw_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink', 'nxw_documentActionSubviewUpperList_newDocument_fancyform:selectDocumentTypeForCreationTable:0:selectDocumentTypeForCreationCategory:0:selectDocumentTypeForCreationCategoryTable:1:selectDocumentTypeForCreationCategoryTitleLink']],
+            ['nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform:File', 'nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform:File']],
             description="Create file: New document")
 
         fl.assert_('document_create' in fl.getBody(),
@@ -631,15 +665,21 @@ class FolderPage(BasePage):
 
         checkbox_id = extractToken(html[start:end], 'input id="', '"')
         fl.assert_(checkbox_id, 'item "%s" not found.' % title)
-        checkbox_ajax_onclick_id = checkbox_id + '_ajax_onclick'
         table_name = checkbox_id.split(':', 1)[0]
 
         params = [
-            ['AJAXREQUEST', 'cv_' + table_name + '_0_region'],
+            [table_name, table_name],
             [checkbox_id, 'on'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            [checkbox_ajax_onclick_id, checkbox_ajax_onclick_id],
-            [table_name, table_name]]
+            ['javax.faces.source', checkbox_id],
+            ['javax.faces.partial.event', 'click'],
+            ['javax.faces.partial.execute', checkbox_id],
+            ['javax.faces.partial.render', table_name + '_buttons:ajax_selection_buttons'],
+            ['javax.faces.behavior.event', 'click'],
+            ['AJAX:EVENTS_COUNT', '1'],
+            ['rfExt', 'null'],
+            ['javax.faces.partial.ajax', 'true']]
+
         fl.post(fl.server_url + "/view_documents.faces", params,
                 description='Select document "%s"' % title)
 
@@ -677,7 +717,9 @@ class FolderPage(BasePage):
 
     def rights(self):
         """Go to rights tab."""
-        self.viewDocumentUid(self.getDocUid(), "TAB_MANAGE", "TAB_RIGHTS")
+        self.viewDocumentUid(self.getDocUid(), tab="TAB_MANAGE", subtab="TAB_RIGHTS")
+        #if 'Local rights' not in self.fl.getBody():
+            #print self.fl.getBody()
         self.fl.assert_('Local rights' in self.fl.getBody())
         return self
 
@@ -690,7 +732,7 @@ class FolderPage(BasePage):
         state = fl.getLastJsfState()
         fl.post(server_url + "/site/automation/UserGroup.Suggestion",
                 Data('application/json+nxrequest; charset=UTF-8',
-                     '{"params":{"prefix":"' + user + '"},"context":{}}'),
+                     '{"params":{"searchTerm":"' + user + '"},"context":{}}'),
                 description="Search user")
         fl.assert_(user in fl.getBody(), "User not found")
 
@@ -780,6 +822,7 @@ class FolderPage(BasePage):
 
     def driveRevokeFirstToken(self):
         fl = self.fl
+        # TODO: migrate to JSF2
         fl.post(fl.server_url + "/view_home.faces", params=[
             ['AJAXREQUEST', '_viewRoot'],
             ['currentUserAuthTokenBindings', 'currentUserAuthTokenBindings'],
