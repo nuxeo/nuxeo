@@ -38,7 +38,7 @@
               action="#{contentViewActions.resetPageProvider(contentViewName)}"
               styleClass="button" id="searchButton" render="content">
               <!-- popupDisplayed flag for preventing relation_search content view execution until search button clicked -->
-              <a4j:actionparam value="true"
+              <a4j:param value="true"
                 assignTo="#{relationActions.popupDisplayed}" />
             </a4j:commandButton>
           </nxu:set>
