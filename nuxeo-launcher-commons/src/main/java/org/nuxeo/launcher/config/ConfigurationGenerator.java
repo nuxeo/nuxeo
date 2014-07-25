@@ -416,8 +416,8 @@ public class ConfigurationGenerator {
                 generateFiles();
             } else if (forceGeneration) {
                 log.info("Configuration files generation (nuxeo.force.generation="
-                        + userConfig.getProperty(PARAM_FORCE_GENERATION,
-                                "false") + ")...");
+                        + userConfig.getProperty(PARAM_FORCE_GENERATION)
+                        + ")...");
                 generateFiles();
             } else {
                 log.info("Server already configured (set nuxeo.force.generation=true to force configuration files generation).");
@@ -1106,12 +1106,12 @@ public class ConfigurationGenerator {
                         if (line.trim().startsWith("#")) {
                             String key = line.substring(1, equalIdx).trim();
                             String value = line.substring(equalIdx + 1).trim();
-                            storedConfig.setProperty(key, value);
+                            getStoredConfig().setProperty(key, value);
                         } else {
                             String key = line.substring(0, equalIdx).trim();
                             String value = line.substring(equalIdx + 1).trim();
                             if (!value.equals(userConfig.getProperty(key))) {
-                                storedConfig.setProperty(key, value);
+                                getStoredConfig().setProperty(key, value);
                             }
                         }
                     } else {
