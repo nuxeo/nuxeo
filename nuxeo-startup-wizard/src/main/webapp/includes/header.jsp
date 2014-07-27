@@ -55,7 +55,7 @@ function showIframeIfPossible() {
 
 <div id="topbar">
 <div class="container">
- <a href="<%=contextPath%>"><img src="<%=contextPath%>/images/nuxeo.png" height="38px" border="0"/></a>
+ <a href="<%=contextPath%>"><img src="<%=contextPath%>/images/nuxeo.png" height="20px" border="0"/></a>
 </div>
 </div>
 <div style="text-align:center;">
