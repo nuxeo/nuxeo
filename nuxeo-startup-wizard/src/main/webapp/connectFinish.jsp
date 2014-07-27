@@ -4,12 +4,13 @@
 
 <%@ include file="includes/form-start.jsp" %>
 
- <h2> <fmt:message key="label.connectFinish.ko" /> </h2>
- <ul>
-  <li><fmt:message key="label.connectFinish.ko.bad1" /></li>
-  <li><fmt:message key="label.connectFinish.ko.bad2" /></li>
- </ul>
- <br/>
+ <div class="warnBlock">
+  <h2> <fmt:message key="label.connectFinish.ko" /> </h2>
+  <ul>
+   <li><fmt:message key="label.connectFinish.ko.bad1" /></li>
+   <li><fmt:message key="label.connectFinish.ko.bad2" /></li>
+  </ul>
+ </div>
  <p>
       <fmt:message key="label.connectFinish.ko.free" />
   </p>

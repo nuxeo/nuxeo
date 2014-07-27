@@ -6,10 +6,8 @@
 
 <form id="wizardform" action="<%=contextPath%>/<%=currentPage.getAction()%>" method="POST">
 <span class="screenDescription">
-<fmt:message key="label.recapScreen.description" /> <br/>
-</span>
-<span class="screenExplanations">
-<fmt:message key="label.recapScreen.explanations" /> <br/>
+<fmt:message key="label.recapScreen.description" />
+<fmt:message key="label.recapScreen.explanations" />
 </span>
 <%
 boolean connectOK = ctx.isConnectRegistrationDone();
@@ -19,7 +17,7 @@ boolean connectOK = ctx.isConnectRegistrationDone();
    <h2> <fmt:message key="label.connectFinish.ok" /> </h2>
    <div id="CLID"><%=connectMap.get("CLID")%></div><br/><br/>
 <%}%>
-
+  <div class="screenExplanations">
   <table>
   <%Map<String,String> changedParams = collector.getChangedParameters();
   Map<String, String> sortedParams = new TreeMap<String, String>(collector.getConfigurationParams());
@@ -28,14 +26,14 @@ boolean connectOK = ctx.isConnectRegistrationDone();
     <tr>
       <%if (changedParams.containsKey(pName) ||
               pName.startsWith("nuxeo.db") && !"default".equals(collector.getConfigurationParam(pName))) {%>
-      <td style="font-weight: bold;">
+      <td class="bold">
       <%} else {%>
       <td>
       <%}%>
       <fmt:message key="<%=label%>"/></td>
       <%if (changedParams.containsKey(pName) ||
               pName.startsWith("nuxeo.db") && !"default".equals(collector.getConfigurationParam(pName))) {%>
-      <td style="font-weight: bold;">
+      <td class="bold highlighted">
       <%} else {%>
       <td>
       <%}%>
@@ -47,6 +45,7 @@ boolean connectOK = ctx.isConnectRegistrationDone();
     </tr>
   <%} %>
   </table>
+ </div>
 
  <div class="buttonContainer">
 <%if (currentPage.prev()!=null) { %>

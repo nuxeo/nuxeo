@@ -1,8 +1,21 @@
 <%@page import="org.nuxeo.wizard.helpers.ServerController"%>
 <%@ include file="includes/header.jsp"%>
 
-<div id="loading"><fmt:message key="label.restart.wait" /><br/><br/>
-<img src="<%=contextPath%>/images/restart_waiter.gif" /></div>
+<h1><fmt:message key="label.restart" /></h1>
+
+<div id="loading">
+ <span class="screenDescription">
+  <fmt:message key="label.restart.description" />
+ </span>
+
+ <div class="screenExplanations bold">
+  <fmt:message key="label.restart.explanations1" />
+ </div>
+ <div class="screenExplanations">
+  <fmt:message key="label.restart.explanations2" />
+ </div>
+ <div class="centered-waiter"><img src="<%=contextPath%>/images/restart_waiter.gif" /></div>
+</div>
 
 <%@ include file="includes/footer.jsp"%>
 
