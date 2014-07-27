@@ -14,7 +14,7 @@
 <input type="hidden" name="browserInternetAccess" id="browserInternetAccess" value=""/>
 </div>
 <div class="buttonContainer">
- <input type="submit" class="glossyButton" id="btnNext" disabled="true" value="<fmt:message key="label.action.next"/>"/>
+ <input type="submit" class="glossyButton" id="btnNext" disabled="true" value="<fmt:message key="label.action.start"/>"/>
 </div>
 <script>
   $(document).ready(function(){
