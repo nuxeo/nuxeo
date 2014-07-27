@@ -24,26 +24,23 @@ String selectedPackageIds="";
 </span>
 
 <% if (!downloadStarted) { %>
-<table>
+<table class="screenExplanations">
 <tr><td>
-<span class="screenExplanations">
-<fmt:message key="label.packagesDownload.selectedPackages" /> <br/>
-</span>
 <ul>
 <%for (DownloadPackage pkg : packages) {
     selectedPackageIds+=pkg.getId() + "|";
 %>
-  <li><%=pkg.getLabel()%> <br/>(<%=pkg.getId()%>) &nbsp;
+  <li><%=pkg.getLabel()%> <div class="detail"><%=pkg.getId()%> &nbsp;
   <%if (pkg.isVirtual()) {%>
-    (already in local)
+    already in local
   <%} else if (pkg.getFilename() == null || "".equals(pkg.getFilename())) {%>
-    (later download)
+    later download
   <%} else if (pkg.isAlreadyInLocal()) {%>
-    (already in local)
+    already in local
   <%} else {
      needDownload = true;%>
-    (to be downloaded)
-  <%} %>
+    to be downloaded
+  <%} %></div>
   </li>
 <%}%>
 </ul>
