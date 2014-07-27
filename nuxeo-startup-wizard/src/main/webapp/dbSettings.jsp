@@ -102,7 +102,6 @@ function updateDBSettings() {
  </div>
 
  <div id="dbSettings" style="<%=dbSettingStyle%>">
-  <table><tr><td>
   <table>
     <tr>
       <td class="labelCell"><fmt:message key="label.nuxeo.db.name"/></td>
@@ -124,17 +123,16 @@ function updateDBSettings() {
       <td class="labelCell"><fmt:message key="label.nuxeo.db.port"/></td>
       <td><input type="text" name="nuxeo.db.port" value="<%=collector.getConfigurationParam("nuxeo.db.port") %>" size="5"/></td>
     </tr>
-  </table>
-  </td><td class="helpCell">
-
-  <fmt:message key="label.dbSettings.doc"/>
-
-  <A href="http://doc.nuxeo.com/x/AYxH" target="doc">
-  <fmt:message key="label.dbSettings.doclink"/>
-  </A>
-
-
-  </td></tr></table>
+    <tr>
+     <td></td>
+     <td class="helpCell">
+      <fmt:message key="label.dbSettings.doc"/>
+      <a href="http://doc.nuxeo.com/x/AYxH" target="doc">
+       <fmt:message key="label.dbSettings.doclink"/>
+      </a>
+     </td>
+    </tr>
+   </table>
   </div>
 
   <%@ include file="includes/prevnext.jsp" %>

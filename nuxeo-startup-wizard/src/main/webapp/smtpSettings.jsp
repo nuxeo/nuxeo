@@ -36,7 +36,7 @@ function updateSmtpSettings() {
 
 
 <%@ include file="includes/feedback.jsp" %>
-  <table>
+  <table class="smtp">
     <tr>
       <td class="labelCell"><fmt:message key="label.mail.transport.host"/></td>
       <td><input type="text" name="mail.transport.host" value="<%=collector.getConfigurationParam("mail.transport.host") %>"/></td>
@@ -72,7 +72,7 @@ function updateSmtpSettings() {
   </table>
 
   <div id="smtpAuthSettings" style="<%=smtpAuthSettingStyle%>">
-  <table>
+  <table class="smtp">
     <tr>
       <td class="labelCell"><fmt:message key="label.mail.transport.user"/></td>
       <td><input type="text" name="mail.transport.user" value="<%=collector.getConfigurationParam("mail.transport.user") %>"/></td>
@@ -85,7 +85,6 @@ function updateSmtpSettings() {
     </tr><tr>
       <td colspan="2" class="helpCell"><fmt:message key="label.mail.transport.password.help"/></td>
     </tr>
-
   </table>
  </div>
 
