@@ -31,6 +31,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -87,19 +88,9 @@ public class ConnectStatusActionBean implements Serializable {
     @In(create = true)
     protected Map<String, String> messages;
 
-    protected String login;
-
-    protected String password;
-
-    protected String registredProject;
-
-    protected String instanceType;
-
-    protected String instanceDescription;
-
-    protected boolean loginValidated = false;
-
     protected String CLID;
+
+    protected String token;
 
     protected ConnectUpdateStatusInfo connectionStatusCache;
 
@@ -135,37 +126,8 @@ public class ConnectStatusActionBean implements Serializable {
         return types;
     }
 
-    @Factory(scope = ScopeType.EVENT, value = "connectLoginValidated")
-    public boolean isLoginValidated() {
-        return loginValidated;
-    }
-
     protected ConnectRegistrationService getService() {
         return Framework.getLocalService(ConnectRegistrationService.class);
-    }
-
-    public String getRegistredProject() {
-        return this.registredProject;
-    }
-
-    public void setRegistredProject(String registredProject) {
-        this.registredProject = registredProject;
-    }
-
-    public String getConnectLogin() {
-        return this.login;
-    }
-
-    public void setConnectLogin(String login) {
-        this.login = login;
-    }
-
-    public String getConnectPassword() {
-        return this.password;
-    }
-
-    public void setConnectPassword(String password) {
-        this.password = password;
     }
 
     @Factory(scope = ScopeType.APPLICATION, value = "registredConnectInstance")
@@ -175,31 +137,9 @@ public class ConnectStatusActionBean implements Serializable {
 
     protected void flushContextCache() {
         // A4J and Event cache don't play well ...
-        Contexts.getEventContext().remove("connectLoginValidated");
-        Contexts.getEventContext().remove("projectsForRegistration");
         Contexts.getApplicationContext().remove("registredConnectInstance");
         Contexts.getApplicationContext().remove("connectUpdateStatusInfo");
         appsViews.flushCache();
-    }
-
-    public void validateLogin() {
-        if (login == null || password == null) {
-            facesMessages.addToControl("login", StatusMessage.Severity.WARN,
-                    messages.get("label.empty.loginpassword"));
-            loginValidated = false;
-            flushContextCache();
-            return;
-        }
-        List<ConnectProject> prjs = getProjectsAvailableForRegistration();
-        if (prjs == null || prjs.size() == 0) {
-            facesMessages.addToControl("online", StatusMessage.Severity.WARN,
-                    messages.get("label.bad.loginpassword.or.noproject"));
-            loginValidated = false;
-            flushContextCache();
-            return;
-        }
-        flushContextCache();
-        loginValidated = true;
     }
 
     @Factory(value = "connectServerReachable", scope = ScopeType.EVENT)
@@ -217,94 +157,29 @@ public class ConnectStatusActionBean implements Serializable {
         return ConnectStatusHolder.instance().getStatus();
     }
 
-    public String getInstanceType() {
-        return instanceType;
-    }
-
-    public void setInstanceType(String instanceType) {
-        this.instanceType = instanceType;
-    }
-
-    public String getInstanceDescription() {
-        return instanceDescription;
-    }
-
-    public void setInstanceDescription(String instanceDescription) {
-        this.instanceDescription = instanceDescription;
-    }
-
-    public String enterConnectCredentials() {
-        // XXX security checks
-        if (login == null) {
-            return "connectCredential";
-        }
-        return "projectListing";
-    }
-
-    @Factory(scope = ScopeType.EVENT, value = "projectsForRegistration")
-    public List<ConnectProject> getProjectsAvailableForRegistration() {
-        List<ConnectProject> projects = new ArrayList<ConnectProject>();
-        if (login != null) {
-            try {
-                projects = getService().getAvailableProjectsForRegistration(
-                        login, password);
-                if (!projects.isEmpty()) {
-                    Collections.sort(projects,
-                            new Comparator<ConnectProject>() {
-                                @Override
-                                public int compare(ConnectProject o1,
-                                        ConnectProject o2) {
-                                    return o1.getName().compareTo(o2.getName());
-                                }
-                            });
-                }
-            } catch (Exception e) {
-                log.error("Error while getting remote project", e);
-            }
-        }
-        return projects;
-    }
-
     public String resetRegister() {
-        login = null;
-        password = null;
-        loginValidated = false;
-        registredProject = null;
-        instanceDescription = null;
         flushContextCache();
         return null;
     }
 
-    public String register() {
-        if (registredProject == null) {
-            facesMessages.addToControl("online", StatusMessage.Severity.WARN,
-                    messages.get("label.empty.project"));
-            return null;
-        }
-        autofillInstanceDescription();
-        try {
-            getService().remoteRegisterInstance(login, password,
-                    registredProject,
-                    NuxeoClientInstanceType.fromString(instanceType),
-                    instanceDescription);
-        } catch (Exception e) {
-            facesMessages.addToControl("online", StatusMessage.Severity.ERROR,
-                    messages.get("label.connect.registrationError"));
-            log.error("Error while registering instance", e);
-        }
-        // force refresh of connect status info
-        connectionStatusCache = null;
-        flushContextCache();
-        ConnectStatusHolder.instance().flush();
-        return null;
+    public String getToken() {
+        return token;
     }
 
-    /**
-     * @since 5.6
-     */
-    protected void autofillInstanceDescription() {
-        if (instanceDescription == null || instanceDescription.isEmpty()) {
-            instanceDescription = login + "'s " + instanceType + " instance";
+    public void setToken(String token) throws IOException, InvalidCLID {
+        if (token != null) {
+            String tokenData = new String(Base64.decodeBase64(token));
+            String[] tokenDataLines = tokenData.split("\n");
+            for (String line : tokenDataLines) {
+                String[] parts = line.split(":");
+                if (parts.length > 1 && "CLID".equals(parts[0])) {
+                    getService().localRegisterInstance(parts[1], " ");
+                    // force refresh of connect status info
+                    connectionStatusCache = null;
+                    flushContextCache();
+                    ConnectStatusHolder.instance().flush();
+                }
+            }
         }
     }
 
@@ -313,9 +188,8 @@ public class ConnectStatusActionBean implements Serializable {
     }
 
     public String localRegister() {
-        autofillInstanceDescription();
         try {
-            getService().localRegisterInstance(CLID, instanceDescription);
+            getService().localRegisterInstance(CLID, "");
         } catch (InvalidCLID e) {
             facesMessages.addToControl("offline_clid",
                     StatusMessage.Severity.WARN,

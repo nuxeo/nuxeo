@@ -35,7 +35,7 @@
                 <p>
                   <h:outputText
                     value="#{messages['label.nuxeo.connect.onlineRegistrationDescription']}" />
-                  (<a href="#{nuxeoConnectUrl}connect/trial/form"
+                  (<a href="#{nuxeoConnectUrl}../../register"
                     class="connectLink" target="NuxeoConnectSite">#{messages['connect.message.newaccount']}</a>).
                 </p>
               </div>
@@ -45,100 +45,21 @@
                     errorClass="errorMessage" for="online" id="online" />
                 </div>
 
-                <h:form rendered="#{!connectLoginValidated}">
-                  <table class="loginTable">
-                    <tr>
-                      <td class="labelColumn required"><h:outputText
-                          value="#{messages['label.nuxeo.connect.login']}" /></td>
-                      <td><h:inputText required="true"
-                          value="#{connectStatus.connectLogin}" id="login" /></td>
-                    </tr>
-                    <tr>
-                      <td colspan="2"><h:message infoClass="infoMessage"
-                          warnClass="warningMessage" errorClass="errorMessage"
-                          for="login" /></td>
-                    </tr>
-                    <tr>
-                      <td class="labelColumn required"><h:outputText
-                          value="#{messages['label.nuxeo.connect.password']}" /></td>
-                      <td><h:inputSecret required="true"
-                          value="#{connectStatus.connectPassword}" id="password" /></td>
-                    </tr>
-                    <tr>
-                      <td colspan="2"><h:message infoClass="infoMessage"
-                          warnClass="warningMessage" errorClass="errorMessage"
-                          for="password" /></td>
-                    </tr>
-                    <tr>
-                      <td class="labelColumn"></td>
-                      <td><a4j:commandButton
-                          value="#{messages['action.connect.login.check']}"
-                          styleClass="button"
-                          action="#{connectStatus.validateLogin}"
-                          reRender="connectStatusPanel" /></td>
-                    </tr>
-                  </table>
-                </h:form>
-                <h:panelGroup rendered="#{connectLoginValidated}">
-                  <h:outputText
-                    value="#{messages['label.nuxeo.connect.onlineRegistrationStep2Description']}" />
-                  <h:form>
-                    <table class="loginTable">
-                      <tr>
-                        <td class="labelColumn"><h:outputText
-                            value="#{messages['label.nuxeo.connect.instanceDescription']}" /></td>
-                        <td><h:inputText
-                            value="#{connectStatus.instanceDescription}"
-                            size="24" /></td>
-                      </tr>
-                      <tr>
-                        <td class="labelColumn"><h:outputText
-                            value="#{messages['label.nuxeo.connect.instanceType']}" /></td>
-                        <td><h:selectOneListbox class="dataInputText"
-                            size="1" value="#{connectStatus.instanceType}">
-                            <nxu:selectItems
-                              value="#{connectStatus.instanceTypes}" var="itype"
-                              itemValue="#{itype.value}"
-                              itemLabel="#{messages[itype.label]}" />
-                          </h:selectOneListbox></td>
-                      </tr>
-                      <tr>
-                        <td colspan="2">
-                          <p>
-                            <h:outputText class="importantLabel"
-                              value="You don't have any project available."
-                              rendered="#{projectsForRegistration.size==0}" />
-                          </p>
-                        </td>
-                      </tr>
-                      <h:panelGroup
-                        rendered="#{projectsForRegistration.size > 0}">
-                        <tr>
-                          <td class="labelColumn"><h:outputText
-                              value="#{messages['label.nuxeo.connect.associatedProject']}" /></td>
-                          <td><h:selectOneListbox class="dataInputText"
-                              size="1" value="#{connectStatus.registredProject}">
-                              <nxu:selectItems
-                                value="#{projectsForRegistration}" var="prj"
-                                itemValue="#{prj.uuid}" itemLabel="#{prj.name}" />
-                            </h:selectOneListbox></td>
-                        </tr>
-                        <tr>
-                          <td><a4j:commandButton
-                              value="#{messages['action.connect.cancel']}"
-                              styleClass="button"
-                              action="#{connectStatus.resetRegister}"
-                              reRender="connectStatusPanel" /></td>
-                          <td><a4j:commandButton
-                              value="#{messages['action.connect.register']}"
-                              styleClass="button"
-                              action="#{connectStatus.register}"
-                              reRender="connectStatusPanel" /></td>
-                        </tr>
-                      </h:panelGroup>
-                    </table>
-                  </h:form>
-                </h:panelGroup>
+                <script type="text/javascript">
+                  function openInstanceRegistration() {
+                    var url = '#{nuxeoConnectUrl}connect/wizardInstanceRegistration/?wizardCallbackUrl=#{baseURL}site/connectClient/registerInstanceCallback?cb=yes';
+                    window.open(url, 'instanceRegistrationPopup', 'width=1024,height=768');
+                  }
+                </script>
+
+                <a4j:form>
+                  <a4j:jsFunction name="registerInstanceCallback" reRender="connectStatusPanel">
+                    <a4j:actionparam name="param1" assignTo="#{connectStatus.token}"  />
+                  </a4j:jsFunction>
+                </a4j:form>
+
+                <a href="#" onclick="openInstanceRegistration(); return false;" class="button" target="_blank">Register instance</a>
+
               </div>
             </div>
           </td>
@@ -177,17 +98,6 @@
               <div class="body">
                 <h:form>
                   <table>
-                    <tr>
-                      <td class="required"><h:outputText
-                          value="#{messages['label.nuxeo.connect.instanceDescription']}" /></td>
-                      <td><h:inputText required="true" id="offline_desc"
-                          value="#{connectStatus.instanceDescription}" /></td>
-                    </tr>
-                    <tr>
-                      <td colspan="2"><h:message infoClass="infoMessage"
-                          warnClass="warningMessage" errorClass="errorMessage"
-                          for="offline_desc" /></td>
-                    </tr>
                     <tr>
                       <td class="required"><h:outputText
                           value="#{messages['label.nuxeo.connect.CLID']}" /></td>
@@ -242,18 +152,6 @@
             <td class="labelColumn"><h:outputText
                 value="#{messages['label.nuxeo.connect.contractEndDate']}" /></td>
             <td><h:outputText value="#{connectStatus.status.endDate}" styleClass="label label-warning"/></td>
-          </tr>
-          <tr>
-            <td class="labelColumn"><h:outputText
-                value="#{messages['label.nuxeo.connect.description']}" /></td>
-            <td><h:outputText value="#{connectStatus.status.description}" />
-            </td>
-          </tr>
-          <tr>
-            <td class="labelColumn"><h:outputText
-                value="#{messages['label.nuxeo.connect.instanceType']}" /></td>
-            <td><h:outputText
-                value="#{messages[connectStatus.status.instanceTypeLabel]}" /></td>
           </tr>
           <tr>
             <td class="labelColumn"><h:outputText
