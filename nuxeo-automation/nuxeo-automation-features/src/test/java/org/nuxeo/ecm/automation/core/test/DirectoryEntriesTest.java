@@ -56,7 +56,6 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.automation.features" })
 @LocalDeploy("org.nuxeo.ecm.automation.features:test-directories-sql-contrib.xml")
 public class DirectoryEntriesTest {
-    public static final String NXP14735 = "NXP-14735: local configuration issue";
 
     @Inject
     protected CoreSession session;
@@ -86,7 +85,6 @@ public class DirectoryEntriesTest {
             + "{\"id\":\"mu\",\"obsolete\":0,\"ordering\":10000000,\"label\":\"Mu\"}]";
 
     @Test
-    @RandomBug.Repeat(issue = NXP14735)
     public void testGlobalDirectoryEntries() throws Exception {
         StringBlob result = getDirectoryEntries(session.getDocument(new PathRef(
                 "/default-domain/workspaces/test")));
