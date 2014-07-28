@@ -43,6 +43,11 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .gridStyle2  { width: 16.66% }
 .gridStyle1  { width: 8.33% }
 
+/* Align center when there is only one column */
+.gridBox:only-child {
+  float: none;
+  margin: 0 auto }
+
 .gridBox h3,
 .gridBox h4 {
   border-width: 1px;
