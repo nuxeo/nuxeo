@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,31 +19,36 @@
 
 package org.nuxeo.ecm.webengine;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
-import org.nuxeo.ecm.webengine.model.ModuleResource;
-import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebDocumentException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class WebException extends WebApplicationException {
+
+    protected static final Log log = LogFactory.getLog(WebException.class);
 
     private static final long serialVersionUID = 176876876786L;
 
+    protected String type;
+
+    protected Throwable cause;
+
     protected String message;
 
-    protected boolean byPassAppResponse = false;
-
-    protected int status = 500;
+    protected int status;
 
     public WebException() {
     }
@@ -64,22 +69,28 @@ public class WebException extends WebApplicationException {
 
     protected WebException(Throwable cause, Response response) {
         super(cause, response);
-        byPassAppResponse = true;
+        this.cause = cause;
+        this.status = response.getStatus();
     }
 
-    /** Use WebException.wrap() and not the constructor. */
+    /**
+     * Use WebException.wrap() and not the constructor.
+     */
     protected WebException(Throwable cause, Response.Status status) {
         super(cause, status);
+        this.cause = cause;
         this.status = status.getStatusCode();
     }
 
     protected WebException(Throwable cause, int status) {
         super(cause, status);
+        this.cause = cause;
         this.status = status;
     }
 
     protected WebException(Throwable cause) {
         super(cause);
+        this.cause = cause;
     }
 
     public WebException(String message) {
@@ -92,70 +103,43 @@ public class WebException extends WebApplicationException {
         this.status = code;
     }
 
-    protected WebException(String message, Throwable t) {
-        super(t);
-        this.message = message;
-    }
-
-    protected WebException(String message, Throwable t, int code) {
-        super(t, code);
-        this.message = message;
-        this.status = code;
-    }
-
-    @Override
-    public String getMessage() {
-        return message;
-    }
-
-    public int getStatusCode() {
-        return status;
-    }
-
-    /**
-     * For compatibility only.
-     */
-    @Deprecated
-    public int getReturnCode() {
-        return super.getResponse().getStatus();
-    }
-
-    @Override
-    public Response getResponse() {
-        Response response = super.getResponse();
-        if (!byPassAppResponse) {
-            WebContext ctx = WebEngine.getActiveContext();
-            if (ctx != null) {
-                if (ctx.head() instanceof ModuleResource) {
-                    ModuleResource mr = (ModuleResource) ctx.head();
-                    Object result = mr.handleError(this);
-                    if (result instanceof Response) {
-                        response = (Response) result;
-                    } else if (result != null) {
-                        response = Response.fromResponse(response).entity(
-                                result).build();
-                    }
-                    return response;
-                }
-            }
+    protected WebException(String message, Throwable cause, int status) {
+        if (cause == null) {
+            throw new IllegalArgumentException(
+                    "the cause parameter cannot be null");
         }
-        // Search for the real cause and display it once instead of multiple
-        // useless stacktraces
-        Throwable e = this;
-        while (e.getMessage() == null && e.getCause() != null
-                && e.getCause() != e) {
-            e = e.getCause();
-        }
-        return Response.status(status).type(MediaType.TEXT_PLAIN).entity(
-                toString(e)).build();
+        this.status = status == -1 ? getStatus(cause) : status;
+        this.cause = cause;
+        this.message = message == null ? cause.getMessage() : message;
+        this.type = cause.getClass().getName();
     }
 
-    public String getStackTraceString() {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        printStackTrace(pw);
-        pw.close();
-        return sw.toString();
+    protected WebException(String message, Throwable cause) {
+        if (cause == null) {
+            throw new IllegalArgumentException(
+                    "the cause parameter cannot be null");
+        }
+        this.status = getStatus(cause);
+        this.cause = cause;
+        this.message = message == null ? cause.getMessage() : message;
+        this.type = cause.getClass().getName();
+    }
+
+    public static WebException newException(String message, Throwable cause) {
+        return newException(message, cause, -1);
+    }
+
+    public static WebException newException(Throwable cause) {
+        return newException(null, cause);
+    }
+
+    public static WebException newException(String message,
+            Throwable cause, int status) {
+        if (cause == null) {
+            throw new IllegalArgumentException(
+                    "the cause parameter cannot be null");
+        }
+        return new WebException(message, cause, status);
     }
 
     public static String toString(Throwable t) {
@@ -166,23 +150,19 @@ public class WebException extends WebApplicationException {
         return sw.toString();
     }
 
-    public static Response toResponse(Throwable t) {
-        return Response.status(500).entity(toString(t)).build();
-    }
-
     public static WebException wrap(Throwable e) {
         return wrap(null, e);
     }
 
-    public static WebException wrap(String message, Throwable e) {
-        // TODO add EJBAccessException dependency
-        if (e instanceof DocumentSecurityException
-                || "javax.ejb.EJBAccessException".equals(e.getClass().getName())) {
-            return new WebSecurityException(message, e);
-        } else if (e instanceof WebException) {
-            return (WebException) e;
-        } else if (e instanceof ClientException) {
-            Throwable cause = e.getCause();
+    public static WebException wrap(String message, Throwable exception) {
+        if (exception instanceof DocumentSecurityException
+                || "javax.ejb.EJBAccessException".equals(exception.getClass()
+                .getName())) {
+            return new WebSecurityException(message, exception);
+        } else if (exception instanceof WebException) {
+            return (WebException) exception;
+        } else if (exception instanceof ClientException) {
+            Throwable cause = exception.getCause();
             boolean notFound = false;
             if (cause instanceof NoSuchDocumentException) {
                 notFound = true;
@@ -194,12 +174,14 @@ public class WebException extends WebApplicationException {
                 }
             }
             if (notFound) {
-                return new WebResourceNotFoundException(cause.getMessage(), e);
+                return new WebResourceNotFoundException(cause.getMessage(),
+                        cause);
             } else {
-                return new WebDocumentException(message, (ClientException) e);
+                return new WebDocumentException(message,
+                        (ClientException) cause);
             }
         } else {
-            return new WebException(message, e);
+            return new WebException(message, exception);
         }
     }
 
@@ -211,4 +193,98 @@ public class WebException extends WebApplicationException {
         return Response.status(500).entity(sw.toString()).build();
     }
 
+    /**
+     * Tries to find the best matching HTTP status for the given exception.
+     */
+    public static int getStatus(Throwable cause) {
+        // use a max depth of 8 to avoid infinite loops for broken exceptions
+        // which are referencing themselves as the cause
+        return getStatus(cause, 8);
+    }
+
+    public static int getStatus(Throwable cause, int depth) {
+        if (depth == 0) {
+            log.warn("Possible infinite loop! Check the exception wrapping.");
+            return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        }
+        if ((cause instanceof DocumentSecurityException)
+                || (cause instanceof SecurityException)
+                || "javax.ejb.EJBAccessException".equals(cause.getClass()
+                .getName())) {
+            return HttpServletResponse.SC_FORBIDDEN;
+        } else if (cause instanceof NoSuchDocumentException || cause
+                instanceof WebResourceNotFoundException) {
+            return HttpServletResponse.SC_NOT_FOUND;
+        } else if (cause instanceof InvalidOperationException) {
+            return HttpServletResponse.SC_BAD_REQUEST;
+        } else if (cause instanceof WebSecurityException) {
+            return HttpServletResponse.SC_UNAUTHORIZED;
+        }
+        Throwable parent = cause.getCause();
+        if (parent == cause) {
+            log.warn("Infinite loop detected! Check the exception wrapping.");
+            return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        }
+        if (parent != null) {
+            return getStatus(parent, depth - 1);
+        }
+        if (cause.getMessage() != null
+                && cause.getMessage().contains(
+                "org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
+            log.warn("Badly wrapped exception: found a NoSuchDocumentException"
+                    + " message but no NoSuchDocumentException", cause);
+            return HttpServletResponse.SC_NOT_FOUND;
+        }
+        return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+    }
+
+    public static boolean isSecurityError(Throwable t) {
+        return getStatus(t) == HttpServletResponse.SC_FORBIDDEN;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    public int getStatusCode() {
+        return status;
+    }
+
+    public String getStackTraceString() {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        printStackTrace(pw);
+        pw.close();
+        return sw.toString();
+    }
+
+    public Response toResponse() {
+        return Response.status(status).entity(this).type(MediaType
+                .APPLICATION_JSON).build();
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public Throwable getCause() {
+        return cause;
+    }
+
+    public String getRequestId() {
+        return "";
+    }
+
+    public String getHelpUrl() {
+        return "";
+    }
 }

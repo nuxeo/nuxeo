@@ -16,15 +16,14 @@
  */
 package org.nuxeo.ecm.webengine.app;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
-
+import com.sun.jersey.api.NotFoundException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebException;
 
-import com.sun.jersey.api.NotFoundException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -32,17 +31,19 @@ import com.sun.jersey.api.NotFoundException;
 @Provider
 public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
 
-    protected static final Log log = LogFactory.getLog(WebEngineExceptionMapper.class);
+    protected static final Log log = LogFactory.getLog
+            (WebEngineExceptionMapper.class);
 
     @Override
-    public Response toResponse(Throwable t) {
-        if (t instanceof NotFoundException) {
-            NotFoundException nfe = (NotFoundException) t;
+    public Response toResponse(Throwable cause) {
+        if (cause instanceof NotFoundException) {
+            NotFoundException nfe = (NotFoundException) cause;
             log.error("JAX-RS 404 Not Found: " + nfe.getNotFoundUri());
         } else {
-            log.error("Exception in JAX-RS processing", t);
+            log.error("Exception in JAX-RS processing", cause);
         }
-        return WebException.wrap(t).getResponse();
+        return WebException.newException(cause.getMessage(),
+                WebException.wrap(cause)).toResponse();
     }
 
 }
