@@ -93,6 +93,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     private static final String MONGODB_INDEX_NAME = "name";
 
+    private static final String MONGODB_LANGUAGE_OVERRIDE = "language_override";
+
+    private static final String FULLTEXT_INDEX_NAME = "fulltext";
+
+    private static final String LANGUAGE_FIELD = "__language";
+
     protected static final String COUNTER_NAME_UUID = "ecm:id";
 
     protected static final String COUNTER_FIELD = "seq";
@@ -378,8 +384,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         DBObject indexKeys = new BasicDBObject();
         indexKeys.put(KEY_FULLTEXT_SIMPLE, MONGODB_INDEX_TEXT);
         indexKeys.put(KEY_FULLTEXT_BINARY, MONGODB_INDEX_TEXT);
-        DBObject indexOptions = new BasicDBObject(MONGODB_INDEX_NAME,
-                "fulltext");
+        DBObject indexOptions = new BasicDBObject();
+        indexOptions.put(MONGODB_INDEX_NAME, FULLTEXT_INDEX_NAME);
+        indexOptions.put(MONGODB_LANGUAGE_OVERRIDE, LANGUAGE_FIELD);
         coll.createIndex(indexKeys, indexOptions);
         // check root presence
         DBObject query = new BasicDBObject(KEY_ID, getRootId());
