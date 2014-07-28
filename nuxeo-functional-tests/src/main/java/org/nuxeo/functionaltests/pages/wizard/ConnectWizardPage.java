@@ -17,16 +17,28 @@
 
 package org.nuxeo.functionaltests.pages.wizard;
 
+import static org.nuxeo.functionaltests.pages.wizard.IFrameHelper.CONNECT_IFRAME_URL_PATTERN;
+
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import com.google.common.base.Function;
+
 public class ConnectWizardPage extends AbstractWizardPage {
+
+    protected static final String REGISTER_DIV_LOCATOR = "//div[@class=\"CSS_CLASS\"]";
 
     public ConnectWizardPage(WebDriver driver) {
         super(driver);
         IFrameHelper.focusOnConnectFrame(driver);
+    }
+
+    @Override
+    public String getTitle() {
+        WebElement title = findElementWithTimeout(By.xpath("//h3"));
+        return title.getText().trim();
     }
 
     public void exitIframe() {
@@ -34,7 +46,7 @@ public class ConnectWizardPage extends AbstractWizardPage {
     }
 
     public String getErrorMessage() {
-        WebElement el = findElementWithTimeout(By.xpath("//div[@class=\"errorFeedback\"]"));
+        WebElement el = findElementWithTimeout(By.cssSelector("div.ui.warning.message"));
         if (el == null) {
             return null;
         }
@@ -43,22 +55,31 @@ public class ConnectWizardPage extends AbstractWizardPage {
 
     @Override
     protected String getNextButtonLocator() {
-        return BUTTON_LOCATOR.replace("LABEL", "Validate & register");
+        return REGISTER_DIV_LOCATOR.replace("CSS_CLASS", "ui blue submit button btnNext");
     }
 
     @Override
     protected String getPreviousButtonLocator() {
-        return BUTTON_LOCATOR.replace("LABEL", "Previous");
+        return REGISTER_DIV_LOCATOR.replace("CSS_CLASS", "ui blue submit button btnPrev");
     }
 
     public ConnectWizardPage getLink(String text) {
         ConnectWizardPage wpage = getLink(ConnectWizardPage.class, text);
-        if (!driver.getCurrentUrl().contains("/site/connect/")) {
+        if (!driver.getCurrentUrl().contains(CONNECT_IFRAME_URL_PATTERN)) {
             System.out.println("Oups, we are out of the frame !!!");
             driver.switchTo().frame("connectForm");
             return asPage(ConnectWizardPage.class);
         }
         return wpage;
+    }
+
+    public ConnectWizardPage submitWithError() {
+        return next(ConnectWizardPage.class, new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver input) {
+                return findElementWithTimeout(By.cssSelector(".warning.message li"), 5 * 1000) != null;
+            }
+        });
     }
 
     public <T extends AbstractPage> T getLink(Class<T> wizardPageClass,

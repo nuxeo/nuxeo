@@ -7,9 +7,9 @@ String connectUrl = collector.getConfigurationParam("org.nuxeo.connect.url");
 if (connectUrl.equals("")) {
     connectUrl = "https://connect.nuxeo.com/nuxeo/site/";
 }
-String formUrl = connectUrl + "connect/embeddedTrial/form";
-formUrl = formUrl + "?WizardCB=" + cbUrl;
-formUrl = formUrl + "&source=wizard&pkg=" + ctx.getDistributionKey();
+String formUrl = connectUrl + "../../register/#/embedded";
+formUrl = formUrl + "?wizardCallbackUrl=" + cbUrl;
+formUrl = formUrl + "&pkg=" + ctx.getDistributionKey();
 
 boolean showRegistrationForm = !ctx.isConnectRegistrationDone();
 

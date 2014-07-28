@@ -33,7 +33,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -559,6 +562,17 @@ public abstract class AbstractTest {
     public static <T> T get(String url, Class<T> pageClassToProxy) {
         driver.get(url);
         return asPage(pageClassToProxy);
+    }
+
+    public static WebDriver getPopup() {
+        String currentWindow = driver.getWindowHandle();
+        for(String popup : driver.getWindowHandles()) {
+            if (popup.equals(currentWindow)) {
+                continue;
+            }
+            return driver.switchTo().window(popup);
+        }
+        return null;
     }
 
     public static <T> T asPage(Class<T> pageClassToProxy) {

@@ -29,7 +29,7 @@ public class IFrameHelper {
 
     protected static final Log log = LogFactory.getLog(IFrameHelper.class);
 
-    public static final String CONNECT_IFRAME_URL_PATTERN = "/site/connect";
+    public static final String CONNECT_IFRAME_URL_PATTERN = "/register/";
 
     public static final String CALLBACK_URL_PATTERN = "ConnectCallback";
 

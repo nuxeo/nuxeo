@@ -32,11 +32,17 @@ import org.nuxeo.functionaltests.pages.admincenter.PackageInstallationScreen;
 import org.nuxeo.functionaltests.pages.admincenter.PackageListingPage;
 import org.nuxeo.functionaltests.pages.admincenter.SystemHomePage;
 import org.nuxeo.functionaltests.pages.admincenter.UpdateCenterPage;
+import org.nuxeo.functionaltests.pages.wizard.ConnectRegistrationPage;
 import org.nuxeo.functionaltests.pages.wizard.ConnectWizardPage;
+import org.nuxeo.functionaltests.pages.wizard.IFrameHelper;
 import org.nuxeo.functionaltests.pages.wizard.SummaryWizardPage;
 import org.nuxeo.functionaltests.pages.wizard.WizardPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.google.common.base.Function;
 
 public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
@@ -168,10 +174,10 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertEquals(CONNECT_FORM_TITLE, connectPage1.getTitle());
 
         // try to validate
-        ConnectWizardPage connectPage2 = connectPage1.next(ConnectWizardPage.class);
+        ConnectWizardPage connectPage2 = connectPage1.submitWithError();
         assertNotNull(connectPage2);
         assertTrue(connectPage2.getErrorMessage().startsWith(
-                "There were some errors in your form: "));
+                "There were some errors in your form:"));
 
         // ok, let's try to skip the screen
         WizardPage connectSkip = connectPage1.navByLink(WizardPage.class,
@@ -187,36 +193,32 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertNotNull(connectPage1);
 
         // Register with a existing account
-        ConnectWizardPage connectSignIn = connectPage1.getLink("click here");
-        // Temporary workaround for spaces around "click here" link text
-        if (connectSignIn == null) {
-            System.out.println("Could not find link 'click here', trying with space");
-            connectSignIn = connectPage1.getLink(" click here");
-        }
-        System.out.println(driver.getCurrentUrl());
+        ConnectRegistrationPage connectSignIn = connectPage1.getLink(
+                "click here").asPage(ConnectRegistrationPage.class);
+
+        // Login through CAS
+        String mainWindow = driver.getWindowHandle();
+        WebDriver popup = AbstractTest.getPopup();
+        System.out.println(popup.getCurrentUrl());
+        popup.findElement(By.id("username")).sendKeys(CONNECT_LOGIN);
+        popup.findElement(By.id("password")).sendKeys(getTestPassword());
+        popup.findElement(By.cssSelector(".btn-submit")).click();
+
+        driver.switchTo().window(mainWindow);
+        IFrameHelper.focusOnConnectFrame(driver);
         assertEquals("Pre-Register your new Nuxeo instance",
                 connectSignIn.getTitle());
-        // enter test login/password
-        connectSignIn.fillInput("clogin", CONNECT_LOGIN);
-        connectSignIn.fillInput("cpassword", getTestPassword());
-        ConnectWizardPage connectProjectPage = connectSignIn.nav(
-                ConnectWizardPage.class, "Continue");
-        assertNotNull(connectProjectPage);
 
         // select the associated project
-        connectProjectPage.selectOption("project",
+        connectSignIn.selectOption("project",
                 CONNECT_PROJECT_SELECTOR_UUID);
         // connectProjectPage.fillInput("project", CONNECT_PROJECT_SELECTOR);
-        ConnectWizardPage connectFinish = connectProjectPage.nav(
-                ConnectWizardPage.class, "Continue");
-        assertNotNull(connectFinish);
-        assertEquals("Your pre-registration has been done!",
-                connectFinish.getTitle());
 
         // **********************
         // Exit Connect Form and Display Packages selection
-        WizardPage packageSelectiondPage = connectFinish.nav(WizardPage.class,
-                "Continue", true);
+        WizardPage packageSelectiondPage = connectSignIn.nav(
+                WizardPage.class, "Continue");
+
         assertNotNull(packageSelectiondPage);
         assertEquals("Select Modules", packageSelectiondPage.getTitle());
 
