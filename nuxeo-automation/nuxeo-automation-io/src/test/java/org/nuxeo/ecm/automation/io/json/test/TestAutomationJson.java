@@ -37,7 +37,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io",
+        "org.nuxeo.ecm.webengine.core" })
 @LocalDeploy("org.nuxeo.ecm.automation.io:test-chains.xml")
 public class TestAutomationJson {
 

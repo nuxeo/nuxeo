@@ -1,12 +1,13 @@
 <component name="org.nuxeo.ecm.automation.io.services.IOComponent">
 
+  <require>org.nuxeo.ecm.webengine.core.service.json</require>
+
 
   <documentation>@author Damien Metzler (dmetzler@nuxeo.com)</documentation>
 
   <implementation class="org.nuxeo.ecm.automation.io.services.IOComponent" />
 
   <service>
-    <provide interface="org.nuxeo.ecm.automation.io.services.JsonFactoryManager" />
     <provide interface="org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService" />
   </service>
 

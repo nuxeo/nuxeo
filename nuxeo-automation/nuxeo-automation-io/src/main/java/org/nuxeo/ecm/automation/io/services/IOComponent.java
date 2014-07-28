@@ -18,6 +18,8 @@ package org.nuxeo.ecm.automation.io.services;
 
 import org.nuxeo.ecm.automation.io.services.codec.CodecDescriptor;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
+import org.nuxeo.ecm.webengine.JsonFactoryManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -33,14 +35,14 @@ public class IOComponent extends DefaultComponent {
     protected static final String XP_CODECS = "codecs";
 
 
-    private JsonFactoryManager factoryProvider;
+    private JsonFactoryManager jsonFactoryManager;
 
     private ObjectCodecService codecs;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        factoryProvider = new JsonFactoryManager();
-        codecs = new ObjectCodecService(factoryProvider.getJsonFactory());
+        jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
+        codecs = new ObjectCodecService(jsonFactoryManager.getJsonFactory());
     }
 
     @Override
@@ -69,7 +71,7 @@ public class IOComponent extends DefaultComponent {
         if (ObjectCodecService.class.isAssignableFrom(adapter)) {
             return adapter.cast(codecs);
         } else  if(JsonFactoryManager.class.isAssignableFrom(adapter)) {
-            return adapter.cast(factoryProvider);
+            return adapter.cast(jsonFactoryManager);
         }
         return null;
     }

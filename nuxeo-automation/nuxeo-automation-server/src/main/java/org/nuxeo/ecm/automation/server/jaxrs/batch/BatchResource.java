@@ -42,11 +42,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
@@ -209,7 +209,7 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
             return ResponseHelper.getResponse(result, request);
         } catch (Exception e) {
             log.error("Error while executing automation batch ", e);
-            if (ExceptionHandler.isSecurityError(e)) {
+            if (WebException.isSecurityError(e)) {
                 return Response.status(Status.FORBIDDEN).entity(
                         "{\"error\" : \"" + e.getMessage() + "\"}").build();
             } else {

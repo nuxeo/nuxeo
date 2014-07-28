@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -26,10 +27,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.ConflictOperationException;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.Constants;
-import org.nuxeo.ecm.automation.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.AutomationInfo;
 import org.nuxeo.ecm.core.api.Blob;
@@ -38,6 +40,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -103,7 +106,7 @@ public class AutomationResource extends ModuleRoot {
             }
             return ResponseHelper.notFound();
         } catch (Exception e) {
-            throw ExceptionHandler.newException(e);
+            throw WebException.newException(e);
         }
     }
 
@@ -137,9 +140,20 @@ public class AutomationResource extends ModuleRoot {
             try {
                 OperationType op = service.getOperation(oid);
                 return new OperationResource(service, op);
-            } catch (Throwable e) {
-                throw ExceptionHandler.newException(
-                        "Failed to invoke operation: " + oid, e);
+            } catch (Throwable cause) {
+                if (cause instanceof ConflictOperationException) {
+                    return WebException.newException(
+                            "Failed to invoke operation: " + oid, cause,
+                            HttpServletResponse.SC_CONFLICT).toResponse();
+                } else if (cause instanceof OperationNotFoundException) {
+                    return WebException.newException(
+                            "Failed to invoke operation: " + oid, cause,
+                            HttpServletResponse.SC_NOT_FOUND).toResponse();
+                } else {
+                    return WebException.newException(
+                            "Failed to invoke operation: " + oid,
+                            cause).toResponse();
+                }
             }
         }
     }

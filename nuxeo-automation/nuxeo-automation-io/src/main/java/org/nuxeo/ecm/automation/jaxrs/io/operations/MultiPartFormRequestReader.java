@@ -35,12 +35,12 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.BlobList;
-import org.nuxeo.ecm.automation.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.jaxrs.io.InputStreamDataSource;
 import org.nuxeo.ecm.automation.jaxrs.io.SharedFileInputStream;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -114,7 +114,7 @@ public class MultiPartFormRequestReader implements
                                 + mp.getBodyPart(i).getHeader("Content-ID")[0]
                                 + " -> " + mp.getBodyPart(i).getContentType());
                     }
-                    throw ExceptionHandler.newException(new IllegalStateException(
+                    throw WebException.newException(new IllegalStateException(
                             "Received only " + cnt
                                     + " part in a multipart request"));
                 }
@@ -127,7 +127,7 @@ public class MultiPartFormRequestReader implements
                 tmp.delete();
             }
         } catch (Throwable e) {
-            throw ExceptionHandler.newException(
+            throw WebException.newException(
                     "Failed to parse multipart request", e);
         }
         return req;

@@ -22,7 +22,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonFactory;
-import org.nuxeo.ecm.automation.io.services.JsonFactoryManager;
+import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.jersey.core.spi.component.ComponentContext;
@@ -38,9 +38,6 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 @Provider
 public class JsonFactoryProvider implements
         InjectableProvider<Context, Type>, Injectable<JsonFactory> {
-
-
-
 
     @Override
     public JsonFactory getValue() {

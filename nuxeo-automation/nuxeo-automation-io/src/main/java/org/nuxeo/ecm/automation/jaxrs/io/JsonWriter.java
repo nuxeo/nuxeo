@@ -30,14 +30,14 @@ import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
-import org.nuxeo.ecm.automation.io.services.JsonFactoryManager;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodec;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
-import org.nuxeo.ecm.automation.jaxrs.ExceptionHandler;
 import org.nuxeo.ecm.automation.jaxrs.LoginInfo;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.AutomationInfo;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
+import org.nuxeo.ecm.webengine.JsonFactoryManager;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -290,19 +290,31 @@ public class JsonWriter {
         jg.flush();
     }
 
-    public static void writeException(OutputStream out, ExceptionHandler eh)
+    /**
+     * @deprecated since 5.9.6 - use {@link org.nuxeo.ecm.webengine.app
+     * .JsonWebengineWriter#writeException(java.io.OutputStream,
+     * org.nuxeo.ecm.webengine.WebException)} instead
+     */
+    @Deprecated
+    public static void writeException(OutputStream out, WebException eh)
             throws IOException {
         writeException(createGenerator(out), eh);
     }
 
-    public static void writeException(JsonGenerator jg, ExceptionHandler eh)
+    /**
+     * @deprecated since 5.9.6 - use {@link org.nuxeo.ecm.webengine.app
+     * .JsonWebengineWriter#writeException(org.codehaus.jackson.JsonGenerator,
+     * org.nuxeo.ecm.webengine.WebException)} instead
+     */
+    @Deprecated
+    public static void writeException(JsonGenerator jg, WebException eh)
             throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "exception");
         jg.writeStringField("type", eh.getType());
         jg.writeNumberField("status", eh.getStatus());
         jg.writeStringField("message", eh.getMessage());
-        jg.writeStringField("stack", eh.getSerializedStackTrace());
+        jg.writeStringField("stack", eh.getStackTraceString());
         jg.writeObjectField("cause", eh.getCause());
         jg.writeEndObject();
         jg.flush();
