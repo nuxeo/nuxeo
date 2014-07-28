@@ -171,7 +171,7 @@ author: lkemen@nuxeo.com
   padding: 0 .5em 0 0 }
 
 .bubbleShadow {
-  box-shadow: 0 -5px 5px #eee inset, 0 1px 2px #eee }
+  box-shadow: 0 -1px 2px #eee inset }
 
 a.bubbleBox:hover {
   background: none "color.major.light (__FLAVOR__ background)";
