@@ -7,12 +7,6 @@
 
     <h:panelGroup rendered="#{!registredConnectInstance}">
 
-      <div class="processMessage completeInfo">
-          #{messages['connect.message.notregistred']} <a
-            href="https://doc.nuxeo.com/x/l4FH" class="connectLink"
-            target="NuxeoConnectSite">#{messages['connect.message.discoverconnect']}</a>
-      </div>
-
       <a4j:status>
         <f:facet name="start">
           <h:outputText
@@ -21,20 +15,23 @@
         </f:facet>
       </a4j:status>
 
-      <table class="login">
-        <tr>
-          <td>
-            <div class="loginBlock">
+      <div class="gridContainer">
+        <div class="gridRow">
+          <div class="gridBox gridStyle8">
+            <div class="bubbleBox bubbleShadow">
               <div class="title">
                 <h3>
-                  <h:outputText
-                    value="#{messages['label.nuxeo.connect.onlineRegistration']}" />
+                  <h:outputText value="#{messages['label.nuxeo.connect.onlineRegistration']}" />
                 </h3>
               </div>
-              <div class="detail">
+              <div>
+                <div class="processMessage completeInfo">
+                    #{messages['connect.message.notregistred']} <a
+                      href="https://doc.nuxeo.com/x/l4FH" class="connectLink"
+                      target="NuxeoConnectSite">#{messages['connect.message.discoverconnect']}</a>
+                </div>
                 <p>
-                  <h:outputText
-                    value="#{messages['label.nuxeo.connect.onlineRegistrationDescription']}" />
+                  <h:outputText value="#{messages['label.nuxeo.connect.onlineRegistrationDescription']}" />
                   (<a href="#{nuxeoConnectUrl}../../register"
                     class="connectLink" target="NuxeoConnectSite">#{messages['connect.message.newaccount']}</a>).
                 </p>
@@ -62,16 +59,14 @@
 
               </div>
             </div>
-          </td>
-          <td>
-            <div class="loginBlock wide">
+            <div class="bubbleBox">
               <div class="title">
                 <h3>
                   <h:outputText
                     value="#{messages['label.nuxeo.connect.offlineRegistration']}" />
                 </h3>
               </div>
-              <div class="detail">
+              <div>
                 <p>
                   <h:outputText
                     value="#{messages['label.nuxeo.connect.offlineRegistrationDescription']}" />
@@ -122,9 +117,9 @@
                 </h:form>
               </div>
             </div>
-          </td>
-        </tr>
-      </table>
+          </div>
+        </div>
+      </div>
 
     </h:panelGroup>
 
