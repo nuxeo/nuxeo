@@ -12,11 +12,6 @@
 <%
 boolean connectOK = ctx.isConnectRegistrationDone();
 %>
-<%if (connectOK) {
-   Map<String,String> connectMap = ctx.getConnectMap();%>
-   <h2> <fmt:message key="label.connectFinish.ok" /> </h2>
-   <div id="CLID"><%=connectMap.get("CLID")%></div><br/><br/>
-<%}%>
   <div class="screenExplanations">
   <table>
   <%Map<String,String> changedParams = collector.getChangedParameters();
@@ -46,6 +41,14 @@ boolean connectOK = ctx.isConnectRegistrationDone();
   <%} %>
   </table>
  </div>
+
+ <%if (connectOK) {
+    Map<String,String> connectMap = ctx.getConnectMap();%>
+    <div class="screenExplanations">
+      <div class="bold"><fmt:message key="label.connectFinish.ok" /></div>
+      <div id="CLID"><%=connectMap.get("CLID")%></div>
+    </div>
+ <%}%>
 
  <div class="buttonContainer">
 <%if (currentPage.prev()!=null) { %>
