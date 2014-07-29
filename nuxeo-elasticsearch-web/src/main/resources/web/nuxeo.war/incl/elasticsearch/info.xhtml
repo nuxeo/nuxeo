@@ -46,14 +46,39 @@ Number of command processed since Nuxeo instance startup: <h:outputText value="#
 
   <h3> Elasticsearch Stats </h3>
 
+  <div>
+    <a id="ESStatsOpen" href="#">Expand all</a>
+    <a id="ESStatsClose" href="#" style="display:none">Unexpand all</a>
+  </div>
+
   <div id="ESStats"></div>
 
   <h3> Elasticsearch Cluster Config</h3>
+
+  <div>
+    <a id="ESConfigOpen" href="#">Expand all</a>
+    <a id="ESConfigClose" href="#" style="display:none">Unexpand all</a>
+  </div>
 
   <div id="ESConfig"></div>
 
   <a4j:outputPanel ajaxRendered="true">
     <script>
+function initExpandAll(divId) {
+  jQuery('#' + divId + 'Open').click(function() {
+    jQuery(this).css('display', 'none');
+    jQuery('#' + divId + ' div.closed > div.esheader > div.arrow').click();
+    jQuery('#' + divId + 'Close').css('display', '');
+    return false;
+  });
+  jQuery('#' + divId + 'Close').click(function() {
+    jQuery(this).css('display', 'none');
+    jQuery('#' + divId + ' div.open > div.esheader > div.arrow').click();
+    jQuery('#' + divId + 'Open').css('display', '');
+    return false;
+  });
+}
+
 function initESInfo() {
   // I know this is bad
   jQuery('head').append('<link rel="stylesheet" type="text/css" href="#{baseURL}css/displayESJSON.css"/>');
@@ -63,7 +88,11 @@ function initESInfo() {
 
 }
 
-initESInfo();
+jQuery(document).ready(function(){
+  initESInfo();
+  initExpandAll('ESStats');
+  initExpandAll('ESConfig');
+})
     </script>
   </a4j:outputPanel>
 </div>
