@@ -663,7 +663,8 @@ public class PersistenceContext {
                 todo.add(rowId);
             } else {
                 State state = fragment.getState();
-                if (state != State.DELETED && state != State.DELETED_DEPENDENT) {
+                if (state != State.DELETED && state != State.DELETED_DEPENDENT
+                        && (state != State.ABSENT || allowAbsent)) {
                     res.add(fragment);
                 }
             }

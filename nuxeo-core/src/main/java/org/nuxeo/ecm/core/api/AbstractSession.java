@@ -1598,7 +1598,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             notifyEvent(DocumentEventTypes.SESSION_SAVED, null, options, null,
                     null, true, false);
         } catch (ConcurrentUpdateDocumentException e) {
-            throw new ConcurrentUpdateException("Failed to save session", e);
+            throw new ConcurrentUpdateException("Failed to save session: " + e,
+                    e);
         } catch (DocumentException e) {
             throw new ClientException("Failed to save session", e);
         }

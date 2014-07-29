@@ -152,7 +152,11 @@ public class Node {
     }
 
     public boolean isProxy() {
-        return getPrimaryType().equals(model.PROXY_TYPE);
+        String primaryType = getPrimaryType();
+        if (primaryType == null) {
+            throw new NullPointerException(this.toString());
+        }
+        return primaryType.equals(model.PROXY_TYPE);
     }
 
     private static final String[] NO_MIXINS = {};
