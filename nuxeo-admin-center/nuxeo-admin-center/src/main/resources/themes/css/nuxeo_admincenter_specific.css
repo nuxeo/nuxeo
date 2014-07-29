@@ -34,6 +34,84 @@ author: lkemen@nuxeo.com
 
 .hostInfos pre { font-size: 135%; padding: 1em }
 
+/* Connect registration boxes */
+.nxconnectBox {
+  font-size: 105%;
+  margin-bottom: 2em;
+  padding: 1em 2em 2em;}
+
+.nxconnectBox h2 {
+  border-bottom: 1px solid #eee;
+  color: #000;
+  font-weight: bold;
+  margin-bottom: 1em;}
+
+.nxconnectBox .gridStyle7 {
+  font-size: 14px;
+  min-height: 160px;
+  margin-top: 1.5em;}
+
+.nxconnectBox .gridStyle7 img {
+  float: left;
+  margin: 0 1em 0 2em;
+  width: 25px;}
+
+.nxconnectBox .nxconnectStudio,
+.nxconnectBox .nxconnectMaintenance,
+.nxconnectBox .nxconnectInstance {
+  color: #666;
+  display: block;
+  font-weight: bold;
+  padding: .3em 0 .9em;}
+
+.nxconnectBox .buttonsGadget {
+  margin: 0;
+  padding: 0 0 2em;}
+
+.nxconnectBox .button {
+  background-color: #00adff;
+  border: medium none;
+  border-radius: 0;
+  box-shadow: none;
+  color: #fff;
+  font-size: 1.2em;
+  padding: 1em;}
+
+.nxconnectBox .button:hover {
+  background-color: #0079b3;
+  border: medium none;
+  border-radius: 0;
+  box-shadow: none;}
+
+.nxconnectBox .gridRow.separate {
+  border-top: 1px solid #eee;}
+
+.nxconnectBox .gridStyle6 {
+  padding-top: 0.5em;}
+
+.nxofflineBox {
+  padding: 0 2em 2em;}
+
+.nxofflineBox .title {
+  margin-bottom: 2em;}
+
+.nxofflineBox .gridStyle1 {
+  text-align: center;
+  padding-top: 0.15em;}
+
+.nxofflineBox .importantLabel {
+  display: block;}
+
+.nxofflineBox .gridStyle11 {
+  padding-bottom: 1.5em;}
+
+.nxofflineBox .required {
+  display: block;
+  padding: 0.3em 0;}
+
+.nxofflineBox .required > input {
+  width: 97%;}
+
 /* =Setup Panel */
 .setupPanel .dataOutput th { border-bottom: 1px solid #C7C7C7; font-size: 1.05em; padding: 0 0 .4em }
 .setupPanel .dataOutput td { border: none; padding: 0 0 .4em .6em }
