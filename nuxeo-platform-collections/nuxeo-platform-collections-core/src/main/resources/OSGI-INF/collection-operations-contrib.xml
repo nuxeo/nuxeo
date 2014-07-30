@@ -9,6 +9,7 @@
     <operation class="org.nuxeo.ecm.collections.core.automation.RemoveFromCollectionOperation" />
     <operation class="org.nuxeo.ecm.collections.core.automation.GetCollectionsOperation" />
     <operation class="org.nuxeo.ecm.collections.core.automation.GetDocumentsFromCollectionOperation" />
+    <operation class="org.nuxeo.ecm.collections.core.automation.GetDocumentsFromFavoritesOperation" />
 
   </extension>
 </component>
