@@ -139,11 +139,16 @@ public class TransactionalCoreSessionWrapper implements InvocationHandler,
             if (TransactionHelper.isTransactionActive()
                     && needsRollback(method, t)) {
                 TransactionHelper.setTransactionRollbackOnly();
-                log.warn("Setting transaction rollback only due to exception"
-                        + " (check DEBUG logs for stacktrace): " + t);
+                if (!(t instanceof ConcurrentUpdateException)) {
+                    // don't log a WARN for ConcurrentUpdateException
+                    // because often this will be retried by the Work framework
+                    // log is still available at DEBUG level
+                    log.warn("Setting transaction ROLLBACK ONLY due to exception"
+                            + " (check DEBUG logs for stacktrace): " + t);
+                }
                 if (log.isDebugEnabled()) {
                     log.debug(
-                            "Setting transaction rollback only due to exception: "
+                            "Setting transaction ROLLBACK ONLY due to exception: "
                                     + t, t);
                 }
             }
