@@ -342,19 +342,21 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
     @SuppressWarnings("unchecked")
     @Override
     public long getResultsCount() {
-        buildAuditQuery(false);
+        if (resultsCount == AbstractPageProvider.UNKNOWN_SIZE) {
+            buildAuditQuery(false);
 
-        AuditReader reader;
-        try {
-            reader = Framework.getService(AuditReader.class);
-        } catch (Exception e) {
-            return 0;
+            AuditReader reader;
+            try {
+                reader = Framework.getService(AuditReader.class);
+            } catch (Exception e) {
+                return 0;
+            }
+
+            List<Long> res = (List<Long>) reader.nativeQuery(
+                    "select count(log.id) " + auditQuery, auditQueryParams, 1,
+                    20);
+            resultsCount = res.get(0).longValue();
         }
-
-        List<Long> res = (List<Long>) reader.nativeQuery(
-                "select count(log.id) " + auditQuery, auditQueryParams, 1, 20);
-        resultsCount = res.get(0).longValue();
-
         return resultsCount;
     }
 }
