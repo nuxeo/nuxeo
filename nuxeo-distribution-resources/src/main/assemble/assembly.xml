@@ -92,6 +92,9 @@
     <copy todir="${outdir}/${distribution}/postgresql/lib">
       <artifact:file artifactId="postgresql" />
     </copy>
+    <copy todir="${outdir}/${distribution}/mongodb/lib">
+      <artifact:file artifactId="mongo-java-driver" />
+    </copy>
     <copy todir="${outdir}/${distribution}/default/${h2-lib-dir}">
       <artifact:file artifactId="h2" />
     </copy>

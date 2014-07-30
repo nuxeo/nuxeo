@@ -1,6 +1,7 @@
 <#escape x as x?xml>
 <?xml version="1.0"?>
 <component name="default-repository-config">
+<#if "${nuxeo.mongodb.server}" == "">
   <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
     point="repository">
     <repository name="default"
@@ -99,5 +100,13 @@
 </#if>
     </repository>
   </extension>
+<#else>
+  <extension target="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService"
+      point="repository">
+    <repository name="default" label="MongoDB Repository">
+      <server>${nuxeo.mongodb.server}</server>
+    </repository>
+  </extension>
+</#if>
 </component>
 </#escape>

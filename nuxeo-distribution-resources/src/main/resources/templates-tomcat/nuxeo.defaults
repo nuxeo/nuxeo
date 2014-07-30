@@ -51,6 +51,9 @@ nuxeo.redis.database=0
 nuxeo.redis.timeout=2000
 nuxeo.work.queuing=redis
 
+# MongoDB
+nuxeo.mongodb.server=
+
 nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
 nuxeo.notification.eMailSigner=The Nuxeo team
 
