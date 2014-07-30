@@ -118,7 +118,7 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
         if (!accept(request)) {
             chain.doFilter(request, response);
             return;
-        } 
+        }
         boolean startedTx = false;
         if (!TransactionHelper.isTransactionActive()) {
             startedTx = TransactionHelper.startTransaction();
@@ -412,7 +412,9 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             HttpServletResponse httpResponse) throws IOException,
             ServletException {
 
-        OAuthMessage message = OAuthServlet.getMessage(httpRequest, null);
+        String URL = getRequestURL(httpRequest);
+
+        OAuthMessage message = OAuthServlet.getMessage(httpRequest, URL);
 
         String consumerKey = message.getConsumerKey();
         String signatureMethod = message.getSignatureMethod();
@@ -490,6 +492,24 @@ public class NuxeoOAuthFilter implements NuxeoAuthPreFilter {
             }
         }
         return null;
+    }
+
+    /**
+     * Get the URL used for this request by checking the X-Forwarded-Proto header used
+     * in the request.
+     * @param httpRequest
+     * @return
+     *
+     * @since 5.9.5
+     */
+    public static String getRequestURL(HttpServletRequest httpRequest) {
+        String URL = httpRequest.getRequestURL().toString();
+        String forwardedProto = httpRequest.getHeader("X-Forwarded-Proto");
+        if(forwardedProto != null && !URL.startsWith(forwardedProto)) {
+                int protoDelimiterIndex = URL.indexOf("://");
+                URL = forwardedProto + URL.substring(protoDelimiterIndex);
+        }
+        return URL;
     }
 
 }
