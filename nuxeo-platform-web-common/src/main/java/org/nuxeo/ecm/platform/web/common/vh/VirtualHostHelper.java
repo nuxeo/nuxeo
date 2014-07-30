@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.web.common.vh;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -32,7 +33,10 @@ public class VirtualHostHelper {
 
     private static final String X_FORWARDED_HOST = "x-forwarded-host";
 
+    private static final String X_FORWARDED_PROTO = "x-forwarded-proto";
+
     private static final String VH_HEADER = "nuxeo-virtual-host";
+
 
     // Utility class.
     private VirtualHostHelper() {
@@ -105,7 +109,14 @@ public class VirtualHostHelper {
                         }
                     }
                 }
+
                 String scheme = httpRequest.getScheme();
+
+                String forwardedProto = httpRequest.getHeader(X_FORWARDED_PROTO);
+                if(forwardedProto != null) {
+                    scheme = forwardedProto;
+                }
+
                 baseURL = getServerUrl(scheme, serverName, serverPort);
             }
         }
@@ -123,7 +134,11 @@ public class VirtualHostHelper {
         String baseURL = null;
         String serverUrl = getServerURL(request, false);
         if (serverUrl != null) {
-            baseURL = serverUrl + getWebAppName(request) + '/';
+            String webAppName = getWebAppName(request);
+
+            baseURL = StringUtils.isNotBlank(webAppName) ? serverUrl
+                    + webAppName + '/' : serverUrl;
+
         }
         return baseURL;
     }
@@ -131,8 +146,8 @@ public class VirtualHostHelper {
     /**
      * Returns the context path of the application. Try to get it from the
      * {@code ServletRequest} and then from the
-     * {@code org.nuxeo.ecm.contextPath} system property.
-     * Fallback on default context path {@code /nuxeo}.
+     * {@code org.nuxeo.ecm.contextPath} system property. Fallback on default
+     * context path {@code /nuxeo}.
      */
     public static String getContextPath(ServletRequest request) {
         HttpServletRequest httpRequest = getHttpServletRequest(request);
