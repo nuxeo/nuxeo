@@ -1013,6 +1013,62 @@ public class TestAuditFileSystemChangeFinder {
         }
     }
 
+    @Test
+    public void testMoveToOtherUsersSyncRoot() throws Exception {
+        DocumentModel subFolder;
+        List<FileSystemItemChange> changes;
+        FileSystemItemChange change;
+        try {
+            // Create a subfolder in folder1 as Administrator
+            subFolder = session.createDocument(session.createDocumentModel(
+                    folder1.getPathAsString(), "subFolder", "Folder"));
+            // Register folder1 as a sync root for user1
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    user1Session.getPrincipal(), folder1, user1Session);
+            // Register folder2 as a sync root for Administrator
+            nuxeoDriveManager.registerSynchronizationRoot(
+                    session.getPrincipal(), folder2, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Check changes for user1, expecting 3:
+            // - rootRegistered for folder1
+            // - documentCreated for subFolder1
+            // - documentCreated for folder1 at init
+            changes = getChanges(user1Session.getPrincipal());
+            assertEquals(3, changes.size());
+            change = changes.get(0);
+            assertEquals("rootRegistered", change.getEventId());
+            assertEquals(folder1.getId(), change.getDocUuid());
+            change = changes.get(1);
+            assertEquals("documentCreated", change.getEventId());
+            assertEquals(subFolder.getId(), change.getDocUuid());
+            change = changes.get(2);
+            assertEquals("documentCreated", change.getEventId());
+            assertEquals(folder1.getId(), change.getDocUuid());
+
+            // As Administrator, move subfolder from folder1 (sync root for
+            // user1) to folder2 (sync root for Administrator but not for
+            // user1)
+            session.move(subFolder.getRef(), folder2.getRef(), null);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Check changes for user1, expecting 1: deleted for subFolder
+            changes = getChanges(user1Session.getPrincipal());
+            assertEquals(1, changes.size());
+            change = changes.get(0);
+            assertEquals("deleted", change.getEventId());
+            assertEquals(subFolder.getId(), change.getDocUuid());
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
     /**
      * Gets the document changes for the given user's synchronization roots
      * using the {@link AuditChangeFinder} and updates the

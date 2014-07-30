@@ -30,12 +30,8 @@ import org.nuxeo.drive.adapter.NuxeoDriveContribException;
 import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
-import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -86,10 +82,6 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
                 return;
             }
         }
-        if (DocumentEventTypes.ABOUT_TO_MOVE.equals(event.getName())
-                && !handleAboutToMove(ctx, doc)) {
-            return;
-        }
         if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())
                 && !handleLifeCycleTransition(ctx)) {
             return;
@@ -134,29 +126,6 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         } else {
             return null;
         }
-    }
-
-    protected boolean handleAboutToMove(DocumentEventContext ctx,
-            DocumentModel doc) throws ClientException {
-        // Interested in a move from a synchronization root to a non
-        // synchronized container
-        DocumentRef dstRef = (DocumentRef) ctx.getProperty(CoreEventConstants.DESTINATION_REF);
-        if (dstRef == null) {
-            return false;
-        }
-        CoreSession session = doc.getCoreSession();
-        IdRef dstIdRef;
-        if (dstRef instanceof IdRef) {
-            dstIdRef = (IdRef) dstRef;
-        } else {
-            DocumentModel dstDoc = session.getDocument(dstRef);
-            dstIdRef = new IdRef(dstDoc.getId());
-        }
-        if (Framework.getLocalService(NuxeoDriveManager.class).getSynchronizationRootReferences(
-                session).contains(dstIdRef)) {
-            return false;
-        }
-        return true;
     }
 
     protected boolean handleLifeCycleTransition(DocumentEventContext ctx)
