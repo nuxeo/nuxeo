@@ -23,6 +23,9 @@
     <append
       from="nuxeo.collections.jsf.tmp/OSGI-INF/l10n/messages_en_US.properties"
       to="nuxeo.war/WEB-INF/classes/messages_en_US.properties" addNewLine="true" />
+    <append
+      from="nuxeo.collections.jsf.tmp/OSGI-INF/l10n/messages_en_US.properties"
+      to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
 
     <delete path="nuxeo.collections.jsf.tmp" />
   </install>
