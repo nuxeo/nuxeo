@@ -56,7 +56,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     public static final String TYPE_ROOT = "Root";
 
     // change to have deterministic pseudo-UUID generation for debugging
-    protected final boolean DEBUG_UUIDS = true;
+    protected final boolean DEBUG_UUIDS = false;
 
     private static final String UUID_ZERO = "00000000-0000-0000-0000-000000000000";
 
@@ -141,7 +141,8 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         Transaction transaction;
         try {
             transaction = TransactionHelper.lookupTransactionManager().getTransaction();
-            if (transaction.getStatus() != Status.STATUS_ACTIVE) {
+            if (transaction != null
+                    && transaction.getStatus() != Status.STATUS_ACTIVE) {
                 transaction = null;
             }
         } catch (SystemException | NamingException e) {
