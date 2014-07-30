@@ -1018,6 +1018,8 @@ public class TestAuditFileSystemChangeFinder {
         DocumentModel subFolder;
         List<FileSystemItemChange> changes;
         FileSystemItemChange change;
+
+        TransactionHelper.startTransaction();
         try {
             // Create a subfolder in folder1 as Administrator
             subFolder = session.createDocument(session.createDocumentModel(
