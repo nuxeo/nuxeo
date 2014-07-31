@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -73,18 +73,22 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
 
         // deploy specific adapter for testing external blobs: files are stored
         // in temporary directory
-//        deployContrib("org.nuxeo.ecm.core.storage.mem.tests",
-//                "OSGI-INF/test-externalblob-adapters-contrib.xml");
-//        // set container to temp directory here in case that depends on the OS
-//        // or machine configuration and add funny characters to avoid problems
-//        // due to xml parsing
-//        BlobHolderAdapterService service = Framework.getService(BlobHolderAdapterService.class);
-//        assertNotNull(service);
-//        ExternalBlobAdapter adapter = service.getExternalBlobAdapterForPrefix("fs");
-//        Map<String, String> props = new HashMap<String, String>();
-//        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n"
-//                + System.getProperty("java.io.tmpdir") + " ");
-//        adapter.setProperties(props);
+        // deployContrib("org.nuxeo.ecm.core.storage.mem.tests",
+        // "OSGI-INF/test-externalblob-adapters-contrib.xml");
+        // // set container to temp directory here in case that depends on the
+        // OS
+        // // or machine configuration and add funny characters to avoid
+        // problems
+        // // due to xml parsing
+        // BlobHolderAdapterService service =
+        // Framework.getService(BlobHolderAdapterService.class);
+        // assertNotNull(service);
+        // ExternalBlobAdapter adapter =
+        // service.getExternalBlobAdapterForPrefix("fs");
+        // Map<String, String> props = new HashMap<String, String>();
+        // props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n"
+        // + System.getProperty("java.io.tmpdir") + " ");
+        // adapter.setProperties(props);
 
     }
 
@@ -147,7 +151,8 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
             fail("Should throw PropertyNotFoundException");
         } catch (PropertyNotFoundException e) {
             assertEquals("tp:complexList/notaninteger/foo", e.getPath());
-            assertEquals("segment notaninteger cannot be resolved", e.getDetail());
+            assertEquals("segment notaninteger cannot be resolved",
+                    e.getDetail());
         }
         try {
             doc.getPropertyValue("tp:complexList/0/foo");
@@ -207,8 +212,8 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:complexList") instanceof List);
         assertEquals(0, ((List) doc.getPropertyValue("tp:complexList")).size());
-        ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> item = new HashMap<String, Serializable>();
+        ArrayList<Map<String, Serializable>> values = new ArrayList<>();
+        Map<String, Serializable> item = new HashMap<>();
         item.put("string", "foo");
         Calendar cal = Calendar.getInstance();
         cal.set(2008, 6, 10);
@@ -226,10 +231,10 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
 
     @Test
     public void testComplexListChange() throws Exception {
-        ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> item1 = new HashMap<String, Serializable>();
-        Map<String, Serializable> item2 = new HashMap<String, Serializable>();
-        Map<String, Serializable> item3 = new HashMap<String, Serializable>();
+        ArrayList<Map<String, Serializable>> values = new ArrayList<>();
+        Map<String, Serializable> item1 = new HashMap<>();
+        Map<String, Serializable> item2 = new HashMap<>();
+        Map<String, Serializable> item3 = new HashMap<>();
         List<?> actual;
 
         item1.put("string", "foo");
@@ -342,7 +347,7 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:fileList") instanceof List);
         assertEquals(0, ((List) doc.getPropertyValue("tp:fileList")).size());
-        ArrayList<Blob> values = new ArrayList<Blob>();
+        ArrayList<Blob> values = new ArrayList<>();
         StringBlob blob = new StringBlob("My content");
         values.add(blob);
         doc.setPropertyValue("tp:fileList", values);
@@ -363,8 +368,8 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
         assertTrue(doc.getPropertyValue("tp:fileComplexList") instanceof List);
         assertEquals(0,
                 ((List) doc.getPropertyValue("tp:fileComplexList")).size());
-        ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> item = new HashMap<String, Serializable>();
+        ArrayList<Map<String, Serializable>> values = new ArrayList<>();
+        Map<String, Serializable> item = new HashMap<>();
         StringBlob blob = new StringBlob("My content");
         item.put("blob", blob);
         item.put("filename", "My filename");
@@ -388,7 +393,8 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
 
     @Test
     public void testComplexParallelFetch() throws Exception {
-        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "TestDocument2");
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2",
+                "TestDocument2");
         doc2.setPropertyValue("dc:title", "doc2");
         doc2 = session.createDocument(doc2);
         session.save();
@@ -475,7 +481,7 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
         assertTrue(p.getValue() instanceof Map);
         assertEquals(2, ((Map) p.getValue()).size());
         p.setValue("string", "test");
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         map.put("string", "test2");
         p.setValue("complex", map);
 
@@ -557,7 +563,7 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
     @Test
     public void testExternalBlobDocumentProperty() throws Exception {
         File file = createTempFile();
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         String uri = String.format("fs:%s", file.getName());
         map.put(ExternalBlobProperty.URI, uri);
         map.put(ExternalBlobProperty.FILE_NAME, "hello.txt");
@@ -605,8 +611,8 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
         assertEquals(0, ((List) doc.getPropertyValue(propName)).size());
 
         File file = createTempFile();
-        ArrayList<Map> values = new ArrayList<Map>();
-        Map<String, String> map = new HashMap<String, String>();
+        ArrayList<Map> values = new ArrayList<>();
+        Map<String, String> map = new HashMap<>();
         String uri = String.format("fs:%s", file.getName());
         map.put(ExternalBlobProperty.URI, uri);
         map.put(ExternalBlobProperty.FILE_NAME, "hello.txt");
@@ -636,11 +642,11 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
         // not null on list
         assertTrue(doc.getPropertyValue(propName) instanceof List);
         assertEquals(0, ((List) doc.getPropertyValue(propName)).size());
-        ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> item = new HashMap<String, Serializable>();
+        ArrayList<Map<String, Serializable>> values = new ArrayList<>();
+        Map<String, Serializable> item = new HashMap<>();
 
         File file = createTempFile();
-        HashMap<String, String> blobMap = new HashMap<String, String>();
+        HashMap<String, String> blobMap = new HashMap<>();
         String uri = String.format("fs:%s", file.getName());
         blobMap.put(ExternalBlobProperty.URI, uri);
         blobMap.put(ExternalBlobProperty.FILE_NAME, "hello.txt");
@@ -699,8 +705,8 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
     @Test
     public void testXPath1() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
-        List<Object> files = new ArrayList<Object>(2);
-        Map<String, Object> f = new HashMap<String, Object>();
+        List<Object> files = new ArrayList<>(2);
+        Map<String, Object> f = new HashMap<>();
         f.put("filename", "f1");
         files.add(f);
         doc.setProperty("files", "files", files);
@@ -712,10 +718,10 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
     @Test
     public void testXPath2() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
-        HashMap<String, Object> attachedFile = new HashMap<String, Object>();
-        List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
+        HashMap<String, Object> attachedFile = new HashMap<>();
+        List<Map<String, Object>> vignettes = new ArrayList<>();
         attachedFile.put("vignettes", vignettes);
-        Map<String, Object> vignette = new HashMap<String, Object>();
+        Map<String, Object> vignette = new HashMap<>();
         Long width = Long.valueOf(123);
         vignette.put("width", width);
         vignettes.add(vignette);
@@ -746,8 +752,7 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
         assertEquals("foo/bar/0", canonXPath("foo/bar/gee[0]"));
         assertEquals("foo/0/bar/123/moo",
                 canonXPath("foo/gee[0]/bar/baz[123]/moo"));
-        assertEquals("foo/0/bar/*/moo",
-                canonXPath("foo/gee[0]/bar/baz[*]/moo"));
+        assertEquals("foo/0/bar/*/moo", canonXPath("foo/gee[0]/bar/baz[*]/moo"));
     }
 
     @Test
@@ -797,7 +802,7 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
         doc.setPropertyValue("dc:subjects", new String[] { "bar" });
         StringBlob blob = new StringBlob("foo");
         blob.setFilename("fooname");
-        LinkedList<Object> blobs = new LinkedList<Object>();
+        LinkedList<Object> blobs = new LinkedList<>();
         blobs.add(blob);
         doc.setPropertyValue("attachments", blobs);
 
@@ -835,7 +840,8 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
         doc.setPropertyValue("restr:shortstring", "foo");
         doc = session.createDocument(doc);
         doc = session.getDocument(doc.getRef());
-        String value = doc.getProperty("restr:shortstring").getValue(String.class);
+        String value = doc.getProperty("restr:shortstring").getValue(
+                String.class);
         assertEquals("foo", value);
     }
 

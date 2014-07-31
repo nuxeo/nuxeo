@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.core.api.impl.blob;
@@ -30,7 +29,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class FileBlob extends DefaultStreamBlob implements Serializable {
@@ -48,10 +47,11 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
     }
 
     public FileBlob(File file, String mimeType, String encoding) {
-        this (file, mimeType, encoding, null, null);
+        this(file, mimeType, encoding, null, null);
     }
 
-    public FileBlob(File file, String mimeType, String encoding, String filename, String digest) {
+    public FileBlob(File file, String mimeType, String encoding,
+            String filename, String digest) {
         this.file = file;
         this.mimeType = mimeType;
         this.encoding = encoding;
@@ -63,11 +63,13 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
     public FileBlob(InputStream in) throws IOException {
         this(in, null, null);
     }
+
     public FileBlob(InputStream in, String ctype) throws IOException {
         this(in, ctype, null);
     }
 
-    public FileBlob(InputStream in, String mimeType, String encoding) throws IOException {
+    public FileBlob(InputStream in, String mimeType, String encoding)
+            throws IOException {
         this.mimeType = mimeType;
         this.encoding = encoding;
         OutputStream out = null;

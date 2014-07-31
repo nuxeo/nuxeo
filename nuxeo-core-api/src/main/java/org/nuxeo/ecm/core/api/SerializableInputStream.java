@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.core.api;
@@ -36,13 +35,13 @@ import java.io.Serializable;
 public class SerializableInputStream extends InputStream implements
         Serializable {
 
-    public static final int IN_MEM_LIMIT = 1024*64;
+    public static final int IN_MEM_LIMIT = 1024 * 64;
 
     private static final long serialVersionUID = -2816387281878881614L;
 
     private transient File file;
-    private transient InputStream in;
 
+    private transient InputStream in;
 
     public SerializableInputStream(InputStream in) {
         this.in = in;

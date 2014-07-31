@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.core.api;
@@ -34,13 +33,11 @@ import org.nuxeo.common.utils.FileUtils;
  */
 public class SerializableInputStreamTest {
 
-    @SuppressWarnings({"IOResourceOpenedButNotSafelyClosed"})
     @Test
     public void testFileBlobSerialization() throws Exception {
-
-        URL url = Thread.currentThread().getContextClassLoader().getResource("test.blob");
+        URL url = Thread.currentThread().getContextClassLoader().getResource(
+                "test.blob");
         InputStream sin = new SerializableInputStream(url.openStream());
-
         File tmp = File.createTempFile("SerializableISTest-", ".tmp");
         tmp.deleteOnExit();
         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tmp));
@@ -52,8 +49,6 @@ public class SerializableInputStreamTest {
 
         byte[] bytes1 = FileUtils.readBytes(url.openStream());
         byte[] bytes2 = FileUtils.readBytes(sin);
-
         assertTrue(Arrays.equals(bytes1, bytes2));
     }
-
 }

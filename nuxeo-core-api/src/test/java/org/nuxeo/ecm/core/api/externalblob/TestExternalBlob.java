@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -38,7 +38,6 @@ public class TestExternalBlob extends NXRuntimeTestCase {
 
     public static String TEMP_DIRECTORY_NAME = "testExternalBlobDir";
 
-
     @Override
     @Before
     public void setUp() throws Exception {
@@ -56,7 +55,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         BlobHolderAdapterService service = Framework.getService(BlobHolderAdapterService.class);
         assertNotNull(service);
         ExternalBlobAdapter adapter = service.getExternalBlobAdapterForPrefix("fs");
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n"
                 + System.getProperty("java.io.tmpdir") + " ");
         adapter.setProperties(props);
@@ -111,7 +110,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
     public void testExternalBlobDocumentProperty() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ExternalBlobDoc");
         File file = createTempFile();
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         String uri = getTempFileUri(file);
         map.put(ExternalBlobProperty.URI, uri);
         map.put(ExternalBlobProperty.FILE_NAME, "hello.txt");
@@ -149,7 +148,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
     public void testExternalBlobDocumentPropertyUpdate() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ExternalBlobDoc");
         File file = createTempFile();
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         String uri = getTempFileUri(file);
         map.put("uri", uri);
         doc.setPropertyValue("extfile:content/uri", uri);

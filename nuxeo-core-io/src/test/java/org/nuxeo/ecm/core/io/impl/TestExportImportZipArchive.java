@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestExportedDocument.java 29029 2008-01-14 18:38:14Z ldoguin $
  */
 
 package org.nuxeo.ecm.core.io.impl;
@@ -24,6 +23,7 @@ import java.util.zip.ZipInputStream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;

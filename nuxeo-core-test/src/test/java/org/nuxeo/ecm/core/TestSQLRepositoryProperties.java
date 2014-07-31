@@ -154,7 +154,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
             fail("Should throw PropertyNotFoundException");
         } catch (PropertyNotFoundException e) {
             assertEquals("tp:complexList/notaninteger/foo", e.getPath());
-            assertEquals("segment notaninteger cannot be resolved", e.getDetail());
+            assertEquals("segment notaninteger cannot be resolved",
+                    e.getDetail());
         }
         try {
             doc.getPropertyValue("tp:complexList/0/foo");
@@ -395,7 +396,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
     @Test
     public void testComplexParallelFetch() throws Exception {
-        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "TestDocument2");
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2",
+                "TestDocument2");
         doc2.setPropertyValue("dc:title", "doc2");
         doc2 = session.createDocument(doc2);
         session.save();
@@ -749,8 +751,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertEquals("foo/bar/0", canonXPath("foo/bar/gee[0]"));
         assertEquals("foo/0/bar/123/moo",
                 canonXPath("foo/gee[0]/bar/baz[123]/moo"));
-        assertEquals("foo/0/bar/*/moo",
-                canonXPath("foo/gee[0]/bar/baz[*]/moo"));
+        assertEquals("foo/0/bar/*/moo", canonXPath("foo/gee[0]/bar/baz[*]/moo"));
     }
 
     @Test
@@ -838,7 +839,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc.setPropertyValue("restr:shortstring", "foo");
         doc = session.createDocument(doc);
         doc = session.getDocument(doc.getRef());
-        String value = doc.getProperty("restr:shortstring").getValue(String.class);
+        String value = doc.getProperty("restr:shortstring").getValue(
+                String.class);
         assertEquals("foo", value);
     }
 

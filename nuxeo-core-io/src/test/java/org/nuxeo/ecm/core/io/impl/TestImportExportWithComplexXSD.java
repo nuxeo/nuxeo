@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,6 +24,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -61,7 +62,7 @@ public class TestImportExportWithComplexXSD {
     protected CoreSession session;
 
     @Test
-    public void checkComplexTypeExportImport() throws Exception  {
+    public void checkComplexTypeExportImport() throws Exception {
         DocumentModel doc = session.getDocument(new PathRef("/testDoc"));
         Assert.assertNotNull(doc);
 
@@ -77,15 +78,15 @@ public class TestImportExportWithComplexXSD {
             pipe.setReader(reader);
             pipe.setWriter(writer);
             pipe.run();
-        }
-        finally {
+        } finally {
             writer.close();
             reader.close();
         }
 
-        Assert.assertTrue(out.length()>0);
+        Assert.assertTrue(out.length() > 0);
 
-        DocumentModel newParent = session.createDocumentModel("/", "importRoot", "Folder");
+        DocumentModel newParent = session.createDocumentModel("/",
+                "importRoot", "Folder");
         newParent.setPropertyValue("dc:title", "Import Root");
         newParent = session.createDocument(newParent);
         session.save();
@@ -99,8 +100,7 @@ public class TestImportExportWithComplexXSD {
             pipe.setReader(reader);
             pipe.setWriter(writer);
             pipe.run();
-        }
-        finally {
+        } finally {
             writer.close();
             reader.close();
         }
@@ -129,7 +129,5 @@ public class TestImportExportWithComplexXSD {
         Assert.assertTrue(roles.contains("ComparisonScore"));
         Assert.assertTrue(roles.contains("Decision"));
     }
-
-
 
 }
