@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.FileVersion;
 import org.nuxeo.connect.update.PackageException;
@@ -435,7 +436,6 @@ public class UpdateManager {
         if (!dst.delete()) {
             dst.deleteOnExit();
         }
-        // new File(dst.getAbsolutePath().concat(".md5")).delete();
     }
 
     protected File getBackup(String path) {

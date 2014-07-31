@@ -1,3 +1,21 @@
+/*
+ * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Mathieu Guillaume
+ *     Julien Carsique
+ *
+ */
 package org.nuxeo.connect.update.standalone;
 
 import static org.junit.Assert.assertEquals;
@@ -8,10 +26,12 @@ import java.io.File;
 import java.io.InputStream;
 
 import org.junit.Test;
+
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.NuxeoValidationState;
+import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.task.standalone.InstallTask;
@@ -79,7 +99,8 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         File tmpDir = new File(tmpDirPath);
         tmpDir.mkdirs();
         ZipUtils.unzip(zipFile, tmpDir);
-        LocalPackage pkg = new LocalPackageImpl(tmpDir, 0, service);
+        LocalPackage pkg = new LocalPackageImpl(tmpDir, PackageState.REMOTE,
+                service);
         assertEquals(termsAndConditions, pkg.getTermsAndConditionsContent());
         assertEquals("nuxeo-automation", pkg.getName());
         assertEquals("Nuxeo", pkg.getVendor());

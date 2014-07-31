@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -33,7 +33,7 @@ import org.nuxeo.connect.update.xml.XmlWriter;
 
 /**
  * The delete command. This command takes 2 arguments: the file path to delete
- * and an optional md5. Of md5 is set then the command fails id the target file
+ * and an optional md5. If md5 is set then the command fails if the target file
  * has not the same md5.
  * <p>
  * The inverse of the delete command is a copy command.
@@ -67,6 +67,7 @@ public class Delete extends AbstractCommand {
         this.onExit = onExit;
     }
 
+    @Override
     protected void doValidate(Task task, ValidationStatus status) {
         if (file == null) {
             status.addError("Invalid delete syntax: No file specified");
@@ -76,6 +77,7 @@ public class Delete extends AbstractCommand {
         }
     }
 
+    @Override
     protected Command doRun(Task task, Map<String, String> prefs)
             throws PackageException {
         try {
@@ -99,10 +101,12 @@ public class Delete extends AbstractCommand {
             }
         } catch (Exception e) {
             throw new PackageException(
-                    "Failed to create backup when deleting: " + file.getName(), e);
+                    "Failed to create backup when deleting: " + file.getName(),
+                    e);
         }
     }
 
+    @Override
     public void readFrom(Element element) throws PackageException {
         String v = element.getAttribute("file");
         if (v.length() > 0) {
@@ -121,6 +125,7 @@ public class Delete extends AbstractCommand {
         }
     }
 
+    @Override
     public void writeTo(XmlWriter writer) {
         writer.start(ID);
         if (file != null) {

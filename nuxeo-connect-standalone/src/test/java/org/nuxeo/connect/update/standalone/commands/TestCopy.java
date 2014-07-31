@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.util.Properties;
 
 import org.junit.Before;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
