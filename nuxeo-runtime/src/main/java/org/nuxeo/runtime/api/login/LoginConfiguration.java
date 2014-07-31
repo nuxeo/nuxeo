@@ -31,24 +31,28 @@ public class LoginConfiguration extends Configuration {
         return holder.get().getAppConfigurationEntry(name);
     }
 
-
     @Override
     public void refresh() {
-       context.parent.refresh();
+        context.parent.refresh();
     }
 
     protected class InstallContext {
         protected final Configuration parent = Configuration.getConfiguration();
+
         protected final Provider provider;
+
         protected final Thread thread = Thread.currentThread();
+
         protected final Throwable stacktrace = new Throwable();
+
         protected InstallContext(Provider provider) {
             this.provider = provider;
         }
+
         @Override
         public String toString() {
-            return "Login Installation Context [parent=" + parent + ", thread=" + thread
-                    + "]";
+            return "Login Installation Context [parent=" + parent + ", thread="
+                    + thread + "]";
         }
 
     }
@@ -61,7 +65,8 @@ public class LoginConfiguration extends Configuration {
         if (count == 1) {
             context = new InstallContext(provider);
             Configuration.setConfiguration(this);
-            LogFactory.getLog(LoginConfiguration.class).trace("installed login configuration", context.stacktrace);
+            LogFactory.getLog(LoginConfiguration.class).trace(
+                    "installed login configuration", context.stacktrace);
         }
     }
 
@@ -69,7 +74,9 @@ public class LoginConfiguration extends Configuration {
         holder.remove();
         int count = counter.decrementAndGet();
         if (count == 0) {
-            LogFactory.getLog(LoginConfiguration.class).trace("uninstalled login configuration " + context.thread, context.stacktrace);
+            LogFactory.getLog(LoginConfiguration.class).trace(
+                    "uninstalled login configuration " + context.thread,
+                    context.stacktrace);
             Configuration.setConfiguration(context.parent);
             context = null;
         }
