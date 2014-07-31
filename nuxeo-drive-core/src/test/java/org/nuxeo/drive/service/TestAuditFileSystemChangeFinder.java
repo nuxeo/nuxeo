@@ -1034,6 +1034,7 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
+        TransactionHelper.startTransaction();
         try {
             // Check changes for user1, expecting 3:
             // - rootRegistered for folder1
@@ -1059,6 +1060,7 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
+        TransactionHelper.startTransaction();
         try {
             // Check changes for user1, expecting 1: deleted for subFolder
             changes = getChanges(user1Session.getPrincipal());
