@@ -31,12 +31,14 @@ import java.util.zip.ZipInputStream;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.tree.DefaultElement;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
@@ -130,9 +132,9 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
         // clean up
         FileUtils.deleteTree(workingDir);
         sourceZipFile.delete();
-        newZipFile.deleteOnExit();
 
         Blob newBlob = new FileBlob(newZipFile);
+        Framework.trackFile(newZipFile, newBlob);
         newBlob.setFilename(fileName);
 
         return newBlob;
