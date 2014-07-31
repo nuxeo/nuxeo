@@ -54,13 +54,13 @@ public class ReverseXMapTest {
         // save the object
         // System.out.println(xmap.toXML(author));
         File file = File.createTempFile("xmap", "xml");
-        file.deleteOnExit();
         xmap.toXML(author, file);
 
         // load map from new created file
         xmap = new XMap();
         xmap.register(Author.class);
         author = (Author) xmap.load(file.toURI().toURL());
+        file.delete();
 
         assertEquals("First test 22", author.title);
         assertEquals("bla bla", author.description);
