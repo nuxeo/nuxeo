@@ -37,6 +37,8 @@ import javax.faces.context.FacesContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -53,7 +55,6 @@ import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
 import org.nuxeo.runtime.api.Framework;
-import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @since 5.4.2
@@ -496,7 +497,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         ArrayList<Map<String, Serializable>> files = new ArrayList<>();
         // Attach one file to the list
         File tmpFile = File.createTempFile("test", ".txt");
-        tmpFile.deleteOnExit();
+        Framework.trackFile(tmpFile, this);
         FileUtils.writeFile(tmpFile, "Content");
         FileBlob blob = new FileBlob(tmpFile);
         file.put("file", blob);
