@@ -42,7 +42,9 @@ public class DocumentModelCollector extends ArrayList<DocumentModel> implements
     @Override
     public void collect(OperationContext ctx, DocumentModel obj)
             throws OperationException {
-        add(obj);
+        if (obj != null) {
+            add(obj);
+        }
     }
 
     @Override
