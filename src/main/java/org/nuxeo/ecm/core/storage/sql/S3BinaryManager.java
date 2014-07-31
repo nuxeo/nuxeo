@@ -320,7 +320,7 @@ public class S3BinaryManager extends CachingBinaryManager {
         File dir = File.createTempFile("nxbincache.", "", null);
         dir.delete();
         dir.mkdir();
-        dir.deleteOnExit();
+        Framework.trackFile(dir, dir);
         long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
         initializeCache(dir, cacheSize, newFileStorage());
         log.info("Using binary cache directory: " + dir.getPath() + " size: "
