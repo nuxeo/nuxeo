@@ -13,6 +13,13 @@
 
 package org.nuxeo.ecm.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -27,12 +34,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
-import org.junit.Test;
+import org.junit.Before;
 import org.junit.Ignore;
-
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -104,11 +109,11 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
     protected File createTempFile() throws Exception {
         File file = File.createTempFile("testExternalBlob", ".txt");
+        Framework.trackFile(file, file);
         FileWriter fstream = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fstream);
         out.write("Hello External Blob");
         out.close();
-        file.deleteOnExit();
         return file;
     }
 

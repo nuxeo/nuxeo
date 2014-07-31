@@ -75,7 +75,6 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
         OutputStream out = null;
         try {
             file = File.createTempFile("NXCore-FileBlob-", ".tmp");
-            file.deleteOnExit();
             out = new FileOutputStream(file);
             copy(in, out);
             Framework.trackFile(file, this);
@@ -115,7 +114,6 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
         in.defaultReadObject();
         // create a temp file where we will put the blob content
         file = File.createTempFile("NXCore-FileBlob-", ".tmp");
-        file.deleteOnExit();
         Framework.trackFile(file, this);
         OutputStream out = null;
         try {

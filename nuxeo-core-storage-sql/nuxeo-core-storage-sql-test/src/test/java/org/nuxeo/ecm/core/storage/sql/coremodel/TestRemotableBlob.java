@@ -11,6 +11,9 @@
  */
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -21,10 +24,9 @@ import java.io.OutputStream;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.storage.binary.Binary;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -33,10 +35,9 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestRemotableBlob extends NXRuntimeTestCase {
 
-
     protected StorageBlob createStorageBlob() throws Exception {
         File file = File.createTempFile("nuxeo-test-", ".blob");
-        file.deleteOnExit();
+        Framework.trackFile(file, this);
         OutputStream out = new FileOutputStream(file);
         out.write("the content".getBytes("UTF-8"));
         out.close();

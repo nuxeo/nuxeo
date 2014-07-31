@@ -25,6 +25,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * A serializable input stream.
  * <p>
@@ -121,7 +123,7 @@ public class SerializableInputStream extends InputStream implements
         in.defaultReadObject();
         // create a temp file where we will put the blob content
         file = File.createTempFile("SerializableIS-", ".tmp");
-        file.deleteOnExit();
+        Framework.trackFile(file, file);
         OutputStream out = null;
         try {
             out = new FileOutputStream(file);

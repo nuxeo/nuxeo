@@ -13,6 +13,13 @@
 
 package org.nuxeo.ecm.core.storage.mongodb;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -28,11 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
 import org.junit.Ignore;
-
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -40,9 +44,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
-import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
-import org.nuxeo.ecm.core.api.externalblob.FileSystemExternalBlobAdapter;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -101,11 +102,11 @@ public class TestMongoDBRepositoryProperties extends MongoDBRepositoryTestCase {
 
     protected File createTempFile() throws Exception {
         File file = File.createTempFile("testExternalBlob", ".txt");
+        Framework.trackFile(file, file);
         FileWriter fstream = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fstream);
         out.write("Hello External Blob");
         out.close();
-        file.deleteOnExit();
         return file;
     }
 

@@ -103,6 +103,7 @@ public class TestImportExportWithComplexXSD {
         } finally {
             writer.close();
             reader.close();
+            out.delete();
         }
 
         DocumentModelList children = session.getChildren(newParent.getRef());

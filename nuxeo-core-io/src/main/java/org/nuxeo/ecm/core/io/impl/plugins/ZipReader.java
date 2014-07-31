@@ -25,6 +25,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentReader;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * A reader to read zip files. If the zip file is recognized as a nuxeo archive
@@ -57,6 +58,7 @@ public class ZipReader extends AbstractDocumentReader {
             File root = null;
             try {
                 root = File.createTempFile("nuxeo-import-", ".unzip");
+                Framework.trackFile(root, root);
                 root.delete();
                 root.mkdirs();
                 extract(in, entry, root);

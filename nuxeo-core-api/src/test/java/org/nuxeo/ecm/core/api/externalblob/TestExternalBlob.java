@@ -11,6 +11,11 @@
  */
 package org.nuxeo.ecm.core.api.externalblob;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -20,7 +25,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -66,15 +70,14 @@ public class TestExternalBlob extends NXRuntimeTestCase {
                 TEMP_DIRECTORY_NAME);
         if (!tempDir.exists()) {
             tempDir.mkdir();
-            tempDir.deleteOnExit();
+            Framework.trackFile(tempDir, this);
         }
         File file = File.createTempFile("testExternalBlob", ".txt", tempDir);
-        file.deleteOnExit();
+        Framework.trackFile(file, file);
         FileWriter fstream = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fstream);
         out.write("Hello External Blob");
         out.close();
-        file.deleteOnExit();
         return file;
     }
 

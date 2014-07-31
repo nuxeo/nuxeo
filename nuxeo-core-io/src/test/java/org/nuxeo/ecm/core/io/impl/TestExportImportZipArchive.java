@@ -93,17 +93,16 @@ public class TestExportImportZipArchive {
     public void testExportAsZipAndReimport() throws Exception {
         createDocs();
 
-        File zip = File.createTempFile("core-io-archive", "zip");
+        File archive = File.createTempFile("core-io-archive", "zip");
 
         DocumentReader reader = new DocumentTreeReader(session, workspace);
-        DocumentWriter writer = new NuxeoArchiveWriter(zip);
+        DocumentWriter writer = new NuxeoArchiveWriter(archive);
 
         DocumentPipe pipe = new DocumentPipeImpl(10);
         pipe.setReader(reader);
         pipe.setWriter(writer);
         pipe.run();
 
-        File archive = new File(zip.getAbsolutePath());
         assertTrue(archive.exists());
         assertTrue(archive.length() > 0);
 
@@ -141,6 +140,8 @@ public class TestExportImportZipArchive {
         pipe.setReader(reader);
         pipe.setWriter(writer);
         pipe.run();
+
+        archive.delete();
 
         // check result
         DocumentModelList children = session.getChildren(session.getRootDocument().getRef());
