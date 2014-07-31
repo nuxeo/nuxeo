@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,6 +36,7 @@ import org.codehaus.jackson.JsonNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.RemoteException;
@@ -531,15 +532,15 @@ public abstract class AbstractAutomationClientTest {
                 "SELECT * from Document WHERE ecm:path STARTSWITH '/automation-test-folder/'").set(
                 "pageSize", 2).execute();
         final int pageSize = cursor.getPageSize();
-        final int pageCount = cursor.getPageCount();
-        final int totalSize = cursor.getTotalSize();
+        final int pageCount = cursor.getNumberOfPages();
+        final int totalSize = cursor.getResultsCount();
         assertThat(cursor.size(), is(2));
         int size = docs.size();
         assertThat(totalSize, is(size));
         assertThat(pageSize, is(2));
         assertThat(pageCount, is(size / 2 + size % 2));
-        assertThat(cursor.getTotalSize(), greaterThanOrEqualTo((pageCount - 1)
-                * pageSize));
+        assertThat(cursor.getResultsCount(),
+                greaterThanOrEqualTo((pageCount - 1) * pageSize));
     }
 
     @Test

@@ -1,3 +1,20 @@
+/*
+ * (C) Copyright 2013-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Vladimir Pasquier
+ *
+ */
 package org.nuxeo.ecm.automation.server.test;
 
 import static org.junit.Assert.assertEquals;
@@ -11,6 +28,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.Session;
@@ -155,9 +173,8 @@ public class RemoteAutomationClientTCK {
                 "0").execute();
         assertEquals(2, docs.size());
         assertEquals(2, docs.getPageSize());
-        assertEquals(2, docs.getPageCount());
-        assertEquals(3, docs.getTotalSize());
-
+        assertEquals(2, docs.getNumberOfPages());
+        assertEquals(3, docs.getResultsCount());
     }
 
     public void testQueryPage2() throws Exception {
@@ -170,8 +187,8 @@ public class RemoteAutomationClientTCK {
                 "1").execute();
         assertEquals(1, docs.size());
         assertEquals(2, docs.getPageSize());
-        assertEquals(2, docs.getPageCount());
-        assertEquals(3, docs.getTotalSize());
+        assertEquals(2, docs.getNumberOfPages());
+        assertEquals(3, docs.getResultsCount());
     }
 
     /**
@@ -255,7 +272,7 @@ public class RemoteAutomationClientTCK {
         Document root = (Document) session.newRequest("Document.Fetch").set(
                 "value", "/").execute();
         // Fill the document properties
-        Map<String, Object> creationProps = new HashMap<String, Object>();
+        Map<String, Object> creationProps = new HashMap<>();
         creationProps.put("ds:tableName", "MyTable");
         creationProps.put("ds:attachments", attachments);
 

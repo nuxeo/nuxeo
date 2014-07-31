@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,6 +35,11 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.international.LocaleSelector;
+import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.resource.OutputRepresentation;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -51,10 +56,6 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
-import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.resource.OutputRepresentation;
 
 /**
  * Provides a REST API to retrieve the preview of a document.
@@ -81,9 +82,10 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
     protected transient ResourcesAccessor resourcesAccessor;
 
     // cache duration in seconds
-    //protected static int MAX_CACHE_LIFE = 60 * 10;
+    // protected static int MAX_CACHE_LIFE = 60 * 10;
 
-    //protected static final Map<String, PreviewCacheEntry> cachedAdapters = new ConcurrentHashMap<String, PreviewCacheEntry>();
+    // protected static final Map<String, PreviewCacheEntry> cachedAdapters =
+    // new ConcurrentHashMap<String, PreviewCacheEntry>();
 
     protected static final List<String> previewInProcessing = Collections.synchronizedList(new ArrayList<String>());
 
@@ -95,7 +97,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         String xpath = (String) req.getAttributes().get("fieldPath");
         xpath = xpath.replace("-", "/");
         List<String> segments = req.getResourceRef().getSegments();
-        StringBuilder sb =  new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         for (int i = 6; i < segments.size(); i++) {
             sb.append(segments.get(i));
             sb.append("/");
@@ -109,7 +111,8 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
             log.error(e);
         }
 
-        String blobPostProcessingParameter = getQueryParamValue(req, "blobPostProcessing", "false");
+        String blobPostProcessingParameter = getQueryParamValue(req,
+                "blobPostProcessing", "false");
         boolean blobPostProcessing = Boolean.parseBoolean(blobPostProcessingParameter);
 
         if (repo == null || repo.equals("*")) {
@@ -121,7 +124,8 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
             return;
         }
         try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
+            navigationContext.setCurrentServerLocation(new RepositoryLocation(
+                    repo));
             documentManager = navigationContext.getOrCreateDocumentManager();
             targetDocument = documentManager.getDocument(new IdRef(docid));
         } catch (ClientException e) {
@@ -184,14 +188,15 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         localeSelector.setLocale(locale);
     }
 
-    private List<Blob> initCachedBlob(Response res, String xpath, boolean blobPostProcessing)
-            throws ClientException {
+    private List<Blob> initCachedBlob(Response res, String xpath,
+            boolean blobPostProcessing) throws ClientException {
 
-        HtmlPreviewAdapter preview = null; //getFromCache(targetDocument, xpath);
+        HtmlPreviewAdapter preview = null; // getFromCache(targetDocument,
+                                           // xpath);
 
-        if (preview == null) {
-            preview = targetDocument.getAdapter(HtmlPreviewAdapter.class);
-        }
+        // if (preview == null) {
+        preview = targetDocument.getAdapter(HtmlPreviewAdapter.class);
+        // }
 
         if (preview == null) {
             handleNoPreview(res, xpath, null);
@@ -203,11 +208,14 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
             if (xpath.equals(PreviewHelper.PREVIEWURL_DEFAULTXPATH)) {
                 previewBlobs = preview.getFilePreviewBlobs(blobPostProcessing);
             } else {
-                previewBlobs = preview.getFilePreviewBlobs(xpath, blobPostProcessing);
+                previewBlobs = preview.getFilePreviewBlobs(xpath,
+                        blobPostProcessing);
             }
-            /*if (preview.cachable()) {
-                updateCache(targetDocument, preview, xpath);
-            }*/
+            /*
+             * if (preview.cachable()) {
+             * updateCache(targetDocument, preview, xpath);
+             * }
+             */
         } catch (PreviewException e) {
             previewInProcessing.remove(targetDocument.getId());
             handleNoPreview(res, xpath, e);
@@ -281,70 +289,65 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
     }
 
     /*
-    protected void updateCache(DocumentModel doc, HtmlPreviewAdapter adapter,
-            String xpath) throws ClientException {
-
-        String docKey = doc.getId();
-        try {
-            Calendar modified = (Calendar) doc.getProperty("dublincore",
-                    "modified");
-            PreviewCacheEntry entry = new PreviewCacheEntry(modified, adapter,
-                    xpath);
-            synchronized (cachedAdapters) {
-                cachedAdapters.put(docKey, entry);
-            }
-            cacheGC();
-        } finally {
-            previewInProcessing.remove(docKey);
-        }
-    }
-
-    protected void removeFromCache(String key) {
-        PreviewCacheEntry entry = cachedAdapters.get(key);
-        if (entry != null) {
-            entry.getAdapter().cleanup();
-        }
-        synchronized (cachedAdapters) {
-            cachedAdapters.remove(key);
-        }
-    }
-
-    protected HtmlPreviewAdapter getFromCache(DocumentModel doc, String xpath) throws ClientException {
-        String docKey = doc.getId();
-
-        while (previewInProcessing.contains(docKey)) {
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                log.error(e, e);
-            }
-        }
-
-        if (cachedAdapters.containsKey(docKey)) {
-            Calendar modified = (Calendar) doc.getProperty("dublincore",
-                    "modified");
-            PreviewCacheEntry entry = cachedAdapters.get(doc.getId());
-
-            if (!entry.getModified().equals(modified)
-                    || !xpath.equals(entry.getXpath())) {
-                removeFromCache(docKey);
-                return null;
-            } else {
-                return entry.getAdapter();
-            }
-        } else {
-            return null;
-        }
-    }
-
-    protected void cacheGC() {
-        for (String key : cachedAdapters.keySet()) {
-            long now = System.currentTimeMillis();
-            PreviewCacheEntry entry = cachedAdapters.get(key);
-            if ((now - entry.getTimeStamp()) > MAX_CACHE_LIFE * 1000) {
-                removeFromCache(key);
-            }
-        }
-    }*/
+     * protected void updateCache(DocumentModel doc, HtmlPreviewAdapter adapter,
+     * String xpath) throws ClientException {
+     * String docKey = doc.getId();
+     * try {
+     * Calendar modified = (Calendar) doc.getProperty("dublincore",
+     * "modified");
+     * PreviewCacheEntry entry = new PreviewCacheEntry(modified, adapter,
+     * xpath);
+     * synchronized (cachedAdapters) {
+     * cachedAdapters.put(docKey, entry);
+     * }
+     * cacheGC();
+     * } finally {
+     * previewInProcessing.remove(docKey);
+     * }
+     * }
+     * protected void removeFromCache(String key) {
+     * PreviewCacheEntry entry = cachedAdapters.get(key);
+     * if (entry != null) {
+     * entry.getAdapter().cleanup();
+     * }
+     * synchronized (cachedAdapters) {
+     * cachedAdapters.remove(key);
+     * }
+     * }
+     * protected HtmlPreviewAdapter getFromCache(DocumentModel doc, String
+     * xpath) throws ClientException {
+     * String docKey = doc.getId();
+     * while (previewInProcessing.contains(docKey)) {
+     * try {
+     * Thread.sleep(200);
+     * } catch (InterruptedException e) {
+     * log.error(e, e);
+     * }
+     * }
+     * if (cachedAdapters.containsKey(docKey)) {
+     * Calendar modified = (Calendar) doc.getProperty("dublincore",
+     * "modified");
+     * PreviewCacheEntry entry = cachedAdapters.get(doc.getId());
+     * if (!entry.getModified().equals(modified)
+     * || !xpath.equals(entry.getXpath())) {
+     * removeFromCache(docKey);
+     * return null;
+     * } else {
+     * return entry.getAdapter();
+     * }
+     * } else {
+     * return null;
+     * }
+     * }
+     * protected void cacheGC() {
+     * for (String key : cachedAdapters.keySet()) {
+     * long now = System.currentTimeMillis();
+     * PreviewCacheEntry entry = cachedAdapters.get(key);
+     * if ((now - entry.getTimeStamp()) > MAX_CACHE_LIFE * 1000) {
+     * removeFromCache(key);
+     * }
+     * }
+     * }
+     */
 
 }

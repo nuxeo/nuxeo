@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  *
  */
 package org.nuxeo.ecm.platform.pictures.tiles.service;
@@ -29,17 +27,23 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.helpers.StringMaker;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Wraps the needed information about tiling a picture in order to manage cache.
- * This includes : - original image stored on file system - reduced images if
- * any - tiles already generated
+ * This includes:
+ * <ul>
+ * <li>original image stored on file system</li>
+ * <li>reduced images if any</li>
+ * <li>tiles already generated</li>
+ * </ul>
  *
  * @author tiry
  *
@@ -114,9 +118,9 @@ public class PictureTilingCacheInfo {
         this.cacheKey = cacheKey;
         this.workingDir = workingDir;
         originalPictureInfos = ImageIdentifier.getInfo(filePath);
-        shrinkedImages = new HashMap<Integer, ImageInfo>();
-        shrinkedImagesWidths = new ArrayList<Integer>();
-        tilesSet = new HashMap<String, PictureTiles>();
+        shrinkedImages = new HashMap<>();
+        shrinkedImagesWidths = new ArrayList<>();
+        tilesSet = new HashMap<>();
         updateAccessTime();
     }
 
