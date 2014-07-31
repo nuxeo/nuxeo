@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.auth.saml.key.KeyManager">
+
+    <documentation>
+        The KeyManager Service is used to configure the keystore and keys to use for SAML
+    </documentation>
+
+    <implementation class="org.nuxeo.ecm.platform.auth.saml.key.KeyManagerImpl" />
+
+    <service>
+        <provide interface="org.nuxeo.ecm.platform.auth.saml.key.KeyManager" />
+    </service>
+
+    <extension-point name="configuration">
+        <object class="org.nuxeo.ecm.platform.auth.saml.key.KeyDescriptor" />
+    </extension-point>
+
+</component>
