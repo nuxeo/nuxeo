@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2013-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -34,6 +34,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -75,7 +76,6 @@ public class ExcelExportRightsActionBean implements Serializable {
 
     private static final String WORK_NAME = "Permission Audit for ";
 
-
     public String doGet() {
         try {
             buildAndSendByMail();
@@ -110,7 +110,8 @@ public class ExcelExportRightsActionBean implements Serializable {
     /**
      * Execute ACL audit asynchronously and send the result to current user.
      */
-    protected void buildAndSendByMail(final File tmpFile) throws ClientException {
+    protected void buildAndSendByMail(final File tmpFile)
+            throws ClientException {
         final DocumentModel auditRoot = navigationContext.getCurrentDocument();
         final String repositoryName = documentManager.getRepositoryName();
         final String to = currentNuxeoPrincipal.getEmail();
@@ -118,14 +119,17 @@ public class ExcelExportRightsActionBean implements Serializable {
         final String workName = WORK_NAME + auditRoot.getPathAsString();
         WorkManager wm = Framework.getLocalService(WorkManager.class);
 
-        if(StringUtils.isBlank(to)){
-            facesMessages.add(StatusMessage.Severity.ERROR, "Your email is missing from your profile.");
+        if (StringUtils.isBlank(to)) {
+            facesMessages.add(StatusMessage.Severity.ERROR,
+                    "Your email is missing from your profile.");
             return;
         }
 
         // Work to do and publishing
-        IResultPublisher publisher = new PublishByMail(to, defaultFrom, repositoryName);
-        Work work = new AclAuditWork(workName, repositoryName, auditRoot.getId(), tmpFile, publisher);
+        IResultPublisher publisher = new PublishByMail(to, defaultFrom,
+                repositoryName);
+        Work work = new AclAuditWork(workName, repositoryName,
+                auditRoot.getId(), tmpFile, publisher);
         wm.schedule(work, true);
 
         // Shows information about work, and output
@@ -135,14 +139,14 @@ public class ExcelExportRightsActionBean implements Serializable {
 
     /* */
 
-    protected Set<String> existingPermissions = new HashSet<String>();
+    protected Set<String> existingPermissions = new HashSet<>();
 
     {
         AclNameShortner names = new AclNameShortner();
         existingPermissions.addAll(names.getFullNames());
     }
 
-    public Set<String> getExistingPermissions(){
+    public Set<String> getExistingPermissions() {
         return existingPermissions;
     }
 
