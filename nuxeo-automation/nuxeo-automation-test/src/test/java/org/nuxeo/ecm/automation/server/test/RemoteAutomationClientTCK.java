@@ -44,6 +44,7 @@ import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -197,7 +198,7 @@ public class RemoteAutomationClientTCK {
 
     protected File newFile(String content) throws IOException {
         File file = File.createTempFile("automation-test-", ".xml");
-        file.deleteOnExit();
+        Framework.trackFile(file, this);
         FileUtils.writeFile(file, content);
         return file;
     }

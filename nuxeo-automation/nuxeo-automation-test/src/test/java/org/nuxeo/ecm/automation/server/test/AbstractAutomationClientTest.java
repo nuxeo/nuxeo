@@ -69,6 +69,7 @@ import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
+import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.Inject;
 
@@ -101,7 +102,7 @@ public abstract class AbstractAutomationClientTest {
 
     protected File newFile(String content) throws IOException {
         File file = File.createTempFile("automation-test-", ".xml");
-        file.deleteOnExit();
+        Framework.trackFile(file, this);
         FileUtils.writeFile(file, content);
         return file;
     }
@@ -484,13 +485,13 @@ public abstract class AbstractAutomationClientTest {
                 "filename", "test.zip").setInput(blobs).execute();
         assertNotNull(zip);
 
-        ZipFile zf = new ZipFile(zip.getFile());
-        ZipEntry entry1 = zf.getEntry(filename1);
-        assertNotNull(entry1);
-
-        ZipEntry entry2 = zf.getEntry(filename2);
-        assertNotNull(entry2);
-        zip.getFile().delete();
+        try (ZipFile zf = new ZipFile(zip.getFile())) {
+            ZipEntry entry1 = zf.getEntry(filename1);
+            assertNotNull(entry1);
+            ZipEntry entry2 = zf.getEntry(filename2);
+            assertNotNull(entry2);
+            zip.getFile().delete();
+        }
     }
 
     @Test

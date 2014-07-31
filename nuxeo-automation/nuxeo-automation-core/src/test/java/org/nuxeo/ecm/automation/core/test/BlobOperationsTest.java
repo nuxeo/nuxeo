@@ -313,9 +313,9 @@ public class BlobOperationsTest {
         ArrayList<Map<String, Serializable>> files = new ArrayList<>();
         // Attach one file to the list
         File tmpFile = File.createTempFile("test", ".txt");
-        tmpFile.deleteOnExit();
         FileUtils.writeFile(tmpFile, "Content");
         FileBlob blob = new FileBlob(tmpFile);
+        Framework.trackFile(tmpFile, blob);
         file.put("file", blob);
         file.put("filename", "initial_name.txt");
         files.add(file);

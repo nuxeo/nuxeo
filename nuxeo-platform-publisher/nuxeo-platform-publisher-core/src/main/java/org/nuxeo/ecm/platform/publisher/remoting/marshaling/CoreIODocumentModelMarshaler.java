@@ -69,7 +69,6 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
         File tmpFile = null;
         try {
             tmpFile = File.createTempFile("io-marshaling-", "xml");
-            tmpFile.deleteOnExit();
             DocumentWriter writer = new XMLDocumentWriter(tmpFile);
             DocumentPipe pipe = new DocumentPipeImpl();
             pipe.setReader(reader);

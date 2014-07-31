@@ -155,7 +155,7 @@ public class PictureTilingCacheInfo {
 
         if (!dir.exists()) {
             dir.mkdir();
-            dir.deleteOnExit();
+            Framework.trackFile(dir, this);
         }
         return dirPath;
     }

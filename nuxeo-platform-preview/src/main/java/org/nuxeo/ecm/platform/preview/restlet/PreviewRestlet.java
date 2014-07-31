@@ -267,7 +267,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
             throws IOException {
         final File tempfile = File.createTempFile("nuxeo-previewrestlet-tmp",
                 "");
-        tempfile.deleteOnExit();
+        Framework.trackFile(tempfile, res);
         previewBlob.transferTo(tempfile);
         res.setEntity(new OutputRepresentation(null) {
             @Override
