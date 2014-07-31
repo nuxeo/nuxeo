@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.common.xmap;
@@ -31,6 +30,7 @@ import java.io.File;
 import java.net.URL;
 
 import org.junit.Test;
+
 import org.nuxeo.common.xmap.Author.Gender;
 
 public class ReverseXMapTest {
@@ -47,7 +47,8 @@ public class ReverseXMapTest {
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             String msg = e.getMessage();
-            assertTrue(msg, msg.contains("java.lang.String is NOT registred in xmap"));
+            assertTrue(msg,
+                    msg.contains("java.lang.String is NOT registred in xmap"));
         }
 
         // save the object
