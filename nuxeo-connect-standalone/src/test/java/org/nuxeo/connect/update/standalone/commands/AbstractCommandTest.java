@@ -203,8 +203,8 @@ public abstract class AbstractCommandTest extends PackageTestCase {
     public void testInstallThenUninstall() throws Exception {
         Assume.assumeTrue(!isWindows());
         File zip = createPackage();
-        zip.deleteOnExit();
         LocalPackage pkg = service.addPackage(zip);
+        zip.delete();
         if (install(pkg)) {
             // check package installed
             assertEquals(PackageState.STARTED.getValue(), pkg.getState());

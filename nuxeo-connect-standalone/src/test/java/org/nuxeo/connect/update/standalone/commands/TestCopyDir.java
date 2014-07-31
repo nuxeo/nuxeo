@@ -35,6 +35,7 @@ import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.IOUtils;
 import org.nuxeo.connect.update.util.PackageBuilder;
 import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestCopyDir extends AbstractCommandTest {
 
@@ -71,7 +72,7 @@ public class TestCopyDir extends AbstractCommandTest {
     @Override
     protected void updatePackage(PackageBuilder builder) throws Exception {
         File jarFile = File.createTempFile("test-commands-", ".jar");
-        jarFile.deleteOnExit();
+        Framework.trackFile(jarFile, builder);
         FileUtils.writeFile(jarFile, "anything");
         builder.addEntry("bundles/" + newFilename, new FileInputStream(jarFile));
         FileUtils.writeFile(jarFile, "new SNAPSHOT content");
@@ -80,7 +81,7 @@ public class TestCopyDir extends AbstractCommandTest {
         builder.addEntry("bundles/" + notToDeployFilename, new FileInputStream(
                 jarFile));
         File xmlFile = File.createTempFile("test-config", ".xml");
-        xmlFile.deleteOnExit();
+        Framework.trackFile(xmlFile, builder);
         FileUtils.writeFile(xmlFile, "anything");
         builder.addEntry(
                 "templates/collaboration/config/" + testConfigFilename,

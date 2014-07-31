@@ -26,6 +26,8 @@ import java.util.Calendar;
 import org.javasimon.Sample;
 import org.javasimon.SimonManager;
 
+import org.nuxeo.runtime.api.Framework;
+
 import com.thoughtworks.xstream.XStream;
 
 public class MetricSerializer implements MetricSerializerMXBean {
@@ -95,6 +97,7 @@ public class MetricSerializer implements MetricSerializerMXBean {
 
     private void createTempFile() throws IOException {
         file = File.createTempFile("nx-samples-", ".xml");
+        Framework.trackFile(file, file);
     }
 
     @Override

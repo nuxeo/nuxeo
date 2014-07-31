@@ -23,12 +23,14 @@ import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
+
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.task.standalone.CommandsTask;
 import org.nuxeo.connect.update.task.standalone.InstallTask;
 import org.nuxeo.connect.update.task.standalone.UninstallTask;
 import org.nuxeo.connect.update.util.PackageBuilder;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -51,14 +53,13 @@ public class TestXmlCommands extends PackageTestCase {
         builder.uninstaller(UninstallTask.class.getName(), true);
         builder.addLicense("My test license. All rights reserved.");
         File file = File.createTempFile("nxinstall-file-", ".tmp");
-        file.deleteOnExit();
+        Framework.trackFile(file, this);
         File tofile = File.createTempFile("nxinstall-tofile-", ".tmp");
-        tofile.deleteOnExit();
+        Framework.trackFile(tofile, this);
         builder.addInstallScript("<install>\n  <copy file=\""
                 + file.getAbsolutePath() + "\" tofile=\""
                 + tofile.getAbsolutePath()
                 + "\" overwrite=\"true\"/>\n</install>\n");
-        // System.out.println(builder.buildManifest());
         return builder.build();
     }
 

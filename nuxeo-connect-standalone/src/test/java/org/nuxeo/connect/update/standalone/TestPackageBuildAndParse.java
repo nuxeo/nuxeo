@@ -38,6 +38,7 @@ import org.nuxeo.connect.update.task.standalone.InstallTask;
 import org.nuxeo.connect.update.task.standalone.UninstallTask;
 import org.nuxeo.connect.update.util.PackageBuilder;
 import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestPackageBuildAndParse extends PackageTestCase {
 
@@ -61,9 +62,9 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         builder.uninstaller(UninstallTask.class.getName(), true);
         builder.addLicense("My test license. All rights reserved.");
         File file = File.createTempFile("nxinstall-file-", ".tmp");
-        file.deleteOnExit();
+        Framework.trackFile(file, builder);
         File tofile = File.createTempFile("nxinstall-tofile-", ".tmp");
-        tofile.deleteOnExit();
+        Framework.trackFile(tofile, builder);
         builder.addInstallScript("<install>\n  <copy file=\""
                 + file.getAbsolutePath() + "\" tofile=\""
                 + tofile.getAbsolutePath()
@@ -101,6 +102,7 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         ZipUtils.unzip(zipFile, tmpDir);
         LocalPackage pkg = new LocalPackageImpl(tmpDir, PackageState.REMOTE,
                 service);
+        Framework.trackFile(tmpDir, pkg);
         assertEquals(termsAndConditions, pkg.getTermsAndConditionsContent());
         assertEquals("nuxeo-automation", pkg.getName());
         assertEquals("Nuxeo", pkg.getVendor());

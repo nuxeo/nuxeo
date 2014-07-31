@@ -63,7 +63,6 @@ public class PackageBuilderTest {
         try {
             File file = builder.build();
             assertTrue(file.exists());
-            file.delete();
         } catch (IOException e) {
             fail("Could not create package file");
         }

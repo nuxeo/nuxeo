@@ -25,9 +25,11 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.PackageUpdateService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
@@ -63,6 +65,7 @@ public abstract class PackageTestCase {
      */
     protected void setupService() throws IOException, PackageException {
         File tmpHome = File.createTempFile("tmphome", null);
+        Framework.trackFile(tmpHome, tmpHome);
         FileUtils.forceDelete(tmpHome);
         tmpHome.mkdirs();
         Environment env = new Environment(tmpHome);

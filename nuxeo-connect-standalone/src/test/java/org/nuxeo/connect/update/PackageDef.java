@@ -89,7 +89,6 @@ public abstract class PackageDef {
             writer.end("install");
             builder.addInstallScript(writer.toString());
             pkgFile = builder.build();
-            pkgFile.deleteOnExit();
         }
         return pkgFile;
     }

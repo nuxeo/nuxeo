@@ -46,6 +46,7 @@ import org.nuxeo.connect.update.xml.FormsDefinition;
 import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 import org.nuxeo.connect.update.xml.TaskDefinitionImpl;
 import org.nuxeo.connect.update.xml.XmlSerializer;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Build an XML representation of a package.
@@ -332,6 +333,7 @@ public class PackageBuilder {
         try {
             String mf = buildManifest();
             File file = File.createTempFile(def.getId(), ".zip");
+            Framework.trackFile(file, file);
             ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(
                     file));
             try {
