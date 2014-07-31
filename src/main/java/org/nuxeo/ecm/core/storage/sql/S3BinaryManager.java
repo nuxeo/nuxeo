@@ -32,11 +32,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Objects;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.utils.SizeUtils;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
@@ -63,6 +62,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
+import com.google.common.base.Objects;
 
 /**
  * A Binary Manager that stores binaries as S3 BLOBs
@@ -159,8 +159,8 @@ public class S3BinaryManager extends CachingBinaryManager {
 
         // Get settings from the configuration
         bucketName = Framework.getProperty(BUCKET_NAME_KEY);
-        bucketNamePrefix = Objects.firstNonNull(Framework.getProperty
-                (BUCKET_PREFIX_KEY), StringUtils.EMPTY);
+        bucketNamePrefix = Objects.firstNonNull(
+                Framework.getProperty(BUCKET_PREFIX_KEY), StringUtils.EMPTY);
         String bucketRegion = Framework.getProperty(BUCKET_REGION_KEY);
         if (isBlank(bucketRegion)) {
             bucketRegion = DEFAULT_BUCKET_REGION;
@@ -202,8 +202,8 @@ public class S3BinaryManager extends CachingBinaryManager {
         }
 
         if (!isBlank(bucketNamePrefix) && !bucketNamePrefix.endsWith("/")) {
-            log.warn(String.format("%s %s S3 bucket prefix should end by '/' " +
-                    ": added automatically.", BUCKET_PREFIX_KEY,
+            log.warn(String.format("%s %s S3 bucket prefix should end by '/' "
+                    + ": added automatically.", BUCKET_PREFIX_KEY,
                     bucketNamePrefix));
             bucketNamePrefix += "/";
         }
@@ -213,10 +213,12 @@ public class S3BinaryManager extends CachingBinaryManager {
             try {
                 awsCredentialsProvider.getCredentials();
             } catch (AmazonClientException e) {
-                throw new RuntimeException("Missing AWS credentials and no instance role found");
+                throw new RuntimeException(
+                        "Missing AWS credentials and no instance role found");
             }
         } else {
-            awsCredentialsProvider = new BasicAWSCredentialsProvider(awsID, awsSecret);
+            awsCredentialsProvider = new BasicAWSCredentialsProvider(awsID,
+                    awsSecret);
         }
 
         // set up client configuration
@@ -293,7 +295,8 @@ public class S3BinaryManager extends CachingBinaryManager {
 
         // Try to create bucket if it doesn't exist
         if (encryptionMaterials == null) {
-            amazonS3 = new AmazonS3Client(awsCredentialsProvider, clientConfiguration);
+            amazonS3 = new AmazonS3Client(awsCredentialsProvider,
+                    clientConfiguration);
         } else {
             amazonS3 = new AmazonS3EncryptionClient(awsCredentialsProvider,
                     new StaticEncryptionMaterialsProvider(encryptionMaterials),
@@ -354,7 +357,7 @@ public class S3BinaryManager extends CachingBinaryManager {
         if (e instanceof AmazonServiceException) {
             AmazonServiceException ase = (AmazonServiceException) e;
             return (ase.getStatusCode() == 404)
-                    ||"NoSuchKey".equals(ase.getErrorCode())
+                    || "NoSuchKey".equals(ase.getErrorCode())
                     || "Not Found".equals(e.getMessage());
         }
         return false;
@@ -429,7 +432,8 @@ public class S3BinaryManager extends CachingBinaryManager {
             try {
 
                 ObjectMetadata metadata = amazonS3.getObject(
-                        new GetObjectRequest(bucketName, bucketNamePrefix + digest), file);
+                        new GetObjectRequest(bucketName, bucketNamePrefix
+                                + digest), file);
                 // check ETag
                 String etag = metadata.getETag();
                 if (!(amazonS3 instanceof AmazonS3EncryptionClient)
@@ -530,7 +534,7 @@ public class S3BinaryManager extends CachingBinaryManager {
             }
             startTime = System.currentTimeMillis();
             status = new BinaryManagerStatus();
-            marked = new HashSet<String>();
+            marked = new HashSet<>();
 
             // XXX : we should be able to do better
             // and only remove the cache entry that will be removed from S3
@@ -552,13 +556,13 @@ public class S3BinaryManager extends CachingBinaryManager {
             try {
                 // list S3 objects in the bucket
                 // record those not marked
-                Set<String> unmarked = new HashSet<String>();
+                Set<String> unmarked = new HashSet<>();
                 ObjectListing list = null;
                 do {
                     if (list == null) {
-                        list = binaryManager.amazonS3.listObjects
-                                (binaryManager.bucketName,
-                                        binaryManager.bucketNamePrefix);
+                        list = binaryManager.amazonS3.listObjects(
+                                binaryManager.bucketName,
+                                binaryManager.bucketNamePrefix);
                     } else {
                         list = binaryManager.amazonS3.listNextBatchOfObjects(list);
                     }
