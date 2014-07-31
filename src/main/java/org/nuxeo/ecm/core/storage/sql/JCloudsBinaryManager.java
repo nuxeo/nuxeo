@@ -193,7 +193,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         File dir = File.createTempFile("nxbincache.", "", null);
         dir.delete();
         dir.mkdir();
-        dir.deleteOnExit();
+        Framework.trackFile(dir, dir);
         long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
         initializeCache(dir, cacheSize, new JCloudsFileStorage());
         log.info("Using binary cache directory: " + dir.getPath() + " size: "
