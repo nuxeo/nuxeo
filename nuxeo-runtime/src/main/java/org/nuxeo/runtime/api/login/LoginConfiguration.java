@@ -28,7 +28,14 @@ public class LoginConfiguration extends Configuration {
 
     @Override
     public AppConfigurationEntry[] getAppConfigurationEntry(String name) {
-        return holder.get().getAppConfigurationEntry(name);
+        AppConfigurationEntry[] appConfigurationEntry = holder.get().getAppConfigurationEntry(
+                name);
+        if (appConfigurationEntry == null && context.parent != null) {
+            // delegate to parent config
+            appConfigurationEntry = context.parent.getAppConfigurationEntry(name);
+        }
+        return appConfigurationEntry;
+
     }
 
     @Override
