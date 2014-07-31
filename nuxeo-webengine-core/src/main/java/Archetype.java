@@ -34,6 +34,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -400,7 +402,9 @@ public class Archetype {
     }
 
     public static File unzipArchetype(File zipFile) throws IOException {
-        File file = File.createTempFile("nuxeo_archetype_"+ zipFile.getName(), ".tmp");
+        File file = File.createTempFile("nuxeo_archetype_" + zipFile.getName(),
+                ".tmp");
+        Framework.trackFile(file, file);
         file.delete();
         file.mkdirs();
         unzip(zipFile, file);
