@@ -54,6 +54,7 @@ import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseNuxeoRestlet;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Restlet to retrieve the content diff of a given property between two
@@ -236,7 +237,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             String mimeType) throws IOException {
         final File tempfile = File.createTempFile(
                 "nuxeo-contentDiffRestlet-tmp", "");
-        tempfile.deleteOnExit();
+        Framework.trackFile(tempfile, res);
         contentDiffBlob.transferTo(tempfile);
         res.setEntity(new OutputRepresentation(null) {
             @Override
