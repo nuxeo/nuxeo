@@ -52,6 +52,13 @@
       <category>Nuxeo</category>
       <icon>user_deleted_documents.png</icon>
     </internalGadget>
+     <internalGadget name="favorites" disabled="false">
+      <mountPoint>/favorites</mountPoint>
+      <directory>favorites</directory>
+      <entryPoint>favorites.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>favorites_icon.png</icon>
+    </internalGadget>
 
     <!-- Monitoring -->
     <internalGadget name="httpMonitoring" disabled="false">
