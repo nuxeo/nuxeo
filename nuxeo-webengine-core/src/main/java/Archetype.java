@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,11 +41,15 @@ import org.w3c.dom.Node;
 public class Archetype {
 
     private static final int BUFFER_SIZE = 1024 * 64; // 64K
+
     private static final int MAX_BUFFER_SIZE = 1024 * 1024; // 64K
+
     private static final int MIN_BUFFER_SIZE = 1024 * 8; // 64K
 
     static boolean batchMode = false;
+
     static String outDir = "${artifactId}";
+
     static File archive;
 
     public static void main(String[] args) throws Exception {
@@ -80,7 +84,8 @@ public class Archetype {
         processArchetype(doc, System.getProperties());
     }
 
-    private static void expandVars(File file, Map<?,?> vars) throws IOException {
+    private static void expandVars(File file, Map<?, ?> vars)
+            throws IOException {
         String content = readFile(file);
         content = expandVars(content, vars);
         writeFile(file, content);
@@ -98,6 +103,7 @@ public class Archetype {
             }
         }
     }
+
     public static void unzip(ZipInputStream in, File dir) throws IOException {
         dir.mkdirs();
         ZipEntry entry = in.getNextEntry();
@@ -122,8 +128,7 @@ public class Archetype {
         return name;
     }
 
-    public static String expandVars(String expression,
-            Map<?, ?> properties) {
+    public static String expandVars(String expression, Map<?, ?> properties) {
         int p = expression.indexOf("${");
         if (p == -1) {
             return expression; // do not expand if not needed
@@ -140,10 +145,10 @@ public class Archetype {
         for (int i = p; i < buf.length; i++) {
             char c = buf[i];
             switch (c) {
-            case '$' :
+            case '$':
                 dollar = true;
                 break;
-            case '{' :
+            case '{':
                 if (dollar) {
                     dollar = false;
                     var = true;
@@ -169,7 +174,7 @@ public class Archetype {
                 break;
             default:
                 if (var) {
-                  varBuf.append(c);
+                    varBuf.append(c);
                 } else {
                     result.append(c);
                 }
@@ -220,6 +225,7 @@ public class Archetype {
             }
         }
     }
+
     private static byte[] createBuffer(int preferredSize) {
         if (preferredSize < 1) {
             preferredSize = BUFFER_SIZE;
@@ -232,39 +238,41 @@ public class Archetype {
         return new byte[preferredSize];
     }
 
-    public static Document load(File file) throws Exception  {
+    public static Document load(File file) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.parse(file);
     }
 
-    public static Document load(InputStream in) throws Exception  {
+    public static Document load(InputStream in) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.parse(in);
     }
 
-    public static void processVars(Element root, Map<Object,Object> vars) throws Exception {
+    public static void processVars(Element root, Map<Object, Object> vars)
+            throws Exception {
         Node node = root.getFirstChild();
         while (node != null) {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element el = (Element)node;
+                Element el = (Element) node;
                 if ("var".equals(el.getNodeName())) {
                     String key = el.getAttribute("name");
                     String label = el.getAttribute("label");
                     if (label == null) {
                         label = key;
                     }
-                    String val = (String)vars.get(key);
+                    String val = (String) vars.get(key);
                     String def = el.getAttribute("default");
                     if (def != null) {
                         def = expandVars(def, vars);
                     } else {
                         def = val;
                     }
-                    if (!batchMode && val == null && "true".equals(el.getAttribute("prompt"))) {
+                    if (!batchMode && val == null
+                            && "true".equals(el.getAttribute("prompt"))) {
                         val = readVar(label, def);
                     }
                     if (val == null) {
@@ -277,50 +285,56 @@ public class Archetype {
         }
     }
 
-    public static void processResources(Element root, File dir, Map<Object,Object> vars) throws Exception  {
+    public static void processResources(Element root, File dir,
+            Map<Object, Object> vars) throws Exception {
         Node node = root.getFirstChild();
         while (node != null) {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element el = (Element)node;
+                Element el = (Element) node;
                 if ("directory".equals(el.getNodeName())) {
                     String srcName = el.getAttribute("src");
                     if (srcName == null) {
-                        throw new IllegalArgumentException("directory has no src attribute");
+                        throw new IllegalArgumentException(
+                                "directory has no src attribute");
                     }
                     String targetName = el.getAttribute("target");
                     if (targetName == null) {
-                        throw new IllegalArgumentException("directory has no target attribute");
+                        throw new IllegalArgumentException(
+                                "directory has no target attribute");
                     }
                     srcName = expandVars(srcName, vars);
                     targetName = expandVars(targetName, vars);
                     File src = new File(dir, srcName);
                     File dst = new File(dir, targetName);
-                    System.out.println("Renaming "+src + " to "+dst);
+                    System.out.println("Renaming " + src + " to " + dst);
                     src.renameTo(dst);
                 } else if ("package".equals(el.getNodeName())) {
                     String srcName = el.getAttribute("src");
                     if (srcName == null) {
-                        throw new IllegalArgumentException("package has no src attribute");
+                        throw new IllegalArgumentException(
+                                "package has no src attribute");
                     }
                     String targetName = el.getAttribute("target");
                     if (targetName == null) {
-                        throw new IllegalArgumentException("package has no target attribute");
+                        throw new IllegalArgumentException(
+                                "package has no target attribute");
                     }
                     srcName = expandVars(srcName, vars);
                     targetName = expandVars(targetName, vars);
                     targetName = targetName.replaceAll("\\.", "/");
                     File src = new File(dir, srcName);
                     File dst = new File(dir, targetName);
-                    System.out.println("Renaming "+src + " to "+dst);
+                    System.out.println("Renaming " + src + " to " + dst);
                     dst.getParentFile().mkdirs();
                     src.renameTo(dst);
                 } else if ("template".equals(el.getNodeName())) {
                     String srcName = el.getAttribute("src");
                     if (srcName == null) {
-                        throw new IllegalArgumentException("rename has no src attribute");
+                        throw new IllegalArgumentException(
+                                "rename has no src attribute");
                     }
                     File src = new File(dir, srcName);
-                    System.out.println("Processing "+src);
+                    System.out.println("Processing " + src);
                     expandVars(src, vars);
                 }
             }
@@ -328,14 +342,15 @@ public class Archetype {
         }
     }
 
-    public static void processArchetype(Document doc,  Map<Object,Object> vars) throws Exception  {
+    public static void processArchetype(Document doc, Map<Object, Object> vars)
+            throws Exception {
         Element root = doc.getDocumentElement();
         Node node = root.getFirstChild();
         Element elVars = null;
         Element elRes = null;
         while (node != null) {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element el = (Element)node;
+                Element el = (Element) node;
                 if ("vars".equals(el.getNodeName())) {
                     elVars = el;
                 } else if ("resources".equals(el.getNodeName())) {
@@ -347,11 +362,11 @@ public class Archetype {
         if (elVars != null) {
             processVars(elVars, vars);
         }
-        //System.out.println("vars: "+System.getProperty("artifactId")+" - "+System.getProperty("groupId")+" = "+System.getProperty("moduleId"));
+        // System.out.println("vars: "+System.getProperty("artifactId")+" - "+System.getProperty("groupId")+" = "+System.getProperty("moduleId"));
         outDir = expandVars(outDir, vars);
         File out = new File(outDir);
         if (out.exists()) {
-            System.out.println("Target directory already exists: "+out);
+            System.out.println("Target directory already exists: " + out);
             System.out.println("Please specify as target a directory to be created. Exiting.");
             System.exit(1);
         }
@@ -363,14 +378,14 @@ public class Archetype {
     }
 
     public static String readVar(String key, String value) throws IOException {
-        System.out.print(key+(value == null ? ": " :" [" +value+"]: "));
+        System.out.print(key + (value == null ? ": " : " [" + value + "]: "));
         StringBuilder buf = new StringBuilder();
         int c = System.in.read();
         LOOP: while (c != -1) {
             if (c == '\n' || c == '\r') {
                 if (buf.length() == 0) {
                     if (value == null) {
-                        System.out.println(key+(value == null ? ": " :" [" +value+"]: "));
+                        System.out.println(key + ": ");
                         break LOOP;
                     } else {
                         return value;
@@ -378,7 +393,7 @@ public class Archetype {
                 }
                 return buf.toString();
             }
-            buf.append((char)c);
+            buf.append((char) c);
             c = System.in.read();
         }
         return value;
@@ -430,7 +445,7 @@ public class Archetype {
     }
 
     public static void launch(String[] args) {
-      // launch an app.
+        // launch an app.
     }
 
 }
