@@ -22,12 +22,12 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.automation.io.services.JsonFactoryManager;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentListWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**

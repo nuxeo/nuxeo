@@ -30,7 +30,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.io.services.JsonFactoryManager;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Session;
@@ -39,6 +38,7 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntriesWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntry;
 import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntryWriter;
+import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -53,7 +53,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.test" })
+@Deploy({ "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.test",
+        "org.nuxeo.ecm.webengine.core" })
 @LocalDeploy("org.nuxeo.ecm.automation.test:test-directory-contrib.xml")
 public class DirectoryEntryIOTest {
 

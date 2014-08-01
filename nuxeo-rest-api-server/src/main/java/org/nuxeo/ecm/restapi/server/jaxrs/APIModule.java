@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.nuxeo.ecm.automation.jaxrs.io.JsonAdapterWriter;
-import org.nuxeo.ecm.automation.jaxrs.io.JsonExceptionWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonLoginInfoWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonRecordSetWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonTreeWriter;
@@ -56,6 +55,7 @@ import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoGroupWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoPrincipalListWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoPrincipalReader;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoPrincipalWriter;
+import org.nuxeo.ecm.webengine.app.JsonExceptionWriter;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
 /**
