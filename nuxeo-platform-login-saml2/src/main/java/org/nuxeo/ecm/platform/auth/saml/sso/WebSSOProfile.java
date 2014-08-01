@@ -24,6 +24,7 @@ import org.opensaml.common.SAMLException;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.SAMLVersion;
 import org.opensaml.common.binding.SAMLMessageContext;
+import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.core.*;
 import org.opensaml.saml2.metadata.*;
 import org.opensaml.xml.encryption.DecryptionException;
@@ -48,7 +49,7 @@ public class WebSSOProfile extends SAMLProfile {
         super();
 
         for (SingleSignOnService sso : idpSSO.getSingleSignOnServices()) {
-            if (sso.getBinding().equals(org.opensaml.common.xml.SAMLConstants.SAML2_POST_BINDING_URI)) {
+            if (sso.getBinding().equals(SAMLConstants.SAML2_POST_BINDING_URI)) {
                 ssoService = sso;
             }
         }
@@ -188,7 +189,7 @@ public class WebSSOProfile extends SAMLProfile {
         request.setID(UUID.randomUUID().toString());
         request.setVersion(SAMLVersion.VERSION_20);
         request.setIssueInstant(new DateTime());
-        request.setProtocolBinding(org.opensaml.common.xml.SAMLConstants.SAML2_POST_BINDING_URI);
+        request.setProtocolBinding(SAMLConstants.SAML2_POST_BINDING_URI);
 
         if (ssoService.getResponseLocation() != null) {
             request.setAssertionConsumerServiceURL(ssoService.getResponseLocation());
@@ -231,7 +232,6 @@ public class WebSSOProfile extends SAMLProfile {
             }
         }
     }
-
 
     public Endpoint getEndpoint() {
         return ssoService;

@@ -21,12 +21,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.auth.saml.binding.HTTPPostBinding;
+import org.nuxeo.ecm.platform.auth.saml.binding.HTTPRedirectBinding;
 import org.nuxeo.ecm.platform.auth.saml.binding.SAMLBinding;
 import org.nuxeo.ecm.platform.auth.saml.key.KeyManager;
 import org.nuxeo.ecm.platform.auth.saml.sso.WebSSOProfile;
 import org.nuxeo.ecm.platform.auth.saml.user.EmailBasedUserResolver;
 import org.nuxeo.ecm.platform.auth.saml.user.UserResolver;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
@@ -57,16 +59,18 @@ import org.opensaml.xml.security.keyinfo.KeyInfoCredentialResolver;
 import org.opensaml.xml.security.keyinfo.StaticKeyInfoCredentialResolver;
 import org.opensaml.xml.signature.SignatureTrustEngine;
 import org.opensaml.xml.signature.impl.ExplicitKeySignatureTrustEngine;
+import org.opensaml.xml.util.Pair;
 import org.opensaml.xml.util.XMLHelper;
 import org.w3c.dom.Element;
 
+import org.opensaml.util.URLBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.net.URLEncoder;
 import java.util.*;
 
-import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.*;
 
 public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, LoginProviderLinkComputer, NuxeoAuthenticationPluginLogoutExtension {
 
@@ -82,6 +86,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
     protected static List<SAMLBinding> bindings = new ArrayList<>();
     static {
         bindings.add(new HTTPPostBinding());
+        bindings.add(new HTTPRedirectBinding());
     }
 
     // Decryption key resolver
@@ -165,13 +170,15 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
         }
 
         // contribute icon and link to the Login Screen
-        LoginScreenHelper.registerLoginProvider(
-                parameters.get("name"),
-                parameters.get("icon"),
-                null,
-                parameters.get("label"),
-                parameters.get("description"),
-                this);
+        if (parameters.containsKey("name")) {
+            LoginScreenHelper.registerLoginProvider(
+                    parameters.get("name"),
+                    parameters.get("icon"),
+                    null,
+                    parameters.get("label"),
+                    parameters.get("description"),
+                    this);
+        }
     }
 
     private void addProfile(SAMLProfile profile) {
@@ -200,14 +207,24 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
         return (EntityDescriptor) metadataProvider.getMetadata();
     }
 
+    /**
+     * Returns a Login URL to use with HTTP Redirect
+     */
     protected String getSSOLoginUrl(HttpServletRequest request, HttpServletResponse response) {
         WebSSOProfile sso = (WebSSOProfile) profiles.get(WebSSOProfile.PROFILE_URI);
         if (sso == null) {
             return null;
         }
+
         // Create and populate the context
         SAMLMessageContext context = new BasicSAMLMessageContext();
-        populateLocalContext(context, request, response);
+        populateLocalContext(context);
+
+        // Store the requested URL in the Relay State
+        String requestedUrl = getRequestedUrl(request);
+        if (requestedUrl != null) {
+            context.setRelayState(requestedUrl);
+        }
 
         // Get the encoded SAML request
         String encodedSaml = "";
@@ -237,12 +254,25 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
         String loginURL = sso.getEndpoint().getLocation();
         try {
-            loginURL += "?" + SAML_REQUEST + "=" + URLEncoder.encode(encodedSaml, "UTF-8");
-        } catch (UnsupportedEncodingException e1) {
-            log.error("Error while encoding URL", e1);
+            URLBuilder urlBuilder = new URLBuilder(loginURL);
+            urlBuilder.getQueryParams().add(new Pair<>(SAML_REQUEST, encodedSaml));
+            loginURL = urlBuilder.buildURL();
+        } catch (IllegalArgumentException e) {
+            log.error("Error while encoding URL", e);
             return null;
         }
         return loginURL;
+    }
+
+    private String getRequestedUrl(HttpServletRequest request) {
+        String requestedUrl = (String) request.getAttribute(NXAuthConstants.REQUESTED_URL);
+        if (requestedUrl == null) {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                requestedUrl = (String) session.getAttribute(NXAuthConstants.START_PAGE_SAVE_KEY);
+            }
+        }
+        return requestedUrl;
     }
 
     @Override
@@ -273,42 +303,24 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
     @Override
     public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest request, HttpServletResponse response) {
 
-        if (!"POST".equalsIgnoreCase(request.getMethod()) || (request.getParameter(SAML_RESPONSE) == null)) {
+        HttpServletRequestAdapter inTransport = new HttpServletRequestAdapter(request);
+        SAMLBinding binding = getBinding(inTransport);
+
+        // Check if we support this binding
+        if (binding == null) {
             return null;
         }
 
+        HttpServletResponseAdapter outTransport = new HttpServletResponseAdapter(response, request.isSecure());
+
         // Create and populate the context
         SAMLMessageContext context = new BasicSAMLMessageContext();
-
-        populateLocalContext(context, request, response);
-
-
-        /* Set Peer context info
-        try {
-            context.setPeerEntityId(getIdPDescriptor().getEntityID());
-            context.setPeerEntityMetadata(getIdPDescriptor());
-            context.setPeerEntityRole(IDPSSODescriptor.DEFAULT_ELEMENT_NAME);
-        } catch (MetadataProviderException e) {
-            e.printStackTrace();
-        }*/
-
-        /* Tries to load peer SSL certificate from the inbound message transport using attribute
-        X509Certificate[] chain = (X509Certificate[]) context.getInboundMessageTransport().getAttribute(ServletRequestX509CredentialAdapter.X509_CERT_REQUEST_ATTRIBUTE);
-
-        if (chain != null && chain.length > 0) {
-
-            log.debug("Found certificate chain from request {}", chain[0]);
-            BasicX509Credential credential = new BasicX509Credential();
-            credential.setEntityCertificate(chain[0]);
-            credential.setEntityCertificateChain(Arrays.asList(chain));
-            context.setPeerSSLCredential(credential);
-
-        }*/
+        context.setInboundMessageTransport(inTransport);
+        context.setOutboundMessageTransport(outTransport);
+        populateLocalContext(context);
 
         // Decode the message
-
         try {
-            SAMLBinding binding = getBinding(context.getInboundMessageTransport());
             context.setCommunicationProfileId(WebSSOProfile.PROFILE_URI);
             binding.decode(context);
         } catch (Exception e) {
@@ -331,6 +343,19 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
             //
         }
 
+        /* Tries to load peer SSL certificate from the inbound message transport using attribute
+        X509Certificate[] chain = (X509Certificate[]) context.getInboundMessageTransport().getAttribute(ServletRequestX509CredentialAdapter.X509_CERT_REQUEST_ATTRIBUTE);
+
+        if (chain != null && chain.length > 0) {
+
+            log.debug("Found certificate chain from request {}", chain[0]);
+            BasicX509Credential credential = new BasicX509Credential();
+            credential.setEntityCertificate(chain[0]);
+            credential.setEntityCertificateChain(Arrays.asList(chain));
+            context.setPeerSSLCredential(credential);
+
+        }*/
+
         // Try to authenticate
         SAMLCredential credential = null;
 
@@ -348,6 +373,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
             }
         } catch (Exception e) {
             log.debug("Error processing SAML message", e);
+            return null;
         }
 
         String userId = userResolver.findNuxeoUser(credential);
@@ -360,7 +386,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
         return new UserIdentificationInfo(userId, userId);
     }
 
-    protected SAMLBinding getBinding(InTransport transport) throws SAMLException {
+    protected SAMLBinding getBinding(InTransport transport) {
 
         for (SAMLBinding binding : bindings) {
             if (binding.supports(transport)) {
@@ -368,10 +394,10 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
             }
         }
 
-        throw new SAMLException("Unsupported request");
+        return null;
 
     }
-    private void populateLocalContext(SAMLMessageContext context, HttpServletRequest request, HttpServletResponse response) {
+    private void populateLocalContext(SAMLMessageContext context) {
         // Set local info
         //context.setLocalEntityId(metadataProvider.getHostedSPName());
         context.setLocalEntityRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
@@ -380,11 +406,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
         //context.setLocalEntityMetadata(entityDescriptor);
         //context.setLocalEntityRoleMetadata(roleDescriptor);
 
-        HttpServletRequestAdapter inTransport = new HttpServletRequestAdapter(request);
-        HttpServletResponseAdapter outTransport = new HttpServletResponseAdapter(response, request.isSecure());
         context.setMetadataProvider(metadataProvider);
-        context.setInboundMessageTransport(inTransport);
-        context.setOutboundMessageTransport(outTransport);
     }
 
     @Override
