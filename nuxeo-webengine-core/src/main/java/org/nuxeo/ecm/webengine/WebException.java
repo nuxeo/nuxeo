@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.webengine;
@@ -49,9 +48,6 @@ public class WebException extends WebApplicationException {
     protected String message;
 
     protected int status;
-
-    public WebException() {
-    }
 
     public WebException(Response response) {
         super(response);
@@ -287,4 +283,5 @@ public class WebException extends WebApplicationException {
     public String getHelpUrl() {
         return "";
     }
+
 }

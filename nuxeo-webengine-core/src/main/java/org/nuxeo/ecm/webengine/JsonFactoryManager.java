@@ -25,4 +25,8 @@ public interface JsonFactoryManager {
     JsonFactory getJsonFactory();
 
     JsonFactory createFactory();
+
+    boolean toggleStackDisplay();
+
+    boolean isStackDisplay();
 }

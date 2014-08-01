@@ -17,7 +17,6 @@
  */
 package org.nuxeo.ecm.webengine.app;
 
-import com.google.common.base.Objects;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
@@ -33,18 +32,12 @@ import java.io.OutputStream;
  */
 public class JsonWebengineWriter {
 
-    protected boolean stackEnable;
-
-    public static final String REST_STACK_DISPLAY = "org.nuxeo.rest.stack.enable";
-
-    public JsonWebengineWriter() {
-        stackEnable = Boolean.valueOf(Objects.firstNonNull(Framework
-                .getProperty(REST_STACK_DISPLAY), "false"));
-    }
+    static JsonFactoryManager jsonFactoryManager;
 
     private static JsonFactory getFactory() {
-        return Framework.getLocalService(JsonFactoryManager.class)
-                .getJsonFactory();
+        jsonFactoryManager = Framework.getLocalService(JsonFactoryManager
+                .class);
+        return jsonFactoryManager.getJsonFactory();
     }
 
     private static JsonGenerator createGenerator(OutputStream out)
@@ -57,17 +50,21 @@ public class JsonWebengineWriter {
         writeException(createGenerator(out), eh);
     }
 
-    public static void writeException(JsonGenerator jg, WebException eh)
+    public static void writeException(JsonGenerator jg,
+            WebException webException)
             throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "exception");
-        jg.writeStringField("code", eh.getType());
-        jg.writeNumberField("status", eh.getStatus());
+        jg.writeStringField("code", webException.getType());
+        jg.writeNumberField("status", webException.getStatus());
         //jg.writeStringField("help_url", eh.getHelpUrl());
         //jg.writeStringField("request_id", eh.getRequestId());
-        jg.writeStringField("message", eh.getMessage());
-        jg.writeObjectField("stacktrace", eh.getStackTraceString());
-        jg.writeObjectField("exception", eh.getCause());
+        jg.writeStringField("message", webException.getMessage());
+        if (jsonFactoryManager.isStackDisplay()) {
+            jg.writeStringField("stacktrace",
+                    webException.getStackTraceString());
+            jg.writeObjectField("exception", webException.getCause());
+        }
         jg.writeEndObject();
         jg.flush();
     }

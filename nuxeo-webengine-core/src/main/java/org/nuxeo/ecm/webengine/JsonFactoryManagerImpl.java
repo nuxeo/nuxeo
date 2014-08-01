@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     dmetzler
+ *     Vladimir Pasquir <vpasquier@nuxeo.com>
  */
 package org.nuxeo.ecm.webengine;
 
@@ -28,13 +29,23 @@ import org.codehaus.jackson.map.introspect.BasicBeanDescription;
 import org.codehaus.jackson.map.module.SimpleModule;
 import org.codehaus.jackson.map.ser.BeanSerializer;
 import org.codehaus.jackson.map.ser.BeanSerializerModifier;
+import org.nuxeo.runtime.api.Framework;
 
 import java.io.IOException;
 
 /**
- * @since 5.9.6
+ * @since 6.0
  */
 public class JsonFactoryManagerImpl implements JsonFactoryManager {
+
+    public static final String REST_STACK_DISPLAY = "org.nuxeo.rest.stack" +
+            ".enable";
+
+    protected boolean stackDisplay;
+
+    public JsonFactoryManagerImpl() {
+        stackDisplay = Framework.isBooleanPropertyTrue(REST_STACK_DISPLAY);
+    }
 
     private static class ThrowableSerializer extends BeanSerializer {
 
@@ -110,4 +121,12 @@ public class JsonFactoryManagerImpl implements JsonFactoryManager {
         return factory;
     }
 
+    @Override
+    public boolean toggleStackDisplay() {
+        return stackDisplay = !stackDisplay;
+    }
+
+    public boolean isStackDisplay() {
+        return stackDisplay;
+    }
 }
