@@ -8,6 +8,7 @@
   </parent>
 
   <artifactId>nuxeo-theme-jsf</artifactId>
+  <version>5.9.5.1</version>
   <name>Nuxeo Theme JSF</name>
   <description>Nuxeo Theme: JSF for the Nuxeo ECM platform.</description>
 
