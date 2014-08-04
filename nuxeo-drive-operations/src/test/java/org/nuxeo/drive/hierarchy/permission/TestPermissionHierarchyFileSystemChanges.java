@@ -24,13 +24,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.persistence.EntityManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -55,11 +56,14 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
+import org.nuxeo.ecm.platform.audit.api.AuditReader;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
@@ -79,7 +83,7 @@ import com.google.inject.Inject;
  * @see AuditChangeFinder#getFileSystemChanges
  */
 @RunWith(FeaturesRunner.class)
-@Features({TransactionalFeature.class, AuditFeature.class})
+@Features({ TransactionalFeature.class, AuditFeature.class })
 // We handle transaction start and commit manually to make it possible to have
 // several consecutive transactions in a test method
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
@@ -130,7 +134,7 @@ public class TestPermissionHierarchyFileSystemChanges {
 
     protected String userWorkspace1ItemId;
 
-    protected long lastSuccessfulSync;
+    protected long lastEventLogId;
 
     @Before
     public void init() throws Exception {
@@ -177,6 +181,9 @@ public class TestPermissionHierarchyFileSystemChanges {
         // transaction in FileSystemItemManagerImpl#getSession
         eventServiceAdmin.setListenerEnabledFlag(
                 "nuxeoDriveFileSystemDeletionListener", false);
+
+        // Clean up audit log
+        cleanUpAuditLog();
     }
 
     /**
@@ -193,8 +200,7 @@ public class TestPermissionHierarchyFileSystemChanges {
 
         TransactionHelper.commitOrRollbackTransaction();
 
-        // Set last synchronization date
-        lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
+        lastEventLogId = nuxeoDriveManager.getChangeFinder().getUpperBound();
 
         // Register user1's personal workspace as a synchronization root for
         // user1
@@ -305,8 +311,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         // Wait for creation events to be logged in the audit
         eventService.waitForAsyncCompletion();
 
-        // Set last synchronization date
-        lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
+        lastEventLogId = nuxeoDriveManager.getChangeFinder().getUpperBound();
 
         // Check sync root with Everything permission: user1Folder1 => adaptable
         // so appears in the file system changes
@@ -493,12 +498,24 @@ public class TestPermissionHierarchyFileSystemChanges {
             throws ClientException, InterruptedException {
         // Wait 1 second as the audit change finder relies on steps of 1 second
         Thread.sleep(1000);
-        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummary(
+        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(
                 principal, Collections.<String, Set<IdRef>> emptyMap(),
-                lastSuccessfulSync);
+                lastEventLogId);
         assertNotNull(changeSummary);
-        lastSuccessfulSync = changeSummary.getSyncDate();
+        lastEventLogId = changeSummary.getUpperBound();
         return changeSummary.getFileSystemChanges();
+    }
+
+    protected void cleanUpAuditLog() {
+        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getService(AuditReader.class);
+        auditService.getOrCreatePersistenceProvider().run(true, new RunVoid() {
+            @Override
+            public void runWith(EntityManager em) throws ClientException {
+                em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
+                em.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
+                em.createNativeQuery("delete from nxp_logs").executeUpdate();
+            }
+        });
     }
 
 }

@@ -56,11 +56,40 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
 
     private static final Log log = LogFactory.getLog(AuditChangeFinder.class);
 
+    /**
+     * To be deprecated (in fact make throw
+     * {@link UnsupportedOperationException}), keeping old method based on log
+     * date for backward compatibility.
+     * <p>
+     * Now using event log id for lower and upper bounds to ensure consistency.
+     *
+     * @see https://jira.nuxeo.com/browse/NXP-14826
+     * @see #getFileSystemChangesIntegerBounds(CoreSession, Set,
+     *      SynchronizationRoots, long, long, int)
+     */
     @Override
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session,
             Set<IdRef> lastActiveRootRefs, SynchronizationRoots activeRoots,
             long lastSuccessfulSyncDate, long syncDate, int limit)
             throws ClientException, TooManyChangesException {
+        return getFileSystemChanges(session, lastActiveRootRefs, activeRoots,
+                lastSuccessfulSyncDate, syncDate, false, limit);
+    }
+
+    @Override
+    public List<FileSystemItemChange> getFileSystemChangesIntegerBounds(
+            CoreSession session, Set<IdRef> lastActiveRootRefs,
+            SynchronizationRoots activeRoots, long lowerBound, long upperBound,
+            int limit) throws ClientException, TooManyChangesException {
+        return getFileSystemChanges(session, lastActiveRootRefs, activeRoots,
+                lowerBound, upperBound, true, limit);
+    }
+
+    protected List<FileSystemItemChange> getFileSystemChanges(
+            CoreSession session, Set<IdRef> lastActiveRootRefs,
+            SynchronizationRoots activeRoots, long lowerBound, long upperBound,
+            boolean integerBounds, int limit) throws ClientException,
+            TooManyChangesException {
         String principalName = session.getPrincipal().getName();
         List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
 
@@ -75,7 +104,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         // linked to the un-registration or deletion of formerly synchronized
         // roots
         List<LogEntry> entries = queryAuditEntries(session, activeRoots,
-                lastSuccessfulSyncDate, syncDate, limit);
+                lowerBound, upperBound, integerBounds, limit);
 
         // First pass over the entries to check if a "NuxeoDrive" event has
         // occurred during that period.
@@ -101,7 +130,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 Map<String, SynchronizationRoots> synchronizationRoots = driveManager.getSynchronizationRoots(session.getPrincipal());
                 SynchronizationRoots updatedActiveRoots = synchronizationRoots.get(session.getRepositoryName());
                 entries = queryAuditEntries(session, updatedActiveRoots,
-                        lastSuccessfulSyncDate, syncDate, limit);
+                        lowerBound, upperBound, integerBounds, limit);
                 break;
             }
         }
@@ -197,9 +226,19 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     }
 
     /**
+     * To be deprecated (in fact make throw
+     * {@link UnsupportedOperationException}), keeping for backward
+     * compatibility.
+     * <p>
      * Return the current time to query the logDate field of the audit log. This
      * time intentionally truncated to 0 milliseconds to have a consistent
      * behavior across databases.
+     * <p>
+     * Should now use last available log id in the audit log table as upper
+     * bound.
+     *
+     * @see https://jira.nuxeo.com/browse/NXP-14826
+     * @see #getUpperBound()
      */
     @Override
     public long getCurrentDate() {
@@ -207,10 +246,32 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         return now - (now % 1000);
     }
 
+    /**
+     * Return the last available log id in the audit log table (primary key) to
+     * be used as the upper bound of the event log id range clause in the change
+     * query.
+     * */
+    @Override
+    @SuppressWarnings("unchecked")
+    public long getUpperBound() {
+        AuditReader auditService = Framework.getService(AuditReader.class);
+        String auditQuery = "from LogEntry log order by log.id desc";
+        if (log.isDebugEnabled()) {
+            log.debug("Querying audit log for greatest id: " + auditQuery);
+        }
+        List<LogEntry> entries = (List<LogEntry>) auditService.nativeQuery(
+                auditQuery, 1, 1);
+        if (entries.isEmpty()) {
+            log.debug("Found no audit log entries, returning -1");
+            return -1;
+        }
+        return entries.get(0).getId();
+    }
+
     @SuppressWarnings("unchecked")
     protected List<LogEntry> queryAuditEntries(CoreSession session,
-            SynchronizationRoots activeRoots, long lastSuccessfulSyncDate,
-            long syncDate, int limit) {
+            SynchronizationRoots activeRoots, long lowerBound, long upperBound,
+            boolean integerBounds, int limit) {
         AuditReader auditService = Framework.getLocalService(AuditReader.class);
         // Set fixed query parameters
         Map<String, Object> params = new HashMap<String, Object>();
@@ -247,20 +308,20 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         auditQuerySb.append("' and log.eventId != 'rootUnregistered'");
         auditQuerySb.append(")");
         auditQuerySb.append(") and (");
-        auditQuerySb.append(getJPADateClause(lastSuccessfulSyncDate, syncDate,
-                params));
+        auditQuerySb.append(getJPARangeClause(lowerBound, upperBound,
+                integerBounds, params));
         // we intentionally sort by eventDate even if the range filtering is
-        // done on the logDate: eventDate is useful to reflect the ordering of
-        // events occurring inside the same transaction while the nearly
-        // monotonic behavior of logDate is useful for ensuring that consecutive
+        // done on the log id: eventDate is useful to reflect the ordering of
+        // events occurring inside the same transaction while the
+        // monotonic behavior of log id is useful for ensuring that consecutive
         // range queries to the audit won't miss any events even when long
         // running transactions are logged after a delay.
         auditQuerySb.append(") order by log.repositoryId asc, log.eventDate desc");
         String auditQuery = auditQuerySb.toString();
 
         if (log.isDebugEnabled()) {
-            log.debug("Querying audit log: " + auditQuery + " with params: "
-                    + params);
+            log.debug("Querying audit log for changes: " + auditQuery
+                    + " with params: " + params);
         }
         List<LogEntry> entries = (List<LogEntry>) auditService.nativeQuery(
                 auditQuery, params, 1, limit);
@@ -279,9 +340,10 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             }
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
-                        "Change detected at eventDate=%s logDate=%s: %s on %s",
-                        entry.getEventDate(), entry.getLogDate(),
-                        entry.getEventId(), entry.getDocPath()));
+                        "Change with eventId=%d detected at eventDate=%s, logDate=%s: %s on %s",
+                        entry.getId(), entry.getEventDate(),
+                        entry.getLogDate(), entry.getEventId(),
+                        entry.getDocPath()));
             }
             postFilteredEntries.add(entry);
         }
@@ -306,11 +368,24 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         return rootPathClause.toString();
     }
 
-    protected String getJPADateClause(long lastSuccessfulSyncDate,
-            long syncDate, Map<String, Object> params) {
-        params.put("lastSuccessfulSyncDate", new Date(lastSuccessfulSyncDate));
-        params.put("syncDate", new Date(syncDate));
-        return "log.logDate >= :lastSuccessfulSyncDate and log.logDate < :syncDate";
+    /**
+     * Now using event log id to ensure consistency, see
+     * https://jira.nuxeo.com/browse/NXP-14826.
+     * <p>
+     * Keeping ability to use old clause based on log date for backward
+     * compatibility, to be deprecated.
+     */
+    protected String getJPARangeClause(long lowerBound, long upperBound,
+            boolean integerBounds, Map<String, Object> params) {
+        if (integerBounds) {
+            params.put("lowerBound", lowerBound);
+            params.put("upperBound", upperBound);
+            return "log.id > :lowerBound and log.id <= :upperBound";
+        } else {
+            params.put("lastSuccessfulSyncDate", new Date(lowerBound));
+            params.put("syncDate", new Date(upperBound));
+            return "log.logDate >= :lastSuccessfulSyncDate and log.logDate < :syncDate";
+        }
     }
 
     protected FileSystemItemChange getFileSystemItemChange(CoreSession session,
@@ -350,7 +425,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         // inside a transaction (e.g. when several documents are
         // created, updated, deleted at once) hence it's useful
         // to pass that info to the client even though the change
-        // detection filtering is using the logDate to have a nearly
+        // detection filtering is using the log id to have a
         // guaranteed monotonic behavior that evenDate cannot
         // guarantee when facing long transactions.
         return new FileSystemItemChangeImpl(entry.getEventId(),

@@ -82,7 +82,7 @@ public class TestGetChangeSummaryMultiRepo {
 
     protected CoreSession otherSession;
 
-    protected long lastSuccessfulSync;
+    protected long lastSyncDate;
 
     protected String lastSyncActiveRoots;
 
@@ -100,7 +100,7 @@ public class TestGetChangeSummaryMultiRepo {
         otherSession = CoreInstance.openCoreSession("other", "Administrator");
 
         nuxeoDriveManager.setChangeFinder(new MockChangeFinder());
-        lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
+        lastSyncDate = Calendar.getInstance().getTimeInMillis();
         lastSyncActiveRoots = "";
 
         folder1 = session.createDocument(session.createDocumentModel("/",
@@ -202,9 +202,8 @@ public class TestGetChangeSummaryMultiRepo {
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000);
         Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveGetChangeSummary.ID).set("lastSyncDate",
-                lastSuccessfulSync).set("lastSyncActiveRootDefinitions",
-                lastSyncActiveRoots).execute();
+                NuxeoDriveGetChangeSummary.ID).set("lastSyncDate", lastSyncDate).set(
+                "lastSyncActiveRootDefinitions", lastSyncActiveRoots).execute();
         assertNotNull(docChangeSummaryJSON);
 
         FileSystemChangeSummary changeSummary = mapper.readValue(
@@ -212,7 +211,7 @@ public class TestGetChangeSummaryMultiRepo {
                 FileSystemChangeSummaryImpl.class);
         assertNotNull(changeSummary);
 
-        lastSuccessfulSync = changeSummary.getSyncDate();
+        lastSyncDate = changeSummary.getSyncDate();
         lastSyncActiveRoots = changeSummary.getActiveSynchronizationRootDefinitions();
         return changeSummary;
     }
