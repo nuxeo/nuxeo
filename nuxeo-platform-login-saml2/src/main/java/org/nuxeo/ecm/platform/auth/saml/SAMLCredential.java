@@ -25,14 +25,16 @@ import java.util.List;
 
 public class SAMLCredential {
     private final NameID nameID;
+    private final List<String> sessionIndexes;
     private final String remoteEntityID;
     private final String relayState;
     private final List<Attribute> attributes;
     private final String localEntityID;
     private final Serializable additionalData;
 
-    public SAMLCredential(NameID nameID, String remoteEntityID, String relayState, List<Attribute> attributes, String localEntityID, Serializable additionalData) {
+    public SAMLCredential(NameID nameID, List<String> sessionIndexes, String remoteEntityID, String relayState, List<Attribute> attributes, String localEntityID, Serializable additionalData) {
         this.nameID = nameID;
+        this.sessionIndexes = sessionIndexes;
         this.remoteEntityID = remoteEntityID;
         this.relayState = relayState;
         this.attributes = attributes;
@@ -42,6 +44,10 @@ public class SAMLCredential {
 
     public NameID getNameID() {
         return nameID;
+    }
+
+    public List<String> getSessionIndexes() {
+        return sessionIndexes;
     }
 
     public String getRemoteEntityID() {

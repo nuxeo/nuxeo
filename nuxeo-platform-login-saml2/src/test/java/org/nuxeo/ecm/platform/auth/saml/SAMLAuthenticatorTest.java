@@ -126,7 +126,7 @@ public class SAMLAuthenticatorTest {
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
 
-        String loginURL = samlAuth.getSSOLoginUrl(req, resp);
+        String loginURL = samlAuth.getSSOUrl(req, resp);
         String query = URI.create(loginURL).getQuery();
 
         assertTrue(loginURL.startsWith("http://dummy/SSOPOST"));
@@ -158,6 +158,17 @@ public class SAMLAuthenticatorTest {
         assertEquals(info.getUserName(), user.getId());
 
         verify(req).setAttribute(eq(SAMLAuthenticationProvider.SAML_ATTRIBUTES), notNull());
+    }
+
+    @Test
+    public void testLogoutRequest() throws Exception {
+
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+
+        String logoutURL = samlAuth.getSLOUrl(req, resp);
+
+        assertTrue(logoutURL.startsWith("http://dummy/SLOPOST"));
     }
 
     protected HttpServletRequest getMockRequest(String messageFile, String method, String url, String contentType) throws Exception {

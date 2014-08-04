@@ -22,8 +22,8 @@
         </KeyDescriptor>
         <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://dummy/SSORedirect"/>
         <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://dummy/SSOPOST"/>
-        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://dummy/IDPSloRedirect" ResponseLocation="http://dummy/IDPSloRedirect"/>
-        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://dummy/IDPSloPost" ResponseLocation="http://dummy/IDPSloPost"/>
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://dummy/SLORedirect"/>
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://dummy/SLOPOST"/>
         <ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://dummy/IDPMniRedirect" ResponseLocation="http://dummy/IDPMniRedirect"/>
         <ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://dummy/IDPMniPOST" ResponseLocation="http://dummy/IDPMniPOST"/>
         <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>
