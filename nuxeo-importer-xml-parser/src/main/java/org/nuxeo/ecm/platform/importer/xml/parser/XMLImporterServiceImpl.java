@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Attribute;
@@ -170,12 +171,13 @@ public class XMLImporterServiceImpl {
         mvelCtx.put("source", file);
 
         Document doc = null;
+        File directory = null;
         try {
             doc = new SAXReader().read(file);
             workingDirectory = file.getParentFile();
         } catch (Exception e) {
             File tmp = new File(System.getProperty("java.io.tmpdir"));
-            File directory = new File(tmp, file.getName()
+            directory = new File(tmp, file.getName()
                     + System.currentTimeMillis());
             directory.mkdir();
             ZipUtils.unzip(file, directory);
@@ -186,6 +188,8 @@ public class XMLImporterServiceImpl {
             }
             throw new ClientException(
                     "Can not find XML file inside the zip archive", e);
+        } finally {
+            FileUtils.deleteQuietly(directory);
         }
         return parse(doc);
     }
