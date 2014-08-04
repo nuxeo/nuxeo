@@ -51,6 +51,9 @@ public class NuxeoDriveGetChangeSummary {
     @Param(name = "lastSyncDate", required = false)
     protected Long lastSyncDate = -1L;
 
+    @Param(name = "lowerBound", required = false)
+    protected Long lowerBound = -1L;
+
     // Expect a String structure with form:
     // repo-1:root-ref-1,repo-1:root-ref-2,repo-2:root-ref-3
     @Param(name = "lastSyncActiveRootDefinitions", required = false)
@@ -60,8 +63,14 @@ public class NuxeoDriveGetChangeSummary {
     public Blob run() throws ClientException, IOException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Map<String, Set<IdRef>> lastActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(lastSyncActiveRootDefinitions);
-        FileSystemChangeSummary docChangeSummary = driveManager.getChangeSummary(
-                ctx.getPrincipal(), lastActiveRootRefs, lastSyncDate);
+        FileSystemChangeSummary docChangeSummary;
+        if (lastSyncDate >= 0) {
+            docChangeSummary = driveManager.getChangeSummary(
+                    ctx.getPrincipal(), lastActiveRootRefs, lastSyncDate);
+        } else {
+            docChangeSummary = driveManager.getChangeSummaryIntegerBounds(
+                    ctx.getPrincipal(), lastActiveRootRefs, lowerBound);
+        }
         return NuxeoDriveOperationHelper.asJSONBlob(docChangeSummary);
     }
 

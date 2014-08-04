@@ -70,7 +70,7 @@ public class TestGetChangeSummary {
     @Inject
     protected Session clientSession;
 
-    protected long lastSuccessfulSync;
+    protected long lastSyncDate;
 
     protected DocumentModel folder1;
 
@@ -84,7 +84,7 @@ public class TestGetChangeSummary {
     public void init() throws Exception {
 
         nuxeoDriveManager.setChangeFinder(new MockChangeFinder());
-        lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
+        lastSyncDate = Calendar.getInstance().getTimeInMillis();
         lastSyncActiveRoots = "";
 
         folder1 = session.createDocument(session.createDocumentModel("/",
@@ -166,15 +166,14 @@ public class TestGetChangeSummary {
     /**
      * Gets the changes summary for the user bound to the {@link #session} using
      * the {@link NuxeoDriveGetChangeSummary} automation operation and updates
-     * the {@link #lastSuccessfulSync} date.
+     * the {@link #lastSyncDate} date.
      */
     protected FileSystemChangeSummary getChangeSummary() throws Exception {
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000);
         Blob changeSummaryJSON = (Blob) clientSession.newRequest(
-                NuxeoDriveGetChangeSummary.ID).set("lastSyncDate",
-                lastSuccessfulSync).set("lastSyncActiveRootDefinitions",
-                lastSyncActiveRoots).execute();
+                NuxeoDriveGetChangeSummary.ID).set("lastSyncDate", lastSyncDate).set(
+                "lastSyncActiveRootDefinitions", lastSyncActiveRoots).execute();
         assertNotNull(changeSummaryJSON);
 
         FileSystemChangeSummary changeSummary = mapper.readValue(
@@ -182,7 +181,7 @@ public class TestGetChangeSummary {
                 FileSystemChangeSummaryImpl.class);
         assertNotNull(changeSummary);
 
-        lastSuccessfulSync = changeSummary.getSyncDate();
+        lastSyncDate = changeSummary.getSyncDate();
         lastSyncActiveRoots = changeSummary.getActiveSynchronizationRootDefinitions();
         return changeSummary;
     }

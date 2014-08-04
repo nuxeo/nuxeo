@@ -96,6 +96,15 @@ public class MockChangeFinder implements FileSystemChangeFinder {
         return docChanges;
     }
 
+    @Override
+    public List<FileSystemItemChange> getFileSystemChangesIntegerBounds(
+            CoreSession session, Set<IdRef> lastActiveRootRefs,
+            SynchronizationRoots activeRoots, long lowerBound, long upperBound,
+            int limit) throws ClientException, TooManyChangesException {
+        throw new UnsupportedOperationException(
+                "Using MockChangeFinder with integer bounds is not implemented, please call #getFileSystemChanges.");
+    }
+
     protected String getRootPathClause(Set<String> rootPaths) {
         StringBuilder rootPathClause = new StringBuilder();
         for (String rootPath : rootPaths) {
@@ -150,6 +159,12 @@ public class MockChangeFinder implements FileSystemChangeFinder {
     public long getCurrentDate() {
         long now = System.currentTimeMillis();
         return now - (now % 1000);
+    }
+
+    @Override
+    public long getUpperBound() {
+        throw new UnsupportedOperationException(
+                "Using MockChangeFinder with integer bounds is not implemented, please call #getCurrentDate.");
     }
 
 }

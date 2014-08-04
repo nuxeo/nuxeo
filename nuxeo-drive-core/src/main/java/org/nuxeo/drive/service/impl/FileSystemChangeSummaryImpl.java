@@ -38,7 +38,9 @@ public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
 
     protected List<FileSystemItemChange> fileSystemChanges;
 
-    protected Long syncDate;
+    protected Long syncDate = null;
+
+    protected Long upperBound = null;
 
     protected Boolean hasTooManyChanges = Boolean.FALSE;
 
@@ -51,9 +53,10 @@ public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
     public FileSystemChangeSummaryImpl(
             List<FileSystemItemChange> fileSystemChanges,
             Map<String, Set<IdRef>> activeRootRefs, Long syncDate,
-            Boolean tooManyChanges) {
+            Long upperBound, Boolean tooManyChanges) {
         this.fileSystemChanges = fileSystemChanges;
         this.syncDate = syncDate;
+        this.upperBound = upperBound;
         this.hasTooManyChanges = tooManyChanges;
         List<String> rootDefinitions = new ArrayList<String>();
         for (Map.Entry<String, Set<IdRef>> entry : activeRootRefs.entrySet()) {
@@ -66,10 +69,12 @@ public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
                 rootDefinitions, ",");
     }
 
+    @Override
     public List<FileSystemItemChange> getFileSystemChanges() {
         return fileSystemChanges;
     }
 
+    @Override
     @JsonDeserialize(using = FileSystemItemChangeListDeserializer.class)
     public void setFileSystemChanges(List<FileSystemItemChange> changes) {
         this.fileSystemChanges = changes;
@@ -78,46 +83,65 @@ public class FileSystemChangeSummaryImpl implements FileSystemChangeSummary {
     /**
      * @return the time code of current sync operation in milliseconds since
      *         1970-01-01 UTC rounded to the second as measured on the server
-     *         clock. Changes from the current summary instance all happen
-     *         "strictly" before this time code. This value is expected to be
-     *         passed to the next call to
-     *         {@code NuxeoDriveManager#getDocumentChangeSummary} to get
-     *         strictly monotonic change summaries (without overlap).
+     *         clock.
      */
+    @Override
     public Long getSyncDate() {
         return syncDate;
     }
 
+    /**
+     * @return the last available log id in the audit log table
+     * */
+    @Override
+    public Long getUpperBound() {
+        return upperBound;
+    }
+
+    @Override
     public String getActiveSynchronizationRootDefinitions() {
         return activeSynchronizationRootDefinitions;
     }
 
+    @Override
     public void setActiveSynchronizationRootDefinitions(
             String activeSynchronizationRootDefinitions) {
         this.activeSynchronizationRootDefinitions = activeSynchronizationRootDefinitions;
     }
 
+    @Override
     public void setSyncDate(Long syncDate) {
         this.syncDate = syncDate;
     }
 
+    @Override
+    public void setUpperBound(Long upperBound) {
+        this.upperBound = upperBound;
+    }
+
+    @Override
     public void setHasTooManyChanges(Boolean hasTooManyChanges) {
         this.hasTooManyChanges = hasTooManyChanges;
     }
 
+    @Override
     public Boolean getHasTooManyChanges() {
         return this.hasTooManyChanges;
     }
 
     @Override
     public String toString() {
+        StringBuilder sb = new StringBuilder(getClass().getSimpleName());
+        sb.append("(");
+        sb.append(String.format("upperBound=%d, ", getUpperBound()));
+        sb.append(String.format("syncDate=%d, ", getSyncDate()));
         if (hasTooManyChanges) {
-            return String.format("%s(syncDate=%d, hasTooManyChanges=true)",
-                    getClass().getSimpleName(), getSyncDate());
+            sb.append("hasTooManyChanges=true");
         } else {
-            return String.format("%s(syncDate=%d, items=[%s])",
-                    getClass().getSimpleName(), getSyncDate(),
-                    StringUtils.join(fileSystemChanges, ", "));
+            sb.append(String.format("items=[%s]",
+                    StringUtils.join(fileSystemChanges, ", ")));
         }
+        sb.append(")");
+        return sb.toString();
     }
 }

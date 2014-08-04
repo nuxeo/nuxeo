@@ -27,12 +27,13 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.security.Principal;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.persistence.EntityManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -55,12 +56,15 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
+import org.nuxeo.ecm.platform.audit.api.AuditReader;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -101,7 +105,7 @@ public class TestAuditFileSystemChangeFinder {
     @Inject
     protected EventServiceAdmin eventServiceAdmin;
 
-    protected long lastSuccessfulSync;
+    protected long lastEventLogId;
 
     protected String lastSyncActiveRootDefinitions;
 
@@ -119,7 +123,7 @@ public class TestAuditFileSystemChangeFinder {
         eventServiceAdmin.setListenerEnabledFlag(
                 "nuxeoDriveFileSystemDeletionListener", true);
 
-        lastSuccessfulSync = Calendar.getInstance().getTimeInMillis();
+        lastEventLogId = nuxeoDriveManager.getChangeFinder().getUpperBound();
         lastSyncActiveRootDefinitions = "";
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit",
                 "10");
@@ -172,6 +176,9 @@ public class TestAuditFileSystemChangeFinder {
         // transaction in FileSystemItemManagerImpl#getSession
         eventServiceAdmin.setListenerEnabledFlag(
                 "nuxeoDriveFileSystemDeletionListener", false);
+
+        // Clean up audit log
+        cleanUpAuditLog();
     }
 
     @Test
@@ -474,6 +481,7 @@ public class TestAuditFileSystemChangeFinder {
         try {
             // No sync roots
             changes = getChanges();
+            System.out.println(changes.size());
             assertTrue(changes.isEmpty());
 
             // Create a folder in a sync root
@@ -975,7 +983,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             // Check changes, expecting 3:
             // - documentModified
@@ -1001,7 +1008,6 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             // Check changes, expecting 1: deleted
             List<FileSystemItemChange> changes = getChanges();
@@ -1075,8 +1081,7 @@ public class TestAuditFileSystemChangeFinder {
 
     /**
      * Gets the document changes for the given user's synchronization roots
-     * using the {@link AuditChangeFinder} and updates the
-     * {@link #lastSuccessfulSync} date.
+     * using the {@link AuditChangeFinder} and updates {@link #lastEventLogId}.
      *
      * @throws ClientException
      */
@@ -1095,18 +1100,18 @@ public class TestAuditFileSystemChangeFinder {
 
     /**
      * Gets the document changes summary for the given user's synchronization
-     * roots using the {@link NuxeoDriveManager} and updates the
-     * {@link #lastSuccessfulSync} date.
+     * roots using the {@link NuxeoDriveManager} and updates
+     * {@link #lastEventLogId}.
      */
     protected FileSystemChangeSummary getChangeSummary(Principal principal)
             throws ClientException, InterruptedException {
         // Wait 1 second as the audit change finder relies on steps of 1 second
         Thread.sleep(1000);
         Map<String, Set<IdRef>> lastSyncActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(lastSyncActiveRootDefinitions);
-        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummary(
-                principal, lastSyncActiveRootRefs, lastSuccessfulSync);
+        FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(
+                principal, lastSyncActiveRootRefs, lastEventLogId);
         assertNotNull(changeSummary);
-        lastSuccessfulSync = changeSummary.getSyncDate();
+        lastEventLogId = changeSummary.getUpperBound();
         lastSyncActiveRootDefinitions = changeSummary.getActiveSynchronizationRootDefinitions();
         return changeSummary;
     }
@@ -1172,6 +1177,18 @@ public class TestAuditFileSystemChangeFinder {
         }
         session.setACP(doc.getRef(), acp, true);
         session.save();
+    }
+
+    protected void cleanUpAuditLog() {
+        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getService(AuditReader.class);
+        auditService.getOrCreatePersistenceProvider().run(true, new RunVoid() {
+            @Override
+            public void runWith(EntityManager em) throws ClientException {
+                em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
+                em.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
+                em.createNativeQuery("delete from nxp_logs").executeUpdate();
+            }
+        });
     }
 
 }

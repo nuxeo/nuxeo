@@ -122,10 +122,10 @@ public interface NuxeoDriveManager {
      * @param lastSuccessfulSync the last successful synchronization date of the
      *            user's device. This time is expected to be in milliseconds
      *            since 1970-01-01 UTC as measured on the Nuxeo server clock,
-     *            typically set to the value returned
-     *            {@code DocumentChangeSummary#getSyncDate()} of the previous
+     *            typically set to the value returned by
+     *            {@link FileSystemChangeSummary#getSyncDate()} of the previous
      *            call to
-     *            {@code NuxeoDriveManager#getDocumentChangeSummary(boolean, String, CoreSession, long)}
+     *            {@link NuxeoDriveManager#getChangeSummary(Principal, Map, long)}
      *            or 0 for catching every event since the repository
      *            initialization.
      * @return the summary of document changes
@@ -133,6 +133,47 @@ public interface NuxeoDriveManager {
     public FileSystemChangeSummary getChangeSummary(Principal principal,
             Map<String, Set<IdRef>> lastSyncRootRefs, long lastSuccessfulSync)
             throws ClientException;
+
+    /**
+     * Gets a summary of document changes in all repositories or in the
+     * repository against which the given session is bound depending on the
+     * {@code allRepositories} parameter, for the given user's synchronization
+     * roots, from the lower bound sent by the user's device.
+     * <p>
+     * The summary includes:
+     * <ul>
+     * <li>The list of sync root paths</li>
+     * <li>A list of document changes</li>
+     * <li>The document models that have changed</li>
+     * <li>A status code</li>
+     * </ul>
+     *
+     * @param allRepositories if true then the document changes are retrieved
+     *            from all repositories, else only from the one against which
+     *            the given session is bound
+     * @param userName the id of the Nuxeo Drive user
+     * @param session active CoreSession instance to the repository hosting the
+     *            user's synchronization roots
+     * @param lastSyncRootRefs the map keyed by repository names of document
+     *            refs for the synchronization roots that were active during
+     *            last synchornization
+     * @param lowerBound the lower bound sent by the user's device. Typically
+     *            set to the value returned by
+     *            {@link FileSystemChangeSummary#getUpperBound()} of the
+     *            previous call to
+     *            {@link NuxeoDriveManager#getChangeSummaryIntegerBounds(Principal, Map, long)}
+     *            or 0 for catching every event since the repository
+     *            initialization.
+     * @return the summary of document changes
+     */
+    public FileSystemChangeSummary getChangeSummaryIntegerBounds(
+            Principal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
+            long lowerBound) throws ClientException;
+
+    /**
+     * Gets the {@link FileSystemChangeFinder} member.
+     */
+    public FileSystemChangeFinder getChangeFinder();
 
     /**
      * Sets the {@link FileSystemChangeFinder} member.

@@ -276,10 +276,10 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
      * a limit of document changes to fetch from the audit logs. Default value
      * is 1000.
      *
-     * If lastSuccessfulSync is missing (i.e. set to a negative value), the
-     * filesystem change summary is empty but the returned sync date is set to
-     * the actual server timestamp so that the client can reuse it as a starting
-     * timestamp for a future incremental diff request.
+     * If {@code lastSuccessfulSync} is missing (i.e. set to a negative value),
+     * the filesystem change summary is empty but the returned sync date is set
+     * to the actual server timestamp so that the client can reuse it as a
+     * starting timestamp for a future incremental diff request.
      */
     @Override
     public FileSystemChangeSummary getChangeSummary(Principal principal,
@@ -287,16 +287,48 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
             throws ClientException {
         Map<String, SynchronizationRoots> roots = getSynchronizationRoots(principal);
         return getChangeSummary(principal, lastSyncRootRefs, roots,
-                lastSuccessfulSync);
+                lastSuccessfulSync, false);
+    }
+
+    /**
+     * Uses the {@link AuditChangeFinder} to get the summary of document changes
+     * for the given user and lower bound.
+     * <p>
+     * The {@link #DOCUMENT_CHANGE_LIMIT_PROPERTY} Framework property is used as
+     * a limit of document changes to fetch from the audit logs. Default value
+     * is 1000.
+     *
+     * If {@code lowerBound} is missing (i.e. set to a negative value), the
+     * filesystem change summary is empty but the returned upper bound is set to
+     * the greater event log id so that the client can reuse it as a starting id
+     * for a future incremental diff request.
+     */
+    @Override
+    public FileSystemChangeSummary getChangeSummaryIntegerBounds(
+            Principal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
+            long lowerBound) throws ClientException {
+        Map<String, SynchronizationRoots> roots = getSynchronizationRoots(principal);
+        return getChangeSummary(principal, lastSyncRootRefs, roots, lowerBound,
+                true);
     }
 
     protected FileSystemChangeSummary getChangeSummary(Principal principal,
             Map<String, Set<IdRef>> lastActiveRootRefs,
-            Map<String, SynchronizationRoots> roots, long lastSuccessfulSync)
-            throws ClientException {
+            Map<String, SynchronizationRoots> roots, long lowerBound,
+            boolean integerBounds) throws ClientException {
         FileSystemItemManager fsManager = Framework.getLocalService(FileSystemItemManager.class);
         List<FileSystemItemChange> allChanges = new ArrayList<FileSystemItemChange>();
-        long syncDate = changeFinder.getCurrentDate();
+        long syncDate;
+        long upperBound;
+        if (integerBounds) {
+            upperBound = changeFinder.getUpperBound();
+            // Truncate sync date to 0 milliseconds
+            syncDate = System.currentTimeMillis();
+            syncDate = syncDate - (syncDate % 1000);
+        } else {
+            upperBound = changeFinder.getCurrentDate();
+            syncDate = upperBound;
+        }
         Boolean hasTooManyChanges = Boolean.FALSE;
         int limit = Integer.parseInt(Framework.getProperty(
                 DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
@@ -307,8 +339,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
         allRepositories.addAll(roots.keySet());
         allRepositories.addAll(lastActiveRootRefs.keySet());
 
-        if (!allRepositories.isEmpty() && lastSuccessfulSync > 0
-                && syncDate > lastSuccessfulSync) {
+        if (!allRepositories.isEmpty() && lowerBound >= 0
+                && upperBound > lowerBound) {
             for (String repositoryName : allRepositories) {
                 try {
                     // Get document changes
@@ -322,9 +354,16 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                     if (activeRoots == null) {
                         activeRoots = SynchronizationRoots.getEmptyRoots(repositoryName);
                     }
-                    List<FileSystemItemChange> changes = changeFinder.getFileSystemChanges(
-                            session, lastRefs, activeRoots, lastSuccessfulSync,
-                            syncDate, limit);
+                    List<FileSystemItemChange> changes;
+                    if (integerBounds) {
+                        changes = changeFinder.getFileSystemChangesIntegerBounds(
+                                session, lastRefs, activeRoots, lowerBound,
+                                upperBound, limit);
+                    } else {
+                        changes = changeFinder.getFileSystemChanges(session,
+                                lastRefs, activeRoots, lowerBound, upperBound,
+                                limit);
+                    }
                     allChanges.addAll(changes);
                 } catch (TooManyChangesException e) {
                     hasTooManyChanges = Boolean.TRUE;
@@ -343,7 +382,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                     rootsEntry.getValue().getRefs());
         }
         return new FileSystemChangeSummaryImpl(allChanges, activeRootRefs,
-                syncDate, hasTooManyChanges);
+                syncDate, upperBound, hasTooManyChanges);
     }
 
     @Override
@@ -431,6 +470,11 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements
                             newRootContainer.getRef(),
                             session.getPrincipal().getName()));
         }
+    }
+
+    @Override
+    public FileSystemChangeFinder getChangeFinder() {
+        return this.changeFinder;
     }
 
     // TODO: make changeFinder overridable with an extension point and
