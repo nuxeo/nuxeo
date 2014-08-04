@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2002-2013 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2002-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,7 +21,12 @@ package org.nuxeo.ecm.platform.importer.xml.parser;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +38,7 @@ import org.dom4j.Text;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.DefaultText;
 import org.mvel2.MVEL;
+
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -78,9 +84,9 @@ public class XMLImporterServiceImpl {
 
     protected Stack<DocumentModel> docsStack;
 
-    protected Map<String, Object> mvelCtx = new HashMap<String, Object>();
+    protected Map<String, Object> mvelCtx = new HashMap<>();
 
-    protected Map<Element, DocumentModel> elToDoc = new HashMap<Element, DocumentModel>();
+    protected Map<Element, DocumentModel> elToDoc = new HashMap<>();
 
     protected ParserConfigRegistry registry;
 
@@ -97,7 +103,7 @@ public class XMLImporterServiceImpl {
 
         session = rootDoc.getCoreSession();
         this.rootDoc = rootDoc;
-        docsStack = new Stack<DocumentModel>();
+        docsStack = new Stack<>();
         pushInStack(rootDoc);
         mvelCtx.put("root", rootDoc);
         mvelCtx.put("docs", docsStack);
@@ -111,7 +117,6 @@ public class XMLImporterServiceImpl {
     }
 
     protected DocConfigDescriptor getDocCreationConfig(Element el) {
-
         for (DocConfigDescriptor conf : getRegistry().getDocCreationConfigs()) {
             // direct tagName match
             if (conf.getTagName().equals(el.getName())) {
@@ -131,9 +136,7 @@ public class XMLImporterServiceImpl {
     }
 
     protected List<AttributeConfigDescriptor> getAttributConfigs(Element el) {
-
-        List<AttributeConfigDescriptor> result = new ArrayList<AttributeConfigDescriptor>();
-
+        List<AttributeConfigDescriptor> result = new ArrayList<>();
         for (AttributeConfigDescriptor conf : getRegistry().getAttributConfigs()) {
             if (conf.getTagName().equals(el.getName())) {
                 result.add(conf);
@@ -164,7 +167,6 @@ public class XMLImporterServiceImpl {
     }
 
     public List<DocumentModel> parse(File file) throws Exception {
-
         mvelCtx.put("source", file);
 
         Document doc = null;
@@ -190,16 +192,15 @@ public class XMLImporterServiceImpl {
 
     public List<DocumentModel> parse(Document doc) throws Exception {
         Element root = doc.getRootElement();
-        elToDoc = new HashMap<Element, DocumentModel>();
+        elToDoc = new HashMap<>();
         mvelCtx.put("xml", doc);
         mvelCtx.put("map", elToDoc);
         process(root);
-        return new ArrayList<DocumentModel>(docsStack);
+        return new ArrayList<>(docsStack);
     }
 
     protected Object resolveComplex(Element el, AttributeConfigDescriptor conf) {
-
-        Map<String, Object> propValue = new HashMap<String, Object>();
+        Map<String, Object> propValue = new HashMap<>();
         for (String name : conf.getMapping().keySet()) {
             propValue.put(name,
                     resolveAndEvaluateXmlNode(el, conf.getMapping().get(name)));
@@ -208,7 +209,6 @@ public class XMLImporterServiceImpl {
     }
 
     protected Blob resolveBlob(Element el, AttributeConfigDescriptor conf) {
-
         @SuppressWarnings("unchecked")
         Map<String, Object> propValues = (Map<String, Object>) resolveComplex(
                 el, conf);
@@ -238,7 +238,6 @@ public class XMLImporterServiceImpl {
 
     protected void processDocAttributes(DocumentModel doc, Element el,
             AttributeConfigDescriptor conf) throws Exception {
-
         String targetDocProperty = conf.getTargetDocProperty();
 
         if (log.isDebugEnabled()) {
@@ -284,22 +283,23 @@ public class XMLImporterServiceImpl {
             Serializable value;
 
             if (lType.getFieldType().isSimpleType()) {
-                value = (Serializable) resolveAndEvaluateXmlNode(
-                        el, conf.getSingleXpath());
+                value = (Serializable) resolveAndEvaluateXmlNode(el,
+                        conf.getSingleXpath());
                 if (value != null) {
                     Object values = property.getValue();
                     if (values instanceof List) {
-                        ((List)values).add(value);
+                        ((List) values).add(value);
                         property.setValue(values);
                     } else if (values instanceof Object[]) {
                         List<Object> valuesList = new ArrayList<>();
-                        Collections.addAll(valuesList, (Object[]) property.getValue());
+                        Collections.addAll(valuesList,
+                                (Object[]) property.getValue());
                         valuesList.add(value);
                         property.setValue(valuesList.toArray());
                     } else {
-                        log.error("Simple multi value property "+
-                                  targetDocProperty+
-                                  " is neither a List nor an Array");
+                        log.error("Simple multi value property "
+                                + targetDocProperty
+                                + " is neither a List nor an Array");
                     }
                 }
             } else {
@@ -356,15 +356,12 @@ public class XMLImporterServiceImpl {
     }
 
     protected Object resolveMVEL(Element el, String xpr) {
-        Map<String, Object> ctx = new HashMap<String, Object>(
-                getMVELContext(el));
+        Map<String, Object> ctx = new HashMap<>(getMVELContext(el));
         Serializable compiled = MVEL.compileExpression(xpr);
         return MVEL.executeExpression(compiled, ctx);
     }
 
     protected Object resolveXP(Element el, String xpr) {
-
-        @SuppressWarnings("unchecked")
         List<Object> nodes = el.selectNodes(xpr);
         if (nodes.size() == 1) {
             return nodes.get(0);
@@ -481,7 +478,6 @@ public class XMLImporterServiceImpl {
     }
 
     protected void process(Element el) throws Exception {
-
         DocConfigDescriptor createConf = getDocCreationConfig(el);
         if (createConf != null) {
             createNewDocument(el, createConf);
