@@ -193,6 +193,20 @@ public class DBSSession implements Session {
         return repository.getRootId();
     }
 
+    /*
+     * Normalize using NFC to avoid decomposed characters (like 'e' + COMBINING
+     * ACUTE ACCENT instead of LATIN SMALL LETTER E WITH ACUTE).
+     *
+     * NFKC (normalization using compatibility decomposition) is not used,
+     * because compatibility decomposition turns some characters (LATIN SMALL
+     * LIGATURE FFI, TRADE MARK SIGN, FULLWIDTH SOLIDUS) into a series of
+     * characters ('f'+'f'+'i', 'T'+'M', '/') that cannot be re-composed into
+     * the original, and therefore loses information.
+     */
+    protected String normalize(String path) {
+        return Normalizer.normalize(path, Normalizer.Form.NFC);
+    }
+
     @Override
     public Document resolvePath(String path) throws DocumentException {
         // TODO move checks and normalize higher in call stack
@@ -211,7 +225,7 @@ public class DBSSession implements Session {
             path = path.substring(0, len - 1);
             len--;
         }
-        path = Normalizer.normalize(path, Normalizer.Form.NFKC);
+        path = normalize(path);
 
         if (len == 1) {
             return getRootDocument();
@@ -251,7 +265,7 @@ public class DBSSession implements Session {
             path = path.substring(0, len - 1);
             len--;
         }
-        path = Normalizer.normalize(path, Normalizer.Form.NFKC);
+        path = normalize(path);
 
         if (len == 1) {
             return getRootId();
