@@ -484,7 +484,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                             Arrays.asList("members", "administrators"));
                 }
                 DocumentModel dm = session.createEntry(map);
-                session.commit(); // doesn't do anything
 
                 dm = session.getEntry("user0");
                 assertNotNull(dm);
@@ -543,7 +542,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 map.put("groupname", "group2");
                 map.put("members", Arrays.asList("user1", "user2"));
                 DocumentModel dm = session.createEntry(map);
-                session.commit();
                 dm = session.getEntry("group2");
                 assertNotNull(dm);
                 assertEquals(Arrays.asList("user1", "user2"),
@@ -554,7 +552,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 map.put("members", Arrays.asList("Administrator"));
                 map.put("subGroups", Arrays.asList("group2"));
                 dm = session.createEntry(map);
-                session.commit(); // doesn't do anything
                 dm = session.getEntry("group1");
                 assertNotNull(dm);
                 assertEquals(Arrays.asList("Administrator"),
@@ -984,7 +981,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         Session session = getLDAPDirectory("userDirectory").getSession();
         try {
             session.getEntries();
-            session.rollback();
         } finally {
             session.close();
         }

@@ -58,7 +58,6 @@ public class TestIntIdField extends SQLDirectoryTestCase {
         map.put("label", "titi");
         DocumentModel entry2 = session.createEntry(map);
         assertNotNull(entry2);
-        session.commit();
 
         assertNotNull(session.getEntry("1"));
         assertNotNull(session.getEntry("2"));

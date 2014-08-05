@@ -121,7 +121,6 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 map.put("members", Arrays.asList("user1", "user2"));
                 map.put("gidNumber", 9000);
                 DocumentModel dm = session.createEntry(map);
-                session.commit();
                 dm = session.getEntry("group2");
                 assertNotNull(dm);
                 assertEquals(Arrays.asList("user1", "user2"),
@@ -132,7 +131,6 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 map.put("members", Arrays.asList("Administrator"));
                 map.put("gidNumber", 9001);
                 dm = session.createEntry(map);
-                session.commit(); // doesn't do anything
                 dm = session.getEntry("group1");
                 assertNotNull(dm);
                 assertEquals(Arrays.asList("Administrator"),

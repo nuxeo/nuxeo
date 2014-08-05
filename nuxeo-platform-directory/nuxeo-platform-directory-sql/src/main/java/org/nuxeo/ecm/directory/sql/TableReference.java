@@ -102,7 +102,6 @@ public class TableReference extends AbstractReference {
         SQLSession session = getSQLSession();
         try {
             addLinks(sourceId, targetIds, session);
-            session.commit();
         } finally {
             session.close();
         }
@@ -117,7 +116,6 @@ public class TableReference extends AbstractReference {
         SQLSession session = getSQLSession();
         try {
             addLinks(sourceIds, targetId, session);
-            session.commit();
         } finally {
             session.close();
         }
@@ -336,7 +334,6 @@ public class TableReference extends AbstractReference {
         SQLSession session = getSQLSession();
         try {
             removeLinksForSource(sourceId, session);
-            session.commit();
         } finally {
             session.close();
         }
@@ -347,7 +344,6 @@ public class TableReference extends AbstractReference {
         SQLSession session = getSQLSession();
         try {
             removeLinksForTarget(targetId, session);
-            session.commit();
         } finally {
             session.close();
         }
@@ -466,7 +462,6 @@ public class TableReference extends AbstractReference {
         SQLSession session = getSQLSession();
         try {
             setSourceIdsForTarget(targetId, sourceIds, session);
-            session.commit();
         } finally {
             session.close();
         }
@@ -478,7 +473,6 @@ public class TableReference extends AbstractReference {
         SQLSession session = getSQLSession();
         try {
             setTargetIdsForSource(sourceId, targetIds, session);
-            session.commit();
         } finally {
             session.close();
         }
@@ -492,7 +486,6 @@ public class TableReference extends AbstractReference {
             try {
                 initialize(sqlSession);
                 initialized = true;
-                sqlSession.commit();
             } finally {
                 sqlSession.close();
             }

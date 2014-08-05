@@ -340,33 +340,6 @@ public class MultiDirectorySession extends BaseSession {
         }
     }
 
-    public void commit() throws ClientException {
-        if (sourceInfos == null) {
-            return;
-        }
-        for (SourceInfo sourceInfo : sourceInfos) {
-            for (SubDirectoryInfo subDirectoryInfo : sourceInfo.subDirectoryInfos) {
-                Session session = subDirectoryInfo.session;
-                if (session != null) {
-                    session.commit();
-                }
-            }
-        }
-    }
-
-    public void rollback() throws ClientException {
-        if (sourceInfos == null) {
-            return;
-        }
-        for (SourceInfo sourceInfo : sourceInfos) {
-            for (SubDirectoryInfo subDirectoryInfo : sourceInfo.subDirectoryInfos) {
-                Session session = subDirectoryInfo.session;
-                if (session != null) {
-                    session.rollback();
-                }
-            }
-        }
-    }
 
     @Override
     public String getIdField() {

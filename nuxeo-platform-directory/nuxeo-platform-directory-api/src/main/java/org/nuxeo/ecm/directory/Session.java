@@ -69,13 +69,14 @@ public interface Session {
      * partial results up to that limit, the method
      * {@code DocumentModelList#totalsize} on the returned list will return -2
      * as a special marker for truncated results.
-     * 
+     * @deprecated since 5.9.6 Use query method instead with parameters
      * @return a collection with all the entries in the directory
      * @throws DirectoryException
      * @throws SizeLimitExceededException if the number of results is larger
      *             than the limit configured for the directory and the server
      *             does not send partial results.
      */
+    @Deprecated
     DocumentModelList getEntries() throws ClientException, DirectoryException;
 
     /**
@@ -259,19 +260,6 @@ public interface Session {
     // public DocumentModelList query(Criteria criteria ) throws
     // DirectoryException;
 
-    /**
-     * @deprecated do not use, the container manages transactions.
-     * @since 5.5
-     */
-    @Deprecated
-    void commit() throws ClientException, DirectoryException;
-
-    /**
-     * @deprecated do not use, the container manages transactions.
-     * @since 5.5
-     */
-    @Deprecated
-    void rollback() throws ClientException, DirectoryException;
 
     /**
      * Closes the session and all open result sets obtained from this session.

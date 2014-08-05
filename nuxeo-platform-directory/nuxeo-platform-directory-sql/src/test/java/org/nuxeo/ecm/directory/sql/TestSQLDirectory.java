@@ -211,7 +211,6 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             assertTrue(groups.contains("administrators"));
             assertTrue(groups.contains("members"));
 
-            session.commit();
         } finally {
             session.close();
         }
@@ -359,7 +358,6 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             dm.setProperty(SCHEMA, "groups",
                     Arrays.asList("administrators", "members"));
             session.updateEntry(dm);
-            session.commit();
             session.close();
 
             // retrieve entry again
@@ -387,7 +385,6 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             // change other field, check password still ok
             dm.setProperty(SCHEMA, "company", "foo");
             session.updateEntry(dm);
-            session.commit();
             session.close();
             session = getSession();
             dm = session.getEntry("user_1");
@@ -406,7 +403,6 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         try {
             DocumentModel dm = session.getEntry("user_1");
             session.deleteEntry(dm);
-            session.commit();
             session.close();
 
             session = getSession();

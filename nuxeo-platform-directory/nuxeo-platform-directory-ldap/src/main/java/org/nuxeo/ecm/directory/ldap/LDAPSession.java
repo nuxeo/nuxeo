@@ -662,16 +662,6 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public void commit() {
-        // No LDAP support for transactions
-    }
-
-    @Override
-    public void rollback() {
-        // No LDAP support for transactions
-    }
-
-    @Override
     public void close() throws DirectoryException {
         try {
             dirContext.close();
