@@ -18,11 +18,13 @@ import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * XMap Descriptor for the {@link ConversionService} configuration.
+ * XMap Descriptor for the
+ * {@link org.nuxeo.ecm.core.convert.api.ConversionService} configuration.
  *
  * @author tiry
  */
@@ -58,7 +60,6 @@ public class GlobalConfigDescriptor implements Serializable {
         return GCInterval;
     }
 
-
     public int getDiskCacheSize() {
         if (diskCacheSize == 0) {
             return DEFAULT_DISK_CACHE_IN_KB;
@@ -67,7 +68,7 @@ public class GlobalConfigDescriptor implements Serializable {
     }
 
     public void setDiskCacheSize(int size) {
-        diskCacheSize =size;
+        diskCacheSize = size;
     }
 
     public boolean isCacheEnabled() {
@@ -91,11 +92,13 @@ public class GlobalConfigDescriptor implements Serializable {
 
     public String getCachingDirectory() {
         if (cachingDirectory == null) {
-            File cacheFile = new File(System.getProperty("java.io.tmpdir"), CACHING_DIRECTORY);
+            File cacheFile = new File(System.getProperty("java.io.tmpdir"),
+                    CACHING_DIRECTORY);
             if (cacheFile.exists() && !cacheFile.canWrite()) {
                 log.debug("change directory to avoid FileNotFoundException (permission denied)");
                 try {
-                    cacheFile = File.createTempFile(CACHING_DIRECTORY, null, cacheFile.getParentFile());
+                    cacheFile = File.createTempFile(CACHING_DIRECTORY, null,
+                            cacheFile.getParentFile());
                     cacheFile.delete();
                 } catch (IOException e) {
                     log.error("Could not create caching directory", e);

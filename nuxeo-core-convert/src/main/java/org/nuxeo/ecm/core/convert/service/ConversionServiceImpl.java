@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -50,13 +51,13 @@ public class ConversionServiceImpl extends DefaultComponent implements
     private static final Log log = LogFactory.getLog(ConversionServiceImpl.class);
 
     public static final String CONVERTER_EP = "converter";
+
     public static final String CONFIG_EP = "configuration";
 
-    protected static final Map<String, ConverterDescriptor> converterDescriptors
-            = new HashMap<String, ConverterDescriptor>();
+    protected static final Map<String, ConverterDescriptor> converterDescriptors = new HashMap<>();
 
-    protected static final MimeTypeTranslationHelper translationHelper =
-            new MimeTypeTranslationHelper();
+    protected static final MimeTypeTranslationHelper translationHelper = new MimeTypeTranslationHelper();
+
     protected static final GlobalConfigDescriptor config = new GlobalConfigDescriptor();
 
     @Override
@@ -107,7 +108,8 @@ public class ConversionServiceImpl extends DefaultComponent implements
         return desc.getConverterInstance();
     }
 
-    public static ConverterDescriptor getConverterDescriptor(String converterName) {
+    public static ConverterDescriptor getConverterDescriptor(
+            String converterName) {
         return converterDescriptors.get(converterName);
     }
 
@@ -119,8 +121,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
 
         if (converterDescriptors.containsKey(desc.getConverterName())) {
 
-            ConverterDescriptor existing = converterDescriptors.get(
-                    desc.getConverterName());
+            ConverterDescriptor existing = converterDescriptors.get(desc.getConverterName());
             desc = existing.merge(desc);
         }
         try {
@@ -153,7 +154,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
 
     @Override
     public List<String> getRegistredConverters() {
-        List<String> converterNames = new ArrayList<String>();
+        List<String> converterNames = new ArrayList<>();
         converterNames.addAll(converterDescriptors.keySet());
         return converterNames;
     }
@@ -218,7 +219,8 @@ public class ConversionServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public List<String> getConverterNames(String sourceMimeType, String destinationMimeType) {
+    public List<String> getConverterNames(String sourceMimeType,
+            String destinationMimeType) {
         return translationHelper.getConverterNames(sourceMimeType,
                 destinationMimeType);
     }
@@ -226,7 +228,8 @@ public class ConversionServiceImpl extends DefaultComponent implements
     @Override
     public String getConverterName(String sourceMimeType,
             String destinationMimeType) {
-        List<String> converterNames = getConverterNames(sourceMimeType, destinationMimeType);
+        List<String> converterNames = getConverterNames(sourceMimeType,
+                destinationMimeType);
         if (!converterNames.isEmpty()) {
             return converterNames.get(converterNames.size() - 1);
         }
@@ -239,8 +242,7 @@ public class ConversionServiceImpl extends DefaultComponent implements
         return isConverterAvailable(converterName, false);
     }
 
-    protected final Map<String, ConverterCheckResult> checkResultCache
-            = new HashMap<String, ConverterCheckResult>();
+    protected final Map<String, ConverterCheckResult> checkResultCache = new HashMap<>();
 
     @Override
     public ConverterCheckResult isConverterAvailable(String converterName,
