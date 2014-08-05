@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateProcessor;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
@@ -47,6 +48,7 @@ public abstract class AbstractTemplateProcessor implements TemplateProcessor {
             FileUtils.deleteTree(workingDir);
         }
         workingDir.mkdir();
+        Framework.trackFile(workingDir, workingDir);
         return workingDir;
     }
 
