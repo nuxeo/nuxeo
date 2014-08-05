@@ -50,7 +50,7 @@ import org.nuxeo.ecm.directory.Session;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- * 
+ *
  */
 public class TestSQLDirectory extends SQLDirectoryTestCase {
 

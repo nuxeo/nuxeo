@@ -32,6 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TestIntIdField extends SQLDirectoryTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

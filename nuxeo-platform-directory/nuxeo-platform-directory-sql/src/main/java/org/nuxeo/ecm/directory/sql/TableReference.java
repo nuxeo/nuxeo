@@ -570,6 +570,7 @@ public class TableReference extends AbstractReference {
     /**
      * @since 5.6
      */
+    @Override
     public TableReference clone() {
         TableReference clone = (TableReference) super.clone();
         clone.tableName = tableName;

@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     mhilaire
+ */
 package org.nuxeo.ecm.directory.ldap;
 
 import java.util.ArrayList;
@@ -17,29 +33,30 @@ import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Session;
 
 public class TestLDAPPOSIXSession extends TestLDAPSession {
-	
-	@Override
-	public List<String> getLdifFiles() {
-		List<String> ldifFiles = new ArrayList<String>();
-		ldifFiles.add("sample-users-posix.ldif");
-		if  (POSIXGROUP_IS_STRUCTURAL) {
-		    ldifFiles.add("sample-structural-posixgroups.ldif");
-		} else {
-		    ldifFiles.add("sample-posixgroups.ldif");
-		}
+
+    @Override
+    public List<String> getLdifFiles() {
+        List<String> ldifFiles = new ArrayList<String>();
+        ldifFiles.add("sample-users-posix.ldif");
+        if (POSIXGROUP_IS_STRUCTURAL) {
+            ldifFiles.add("sample-structural-posixgroups.ldif");
+        } else {
+            ldifFiles.add("sample-posixgroups.ldif");
+        }
         if (HAS_DYNGROUP_SCHEMA) {
             ldifFiles.add("sample-dynamic-groups.ldif");
         }
-		return ldifFiles;
-	}
+        return ldifFiles;
+    }
 
-	@Before
-	public void setUp() throws Exception {
-		EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAP-POSIX.xml";
-		INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS-POSIX.xml";
-		super.setUp();
-	}
-	
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAP-POSIX.xml";
+        INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS-POSIX.xml";
+        super.setUp();
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     @Test
@@ -49,8 +66,8 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             DocumentModel entry = session.getEntry("administrators");
             assertNotNull(entry);
             assertEquals("administrators", entry.getId());
-            assertEquals("administrators", entry.getProperty(TestLDAPSession.GROUP_SCHEMANAME,
-                    "groupname"));
+            assertEquals("administrators", entry.getProperty(
+                    TestLDAPSession.GROUP_SCHEMANAME, "groupname"));
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 // LDAP references do not work with the internal test server
@@ -64,8 +81,8 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             entry = session.getEntry("members");
             assertNotNull(entry);
             assertEquals("members", entry.getId());
-            assertEquals("members", entry.getProperty(GROUP_SCHEMANAME,
-                    "groupname"));
+            assertEquals("members",
+                    entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 // LDAP references do not work with the internal test server
@@ -79,18 +96,18 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             entry = session.getEntry("submembers");
             assertNotNull(entry);
             assertEquals("submembers", entry.getId());
-            assertEquals("submembers", entry.getProperty(GROUP_SCHEMANAME,
-                    "groupname"));
+            assertEquals("submembers",
+                    entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
             if (USE_EXTERNAL_TEST_LDAP_SERVER) {
                 // LDAP references do not work with the internal test server
-                assertEquals(Arrays.asList("user2"), entry.getProperty(
-                        GROUP_SCHEMANAME, "members"));
+                assertEquals(Arrays.asList("user2"),
+                        entry.getProperty(GROUP_SCHEMANAME, "members"));
             }
         } finally {
             session.close();
         }
-    }	
+    }
 
     @Override
     @Test
@@ -107,8 +124,8 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 session.commit();
                 dm = session.getEntry("group2");
                 assertNotNull(dm);
-                assertEquals(Arrays.asList("user1", "user2"), dm.getProperty(
-                        GROUP_SCHEMANAME, "members"));
+                assertEquals(Arrays.asList("user1", "user2"),
+                        dm.getProperty(GROUP_SCHEMANAME, "members"));
 
                 map = new HashMap<String, Object>();
                 map.put("groupname", "group1");
@@ -118,8 +135,8 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 session.commit(); // doesn't do anything
                 dm = session.getEntry("group1");
                 assertNotNull(dm);
-                assertEquals(Arrays.asList("Administrator"), dm.getProperty(
-                        GROUP_SCHEMANAME, "members"));
+                assertEquals(Arrays.asList("Administrator"),
+                        dm.getProperty(GROUP_SCHEMANAME, "members"));
 
                 dm = session.getEntry("group2");
                 assertNotNull(dm);
@@ -132,16 +149,16 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 dm = session.getEntry("emptygroup");
                 assertNotNull(dm);
                 assertEquals("emptygroup", dm.getId());
-                assertEquals("emptygroup", dm.getProperty(GROUP_SCHEMANAME,
-                        "groupname"));
+                assertEquals("emptygroup",
+                        dm.getProperty(GROUP_SCHEMANAME, "groupname"));
 
-                assertEquals(Arrays.asList(), dm.getProperty(GROUP_SCHEMANAME,
-                        "members"));
+                assertEquals(Arrays.asList(),
+                        dm.getProperty(GROUP_SCHEMANAME, "members"));
             } finally {
                 session.close();
             }
         }
-    }    
+    }
 
     @Override
     @Test
@@ -174,11 +191,11 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
 
                 entry = session.getEntry("user1");
                 assertNotNull(entry);
-                assertEquals("toto", entry.getProperty(USER_SCHEMANAME,
-                        "firstName"));
+                assertEquals("toto",
+                        entry.getProperty(USER_SCHEMANAME, "firstName"));
                 assertEquals("", entry.getProperty(USER_SCHEMANAME, "lastName"));
-                assertEquals(Long.valueOf(123), entry.getProperty(
-                        USER_SCHEMANAME, "intField"));
+                assertEquals(Long.valueOf(123),
+                        entry.getProperty(USER_SCHEMANAME, "intField"));
                 assertEquals(Arrays.asList("item3", "item4"),
                         entry.getProperty(USER_SCHEMANAME, "employeeType"));
                 if (HAS_DYNGROUP_SCHEMA) {
@@ -234,26 +251,26 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
 
                 // edit description and members but not subGroups
                 entry.setProperty(GROUP_SCHEMANAME, "description", "blablabla");
-                entry.setProperty(GROUP_SCHEMANAME, "members", Arrays.asList(
-                        "user1", "user2"));
+                entry.setProperty(GROUP_SCHEMANAME, "members",
+                        Arrays.asList("user1", "user2"));
                 session.updateEntry(entry);
 
                 entry = session.getEntry("members");
                 assertNotNull(entry);
-                assertEquals("blablabla", (String) entry.getProperty(
-                        GROUP_SCHEMANAME, "description"));
+                assertEquals("blablabla",
+                        entry.getProperty(GROUP_SCHEMANAME, "description"));
                 assertEquals(Arrays.asList("user1", "user2"),
                         entry.getProperty(GROUP_SCHEMANAME, "members"));
 
                 // edit both members and subGroups at the same time
-                entry.setProperty(GROUP_SCHEMANAME, "members", Arrays.asList(
-                        "user1", "user3"));
+                entry.setProperty(GROUP_SCHEMANAME, "members",
+                        Arrays.asList("user1", "user3"));
                 session.updateEntry(entry);
 
                 entry = session.getEntry("members");
                 assertNotNull(entry);
-                assertEquals("blablabla", (String) entry.getProperty(
-                        GROUP_SCHEMANAME, "description"));
+                assertEquals("blablabla",
+                        entry.getProperty(GROUP_SCHEMANAME, "description"));
                 assertEquals(Arrays.asList("user1", "user3"),
                         entry.getProperty(GROUP_SCHEMANAME, "members"));
             } finally {
@@ -274,8 +291,8 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             DocumentModel entry = session.getEntry("dyngroup1");
             assertNotNull(entry);
             assertEquals("dyngroup1", entry.getId());
-            assertEquals("dyngroup1", entry.getProperty(GROUP_SCHEMANAME,
-                    "groupname"));
+            assertEquals("dyngroup1",
+                    entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
             List<String> members = (List<String>) entry.getProperty(
                     GROUP_SCHEMANAME, "members");
@@ -294,8 +311,8 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             entry = session.getEntry("dyngroup2");
             assertNotNull(entry);
             assertEquals("dyngroup2", entry.getId());
-            assertEquals("dyngroup2", entry.getProperty(GROUP_SCHEMANAME,
-                    "groupname"));
+            assertEquals("dyngroup2",
+                    entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
             members = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
                     "members");
@@ -317,8 +334,8 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             entry = session.getEntry("submembers");
             assertNotNull(entry);
             assertEquals("submembers", entry.getId());
-            assertEquals("submembers", entry.getProperty(GROUP_SCHEMANAME,
-                    "groupname"));
+            assertEquals("submembers",
+                    entry.getProperty(GROUP_SCHEMANAME, "groupname"));
 
             members = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
                     "members");
@@ -352,12 +369,13 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
             session = (LDAPSession) getLDAPDirectory("groupDirectory").getSession();
             try {
                 List<String> mandatoryAttributes = session.getMandatoryAttributes();
-                List<String> expectedAttributes = Arrays.asList("cn", "gidNumber");
+                List<String> expectedAttributes = Arrays.asList("cn",
+                        "gidNumber");
                 Collections.sort(mandatoryAttributes);
                 assertEquals(expectedAttributes, mandatoryAttributes);
             } finally {
                 session.close();
             }
         }
-    }    
+    }
 }

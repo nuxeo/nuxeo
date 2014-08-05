@@ -753,7 +753,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
                 entry = session.getEntry("members");
                 assertNotNull(entry);
-                assertEquals("blablabla", (String) entry.getProperty(
+                assertEquals("blablabla", entry.getProperty(
                         GROUP_SCHEMANAME, "description"));
                 assertEquals(Arrays.asList("user1", "user2"),
                         entry.getProperty(GROUP_SCHEMANAME, "members"));
@@ -769,7 +769,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
                 entry = session.getEntry("members");
                 assertNotNull(entry);
-                assertEquals("blablabla", (String) entry.getProperty(
+                assertEquals("blablabla", entry.getProperty(
                         GROUP_SCHEMANAME, "description"));
                 assertEquals(Arrays.asList("user1", "user3"),
                         entry.getProperty(GROUP_SCHEMANAME, "members"));
@@ -819,7 +819,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 assertNotNull(entry);
 
                 // the stored field has been edited
-                assertEquals("blablabla", (String) entry.getProperty(
+                assertEquals("blablabla", entry.getProperty(
                         GROUP_SCHEMANAME, "description"));
 
                 // dynamically resolved references have not been edited

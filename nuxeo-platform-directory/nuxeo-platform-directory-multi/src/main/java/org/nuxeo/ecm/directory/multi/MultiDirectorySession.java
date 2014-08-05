@@ -79,10 +79,10 @@ public class MultiDirectorySession extends BaseSession {
         directoryService = MultiDirectoryFactory.getDirectoryService();
         schemaManager = Framework.getLocalService(SchemaManager.class);
         this.directory = directory;
-        this.descriptor = directory.getDescriptor();
-        this.schemaName = descriptor.schemaName;
-        this.schemaIdField = descriptor.idField;
-        this.schemaPasswordField = descriptor.passwordField;
+        descriptor = directory.getDescriptor();
+        schemaName = descriptor.schemaName;
+        schemaIdField = descriptor.idField;
+        schemaPasswordField = descriptor.passwordField;
     }
 
     protected class SubDirectoryInfo {
@@ -304,6 +304,7 @@ public class MultiDirectorySession extends BaseSession {
         sourceInfos = newSourceInfos;
     }
 
+    @Override
     public void close() throws DirectoryException {
         try {
             if (sourceInfos == null) {
@@ -367,22 +368,27 @@ public class MultiDirectorySession extends BaseSession {
         }
     }
 
+    @Override
     public String getIdField() {
         return schemaIdField;
     }
 
+    @Override
     public String getPasswordField() {
         return schemaPasswordField;
     }
 
+    @Override
     public boolean isAuthenticating() {
         return schemaPasswordField != null;
     }
 
+    @Override
     public boolean isReadOnly() {
         return Boolean.TRUE.equals(descriptor.readOnly);
     }
 
+    @Override
     public boolean authenticate(String username, String password)
             throws ClientException {
         init();
@@ -409,10 +415,12 @@ public class MultiDirectorySession extends BaseSession {
         return false;
     }
 
+    @Override
     public DocumentModel getEntry(String id) throws DirectoryException {
         return getEntry(id, true);
     }
 
+    @Override
     public DocumentModel getEntry(String id, boolean fetchReferences)
             throws DirectoryException {
         init();
@@ -476,6 +484,7 @@ public class MultiDirectorySession extends BaseSession {
         return null;
     }
 
+    @Override
     @SuppressWarnings("boxing")
     public DocumentModelList getEntries() throws ClientException {
         init();
@@ -581,6 +590,7 @@ public class MultiDirectorySession extends BaseSession {
         return results;
     }
 
+    @Override
     public DocumentModel createEntry(Map<String, Object> fieldMap)
             throws ClientException {
         init();
@@ -609,10 +619,12 @@ public class MultiDirectorySession extends BaseSession {
                 directory.getName()));
     }
 
+    @Override
     public void deleteEntry(DocumentModel docModel) throws ClientException {
         deleteEntry(docModel.getId());
     }
 
+    @Override
     public void deleteEntry(String id) throws ClientException {
         init();
         for (SourceInfo sourceInfo : sourceInfos) {
@@ -622,6 +634,7 @@ public class MultiDirectorySession extends BaseSession {
         }
     }
 
+    @Override
     public void deleteEntry(String id, Map<String, String> map)
             throws DirectoryException {
         log.warn("Calling deleteEntry extended on multi directory");
@@ -665,6 +678,7 @@ public class MultiDirectorySession extends BaseSession {
         }
     }
 
+    @Override
     public void updateEntry(DocumentModel docModel) throws ClientException {
         if (isReadOnly() || isReadOnlyEntry(docModel)) {
             return;
@@ -689,16 +703,19 @@ public class MultiDirectorySession extends BaseSession {
         }
     }
 
+    @Override
     public DocumentModelList query(Map<String, Serializable> filter)
             throws ClientException {
         return query(filter, Collections.<String> emptySet());
     }
 
+    @Override
     public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext) throws ClientException {
         return query(filter, fulltext, Collections.<String, String> emptyMap());
     }
 
+    @Override
     @SuppressWarnings("boxing")
     public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy)
@@ -706,6 +723,7 @@ public class MultiDirectorySession extends BaseSession {
         return query(filter, fulltext, orderBy, false);
     }
 
+    @Override
     @SuppressWarnings("boxing")
     public DocumentModelList query(Map<String, Serializable> filter,
             Set<String> fulltext, Map<String, String> orderBy,
@@ -841,12 +859,14 @@ public class MultiDirectorySession extends BaseSession {
         return results;
     }
 
+    @Override
     public List<String> getProjection(Map<String, Serializable> filter,
             String columnName) throws ClientException {
         return getProjection(filter, Collections.<String> emptySet(),
                 columnName);
     }
 
+    @Override
     public List<String> getProjection(Map<String, Serializable> filter,
             Set<String> fulltext, String columnName) throws ClientException {
 
@@ -868,12 +888,14 @@ public class MultiDirectorySession extends BaseSession {
         return results;
     }
 
+    @Override
     public DocumentModel createEntry(DocumentModel entry)
             throws ClientException {
         Map<String, Object> fieldMap = entry.getProperties(schemaName);
         return createEntry(fieldMap);
     }
 
+    @Override
     public boolean hasEntry(String id) throws ClientException {
         init();
         for (SourceInfo sourceInfo : sourceInfos) {

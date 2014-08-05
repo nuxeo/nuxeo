@@ -1058,7 +1058,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     /**
      * Enable connection status checking on SQL directory connections
-     * 
+     *
      * @since 5.7.2
      */
     public boolean isLive() throws DirectoryException {
@@ -1175,7 +1175,7 @@ public class SQLSession extends BaseSession implements EntrySource {
      * Public getter to allow custom {@link Reference} implementation to access
      * the current connection even if it lives in a separate java package,
      * typically: com.company.custom.nuxeo.project.MyCustomReference
-     * 
+     *
      * @return the current {@link Connection} instance
      */
     public Connection getSqlConnection() {
