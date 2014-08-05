@@ -189,8 +189,8 @@ public class LDAPReference extends AbstractReference {
     public Directory getSourceDirectory() throws DirectoryException {
 
         Directory sourceDir = super.getSourceDirectory();
-        if (sourceDir instanceof LDAPDirectoryProxy) {
-            return ((LDAPDirectoryProxy) sourceDir).getDirectory();
+        if (sourceDir instanceof LDAPDirectory) {
+            return sourceDir;
         } else {
             throw new DirectoryException(
                     sourceDirectoryName
@@ -202,8 +202,8 @@ public class LDAPReference extends AbstractReference {
     @Override
     public Directory getTargetDirectory() throws DirectoryException {
         Directory targetDir = super.getTargetDirectory();
-        if (targetDir instanceof LDAPDirectoryProxy) {
-            return ((LDAPDirectoryProxy) targetDir).getDirectory();
+        if (targetDir instanceof LDAPDirectory) {
+            return targetDir;
         } else {
             throw new DirectoryException(
                     targetDirectoryName
@@ -685,7 +685,7 @@ public class LDAPReference extends AbstractReference {
          * filter expression not yet supported by LDAPFilterMatcher. See
          * NXP-4562
          */
-        if (this.dynamicReferences != null && this.dynamicReferences.length > 0) {
+        if (dynamicReferences != null && dynamicReferences.length > 0) {
             log.error("This kind of reference is not supported.");
         }
 
@@ -891,11 +891,11 @@ public class LDAPReference extends AbstractReference {
                 }
             }
 
-            if (this.dynamicReferences != null
-                    && this.dynamicReferences.length > 0) {
+            if (dynamicReferences != null
+                    && dynamicReferences.length > 0) {
 
                 // Only the first Dynamic Reference is used
-                LDAPDynamicReferenceDescriptor dynAtt = this.dynamicReferences[0];
+                LDAPDynamicReferenceDescriptor dynAtt = dynamicReferences[0];
 
                 Attribute baseDnsAttribute = attributes.get(dynAtt.baseDN);
                 Attribute filterAttribute = attributes.get(dynAtt.filter);

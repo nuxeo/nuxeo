@@ -43,8 +43,8 @@ import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 
 /**
- * Implementation of the directory Reference interface that makes it possible
- * to retrieve children of a node in the LDAP tree structure.
+ * Implementation of the directory Reference interface that makes it possible to
+ * retrieve children of a node in the LDAP tree structure.
  *
  * @author Anahide Tchertchian
  */
@@ -98,8 +98,8 @@ public class LDAPTreeReference extends AbstractReference {
     public Directory getSourceDirectory() throws DirectoryException {
 
         Directory sourceDir = super.getSourceDirectory();
-        if (sourceDir instanceof LDAPDirectoryProxy) {
-            return ((LDAPDirectoryProxy) sourceDir).getDirectory();
+        if (sourceDir instanceof LDAPDirectory) {
+            return sourceDir;
         } else {
             throw new DirectoryException(
                     sourceDirectoryName
@@ -111,8 +111,8 @@ public class LDAPTreeReference extends AbstractReference {
     @Override
     public Directory getTargetDirectory() throws DirectoryException {
         Directory targetDir = super.getTargetDirectory();
-        if (targetDir instanceof LDAPDirectoryProxy) {
-            return ((LDAPDirectoryProxy) targetDir).getDirectory();
+        if (targetDir instanceof LDAPDirectory) {
+            return targetDir;
         } else {
             throw new DirectoryException(
                     targetDirectoryName
@@ -142,6 +142,7 @@ public class LDAPTreeReference extends AbstractReference {
      *
      * @see org.nuxeo.ecm.directory.Reference#addLinks(String, List)
      */
+    @Override
     public void addLinks(String sourceId, List<String> targetIds)
             throws DirectoryException {
         // TODO: not yet implemented
@@ -152,6 +153,7 @@ public class LDAPTreeReference extends AbstractReference {
      *
      * @see org.nuxeo.ecm.directory.Reference#addLinks(List, String)
      */
+    @Override
     public void addLinks(List<String> sourceIds, String targetId)
             throws DirectoryException {
         // TODO: not yet implemented
@@ -162,6 +164,7 @@ public class LDAPTreeReference extends AbstractReference {
      *
      * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(String)
      */
+    @Override
     public List<String> getSourceIdsForTarget(String targetId)
             throws DirectoryException {
         Set<String> sourceIds = new TreeSet<String>();
@@ -245,6 +248,7 @@ public class LDAPTreeReference extends AbstractReference {
      */
     // TODO: optimize reusing the same ldap session (see LdapReference optim
     // method)
+    @Override
     public List<String> getTargetIdsForSource(String sourceId)
             throws DirectoryException {
         Set<String> targetIds = new TreeSet<String>();
@@ -365,6 +369,7 @@ public class LDAPTreeReference extends AbstractReference {
      *
      * @see org.nuxeo.ecm.directory.Reference#removeLinksForSource(String)
      */
+    @Override
     public void removeLinksForSource(String sourceId) throws DirectoryException {
         // TODO: not yet implemented
     }
@@ -375,6 +380,7 @@ public class LDAPTreeReference extends AbstractReference {
      *
      * @see org.nuxeo.ecm.directory.Reference#removeLinksForTarget(String)
      */
+    @Override
     public void removeLinksForTarget(String targetId) throws DirectoryException {
         // TODO: not yet implemented
     }
@@ -386,6 +392,7 @@ public class LDAPTreeReference extends AbstractReference {
      * @see org.nuxeo.ecm.directory.Reference#setSourceIdsForTarget(String,
      *      List)
      */
+    @Override
     public void setSourceIdsForTarget(String targetId, List<String> sourceIds)
             throws DirectoryException {
         // TODO: not yet implemented
@@ -398,6 +405,7 @@ public class LDAPTreeReference extends AbstractReference {
      * @see org.nuxeo.ecm.directory.Reference#setTargetIdsForSource(String,
      *      List)
      */
+    @Override
     public void setTargetIdsForSource(String sourceId, List<String> targetIds)
             throws DirectoryException {
         // TODO: not yet implemented

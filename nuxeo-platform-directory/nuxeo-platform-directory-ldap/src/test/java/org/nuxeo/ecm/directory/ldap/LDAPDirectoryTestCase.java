@@ -210,7 +210,7 @@ public abstract class LDAPDirectoryTestCase extends SQLRepositoryTestCase {
             throws DirectoryException {
         LDAPDirectoryFactory factory = (LDAPDirectoryFactory) Framework.getRuntime().getComponent(
                 LDAPDirectoryFactory.NAME);
-        return ((LDAPDirectoryProxy) factory.getDirectory(name)).getDirectory();
+        return (LDAPDirectory) factory.getDirectory(name);
     }
 
     /**

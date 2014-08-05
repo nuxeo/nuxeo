@@ -25,8 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.ldap.LDAPDirectory;
 import org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor;
-import org.nuxeo.ecm.directory.ldap.LDAPDirectoryProxy;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -49,7 +49,7 @@ public class LDAPDirectoryRegistry extends
             LDAPDirectoryDescriptor descriptor,
             LDAPDirectoryDescriptor newOrigContrib) {
         String descriptorName = descriptor.getName();
-        proxies.put(descriptorName, new LDAPDirectoryProxy(descriptor));
+        proxies.put(descriptorName, new LDAPDirectory(descriptor));
         log.info("directory registered: " + descriptorName);
     }
 
