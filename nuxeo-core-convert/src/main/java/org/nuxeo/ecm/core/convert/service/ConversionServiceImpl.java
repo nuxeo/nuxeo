@@ -68,6 +68,9 @@ public class ConversionServiceImpl extends DefaultComponent implements
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        if (config.isCacheEnabled()) {
+            ConversionCacheHolder.deleteCache();
+        }
         converterDescriptors.clear();
         translationHelper.clear();
     }

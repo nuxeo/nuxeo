@@ -183,4 +183,16 @@ public class ConversionCacheHolder {
         }
     }
 
+    /**
+     * @since 5.9.6
+     */
+    public static void deleteCache() {
+        cacheLock.writeLock().lock();
+        try {
+            cache.clear();
+            new File(ConversionServiceImpl.getCacheBasePath()).delete();
+        } finally {
+            cacheLock.writeLock().unlock();
+        }
+    }
 }
