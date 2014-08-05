@@ -758,6 +758,20 @@ public class SessionImpl implements Session, XAResource {
         return path;
     }
 
+    /*
+     * Normalize using NFC to avoid decomposed characters (like 'e' + COMBINING
+     * ACUTE ACCENT instead of LATIN SMALL LETTER E WITH ACUTE).
+     *
+     * NFKC (normalization using compatibility decomposition) is not used,
+     * because compatibility decomposition turns some characters (LATIN SMALL
+     * LIGATURE FFI, TRADE MARK SIGN, FULLWIDTH SOLIDUS) into a series of
+     * characters ('f'+'f'+'i', 'T'+'M', '/') that cannot be re-composed into
+     * the original, and therefore loses information.
+     */
+    protected String normalize(String path) {
+        return Normalizer.normalize(path, Normalizer.Form.NFC);
+    }
+
     /* Does not apply to properties for now (no use case). */
     @Override
     public Node getNodeByPath(String path, Node node) throws StorageException {
@@ -766,7 +780,7 @@ public class SessionImpl implements Session, XAResource {
         if (path == null) {
             throw new IllegalArgumentException("Illegal null path");
         }
-        path = Normalizer.normalize(path, Normalizer.Form.NFKC);
+        path = normalize(path);
         int i;
         if (path.startsWith("/")) {
             node = getRootNode();
@@ -813,7 +827,7 @@ public class SessionImpl implements Session, XAResource {
         if (name == null) {
             throw new IllegalArgumentException("Illegal null name");
         }
-        name = Normalizer.normalize(name, Normalizer.Form.NFKC);
+        name = normalize(name);
         if (name.contains("/") || name.equals(".") || name.equals("..")) {
             throw new IllegalArgumentException("Illegal name: " + name);
         }
