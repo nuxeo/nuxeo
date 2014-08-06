@@ -431,7 +431,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 entry.setProperty(schema, dir.getIdField(), username);
                 entry.setProperty(schema, dir.getPasswordField(), ha1);
                 dir.createEntry(entry);
-                dir.commit();
                 log.debug("Created digest auth password for user:" + username);
             } else {
                 String storedHa1 = (String) entry.getProperty(schema,
@@ -439,7 +438,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 if (!ha1.equals(storedHa1)) {
                     entry.setProperty(schema, dir.getPasswordField(), ha1);
                     dir.updateEntry(entry);
-                    dir.commit();
                     log.debug("Updated digest auth password for user:"
                             + username);
                 }
@@ -1259,7 +1257,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 throw new GroupAlreadyExistsException();
             }
             groupModel = groupDir.createEntry(groupModel);
-            groupDir.commit();
             notifyGroupChanged(groupId);
             notify(groupId, GROUPCREATED_EVENT_ID);
             return groupModel;
@@ -1429,7 +1426,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                     userDir.getPasswordField());
 
             userModel = userDir.createEntry(userModel);
-            userDir.commit();
 
             syncDigestAuthPassword(clearUsername, clearPassword);
 
@@ -1463,7 +1459,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                     userDir.getPasswordField());
 
             userDir.updateEntry(userModel);
-            userDir.commit();
 
             syncDigestAuthPassword(clearUsername, clearPassword);
 
@@ -1494,7 +1489,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 throw new DirectoryException("User does not exist: " + userId);
             }
             userDir.deleteEntry(userId);
-            userDir.commit();
             notifyUserChanged(userId);
             notify(userId, USERDELETED_EVENT_ID);
 
@@ -1518,7 +1512,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 throw new DirectoryException("group does not exist: " + groupId);
             }
             groupDir.updateEntry(groupModel);
-            groupDir.commit();
             notifyGroupChanged(groupId);
             notify(groupId, GROUPMODIFIED_EVENT_ID);
         } finally {
@@ -1545,7 +1538,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 throw new DirectoryException("Group does not exist: " + groupId);
             }
             groupDir.deleteEntry(groupId);
-            groupDir.commit();
             notifyGroupChanged(groupId);
             notify(groupId, GROUPDELETED_EVENT_ID);
         } finally {
