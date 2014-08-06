@@ -115,17 +115,11 @@ public class LDAPDirectory extends AbstractDirectory {
     }
 
     /**
-     * Private method to initialize the directory ldap config. The code has been
-     * moved from the constructor to be used in the getSession method to run the
-     * constructor class before required other contrib (like schema types) have
-     * been deployed. This has been done to remove the former LDAPDirectoryProxy
-     * class
-     *
-     * see https://jira.nuxeo.com/browse/NXP-14914
+     * Lazy init method for ldap config
      *
      * @since 5.9.6
      */
-    private void initLDAPConfig()
+    protected void initLDAPConfig()
     {
         // computing attributes that will be useful for all sessions
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
