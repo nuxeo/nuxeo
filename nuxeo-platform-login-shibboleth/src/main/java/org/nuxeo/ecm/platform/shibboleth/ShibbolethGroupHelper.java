@@ -98,7 +98,6 @@ public class ShibbolethGroupHelper {
             checkExpressionLanguageValidity(group);
 
             group = session.createEntry(group);
-            session.commit();
             return group;
         } finally {
             if (session != null) {
@@ -130,7 +129,6 @@ public class ShibbolethGroupHelper {
             checkExpressionLanguageValidity(group);
 
             session.updateEntry(group);
-            session.commit();
         } finally {
             if (session != null) {
                 session.close();
@@ -144,7 +142,6 @@ public class ShibbolethGroupHelper {
             session = getDirectoryService().open(
                     ShibbolethConstants.SHIBBOLETH_DIRECTORY);
             session.deleteEntry(group);
-            session.commit();
         } finally {
             if (session != null) {
                 session.close();

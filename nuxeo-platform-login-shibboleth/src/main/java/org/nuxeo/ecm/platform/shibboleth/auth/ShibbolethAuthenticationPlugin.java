@@ -54,10 +54,12 @@ public class ShibbolethAuthenticationPlugin implements
         return service;
     }
 
+    @Override
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;
     }
 
+    @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest,
             HttpServletResponse httpResponse, String baseURL) {
         if (getService() == null) {
@@ -98,6 +100,7 @@ public class ShibbolethAuthenticationPlugin implements
         return true;
     }
 
+    @Override
     public UserIdentificationInfo handleRetrieveIdentity(
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         if (getService() == null) {
@@ -123,7 +126,6 @@ public class ShibbolethAuthenticationPlugin implements
                         fieldMap);
                 userDir.updateEntry(entry);
             }
-            userDir.commit();
         } catch (Exception e) {
             log.error("Failed to get or create user entry", e);
         } finally {
@@ -139,9 +141,11 @@ public class ShibbolethAuthenticationPlugin implements
         return new UserIdentificationInfo(userId, userId);
     }
 
+    @Override
     public void initPlugin(Map<String, String> parameters) {
     }
 
+    @Override
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
         return true;
     }
