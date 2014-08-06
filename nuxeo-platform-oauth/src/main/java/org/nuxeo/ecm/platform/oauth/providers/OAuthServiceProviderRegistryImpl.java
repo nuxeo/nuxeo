@@ -53,6 +53,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
 
     protected Map<String, NuxeoOAuthServiceProvider> inMemoryProviders = new HashMap<String, NuxeoOAuthServiceProvider>();
 
+    @Override
     public NuxeoOAuthServiceProvider getProvider(String gadgetUri,
             String serviceName) {
         try {
@@ -175,6 +176,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
         return "k-" + gadgetUri + "-" + serviceName;
     }
 
+    @Override
     public NuxeoOAuthServiceProvider addReadOnlyProvider(String gadgetUri,
             String serviceName, String consumerKey, String consumerSecret,
             String publicKey) {
@@ -186,6 +188,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
         return sp;
     }
 
+    @Override
     public void deleteProvider(String gadgetUri, String serviceName) {
 
         NuxeoOAuthServiceProvider provider = getProvider(gadgetUri, serviceName);
@@ -195,6 +198,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
 
     }
 
+    @Override
     public void deleteProvider(String providerId) {
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
@@ -202,7 +206,6 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
             try {
                 session = ds.open(DIRECTORY_NAME);
                 session.deleteEntry(providerId);
-                session.commit();
             } finally {
                 if (session != null) {
                     session.close();
@@ -213,6 +216,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent
         }
     }
 
+    @Override
     public List<NuxeoOAuthServiceProvider> listProviders() {
 
         List<NuxeoOAuthServiceProvider> result = new ArrayList<NuxeoOAuthServiceProvider>();

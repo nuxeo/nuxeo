@@ -14,6 +14,11 @@ import org.nuxeo.runtime.api.Framework;
 
 public abstract class DirectoryBasedEditor implements Serializable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
     protected DocumentModelList entries;
 
     protected DocumentModel editableEntry;
@@ -51,7 +56,6 @@ public abstract class DirectoryBasedEditor implements Serializable {
         Session session = ds.open(getDirectoryName());
         try {
             session.createEntry(creationEntry);
-            session.commit();
             creationEntry = null;
             showAddForm = false;
             entries = null;
@@ -113,7 +117,6 @@ public abstract class DirectoryBasedEditor implements Serializable {
         Session session = ds.open(getDirectoryName());
         try {
             session.updateEntry(editableEntry);
-            session.commit();
             editableEntry = null;
             entries = null;
         } finally {

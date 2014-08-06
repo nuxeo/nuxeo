@@ -38,6 +38,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestServiceProviderService extends NXRuntimeTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -52,6 +53,7 @@ public class TestServiceProviderService extends NXRuntimeTestCase {
                 "OSGI-INF/directory-test-config.xml");
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         DatabaseHelper.DATABASE.tearDown();
@@ -122,7 +124,6 @@ public class TestServiceProviderService extends NXRuntimeTestCase {
         entry = session.createEntry(init);
         session.updateEntry(entry);
 
-        session.commit();
         session.close();
 
         assertEquals(5, providerRegistry.listProviders().size());

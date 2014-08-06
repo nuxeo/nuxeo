@@ -46,6 +46,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
 
     public static final String DIRECTORY_NAME = "oauthConsumers";
 
+    @Override
     public NuxeoOAuthConsumer getConsumer(String consumerKey, String keyType) {
         try {
             NuxeoOAuthConsumer consumer = getEntry(consumerKey, keyType);
@@ -82,6 +83,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public NuxeoOAuthConsumer storeConsumer(NuxeoOAuthConsumer consumer)
             throws Exception {
 
@@ -94,7 +96,6 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
             DocumentModel entry = session.createEntry(init);
             consumer.asDocumentModel(entry);
             session.updateEntry(entry);
-            session.commit();
             if (entry == null) {
                 return null;
             }
@@ -115,7 +116,6 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements
             try {
                 session = ds.open(DIRECTORY_NAME);
                 session.deleteEntry(consumerKey);
-                session.commit();
             } finally {
                 if (session != null) {
                     session.close();

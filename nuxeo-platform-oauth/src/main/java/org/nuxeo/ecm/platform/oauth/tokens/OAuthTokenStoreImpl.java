@@ -83,6 +83,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public NuxeoOAuthToken getClientAccessToken(String appId, String owner)
             throws Exception {
         DirectoryService ds = Framework.getService(DirectoryService.class);
@@ -108,6 +109,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public void removeClientAccessToken(String appId, String owner)
             throws Exception {
         DirectoryService ds = Framework.getService(DirectoryService.class);
@@ -134,6 +136,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
 
     }
 
+    @Override
     public void storeClientAccessToken(String consumerKey, String callBack,
             String token, String tokenSecret, String appId, String owner) {
         NuxeoOAuthToken aToken = new NuxeoOAuthToken(consumerKey, callBack);
@@ -190,7 +193,6 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
 
             aToken.updateEntry(entry);
             session.updateEntry(entry);
-            session.commit();
 
             return getTokenFromDirectoryEntry(session.getEntry(aToken.getToken()));
         } finally {
@@ -294,7 +296,6 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements
         try {
             session = ds.open(DIRECTORY_NAME);
             session.deleteEntry(token);
-            session.commit();
         } finally {
             if (session != null) {
                 session.close();
