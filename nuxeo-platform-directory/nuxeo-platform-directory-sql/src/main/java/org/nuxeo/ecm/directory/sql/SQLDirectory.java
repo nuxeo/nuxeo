@@ -126,15 +126,15 @@ public class SQLDirectory extends AbstractDirectory {
 
     private DataSource dataSource;
 
-    private final Table table;
+    private Table table;
 
-    private final Schema schema;
+    private Schema schema;
 
-    private final Map<String, Field> schemaFieldMap;
+    private Map<String, Field> schemaFieldMap;
 
-    private final List<String> storedFieldNames;
+    private List<String> storedFieldNames;
 
-    private final Dialect dialect;
+    private Dialect dialect;
 
     public SQLDirectory(SQLDirectoryDescriptor config) throws ClientException {
         super(config.name);
@@ -149,6 +149,20 @@ public class SQLDirectory extends AbstractDirectory {
         cache.setMaxSize(config.getCacheMaxSize());
         cache.setTimeout(config.getCacheTimeout());
 
+    }
+
+    /**
+     * Private method to initialize the directory connection. The code has been
+     * moved from the constructor to be used in the getSession method to run the
+     * constructor class before required other contrib (like schema types) have
+     * been deployed. This has been done to remove the former SQLDirectoryProxy
+     * class
+     *
+     * see https://jira.nuxeo.com/browse/NXP-14914
+     *
+     * @since 5.9.6
+     */
+    private void initConnection() {
         Connection sqlConnection = getConnection();
         try {
             dialect = Dialect.createDialect(sqlConnection, null, null);
@@ -350,6 +364,9 @@ public class SQLDirectory extends AbstractDirectory {
 
     @Override
     public synchronized Session getSession() throws DirectoryException {
+        if (dialect == null) {
+            initConnection();
+        }
         SQLSession session = new SQLSession(this, config, managedSQLSession);
         addSession(session);
         return session;
@@ -367,7 +384,8 @@ public class SQLDirectory extends AbstractDirectory {
             return;
         }
         try {
-             ConnectionHelper.registerSynchronization(new TxSessionCleaner(session));
+            ConnectionHelper.registerSynchronization(new TxSessionCleaner(
+                    session));
         } catch (SystemException e) {
             throw new DirectoryException(
                     "Cannot register in tx for session cleanup handling "

@@ -63,7 +63,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Implementation of the Directory interface for servers implementing the
  * Lightweight Directory Access Protocol.
- * 
+ *
  * @author ogrisel
  * @author Robert Browning
  */
@@ -76,15 +76,15 @@ public class LDAPDirectory extends AbstractDirectory {
 
     protected final LDAPDirectoryDescriptor config;
 
-    protected final Properties contextProperties;
+    protected Properties contextProperties;
 
-    protected final SearchControls searchControls;
+    protected SearchControls searchControls;
 
-    protected final Map<String, Field> schemaFieldMap;
+    protected Map<String, Field> schemaFieldMap;
 
     protected final LDAPDirectoryFactory factory;
 
-    protected final String baseFilter;
+    protected String baseFilter;
 
     // the following attribute is only used for testing purpose
     protected ContextProvider testServer;
@@ -111,6 +111,22 @@ public class LDAPDirectory extends AbstractDirectory {
                     "searchBaseDn configuration is missing for directory "
                             + config.getName());
         }
+
+    }
+
+    /**
+     * Private method to initialize the directory ldap config. The code has been
+     * moved from the constructor to be used in the getSession method to run the
+     * constructor class before required other contrib (like schema types) have
+     * been deployed. This has been done to remove the former LDAPDirectoryProxy
+     * class
+     *
+     * see https://jira.nuxeo.com/browse/NXP-14914
+     *
+     * @since 5.9.6
+     */
+    private void initLDAPConfig()
+    {
         // computing attributes that will be useful for all sessions
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         Schema schema = schemaManager.getSchema(config.getSchemaName());
@@ -178,8 +194,8 @@ public class LDAPDirectory extends AbstractDirectory {
                             + config.getName());
         }
         props.put(Context.PROVIDER_URL, ldapUrls);
-        
-        // define how referrals are handled 
+
+        // define how referrals are handled
         if (!getConfig().followReferrals) {
             props.put(Context.REFERRAL, "ignore");
         } else {
@@ -232,7 +248,7 @@ public class LDAPDirectory extends AbstractDirectory {
 
     /**
      * Search controls that only fetch attributes defined by the schema
-     * 
+     *
      * @return common search controls to use for all LDAP search queries
      * @throws DirectoryException
      */
@@ -353,6 +369,10 @@ public class LDAPDirectory extends AbstractDirectory {
 
     @Override
     public Session getSession() throws DirectoryException {
+        if(schemaFieldMap == null)
+        {
+            initLDAPConfig();
+        }
         DirContext context;
         if (testServer != null) {
             context = testServer.getContext();
@@ -391,9 +411,9 @@ public class LDAPDirectory extends AbstractDirectory {
 
     /**
      * Get the value of the field passwordHashAlgorithm
-     * 
+     *
      * @return The value
-     * 
+     *
      * @since 5.9.3
      */
     public String getPasswordHashAlgorithmField() {
@@ -414,7 +434,7 @@ public class LDAPDirectory extends AbstractDirectory {
         /**
          * Create a new SSLSocketFactory that creates a Socket regardless of the
          * certificate used.
-         * 
+         *
          * @throws SSLException if initialization fails.
          */
         public TrustingSSLSocketFactory() {
