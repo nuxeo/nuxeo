@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +59,7 @@ public class DeputyManagementStorageService implements DeputyManager {
 
     private String directorySchema;
 
+    @Override
     public String getDeputySchemaName() {
         return directorySchema;
     }
@@ -111,14 +111,13 @@ public class DeputyManagementStorageService implements DeputyManager {
                 dirSession.deleteEntry(id);
             }
 
-            dirSession.commit();
-
         } finally {
             releasePersistenceService();
         }
 
     }
 
+    @Override
     public List<String> getPossiblesAlternateLogins(String userName)
             throws ClientException {
         List<String> users = new ArrayList<String>();
@@ -144,7 +143,8 @@ public class DeputyManagementStorageService implements DeputyManager {
                 Calendar endDate = (Calendar) entry.getProperty(
                         directorySchema, DIR_COL_END_VALIDITY);
 
-                boolean validateDate = (Boolean)entry.getProperty(directorySchema, DIR_COL_VALIDATE_DATE);
+                boolean validateDate = (Boolean) entry.getProperty(
+                        directorySchema, DIR_COL_VALIDATE_DATE);
                 boolean valid = true;
                 if (validateDate && (startDate != null)
                         && (startDate.getTimeInMillis() > currentTime)) {
@@ -166,7 +166,6 @@ public class DeputyManagementStorageService implements DeputyManager {
                 dirSession.deleteEntry(outDatedId);
             }
 
-            dirSession.commit();
             return users;
         } finally {
 
@@ -174,6 +173,7 @@ public class DeputyManagementStorageService implements DeputyManager {
         }
     }
 
+    @Override
     public List<String> getAvalaibleDeputyIds(String userName)
             throws ClientException {
         List<String> deputies = new ArrayList<String>();
@@ -187,6 +187,7 @@ public class DeputyManagementStorageService implements DeputyManager {
         return deputies;
     }
 
+    @Override
     public List<DocumentModel> getAvalaibleMandates(String userName)
             throws ClientException {
         List<DocumentModel> deputies = new ArrayList<DocumentModel>();
@@ -207,6 +208,7 @@ public class DeputyManagementStorageService implements DeputyManager {
 
     }
 
+    @Override
     public DocumentModel newMandate(String username, String deputy)
             throws ClientException {
 
@@ -215,7 +217,8 @@ public class DeputyManagementStorageService implements DeputyManager {
         try {
             DocumentModel entry = newEntry(username, deputy);
             Calendar cal = Calendar.getInstance();
-            entry.setProperty(directorySchema, DIR_COL_VALIDATE_DATE,  new Boolean(false));
+            entry.setProperty(directorySchema, DIR_COL_VALIDATE_DATE,
+                    new Boolean(false));
             entry.setProperty(directorySchema, DIR_COL_START_VALIDITY, cal);
             entry.setProperty(directorySchema, DIR_COL_END_VALIDITY, cal);
             return entry;
@@ -238,6 +241,7 @@ public class DeputyManagementStorageService implements DeputyManager {
         return entry;
     }
 
+    @Override
     public DocumentModel newMandate(String username, String deputy,
             Calendar start, Calendar end) throws ClientException {
 
@@ -245,7 +249,8 @@ public class DeputyManagementStorageService implements DeputyManager {
 
         try {
             DocumentModel entry = newEntry(username, deputy);
-            entry.setProperty(directorySchema, DIR_COL_VALIDATE_DATE, new Boolean(true));
+            entry.setProperty(directorySchema, DIR_COL_VALIDATE_DATE,
+                    new Boolean(true));
             entry.setProperty(directorySchema, DIR_COL_START_VALIDITY, start);
             entry.setProperty(directorySchema, DIR_COL_END_VALIDITY, end);
             return entry;
@@ -254,6 +259,7 @@ public class DeputyManagementStorageService implements DeputyManager {
         }
     }
 
+    @Override
     public void addMandate(DocumentModel entry) throws ClientException {
 
         initPersistentService();
@@ -264,23 +270,21 @@ public class DeputyManagementStorageService implements DeputyManager {
             if (dirSession.getEntry(id) != null) {
                 // first remove entry
                 dirSession.deleteEntry(id);
-                dirSession.commit();
             }
 
             entry.setProperty(directorySchema, DIR_COL_ID, id);
 
             dirSession.createEntry(entry);
 
-            dirSession.commit();
         } catch (Throwable e) {
             System.out.println(e);
-        }
-            finally {
+        } finally {
             releasePersistenceService();
         }
         return;
     }
 
+    @Override
     public void removeMandate(String username, String deputy)
             throws ClientException {
 
@@ -289,7 +293,6 @@ public class DeputyManagementStorageService implements DeputyManager {
         try {
             String id = id(username, deputy);
             dirSession.deleteEntry(id);
-            dirSession.commit();
         } finally {
             releasePersistenceService();
         }
