@@ -66,9 +66,6 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
         DirectoryServiceImpl dirServiceImpl = (DirectoryServiceImpl) Framework.getRuntime().getComponent(
                 DirectoryService.NAME);
         Directory dir = dirServiceImpl.getDirectory(dirName);
-        if (dir instanceof SQLDirectoryProxy) {
-            dir = ((SQLDirectoryProxy) dir).getDirectory();
-        }
         return dir;
     }
 

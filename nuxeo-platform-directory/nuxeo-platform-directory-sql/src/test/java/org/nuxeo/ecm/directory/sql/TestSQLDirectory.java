@@ -98,9 +98,6 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
 
     public static SQLDirectory getSQLDirectory() throws Exception {
         Directory dir = getDirectory("userDirectory");
-        if (dir instanceof SQLDirectoryProxy) {
-            dir = ((SQLDirectoryProxy) dir).getDirectory();
-        }
         return (SQLDirectory) dir;
     }
 

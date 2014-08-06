@@ -78,9 +78,6 @@ public class TableReference extends AbstractReference {
 
     private SQLDirectory getSQLSourceDirectory() throws DirectoryException {
         Directory dir = getSourceDirectory();
-        if (dir instanceof SQLDirectoryProxy) {
-            dir = ((SQLDirectoryProxy) dir).getDirectory();
-        }
         return (SQLDirectory) dir;
     }
 

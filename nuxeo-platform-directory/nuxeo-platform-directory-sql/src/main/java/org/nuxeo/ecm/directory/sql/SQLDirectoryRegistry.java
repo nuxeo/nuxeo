@@ -60,7 +60,7 @@ public class SQLDirectoryRegistry extends
                 log.info("Registered directory: " + directoryName);
             }
             descriptors.put(id, descriptor);
-            directories.put(id, new SQLDirectoryProxy(descriptor));
+            directories.put(id, new SQLDirectory(descriptor));
         }
     }
 
