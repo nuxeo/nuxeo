@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -221,10 +221,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         userConfig.schemaName = userSchemaName;
         userConfig.nameKey = userIdField;
 
-        if (descriptor.userCacheMaxSize>0) {
+        if (descriptor.userCacheMaxSize > 0) {
             principalCache = CacheBuilder.newBuilder().concurrencyLevel(
-                    CACHE_CONCURRENCY_LEVEL).maximumSize(descriptor.userCacheMaxSize).expireAfterWrite(
-                            descriptor.userCacheTimeout, TimeUnit.MINUTES).build();
+                    CACHE_CONCURRENCY_LEVEL).maximumSize(
+                    descriptor.userCacheMaxSize).expireAfterWrite(
+                    descriptor.userCacheTimeout, TimeUnit.MINUTES).build();
         }
 
     }
@@ -561,7 +562,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     protected boolean useCache() {
-            return (!Framework.isTestModeSet()) && principalCache!=null;
+        return (!Framework.isTestModeSet()) && principalCache != null;
     }
 
     @Override
@@ -570,9 +571,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         if (useCache()) {
             principal = principalCache.getIfPresent(username);
         }
-        if (principal==null) {
-            principal =  getPrincipal(username, null);
-            if (useCache() && principal!=null) {
+        if (principal == null) {
+            principal = getPrincipal(username, null);
+            if (useCache() && principal != null) {
                 principalCache.put(username, principal);
             }
         }
@@ -984,7 +985,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         DocumentModel newGroupModel = getBareGroupModel();
         newGroupModel.setProperty(groupSchemaName, groupIdField,
                 group.getName());
-        newGroupModel.setProperty(groupSchemaName, groupLabelField, group.getLabel());
+        newGroupModel.setProperty(groupSchemaName, groupLabelField,
+                group.getLabel());
         newGroupModel.setProperty(groupSchemaName, groupMembersField,
                 group.getMemberUsers());
         newGroupModel.setProperty(groupSchemaName, groupSubGroupsField,
