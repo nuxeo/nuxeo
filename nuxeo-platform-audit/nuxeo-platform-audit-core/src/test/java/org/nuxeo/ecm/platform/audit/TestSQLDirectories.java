@@ -34,7 +34,6 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.sql.SQLDirectoryProxy;
 import org.nuxeo.ecm.directory.sql.SimpleDataSource;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -75,9 +74,6 @@ public class TestSQLDirectories extends NXRuntimeTestCase {
         DirectoryServiceImpl dirServiceImpl = (DirectoryServiceImpl) Framework.getRuntime().getComponent(
                 DirectoryService.NAME);
         Directory dir = dirServiceImpl.getDirectory(dirName);
-        if (dir instanceof SQLDirectoryProxy) {
-            dir = ((SQLDirectoryProxy) dir).getDirectory();
-        }
         return dir;
     }
 
