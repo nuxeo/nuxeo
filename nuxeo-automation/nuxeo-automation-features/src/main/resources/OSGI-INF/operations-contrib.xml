@@ -24,7 +24,7 @@
               <label mode="any">NXQL query</label>
             </labels>
             <properties mode="any">
-              <property name="language">javascript</property>
+              <property name="language">nxql</property>
             </properties>
              <fields>
               <field>query</field>
