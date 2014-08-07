@@ -76,12 +76,10 @@ public class TestShibbolethComputedGroup {
     @After
     public void setDown() throws Exception {
         if (userDir != null) {
-            userDir.rollback();
             userDir.close();
         }
 
         if (groupDir != null) {
-            groupDir.rollback();
             groupDir.close();
         }
     }
