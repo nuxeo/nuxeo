@@ -113,6 +113,15 @@ public class LDAPDirectory extends AbstractDirectory {
         }
 
     }
+    
+    @Override
+    public Reference getReference(String referenceFieldName) {
+        if(schemaFieldMap == null)
+        {
+            initLDAPConfig();
+        }
+        return references.get(referenceFieldName);
+    }
 
     /**
      * Lazy init method for ldap config
