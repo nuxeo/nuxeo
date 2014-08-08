@@ -140,7 +140,15 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
-        String id = String.valueOf(fieldMap.get(getIdField()));
+        String idFieldName = schemaFieldMap.get(getIdField()).getName().getPrefixedName();
+        //If the prefixed id is not here, try to get without prefix
+        //It may happen when we gentry from sql
+        if(!fieldMap.containsKey(idFieldName))
+        {
+            idFieldName = getIdField();
+        }
+        
+        String id = String.valueOf(fieldMap.get(idFieldName));
         try {
             DocumentModel docModel = BaseSession.createEntryModel(sid,
                     schemaName, id, fieldMap, isReadOnly());
@@ -172,12 +180,17 @@ public class SQLSession extends BaseSession implements EntrySource {
         if (isReadOnly()) {
             log.warn(READ_ONLY_VOCABULARY_WARN);
         }
+
+        Field schemaIdField = schemaFieldMap.get(idField);
+
+        String idFieldName = schemaIdField.getName().getPrefixedName();
+
         acquireConnection();
         if (autoincrementIdField) {
-            fieldMap.remove(idField);
+            fieldMap.remove(idFieldName);
         } else {
             // check id that was given
-            Object rawId = fieldMap.get(idField);
+            Object rawId = fieldMap.get(idFieldName);
             if (rawId == null) {
                 throw new DirectoryException("Missing id");
             }
@@ -192,7 +205,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 if (!StringUtils.isBlank(tenantId)) {
                     fieldMap.put(TENANT_ID_FIELD, tenantId);
                     if (computeMultiTenantId) {
-                        fieldMap.put(idField,
+                        fieldMap.put(idFieldName,
                                 computeMultiTenantDirectoryId(tenantId, id));
                     }
                 }
@@ -202,7 +215,8 @@ public class SQLSession extends BaseSession implements EntrySource {
         List<Column> columnList = new ArrayList<Column>(table.getColumns());
         for (Iterator<Column> i = columnList.iterator(); i.hasNext();) {
             Column column = i.next();
-            if (fieldMap.get(column.getKey()) == null) {
+            String prefixField = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
+            if (fieldMap.get(prefixField) == null) {
                 i.remove();
             }
         }
@@ -216,7 +230,8 @@ public class SQLSession extends BaseSession implements EntrySource {
             List<Serializable> values = new ArrayList<Serializable>(
                     columnList.size());
             for (Column column : columnList) {
-                Object value = fieldMap.get(column.getKey());
+                String prefixField = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
+                Object value = fieldMap.get(prefixField);
                 values.add(fieldValueForWrite(value, column));
             }
             logger.logSQL(sql, values);
@@ -234,7 +249,8 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
             int index = 1;
             for (Column column : columnList) {
-                Object value = fieldMap.get(column.getKey());
+                String prefixField = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
+                Object value = fieldMap.get(prefixField);
                 setFieldValue(ps, index, column, value);
                 index++;
             }
@@ -257,7 +273,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                     logger.logResultSet(rs, Collections.singletonList(column));
                 }
                 Serializable rawId = column.getFromResultSet(rs, 1);
-                fieldMap.put(idField, rawId);
+                fieldMap.put(idFieldName, rawId);
                 rs.close();
             }
             entry = fieldMapToDocumentModel(fieldMap);
@@ -279,8 +295,9 @@ public class SQLSession extends BaseSession implements EntrySource {
         // second step: add references fields
         String sourceId = entry.getId();
         for (Reference reference : getDirectory().getReferences()) {
+            String referenceFieldName = schemaFieldMap.get(reference.getFieldName()).getName().getPrefixedName(); 
             @SuppressWarnings("unchecked")
-            List<String> targetIds = (List<String>) fieldMap.get(reference.getFieldName());
+            List<String> targetIds = (List<String>) fieldMap.get(referenceFieldName);
             if (reference instanceof TableReference) {
                 // optim: reuse the current session
                 // but still initialize the reference if not yet done
