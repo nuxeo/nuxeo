@@ -51,10 +51,10 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
         request.setDestination(getEndpoint().getLocation());
 
         // Add session indexes
-        if (credential.getSessionIndexes().isEmpty()) {
+        if (credential.getSessionIndexes() == null || credential.getSessionIndexes().isEmpty()) {
             throw new SAMLException("No session indexes found");
         }
-        for (String sessionIndex : credential.getSessionIndexes()) {
+        for (String sessionIndex :credential.getSessionIndexes()) {
             SessionIndex index = build(SessionIndex.DEFAULT_ELEMENT_NAME);
             index.setSessionIndex(sessionIndex);
             request.getSessionIndexes().add(index);
@@ -130,5 +130,46 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
         }
 
         return false;
+    }
+
+    public void processLogoutResponse(SAMLMessageContext context) throws SAMLException {
+
+        SAMLObject message = context.getInboundSAMLMessage();
+
+        if (!(message instanceof LogoutResponse)) {
+            throw new SAMLException("Message is not of a LogoutResponse object type");
+        }
+        LogoutResponse response = (LogoutResponse) message;
+
+        // Validate signature of the response if present
+        if (response.getSignature() != null) {
+            log.debug("Verifying message signature");
+            try {
+                validateSignature(response.getSignature(), context.getPeerEntityId());
+            } catch (ValidationException e) {
+                log.error("Error validating signature", e);
+            } catch (org.opensaml.xml.security.SecurityException e) {
+                e.printStackTrace();
+            }
+            context.setInboundSAMLMessageAuthenticated(true);
+        }
+
+
+        // TODO - Validate destination
+
+        // Validate issuer
+        if (response.getIssuer() != null) {
+            log.debug("Verifying issuer of the message");
+            Issuer issuer = response.getIssuer();
+            validateIssuer(issuer, context);
+        }
+
+        // TODO - Validate issue time
+
+        // Verify status
+        String statusCode = response.getStatus().getStatusCode().getValue();
+        if (!statusCode.equals(StatusCode.SUCCESS_URI) && !statusCode.equals(StatusCode.PARTIAL_LOGOUT_URI)) {
+            log.warn("Invalid status code " + statusCode + ": " + response.getStatus().getStatusMessage());
+        }
     }
 }

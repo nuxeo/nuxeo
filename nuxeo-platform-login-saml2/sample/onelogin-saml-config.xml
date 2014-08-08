@@ -12,7 +12,9 @@
             <parameters>
                 <parameter name="name">OneLogin</parameter>
                 <!-- Uri of the metadata -->
-                <parameter name="metadata">https://app.onelogin.com/saml/metadata/389482</parameter>
+                <!--parameter name="metadata">https://app.onelogin.com/saml/metadata/389482</parameter-->
+                <!-- Custom metadata to add SLO -->
+                <parameter name="metadata">nxserver/config/onelogin-metadata-idp.xml</parameter>
                 <!-- Request timeout in seconds -->
                 <parameter name="timeout">5</parameter>
             </parameters>
@@ -25,7 +27,7 @@
         <authenticationChain>
             <plugins>
                 <plugin>BASIC_AUTH</plugin>
-                <!--plugin>FORM_AUTH</plugin-->
+                <plugin>FORM_AUTH</plugin>
                 <plugin>ONELOGIN_AUTH</plugin>
             </plugins>
         </authenticationChain>

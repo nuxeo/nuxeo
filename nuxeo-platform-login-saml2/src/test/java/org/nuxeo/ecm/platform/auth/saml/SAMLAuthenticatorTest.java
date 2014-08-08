@@ -21,9 +21,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.startsWith;
-import static org.mockito.Matchers.notNull;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -33,6 +31,7 @@ import com.google.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
@@ -58,6 +57,7 @@ import org.opensaml.xml.util.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
@@ -66,6 +66,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 @RunWith(FeaturesRunner.class)
@@ -143,8 +144,6 @@ public class SAMLAuthenticatorTest {
         assertEquals(SAMLVersion.VERSION_20, auth.getVersion());
         assertNotNull(auth.getID());
         assertEquals(SAMLConstants.SAML2_POST_BINDING_URI, auth.getProtocolBinding());
-        assertEquals("http://dummy/SSOPOST", auth.getAssertionConsumerServiceURL());
-
     }
 
     @Test
@@ -157,7 +156,13 @@ public class SAMLAuthenticatorTest {
         UserIdentificationInfo info = samlAuth.handleRetrieveIdentity(req, resp);
         assertEquals(info.getUserName(), user.getId());
 
-        verify(req).setAttribute(eq(SAMLAuthenticationProvider.SAML_ATTRIBUTES), notNull());
+        final ArgumentCaptor<Cookie> captor = ArgumentCaptor.forClass(Cookie.class);
+
+        verify(resp).addCookie(captor.capture());
+
+        final List<Cookie> cookies = captor.getAllValues();
+
+        assertTrue(!cookies.isEmpty());
     }
 
     @Test
@@ -165,7 +170,10 @@ public class SAMLAuthenticatorTest {
 
         HttpServletRequest req = mock(HttpServletRequest.class);
         HttpServletResponse resp = mock(HttpServletResponse.class);
-
+        Cookie [] cookies = new Cookie[] {
+            new Cookie(SAMLAuthenticationProvider.SAML_SESSION_KEY, "sessionId|user@dummy|format")
+        };
+        when(req.getCookies()).thenReturn(cookies);
         String logoutURL = samlAuth.getSLOUrl(req, resp);
 
         assertTrue(logoutURL.startsWith("http://dummy/SLOPOST"));

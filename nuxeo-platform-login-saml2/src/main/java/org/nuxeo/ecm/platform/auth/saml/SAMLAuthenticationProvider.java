@@ -38,11 +38,11 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
 import org.nuxeo.runtime.api.Framework;
 import org.opensaml.DefaultBootstrap;
 import org.opensaml.common.SAMLException;
+import org.opensaml.common.SAMLObject;
 import org.opensaml.common.binding.BasicSAMLMessageContext;
 import org.opensaml.common.binding.SAMLMessageContext;
 import org.opensaml.common.xml.SAMLConstants;
-import org.opensaml.saml2.core.AuthnRequest;
-import org.opensaml.saml2.core.LogoutRequest;
+import org.opensaml.saml2.core.*;
 import org.opensaml.saml2.encryption.Decrypter;
 import org.opensaml.saml2.encryption.EncryptedElementTypeEncryptedKeyResolver;
 import org.opensaml.saml2.metadata.*;
@@ -69,6 +69,8 @@ import org.opensaml.xml.util.XMLHelper;
 import org.w3c.dom.Element;
 
 import org.opensaml.util.URLBuilder;
+
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -84,7 +86,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
     // SAML Constants
     protected static final String SAML_REQUEST = "SAMLRequest";
     protected static final String SAML_RESPONSE = "SAMLResponse";
-    protected static final String SAML_ATTRIBUTES = "SAML_ATTRIBUTES";
+    protected static final String SAML_SESSION_KEY = "SAML_SESSION";
 
     // Supported SAML Bindings
     // TODO: Allow registering new bindings
@@ -160,7 +162,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
                     // SSO
                     for (SingleSignOnService sso : idpSSO.getSingleSignOnServices()) {
-                        if (sso.getBinding().equals(SAMLConstants.SAML2_POST_BINDING_URI)) {
+                        if (sso.getBinding().equals(SAMLConstants.SAML2_REDIRECT_BINDING_URI)) {
                             addProfile(new WebSSOProfileImpl(sso));
                             break;
                         }
@@ -168,7 +170,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
                     // SLO
                     for (SingleLogoutService slo : idpSSO.getSingleLogoutServices()) {
-                        if (slo.getBinding().equals(SAMLConstants.SAML2_POST_BINDING_URI)) {
+                        if (slo.getBinding().equals(SAMLConstants.SAML2_REDIRECT_BINDING_URI)) {
                             addProfile(new SLOProfileImpl(slo));
                             break;
                         }
@@ -336,7 +338,6 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
         // Decode the message
         try {
-            context.setCommunicationProfileId(WebSSOProfile.PROFILE_URI);
             binding.decode(context);
         } catch (Exception e) {
             log.error("Error during SAML decoding", e);
@@ -371,21 +372,44 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
         }*/
 
-        // Try to authenticate
+        // Check for a response processor for this profile
+        SAMLProfile processor = getProcessor(context);
+
+        if (processor == null) {
+            log.warn("Unsupported profile encountered in the context " + context.getCommunicationProfileId());
+            return null;
+        }
+
+        // Set the communication profile
+        context.setCommunicationProfileId(processor.getProfileIdentifier());
+
+        // Delegate handling the message to the processor
+        SAMLObject message = context.getInboundSAMLMessage();
+
+        // Handle SLO
+        // TODO - Try to handle IdP initiated SLO somewhere else
+        if (processor instanceof SLOProfile) {
+            SLOProfile slo = (SLOProfile) processor;
+            try {
+                // Handle SLO response
+                if (message instanceof LogoutResponse) {
+                    slo.processLogoutResponse(context);
+                // Handle SLO request
+                } else if (message instanceof LogoutRequest) {
+                    SAMLCredential credential = getSamlCredential(request);
+                    slo.processLogoutRequest(context, credential);
+                }
+            } catch (Exception e) {
+                log.debug("Error processing SAML message", e);
+            }
+            return null;
+        }
+
+        // Handle SSO
         SAMLCredential credential = null;
 
         try {
-            WebSSOProfile processor = (WebSSOProfile) profiles.get(context.getCommunicationProfileId());
-            if (processor != null) {
-                credential = processor.processAuthenticationResponse(context);
-
-                // TODO - Store extra data as a key in the request so apps can use it later in the chain
-                Map<String, Object> attributes = new HashMap<>();
-                request.setAttribute(SAML_ATTRIBUTES, attributes);
-
-            } else {
-                throw new SAMLException("Unsupported profile encountered in the context " + context.getCommunicationProfileId());
-            }
+            credential = ((WebSSOProfile) processor).processAuthenticationResponse(context);
         } catch (Exception e) {
             log.debug("Error processing SAML message", e);
             return null;
@@ -398,7 +422,27 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
             return null;
         }
 
-        return  new UserIdentificationInfo(userId, userId);
+        // Store session id in a cookie
+        if (credential.getSessionIndexes() != null && !credential.getSessionIndexes().isEmpty()) {
+            String nameValue = credential.getNameID().getValue();
+            String nameFormat = credential.getNameID().getFormat();
+            String sessionId = credential.getSessionIndexes().get(0);
+            addCookie(response, SAML_SESSION_KEY, sessionId + "|" + nameValue + "|" + nameFormat);
+        }
+
+        return new UserIdentificationInfo(userId, userId);
+    }
+
+    protected SAMLProfile getProcessor(SAMLMessageContext context) {
+        String profileId;
+        SAMLObject message = context.getInboundSAMLMessage();
+        if (message instanceof LogoutResponse || message instanceof LogoutRequest) {
+            profileId = SLOProfile.PROFILE_URI;
+        } else {
+            profileId = WebSSOProfile.PROFILE_URI;
+        }
+
+        return profiles.get(profileId);
     }
 
     protected SAMLBinding getBinding(InTransport transport) {
@@ -445,48 +489,75 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
         String logoutURL = slo.getEndpoint().getLocation();
 
-        // TODO(nfgs) Retrieve the SAMLCredential
+        SAMLCredential credential = getSamlCredential(request);
+
+        // Create and populate the context
+        SAMLMessageContext context = new BasicSAMLMessageContext();
+        populateLocalContext(context);
+
+        try {
+            LogoutRequest logoutRequest = slo.buildLogoutRequest(context, credential);
+            Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(logoutRequest);
+            if (marshaller == null) {
+                log.error("Unable to marshall message, no marshaller registered for message object: "
+                        + logoutRequest.getElementQName());
+            }
+            Element dom = marshaller.marshall(logoutRequest);
+            StringWriter buffer = new StringWriter();
+            XMLHelper.writeNode(dom, buffer);
+            String encodedSaml = Base64.encodeBase64String(buffer.toString().getBytes());
+
+            // Add the SAML as parameter
+            URLBuilder urlBuilder = new URLBuilder(logoutURL);
+            urlBuilder.getQueryParams().add(new Pair<>(SAML_REQUEST, encodedSaml));
+            logoutURL = urlBuilder.buildURL();
+        } catch (SAMLException e) {
+            log.error("Failed to get SAML Logout request", e);
+        } catch (MarshallingException e) {
+            log.error("Encountered error marshalling message to its DOM representation", e);
+        }
+
+        return logoutURL;
+    }
+
+    private SAMLCredential getSamlCredential(HttpServletRequest request) {
         SAMLCredential credential = null;
 
-        // If we have a credential generate a LogoutRequest with the proper session index
-        if (credential != null) {
+        // Retrieve the SAMLCredential credential from cookie
+        Cookie cookie = getCookie(request, SAML_SESSION_KEY);
+        if (cookie != null) {
+            String[] parts = cookie.getValue().split("\\|");
+            String sessionId = parts[0];
+            String nameValue = parts[1];
+            String nameFormat = parts[2];
 
-            // Create and populate the context
-            SAMLMessageContext context = new BasicSAMLMessageContext();
-            populateLocalContext(context);
+            NameID nameID = (NameID) Configuration.getBuilderFactory()
+                    .getBuilder(NameID.DEFAULT_ELEMENT_NAME)
+                    .buildObject(NameID.DEFAULT_ELEMENT_NAME);
+            nameID.setValue(nameValue);
+            nameID.setFormat(nameFormat);
 
-            try {
-                LogoutRequest logoutRequest = slo.buildLogoutRequest(context, credential);
-                Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(logoutRequest);
-                if (marshaller == null) {
-                    log.error("Unable to marshall message, no marshaller registered for message object: "
-                            + logoutRequest.getElementQName());
-                }
-                Element dom = marshaller.marshall(logoutRequest);
-                StringWriter buffer = new StringWriter();
-                XMLHelper.writeNode(dom, buffer);
-                String encodedSaml = Base64.encodeBase64String(buffer.toString().getBytes());
+            List<String> sessionIndexes = new ArrayList<>();
+            sessionIndexes.add(sessionId);
 
-                // Add the SAML as parameter
-                URLBuilder urlBuilder = new URLBuilder(logoutURL);
-                urlBuilder.getQueryParams().add(new Pair<>(SAML_REQUEST, encodedSaml));
-                logoutURL = urlBuilder.buildURL();
-            } catch (SAMLException e) {
-                log.error("Failed to get SAML Logout request", e);
-            } catch (MarshallingException e) {
-                log.error("Encountered error marshalling message to its DOM representation", e);
-            }
+            credential = new SAMLCredential(nameID, sessionIndexes);
         }
-        return logoutURL;
+
+        return credential;
     }
 
     @Override
     public Boolean handleLogout(HttpServletRequest request, HttpServletResponse response) {
         String logoutURL = getSLOUrl(request, response);
 
+        if (logoutURL == null) {
+            return false;
+        }
+
         if (log.isDebugEnabled()) {
             log.debug("Send redirect to " + logoutURL);
         }
+
         try {
             response.sendRedirect(logoutURL);
         } catch (IOException e) {
@@ -494,6 +565,12 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
             log.error(errorMessage, e);
             return false;
         }
+
+        Cookie cookie = getCookie(request, SAML_SESSION_KEY);
+        if (cookie != null) {
+            removeCookie(response, cookie);
+        }
+
         return true;
     }
 
@@ -506,6 +583,30 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
             keyManager = Framework.getLocalService(KeyManager.class);
         }
         return keyManager;
+    }
+
+    private void addCookie(HttpServletResponse httpResponse, String name, String value) {
+        Cookie cookie = new Cookie(name, value);
+        httpResponse.addCookie(cookie);
+    }
+
+    private Cookie getCookie(HttpServletRequest httpRequest, String cookieName) {
+        Cookie cookies[] = httpRequest.getCookies();
+        if (cookies != null) {
+            for (int i = 0; i < cookies.length; i++) {
+                if (cookieName.equals(cookies[i].getName())) {
+                    return cookies[i];
+                }
+            }
+        }
+        return null;
+    }
+
+    private void removeCookie(HttpServletResponse httpResponse, Cookie cookie) {
+        log.debug(String.format("Removing cookie %s.", cookie.getName()));
+        cookie.setMaxAge(0);
+        cookie.setValue("");
+        httpResponse.addCookie(cookie);
     }
 
 }
