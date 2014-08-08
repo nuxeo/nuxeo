@@ -38,7 +38,17 @@ public class Invalidations implements Serializable {
 
     public static final int DELETED = 2;
 
-    /** used locally when invalidating everything */
+    /**
+     * Maximum number of invalidations kept, after which only {@link #all} is
+     * set. This avoids accumulating too many invalidations in memory, at the
+     * expense of more coarse-grained invalidations.
+     */
+    public static final int MAX_SIZE = 10000;
+
+    /**
+     * Used locally when invalidating everything, or when too many invalidations
+     * have been received.
+     */
     public boolean all;
 
     /** null when empty */
@@ -62,6 +72,19 @@ public class Invalidations implements Serializable {
         all = false;
         modified = null;
         deleted = null;
+    }
+
+    protected void setAll() {
+        all = true;
+        modified = null;
+        deleted = null;
+    }
+
+    protected void checkMaxSize() {
+        if (modified != null && modified.size() > MAX_SIZE //
+                || deleted != null && deleted.size() > MAX_SIZE) {
+            setAll();
+        }
     }
 
     /** only call this if it's to add at least one element in the set */
@@ -89,17 +112,22 @@ public class Invalidations implements Serializable {
             return;
         }
         if (other.all) {
-            all = true;
-            modified = null;
-            deleted = null;
+            setAll();
             return;
         }
         if (other.modified != null) {
-            addModified(other.modified);
+            if (modified == null) {
+                modified = new HashSet<RowId>();
+            }
+            modified.addAll(other.modified);
         }
         if (other.deleted != null) {
-            addDeleted(other.deleted);
+            if (deleted == null) {
+                deleted = new HashSet<RowId>();
+            }
+            deleted.addAll(other.deleted);
         }
+        checkMaxSize();
     }
 
     public void addModified(RowId rowId) {
@@ -110,13 +138,7 @@ public class Invalidations implements Serializable {
             modified = new HashSet<RowId>();
         }
         modified.add(rowId);
-    }
-
-    protected void addModified(Set<RowId> rowIds) {
-        if (modified == null) {
-            modified = new HashSet<RowId>();
-        }
-        modified.addAll(rowIds);
+        checkMaxSize();
     }
 
     public void addDeleted(RowId rowId) {
@@ -127,13 +149,7 @@ public class Invalidations implements Serializable {
             deleted = new HashSet<RowId>();
         }
         deleted.add(rowId);
-    }
-
-    protected void addDeleted(Set<RowId> rowIds) {
-        if (deleted == null) {
-            deleted = new HashSet<RowId>();
-        }
-        deleted.addAll(rowIds);
+        checkMaxSize();
     }
 
     public void add(Serializable id, String[] tableNames, int kind) {
@@ -144,6 +160,7 @@ public class Invalidations implements Serializable {
         for (String tableName : tableNames) {
             set.add(new RowId(tableName, id));
         }
+        checkMaxSize();
     }
 
     @Override

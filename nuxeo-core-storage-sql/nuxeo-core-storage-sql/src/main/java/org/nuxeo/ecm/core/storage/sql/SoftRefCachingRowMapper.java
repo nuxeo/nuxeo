@@ -82,7 +82,8 @@ public class SoftRefCachingRowMapper implements RowMapper {
      * The queue of cache invalidations received from other session, to process
      * at pre-transaction time.
      */
-    private final InvalidationsQueue cacheQueue;
+    // public for unit tests
+    public final InvalidationsQueue cacheQueue;
 
     /**
      * The propagator of invalidations to other mappers.
