@@ -66,8 +66,10 @@ public class WritePolicyEntryAdaptor implements EntryAdaptor {
             }
         } catch (ClientException e) {
             throw new DirectoryException(
-                    "Field to adapt entry " + entry.getId()
-                            + "  from directory " + directory.getName(), e);
+                    String.format(
+                            "The field '%s' of entry '%s' could not be adapt and map on directory '%s', check that the field exist in the schema",
+                            fieldName, entry.getId(), directory.getName()), e);
+
         }
         return entry;
     }
