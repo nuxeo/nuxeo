@@ -82,6 +82,9 @@ public class MemoryDirectorySession extends BaseSession {
 
     public DocumentModel createEntry(Map<String, Object> fieldMap)
             throws DirectoryException {
+        if (isReadOnly()) {
+            return null;
+        }
         // find id
         Object rawId = fieldMap.get(directory.idField);
         if (rawId == null) {
