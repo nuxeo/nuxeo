@@ -3414,6 +3414,87 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
+    public void testCacheInvalidations() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Session s2 = repository.getConnection();
+
+        // no invalidations yet
+        assertSessionInvalidations(s2, false, -1, -1);
+
+        // creation
+        Node doc = session.addChildNode(root, "doc", null, "Relation", false);
+        session.save(); // send invalidations
+        // 2 invalidations: root __PARENT__ and doc hierarchy
+        assertSessionInvalidations(s2, false, 2, -1);
+        s2.save(); // process (clear) invalidations
+
+        // modification
+        doc.setSimpleProperty("relation:predicate", "foo");
+        session.save(); // send invalidations
+        // 1 invalidation: doc relation & fulltext
+        assertSessionInvalidations(s2, false, 2, -1);
+        s2.save(); // process (clear) invalidations
+
+        // delete
+        session.removeNode(doc);
+        session.save(); // send invalidations
+        assertSessionInvalidations(s2, false, isProxiesEnabled() ? 5 : 3, 9);
+
+        s2.close();
+        session.close();
+    }
+
+    /**
+     * Tests that invalidations don't grow indefinitely (and consume memory).
+     */
+    @Test
+    public void testCacheInvalidationsUnlimitedGrowth() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Session s2 = repository.getConnection();
+
+        // no invalidations yet
+        assertSessionInvalidations(s2, false, -1, -1);
+
+        // now create many docs, accumulating invalidations
+        int ndocs = Invalidations.MAX_SIZE + 1;
+        for (int i = 0; i < ndocs; i++) {
+            session.addChildNode(root, "doc" + i, null, "Relation", false);
+        }
+        session.save(); // send invalidations
+        // "all" invalidations flagged
+        assertSessionInvalidations(s2, true, -1, -1);
+
+        s2.close();
+        session.close();
+    }
+
+    protected static void assertSessionInvalidations(Session session,
+            boolean all, int modified, int deleted) {
+        SoftRefCachingMapper mapper = (SoftRefCachingMapper) ((SessionImpl) session).getMapper();
+        Invalidations invalidations = mapper.cacheQueue.queue;
+        assertTrue(all == invalidations.all);
+        if (modified == -1) {
+            if (invalidations.modified != null) {
+                // if() prevents NPE when computing the message
+                assertNull(String.valueOf(invalidations.modified.size()),
+                        invalidations.modified);
+            }
+        } else {
+            assertEquals(modified, invalidations.modified.size());
+        }
+        if (deleted == -1) {
+            if (invalidations.deleted != null) {
+                assertNull(String.valueOf(invalidations.deleted.size()),
+                        invalidations.deleted);
+            }
+        } else {
+            assertEquals(deleted, invalidations.deleted.size());
+        }
+    }
+
+    @Test
     public void testCacheInvalidationsPropagatorLeak() throws Exception {
         if (this instanceof TestSQLBackendNet
                 || this instanceof ITSQLBackendNet) {
