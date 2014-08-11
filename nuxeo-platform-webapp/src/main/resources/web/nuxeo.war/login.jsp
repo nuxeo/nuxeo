@@ -82,7 +82,6 @@ if (selectedLanguage != null) { %>
 </script>
 <style type="text/css">
 <!--
-
 html, body {
   height: 100%;
   overflow: hidden;
@@ -93,7 +92,6 @@ body {
   background: <%=bodyBackgroundStyle%>;
   color: #343434;
   margin: 0;
-  text-align: center;
   <% if (!disableBackgroundSizeCover) { %>
   -webkit-background-size: cover;
   -moz-background-size: cover;
