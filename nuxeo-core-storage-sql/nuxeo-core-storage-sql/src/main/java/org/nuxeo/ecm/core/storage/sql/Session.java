@@ -512,7 +512,7 @@ public interface Session extends Connection {
      * @param id the document id
      * @return the existing lock, or {@code null} when there is no lock
      */
-    Lock getLock(Serializable id) throws StorageException;
+    Lock getLock(Serializable id);
 
     /**
      * Sets a lock on a document.
@@ -525,7 +525,7 @@ public interface Session extends Connection {
      * @return {@code null} if locking succeeded, or the existing lock if
      *         locking failed
      */
-    Lock setLock(Serializable id, Lock lock) throws StorageException;
+    Lock setLock(Serializable id, Lock lock);
 
     /**
      * Removes a lock from a document.
@@ -545,8 +545,7 @@ public interface Session extends Connection {
      *            previous lock
      * @return the previous lock
      */
-    Lock removeLock(Serializable id, String owner, boolean force)
-            throws StorageException;
+    Lock removeLock(Serializable id, String owner, boolean force);
 
     /**
      * Read ACLs are optimized ACLs for the read permission, they need to be

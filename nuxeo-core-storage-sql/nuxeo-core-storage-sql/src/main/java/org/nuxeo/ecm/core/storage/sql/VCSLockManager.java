@@ -14,15 +14,23 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.sql.BatchUpdateException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
+import org.nuxeo.ecm.core.storage.lock.LockException;
+import org.nuxeo.ecm.core.storage.sql.RepositoryBackend.MapperKind;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Manager of locks that serializes access to them.
@@ -37,16 +45,24 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * Transaction management can be done by hand because we're dealing with a
  * low-level {@link Mapper} and not something wrapped by a JCA pool.
  */
-public class LockManager {
+public class VCSLockManager extends AbstractLockManager {
 
-    private static final Log log = LogFactory.getLog(LockManager.class);
+    private static final Log log = LogFactory.getLog(VCSLockManager.class);
+
+    public static final int LOCK_RETRIES = 10;
+
+    public static final long LOCK_SLEEP_DELAY = 1; // 1 ms
+
+    public static final long LOCK_SLEEP_INCREMENT = 50; // add 50 ms each time
+
+    protected final RepositoryImpl repository;
 
     /**
      * The mapper to use. In this mapper we only ever touch the lock table, so
      * no need to deal with fulltext and complex saves, and we don't do
      * prefetch.
      */
-    protected final Mapper mapper;
+    protected Mapper mapper;
 
     /**
      * If clustering is enabled then we have to wrap test/set and test/remove in
@@ -90,16 +106,16 @@ public class LockManager {
     }
 
     /**
-     * Creates a lock manager using the given mapper.
+     * Creates a lock manager for the given repository.
      * <p>
      * The mapper will from then on be only used and closed by the lock manager.
      * <p>
-     * {@link #shutdown} must be called when done with the lock manager.
+     * {@link #close} must be called when done with the lock manager.
      */
-    public LockManager(Mapper mapper, boolean clusteringEnabled)
-            throws StorageException {
-        this.mapper = mapper;
-        this.clusteringEnabled = clusteringEnabled;
+    public VCSLockManager(String repositoryName) throws StorageException {
+        SQLRepositoryService repositoryService = Framework.getService(SQLRepositoryService.class);
+        repository = repositoryService.getRepositoryImpl(repositoryName);
+        clusteringEnabled = repository.getRepositoryDescriptor().getClusteringEnabled();
         serializationLock = new ReentrantLock();
         caching = !clusteringEnabled;
         lockCache = caching ? new LRUCache<Serializable, Lock>(CACHE_SIZE)
@@ -107,21 +123,32 @@ public class LockManager {
     }
 
     /**
-     * Shuts down the lock manager.
+     * Delay mapper acquisition until the repository has been fully initialized.
      */
-    public void shutdown() throws StorageException {
+    protected Mapper getMapper() throws StorageException {
+        if (mapper == null) {
+            mapper = repository.getBackend().newMapper(repository.getModel(),
+                    null, MapperKind.LOCK_MANAGER);
+        }
+        return mapper;
+    }
+
+    @Override
+    public void close() {
         serializationLock.lock();
         try {
-            mapper.close();
+            try {
+                getMapper().close();
+            } catch (StorageException e) {
+                throw new NuxeoException(e);
+            }
         } finally {
             serializationLock.unlock();
         }
     }
 
-    /**
-     * Gets the lock on a document.
-     */
-    public Lock getLock(final Serializable id) throws StorageException {
+    @Override
+    public Lock getLock(final String id) {
         serializationLock.lock();
         try {
             Lock lock;
@@ -129,7 +156,11 @@ public class LockManager {
                 return lock == NULL_LOCK ? null : lock;
             }
             // no transaction needed, single operation
-            lock = mapper.getLock(id);
+            try {
+                lock = getMapper().getLock(id);
+            } catch (StorageException e) {
+                throw new LockException(e);
+            }
             if (caching) {
                 lockCache.put(id, lock == null ? NULL_LOCK : lock);
             }
@@ -139,36 +170,48 @@ public class LockManager {
         }
     }
 
-    /**
-     * Locks a document.
-     */
-    public Lock setLock(Serializable id, Lock lock) throws StorageException {
-        int RETRIES = 10;
-        long sleepDelay = 1; // 1 ms
-        long INCREMENT = 50; // additional 50 ms each time
-        for (int i = 0; i < RETRIES; i++) {
+    @Override
+    public Lock setLock(String id, Lock lock) {
+        // We don't call addSuppressed() on an existing exception
+        // because constructing it beforehand when it most likely
+        // won't be needed is expensive.
+        List<Throwable> suppressed = new ArrayList<>(0);
+        long sleepDelay = LOCK_SLEEP_DELAY;
+        for (int i = 0; i < LOCK_RETRIES; i++) {
             if (i > 0) {
                 log.debug("Retrying lock on " + id + ": try " + (i + 1));
             }
             try {
                 return setLockInternal(id, lock);
             } catch (StorageException e) {
+                suppressed.add(e);
                 if (shouldRetry(e)) {
                     // cluster: two simultaneous inserts
                     // retry
                     try {
                         Thread.sleep(sleepDelay);
                     } catch (InterruptedException ie) {
+                        // restore interrupted status
+                        Thread.currentThread().interrupt();
                         throw new RuntimeException(ie);
                     }
-                    sleepDelay += INCREMENT;
+                    sleepDelay += LOCK_SLEEP_INCREMENT;
                     continue;
                 }
-                throw e;
+                // not something to retry
+                LockException exception = new LockException(e);
+                for (Throwable t : suppressed) {
+                    exception.addSuppressed(t);
+                }
+                throw exception;
             }
         }
-        throw new StorageException("Failed to lock " + id
-                + ", too much concurrency (tried " + RETRIES + " times)");
+        LockException exception = new LockException("Failed to lock " + id
+                + ", too much concurrency (tried " + LOCK_RETRIES + " times)");
+        for (Throwable t : suppressed) {
+            exception.addSuppressed(t);
+        }
+        throw exception;
     }
 
     /**
@@ -218,7 +261,7 @@ public class LockManager {
                     && oldLock != NULL_LOCK) {
                 return oldLock;
             }
-            oldLock = mapper.setLock(id, lock);
+            oldLock = getMapper().setLock(id, lock);
             if (caching && oldLock == null) {
                 lockCache.put(id, lock == null ? NULL_LOCK : lock);
             }
@@ -228,11 +271,8 @@ public class LockManager {
         }
     }
 
-    /**
-     * Unlocks a document.
-     */
-    public Lock removeLock(final Serializable id, final String owner)
-            throws StorageException {
+    @Override
+    public Lock removeLock(final String id, final String owner) {
         serializationLock.lock();
         try {
             Lock oldLock = null;
@@ -243,12 +283,16 @@ public class LockManager {
                 // existing mismatched lock, flag failure
                 oldLock = new Lock(oldLock, true);
             } else {
-                if (oldLock == null) {
-                    oldLock = mapper.removeLock(id, owner, false);
-                } else {
-                    // we know the previous lock, we can force
-                    // no transaction needed, single operation
-                    mapper.removeLock(id, owner, true);
+                try {
+                    if (oldLock == null) {
+                        oldLock = getMapper().removeLock(id, owner, false);
+                    } else {
+                        // we know the previous lock, we can force
+                        // no transaction needed, single operation
+                        getMapper().removeLock(id, owner, true);
+                    }
+                } catch (StorageException e) {
+                    throw new LockException(e);
                 }
             }
             if (caching) {
@@ -265,7 +309,7 @@ public class LockManager {
         }
     }
 
-
+    @Override
     public void clearCaches() {
         serializationLock.lock();
         try {
@@ -279,18 +323,7 @@ public class LockManager {
 
     @Override
     public String toString() {
-        return "LockManager [mapper=" + mapper + "]";
-    }
-
-    /**
-     * Checks if a given lock can be removed by the given owner.
-     *
-     * @param lock the lock
-     * @param owner the owner (may be {@code null})
-     * @return {@code true} if the lock can be removed
-     */
-    public static boolean canLockBeRemoved(Lock lock, String owner) {
-        return owner == null || owner.equals(lock.getOwner());
+        return getClass().getSimpleName() + '(' + repository.getName() + ')';
     }
 
 }

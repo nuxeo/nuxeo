@@ -55,7 +55,6 @@ import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.ColumnType.WrappedId;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
-import org.nuxeo.ecm.core.storage.sql.LockManager;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
@@ -1269,7 +1268,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     // not locked, nothing to do
                     return null;
                 }
-                if (!LockManager.canLockBeRemoved(oldLock, owner)) {
+                if (!repository.getLockManager().canLockBeRemoved(oldLock,
+                        owner)) {
                     // existing mismatched lock, flag failure
                     return new Lock(oldLock, true);
                 }
@@ -1281,7 +1281,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
-     @Override
+    @Override
     public void markReferencedBinaries(BinaryGarbageCollector gc)
             throws StorageException {
         log.debug("Starting binaries GC mark");

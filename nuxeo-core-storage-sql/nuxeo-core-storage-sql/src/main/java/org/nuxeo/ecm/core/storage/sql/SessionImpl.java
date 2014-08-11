@@ -1415,22 +1415,22 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Lock getLock(Serializable id) throws StorageException {
-        return repository.getLockManager().getLock(id);
+    public Lock getLock(Serializable id) {
+        return repository.getLockManager().getLock(model.idToString(id));
     }
 
     @Override
-    public Lock setLock(Serializable id, Lock lock) throws StorageException {
+    public Lock setLock(Serializable id, Lock lock) {
         if (lock == null) {
             throw new NullPointerException("Attempt to use null lock on: " + id);
         }
-        return repository.getLockManager().setLock(id, lock);
+        return repository.getLockManager().setLock(model.idToString(id), lock);
     }
 
     @Override
-    public Lock removeLock(Serializable id, String owner, boolean force)
-            throws StorageException {
-        return repository.getLockManager().removeLock(id, owner);
+    public Lock removeLock(Serializable id, String owner, boolean force) {
+        return repository.getLockManager().removeLock(model.idToString(id),
+                owner);
     }
 
     @Override

@@ -35,6 +35,8 @@ import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerService;
 import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
+import org.nuxeo.ecm.core.storage.lock.LockManager;
+import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend.MapperKind;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
@@ -262,6 +264,10 @@ public class RepositoryImpl implements Repository {
         return model;
     }
 
+    public RepositoryBackend getBackend() {
+        return backend;
+    }
+
     public Class<? extends FulltextParser> getFulltextParserClass() {
         return fulltextParserClass;
     }
@@ -313,14 +319,7 @@ public class RepositoryImpl implements Repository {
         backend.initializeModelSetup(modelSetup);
         model = new Model(modelSetup);
         backend.initializeModel(model);
-
-        // create the lock manager, which creates its own mapper
-        // creating this first, before the cluster node handler,
-        // as we don't want invalidations in the lock manager's mapper
-        Mapper lockManagerMapper = backend.newMapper(model, null,
-                MapperKind.LOCK_MANAGER);
-        lockManager = new LockManager(lockManagerMapper,
-                repositoryDescriptor.getClusteringEnabled());
+        initLockManager();
 
         // create the mapper for the cluster node handler
         if (repositoryDescriptor.getClusteringEnabled()) {
@@ -337,6 +336,19 @@ public class RepositoryImpl implements Repository {
         } else {
             log.info("VCS Mapper cache using: " + cachingMapperClass.getName());
         }
+    }
+
+    protected void initLockManager() throws StorageException {
+        String lockManagerName = getName(); // TODO configure in repo descriptor
+        LockManagerService lockManagerService = Framework.getService(LockManagerService.class);
+        lockManager = lockManagerService.getLockManager(lockManagerName);
+        if (lockManager == null) {
+            // no descriptor
+            // default to a VCSLockManager
+            lockManager = new VCSLockManager(lockManagerName);
+        }
+        log.info("Repository " + getName() + " using lock manager "
+                + lockManager);
     }
 
     protected SessionImpl newSession(Model model, Mapper mapper)
@@ -420,7 +432,7 @@ public class RepositoryImpl implements Repository {
         sessions.clear();
         sessionCount.dec(sessionCount.getCount());
         if (lockManager != null) {
-            lockManager.shutdown();
+            lockManager.close();
         }
     }
 

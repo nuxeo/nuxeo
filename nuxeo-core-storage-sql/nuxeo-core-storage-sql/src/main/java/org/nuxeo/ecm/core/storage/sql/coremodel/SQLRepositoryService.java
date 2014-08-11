@@ -211,7 +211,7 @@ public class SQLRepositoryService extends DefaultComponent {
         }
     }
 
-    protected RepositoryImpl getRepositoryImpl(String repositoryName) {
+    public RepositoryImpl getRepositoryImpl(String repositoryName) {
         RepositoryManagement repository = getRepository(repositoryName);
         if (repository instanceof RepositoryImpl) {
             return (RepositoryImpl) repository;

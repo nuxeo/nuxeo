@@ -83,12 +83,24 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     private static final Log log = LogFactory.getLog(TestSQLBackend.class);
 
+    protected boolean pathOptimizationsEnabled;
+
     @Override
     @Before
     public void setUp() throws Exception {
+        pathOptimizationsEnabled = true; // changed in a few tests
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests",
                 "OSGI-INF/test-backend-core-types-contrib.xml");
+    }
+
+    @Override
+    protected RepositoryDescriptor newDescriptor(String name,
+            long clusteringDelay) {
+        RepositoryDescriptor descriptor = super.newDescriptor(name,
+                clusteringDelay);
+        descriptor.setPathOptimizationsEnabled(pathOptimizationsEnabled);
+        return descriptor;
     }
 
     @Test
@@ -919,8 +931,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
         try {
             LockStepJob.run(r1, r2);
             fail("Expected ConcurrentUpdateStorageException");
-        } catch (ConcurrentUpdateStorageException e) {
-            // ok, detected
+        } catch (RuntimeException e) {
+            Throwable[] suppressed = e.getSuppressed();
+            assertNotNull(suppressed);
+            assertTrue(suppressed[0].toString(),
+                    suppressed[0] instanceof ConcurrentUpdateStorageException);
         }
     }
 
@@ -1353,6 +1368,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 // in session2, retrieve folder and check children
                 Node root2 = session2.getRootNode();
                 folder2 = session2.getChildNode(root2, "foo", false);
+                assertNotNull(folder2);
                 title2 = folder2.getSimpleProperty("tst:title");
                 session2.getChildren(folder2, null, false);
             }
@@ -3194,15 +3210,21 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testJDBCConnectionPropagatorLeak() throws Exception {
         assertEquals(0, getJDBCConnectionPropagatorSize());
         repository.getConnection().close();
-        // 1 connection remains for the lock manager
-        assertEquals(1, getJDBCConnectionPropagatorSize());
+        assertEquals(0, getJDBCConnectionPropagatorSize());
+
         Session s1 = repository.getConnection();
+        assertEquals(0 + 1, getJDBCConnectionPropagatorSize());
+        s1.getLock(s1.getRootNode().getId());
+        // 1 additional connection for the lock manager
+        assertEquals(1 + 1, getJDBCConnectionPropagatorSize());
+
         Session s2 = repository.getConnection();
         Session s3 = repository.getConnection();
         assertEquals(1 + 3, getJDBCConnectionPropagatorSize());
         s1.close();
         s2.close();
         s3.close();
+        // 1 connection remains for the lock manager
         assertEquals(1, getJDBCConnectionPropagatorSize());
     }
 
@@ -3369,10 +3391,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // get a clustered repository
         long DELAY = 0; // ms
         repository = newRepository(DELAY);
-        repository.getConnection(); // init
+        Session connection = repository.getConnection(); // init
+        // init lockmanager mapper
+        connection.getLock(connection.getRootNode().getId());
 
         // lock manager mapper has no invalidations queue
-        LockManager lockManager = ((RepositoryImpl) repository).getLockManager();
+        VCSLockManager lockManager = (VCSLockManager) ((RepositoryImpl) repository).getLockManager();
         assertNoInvalidationsQueue((JDBCRowMapper) lockManager.mapper);
 
         // cluster node handler mapper has no invalidations queue
@@ -4149,9 +4173,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testPathOptimizationsActivation() throws Exception {
         repository.close();
         // open a repository without path optimization
-        RepositoryDescriptor descriptor = newDescriptor(-1);
-        descriptor.setPathOptimizationsEnabled(false);
-        repository = new RepositoryImpl(descriptor);
+        pathOptimizationsEnabled = false;
+        repository = newRepository(-1);
         Session session = repository.getConnection();
         PartialList<Serializable> res;
         Node root = session.getRootNode();
@@ -4172,8 +4195,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // reopen repository with path optimization to populate the ancestors
         // table
         repository.close();
-        descriptor.setPathOptimizationsEnabled(true);
-        repository = new RepositoryImpl(descriptor);
+        pathOptimizationsEnabled = true;
+        repository = newRepository(-1);
         session = repository.getConnection();
         // this query will use nx_ancestors to bulk load the path
         nodes = session.getNodesByIds(ids);

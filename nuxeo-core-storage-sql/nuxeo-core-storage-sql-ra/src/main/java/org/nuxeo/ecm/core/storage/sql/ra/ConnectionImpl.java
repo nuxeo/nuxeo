@@ -29,6 +29,7 @@ import javax.resource.cci.ResultSetInfo;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -138,9 +139,9 @@ public class ConnectionImpl implements Session {
      * ----- org.nuxeo.ecm.core.storage.sql.Session -----
      */
 
-    private Session getSession() throws StorageException {
+    private Session getSession() {
         if (session == null) {
-            throw new StorageException("Cannot use closed connection handle: "
+            throw new NuxeoException("Cannot use closed connection handle: "
                     + this);
         }
         return session;
@@ -408,19 +409,17 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public Lock getLock(Serializable id) throws StorageException {
+    public Lock getLock(Serializable id) {
         return getSession().getLock(id);
     }
 
     @Override
-    public Lock setLock(Serializable id, Lock lock)
-            throws StorageException {
+    public Lock setLock(Serializable id, Lock lock) {
         return getSession().setLock(id, lock);
     }
 
     @Override
-    public Lock removeLock(Serializable id, String owner, boolean force)
-            throws StorageException {
+    public Lock removeLock(Serializable id, String owner, boolean force) {
         return getSession().removeLock(id, owner, force);
     }
 

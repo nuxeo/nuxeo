@@ -97,14 +97,15 @@ public abstract class LockStepJob implements Runnable {
                 threads[i].join();
                 threads[i] = null;
             }
+            Exception exception = new RuntimeException("failed");
             for (int i = 0; i < n; i++) {
                 Throwable t = jobs[i].throwable;
                 if (t != null) {
-                    if (t instanceof Exception) {
-                        throw (Exception) t;
-                    }
-                    throw new RuntimeException(t);
+                    exception.addSuppressed(t);
                 }
+            }
+            if (exception.getSuppressed().length > 0) {
+                throw exception;
             }
         } finally {
             // error condition recovery

@@ -82,6 +82,7 @@ import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.binary.Binary;
+import org.nuxeo.ecm.core.storage.lock.LockException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
@@ -915,7 +916,7 @@ public class SQLSession implements Session {
     protected Lock getLock(Node node) throws DocumentException {
         try {
             return session.getLock(node.getId());
-        } catch (StorageException e) {
+        } catch (LockException e) {
             throw new DocumentException(e);
         }
     }
@@ -923,7 +924,7 @@ public class SQLSession implements Session {
     protected Lock setLock(Node node, Lock lock) throws DocumentException {
         try {
             return session.setLock(node.getId(), lock);
-        } catch (StorageException e) {
+        } catch (LockException e) {
             throw new DocumentException(e);
         }
     }
@@ -931,7 +932,7 @@ public class SQLSession implements Session {
     protected Lock removeLock(Node node, String owner) throws DocumentException {
         try {
             return session.removeLock(node.getId(), owner, false);
-        } catch (StorageException e) {
+        } catch (LockException e) {
             throw new DocumentException(e);
         }
     }

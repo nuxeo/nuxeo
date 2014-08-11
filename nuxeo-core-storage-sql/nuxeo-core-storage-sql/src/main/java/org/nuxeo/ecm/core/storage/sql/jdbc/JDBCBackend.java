@@ -57,6 +57,8 @@ public class JDBCBackend implements RepositoryBackend {
 
     private SQLInfo sqlInfo;
 
+    private boolean firstMapper = true;
+
     private ClusterNodeHandler clusterNodeHandler;
 
     private JDBCConnectionPropagator connectionPropagator;
@@ -195,17 +197,15 @@ public class JDBCBackend implements RepositoryBackend {
     @Override
     public Mapper newMapper(Model model, PathResolver pathResolver,
             MapperKind kind) throws StorageException {
-        boolean create = kind == MapperKind.LOCK_MANAGER;
         boolean noSharing = kind == MapperKind.LOCK_MANAGER
                 || kind == MapperKind.CLUSTER_NODE_HANDLER;
+        boolean noInvalidationPropagation = kind == MapperKind.LOCK_MANAGER;
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
 
-        // The first mapper is used for the lock manager and must not accumulate
-        // invalidations from the cluster. Fortunately if first then there is
-        // no cluster node handler yet.
+        ClusterNodeHandler cnh = noInvalidationPropagation ? null
+                : clusterNodeHandler;
         Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo,
-                xadatasource, clusterNodeHandler, connectionPropagator,
-                noSharing, repository);
+                xadatasource, cnh, connectionPropagator, noSharing, repository);
         if (isPooledDataSource) {
             mapper = JDBCMapperConnector.newConnector(mapper);
             if (noSharing) {
@@ -214,7 +214,8 @@ public class JDBCBackend implements RepositoryBackend {
         } else {
             mapper.connect();
         }
-        if (create) {
+        if (firstMapper) {
+            firstMapper = false;
             if (repositoryDescriptor.getNoDDL()) {
                 log.info("Skipping database creation");
             } else {

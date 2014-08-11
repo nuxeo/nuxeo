@@ -73,7 +73,7 @@ import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.storage.binary.Binary;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerStreamSupport;
-import org.nuxeo.ecm.core.storage.sql.LockManager;
+import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.FileSource;
@@ -543,7 +543,8 @@ public class DBSDocument implements Document {
         Lock oldLock = getLock();
         if (owner != null) {
             if (oldLock != null
-                    && !LockManager.canLockBeRemoved(oldLock, owner)) {
+                    && !AbstractLockManager.canLockBeRemovedStatic(oldLock,
+                            owner)) {
                 // existing mismatched lock, flag failure
                 return new Lock(oldLock, true);
             }
