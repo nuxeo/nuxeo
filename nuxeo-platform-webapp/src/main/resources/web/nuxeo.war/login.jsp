@@ -53,12 +53,16 @@ if (selectedLanguage != null) { %>
 </script>
 <style type="text/css">
 <!--
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   font: normal 12px/18pt "Lucida Grande", Arial, sans-serif;
   background: url("<%=context%>/img/login_bg.png") repeat scroll bottom left #cadfc0;
   color: #343434;
   margin: 0;
-  text-align: center
 }
 
 .leftColumn {
@@ -111,11 +115,13 @@ body {
   background: none repeat scroll 0 0 #fff;
   border-radius: 8px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
   margin-left: 10em;
   filter: alpha(opacity = 80);
   opacity: 0.8;
   padding: 1.5em 0 1em;
-  width: 22em
+  width: 300px
 }
 
 .login_label {
@@ -391,4 +397,3 @@ body {
 
 </body>
 </html>
-
