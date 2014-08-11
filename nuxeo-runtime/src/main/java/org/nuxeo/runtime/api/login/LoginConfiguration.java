@@ -43,8 +43,7 @@ public class LoginConfiguration extends Configuration {
     public AppConfigurationEntry[] getAppConfigurationEntry(String name) {
         AppConfigurationEntry[] appConfigurationEntry = holder.get().getAppConfigurationEntry(
                 name);
-        if (appConfigurationEntry == null && context.parent != null) {
-            // delegate to parent config
+        if (appConfigurationEntry == null) {
             appConfigurationEntry = context.parent.getAppConfigurationEntry(name);
         }
         return appConfigurationEntry;
