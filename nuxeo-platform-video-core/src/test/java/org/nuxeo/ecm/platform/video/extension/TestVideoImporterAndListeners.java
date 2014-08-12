@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,6 +17,10 @@
 
 package org.nuxeo.ecm.platform.video.extension;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.video.VideoConstants.DURATION_PROPERTY;
 
 import java.io.File;
@@ -26,13 +30,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -53,7 +56,7 @@ import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoDocument;
 import org.nuxeo.runtime.api.Framework;
 
-/*
+/**
  * Tests that the VideoImporter class works by importing a sample video
  */
 public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
@@ -83,6 +86,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         return new SimpleBlobHolder(blob);
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -116,6 +120,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         fileManagerService = Framework.getService(FileManager.class);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         fileManagerService = null;
@@ -126,7 +131,6 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
 
     @Test
     public void testVideoType() throws ClientException {
-
         DocumentType videoType = session.getDocumentType(VIDEO_TYPE);
         assertNotNull("Does our type exist?", videoType);
 
@@ -159,13 +163,10 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         assertEquals("testUid", docModelResult.getPropertyValue("uid:uid"));
         assertEquals("0.0",
                 docModelResult.getPropertyValue(DURATION_PROPERTY).toString());
-
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testImportSmallVideo() throws Exception {
-
         File testFile = getTestFile();
         Blob blob = StreamingBlob.createFromFile(testFile, "video/mpg");
         blob.setFilename("Test file.mov");
@@ -234,7 +235,6 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         docModel = session.getDocument(docModel.getRef());
         // the test video last around 10 minutes
         assertEquals(653.8, docModel.getPropertyValue(DURATION_PROPERTY));
-        @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> storyboard = docModel.getProperty(
                 "vid:storyboard").getValue(List.class);
         assertNotNull(storyboard);
@@ -329,7 +329,8 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         assertEquals("mpeg1video", stream.getCodec());
         assertEquals(104857, stream.getBitRate(), 0.1);
         String streamInfo = stream.getStreamInfo();
-        // assert that the stream info contains common info, to avoid strict equals
+        // assert that the stream info contains common info, to avoid strict
+        // equals
         assertTrue(streamInfo.contains("Video: mpeg1video"));
         assertTrue(streamInfo.contains("320x200"));
         assertTrue(streamInfo.contains("23.98 fps"));
