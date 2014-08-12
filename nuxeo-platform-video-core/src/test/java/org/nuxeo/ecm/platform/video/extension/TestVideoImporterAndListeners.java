@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.internal.AssumptionViolatedException;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -197,8 +198,9 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
                 CommandLineExecutorService.class).getCommandAvailability(
                 "ffmpeg-storyboard");
         if (!ca.isAvailable()) {
-            log.warn("ffmpeg is not avalaible, skipping the end of the test");
-            return;
+            log.warn("ffmpeg-storyboard is not avalaible, skipping the end of the test");
+            throw new AssumptionViolatedException(
+                    "ffmpeg-storyboard is not avalaible");
         }
 
         Framework.getService(EventService.class).waitForAsyncCompletion();
@@ -218,8 +220,9 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
                 CommandLineExecutorService.class).getCommandAvailability(
                 "ffmpeg-storyboard");
         if (!ca.isAvailable()) {
-            log.warn("ffmpeg is not avalaible, skipping the end of the test");
-            return;
+            log.warn("ffmpeg-storyboard is not avalaible, skipping the end of the test");
+            throw new AssumptionViolatedException(
+                    "ffmpeg-storyboard is not avalaible");
         }
         DocumentModel docModel = session.createDocumentModel("/", "doc",
                 VIDEO_TYPE);
