@@ -234,20 +234,13 @@ public class DefaultStorageConnectionMonitor implements StorageConnectionMonitor
 
     @Override
     public void install() {
-        try {
-            self = DefaultMonitorComponent.bind(this, name);
-            registry.register(MetricRegistry.name("nuxeo", "repositories",
-                    name, "connections", "count"),
-                    new JmxAttributeGauge(self.getObjectName(),
-                            "ConnectionCount"));
-            registry.register(MetricRegistry.name("nuxeo", "repositories",
-                    name, "connections", "idle"),
-                    new JmxAttributeGauge(self.getObjectName(),
-                            "IdleConnectionCount"));
-        } catch (UnsupportedOperationException e) {
-            // TODO investigate why hot-reload fails, NXP-14910
-            log.debug("Failed to bind", e);
-        }
+        self = DefaultMonitorComponent.bind(this, name);
+        registry.register(MetricRegistry.name("nuxeo", "repositories",
+                name, "connections", "count"), new JmxAttributeGauge(
+                self.getObjectName(), "ConnectionCount"));
+        registry.register(MetricRegistry.name("nuxeo", "repositories",
+                name, "connections", "idle"), new JmxAttributeGauge(
+                self.getObjectName(), "IdleConnectionCount"));
     }
 
     @Override
