@@ -243,7 +243,9 @@ public class TestAutomationJson {
         res.append("    } ],\n");
         res.append("    \"properties\" : {\n");
         res.append("      \"any\" : {\n");
-        res.append("        \"language\" : \"javascript\"\n");
+        res.append("        \"height\" : \"100%\",\n");
+        res.append("        \"language\" : \"nxql\",\n");
+        res.append("        \"width\" : \"100%\"\n");
         res.append("      }\n");
         res.append("    }\n");
         res.append("  } ]\n");
