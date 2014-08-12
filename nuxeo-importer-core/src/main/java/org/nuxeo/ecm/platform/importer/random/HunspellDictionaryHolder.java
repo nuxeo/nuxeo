@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -34,7 +35,9 @@ import java.util.Random;
 */
 public class HunspellDictionaryHolder implements DictionaryHolder {
 
-    protected List<String> words = new LinkedList<String>();
+    protected static final int INITIAL_SIZE = 100000;
+
+    protected List<String> words = new ArrayList<String>(INITIAL_SIZE);
 
     protected Random generator;
 
