@@ -220,7 +220,11 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
                 task.setProcessId(processId);
                 task.setCreated(new Date());
                 if (principal != null) {
-                    task.setInitiator(principal.getName());
+                    String username = principal.getOriginatingUser();
+                    if (username == null) {
+                        username = principal.getName();
+                    }
+                    task.setInitiator(username);
                 }
                 task.setActors(prefixedActorIds);
                 task.setDueDate(dueDate);
