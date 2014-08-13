@@ -60,15 +60,14 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * 
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(type = BackendType.H2, init = RenditionPublicationRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
         "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert",
+        "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.rendition.api",
         "org.nuxeo.ecm.platform.rendition.core",
         "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.directory",
