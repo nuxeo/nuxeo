@@ -192,7 +192,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
             connectSignIn = connectPage1.getLink(" click here");
         }
         System.out.println(driver.getCurrentUrl());
-        assertEquals("Pre-Register your new Nuxeo instance",
+        assertEquals("Register your new Nuxeo instance",
                 connectSignIn.getTitle());
         // enter test login/password
         connectSignIn.fillInput("clogin", CONNECT_LOGIN);
