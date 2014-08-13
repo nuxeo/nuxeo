@@ -46,6 +46,12 @@ import org.nuxeo.runtime.api.Framework;
  * pass the {@link CoreSession} instance that will perform the query. The
  * optional property {@link #CHECK_QUERY_CACHE_PROPERTY} can be set to "true"
  * to avoid performing the query again if it did not change.
+ * <p>
+ * Since 5.9.6, the page provider property named
+ * {@link #USE_UNRESTRICTED_SESSION_PROPERTY} allows specifying whether the
+ * query should be run as unrestricted. When such a property is set to "true",
+ * the additional property {@link #DETACH_DOCUMENTS_PROPERTY} is used to detach
+ * documents (defaults to true when session is unrestricted).
  *
  * @author Anahide Tchertchian
  * @since 5.4
