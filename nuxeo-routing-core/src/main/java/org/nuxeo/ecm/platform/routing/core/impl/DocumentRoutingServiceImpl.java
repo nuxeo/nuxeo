@@ -1107,10 +1107,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         GraphNode node = graph.getNode(nodeId);
 
         NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
-        String actor = principal.getOriginatingUser();
-        if (actor == null) {
-            actor = principal.getName();
-        }
+        String actor = principal.getActingUser();
         node.updateTaskInfo(task.getId(), true, status, actor, null);
     }
 

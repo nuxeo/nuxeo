@@ -1149,10 +1149,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
             // canceled
             // actor
             NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
-            String actor = principal.getOriginatingUser();
-            if (actor == null) {
-                actor = principal.getName();
-            }
+            String actor = principal.getActingUser();
             updateTaskInfo(taskId, true, null, actor, null);
         } catch (ClientException e) {
             throw new DocumentRouteException("Cannot cancel task", e);

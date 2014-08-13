@@ -248,10 +248,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                 }
                 // actor
                 NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
-                String actor = principal.getOriginatingUser();
-                if (actor == null) {
-                    actor = principal.getName();
-                }
+                String actor = principal.getActingUser();
                 node.setLastActor(actor);
                 // resuming, variables have been set by resumeGraph
                 jump = State.RUNNING_OUTPUT;
@@ -431,10 +428,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner {
                     : "";
             // actor
             NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
-            String actor = principal.getOriginatingUser();
-            if (actor == null) {
-                actor = principal.getName();
-            }
+            String actor = principal.getActingUser();
             node.updateTaskInfo(task.getId(), true, status, actor, comment);
 
         } catch (ClientException e) {
