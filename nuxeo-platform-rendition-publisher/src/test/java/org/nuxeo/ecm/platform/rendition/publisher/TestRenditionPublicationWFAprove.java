@@ -62,15 +62,14 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = RenditionPublicationRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
         "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert",
+        "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.rendition.api",
         "org.nuxeo.ecm.platform.rendition.core",
         "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.directory",
@@ -195,7 +194,7 @@ public class TestRenditionPublicationWFAprove {
 
     @After
     public void closeOthers() {
-        for (CoreSession session:others) {
+        for (CoreSession session : others) {
             CoreInstance.closeCoreSession(session);
         }
     }
