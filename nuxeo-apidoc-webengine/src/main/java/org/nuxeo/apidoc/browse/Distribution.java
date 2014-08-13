@@ -382,6 +382,7 @@ public class Distribution extends ModuleRoot {
                 getContext().getCoreSession(), blob.getStream());
         if (snap == null) {
             log.error("Unable to import archive");
+            return null;
         }
         DistributionSnapshot snapObject = snap.getAdapter(DistributionSnapshot.class);
         return getView("uploadEdit").arg("tmpSnap", snap).arg("snapObject",
