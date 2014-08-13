@@ -17,31 +17,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.runtime.ComponentListener;
-
 /**
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
 public interface ComponentManager {
-
-    /**
-     * Adds a component listener.
-     * <p>
-     * Does nothing if the given listener is already registered.
-     *
-     * @param listener the component listener to add
-     */
-    void addComponentListener(ComponentListener listener);
-
-    /**
-     * Removes a component listener.
-     * <p>
-     * Does nothing if the given listener is not registered.
-     *
-     * @param listener the component listener to remove
-     */
-    void removeComponentListener(ComponentListener listener);
 
     /**
      * Handles the registration of the given registration info.

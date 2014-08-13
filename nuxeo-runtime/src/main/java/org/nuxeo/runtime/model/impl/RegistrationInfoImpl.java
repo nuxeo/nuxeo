@@ -26,12 +26,10 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentInstance;
-import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.ConfigurationDescriptor;
 import org.nuxeo.runtime.model.Extension;
@@ -266,18 +264,11 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return "RegistrationInfo: " + name;
     }
 
-    @Override
-    public ComponentManager getManager() {
-        return manager;
-    }
-
     synchronized void register() {
         if (state != UNREGISTERED) {
             return;
         }
         state = REGISTERED;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.COMPONENT_REGISTERED, this));
     }
 
     synchronized void unregister() throws Exception {
@@ -288,8 +279,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             unresolve();
         }
         state = UNREGISTERED;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.COMPONENT_UNREGISTERED, this));
         destroy();
     }
 
@@ -304,11 +293,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             Framework.handleDevError(e);
             throw e;
         }
-    }
-
-    public synchronized void restart() throws Exception {
-        deactivate();
-        activate();
     }
 
     @Override
@@ -348,16 +332,12 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         component = createComponentInstance();
 
         state = ACTIVATING;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.ACTIVATING_COMPONENT, this));
 
         // activate component
         component.activate();
         log.info("Component activated: " + name);
 
         state = ACTIVATED;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.COMPONENT_ACTIVATED, this));
 
         // register contributed extensions if any
         if (extensions != null) {
@@ -407,8 +387,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
 
         state = DEACTIVATING;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.DEACTIVATING_COMPONENT, this));
 
         // unregister contributed extensions if any
         if (extensions != null) {
@@ -431,8 +409,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         component = null;
 
         state = RESOLVED;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.COMPONENT_DEACTIVATED, this));
     }
 
     public synchronized void resolve() throws Exception {
@@ -444,8 +420,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         manager.registerServices(this);
 
         state = RESOLVED;
-        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_RESOLVED,
-                this));
         // TODO lazy activation
         activate();
     }
@@ -462,8 +436,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             deactivate();
         }
         state = REGISTERED;
-        manager.sendEvent(new ComponentEvent(
-                ComponentEvent.COMPONENT_UNRESOLVED, this));
     }
 
     @Override

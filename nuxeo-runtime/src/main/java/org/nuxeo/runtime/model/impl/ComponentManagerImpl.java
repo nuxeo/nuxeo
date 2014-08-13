@@ -26,8 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
-import org.nuxeo.runtime.ComponentEvent;
-import org.nuxeo.runtime.ComponentListener;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -48,8 +46,6 @@ public class ComponentManagerImpl implements ComponentManager {
     // extensions
     protected final Map<ComponentName, Set<Extension>> pendingExtensions;
 
-    private ListenerList listeners;
-
     private final Map<String, RegistrationInfoImpl> services;
 
     protected Set<String> blacklist;
@@ -59,7 +55,6 @@ public class ComponentManagerImpl implements ComponentManager {
     public ComponentManagerImpl(RuntimeService runtime) {
         reg = new ComponentRegistry();
         pendingExtensions = new HashMap<ComponentName, Set<Extension>>();
-        listeners = new ListenerList();
         services = new ConcurrentHashMap<String, RegistrationInfoImpl>();
         blacklist = new HashSet<String>();
     }
@@ -110,7 +105,6 @@ public class ComponentManagerImpl implements ComponentManager {
     public synchronized void shutdown() {
         ShutdownTask.shutdown(this);
         try {
-            listeners = null;
             reg.destroy();
             reg = null;
         } catch (Exception e) {
@@ -196,16 +190,6 @@ public class ComponentManagerImpl implements ComponentManager {
     }
 
     @Override
-    public void addComponentListener(ComponentListener listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeComponentListener(ComponentListener listener) {
-        listeners.remove(listener);
-    }
-
-    @Override
     public ComponentInstance getComponentProvidingService(
             Class<?> serviceClass) {
         RegistrationInfoImpl ri = services.get(serviceClass.getName());
@@ -254,14 +238,6 @@ public class ComponentManagerImpl implements ComponentManager {
         return activating;
     }
 
-    void sendEvent(ComponentEvent event) {
-        log.debug("Dispatching event: " + event);
-        Object[] listeners = this.listeners.getListeners();
-        for (Object listener : listeners) {
-            ((ComponentListener) listener).handleEvent(event);
-        }
-    }
-
     public synchronized void registerExtension(Extension extension)
             throws Exception {
         ComponentName name = extension.getTargetComponent();
@@ -272,9 +248,6 @@ public class ComponentManagerImpl implements ComponentManager {
             }
             loadContributions(ri, extension);
             ri.component.registerExtension(extension);
-            sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_REGISTERED,
-                    ((ComponentInstanceImpl) extension.getComponent()).ri,
-                    extension));
         } else { // put the extension in the pending queue
             if (log.isDebugEnabled()) {
                 log.debug("Enqueue contributed extension to pending queue: "
@@ -289,9 +262,6 @@ public class ComponentManagerImpl implements ComponentManager {
                 pendingExtensions.put(name, extensions);
             }
             extensions.add(extension);
-            sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_PENDING,
-                    ((ComponentInstanceImpl) extension.getComponent()).ri,
-                    extension));
         }
     }
 
@@ -318,9 +288,6 @@ public class ComponentManagerImpl implements ComponentManager {
                 }
             }
         }
-        sendEvent(new ComponentEvent(ComponentEvent.EXTENSION_UNREGISTERED,
-                ((ComponentInstanceImpl) extension.getComponent()).ri,
-                extension));
     }
 
     public static void loadContributions(RegistrationInfoImpl ri, Extension xt) {
