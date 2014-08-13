@@ -55,9 +55,11 @@
         <property name="checkQueryCache">true</property>
         <whereClause docType="File">
           <fixedPart statement="SELECT * FROM Folder">
-            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+            ecm:parentId = ? AND
+            ecm:isCheckedInVersion = 0 AND
             ecm:mixinType !=
-            'HiddenInNavigation' AND ecm:currentLifeCycleState
+            'HiddenInNavigation'
+            AND ecm:currentLifeCycleState
             != 'deleted'
           </fixedPart>
           <predicate parameter="dc:title" operator="FULLTEXT">
@@ -194,6 +196,36 @@
       <cacheKey>only_one_cache</cacheKey>
     </contentView>
 
+    <contentView name="QUERY_RESTRICTED">
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <pattern>
+          SELECT * FROM Document
+        </pattern>
+      </coreQueryPageProvider>
+    </contentView>
+
+    <contentView name="QUERY_UNRESTRICTED">
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <property name="useUnrestrictedSession">true</property>
+        <pattern>
+          SELECT * FROM Document
+        </pattern>
+      </coreQueryPageProvider>
+    </contentView>
+
+    <contentView name="QUERY_UNRESTRICTED_NO_DETACH">
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <property name="useUnrestrictedSession">true</property>
+        <property name="detachDocuments">false</property>
+        <pattern>
+          SELECT * FROM Document
+        </pattern>
+      </coreQueryPageProvider>
+    </contentView>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
@@ -213,9 +245,11 @@
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT_PP">
       <whereClause docType="File">
         <fixedPart statement="SELECT * FROM Folder">
-          ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+          ecm:parentId = ? AND
+          ecm:isCheckedInVersion = 0 AND
           ecm:mixinType !=
-          'HiddenInNavigation' AND ecm:currentLifeCycleState !=
+          'HiddenInNavigation' AND
+          ecm:currentLifeCycleState !=
           'deleted'
         </fixedPart>
         <predicate parameter="dc:title" operator="FULLTEXT">
