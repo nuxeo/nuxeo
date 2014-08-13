@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,11 +12,20 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     George Lefter
+ *     Stéfane Fermigier
+ *     Julien Carsique
+ *     Anahide Tchertchian
+ *     Alexandre Russel
+ *     Thierry Delprat
+ *     Stéphane Lacoin
+ *     Sun Seng David Tan
+ *     Thomas Roger
+ *     Thierry Martins
+ *     Benoit Delbosc
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.usermanager;
 
 import java.security.Principal;
@@ -42,12 +51,9 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.runtime.api.Framework;
 
-/**
- * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- */
 public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
-    private static final long serialVersionUID = 1791676740406045594L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(NuxeoPrincipalImpl.class);
 
@@ -82,8 +88,8 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     /**
-     * Constructor that sets principal to not administrator, and updates all
-     * the principal groups.
+     * Constructor that sets principal to not administrator, and updates all the
+     * principal groups.
      */
     public NuxeoPrincipalImpl(String name, boolean isAnonymous)
             throws ClientException {
@@ -122,6 +128,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         return config;
     }
 
+    @Override
     public String getCompany() {
         try {
             return (String) dataModel.getData(config.companyKey);
@@ -130,6 +137,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
+    @Override
     public void setCompany(String company) {
         try {
             dataModel.setData(config.companyKey, company);
@@ -138,6 +146,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
+    @Override
     public String getFirstName() {
         try {
             return (String) dataModel.getData(config.firstNameKey);
@@ -146,6 +155,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
+    @Override
     public void setFirstName(String firstName) {
         try {
             dataModel.setData(config.firstNameKey, firstName);
@@ -154,6 +164,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
+    @Override
     public String getLastName() {
         try {
             return (String) dataModel.getData(config.lastNameKey);
@@ -162,6 +173,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
+    @Override
     public void setLastName(String lastName) {
         try {
             dataModel.setData(config.lastNameKey, lastName);
@@ -171,6 +183,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     // impossible to modify the name - it is PK
+    @Override
     public void setName(String name) {
         try {
             dataModel.setData(config.nameKey, name);
@@ -179,11 +192,13 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
+    @Override
     public void setRoles(List<String> roles) {
         this.roles.clear();
         this.roles.addAll(roles);
     }
 
+    @Override
     public void setGroups(List<String> groups) {
         if (virtualGroups != null && !virtualGroups.isEmpty()) {
             List<String> groupsToWrite = new ArrayList<String>();
@@ -206,6 +221,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
+    @Override
     public String getName() {
         try {
             return (String) dataModel.getData(config.nameKey);
@@ -215,6 +231,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public List<String> getGroups() {
         List<String> groups = new LinkedList<String>();
         List<String> storedGroups;
@@ -231,10 +248,12 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     @Deprecated
+    @Override
     public List<String> getRoles() {
         return new ArrayList<String>(roles);
     }
 
+    @Override
     public void setPassword(String password) {
         try {
             dataModel.setData(config.passwordKey, password);
@@ -243,6 +262,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
+    @Override
     public String getPassword() {
         // password should never be read at the UI level for safety reasons
         // + backend directories usually only store hashes that are useless
@@ -259,14 +279,17 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
+    @Override
     public String getPrincipalId() {
         return principalId;
     }
 
+    @Override
     public void setPrincipalId(String principalId) {
         this.principalId = principalId;
     }
 
+    @Override
     public String getEmail() {
         try {
             return (String) dataModel.getData(config.emailKey);
@@ -275,6 +298,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
+    @Override
     public void setEmail(String email) {
         try {
             dataModel.setData(config.emailKey, email);
@@ -283,6 +307,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
+    @Override
     public DocumentModel getModel() {
         return model;
     }
@@ -299,14 +324,17 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         }
     }
 
+    @Override
     public void setModel(DocumentModel model) throws ClientException {
         setModel(model, true);
     }
 
+    @Override
     public boolean isMemberOf(String group) {
         return allGroups.contains(group);
     }
 
+    @Override
     public List<String> getAllGroups() {
         return new ArrayList<String>(allGroups);
     }
@@ -403,6 +431,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         setVirtualGroups(virtualGroups, true);
     }
 
+    @Override
     public boolean isAdministrator() {
         return isAdministrator
                 || SecurityConstants.SYSTEM_USERNAME.equals(getName());
@@ -413,6 +442,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         return null;
     }
 
+    @Override
     public boolean isAnonymous() {
         return isAnonymous;
     }
@@ -438,12 +468,19 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         return name == null ? 0 : name.hashCode();
     }
 
+    @Override
     public String getOriginatingUser() {
         return origUserName;
     }
 
+    @Override
     public void setOriginatingUser(String originatingUser) {
         origUserName = originatingUser;
+    }
+
+    @Override
+    public String getActingUser() {
+        return getOriginatingUser() == null ? getName() : getOriginatingUser();
     }
 
 }

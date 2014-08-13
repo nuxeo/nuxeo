@@ -213,4 +213,10 @@ public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
     public void setOriginatingUser(String originatingUser) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public String getActingUser() {
+        return getName();
+    }
+
 }
