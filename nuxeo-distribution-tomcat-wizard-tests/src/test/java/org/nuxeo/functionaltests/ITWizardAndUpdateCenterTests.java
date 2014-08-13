@@ -208,7 +208,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         ConnectWizardPage connectFinish = connectProjectPage.nav(
                 ConnectWizardPage.class, "Continue");
         assertNotNull(connectFinish);
-        assertEquals("Your pre-registration has been done!",
+        assertEquals("Your registration has been done!",
                 connectFinish.getTitle());
 
         // **********************
