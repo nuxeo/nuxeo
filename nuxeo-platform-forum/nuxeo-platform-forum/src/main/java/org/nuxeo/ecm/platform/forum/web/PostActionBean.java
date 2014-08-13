@@ -167,7 +167,8 @@ public class PostActionBean implements PostAction {
             // start moderation workflow + warn user that post
             // won't be displayed until moderation kicks in
             startModeration(dm);
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.comment.waiting_approval"));
         } else {
@@ -180,7 +181,8 @@ public class PostActionBean implements PostAction {
                 documentManager.save();
             } else {
                 // Here user only granted with read rights should be able to
-                // create a post => open a system session to put it in published
+                // create a post => open a system session to put it in
+                // published
                 // state
                 LoginContext loginContext = null;
                 CoreSession systemSession = null;
@@ -211,7 +213,8 @@ public class PostActionBean implements PostAction {
             }
             fetchInvalidationsIfNeeded();
             // NXP-1262 display the message only when about to publish
-            facesMessages.add(StatusMessage.Severity.INFO,
+            facesMessages.add(
+                    StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get(
                             "label.comment.added.sucess"));
         }
@@ -264,7 +267,8 @@ public class PostActionBean implements PostAction {
             throw new ClientException("No moderation task found");
         }
 
-        taskService.rejectTask(documentManager, (NuxeoPrincipal) currentUser, moderationTask, null);
+        taskService.rejectTask(documentManager, (NuxeoPrincipal) currentUser,
+                moderationTask, null);
 
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
 
@@ -334,19 +338,20 @@ public class PostActionBean implements PostAction {
         vars.put(
                 CreateTask.OperationTaskVariableName.createdFromCreateTaskOperation.name(),
                 "false");
-        vars.put(
-                Task.TaskVariableName.needi18n.name(), "true");
-        vars.put(
-                Task.TaskVariableName.taskType.name(), ForumConstants.FORUM_TASK_TYPE);
+        vars.put(Task.TaskVariableName.needi18n.name(), "true");
+        vars.put(Task.TaskVariableName.taskType.name(),
+                ForumConstants.FORUM_TASK_TYPE);
 
-        vars.put(CreateTask.OperationTaskVariableName.acceptOperationChain.name(),
+        vars.put(
+                CreateTask.OperationTaskVariableName.acceptOperationChain.name(),
                 CommentsConstants.ACCEPT_CHAIN_NAME);
-        vars.put(CreateTask.OperationTaskVariableName.rejectOperationChain.name(),
+        vars.put(
+                CreateTask.OperationTaskVariableName.rejectOperationChain.name(),
                 CommentsConstants.REJECT_CHAIN_NAME);
 
         taskService.createTask(documentManager, (NuxeoPrincipal) currentUser,
-                thread, ForumConstants.MODERATION_TASK_NAME, moderators,
-                false, ForumConstants.MODERATION_TASK_NAME, null, null, vars, null);
+                thread, ForumConstants.MODERATION_TASK_NAME, moderators, false,
+                ForumConstants.MODERATION_TASK_NAME, null, null, vars, null);
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_NEW_STARTED);
 
     }
@@ -355,8 +360,10 @@ public class PostActionBean implements PostAction {
             throws ClientException {
         String query = TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_QUERY;
         query = String.format(query, thread.getId());
-        String commentWhereClause = TaskQueryConstant.getVariableWhereClause(ForumConstants.COMMENT_ID, postId);
-        List<DocumentModel> tasks = documentManager.query(String.format("%s AND %s", query, commentWhereClause));
+        String commentWhereClause = TaskQueryConstant.getVariableWhereClause(
+                ForumConstants.COMMENT_ID, postId);
+        List<DocumentModel> tasks = documentManager.query(String.format(
+                "%s AND %s", query, commentWhereClause));
 
         if (tasks != null && !tasks.isEmpty()) {
             if (tasks.size() > 1) {
