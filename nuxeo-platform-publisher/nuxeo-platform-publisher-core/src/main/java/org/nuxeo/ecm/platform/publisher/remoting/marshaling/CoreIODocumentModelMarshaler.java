@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,6 +16,10 @@
  */
 
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -31,10 +35,6 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.io.SingleDocumentRea
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.io.SingleShadowDocumentWriter;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.io.SingleXMlDocumentReader;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-
 /**
  * DocumentModel marshaler using Core IO services.
  *
@@ -44,6 +44,7 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
 
     protected String originatingServer;
 
+    @Override
     public String marshalDocument(DocumentModel doc)
             throws PublishingMarshalingException {
 
@@ -59,17 +60,15 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
             } catch (ClientException e) {
                 throw new PublishingMarshalingException(e);
             }
-
         }
 
         CoreSession coreSession = doc.getCoreSession();
-        DocumentReader reader = new SingleDocumentReaderWithInLineBlobs(coreSession, doc);
+        DocumentReader reader = new SingleDocumentReaderWithInLineBlobs(
+                coreSession, doc);
 
         File tmpFile = null;
         try {
-
             tmpFile = File.createTempFile("io-marshaling-", "xml");
-            tmpFile.deleteOnExit();
             DocumentWriter writer = new XMLDocumentWriter(tmpFile);
             DocumentPipe pipe = new DocumentPipeImpl();
             pipe.setReader(reader);
@@ -86,7 +85,6 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
             reader.close();
             br.close();
             return sb.toString();
-
         } catch (Exception e) {
             throw new PublishingMarshalingException(
                     "Unable to marshal DocumentModel", e);
@@ -97,24 +95,25 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
         }
     }
 
+    @Override
     public DocumentModel unMarshalDocument(String data, CoreSession coreSession)
             throws PublishingMarshalingException {
-
         try {
             DocumentReader reader = new SingleXMlDocumentReader(data);
-            DocumentWriter writer = new SingleShadowDocumentWriter(coreSession, null);
+            DocumentWriter writer = new SingleShadowDocumentWriter(coreSession,
+                    null);
             DocumentPipe pipe = new DocumentPipeImpl();
             pipe.setReader(reader);
             pipe.setWriter(writer);
             pipe.run();
             return ((SingleShadowDocumentWriter) writer).getShadowDocument();
-
         } catch (Exception e) {
             throw new PublishingMarshalingException(
                     "Unable to unmarshal DocumentModel", e);
         }
     }
 
+    @Override
     public void setOriginatingServer(String serverName) {
         this.originatingServer = serverName;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,6 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -302,18 +303,19 @@ public class BlobOperationsTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testGetAllDocumentBlobsOperation() throws Exception {
         // Create a file
         Blob mainFile = new StringBlob("the blob content");
         // Create files list
-        Map<String, Serializable> file = new HashMap<String, Serializable>();
-        ArrayList<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+        Map<String, Serializable> file = new HashMap<>();
+        ArrayList<Map<String, Serializable>> files = new ArrayList<>();
         // Attach one file to the list
         File tmpFile = File.createTempFile("test", ".txt");
-        tmpFile.deleteOnExit();
         FileUtils.writeFile(tmpFile, "Content");
         FileBlob blob = new FileBlob(tmpFile);
+        Framework.trackFile(tmpFile, blob);
         file.put("file", blob);
         file.put("filename", "initial_name.txt");
         files.add(file);
@@ -373,12 +375,13 @@ public class BlobOperationsTest {
         params.put("filename", "pdfresult");
         ctx = new OperationContext(session);
         ctx.setInput(blobs);
-        try{
+        try {
             service.run(ctx, ConcatenatePDFs.ID, params);
             // Should fails before
             Assert.fail();
-        }catch(OperationException e){
-            assertEquals("Blob pdfMerge1.pdf is not a PDF.", e.getCause().getMessage());
+        } catch (OperationException e) {
+            assertEquals("Blob pdfMerge1.pdf is not a PDF.",
+                    e.getCause().getMessage());
         }
 
         // Test check on context blob failure
@@ -393,12 +396,14 @@ public class BlobOperationsTest {
         ctx.setInput(blobs);
         // Inject a file into context for failing
         ctx.put("blobToAppend", pdfMerge1);
-        try{
+        try {
             service.run(ctx, ConcatenatePDFs.ID, params);
             // Should fails before
             Assert.fail();
-        }catch(OperationException e){
-            assertNotNull("The blob to append from variable context: 'blobToAppend' is not a blob.", e.getCause().getMessage());
+        } catch (OperationException e) {
+            assertNotNull(
+                    "The blob to append from variable context: 'blobToAppend' is not a blob.",
+                    e.getCause().getMessage());
         }
     }
     // TODO add post and file2pdf tests

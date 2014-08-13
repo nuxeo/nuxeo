@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -36,6 +36,7 @@ import org.codehaus.jackson.JsonNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.RemoteException;
@@ -68,6 +69,7 @@ import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
+import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.Inject;
 
@@ -100,7 +102,7 @@ public abstract class AbstractAutomationClientTest {
 
     protected File newFile(String content) throws IOException {
         File file = File.createTempFile("automation-test-", ".xml");
-        file.deleteOnExit();
+        Framework.trackFile(file, this);
         FileUtils.writeFile(file, content);
         return file;
     }
@@ -483,13 +485,13 @@ public abstract class AbstractAutomationClientTest {
                 "filename", "test.zip").setInput(blobs).execute();
         assertNotNull(zip);
 
-        ZipFile zf = new ZipFile(zip.getFile());
-        ZipEntry entry1 = zf.getEntry(filename1);
-        assertNotNull(entry1);
-
-        ZipEntry entry2 = zf.getEntry(filename2);
-        assertNotNull(entry2);
-        zip.getFile().delete();
+        try (ZipFile zf = new ZipFile(zip.getFile())) {
+            ZipEntry entry1 = zf.getEntry(filename1);
+            assertNotNull(entry1);
+            ZipEntry entry2 = zf.getEntry(filename2);
+            assertNotNull(entry2);
+            zip.getFile().delete();
+        }
     }
 
     @Test
@@ -531,15 +533,15 @@ public abstract class AbstractAutomationClientTest {
                 "SELECT * from Document WHERE ecm:path STARTSWITH '/automation-test-folder/'").set(
                 "pageSize", 2).execute();
         final int pageSize = cursor.getPageSize();
-        final int pageCount = cursor.getPageCount();
-        final int totalSize = cursor.getTotalSize();
+        final int pageCount = cursor.getNumberOfPages();
+        final int totalSize = cursor.getResultsCount();
         assertThat(cursor.size(), is(2));
         int size = docs.size();
         assertThat(totalSize, is(size));
         assertThat(pageSize, is(2));
         assertThat(pageCount, is(size / 2 + size % 2));
-        assertThat(cursor.getTotalSize(), greaterThanOrEqualTo((pageCount - 1)
-                * pageSize));
+        assertThat(cursor.getResultsCount(),
+                greaterThanOrEqualTo((pageCount - 1) * pageSize));
     }
 
     @Test

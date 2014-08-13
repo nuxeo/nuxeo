@@ -31,9 +31,11 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author jcarsique
@@ -50,6 +52,7 @@ public class TestSetupWizardActionBean {
     @Before
     public void setUp() throws Exception {
         nuxeoHome = File.createTempFile("nuxeo", null);
+        Framework.trackFile(nuxeoHome, nuxeoHome);
         nuxeoHome.delete();
         nuxeoHome.mkdirs();
         System.setProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
