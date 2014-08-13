@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,6 +30,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.NuxeoValidationState;
@@ -45,6 +46,7 @@ import org.nuxeo.connect.update.xml.FormsDefinition;
 import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 import org.nuxeo.connect.update.xml.TaskDefinitionImpl;
 import org.nuxeo.connect.update.xml.XmlSerializer;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Build an XML representation of a package.
@@ -73,14 +75,14 @@ public class PackageBuilder {
 
     public PackageBuilder() {
         def = new PackageDefinitionImpl();
-        platforms = new ArrayList<String>();
-        dependencies = new ArrayList<PackageDependency>();
-        conflicts = new ArrayList<PackageDependency>();
-        provides = new ArrayList<PackageDependency>();
-        entries = new LinkedHashMap<String, InputStream>();
-        installForms = new ArrayList<FormDefinition>();
-        validationForms = new ArrayList<FormDefinition>();
-        uninstallForms = new ArrayList<FormDefinition>();
+        platforms = new ArrayList<>();
+        dependencies = new ArrayList<>();
+        conflicts = new ArrayList<>();
+        provides = new ArrayList<>();
+        entries = new LinkedHashMap<>();
+        installForms = new ArrayList<>();
+        validationForms = new ArrayList<>();
+        uninstallForms = new ArrayList<>();
     }
 
     public PackageBuilder name(String name) {
@@ -331,6 +333,7 @@ public class PackageBuilder {
         try {
             String mf = buildManifest();
             File file = File.createTempFile(def.getId(), ".zip");
+            Framework.trackFile(file, file);
             ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(
                     file));
             try {

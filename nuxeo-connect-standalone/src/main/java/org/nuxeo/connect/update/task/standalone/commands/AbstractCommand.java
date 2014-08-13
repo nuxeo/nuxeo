@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,19 +19,20 @@ package org.nuxeo.connect.update.task.standalone.commands;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.w3c.dom.Element;
+
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.task.Command;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.task.guards.Guard;
-import org.w3c.dom.Element;
 
 /**
  * All commands have 2 attributes: fail and ignore which are EL expressions.
  * <p>
  * If ignore is defined and evaluated to true then the command will be ignored
- * (null is returned as the inverse command) If fail is defined and evaluated
- * to true then the validation fails.
+ * (null is returned as the inverse command) If fail is defined and evaluated to
+ * true then the validation fails.
  * <p>
  * Commands extending this class must implement the {@link #doRun} and
  * {@link #doValidate} methods instead of the one in the interface. These
@@ -57,7 +58,7 @@ public abstract class AbstractCommand implements Command {
 
     protected AbstractCommand(String id) {
         this.id = id;
-        guardVars = new HashMap<String, Object>();
+        guardVars = new HashMap<>();
     }
 
     public AbstractCommand(AbstractCommand command) {
@@ -93,6 +94,7 @@ public abstract class AbstractCommand implements Command {
     protected abstract void doValidate(Task task, ValidationStatus status)
             throws PackageException;
 
+    @Override
     public void validate(Task task, ValidationStatus status)
             throws PackageException {
         if (fail != null) {
@@ -108,6 +110,7 @@ public abstract class AbstractCommand implements Command {
         doValidate(task, status);
     }
 
+    @Override
     public Command run(Task task, Map<String, String> prefs)
             throws PackageException {
         if (ignore()) {
@@ -116,6 +119,7 @@ public abstract class AbstractCommand implements Command {
         return doRun(task, prefs);
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -139,6 +143,7 @@ public abstract class AbstractCommand implements Command {
         return false;
     }
 
+    @Override
     public void initialize(Element element) throws PackageException {
         String v = element.getAttribute("fail");
         if (v.length() > 0) {

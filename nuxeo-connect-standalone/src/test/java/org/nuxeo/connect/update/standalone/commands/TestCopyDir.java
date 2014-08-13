@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 
 import org.junit.Before;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.LocalPackage;
@@ -34,6 +35,7 @@ import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.IOUtils;
 import org.nuxeo.connect.update.util.PackageBuilder;
 import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.runtime.api.Framework;
 
 public class TestCopyDir extends AbstractCommandTest {
 
@@ -70,7 +72,7 @@ public class TestCopyDir extends AbstractCommandTest {
     @Override
     protected void updatePackage(PackageBuilder builder) throws Exception {
         File jarFile = File.createTempFile("test-commands-", ".jar");
-        jarFile.deleteOnExit();
+        Framework.trackFile(jarFile, builder);
         FileUtils.writeFile(jarFile, "anything");
         builder.addEntry("bundles/" + newFilename, new FileInputStream(jarFile));
         FileUtils.writeFile(jarFile, "new SNAPSHOT content");
@@ -79,7 +81,7 @@ public class TestCopyDir extends AbstractCommandTest {
         builder.addEntry("bundles/" + notToDeployFilename, new FileInputStream(
                 jarFile));
         File xmlFile = File.createTempFile("test-config", ".xml");
-        xmlFile.deleteOnExit();
+        Framework.trackFile(xmlFile, builder);
         FileUtils.writeFile(xmlFile, "anything");
         builder.addEntry(
                 "templates/collaboration/config/" + testConfigFilename,

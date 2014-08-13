@@ -1,17 +1,35 @@
+/*
+ * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Mathieu Guillaume
+ *
+ */
 package org.nuxeo.connect.update.util;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.PackageType;
-import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 import org.nuxeo.connect.update.standalone.StandaloneUpdateService;
-
+import org.nuxeo.connect.update.xml.PackageDefinitionImpl;
 
 public class PackageBuilderTest {
 
@@ -36,7 +54,7 @@ public class PackageBuilderTest {
         XMap xmap = StandaloneUpdateService.createXmap();
         try {
             PackageDefinitionImpl pdef = (PackageDefinitionImpl) xmap.load(new ByteArrayInputStream(
-                xml.getBytes()));
+                    xml.getBytes()));
             // System.out.println(pdef);
         } catch (Exception e) {
             fail("Could not create package definition");
@@ -45,9 +63,8 @@ public class PackageBuilderTest {
         try {
             File file = builder.build();
             assertTrue(file.exists());
-            file.delete();
         } catch (IOException e) {
-            fail("Coud not create package file");
+            fail("Could not create package file");
         }
     }
 

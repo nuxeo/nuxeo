@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,6 +27,7 @@ import java.util.Map;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageState;
@@ -157,7 +158,7 @@ public abstract class AbstractCommandTest extends PackageTestCase {
     }
 
     protected Map<String, String> getUserProperties() {
-        return new HashMap<String, String>();
+        return new HashMap<>();
     }
 
     public boolean install(LocalPackage pkg) throws Exception {
@@ -202,8 +203,8 @@ public abstract class AbstractCommandTest extends PackageTestCase {
     public void testInstallThenUninstall() throws Exception {
         Assume.assumeTrue(!isWindows());
         File zip = createPackage();
-        zip.deleteOnExit();
         LocalPackage pkg = service.addPackage(zip);
+        zip.delete();
         if (install(pkg)) {
             // check package installed
             assertEquals(PackageState.STARTED.getValue(), pkg.getState());

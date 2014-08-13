@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,12 +23,14 @@ import java.io.File;
 import java.util.List;
 
 import org.junit.Test;
+
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.connect.update.task.standalone.CommandsTask;
 import org.nuxeo.connect.update.task.standalone.InstallTask;
 import org.nuxeo.connect.update.task.standalone.UninstallTask;
 import org.nuxeo.connect.update.util.PackageBuilder;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -51,14 +53,13 @@ public class TestXmlCommands extends PackageTestCase {
         builder.uninstaller(UninstallTask.class.getName(), true);
         builder.addLicense("My test license. All rights reserved.");
         File file = File.createTempFile("nxinstall-file-", ".tmp");
-        file.deleteOnExit();
+        Framework.trackFile(file, this);
         File tofile = File.createTempFile("nxinstall-tofile-", ".tmp");
-        tofile.deleteOnExit();
+        Framework.trackFile(tofile, this);
         builder.addInstallScript("<install>\n  <copy file=\""
                 + file.getAbsolutePath() + "\" tofile=\""
                 + tofile.getAbsolutePath()
                 + "\" overwrite=\"true\"/>\n</install>\n");
-        // System.out.println(builder.buildManifest());
         return builder.build();
     }
 
@@ -82,9 +83,8 @@ public class TestXmlCommands extends PackageTestCase {
         task.run(null);
         assertEquals(1, task.getCommands().size());
         assertEquals(1, task.getCommandLog().size());
-        // check that uninstall file was generated.
-        assertTrue(pkg.getUninstallFile().isFile());
-        // System.out.println(FileUtils.readFile(pkg.getUninstallFile()));
+        assertTrue("uninstall file was not generated",
+                pkg.getUninstallFile().isFile());
     }
 
 }

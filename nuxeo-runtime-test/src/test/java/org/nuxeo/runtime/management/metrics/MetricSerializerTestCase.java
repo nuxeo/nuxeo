@@ -47,7 +47,6 @@ public class MetricSerializerTestCase {
     @Test
     public void testService() throws IOException {
         srv.resetOutput();
-        srv.getOutputFile().deleteOnExit();
         srv.toStream(newSample());
         srv.flushOuput();
         assertTrue(srv.getOutputFile().length() > 0);
