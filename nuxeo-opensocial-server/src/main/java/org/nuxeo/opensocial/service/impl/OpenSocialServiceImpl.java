@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import com.google.inject.Injector;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -33,15 +33,19 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.shindig.common.crypto.BasicBlobCrypter;
 import org.apache.shindig.common.crypto.Crypto;
 import org.apache.shindig.gadgets.GadgetSpecFactory;
+
 import org.nuxeo.opensocial.service.api.OpenSocialService;
 import org.nuxeo.opensocial.servlet.GuiceContextListener;
 import org.nuxeo.opensocial.shindig.crypto.OAuthServiceDescriptor;
 import org.nuxeo.opensocial.shindig.crypto.OpenSocialDescriptor;
 import org.nuxeo.opensocial.shindig.crypto.PortalConfig;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+
+import com.google.inject.Injector;
 
 public class OpenSocialServiceImpl extends DefaultComponent implements
         OpenSocialService {
@@ -62,7 +66,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
 
     protected OpenSocialDescriptor os;
 
-    private final Map<String, String> keys = new HashMap<String, String>();
+    private final Map<String, String> keys = new HashMap<>();
 
     protected String signingStateKeyBytes;
 
@@ -70,6 +74,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         return injector;
     }
 
+    @Override
     public GadgetSpecFactory getGadgetSpecFactory() {
         return injector.getInstance(GadgetSpecFactory.class);
     }
@@ -123,6 +128,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
             return null;
     }
 
+    @Override
     public void setInjector(Injector injector) {
         OpenSocialServiceImpl.injector = injector;
     }
@@ -131,6 +137,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         return keys.get(defaultContainer);
     }
 
+    @Override
     public void setupOpenSocial() throws Exception {
         if (os == null) {
             log.warn("OpenSocial does not have any configuration contribution ... setup canceled");
@@ -170,7 +177,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
     // assumptions that the container is reasonably secure
     protected File createTempFileForAKey(String keyValue) throws IOException {
         File f = File.createTempFile("nxkey", ".txt");
-        f.deleteOnExit();
+        Framework.trackFile(f, f);
         FileWriter writer = new FileWriter(f);
         writer.append(keyValue);
         writer.flush();
@@ -178,22 +185,27 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         return f;
     }
 
+    @Override
     public File getSigningStateKeyFile() {
         return signingStateKeyFile;
     }
 
+    @Override
     public PortalConfig[] getPortalConfig() {
         return os.getPortalConfig();
     }
 
+    @Override
     public OAuthServiceDescriptor[] getOAuthServices() {
         return os.getOAuthServices();
     }
 
+    @Override
     public String getOAuthCallbackUrl() {
         return os.getCallbackUrl();
     }
 
+    @Override
     public String[] getTrustedHosts() {
         return os.getTrustedHosts();
     }
@@ -203,6 +215,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         return os.isTrustedHost(host);
     }
 
+    @Override
     public byte[] getSigningStateKeyBytes() {
         try {
             if (signingStateKeyBytes == null) {
@@ -221,6 +234,7 @@ public class OpenSocialServiceImpl extends DefaultComponent implements
         }
     }
 
+    @Override
     public boolean propagateJSESSIONIDToTrustedHosts() {
         return os.propagateJSESSIONIDToTrustedHosts();
     }
