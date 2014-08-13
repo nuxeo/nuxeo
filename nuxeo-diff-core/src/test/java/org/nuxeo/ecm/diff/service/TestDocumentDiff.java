@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,14 +18,12 @@ package org.nuxeo.ecm.diff.service;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -614,39 +612,6 @@ public class TestDocumentDiff extends DiffTestCase {
         checkListFieldDiff(schemaDiff.getFieldDiff("listOfLists"),
                 expectedListFieldDiff);
 
-    }
-
-    /**
-     * Creates an XML export temp file.
-     *
-     * @param doc the doc
-     * @throws ClientException the client exception
-     */
-    protected final void createXMLExportTempFile(DocumentModel doc)
-            throws ClientException {
-
-        byte[] xmlExportByteArray = docXMLExporter.exportXMLAsByteArray(doc,
-                session);
-
-        File tempDir = new File("target/classes");
-        File tempFile;
-        OutputStream fos = null;
-        try {
-            tempFile = File.createTempFile("export_" + doc.getName() + "_",
-                    ".xml", tempDir);
-            fos = new FileOutputStream(tempFile);
-            fos.write(xmlExportByteArray);
-        } catch (IOException ioe) {
-            throw ClientException.wrap(ioe);
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException ioe) {
-                    throw ClientException.wrap(ioe);
-                }
-            }
-        }
     }
 
     protected final String getDigest(Blob blob) throws ClientException {
