@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-20012 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-20014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,12 +31,14 @@ import java.util.zip.ZipInputStream;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.tree.DefaultElement;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
@@ -46,9 +48,9 @@ import org.nuxeo.template.processors.BidirectionalTemplateProcessor;
 /**
  * WordXML implementation of the {@link BidirectionalTemplateProcessor}. Uses
  * Raw XML parsing : legacy code for now.
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
- * 
+ *
  */
 public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
         implements BidirectionalTemplateProcessor {
@@ -58,6 +60,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
 
     public static final String TEMPLATE_TYPE = "wordXMLTemplate";
 
+    @Override
     @SuppressWarnings("rawtypes")
     public Blob renderTemplate(TemplateBasedDocument templateDocument,
             String templateName) throws Exception {
@@ -129,18 +132,19 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
         // clean up
         FileUtils.deleteTree(workingDir);
         sourceZipFile.delete();
-        newZipFile.deleteOnExit();
 
         Blob newBlob = new FileBlob(newZipFile);
+        Framework.trackFile(newZipFile, newBlob);
         newBlob.setFilename(fileName);
 
         return newBlob;
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public List<TemplateInput> getInitialParametersDefinition(Blob blob)
             throws Exception {
-        List<TemplateInput> params = new ArrayList<TemplateInput>();
+        List<TemplateInput> params = new ArrayList<>();
 
         String xmlContent = readPropertyFile(blob.getStream());
 
@@ -203,6 +207,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor
         return xmlContent;
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public DocumentModel updateDocumentFromBlob(
             TemplateBasedDocument templateDocument, String templateName)
