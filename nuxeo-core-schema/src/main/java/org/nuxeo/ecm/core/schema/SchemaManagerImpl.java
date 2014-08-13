@@ -59,7 +59,8 @@ public class SchemaManagerImpl implements SchemaManager {
      * Whether there have been changes to the registered schemas, facets or
      * document types that require recomputation of the effective ones.
      */
-    protected boolean dirty = true;
+    // volatile to use double-check idiom
+    protected volatile boolean dirty = true;
 
     /** Basic type registry. */
     protected Map<String, Type> types = new HashMap<String, Type>();
@@ -240,12 +241,19 @@ public class SchemaManagerImpl implements SchemaManager {
      * Checks if something has to be recomputed if a dynamic register/unregister
      * happened.
      */
-    protected synchronized void checkDirty() {
+    protected void checkDirty() {
+        // variant of double-check idiom
         if (!dirty) {
             return;
         }
-        recompute();
-        dirty = false;
+        synchronized (this) {
+            if (!dirty) {
+                return;
+            }
+            // call recompute() synchronized
+            recompute();
+            dirty = false;
+        }
     }
 
     /**
