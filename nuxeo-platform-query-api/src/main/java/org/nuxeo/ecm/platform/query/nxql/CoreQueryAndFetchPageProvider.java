@@ -45,6 +45,9 @@ import org.nuxeo.ecm.platform.query.api.PageSelections;
  * pass the {@link CoreSession} instance that will perform the query. The
  * optional property {@link #CHECK_QUERY_CACHE_PROPERTY} can be set to "true"
  * to avoid performing the query again if it did not change.
+ * <p>
+ * Since 5.9.6, the page provider property named {@link #LANGUAGE_PROPERTY}
+ * allows specifying the query language (NXQL, NXTAG,...).
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -55,6 +58,11 @@ public class CoreQueryAndFetchPageProvider extends
     public static final String CORE_SESSION_PROPERTY = "coreSession";
 
     public static final String CHECK_QUERY_CACHE_PROPERTY = "checkQueryCache";
+
+    /**
+     * @since 5.9.6: alow specifying the query language (NXQL, NXTAG,...)
+     */
+    public static final String LANGUAGE_PROPERTY = "language";
 
     private static final long serialVersionUID = 1L;
 
@@ -101,7 +109,7 @@ public class CoreQueryAndFetchPageProvider extends
                             Long.valueOf(offset)));
                 }
 
-                result = coreSession.queryAndFetch(query, NXQL.NXQL);
+                result = coreSession.queryAndFetch(query, getQueryLanguage());
                 long resultsCount = result.size();
                 setResultsCount(resultsCount);
                 if (offset < resultsCount) {
@@ -206,6 +214,14 @@ public class CoreQueryAndFetchPageProvider extends
             buildQuery();
         }
 
+    }
+
+    protected String getQueryLanguage() {
+        Map<String, Serializable> props = getProperties();
+        if (props.containsKey(LANGUAGE_PROPERTY)) {
+            return (String) props.get(LANGUAGE_PROPERTY);
+        }
+        return NXQL.NXQL;
     }
 
     public String getCurrentQuery() {
