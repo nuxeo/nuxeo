@@ -559,6 +559,22 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         this.properties = properties;
     }
 
+    /**
+     * @since 5.9.6
+     */
+    protected boolean getBooleanProperty(String propName, boolean defaultValue) {
+        Map<String, Serializable> props = getProperties();
+        if (props.containsKey(propName)) {
+            Serializable prop = props.get(propName);
+            if (prop instanceof String) {
+                return Boolean.parseBoolean((String) prop);
+            } else {
+                return Boolean.TRUE.equals(prop);
+            }
+        }
+        return defaultValue;
+    }
+
     public void setResultsCount(long resultsCount) {
         this.resultsCount = resultsCount;
         setCurrentHigherNonEmptyPageIndex(-1);
@@ -794,8 +810,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                     continue;
                 } else if (newParams[i] instanceof String[]
                         && oldParams[i] instanceof String[]
-                                && Arrays.equals((String[]) oldParams[i],
-                                        (String[]) newParams[i])) {
+                        && Arrays.equals((String[]) oldParams[i],
+                                (String[]) newParams[i])) {
                     continue;
                 } else if (oldParams[i] != null
                         && !oldParams[i].equals(newParams[i])) {

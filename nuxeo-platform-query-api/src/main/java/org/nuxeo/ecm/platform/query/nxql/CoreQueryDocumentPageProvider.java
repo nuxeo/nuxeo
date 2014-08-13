@@ -69,6 +69,23 @@ public class CoreQueryDocumentPageProvider extends
 
     public static final String CHECK_QUERY_CACHE_PROPERTY = "checkQueryCache";
 
+    /**
+     * Boolean property stating that query should be unrestricted.
+     *
+     * @since 5.9.6
+     */
+    public static final String USE_UNRESTRICTED_SESSION_PROPERTY = "useUnrestrictedSession";
+
+    /**
+     * Boolean property stating that documents should be detached, only useful
+     * when property {@link #USE_UNRESTRICTED_SESSION_PROPERTY} is set to true.
+     * <p>
+     * When an unrestricted session is used, this property defaults to true.
+     *
+     * @since 5.9.6
+     */
+    public static final String DETACH_DOCUMENTS_PROPERTY = "detachDocuments";
+
     private static final Log log = LogFactory.getLog(CoreQueryDocumentPageProvider.class);
 
     private static final long serialVersionUID = 1L;
@@ -100,9 +117,9 @@ public class CoreQueryDocumentPageProvider extends
 
             try {
 
-                long minMaxPageSize = getMinMaxPageSize();
+                final long minMaxPageSize = getMinMaxPageSize();
 
-                long offset = getCurrentPageOffset();
+                final long offset = getCurrentPageOffset();
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
                             "Perform query for provider '%s': '%s' with pageSize=%s, offset=%s",
@@ -110,16 +127,38 @@ public class CoreQueryDocumentPageProvider extends
                             Long.valueOf(offset)));
                 }
 
-                DocumentModelList docs;
-                if (getMaxResults() > 0) {
-                    docs = coreSession.query(query, getFilter(),
-                            minMaxPageSize, offset, getMaxResults());
+                final DocumentModelList docs;
+                final long maxResults = getMaxResults();
+                final Filter filter = getFilter();
+                final boolean useUnrestricted = useUnrestrictedSession();
+
+                final boolean detachDocs = detachDocuments();
+                if (maxResults > 0) {
+                    if (useUnrestricted) {
+                        CoreQueryUnrestrictedSessionRunner r = new CoreQueryUnrestrictedSessionRunner(
+                                coreSession, query, filter, minMaxPageSize,
+                                offset, false, maxResults, detachDocs);
+                        r.runUnrestricted();
+                        docs = r.getDocs();
+                    } else {
+                        docs = coreSession.query(query, getFilter(),
+                                minMaxPageSize, offset, maxResults);
+                    }
                 } else {
-                    // use a totalCount=true instead of countUpTo=-1 to enable
-                    // global limitation described in NXP-9381
-                    docs = coreSession.query(query, getFilter(),
-                            minMaxPageSize, offset, true);
+                    // use a totalCount=true instead of countUpTo=-1 to
+                    // enable global limitation described in NXP-9381
+                    if (useUnrestricted) {
+                        CoreQueryUnrestrictedSessionRunner r = new CoreQueryUnrestrictedSessionRunner(
+                                coreSession, query, filter, minMaxPageSize,
+                                offset, true, maxResults, detachDocs);
+                        r.runUnrestricted();
+                        docs = r.getDocs();
+                    } else {
+                        docs = coreSession.query(query, getFilter(),
+                                minMaxPageSize, offset, true);
+                    }
                 }
+
                 long resultsCount = docs.totalSize();
                 if (resultsCount < 0) {
                     // results count is truncated
@@ -228,12 +267,18 @@ public class CoreQueryDocumentPageProvider extends
 
     protected void checkQueryCache() {
         // maybe handle refresh of select page according to query
-        Map<String, Serializable> props = getProperties();
-        if (props.containsKey(CHECK_QUERY_CACHE_PROPERTY)
-                && Boolean.TRUE.equals(Boolean.valueOf((String) props.get(CHECK_QUERY_CACHE_PROPERTY)))) {
+        if (getBooleanProperty(CHECK_QUERY_CACHE_PROPERTY, false)) {
             CoreSession coreSession = getCoreSession();
             buildQuery(coreSession);
         }
+    }
+
+    protected boolean useUnrestrictedSession() {
+        return getBooleanProperty(USE_UNRESTRICTED_SESSION_PROPERTY, false);
+    }
+
+    protected boolean detachDocuments() {
+        return getBooleanProperty(DETACH_DOCUMENTS_PROPERTY, true);
     }
 
     protected CoreSession getCoreSession() {
