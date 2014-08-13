@@ -769,12 +769,13 @@ public class NXAuditEventsService extends DefaultComponent implements
             log.warn("received event " + eventName + " with null document");
         }
         if (principal != null) {
-            String originatingUser = null;
+            String principalName;
             if (principal instanceof NuxeoPrincipal) {
-                originatingUser = ((NuxeoPrincipal) principal).getOriginatingUser();
+                principalName = ((NuxeoPrincipal) principal).getActingUser();
+            } else {
+                principalName = principal.getName();
             }
-            entry.setPrincipalName(originatingUser == null ? principal.getName()
-                    : originatingUser);
+            entry.setPrincipalName(principalName);
         } else {
             log.warn("received event " + eventName + " with null principal");
         }
@@ -815,12 +816,13 @@ public class NXAuditEventsService extends DefaultComponent implements
         entry.setEventId(eventName);
         entry.setEventDate(eventDate);
         if (principal != null) {
-            String originatingUser = null;
+            String principalName;
             if (principal instanceof NuxeoPrincipal) {
-                originatingUser = ((NuxeoPrincipal) principal).getOriginatingUser();
+                principalName = ((NuxeoPrincipal) principal).getActingUser();
+            } else {
+                principalName = principal.getName();
             }
-            entry.setPrincipalName(originatingUser == null ? principal.getName()
-                    : originatingUser);
+            entry.setPrincipalName(principalName);
         }
         entry.setComment((String) properties.get("comment"));
 

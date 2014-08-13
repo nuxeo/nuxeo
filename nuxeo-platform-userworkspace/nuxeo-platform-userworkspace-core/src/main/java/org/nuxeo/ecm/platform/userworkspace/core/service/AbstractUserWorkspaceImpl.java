@@ -51,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
  * Abstract class holding most of the logic for using
  * {@link UnrestrictedSessionRunner} while creating UserWorkspaces and
  * associated resources
- * 
+ *
  * @author tiry
  * @since 5.9.5
  */
@@ -130,7 +130,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
      * This method handles the UserWorkspace creation with a Principal or a
      * username. At least one should be passed. If a principal is passed, the
      * username is not taken into account.
-     * 
+     *
      * @since 5.7 "userWorkspaceCreated" is triggered
      */
     protected DocumentModel getCurrentUserPersonalWorkspace(
@@ -141,15 +141,11 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
                     "You should pass at least one principal or one username");
         }
 
-        String usedUsername = userName;
-        if (principal != null) {
-            if (principal instanceof NuxeoPrincipal) {
-                usedUsername = principal.getName();
-                String originatingUser = ((NuxeoPrincipal) principal).getOriginatingUser();
-                if (!StringUtils.isBlank(originatingUser)) {
-                    usedUsername = originatingUser;
-                }
-            }
+        String usedUsername;
+        if (principal instanceof NuxeoPrincipal) {
+            usedUsername = ((NuxeoPrincipal) principal).getActingUser();
+        } else {
+            usedUsername = userName;
         }
 
         PathRef uwsDocRef = new PathRef(computePathForUserWorkspace(

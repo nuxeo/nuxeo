@@ -577,10 +577,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
                 taskDoc.setACP(acp, true);
                 task.setActors(actorIds);
-                String currentUser = ((NuxeoPrincipal) session.getPrincipal()).getOriginatingUser();
-                if (currentUser == null) {
-                    currentUser = session.getPrincipal().getName();
-                }
+                String currentUser = ((NuxeoPrincipal) session.getPrincipal()).getActingUser();
                 task.addComment(currentUser, comment);
                 session.saveDocument(taskDoc);
 
@@ -644,10 +641,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 }
                 task.setDelegatedActors(allDelegatedActors);
 
-                String currentUser = ((NuxeoPrincipal) session.getPrincipal()).getOriginatingUser();
-                if (currentUser == null) {
-                    currentUser = session.getPrincipal().getName();
-                }
+                String currentUser = ((NuxeoPrincipal) session.getPrincipal()).getActingUser();
                 task.addComment(currentUser, comment);
                 session.saveDocument(taskDoc);
                 List<DocumentModel> docs = new ArrayList<DocumentModel>();

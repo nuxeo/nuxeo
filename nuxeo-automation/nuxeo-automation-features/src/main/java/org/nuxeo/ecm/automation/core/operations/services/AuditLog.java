@@ -25,7 +25,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 
@@ -95,9 +95,11 @@ public class AuditLog {
     }
 
     private String getPrincipalName(Principal principal) {
-        String uname = principal != null ? principal.getName() : null;
-        if (principal instanceof SystemPrincipal) {
-            uname = ((SystemPrincipal) principal).getOriginatingUser();
+        String uname;
+        if (principal instanceof NuxeoPrincipal) {
+            uname = ((NuxeoPrincipal) principal).getActingUser();
+        } else {
+            uname = principal.getName();
         }
         return uname;
     }

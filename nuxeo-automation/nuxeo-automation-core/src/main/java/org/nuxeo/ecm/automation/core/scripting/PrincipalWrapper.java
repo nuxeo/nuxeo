@@ -25,11 +25,11 @@ import org.nuxeo.ecm.core.api.model.Property;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@SuppressWarnings("serial")
 public class PrincipalWrapper extends HashMap<String, Serializable> {
 
-    protected NuxeoPrincipal principal;
+    private static final long serialVersionUID = 1L;
 
+    protected NuxeoPrincipal principal;
 
     public PrincipalWrapper(NuxeoPrincipal principal) {
         this.principal = principal;
@@ -53,6 +53,10 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
 
     public String getOriginatingUser() {
         return principal.getOriginatingUser();
+    }
+
+    public String getActingUser() {
+        return principal.getActingUser();
     }
 
     public List<String> getAllGroups() {
