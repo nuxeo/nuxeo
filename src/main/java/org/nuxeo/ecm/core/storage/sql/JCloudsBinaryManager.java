@@ -43,6 +43,7 @@ import org.jclouds.blobstore.domain.Blob;
 import org.jclouds.domain.Location;
 import org.jclouds.domain.LocationBuilder;
 import org.jclouds.domain.LocationScope;
+
 import org.nuxeo.common.utils.SizeUtils;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
@@ -60,7 +61,7 @@ import org.nuxeo.runtime.api.Framework;
  * Because the BLOB length can be accessed independently of the binary stream,
  * it is also cached in a simple text file if accessed before the stream.
  */
-public class JCloudsBinaryManager extends CachingBinaryManager  {
+public class JCloudsBinaryManager extends CachingBinaryManager {
 
     private static final Log log = LogFactory.getLog(JCloudsBinaryManager.class);
 
@@ -114,11 +115,13 @@ public class JCloudsBinaryManager extends CachingBinaryManager  {
 
         storeProvider = Framework.getProperty(BLOBSTORE_PROVIDER_KEY);
         if (isBlank(storeProvider)) {
-            throw new RuntimeException("Missing conf: " + BLOBSTORE_PROVIDER_KEY);
+            throw new RuntimeException("Missing conf: "
+                    + BLOBSTORE_PROVIDER_KEY);
         }
         storeName = Framework.getProperty(BLOBSTORE_MAP_NAME_KEY);
         if (isBlank(storeName)) {
-            throw new RuntimeException("Missing conf: " + BLOBSTORE_MAP_NAME_KEY);
+            throw new RuntimeException("Missing conf: "
+                    + BLOBSTORE_MAP_NAME_KEY);
         }
 
         String storeLocation = Framework.getProperty(BLOBSTORE_LOCATION_KEY);
@@ -128,7 +131,8 @@ public class JCloudsBinaryManager extends CachingBinaryManager  {
 
         String storeIdentity = Framework.getProperty(BLOBSTORE_IDENTITY_KEY);
         if (isBlank(storeIdentity)) {
-            throw new RuntimeException("Missing conf: " + BLOBSTORE_IDENTITY_KEY);
+            throw new RuntimeException("Missing conf: "
+                    + BLOBSTORE_IDENTITY_KEY);
         }
 
         String storeSecret = Framework.getProperty(BLOBSTORE_SECRET_KEY);
@@ -146,7 +150,6 @@ public class JCloudsBinaryManager extends CachingBinaryManager  {
         final String proxyLogin = Framework.getProperty(PROXY_LOGIN_KEY);
         final String proxyPassword = Framework.getProperty(PROXY_PASSWORD_KEY);
 
-
         // Set up proxy
         if (isNotBlank(proxyHost)) {
             System.setProperty("https.proxyHost", proxyHost);
@@ -157,21 +160,17 @@ public class JCloudsBinaryManager extends CachingBinaryManager  {
         if (isNotBlank(proxyLogin)) {
             System.setProperty("https.proxyUser", proxyLogin);
             System.setProperty("https.proxyPassword", proxyPassword);
-            Authenticator.setDefault(
-                    new Authenticator() {
-                        @Override
-                        public PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(
-                                    proxyLogin, proxyPassword.toCharArray());
-                        }
-                    }
-                    );
+            Authenticator.setDefault(new Authenticator() {
+                @Override
+                public PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(proxyLogin,
+                            proxyPassword.toCharArray());
+                }
+            });
         }
 
-
-        BlobStoreContext context = ContextBuilder.newBuilder(storeProvider)
-                .credentials(storeIdentity, storeSecret)
-                .buildView(BlobStoreContext.class);
+        BlobStoreContext context = ContextBuilder.newBuilder(storeProvider).credentials(
+                storeIdentity, storeSecret).buildView(BlobStoreContext.class);
 
         // Try to create container if it doesn't exist
         BlobStore store = context.getBlobStore();
@@ -181,7 +180,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager  {
         } else {
             Location location = new LocationBuilder().scope(
                     LocationScope.REGION).id(storeLocation).description(
-                            storeLocation).build();
+                    storeLocation).build();
             created = store.createContainerInLocation(location, storeName);
         }
         if (created) {
@@ -194,7 +193,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager  {
         File dir = File.createTempFile("nxbincache.", "", null);
         dir.delete();
         dir.mkdir();
-        dir.deleteOnExit();
+        Framework.trackFile(dir, dir);
         long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
         initializeCache(dir, cacheSize, new JCloudsFileStorage());
         log.info("Using binary cache directory: " + dir.getPath() + " size: "
@@ -316,10 +315,12 @@ public class JCloudsBinaryManager extends CachingBinaryManager  {
     }
 
     /**
-     * Garbage collector for the blobstore binaries that stores the marked (in use)
+     * Garbage collector for the blobstore binaries that stores the marked (in
+     * use)
      * binaries in memory.
      */
-    public static class JCloudsBinaryGarbageCollector implements BinaryGarbageCollector {
+    public static class JCloudsBinaryGarbageCollector implements
+            BinaryGarbageCollector {
 
         protected final JCloudsBinaryManager binaryManager;
 
@@ -335,7 +336,8 @@ public class JCloudsBinaryManager extends CachingBinaryManager  {
 
         @Override
         public String getId() {
-            return "jclouds/" + binaryManager.storeProvider + ":" + binaryManager.storeName;
+            return "jclouds/" + binaryManager.storeProvider + ":"
+                    + binaryManager.storeName;
         }
 
         @Override
@@ -380,7 +382,8 @@ public class JCloudsBinaryManager extends CachingBinaryManager  {
                 }
                 Blob blob = blobEntry.getValue();
                 // Too costly to do for all binaries
-                // long length = blob.getMetadata().getContentMetadata().getContentLength();
+                // long length =
+                // blob.getMetadata().getContentMetadata().getContentLength();
                 if (marked.contains(digest)) {
                     status.numBinaries++;
                     // status.sizeBinaries += length;
