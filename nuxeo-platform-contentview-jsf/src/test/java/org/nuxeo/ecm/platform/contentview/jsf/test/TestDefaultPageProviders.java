@@ -35,6 +35,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -72,7 +79,17 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test",
                 "test-contentview-contrib.xml");
 
+        // set rights to user "bob" on root
         openSession();
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("bob", SecurityConstants.EVERYTHING, true));
+        acp.addACL(acl);
+        session.setACP(session.getRootDocument().getRef(), acp, false);
+        session.save();
+        closeSession();
+
+        session = openSessionAs("bob");
 
         searchDocument = session.createDocumentModel("File");
 
@@ -95,13 +112,13 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     @After
     public void tearDown() throws Exception {
-        closeSession();
+        closeSession(session);
         facesContext.relieveCurrent();
         super.tearDown();
     }
 
     protected void createTestDocuments() throws ClientException {
-        DocumentModel root = session.getRootDocument();
+        final DocumentModel root = session.getRootDocument();
         // create docs in descending order so that docs are not ordered by
         // title by default
         for (int i = 4; i >= 0; i--) {
@@ -111,6 +128,24 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
             doc.setPathInfo(root.getPathAsString(), "doc_" + i);
             session.createDocument(doc);
         }
+        // also create another document as unrestricted, so that Administrator
+        // does not have access to it by default
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() throws ClientException {
+                DocumentModel doc = session.createDocumentModel("Folder");
+                doc.setPropertyValue("dc:title", "Document restricted");
+                doc.setPathInfo(root.getPathAsString(), "doc_restricted");
+                doc = session.createDocument(doc);
+                // set restriction
+                ACP acp = new ACPImpl();
+                ACL acl = new ACLImpl();
+                acl.add(new ACE(SecurityConstants.EVERYONE,
+                        SecurityConstants.EVERYTHING, false));
+                acp.addACL(acl);
+                session.setACP(doc.getRef(), acp, true);
+            }
+        }.runUnrestricted();
         session.save();
         // wait for fulltext indexing
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
@@ -637,8 +672,8 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
 
     }
 
-    @SuppressWarnings("unchecked")
     @Test
+    @SuppressWarnings("unchecked")
     public void testCoreQueryWithSearchDocumentWithWhereClause()
             throws Exception {
         ContentView contentView = service.getContentView("QUERY_WITH_SUBCLAUSE");
@@ -655,7 +690,7 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
             String parentIdParam, PageProvider<DocumentModel> pp)
             throws Exception {
         // init results
-        List<DocumentModel> docs = pp.getCurrentPage();
+        pp.getCurrentPage();
 
         // check query
         assertTrue(pp instanceof CoreQueryDocumentPageProvider);
@@ -667,6 +702,45 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                                 + " AND ecm:currentLifeCycleState != 'deleted' ORDER BY dc:title",
                         parentIdParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testCoreQueryUnrestricted() throws Exception {
+        ContentView contentView = service.getContentView("QUERY_RESTRICTED");
+        assertNotNull(contentView);
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProvider();
+        List<DocumentModel> docs = pp.getCurrentPage();
+        assertEquals(5, docs.size());
+
+        contentView = service.getContentView("QUERY_UNRESTRICTED");
+        assertNotNull(contentView);
+        pp = (PageProvider<DocumentModel>) contentView.getPageProvider();
+        docs = pp.getCurrentPage();
+        // there's one more
+        assertEquals(6, docs.size());
+        // check docs are detached
+        checkDetached(docs, true);
+
+        contentView = service.getContentView("QUERY_UNRESTRICTED_NO_DETACH");
+        assertNotNull(contentView);
+        pp = (PageProvider<DocumentModel>) contentView.getPageProvider();
+        docs = pp.getCurrentPage();
+        // there's still six results
+        assertEquals(6, docs.size());
+        // check docs are not detached
+        checkDetached(docs, false);
+    }
+
+    protected void checkDetached(List<DocumentModel> docs,
+            boolean shouldBeDetached) {
+        for (DocumentModel doc : docs) {
+            if ("doc_restricted".equals(doc.getName())) {
+                boolean isDetached = doc.getSessionId() == null;
+                assertTrue(shouldBeDetached == isDetached);
+                break;
+            }
+        }
     }
 
 }
