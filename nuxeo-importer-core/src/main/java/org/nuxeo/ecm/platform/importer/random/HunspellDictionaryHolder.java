@@ -18,13 +18,15 @@
  */
 package org.nuxeo.ecm.platform.importer.random;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -35,13 +37,15 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
 
     protected static final int INITIAL_SIZE = 100000;
 
-    protected List<String> words = new ArrayList<String>(INITIAL_SIZE);
+    protected List<String> words = new ArrayList<>(INITIAL_SIZE);
 
     protected Random generator;
 
     protected int wordCount;
 
     protected String dicName;
+
+    public static final Log log = LogFactory.getLog(HunspellDictionaryHolder.class);
 
     public HunspellDictionaryHolder(String dicName) throws Exception {
         generator = new Random(System.currentTimeMillis());
@@ -50,21 +54,31 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
 
     @Override
     public void init() throws Exception {
-        loadDic(dicName);
+        loadDic();
         wordCount = words.size();
     }
 
+    /**
+     * @deprecated since 5.9.6
+     */
+    @Deprecated
     protected void loadDic(String dicName) throws Exception {
+        this.dicName = dicName;
+        loadDic();
+    }
 
-        // File dic = FileUtils.getResourceFileFromContext(dicName);
+    /**
+     * @since 5.9.6
+     */
+    protected void loadDic() throws IOException {
         URL url = Thread.currentThread().getContextClassLoader().getResource(
                 dicName);
-
-        BufferedReader reader = null;
-        try {
-            // InputStream in = new FileInputStream(dic);
-            InputStream in = url.openStream();
-            reader = new BufferedReader(new InputStreamReader(in));
+        if (url == null) {
+            log.error("not found: " + dicName);
+            return;
+        }
+        try (InputStream in = url.openStream();
+             BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 int idx = line.indexOf("/");
@@ -73,13 +87,6 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
                     words.add(word + " ");
                 } else {
                     words.add(line + " ");
-                }
-            }
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
                 }
             }
         }
