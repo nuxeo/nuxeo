@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,6 +37,8 @@ import javax.faces.context.FacesContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -53,7 +55,6 @@ import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.ui.web.jsf.MockFacesContext;
 import org.nuxeo.runtime.api.Framework;
-import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @since 5.4.2
@@ -211,7 +212,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         state.setResultLayout(new ContentViewLayoutImpl("document_listing",
                 "label.document_listing.layout", true, "/icons/myicon.png",
                 true));
-        List<SortInfo> sortInfos = new ArrayList<SortInfo>();
+        List<SortInfo> sortInfos = new ArrayList<>();
         sortInfos.add(new SortInfo("dc:modified", false));
         state.setSortInfos(sortInfos);
 
@@ -393,7 +394,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         state.setResultLayout(new ContentViewLayoutImpl("document_listing",
                 "label.document_listing.layout", true, "/icons/myicon.png",
                 true));
-        List<SortInfo> sortInfos = new ArrayList<SortInfo>();
+        List<SortInfo> sortInfos = new ArrayList<>();
         sortInfos.add(new SortInfo("dc:modified", false));
         state.setSortInfos(sortInfos);
         state.setSearchDocumentModel(searchDocument);
@@ -460,7 +461,7 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         state.setResultLayout(new ContentViewLayoutImpl("document_listing",
                 "label.document_listing.layout", true, "/icons/myicon.png",
                 true));
-        List<SortInfo> sortInfos = new ArrayList<SortInfo>();
+        List<SortInfo> sortInfos = new ArrayList<>();
         sortInfos.add(new SortInfo("dc:modified", false));
         state.setSortInfos(sortInfos);
         state.setSearchDocumentModel(searchDocument);
@@ -492,11 +493,11 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         // set some blob properties on the searchDocument ( has the schema
         // files)
         // to check that there are ignored during serialization
-        Map<String, Serializable> file = new HashMap<String, Serializable>();
-        ArrayList<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
+        Map<String, Serializable> file = new HashMap<>();
+        ArrayList<Map<String, Serializable>> files = new ArrayList<>();
         // Attach one file to the list
         File tmpFile = File.createTempFile("test", ".txt");
-        tmpFile.deleteOnExit();
+        Framework.trackFile(tmpFile, this);
         FileUtils.writeFile(tmpFile, "Content");
         FileBlob blob = new FileBlob(tmpFile);
         file.put("file", blob);
