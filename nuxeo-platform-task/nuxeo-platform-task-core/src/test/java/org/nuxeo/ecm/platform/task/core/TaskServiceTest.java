@@ -16,17 +16,21 @@
  */
 package org.nuxeo.ecm.platform.task.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -71,6 +75,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         deployBundle("org.nuxeo.ecm.platform.usermanager");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.directory.sql");
+        deployBundle("org.nuxeo.ecm.platform.query.api");
 
         deployBundle(TaskUTConstants.CORE_BUNDLE_NAME);
         deployBundle(TaskUTConstants.TESTING_BUNDLE_NAME);

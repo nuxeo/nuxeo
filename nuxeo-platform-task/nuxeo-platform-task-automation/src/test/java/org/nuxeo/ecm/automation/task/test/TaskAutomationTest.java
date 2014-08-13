@@ -64,7 +64,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.automation.core",
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.task.automation",
         "org.nuxeo.ecm.platform.task.core",
         "org.nuxeo.ecm.platform.task.testing" })

@@ -38,8 +38,8 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.task.Task;
-import org.nuxeo.ecm.platform.task.TaskQueryConstant;
 import org.nuxeo.ecm.platform.task.TaskService;
+import org.nuxeo.ecm.platform.task.core.service.DocumentTaskProvider;
 import org.nuxeo.runtime.api.Framework;
 
 public class CommentsModerationServiceImpl implements CommentsModerationService {
@@ -78,20 +78,15 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
 
     public Task getModerationTask(TaskService taskService, CoreSession session,
             DocumentModel doc, String commentId) throws ClientException {
-        String query = TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY;
-        query = String.format(query, doc.getId(),
-                session.getPrincipal().getName());
-        String commentWhereClause = TaskQueryConstant.getVariableWhereClause(
-                CommentsConstants.COMMENT_ID, commentId);
-        List<DocumentModel> tasks = session.query(String.format("%s AND %s",
-                query, commentWhereClause));
-
+        List<Task> tasks = DocumentTaskProvider.getTasks(
+                "GET_COMMENT_MODERATION_TASKS", session, false, null,
+                doc.getId(), session.getPrincipal().getName(), commentId);
         if (tasks != null && !tasks.isEmpty()) {
             if (tasks.size() > 1) {
                 log.error("There are several moderation workflows running, "
                         + "taking only first found");
             }
-            Task task = tasks.get(0).getAdapter(Task.class);
+            Task task = tasks.get(0);
             return task;
         }
         return null;

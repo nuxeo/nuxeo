@@ -58,8 +58,8 @@ import org.nuxeo.ecm.platform.forum.web.api.ThreadAction;
 import org.nuxeo.ecm.platform.forum.workflow.ForumConstants;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
-import org.nuxeo.ecm.platform.task.TaskQueryConstant;
 import org.nuxeo.ecm.platform.task.TaskService;
+import org.nuxeo.ecm.platform.task.core.service.DocumentTaskProvider;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -358,19 +358,15 @@ public class PostActionBean implements PostAction {
 
     protected Task getModerationTask(DocumentModel thread, String postId)
             throws ClientException {
-        String query = TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_QUERY;
-        query = String.format(query, thread.getId());
-        String commentWhereClause = TaskQueryConstant.getVariableWhereClause(
-                ForumConstants.COMMENT_ID, postId);
-        List<DocumentModel> tasks = documentManager.query(String.format(
-                "%s AND %s", query, commentWhereClause));
-
+        List<Task> tasks = DocumentTaskProvider.getTasks(
+                "GET_FORUM_MODERATION_TASKS", documentManager, false, null,
+                thread.getId(), postId);
         if (tasks != null && !tasks.isEmpty()) {
             if (tasks.size() > 1) {
                 log.error("There are several moderation workflows running, "
                         + "taking only first found");
             }
-            Task task = tasks.get(0).getAdapter(Task.class);
+            Task task = tasks.get(0);
             return task;
         }
         return null;

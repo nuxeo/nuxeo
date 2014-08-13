@@ -31,15 +31,17 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
-import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
 import org.nuxeo.ecm.platform.task.TaskProvider;
 import org.nuxeo.ecm.platform.task.TaskQueryConstant;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.task.core.helpers.TaskActorsHelper;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author Laurent Doguin
@@ -66,14 +68,14 @@ public class DocumentTaskProvider implements TaskProvider {
     }
 
     /**
-     * Provide @param sortInfo to handle sort page-provider contributions
-     * (see {@link #getCurrentTaskInstances})
+     * Provide @param sortInfo to handle sort page-provider contributions (see
+     * {@link #getCurrentTaskInstances})
      *
      * @since 5.9.3
      */
     @Override
-    public List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos)
-            throws ClientException {
+    public List<Task> getCurrentTaskInstances(CoreSession coreSession,
+            List<SortInfo> sortInfos) throws ClientException {
 
         // Get tasks for current user
         // We need to build the task actors list: prefixed and unprefixed names
@@ -99,48 +101,40 @@ public class DocumentTaskProvider implements TaskProvider {
         if (actors == null || actors.isEmpty()) {
             return new ArrayList<Task>();
         }
-        String userNames = TaskQueryConstant.formatStringList(actors);
-        String query = String.format(
-                TaskQueryConstant.GET_TASKS_FOR_ACTORS_QUERY, userNames);
-        return queryTasksUnrestricted(query, coreSession);
+        return getTasks(TaskQueryConstant.GET_TASKS_FOR_ACTORS_PP, coreSession,
+                true, null, actors);
     }
 
     /**
-     * Provide @param sortInfo to handle sort page-provider contributions
-     * (see {@link #getCurrentTaskInstances})
+     * Provide @param sortInfo to handle sort page-provider contributions (see
+     * {@link #getCurrentTaskInstances})
      *
      * @since 5.9.3
      */
     @Override
     public List<Task> getCurrentTaskInstances(List<String> actors,
-            CoreSession coreSession, List<SortInfo> sortInfos) throws ClientException {
+            CoreSession coreSession, List<SortInfo> sortInfos)
+            throws ClientException {
         if (actors == null || actors.isEmpty()) {
             return new ArrayList<Task>();
         }
-        String userNames = TaskQueryConstant.formatStringList(actors);
-        String query = String.format(
-                TaskQueryConstant.GET_TASKS_FOR_ACTORS_QUERY, userNames);
-        query += NXQLQueryBuilder.getSortClause(sortInfos.toArray(new
-                SortInfo[sortInfos.size()]));
-        return queryTasksUnrestricted(query, coreSession);
+        return getTasks(TaskQueryConstant.GET_TASKS_FOR_ACTORS_PP, coreSession,
+                true, sortInfos, actors);
     }
 
     @Override
     public List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user,
             CoreSession coreSession) throws ClientException {
-        String query;
         if (user == null) {
-            query = String.format(
-                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_QUERY,
-                    dm.getId(), dm.getId());
+            return getTasks(
+                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_PP,
+                    coreSession, true, null, dm.getId(), dm.getId());
         } else {
             List<String> actors = TaskActorsHelper.getTaskActors(user);
-            String userNames = TaskQueryConstant.formatStringList(actors);
-            query = String.format(
-                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_QUERY,
-                    dm.getId(), dm.getId(), userNames);
+            return getTasks(
+                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_PP,
+                    coreSession, true, null, dm.getId(), dm.getId(), actors);
         }
-        return queryTasksUnrestricted(query, coreSession);
     }
 
     @Override
@@ -149,19 +143,16 @@ public class DocumentTaskProvider implements TaskProvider {
         if (actors == null || actors.isEmpty()) {
             return new ArrayList<Task>();
         }
-        String userNames = TaskQueryConstant.formatStringList(actors);
-        String query = String.format(
-                TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_QUERY,
-                dm.getId(), dm.getId(), userNames);
-        return queryTasksUnrestricted(query, coreSession);
+        return getTasks(
+                TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_PP,
+                coreSession, true, null, dm.getId(), dm.getId(), actors);
     }
 
     @Override
     public List<Task> getAllTaskInstances(String processId, CoreSession session)
             throws ClientException {
-        String query = String.format(
-                TaskQueryConstant.GET_TASKS_FOR_PROCESS_ID_QUERY, processId);
-        return queryTasksUnrestricted(query, session);
+        return getTasks(TaskQueryConstant.GET_TASKS_FOR_PROCESS_PP, session,
+                true, null, processId);
     }
 
     @Override
@@ -174,26 +165,29 @@ public class DocumentTaskProvider implements TaskProvider {
     @Override
     public List<Task> getAllTaskInstances(String processId,
             List<String> actors, CoreSession session) throws ClientException {
-        String userNames = TaskQueryConstant.formatStringList(actors);
-        String query = String.format(
-                TaskQueryConstant.GET_TASKS_FOR_PROCESS_ID_AND_ACTORS_QUERY,
-                processId, userNames);
-        return queryTasksUnrestricted(query, session);
+        return getTasks(TaskQueryConstant.GET_TASKS_FOR_PROCESS_AND_ACTORS_PP,
+                session, true, null, processId, actors);
     }
 
-    protected List<Task> queryTasksUnrestricted(final String query,
-            CoreSession session) throws ClientException {
-        final List<Task> tasks = new ArrayList<Task>();
-        new UnrestrictedSessionRunner(session) {
-            @Override
-            public void run() throws ClientException {
-                DocumentModelList taskDocuments = session.query(query);
-                tasks.addAll(wrapDocModelInTask(taskDocuments, true));
-            }
-        }.runUnrestricted();
+    /**
+     * Converts a {@link DocumentModelList} to a list of {@link Task}s.
+     *
+     * @since 5.9.6
+     * @param taskDocuments
+     */
+    public static List<Task> wrapDocModelInTask(
+            List<DocumentModel> taskDocuments) {
+        List<Task> tasks = new ArrayList<Task>();
+        for (DocumentModel doc : taskDocuments) {
+            tasks.add(doc.getAdapter(Task.class));
+        }
         return tasks;
     }
 
+    /**
+     * @deprecated since 5.9.6, use {@link #wrapDocModelInTask(List)} instead.
+     */
+    @Deprecated
     public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments)
             throws ClientException {
         return wrapDocModelInTask(taskDocuments, false);
@@ -204,7 +198,9 @@ public class DocumentTaskProvider implements TaskProvider {
      *
      * @param detach if {@code true}, detach each document before converting it
      *            to a {@code Task}.
+     * @deprecated since 5.9.6, use {@link #wrapDocModelInTask(List)} instead.
      */
+    @Deprecated
     public static List<Task> wrapDocModelInTask(
             DocumentModelList taskDocuments, boolean detach)
             throws ClientException {
@@ -306,25 +302,51 @@ public class DocumentTaskProvider implements TaskProvider {
     @Override
     public List<Task> getAllTaskInstances(String processId, String nodeId,
             CoreSession session) throws ClientException {
-        String query = String.format(
-                TaskQueryConstant.GET_TASKS_FOR_PROCESS_ID_AND_NODE_ID_QUERY,
-                processId, nodeId);
-        return queryTasksUnrestricted(query, session);
+        return getTasks(TaskQueryConstant.GET_TASKS_FOR_PROCESS_AND_NODE_PP,
+                session, true, null, processId, nodeId);
     }
 
     @Override
     public List<Task> getTaskInstances(DocumentModel dm, List<String> actors,
             boolean includeDelegatedTasks, CoreSession session)
             throws ClientException {
-        String userNames = TaskQueryConstant.formatStringList(actors);
-        String query = String.format(
-                TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_QUERY,
-                dm.getId(), dm.getId(), userNames);
         if (includeDelegatedTasks) {
-            query = String.format(
-                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY_OR_DELEGATED_ACTORS_QUERY,
-                    dm.getId(), dm.getId(), userNames, userNames);
+            return getTasks(
+                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_OR_DELEGATED_ACTORS_PP,
+                    session, true, null, dm.getId(), dm.getId(), actors, actors);
+        } else {
+            return getTasks(
+                    TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_PP,
+                    session, true, null, dm.getId(), dm.getId(), actors);
         }
-        return queryTasksUnrestricted(query, session);
     }
+
+    /**
+     * @since 5.9.6
+     */
+    @SuppressWarnings("unchecked")
+    public static List<Task> getTasks(String pageProviderName,
+            CoreSession session, boolean unrestricted,
+            List<SortInfo> sortInfos, Object... params) {
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+        if (ppService == null) {
+            throw new RuntimeException("Missing PageProvider service");
+        }
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+        if (unrestricted) {
+            props.put(
+                    CoreQueryDocumentPageProvider.USE_UNRESTRICTED_SESSION_PROPERTY,
+                    Boolean.TRUE);
+        }
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                pageProviderName, sortInfos, null, null, props, params);
+        if (pp == null) {
+            throw new ClientException("Page provider not found: "
+                    + pageProviderName);
+        }
+        return wrapDocModelInTask(pp.getCurrentPage());
+    }
+
 }

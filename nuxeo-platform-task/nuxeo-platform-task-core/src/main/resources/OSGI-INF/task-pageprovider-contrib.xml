@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.task.core.pageproviders">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="GET_TASKS_FOR_ACTORS">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
+        ecm:currentLifeCycleState
+        NOT IN ('ended', 'cancelled') AND ecm:isProxy =
+        0 AND nt:actors IN ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="GET_TASKS_FOR_TARGET_DOCUMENT">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
+        ecm:currentLifeCycleState
+        NOT IN ('ended', 'cancelled') AND ecm:isProxy =
+        0 AND nt:targetDocumentId = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
+        ecm:currentLifeCycleState
+        NOT IN ('ended', 'cancelled') AND ecm:isProxy =
+        0 AND nt:targetDocumentId = ? AND nt:actors IN ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="GET_TASKS_FOR_TARGET_DOCUMENTS">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
+        ecm:currentLifeCycleState
+        NOT IN ('ended', 'cancelled') AND ecm:isProxy =
+        0 AND (nt:targetDocumentId = ? OR nt:targetDocumentsIds IN (?))
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
+        ecm:currentLifeCycleState
+        NOT IN ('ended', 'cancelled') AND ecm:isProxy =
+        0 AND (nt:targetDocumentId = ? OR nt:targetDocumentsIds IN (?)) AND
+        nt:actors IN ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="GET_TASKS_FOR_PROCESS">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
+        ecm:currentLifeCycleState
+        NOT IN ('ended', 'cancelled') AND ecm:isProxy =
+        0 AND nt:processId = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="GET_TASKS_FOR_PROCESS_AND_ACTORS">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
+        ecm:currentLifeCycleState
+        NOT IN ('ended', 'cancelled') AND ecm:isProxy =
+        0 AND nt:processId = ? AND nt:actors IN ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="GET_TASKS_FOR_PROCESS_AND_NODE">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
+        ecm:currentLifeCycleState
+        NOT IN ('ended', 'cancelled') AND ecm:isProxy =
+        0 AND nt:processId = ? AND nt:task_variables/*/key = 'nodeId' AND
+        nt:task_variables/*/value = ?";
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider
+      name="GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_OR_DELEGATED_ACTORS">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
+        ecm:currentLifeCycleState
+        NOT IN ('ended', 'cancelled') AND ecm:isProxy =
+        0 AND (nt:targetDocumentId = ? OR nt:targetDocumentsIds IN (?)) AND
+        (nt:actors IN ? OR nt:delegatedActors IN ?)";
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+  </extension>
+
+</component>
