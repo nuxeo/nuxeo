@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.export.ArchiveFile;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -129,16 +130,15 @@ public class Distribution extends ModuleRoot {
         }
 
         String latest = "current";
-        if (keys.size()>0) {
+        if (keys.size() > 0) {
             latest = keys.get(0);
         }
-        return ctx.newObject("redirectWO", "latest",
-                latest);
+        return ctx.newObject("redirectWO", "latest", latest);
     }
 
     @Path("{distributionId}")
-    public Resource viewDistribution(@PathParam("distributionId")
-    String distributionId) {
+    public Resource viewDistribution(
+            @PathParam("distributionId") String distributionId) {
         try {
             if (distributionId == null || "".equals(distributionId)) {
                 return this;
@@ -243,7 +243,7 @@ public class Distribution extends ModuleRoot {
         }
 
         String redirectUrl = getContext().getBaseURL() + getPath();
-        log.error("Path => " + redirectUrl);
+        log.debug("Path => " + redirectUrl);
         return getView("saved");
     }
 
@@ -335,8 +335,8 @@ public class Distribution extends ModuleRoot {
 
     @GET
     @Path("download/{distributionId}")
-    public Response downloadDistrib(@PathParam("distributionId")
-    String distribId) throws Exception {
+    public Response downloadDistrib(
+            @PathParam("distributionId") String distribId) throws Exception {
         File tmp = getExportTmpFile();
         tmp.createNewFile();
         OutputStream out = new FileOutputStream(tmp);
@@ -380,7 +380,7 @@ public class Distribution extends ModuleRoot {
         }
         DocumentModel snap = getSnapshotManager().importTmpSnapshot(
                 getContext().getCoreSession(), blob.getStream());
-        if (snap==null) {
+        if (snap == null) {
             log.error("Unable to import archive");
         }
         DistributionSnapshot snapObject = snap.getAdapter(DistributionSnapshot.class);
