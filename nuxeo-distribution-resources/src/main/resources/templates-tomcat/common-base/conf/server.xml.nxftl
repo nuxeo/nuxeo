@@ -48,7 +48,7 @@
               factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
               pathname="conf/tomcat-users.xml" />
 
-  <#if !isWizard && nuxeo.db.embeddedDatasources == "false">
+  <#if !isWizard && nuxeo.server.declare_datasources == "true">
     <!-- Common datasource for all basic nuxeo datasources -->
     <Resource name="${nuxeo.db.commonds}" auth="Container" type="javax.sql.DataSource"
         maxActive="${nuxeo.db["max-pool-size"]}" maxIdle="30" maxWait="10000" driverClassName="${nuxeo.db.driver}"
