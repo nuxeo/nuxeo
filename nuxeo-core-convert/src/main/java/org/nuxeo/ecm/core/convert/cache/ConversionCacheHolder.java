@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,6 +23,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -36,7 +37,7 @@ import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
  */
 public class ConversionCacheHolder {
 
-    protected static final Map<String, ConversionCacheEntry> cache = new HashMap<String, ConversionCacheEntry>();
+    protected static final Map<String, ConversionCacheEntry> cache = new HashMap<>();
 
     protected static final ReentrantReadWriteLock cacheLock = new ReentrantReadWriteLock();
 
@@ -61,7 +62,7 @@ public class ConversionCacheHolder {
     }
 
     protected static List<String> getSubPathFromKey(String key) {
-        List<String> subPath = new ArrayList<String>();
+        List<String> subPath = new ArrayList<>();
 
         String path = Base64.encodeBytes(key.getBytes());
 
@@ -176,10 +177,22 @@ public class ConversionCacheHolder {
     public static Set<String> getCacheKeys() {
         cacheLock.readLock().lock();
         try {
-            return new HashSet<String>(cache.keySet());
+            return new HashSet<>(cache.keySet());
         } finally {
             cacheLock.readLock().unlock();
         }
     }
 
+    /**
+     * @since 5.9.6
+     */
+    public static void deleteCache() {
+        cacheLock.writeLock().lock();
+        try {
+            cache.clear();
+            new File(ConversionServiceImpl.getCacheBasePath()).delete();
+        } finally {
+            cacheLock.writeLock().unlock();
+        }
+    }
 }

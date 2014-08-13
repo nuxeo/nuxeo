@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestExportedDocument.java 29029 2008-01-14 18:38:14Z ldoguin $
  */
 
 package org.nuxeo.ecm.core.io.impl;
@@ -24,6 +23,7 @@ import java.util.zip.ZipInputStream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -93,17 +93,16 @@ public class TestExportImportZipArchive {
     public void testExportAsZipAndReimport() throws Exception {
         createDocs();
 
-        File zip = File.createTempFile("core-io-archive", "zip");
+        File archive = File.createTempFile("core-io-archive", "zip");
 
         DocumentReader reader = new DocumentTreeReader(session, workspace);
-        DocumentWriter writer = new NuxeoArchiveWriter(zip);
+        DocumentWriter writer = new NuxeoArchiveWriter(archive);
 
         DocumentPipe pipe = new DocumentPipeImpl(10);
         pipe.setReader(reader);
         pipe.setWriter(writer);
         pipe.run();
 
-        File archive = new File(zip.getAbsolutePath());
         assertTrue(archive.exists());
         assertTrue(archive.length() > 0);
 
@@ -141,6 +140,8 @@ public class TestExportImportZipArchive {
         pipe.setReader(reader);
         pipe.setWriter(writer);
         pipe.run();
+
+        archive.delete();
 
         // check result
         DocumentModelList children = session.getChildren(session.getRootDocument().getRef());

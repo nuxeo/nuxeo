@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.core.api;
@@ -26,6 +25,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * A serializable input stream.
  * <p>
@@ -36,13 +37,13 @@ import java.io.Serializable;
 public class SerializableInputStream extends InputStream implements
         Serializable {
 
-    public static final int IN_MEM_LIMIT = 1024*64;
+    public static final int IN_MEM_LIMIT = 1024 * 64;
 
     private static final long serialVersionUID = -2816387281878881614L;
 
     private transient File file;
-    private transient InputStream in;
 
+    private transient InputStream in;
 
     public SerializableInputStream(InputStream in) {
         this.in = in;
@@ -122,7 +123,7 @@ public class SerializableInputStream extends InputStream implements
         in.defaultReadObject();
         // create a temp file where we will put the blob content
         file = File.createTempFile("SerializableIS-", ".tmp");
-        file.deleteOnExit();
+        Framework.trackFile(file, file);
         OutputStream out = null;
         try {
             out = new FileOutputStream(file);

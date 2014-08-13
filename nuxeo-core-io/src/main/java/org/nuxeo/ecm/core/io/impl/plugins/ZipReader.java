@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     bstefanescu
  *
- * $Id: ZipReader.java 29029 2008-01-14 18:38:14Z ldoguin $
  */
 
 package org.nuxeo.ecm.core.io.impl.plugins;
@@ -26,6 +25,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.AbstractDocumentReader;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * A reader to read zip files. If the zip file is recognized as a nuxeo archive
@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.io.impl.AbstractDocumentReader;
 public class ZipReader extends AbstractDocumentReader {
 
     private final ZipInputStream in;
+
     private DocumentReader delegate;
 
     public ZipReader(File file) throws IOException {
@@ -57,6 +58,7 @@ public class ZipReader extends AbstractDocumentReader {
             File root = null;
             try {
                 root = File.createTempFile("nuxeo-import-", ".unzip");
+                Framework.trackFile(root, root);
                 root.delete();
                 root.mkdirs();
                 extract(in, entry, root);
@@ -66,7 +68,7 @@ public class ZipReader extends AbstractDocumentReader {
             } finally {
                 in.close();
             }
-          delegate = new XMLDirectoryReader(root);
+            delegate = new XMLDirectoryReader(root);
         }
     }
 

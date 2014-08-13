@@ -13,6 +13,13 @@
 
 package org.nuxeo.ecm.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -27,12 +34,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
-import org.junit.Test;
+import org.junit.Before;
 import org.junit.Ignore;
-
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -104,11 +109,11 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
     protected File createTempFile() throws Exception {
         File file = File.createTempFile("testExternalBlob", ".txt");
+        Framework.trackFile(file, file);
         FileWriter fstream = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fstream);
         out.write("Hello External Blob");
         out.close();
-        file.deleteOnExit();
         return file;
     }
 
@@ -154,7 +159,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
             fail("Should throw PropertyNotFoundException");
         } catch (PropertyNotFoundException e) {
             assertEquals("tp:complexList/notaninteger/foo", e.getPath());
-            assertEquals("segment notaninteger cannot be resolved", e.getDetail());
+            assertEquals("segment notaninteger cannot be resolved",
+                    e.getDetail());
         }
         try {
             doc.getPropertyValue("tp:complexList/0/foo");
@@ -395,7 +401,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
 
     @Test
     public void testComplexParallelFetch() throws Exception {
-        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "TestDocument2");
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2",
+                "TestDocument2");
         doc2.setPropertyValue("dc:title", "doc2");
         doc2 = session.createDocument(doc2);
         session.save();
@@ -749,8 +756,7 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         assertEquals("foo/bar/0", canonXPath("foo/bar/gee[0]"));
         assertEquals("foo/0/bar/123/moo",
                 canonXPath("foo/gee[0]/bar/baz[123]/moo"));
-        assertEquals("foo/0/bar/*/moo",
-                canonXPath("foo/gee[0]/bar/baz[*]/moo"));
+        assertEquals("foo/0/bar/*/moo", canonXPath("foo/gee[0]/bar/baz[*]/moo"));
     }
 
     @Test
@@ -838,7 +844,8 @@ public class TestSQLRepositoryProperties extends SQLRepositoryTestCase {
         doc.setPropertyValue("restr:shortstring", "foo");
         doc = session.createDocument(doc);
         doc = session.getDocument(doc.getRef());
-        String value = doc.getProperty("restr:shortstring").getValue(String.class);
+        String value = doc.getProperty("restr:shortstring").getValue(
+                String.class);
         assertEquals("foo", value);
     }
 
