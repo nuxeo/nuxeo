@@ -136,6 +136,11 @@ public class SystemPrincipal implements NuxeoPrincipal {
         computeHash();
     }
 
+    @Override
+    public String getActingUser() {
+        return getOriginatingUser() == null ? getName() : getOriginatingUser();
+    }
+
     public DocumentModel getModel() {
         return null;
     }

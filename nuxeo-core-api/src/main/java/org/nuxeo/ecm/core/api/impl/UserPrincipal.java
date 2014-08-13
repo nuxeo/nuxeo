@@ -279,4 +279,9 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
         this.originatingUser = originatingUser;
     }
 
+    @Override
+    public String getActingUser() {
+        return getOriginatingUser() == null ? getName() : getOriginatingUser();
+    }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,11 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
  */
-
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
@@ -21,9 +18,6 @@ import java.util.List;
 /**
  * Class to represent a principal in Nuxeo. This class holds the list of roles
  * and groups for this principal.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface NuxeoPrincipal extends Principal, Serializable {
 
@@ -153,8 +147,30 @@ public interface NuxeoPrincipal extends Principal, Serializable {
      */
     boolean isAnonymous();
 
+    /**
+     * Gets the base user from which this principal was created, or {@code null} if
+     * this principal was not created from another user.
+     *
+     * @return the originating user, or {@code null}
+     */
     String getOriginatingUser();
 
+    /**
+     * Sets the originating user.
+     *
+     * @param originatingUser the originating user
+     */
     void setOriginatingUser(String originatingUser);
+
+    /**
+     * Gets the acting user for this principal.
+     * <p>
+     * This is the originating user (usually when this principal is a system
+     * user), or if there is none this principal's user.
+     *
+     * @return the acting user
+     * @since 5.9.6
+     */
+    String getActingUser();
 
 }
