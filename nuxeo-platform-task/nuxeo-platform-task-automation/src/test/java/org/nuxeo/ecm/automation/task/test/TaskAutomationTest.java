@@ -16,6 +16,12 @@
  */
 package org.nuxeo.ecm.automation.task.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,12 +31,9 @@ import java.util.TimeZone;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.junit.runner.RunWith;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -61,7 +64,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy( { "org.nuxeo.ecm.automation.core",
+@Deploy({ "org.nuxeo.ecm.automation.core",
         "org.nuxeo.ecm.platform.task.automation",
         "org.nuxeo.ecm.platform.task.core",
         "org.nuxeo.ecm.platform.task.testing" })
@@ -124,13 +127,12 @@ public class TaskAutomationTest {
         assertEquals(1, comments.size());
 
         TaskComment comment = comments.get(0);
-        assertEquals(SecurityConstants.ADMINISTRATOR,
-                comment.getAuthor());
+        assertEquals(SecurityConstants.ADMINISTRATOR, comment.getAuthor());
         assertEquals("test comment", comment.getText());
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(2006, 6, 6, 15, 10, 15);
-        calendar.set(Calendar.MILLISECOND,0);
+        calendar.set(Calendar.MILLISECOND, 0);
         calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
         assertEquals(calendar.getTime(), task.getDueDate());
         // task status
@@ -151,8 +153,7 @@ public class TaskAutomationTest {
         assertEquals(
                 "true",
                 task.getVariable(TaskService.VariableName.createdFromTaskService.name()));
-        assertEquals(SecurityConstants.ADMINISTRATOR,
-                task.getInitiator());
+        assertEquals(SecurityConstants.ADMINISTRATOR, task.getInitiator());
 
         // accept task
         taskService.acceptTask(coreSession,
@@ -172,22 +173,22 @@ public class TaskAutomationTest {
     public void testGetUserTasks() throws Exception {
         OperationContext ctx = new OperationContext(coreSession);
         ctx.setInput(document);
-       automationService.run(ctx, "createSingleTaskChain");
-       ctx.clear();
-       OperationChain chain = new OperationChain("test");
-       chain.add(GetUserTasks.ID);
-       Blob blob = (Blob)automationService.run(ctx, chain);
-       JSONArray rows = JSONArray.fromObject(blob.getString());
-       assertEquals(1, rows.size());
-       JSONObject obj = rows.getJSONObject(0);
-       assertNotNull(obj.get("id")); // can be 1 or 2 depending
-       assertEquals(obj.get("docref"), document.getRef().toString());
-       assertEquals(obj.get("name"), "single test task");
-       assertEquals(obj.get("directive"), "test directive");
-       assertEquals(obj.get("comment"), "test comment");
-       assertNotNull(obj.get("startDate"));
-       assertNotNull(obj.get("dueDate"));
-       assertTrue((Boolean)obj.get("expired"));
+        automationService.run(ctx, "createSingleTaskChain");
+        ctx.clear();
+        OperationChain chain = new OperationChain("test");
+        chain.add(GetUserTasks.ID);
+        Blob blob = (Blob) automationService.run(ctx, chain);
+        JSONArray rows = JSONArray.fromObject(blob.getString());
+        assertEquals(1, rows.size());
+        JSONObject obj = rows.getJSONObject(0);
+        assertNotNull(obj.get("id")); // can be 1 or 2 depending
+        assertEquals(obj.get("docref"), document.getRef().toString());
+        assertEquals(obj.get("name"), "single test task");
+        assertEquals(obj.get("directive"), "test directive");
+        assertEquals(obj.get("comment"), "test comment");
+        assertNotNull(obj.get("startDate"));
+        assertNotNull(obj.get("dueDate"));
+        assertTrue((Boolean) obj.get("expired"));
     }
 
     @Test
@@ -251,8 +252,7 @@ public class TaskAutomationTest {
                 "true",
                 task1.getVariable(TaskService.VariableName.createdFromTaskService.name()));
 
-        assertEquals(SecurityConstants.ADMINISTRATOR,
-                task1.getInitiator());
+        assertEquals(SecurityConstants.ADMINISTRATOR, task1.getInitiator());
         // accept task
         taskService.acceptTask(coreSession,
                 (NuxeoPrincipal) coreSession.getPrincipal(), task1, "ok i'm in");
@@ -271,8 +271,7 @@ public class TaskAutomationTest {
 
         pooledActorIds = task2.getActors();
         assertEquals(1, pooledActorIds.size());
-        assertEquals(SecurityConstants.MEMBERS,
-                pooledActorIds.get(0));
+        assertEquals(SecurityConstants.MEMBERS, pooledActorIds.get(0));
 
         comments = task2.getComments();
         assertEquals(0, comments.size());
@@ -294,15 +293,13 @@ public class TaskAutomationTest {
                 "true",
                 task2.getVariable(TaskService.VariableName.createdFromTaskService.name()));
 
-        assertEquals(SecurityConstants.ADMINISTRATOR,
-                task2.getInitiator());
+        assertEquals(SecurityConstants.ADMINISTRATOR, task2.getInitiator());
         Task task3 = tasks.get(1);
         assertEquals("several test tasks", task3.getName());
 
         pooledActorIds = task3.getActors();
         assertEquals(1, pooledActorIds.size());
-        assertEquals("myuser",
-                pooledActorIds.get(0));
+        assertEquals("myuser", pooledActorIds.get(0));
 
         comments = task3.getComments();
         assertEquals(0, comments.size());
@@ -324,8 +321,7 @@ public class TaskAutomationTest {
                 "true",
                 task3.getVariable(TaskService.VariableName.createdFromTaskService.name()));
 
-        assertEquals(SecurityConstants.ADMINISTRATOR,
-                task3.getInitiator());
+        assertEquals(SecurityConstants.ADMINISTRATOR, task3.getInitiator());
         // check document metadata
         assertNull(document.getPropertyValue("dc:description"));
     }

@@ -56,31 +56,35 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         }
         Map<String, String> vars = new HashMap<String, String>();
         vars.put(CommentsConstants.COMMENT_ID, commentID);
-        vars.put(
-                Task.TaskVariableName.needi18n.name(), "true");
-        vars.put(
-                Task.TaskVariableName.taskType.name(), CommentConstants.COMMENT_TASK_TYPE);
+        vars.put(Task.TaskVariableName.needi18n.name(), "true");
+        vars.put(Task.TaskVariableName.taskType.name(),
+                CommentConstants.COMMENT_TASK_TYPE);
 
-        vars.put(CreateTask.OperationTaskVariableName.createdFromCreateTaskOperation.name(),
+        vars.put(
+                CreateTask.OperationTaskVariableName.createdFromCreateTaskOperation.name(),
                 "false");
-        vars.put(CreateTask.OperationTaskVariableName.acceptOperationChain.name(),
+        vars.put(
+                CreateTask.OperationTaskVariableName.acceptOperationChain.name(),
                 CommentsConstants.ACCEPT_CHAIN_NAME);
-        vars.put(CreateTask.OperationTaskVariableName.rejectOperationChain.name(),
+        vars.put(
+                CreateTask.OperationTaskVariableName.rejectOperationChain.name(),
                 CommentsConstants.REJECT_CHAIN_NAME);
 
         taskService.createTask(session,
                 (NuxeoPrincipal) session.getPrincipal(), doc,
-                CommentsConstants.MODERATION_DIRECTIVE_NAME, moderators,
-                false, null, null, null, vars, null);
+                CommentsConstants.MODERATION_DIRECTIVE_NAME, moderators, false,
+                null, null, null, vars, null);
     }
 
-    public Task getModerationTask(TaskService taskService,
-            CoreSession session, DocumentModel doc, String commentId)
-            throws ClientException {
+    public Task getModerationTask(TaskService taskService, CoreSession session,
+            DocumentModel doc, String commentId) throws ClientException {
         String query = TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY;
-        query = String.format(query, doc.getId(), session.getPrincipal().getName());
-        String commentWhereClause = TaskQueryConstant.getVariableWhereClause(CommentsConstants.COMMENT_ID, commentId);
-        List<DocumentModel> tasks = session.query(String.format("%s AND %s", query, commentWhereClause));
+        query = String.format(query, doc.getId(),
+                session.getPrincipal().getName());
+        String commentWhereClause = TaskQueryConstant.getVariableWhereClause(
+                CommentsConstants.COMMENT_ID, commentId);
+        List<DocumentModel> tasks = session.query(String.format("%s AND %s",
+                query, commentWhereClause));
 
         if (tasks != null && !tasks.isEmpty()) {
             if (tasks.size() > 1) {
@@ -104,7 +108,9 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
             session.followTransition(new IdRef(commentId),
                     CommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
         } else {
-            taskService.acceptTask(session, (NuxeoPrincipal) session.getPrincipal(), moderationTask, null);
+            taskService.acceptTask(session,
+                    (NuxeoPrincipal) session.getPrincipal(), moderationTask,
+                    null);
         }
 
         Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
@@ -124,7 +130,9 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
             session.followTransition(new IdRef(commentId),
                     CommentsConstants.REJECT_STATE);
         } else {
-            taskService.rejectTask(session, (NuxeoPrincipal) session.getPrincipal(), moderationTask, null);
+            taskService.rejectTask(session,
+                    (NuxeoPrincipal) session.getPrincipal(), moderationTask,
+                    null);
         }
     }
 
