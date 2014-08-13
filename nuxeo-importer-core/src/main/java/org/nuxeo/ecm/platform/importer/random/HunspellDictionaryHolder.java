@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,8 +13,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Michaël Vachette
  *
- * $Id$
  */
 package org.nuxeo.ecm.platform.importer.random;
 
@@ -29,10 +29,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
-*
-* @author Thierry Delprat
-*
-*/
+ * @author Thierry Delprat
+ */
 public class HunspellDictionaryHolder implements DictionaryHolder {
 
     protected static final int INITIAL_SIZE = 100000;
@@ -87,23 +85,11 @@ public class HunspellDictionaryHolder implements DictionaryHolder {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.importer.random.DictionaryHolder#getWordCount()
-     */
     @Override
     public int getWordCount() {
         return wordCount;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.nuxeo.ecm.platform.importer.random.DictionaryHolder#getRandomWord()
-     */
     @Override
     public String getRandomWord() {
         int idx = generator.nextInt(wordCount);
