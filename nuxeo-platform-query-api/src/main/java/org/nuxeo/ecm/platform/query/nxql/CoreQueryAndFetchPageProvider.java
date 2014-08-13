@@ -48,6 +48,10 @@ import org.nuxeo.ecm.platform.query.api.PageSelections;
  * <p>
  * Since 5.9.6, the page provider property named {@link #LANGUAGE_PROPERTY}
  * allows specifying the query language (NXQL, NXTAG,...).
+ * <p>
+ * Also since 5.9.6, the page provider property named
+ * {@link #USE_UNRESTRICTED_SESSION_PROPERTY} allows specifying whether the
+ * query should be run as unrestricted.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -58,6 +62,13 @@ public class CoreQueryAndFetchPageProvider extends
     public static final String CORE_SESSION_PROPERTY = "coreSession";
 
     public static final String CHECK_QUERY_CACHE_PROPERTY = "checkQueryCache";
+
+    /**
+     * Boolean property stating that query should be unrestricted.
+     *
+     * @since 5.9.6
+     */
+    public static final String USE_UNRESTRICTED_SESSION_PROPERTY = "useUnrestrictedSession";
 
     /**
      * @since 5.9.6: alow specifying the query language (NXQL, NXTAG,...)
@@ -109,7 +120,16 @@ public class CoreQueryAndFetchPageProvider extends
                             Long.valueOf(offset)));
                 }
 
-                result = coreSession.queryAndFetch(query, getQueryLanguage());
+                final String language = getQueryLanguage();
+                final boolean useUnrestricted = useUnrestrictedSession();
+                if (useUnrestricted) {
+                    CoreQueryAndFetchUnrestrictedSessionRunner r = new CoreQueryAndFetchUnrestrictedSessionRunner(
+                            coreSession, query, language);
+                    r.runUnrestricted();
+                    result = r.getResult();
+                } else {
+                    result = coreSession.queryAndFetch(query, language);
+                }
                 long resultsCount = result.size();
                 setResultsCount(resultsCount);
                 if (offset < resultsCount) {
@@ -208,12 +228,13 @@ public class CoreQueryAndFetchPageProvider extends
 
     protected void checkQueryCache() {
         // maybe handle refresh of select page according to query
-        Map<String, Serializable> props = getProperties();
-        if (props.containsKey(CHECK_QUERY_CACHE_PROPERTY)
-                && Boolean.TRUE.equals(Boolean.valueOf((String) props.get(CHECK_QUERY_CACHE_PROPERTY)))) {
+        if (getBooleanProperty(CHECK_QUERY_CACHE_PROPERTY, false)) {
             buildQuery();
         }
+    }
 
+    protected boolean useUnrestrictedSession() {
+        return getBooleanProperty(USE_UNRESTRICTED_SESSION_PROPERTY, false);
     }
 
     protected String getQueryLanguage() {
