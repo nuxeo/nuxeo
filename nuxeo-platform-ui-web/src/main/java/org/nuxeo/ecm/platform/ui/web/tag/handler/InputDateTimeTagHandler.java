@@ -73,7 +73,9 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         m.ignore("showsTime");
         // locale ok
         // timeZone ok
-        m.alias("styleClass", "inputClass");
+        // do not bind styleClass to inputClass anymore: styleClass can be
+        // taken into account but the datetime widget itself, see NXP-14963.
+        // m.alias("styleClass", "inputClass");
         m.alias("triggerLabel", "buttonLabel");
         m.alias("triggerImg", "buttonIcon");
         m.alias("triggerStyleClass", "buttonClass");

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 import java.util.Arrays;
 
 import javax.faces.component.html.HtmlOutputText;
+import javax.faces.component.html.HtmlPanelGroup;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -94,6 +95,16 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     tagConfig, widget.getTagConfigId(), attributes, leaf,
                     UICalendar.COMPONENT_TYPE, null);
             ComponentHandler input = new InputDateTimeTagHandler(config);
+            if (widget.getProperty("styleClass") != null) {
+                // add a surrounding span tag with associated class, see
+                // NXP-14963
+                input = helper.getHtmlComponentHandler(
+                        widgetTagConfigId,
+                        FaceletHandlerHelper.getTagAttributes(helper.createAttribute(
+                                "styleClass",
+                                (String) widget.getProperty("styleClass"))),
+                        input, HtmlPanelGroup.COMPONENT_TYPE, null);
+            }
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(
                     widgetTagConfigId, msgId, widgetId, null);
