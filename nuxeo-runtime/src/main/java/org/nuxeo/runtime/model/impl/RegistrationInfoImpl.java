@@ -467,12 +467,16 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     }
 
     @Override
-    public synchronized boolean isActivated() {
+    // not synchronized, intermediate states from other synchronized methods
+    // are not a problem
+    public boolean isActivated() {
         return state == ACTIVATED;
     }
 
     @Override
-    public synchronized boolean isResolved() {
+    // not synchronized, intermediate states from other synchronized methods
+    // are not a problem
+    public boolean isResolved() {
         return state == RESOLVED;
     }
 
