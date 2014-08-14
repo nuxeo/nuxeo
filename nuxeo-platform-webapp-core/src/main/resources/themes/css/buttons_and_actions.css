@@ -126,7 +126,9 @@ input.tinyButton {
   margin: -0.2em .3em -0.3em -0.4em }
 
 .action_bar input[type="text"] {
-  margin: 0 .2em }
+  margin: 0 .2em;
+  padding: .3em .5em;
+  width: auto }
 
 .action_bar input.button {
   margin-top: 0 }
