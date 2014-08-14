@@ -30,14 +30,14 @@ author: lkemen@nuxeo.com
   padding: .5em 0 }
 
 #fancybox-content .content {
-  padding: 1em 1em 1.5em;
+  padding: 2em 2em 2.5em;
   overflow: auto }
 
 #fancybox-content .buttonsGadget {
   border-top: 2px dotted #e9e9e9;
   font-size: 1.1em;
   margin: .5em 0 0;
-  padding: .5em 0 0 }
+  padding: .8em 0 0 }
 
 #fancybox-content .popUpDescription {
   padding: 0 0 1em }
