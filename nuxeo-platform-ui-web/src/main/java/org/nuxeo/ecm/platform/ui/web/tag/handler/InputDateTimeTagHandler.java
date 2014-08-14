@@ -115,8 +115,10 @@ public class InputDateTimeTagHandler extends GenericHtmlComponentHandler {
         // set default time in timezone
         HtmlCalendar c = (HtmlCalendar) instance;
         c.setPopup(Boolean.parseBoolean(getValue(attributes, "popup", "true")));
-        c.setEnableManualInput(Boolean.parseBoolean(getValue(attributes, "enableManualInput", "true")));
-        c.setShowApplyButton(Boolean.parseBoolean(getValue(attributes, "showApplyButton", "false")));
+        c.setEnableManualInput(Boolean.parseBoolean(getValue(attributes,
+                "enableManualInput", "true")));
+        c.setShowApplyButton(Boolean.parseBoolean(getValue(attributes,
+                "showApplyButton", "false")));
         c.setZindex(Integer.parseInt(getValue(attributes, "zindex", "1500")));
         setDefaultTime(c);
     }
