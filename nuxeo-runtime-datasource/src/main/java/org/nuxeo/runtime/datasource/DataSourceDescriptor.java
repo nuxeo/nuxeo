@@ -134,15 +134,16 @@ public class DataSourceDescriptor {
         } else if (driverClasssName != null) {
             poolReference = new Reference(DataSource.class.getName(),
                     PoolFactory.class.getName(), null);
-            for (Entry<String, String> e : properties.entrySet()) {
-                String key = e.getKey();
-                String value = Framework.expandVars(e.getValue());
-                StringRefAddr addr = new StringRefAddr(key, value);
-                poolReference.add(addr);
-            }
         } else {
             throw new RuntimeException("Datasource " + name
                     + " should have xaDataSource or driverClassName attribute");
+        }
+
+        for (Entry<String, String> e : properties.entrySet()) {
+            String key = e.getKey();
+            String value = Framework.expandVars(e.getValue());
+            StringRefAddr addr = new StringRefAddr(key, value);
+            poolReference.add(addr);
         }
 
         NamedNodeMap attrs = element.getAttributes();
