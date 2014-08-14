@@ -72,12 +72,13 @@ public class TestCacheManager<T> {
         cacheManager = (CacheManager<String>) cacheManagerService.getCacheManager(CACHEMANAGER_NAME);
         Assert.assertNotNull(cacheManager);
 
-        Cache<String, ?> cache = null;
+        Cache<String, String> cache = null;
         if (cacheManager.getCache() instanceof Cache<?, ?>) {
             cache = cacheManager.getCache();
         }
         cacheManager.put("test", "toto");
         Assert.assertNotNull(cache);
+        cache.put("test2", "toto2");
         
         
     }
