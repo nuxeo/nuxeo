@@ -15,4 +15,6 @@ public interface NuxeoContainerListener {
     void handleNewConnectionManager(String name, AbstractConnectionManager mgr);
 
     void handleConnectionManagerReset(String name, AbstractConnectionManager mgr);
+
+    void handleConnectionManagerDispose(String name, AbstractConnectionManager mgr);
 }
