@@ -12,6 +12,7 @@
  */
 package org.nuxeo.runtime.jtajca;
 
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -226,4 +227,22 @@ public class NuxeoConnectionManagerConfiguration {
         this.idleTimeoutMinutes = Integer.valueOf(idleTimeoutMinutes);
     }
 
+    @XNode("@maxActive")
+    public void setMaxActive(int num) {
+        maxPoolSize = num;
+        LogFactory.getLog(NuxeoConnectionManagerConfiguration.class).warn("maxActive deprecated dbcp pool attribute usage, should use maxPoolSize geronimo pool attribute instead");
+    }
+
+    @XNode("@maxIdle")
+    public void setMaxIdle(int num) {
+        minPoolSize = num;
+        LogFactory.getLog(NuxeoConnectionManagerConfiguration.class).warn("maxIdle deprecated dbcp pool attribute usage, should use minPoolSize geronimo pool attribute instead");
+    }
+
+    @XNode("@maxWait")
+    public void setMaxWait(int num) {
+        blockingTimeoutMillis = num;
+        LogFactory.getLog(NuxeoConnectionManagerConfiguration.class).warn("maxWait deprecated dbcp pool attribute usage, should use blockingTimeoutMillis geronimo pool attribute instead");
+
+    }
 }

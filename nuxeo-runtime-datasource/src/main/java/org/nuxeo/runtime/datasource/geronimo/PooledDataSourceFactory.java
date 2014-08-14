@@ -17,6 +17,7 @@ import javax.resource.spi.InvalidPropertyException;
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.sql.XADataSource;
 
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.datasource.PooledDataSourceRegistry;
 import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
@@ -85,9 +86,9 @@ public class PooledDataSourceFactory implements
     protected ManagedConnectionFactory createFactory(Reference ref, Context ctx)
             throws NamingException, InvalidPropertyException {
         String className = ref.getClassName();
-        String user = refAttribute(ref, "user", "");
-        String password = refAttribute(ref, "password", "");
         if (XADataSource.class.getName().equals(className)) {
+            String user = refAttribute(ref, "User", "");
+            String password = refAttribute(ref, "Password", "");
             String name = refAttribute(ref, "dataSourceJNDI", null);
             XADataSource ds = (XADataSource) new InitialContext().lookup(name);
             XADataSourceWrapper wrapper = new XADataSourceWrapper(ds);
@@ -96,6 +97,14 @@ public class PooledDataSourceFactory implements
             return wrapper;
         }
         if (javax.sql.DataSource.class.getName().equals(className)) {
+            String user = refAttribute(ref, "username", "");
+            if (user.isEmpty()) {
+                user = refAttribute(ref, "user", "");
+                if (!user.isEmpty()) {
+                    LogFactory.getLog(PooledDataSourceFactory.class).warn("wrong attribute 'user' in datasource descriptor, should use 'username' instead");
+                }
+            }
+            String password = refAttribute(ref, "password", "");
             String name = refAttribute(ref, "driverClassName", null);
             String url = refAttribute(ref, "url", null);
             JDBCDriverMCF factory = new JDBCDriverMCF();
