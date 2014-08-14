@@ -61,7 +61,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(repositoryFactoryClass = PoolingRepositoryFactory.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.platform.tag",
+@Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.ws" })
 @LocalDeploy("org.nuxeo.ecm.platform.tag:login-config.xml")
 public class TestTagService {

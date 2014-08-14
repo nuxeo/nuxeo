@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,15 +33,19 @@ import javax.security.auth.login.LoginContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -54,6 +59,39 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
     public static final String NXTAG = TagQueryMaker.NXTAG;
 
     private Boolean enabled;
+
+    protected enum PAGE_PROVIDERS {
+        //
+        GET_DOCUMENT_IDS_FOR_TAG,
+        //
+        GET_FIRST_TAGGING_FOR_DOC_AND_TAG_AND_USER,
+        //
+        GET_FIRST_TAGGING_FOR_DOC_AND_TAG,
+        //
+        GET_TAGS_FOR_DOCUMENT,
+        //
+        GET_DOCUMENTS_FOR_TAG,
+        //
+        GET_TAGS_FOR_DOCUMENT_AND_USER,
+        //
+        GET_DOCUMENTS_FOR_TAG_AND_USER,
+        //
+        GET_TAGS_TO_COPY_FOR_DOCUMENT,
+        //
+        GET_TAG_SUGGESTIONS,
+        //
+        GET_TAG_SUGGESTIONS_FOR_USER,
+        //
+        GET_TAGGED_DOCUMENTS_UNDER,
+        //
+        GET_ALL_TAGS,
+        //
+        GET_ALL_TAGS_FOR_USER,
+        //
+        GET_TAGS_FOR_DOCUMENTS,
+        //
+        GET_TAGS_FOR_DOCUMENTS_AND_USER,
+    }
 
     public boolean isEnabled() {
         if (enabled == null) {
@@ -84,9 +122,12 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return enabled.booleanValue();
     }
 
-    protected static String cleanLabel(String label, boolean allowPercent)
-            throws ClientException {
+    protected static String cleanLabel(String label, boolean allowEmpty,
+            boolean allowPercent) throws ClientException {
         if (label == null) {
+            if (allowEmpty) {
+                return null;
+            }
             throw new ClientException("Invalid empty tag");
         }
         label = label.toLowerCase(); // lowercase
@@ -102,6 +143,10 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return label;
     }
 
+    protected static String cleanUsername(String username) {
+        return username == null ? null : username.replace("'", "");
+    }
+
     public void tag(CoreSession session, String docId, String label,
             String username) throws ClientException {
         UnrestrictedAddTagging r = new UnrestrictedAddTagging(session, docId,
@@ -111,7 +156,6 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
     protected static class UnrestrictedAddTagging extends
             UnrestrictedSessionRunner {
-
         private final String docId;
 
         private final String label;
@@ -122,26 +166,19 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                 String label, String username) throws ClientException {
             super(session);
             this.docId = docId;
-            this.label = cleanLabel(label, false);
-            this.username = username == null ? null : username.replace("'", "");
+            this.label = cleanLabel(label, false, false);
+            this.username = cleanUsername(username);
         }
 
         @Override
         public void run() throws ClientException {
-            // Find tag.
-            String tagId = null;
-            String query = String.format(
-                    "SELECT ecm:uuid FROM Tag WHERE tag:label = '%s' AND ecm:isProxy = 0",
-                    label);
-            IterableQueryResult res = session.queryAndFetch(query, NXQL.NXQL);
-            try {
-                for (Map<String, Serializable> map : res) {
-                    tagId = (String) map.get(NXQL.ECM_UUID);
-                    break;
-                }
-            } finally {
-                res.close();
-            }
+            // Find tag
+            List<Map<String, Serializable>> res = getItems(
+                    PAGE_PROVIDERS.GET_DOCUMENT_IDS_FOR_TAG.name(), session,
+                    null, label);
+            String tagId = (res != null && !res.isEmpty()) ? (String) res.get(0).get(
+                    NXQL.ECM_UUID)
+                    : null;
             Calendar date = Calendar.getInstance();
             if (tagId == null) {
                 // no tag found, create it
@@ -150,27 +187,22 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                 tag.setPropertyValue("dc:created", date);
                 tag.setPropertyValue(TagConstants.TAG_LABEL_FIELD, label);
                 tag = session.createDocument(tag);
-                // session.save();
                 tagId = tag.getId();
             }
-
             // Check if tagging already exists for user.
-            query = String.format("SELECT ecm:uuid FROM Tagging "
-                    + "WHERE relation:source = '%s'"
-                    + "  AND relation:target = '%s'", docId, tagId);
             if (username != null) {
-                query += String.format(" AND dc:creator = '%s'", username);
+                res = getItems(
+                        PAGE_PROVIDERS.GET_FIRST_TAGGING_FOR_DOC_AND_TAG_AND_USER.name(),
+                        session, null, docId, tagId, username);
+            } else {
+                res = getItems(
+                        PAGE_PROVIDERS.GET_FIRST_TAGGING_FOR_DOC_AND_TAG.name(),
+                        session, null, docId, tagId);
             }
-            res = session.queryAndFetch(query, NXQL.NXQL);
-            try {
-                if (res.iterator().hasNext()) {
-                    // tagging already exists
-                    return;
-                }
-            } finally {
-                res.close();
+            if (res != null && !res.isEmpty()) {
+                // tagging already exists
+                return;
             }
-
             // Add tagging to the document.
             DocumentModel tagging = session.createDocumentModel(null, label,
                     TagConstants.TAGGING_DOCUMENT_TYPE);
@@ -205,28 +237,21 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                 String label, String username) throws ClientException {
             super(session);
             this.docId = docId;
-            this.label = label == null ? null : cleanLabel(label, false);
-            this.username = username == null ? null : username.replace("'", "");
+            this.label = cleanLabel(label, true, false);
+            this.username = cleanUsername(username);
         }
 
         @Override
         public void run() throws ClientException {
             String tagId = null;
             if (label != null) {
-                // Find tag.
-                String query = String.format(
-                        "SELECT ecm:uuid FROM Tag WHERE tag:label = '%s' AND ecm:isProxy = 0",
-                        label);
-                IterableQueryResult res = session.queryAndFetch(query,
-                        NXQL.NXQL);
-                try {
-                    for (Map<String, Serializable> map : res) {
-                        tagId = (String) map.get(NXQL.ECM_UUID);
-                        break;
-                    }
-                } finally {
-                    res.close();
-                }
+                // Find tag
+                List<Map<String, Serializable>> res = getItems(
+                        PAGE_PROVIDERS.GET_DOCUMENT_IDS_FOR_TAG.name(),
+                        session, null, label);
+                tagId = (res != null && !res.isEmpty()) ? (String) res.get(0).get(
+                        NXQL.ECM_UUID)
+                        : null;
                 if (tagId == null) {
                     // tag not found
                     return;
@@ -281,28 +306,26 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                 String docId, String username) throws ClientException {
             super(session);
             this.docId = docId;
-            this.username = username == null ? null : username.replace("'", "");
+            this.username = cleanUsername(username);
             tags = new ArrayList<Tag>();
         }
 
         @Override
         public void run() throws ClientException {
-            String query = String.format(
-                    "TAGISTARGET: SELECT DISTINCT tag:label " //
-                            + "FROM Tagging " //
-                            + "WHERE relation:source = '%s'", //
-                    docId);
-            if (username != null) {
-                query += String.format(" AND dc:creator = '%s'", username);
+            List<Map<String, Serializable>> res;
+            if (username == null) {
+                res = getItems(PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENT.name(),
+                        session, null, docId);
+            } else {
+                res = getItems(
+                        PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENT_AND_USER.name(),
+                        session, null, docId, username);
             }
-            IterableQueryResult res = session.queryAndFetch(query, NXTAG);
-            try {
+            if (res != null) {
                 for (Map<String, Serializable> map : res) {
                     String label = (String) map.get(TagConstants.TAG_LABEL_FIELD);
                     tags.add(new Tag(label, 0));
                 }
-            } finally {
-                res.close();
             }
         }
     }
@@ -347,28 +370,20 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         @Override
         public void run() throws ClientException {
             Set<String> existingTags = new HashSet<>();
-            String dstTagsQuery = String.format(
-                    "TAGISTARGET: SELECT tag:label, dc:created, dc:creator, relation:target FROM Tagging "
-                            + "WHERE relation:source = '%s'", dstDocId);
-            IterableQueryResult dstTagsRes = session.queryAndFetch(
-                    dstTagsQuery, NXTAG);
-            try {
+            List<Map<String, Serializable>> dstTagsRes = getItems(
+                    PAGE_PROVIDERS.GET_TAGS_TO_COPY_FOR_DOCUMENT.name(),
+                    session, null, dstDocId);
+            if (dstTagsRes != null) {
                 for (Map<String, Serializable> map : dstTagsRes) {
                     existingTags.add(String.format("%s/%s",
                             map.get("tag:label"), map.get("dc:creator")));
                 }
-            } finally {
-                dstTagsRes.close();
             }
 
-            String srcTagsQuery = String.format(
-                    "TAGISTARGET: SELECT tag:label, dc:created, dc:creator, relation:target " //
-                            + "FROM Tagging " //
-                            + "WHERE relation:source = '%s'", //
-                    srcDocId);
-            IterableQueryResult srcTagsRes = session.queryAndFetch(
-                    srcTagsQuery, NXTAG);
-            try {
+            List<Map<String, Serializable>> srcTagsRes = getItems(
+                    PAGE_PROVIDERS.GET_TAGS_TO_COPY_FOR_DOCUMENT.name(),
+                    session, null, srcDocId);
+            if (srcTagsRes != null) {
                 for (Map<String, Serializable> map : srcTagsRes) {
                     String key = String.format("%s/%s", map.get("tag:label"),
                             map.get("dc:creator"));
@@ -388,8 +403,6 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                         session.createDocument(tagging);
                     }
                 }
-            } finally {
-                srcTagsRes.close();
             }
         }
     }
@@ -420,28 +433,26 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         protected UnrestrictedGetTagDocumentIds(CoreSession session,
                 String label, String username) throws ClientException {
             super(session);
-            this.label = cleanLabel(label, false);
-            this.username = username == null ? null : username.replace("'", "");
+            this.label = cleanLabel(label, false, false);
+            this.username = cleanUsername(username);
             docIds = new ArrayList<String>();
         }
 
         @Override
         public void run() throws ClientException {
-            String query = String.format(
-                    "TAGISTARGET: SELECT DISTINCT relation:source " //
-                            + "FROM Tagging " //
-                            + "WHERE tag:label = '%s'", //
-                    label);
-            if (username != null) {
-                query += String.format(" AND dc:creator = '%s'", username);
+            List<Map<String, Serializable>> res;
+            if (username == null) {
+                res = getItems(PAGE_PROVIDERS.GET_DOCUMENTS_FOR_TAG.name(),
+                        session, null, label);
+            } else {
+                res = getItems(
+                        PAGE_PROVIDERS.GET_DOCUMENTS_FOR_TAG_AND_USER.name(),
+                        session, null, label, username);
             }
-            IterableQueryResult res = session.queryAndFetch(query, NXTAG);
-            try {
+            if (res != null) {
                 for (Map<String, Serializable> map : res) {
                     docIds.add((String) map.get(TagConstants.TAGGING_SOURCE_FIELD));
                 }
-            } finally {
-                res.close();
             }
         }
     }
@@ -470,48 +481,50 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                 throws ClientException {
             super(session);
             this.docId = docId;
-            this.username = username == null ? null : username.replace("'", "");
+            this.username = cleanUsername(username);
             this.normalize = normalize;
             cloud = new ArrayList<Tag>();
         }
 
         @Override
         public void run() throws ClientException {
-            String query = "COUNTSOURCE: " //
-                    + "SELECT tag:label, relation:source " //
-                    + "FROM Tagging";
-            if (docId != null) {
+            List<Map<String, Serializable>> res;
+            if (docId == null) {
+                if (username == null) {
+                    res = getItems(PAGE_PROVIDERS.GET_ALL_TAGS.name(), session,
+                            null);
+                } else {
+                    res = getItems(PAGE_PROVIDERS.GET_ALL_TAGS_FOR_USER.name(),
+                            session, null, username);
+                }
+            } else {
                 // find all docs under docid
                 String path = session.getDocument(new IdRef(docId)).getPathAsString();
                 path = path.replace("'", "");
-                String q = String.format("SELECT ecm:uuid FROM Document "
-                        + "WHERE ecm:path STARTSWITH '%s'", path);
                 List<String> docIds = new ArrayList<String>();
                 docIds.add(docId);
-                IterableQueryResult r = session.queryAndFetch(q, NXQL.NXQL);
-                try {
-                    for (Map<String, Serializable> map : r) {
+                List<Map<String, Serializable>> docRes = getItems(
+                        PAGE_PROVIDERS.GET_TAGGED_DOCUMENTS_UNDER.name(),
+                        session, null, path);
+                if (docRes != null) {
+                    for (Map<String, Serializable> map : docRes) {
                         docIds.add((String) map.get(NXQL.ECM_UUID));
                     }
-                } finally {
-                    r.close();
                 }
-                // now used these docids for the relation source
-                query += String.format(" WHERE relation:source IN ('%s')",
-                        StringUtils.join(docIds, "', '"));
-            }
-            if (username != null) {
-                if (docId == null) {
-                    query += " WHERE ";
-                } else {
-                    query += " AND ";
-                }
-                query += String.format("dc:creator = '%s'", username);
 
+                if (username == null) {
+                    res = getItems(
+                            PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENTS.name(),
+                            session, null, docIds);
+                } else {
+                    res = getItems(
+                            PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENTS_AND_USER.name(),
+                            session, null, docIds, username);
+                }
             }
+
             int min = 999999, max = 0;
-            IterableQueryResult res = session.queryAndFetch(query, NXTAG);
-            try {
+            if (res != null) {
                 for (Map<String, Serializable> map : res) {
                     String label = (String) map.get(TagConstants.TAG_LABEL_FIELD);
                     int weight = ((Long) map.get(TagConstants.TAGGING_SOURCE_FIELD)).intValue();
@@ -528,8 +541,6 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                     Tag weightedTag = new Tag(label, weight);
                     cloud.add(weightedTag);
                 }
-            } finally {
-                res.close();
             }
             if (normalize != null) {
                 normalizeCloud(cloud, min, max, !normalize.booleanValue());
@@ -586,35 +597,67 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         protected UnrestrictedGetTagSuggestions(CoreSession session,
                 String label, String username) throws ClientException {
             super(session);
-            label = cleanLabel(label, true);
+            label = cleanLabel(label, false, true);
             if (!label.contains("%")) {
                 label += "%";
             }
             this.label = label;
-            this.username = username == null ? null : username.replace("'", "");
+            this.username = cleanUsername(username);
             tags = new ArrayList<Tag>();
         }
 
         @Override
         public void run() throws ClientException {
-            String query = String.format(
-                    "SELECT DISTINCT tag:label FROM Tag WHERE tag:label LIKE '%s' AND ecm:isProxy = 0",
-                    label);
-            if (username != null) {
-                query += String.format(" AND dc:creator = '%s'", username);
+            List<Map<String, Serializable>> res;
+            if (username == null) {
+                res = getItems(PAGE_PROVIDERS.GET_TAG_SUGGESTIONS.name(),
+                        session, null, label);
+            } else {
+                res = getItems(
+                        PAGE_PROVIDERS.GET_TAG_SUGGESTIONS_FOR_USER.name(),
+                        session, null, label, username);
             }
-            IterableQueryResult res = session.queryAndFetch(query, NXQL.NXQL);
-            try {
+            if (res != null) {
                 for (Map<String, Serializable> map : res) {
                     String label = (String) map.get(TagConstants.TAG_LABEL_FIELD);
                     tags.add(new Tag(label, 0));
                 }
-            } finally {
-                res.close();
             }
             // XXX should sort on tag weight
             Collections.sort(tags, Tag.LABEL_COMPARATOR);
         }
     }
 
+    /**
+     * Returns results from calls to
+     * {@link CoreSession#queryAndFetch(String, String, Object...)} using page
+     * providers.
+     *
+     * @since 5.9.6
+     */
+    @SuppressWarnings("unchecked")
+    protected static List<Map<String, Serializable>> getItems(
+            String pageProviderName, CoreSession session,
+            List<SortInfo> sortInfos, Object... params) {
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+        if (ppService == null) {
+            throw new RuntimeException("Missing PageProvider service");
+        }
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        // first retrieve potential props from definition
+        PageProviderDefinition def = ppService.getPageProviderDefinition(pageProviderName);
+        Map<String, String> defProps = def.getProperties();
+        if (defProps != null) {
+            props.putAll(defProps);
+        }
+        props.put(CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+        PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) ppService.getPageProvider(
+                pageProviderName, sortInfos, null, null, props, params);
+        if (pp == null) {
+            throw new ClientException("Page provider not found: "
+                    + pageProviderName);
+        }
+        return pp.getCurrentPage();
+    }
 }
