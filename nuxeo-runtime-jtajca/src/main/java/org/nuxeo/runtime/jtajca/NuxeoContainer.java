@@ -550,6 +550,10 @@ public class NuxeoContainer {
 
     public static synchronized void disposeConnectionManager(
             ConnectionManager mgr) throws Exception {
+        ConnectionManagerWrapper wrapper = (ConnectionManagerWrapper)mgr;
+        for (NuxeoContainerListener listener : listeners) {
+            listener.handleConnectionManagerDispose(wrapper.config.getName(), wrapper.cm);
+        }
         ((ConnectionManagerWrapper) mgr).dispose();
     }
 
