@@ -6,12 +6,6 @@ author: lkemen@nuxeo.com
 */
 
 /* =Forms elements */
-textarea {
-  font-family: "default (__FLAVOR__ font)";
-  font-size: .95em;
-  min-height: 5em;
-  padding: .4em }
-
 .required {
   background: transparent url("${basePath}/icons/required.gif") top right no-repeat;
   padding: 0 1em 0 0 }
@@ -34,15 +28,25 @@ textarea,
 input[type="text"],
 input[type="file"],
 input[type="password"] {
-  -moz-box-sizing: border-box;
+  font-family: "default (__FLAVOR__ font)";
   box-sizing: border-box;
   border: 1px solid;
   border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 2px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.07) inset;
   display: inline-block;
   font-size: 1em;
-  margin-bottom: .3em;
-  padding: .3em }
+  margin-bottom: .5em;
+  padding: .5em }
+
+input[type="text"],
+input[type="password"],
+input[type="date"],
+textarea {
+  width: 100% }
+
+textarea {
+  min-height: 5.5em }
 
 select {
   margin: 0 .5em .5em 0;
@@ -103,14 +107,13 @@ input[placeholder] {
   text-overflow: ellipsis; }
 
 /* in Tables */
-.dataInput textarea,
 .dataTableNoBorder textarea,
-.dataInput input[type="text"],
 .dataTableNoBorder input[type="text"] {
   max-width: 49em }
 
 input.rich-calendar-input[type="text"] {
-  max-width: 14em }
+  max-width: 14em;
+  width: 80%; }
 
 .chainSelect input[type="image"] {
   margin: -0.1em 0 0 0.2em;
@@ -131,3 +134,6 @@ input.tagInput {
   cursor: pointer;
   margin: 0 0 .4em;
   vertical-align: bottom }
+
+.inputDate {
+  white-space: nowrap }

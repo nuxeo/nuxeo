@@ -31,9 +31,11 @@ table td {
   margin: 0 0 .8em;
   width: 100% }
 
-.dataTableNoBorder,
-.dataInput {
+.dataTableNoBorder {
   max-width: 100em }
+
+.dataInput {
+  max-width: 50em }
 
 .dataTable th,
 .dataTableLine th,
