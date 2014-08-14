@@ -105,7 +105,7 @@ table td {
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-style: solid none;
   border-width: 1px;
-  padding: .6em .4em }
+  padding: .5em .6em .6em 0 }
 
 .dataTableNoBorder,
 .dataTableNoBorder th,
@@ -114,8 +114,8 @@ table td {
 .dataInput th,
 .dataInput td {
   background-color: none;
-	border: none 0;
-	padding: .6em .4em }
+  border: none 0;
+  padding: .5em .6em .6em 0 }
 
 .dataTable .dataTable,
 .dataTableLine .dataTableLine,
@@ -140,7 +140,7 @@ table td {
 
 table.smallTable th,
 table.smallTable td {
-  padding: .2em .4em .3em .2em }
+  padding: .2em .4em .3em 0 }
 
 .buttonsGadgetNoForm {
   margin: 0 .4em }
@@ -208,11 +208,16 @@ table.noHover tr:hover {
 .labelColumn {
   font-weight: bold;
   width: 12em }
+
 .labelColumn span {
   display: block }
 
 .fieldColumn img {
   margin: 0 .4em -0.2em .2em }
+
+.fieldColumn + .labelColumn {
+  text-align: right;
+  padding-right: 1em }
 
 #fancybox-content .labelColumn {
   width: 10em }
