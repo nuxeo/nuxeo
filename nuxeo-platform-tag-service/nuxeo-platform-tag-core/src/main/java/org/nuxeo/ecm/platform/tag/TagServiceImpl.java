@@ -84,14 +84,6 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return enabled.booleanValue();
     }
 
-    protected static String getUsername(CoreSession session)
-            throws ClientException {
-        if (session == null) {
-            throw new ClientException("No session available");
-        }
-        return session.getPrincipal().getName().replace("'", "");
-    }
-
     protected static String cleanLabel(String label, boolean allowPercent)
             throws ClientException {
         if (label == null) {
@@ -136,9 +128,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
         @Override
         public void run() throws ClientException {
-            /*
-             * Find tag.
-             */
+            // Find tag.
             String tagId = null;
             String query = String.format(
                     "SELECT ecm:uuid FROM Tag WHERE tag:label = '%s' AND ecm:isProxy = 0",
@@ -163,9 +153,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                 // session.save();
                 tagId = tag.getId();
             }
-            /*
-             * Check if tagging already exists for user.
-             */
+
+            // Check if tagging already exists for user.
             query = String.format("SELECT ecm:uuid FROM Tagging "
                     + "WHERE relation:source = '%s'"
                     + "  AND relation:target = '%s'", docId, tagId);
@@ -181,9 +170,8 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             } finally {
                 res.close();
             }
-            /*
-             * Add tagging to the document.
-             */
+
+            // Add tagging to the document.
             DocumentModel tagging = session.createDocumentModel(null, label,
                     TagConstants.TAGGING_DOCUMENT_TYPE);
             tagging.setPropertyValue("dc:created", date);
@@ -225,9 +213,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         public void run() throws ClientException {
             String tagId = null;
             if (label != null) {
-                /*
-                 * Find tag.
-                 */
+                // Find tag.
                 String query = String.format(
                         "SELECT ecm:uuid FROM Tag WHERE tag:label = '%s' AND ecm:isProxy = 0",
                         label);
@@ -246,9 +232,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                     return;
                 }
             }
-            /*
-             * Find taggings for user.
-             */
+            // Find taggings for user.
             Set<String> taggingIds = new HashSet<String>();
             String query = String.format("SELECT ecm:uuid FROM Tagging "
                     + "WHERE relation:source = '%s'", docId);
@@ -266,9 +250,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             } finally {
                 res.close();
             }
-            /*
-             * Remove taggings.
-             */
+            // Remove taggings
             for (String taggingId : taggingIds) {
                 session.removeDocument(new IdRef(taggingId));
             }
