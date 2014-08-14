@@ -32,14 +32,29 @@ import org.nuxeo.runtime.services.event.EventService;
 /**
  * @since 5.6
  */
-public class CacheManagerRegistry extends
+public final class CacheManagerRegistry extends
         ContributionFragmentRegistry<CacheManagerDescriptor> {
 
     private static final Log log = LogFactory.getLog(CacheManagerRegistry.class);
 
-    // cache of directories
-    protected Map<String, CacheManager> cacheManagers = new HashMap<String, CacheManager>();
+    // cache of cacheManager
+    protected Map<String, CacheManager<?>> cacheManagers = new HashMap<String, CacheManager<?>>();
 
+    private static CacheManagerRegistry instanceRegistry = null;
+    
+    private CacheManagerRegistry(){}
+    
+    public static CacheManagerRegistry getInstance()
+    {
+        if(instanceRegistry == null)
+        {
+            instanceRegistry = new CacheManagerRegistry();
+        }
+        
+        return instanceRegistry;
+     
+    }
+    
     @Override
     public String getContributionId(CacheManagerDescriptor contrib) {
         return contrib.name;
@@ -59,9 +74,9 @@ public class CacheManagerRegistry extends
                         "No class specified for the cacheManager ",
                         descriptor.name));
             } else {
-                CacheManager cacheManager = null;
+                CacheManager<?> cacheManager = null;
                 try {
-                    cacheManager = (CacheManager) klass.newInstance();
+                    cacheManager = (CacheManager<?>) klass.newInstance();
                 } catch (InstantiationException e) {
                     throw new RuntimeException("Failed to instantiate class "
                             + klass, e);
@@ -94,7 +109,7 @@ public class CacheManagerRegistry extends
     public void contributionRemoved(String id,
             CacheManagerDescriptor origContrib) {
         String cacheManagerName = origContrib.name;
-        CacheManager cacheManager = cacheManagers.remove(cacheManagerName);
+        CacheManager<?> cacheManager = cacheManagers.remove(cacheManagerName);
         if (cacheManager != null) {
             try {
                 // TODO : destroy/fire event to remove the former instance cache
@@ -110,13 +125,13 @@ public class CacheManagerRegistry extends
         log.info("CacheManager removed: " + cacheManagerName);
     }
 
-    protected void addListener (CacheManager cacheManager)
+    protected void addListener (CacheManager<?> cacheManager)
     {
         EventService eventService = Framework.getLocalService(EventService.class);
         eventService.addListener(CacheManager.CORECACHEMANAGER_TOPIC,
                 (EventListener) cacheManager);
     }
-    protected void removeListener(CacheManager cacheManager)
+    protected void removeListener(CacheManager<?> cacheManager)
     {
         EventService eventService = Framework.getLocalService(EventService.class);
         if (eventService != null) {
@@ -144,18 +159,18 @@ public class CacheManagerRegistry extends
     
     public void removeAllCacheManager()
     {
-        for (CacheManager cacheManager : cacheManagers.values()) {
+        for (CacheManager<?> cacheManager : cacheManagers.values()) {
             removeListener(cacheManager);
         }
-        cacheManagers = new HashMap<String, CacheManager>();
+        cacheManagers = new HashMap<String, CacheManager<?>>();
     }
 
-    public CacheManager getCacheManager(String name) {
+    public CacheManager<?> getCacheManager(String name) {
         return cacheManagers.get(name);
     }
 
-    public List<CacheManager> getCacheManagers() {
-        List<CacheManager> res = new ArrayList<CacheManager>(
+    public List<CacheManager<?>> getCacheManagers() {
+        List<CacheManager<?>> res = new ArrayList<CacheManager<?>>(
                 cacheManagers.size());
         res.addAll(cacheManagers.values());
         return res;

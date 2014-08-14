@@ -38,21 +38,21 @@ public class CacheManagerDescriptor {
     protected Class<?> implClass;
 
     @XNode("ttl")
-    protected long ttl;
+    protected Integer ttl;
 
     @XNode("maxSize")
-    protected long maxSize;
+    protected Integer maxSize;
 
     @XNode("concurrency-level")
-    protected long concurrencyLevel;
+    protected Integer concurrencyLevel;
 
     public CacheManagerDescriptor()
     {
         
     }
     
-    public CacheManagerDescriptor(String name, Class<?> implClass, long ttl,
-            long concurrencyLevel, long maxSize) {
+    public CacheManagerDescriptor(String name, Class<?> implClass, Integer ttl,
+            Integer concurrencyLevel, Integer maxSize) {
         this.name = name;
         this.implClass = implClass;
         this.ttl = ttl;
@@ -69,7 +69,7 @@ public class CacheManagerDescriptor {
         return implClass;
     }
 
-    public void setImplClass(Class<CacheManager> implClass) {
+    public void setImplClass(Class<CacheManager<?>> implClass) {
         this.implClass = implClass;
     }
 
@@ -78,27 +78,27 @@ public class CacheManagerDescriptor {
         return name + ": " + implClass + ": " + ttl + ": " + concurrencyLevel;
     }
 
-    public long getTtl() {
+    public Integer getTtl() {
         return ttl;
     }
 
-    public void setTtl(long ttl) {
+    public void setTtl(Integer ttl) {
         this.ttl = ttl;
     }
 
-    public long getConcurrencyLevel() {
+    public Integer getConcurrencyLevel() {
         return concurrencyLevel;
     }
 
-    public void setConcurrencyLevel(long concurrencyLevel) {
+    public void setConcurrencyLevel(Integer concurrencyLevel) {
         this.concurrencyLevel = concurrencyLevel;
     }
 
-    public long getMaxSize() {
+    public Integer getMaxSize() {
         return maxSize;
     }
 
-    public void setMaxSize(long maxSize) {
+    public void setMaxSize(Integer maxSize) {
         this.maxSize = maxSize;
     }
 

@@ -2,16 +2,16 @@ package org.nuxeo.ecm.core.cache;
 
 import org.nuxeo.runtime.services.event.EventListener;
 
-public abstract class AbstractCacheManager implements CacheManager,
+public abstract class AbstractCacheManager<T> implements CacheManager<T>,
         EventListener {
 
     protected String name = null;
 
-    protected long maxSize = 0L;
+    protected Integer maxSize = 0;
 
-    protected long ttl = 0L;
+    protected Integer ttl = 0;
 
-    protected long concurrencyLevel = 0L;
+    protected Integer concurrencyLevel = 0;
 
     public String getName() {
         return name;
@@ -21,27 +21,27 @@ public abstract class AbstractCacheManager implements CacheManager,
         this.name = name;
     }
 
-    public long getMaxSize() {
+    public Integer getMaxSize() {
         return maxSize;
     }
 
-    public void setMaxSize(long maxSize) {
+    public void setMaxSize(Integer maxSize) {
         this.maxSize = maxSize;
     }
 
-    public long getTtl() {
+    public Integer getTtl() {
         return ttl;
     }
 
-    public void setTtl(long ttl) {
+    public void setTtl(Integer ttl) {
         this.ttl = ttl;
     }
 
-    public long getConcurrencyLevel() {
+    public Integer getConcurrencyLevel() {
         return concurrencyLevel;
     }
 
-    public void setConcurrencyLevel(long concurrencyLevel) {
+    public void setConcurrencyLevel(Integer concurrencyLevel) {
         this.concurrencyLevel = concurrencyLevel;
     }
 

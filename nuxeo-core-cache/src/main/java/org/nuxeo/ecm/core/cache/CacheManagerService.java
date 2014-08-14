@@ -41,13 +41,13 @@ public class CacheManagerService extends DefaultComponent {
 
     protected static CacheManagerRegistry cacheRegistry;
 
-    public CacheManager getCacheManager(String name) {
+    public CacheManager<?> getCacheManager(String name) {
         return cacheRegistry.getCacheManager(name);
     }
 
     @Override
     public void activate(ComponentContext context) {
-        cacheRegistry = new CacheManagerRegistry();
+        cacheRegistry = CacheManagerRegistry.getInstance();
         log.info("CacheManagerService activated");
     }
 
@@ -81,8 +81,8 @@ public class CacheManagerService extends DefaultComponent {
     }
 
 
-    public List<CacheManager> getCacheManagers() {
-        return new ArrayList<CacheManager>(cacheRegistry.getCacheManagers());
+    public List<CacheManager<?>> getCacheManagers() {
+        return new ArrayList<CacheManager<?>>(cacheRegistry.getCacheManagers());
     }
 
 }

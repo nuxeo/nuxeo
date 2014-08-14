@@ -17,13 +17,15 @@
  */
 package org.nuxeo.ecm.core.cache;
 
+import com.google.common.cache.Cache;
+
 
 /**
  * @author Maxime Hilaire
  *
  * @since 5.9.6
  */
-public interface CacheManager {
+public interface CacheManager<T> {
 
     public static final String CORECACHEMANAGER_TOPIC = "corecachemanager";
 
@@ -31,16 +33,33 @@ public interface CacheManager {
 
     public void setName(String name);
 
-    public long getMaxSize();
+    public Integer getMaxSize();
 
-    public void setMaxSize(long maxSize);
+    public void setMaxSize(Integer maxSize);
 
-    public long getTtl();
+    public Integer getTtl();
 
-    public void setTtl(long ttl);
+    public void setTtl(Integer ttl);
 
-    public long getConcurrencyLevel();
+    public Integer getConcurrencyLevel();
 
-    public void setConcurrencyLevel(long concurrencyLevel);
+    public void setConcurrencyLevel(Integer concurrencyLevel);
+
+    /**
+     * Get the cache of the cache manager. Instantiate a new one if null
+     * 
+     * @return A cache instance. Type depends of the chosen implementation
+     *
+     * @since 5.9.6
+     */
+    public Cache<String, T> getCache();
+
+    
+    public T get(String key);
+    public void invalidate(String key);
+    public void invalidateAll();
+
+    public void put(String key, T value);
+
 
 }

@@ -31,9 +31,9 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
+import com.google.common.cache.Cache;
 import com.google.inject.Inject;
 
 /**
@@ -44,8 +44,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.cache"})
-public class TestCacheManager {
+@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.cache" })
+public class TestCacheManager<T> {
 
     private static final String TEST_BUNDLE = "org.nuxeo.ecm.core.cache.tests";
 
@@ -55,25 +55,31 @@ public class TestCacheManager {
     @Inject
     protected RuntimeHarness harness;
 
-    protected CacheManager cacheManager;
+    protected CacheManager<String> cacheManager;
 
     protected static String CACHEMANAGER_NAME = "default-test-cachemanager";
 
     @Before
     public void setUp() throws Exception {
-        
-        
-        // Config for the tested bundle
-        harness.deployContrib(TEST_BUNDLE,
-                "cachemanager-config.xml");
 
-        
+        // Config for the tested bundle
+        harness.deployContrib(TEST_BUNDLE, "cachemanager-config.xml");
+
     }
 
     @Test
     public void getCacheManager() {
-        cacheManager = cacheManagerService.getCacheManager(CACHEMANAGER_NAME);
+        cacheManager = (CacheManager<String>) cacheManagerService.getCacheManager(CACHEMANAGER_NAME);
         Assert.assertNotNull(cacheManager);
+
+        Cache<String, ?> cache = null;
+        if (cacheManager.getCache() instanceof Cache<?, ?>) {
+            cache = cacheManager.getCache();
+        }
+        cacheManager.put("test", "toto");
+        Assert.assertNotNull(cache);
+        
+        
     }
 
     @After
