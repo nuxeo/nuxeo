@@ -138,6 +138,13 @@ public interface RegistrationInfo extends Serializable {
     int getState();
 
     /**
+     * Gets the component manager.
+     *
+     * @return the component manager
+     */
+    ComponentManager getManager();
+
+    /**
      * Checks whether this component is activated.
      *
      * @return true if the component is activated, false otherwise
