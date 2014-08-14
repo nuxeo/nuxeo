@@ -14,10 +14,16 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.work.redis;
+package org.nuxeo.ecm.core.redis;
+
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
 
 /**
  * This defines system properties that can be used to run Redis tests with a
@@ -82,6 +88,25 @@ public class RedisTestHelper {
         desc.port = getPort();
         desc.prefix = getPrefix();
         return desc;
+    }
+
+    public static void clearRedis(RedisService redisService) {
+        JedisPool jedisPool = redisService.getJedisPool();
+        Jedis jedis = jedisPool.getResource();
+        try {
+            delKeys(redisService.getPrefix(), jedis);
+        } finally {
+            jedisPool.returnResource(jedis);
+        }
+    }
+
+    protected static void delKeys(String prefix, Jedis jedis) {
+        Set<String> keys = jedis.keys(prefix + "*");
+        Pipeline pipe = jedis.pipelined();
+        for (String key : keys) {
+            pipe.del(key);
+        }
+        pipe.sync();
     }
 
 }

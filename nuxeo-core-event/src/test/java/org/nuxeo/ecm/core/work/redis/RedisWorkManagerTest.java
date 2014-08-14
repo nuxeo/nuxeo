@@ -18,18 +18,13 @@ package org.nuxeo.ecm.core.work.redis;
 
 import static org.junit.Assume.assumeTrue;
 
-import java.util.Set;
-
 import org.junit.After;
 import org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor;
 import org.nuxeo.ecm.core.redis.RedisService;
 import org.nuxeo.ecm.core.redis.RedisServiceImpl;
+import org.nuxeo.ecm.core.redis.RedisTestHelper;
 import org.nuxeo.ecm.core.work.WorkManagerTest;
 import org.nuxeo.runtime.api.Framework;
-
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Pipeline;
 
 /**
  * Test of the WorkManager using Redis. Does not run if no Redis is configured
@@ -49,6 +44,7 @@ public class RedisWorkManagerTest extends WorkManagerTest {
     @Override
     protected void doDeploy() throws Exception {
         super.doDeploy();
+        deployBundle("org.nuxeo.ecm.core.redis");
         deployContrib("org.nuxeo.ecm.core.event.test",
                 "test-workmanager-redis-config.xml");
         redisConfigurationDescriptor = RedisTestHelper.getRedisConfigurationDescriptor();
@@ -56,7 +52,7 @@ public class RedisWorkManagerTest extends WorkManagerTest {
         assumeTrue(enabled);
         RedisServiceImpl redisService = (RedisServiceImpl) Framework.getLocalService(RedisService.class);
         redisService.registerConfiguration(redisConfigurationDescriptor);
-        clearRedis(redisService);
+        RedisTestHelper.clearRedis(redisService);
     }
 
     @Override
@@ -65,25 +61,6 @@ public class RedisWorkManagerTest extends WorkManagerTest {
         RedisServiceImpl redisService = (RedisServiceImpl) Framework.getLocalService(RedisService.class);
         super.tearDown();
         redisService.unregisterConfiguration(redisConfigurationDescriptor);
-    }
-
-    protected void clearRedis(RedisService redisService) {
-        JedisPool jedisPool = redisService.getJedisPool();
-        Jedis jedis = jedisPool.getResource();
-        try {
-            delKeys(redisService.getPrefix(), jedis);
-        } finally {
-            jedisPool.returnResource(jedis);
-        }
-    }
-
-    protected void delKeys(String prefix, Jedis jedis) {
-        Set<String> keys = jedis.keys(prefix + "*");
-        Pipeline pipe = jedis.pipelined();
-        for (String key : keys) {
-            pipe.del(key);
-        }
-        pipe.sync();
     }
 
 }
