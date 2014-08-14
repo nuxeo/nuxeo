@@ -64,6 +64,7 @@ import com.google.inject.Inject;
 @Deploy({ "org.nuxeo.ecm.platform.mimetype.api",
         "org.nuxeo.ecm.platform.mimetype.core",
         "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
+        "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.core.convert.plugins", "org.nuxeo.ecm.platform.convert",
         "org.nuxeo.ecm.platform.rendition.api",
         "org.nuxeo.ecm.platform.rendition.core",
