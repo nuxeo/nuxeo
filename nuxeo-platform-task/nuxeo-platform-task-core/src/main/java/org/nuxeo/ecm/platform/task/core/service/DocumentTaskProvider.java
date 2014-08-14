@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.task.Task;
@@ -333,6 +334,12 @@ public class DocumentTaskProvider implements TaskProvider {
             throw new RuntimeException("Missing PageProvider service");
         }
         Map<String, Serializable> props = new HashMap<String, Serializable>();
+        // first retrieve potential props from definition
+        PageProviderDefinition def = ppService.getPageProviderDefinition(pageProviderName);
+        Map<String, String> defProps = def.getProperties();
+        if (defProps != null) {
+            props.putAll(defProps);
+        }
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
         if (unrestricted) {
