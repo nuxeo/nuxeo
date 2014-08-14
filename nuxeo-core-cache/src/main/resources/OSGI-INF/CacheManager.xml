@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.cache.CacheManagerService"
+	version="1.0.0">
+	<documentation>
+		Service providing a cache management system.
+	</documentation>
+
+	<implementation class="org.nuxeo.ecm.core.cache.CacheManagerService" />
+
+	<service>
+		<provide interface="org.nuxeo.ecm.core.cache.CacheManager" />
+	</service>
+
+	<extension-point name="caches">
+
+		<documentation>
+			Extension Point to define a new cache manager. 
+			<cacheManager name="newCache" class="org.nuxeo.ecm.core.cache.CacheManagerImpl">
+				<maxSize>100</maxSize>
+				<ttl>20</ttl>
+				<concurrency-level>true</concurrency-level>				
+			</cacheManager>
+			The class attribute must link a class that implements the
+			CoreCacheManager interface. The default implementation is based on
+			Google Guava implementation that does not support distributed cache
+			<p/>
+			The max size set the max number of elements contained in the cache
+			<p/>
+			The Time To Live define in minutes the time before the cache will be destroyed
+			<p/>
+			The concurrency level ...???
+		</documentation>
+
+		<object class="org.nuxeo.ecm.core.cache.CacheManagerDescriptor" />
+
+	</extension-point>
+
+</component>
