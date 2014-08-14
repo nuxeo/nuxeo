@@ -65,7 +65,6 @@ public class RepositoryReloader implements EventListener {
      * @throws Exception
      */
     protected static void reloadRepositories() throws Exception {
-        RepositoryReloader.flushJCAPool();
         RepositoryReloader.closeRepositories();
     }
 }

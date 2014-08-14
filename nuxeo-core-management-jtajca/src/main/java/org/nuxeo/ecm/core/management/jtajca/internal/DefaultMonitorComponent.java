@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.core.management.jtajca.internal;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,7 +69,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
         @Override
         public void handleNewConnectionManager(String name,
                 AbstractConnectionManager cm) {
-            DefaultStorageConnectionMonitor monitor = new DefaultStorageConnectionMonitor(
+            StorageConnectionMonitor monitor = new DefaultStorageConnectionMonitor(
                     name, cm);
             monitor.install();
             storageConnectionMonitors.put(name, monitor);
@@ -82,6 +80,12 @@ public class DefaultMonitorComponent extends DefaultComponent {
                 AbstractConnectionManager cm) {
             DefaultStorageConnectionMonitor monitor = (DefaultStorageConnectionMonitor) storageConnectionMonitors.get(name);
             monitor.handleNewConnectionManager(cm);
+        }
+
+        @Override
+        public void handleConnectionManagerDispose(String name, AbstractConnectionManager mgr) {
+            StorageConnectionMonitor monitor = storageConnectionMonitors.remove(name);
+            monitor.uninstall();
         }
 
     }
