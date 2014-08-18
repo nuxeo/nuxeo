@@ -51,8 +51,8 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.publisher.core.contrib",
         "org.nuxeo.ecm.platform.publisher.core",
         "org.nuxeo.ecm.platform.publisher.task",
-        TaskUTConstants.CORE_BUNDLE_NAME, TaskUTConstants.TESTING_BUNDLE_NAME,
-        "org.nuxeo.snapshot" })
+        "org.nuxeo.ecm.platform.query.api", TaskUTConstants.CORE_BUNDLE_NAME,
+        TaskUTConstants.TESTING_BUNDLE_NAME, "org.nuxeo.snapshot" })
 @LocalDeploy("org.nuxeo.snapshot:relations-default-jena-contrib.xml")
 public class TestTreePublication {
 
