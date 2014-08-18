@@ -28,12 +28,12 @@ import com.google.common.cache.CacheBuilder;
  * Default in memory implementation for cache management based on guava
  * 
  * @author Maxime Hilaire
- * @param <V>
+ * @param <K,V>
  * @since 5.9.6
  */
-public class CacheManagerImpl<T> extends AbstractCacheManager<T> {
+public class CacheManagerImpl<K,V> extends AbstractCacheManager<K,V> {
 
-    protected Cache<String, T> cache = null;
+    protected Cache<K,V> cache = null;
     
     @Override
     public boolean aboutToHandleEvent(Event arg0) {
@@ -61,39 +61,31 @@ public class CacheManagerImpl<T> extends AbstractCacheManager<T> {
         
     }
     
-    @Override
-    public Cache<String, T> getCache()
+    public Cache<K, V> getCache()
     {
         createCache();
         return cache;
     }
 
     @Override
-    public T get(String key) {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
+    public V get(K key) {
+        return getCache().getIfPresent(key);
     }
 
 
     @Override
-    public void invalidate(String key) {
-        // TODO Auto-generated method stub
-        // 
-        throw new UnsupportedOperationException();
+    public void invalidate(K key) {
+        getCache().invalidate(key);
     }
 
     @Override
     public void invalidateAll() {
-        // TODO Auto-generated method stub
-        // 
-        throw new UnsupportedOperationException();
+        getCache().invalidateAll();
     }
 
     @Override
-    public void put(String key, T value) {
-        createCache();
-        cache.put(key, value);
+    public void put(K key, V value) {
+        getCache().put(key, value);
     }
     
 

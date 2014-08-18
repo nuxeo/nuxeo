@@ -69,7 +69,7 @@ public class CacheManagerDescriptor {
         return implClass;
     }
 
-    public void setImplClass(Class<CacheManager<?>> implClass) {
+    public void setImplClass(Class<CacheManager<?,?>> implClass) {
         this.implClass = implClass;
     }
 

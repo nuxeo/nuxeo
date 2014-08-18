@@ -55,7 +55,7 @@ public class TestCacheManager<T> {
     @Inject
     protected RuntimeHarness harness;
 
-    protected CacheManager<String> cacheManager;
+    protected CacheManager<String, String> cacheManager;
 
     protected static String CACHEMANAGER_NAME = "default-test-cachemanager";
 
@@ -69,18 +69,27 @@ public class TestCacheManager<T> {
 
     @Test
     public void getCacheManager() {
-        cacheManager = (CacheManager<String>) cacheManagerService.getCacheManager(CACHEMANAGER_NAME);
-        Assert.assertNotNull(cacheManager);
+
+        if (cacheManagerService.getCacheManager(CACHEMANAGER_NAME) instanceof CacheManagerImpl<?, ?>) {
+            cacheManager = (CacheManager<String, String>) cacheManagerService.getCacheManager(CACHEMANAGER_NAME);
+        }
 
         Cache<String, String> cache = null;
-        if (cacheManager.getCache() instanceof Cache<?, ?>) {
-            cache = cacheManager.getCache();
+
+        cache = ((CacheManagerImpl<String, String>) cacheManager).getCache();
+
+        Assert.assertNotNull(cacheManager);
+
+        if (cacheManager instanceof CacheManagerImpl<?, ?>) {
+            cache = ((CacheManagerImpl<String, String>) cacheManager).getCache();
         }
         cacheManager.put("test", "toto");
         Assert.assertNotNull(cache);
         cache.put("test2", "toto2");
         
-        
+        String testGet = cacheManager.get("test2");
+        Assert.assertNotNull(testGet);
+
     }
 
     @After

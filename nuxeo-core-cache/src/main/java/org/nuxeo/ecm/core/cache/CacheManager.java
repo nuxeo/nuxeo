@@ -17,7 +17,6 @@
  */
 package org.nuxeo.ecm.core.cache;
 
-import com.google.common.cache.Cache;
 
 
 /**
@@ -25,7 +24,7 @@ import com.google.common.cache.Cache;
  *
  * @since 5.9.6
  */
-public interface CacheManager<T> {
+public interface CacheManager<K,V> {
 
     public static final String CORECACHEMANAGER_TOPIC = "corecachemanager";
 
@@ -45,21 +44,11 @@ public interface CacheManager<T> {
 
     public void setConcurrencyLevel(Integer concurrencyLevel);
 
-    /**
-     * Get the cache of the cache manager. Instantiate a new one if null
-     * 
-     * @return A cache instance. Type depends of the chosen implementation
-     *
-     * @since 5.9.6
-     */
-    public Cache<String, T> getCache();
-
-    
-    public T get(String key);
-    public void invalidate(String key);
+    public V get(K key);
+    public void invalidate(K key);
     public void invalidateAll();
 
-    public void put(String key, T value);
+    public void put(K key, V value);
 
 
 }

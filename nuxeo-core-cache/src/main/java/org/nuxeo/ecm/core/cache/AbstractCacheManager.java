@@ -2,7 +2,7 @@ package org.nuxeo.ecm.core.cache;
 
 import org.nuxeo.runtime.services.event.EventListener;
 
-public abstract class AbstractCacheManager<T> implements CacheManager<T>,
+public abstract class AbstractCacheManager<K,V> implements CacheManager<K,V>,
         EventListener {
 
     protected String name = null;
