@@ -436,6 +436,7 @@ span.group {
   display: inline-block;
   opacity: 1;
   padding: .1em .3em .1em 1.8em;
+  margin: 0 .2em .2em 0;
   white-space: nowrap }
 
 .group,
