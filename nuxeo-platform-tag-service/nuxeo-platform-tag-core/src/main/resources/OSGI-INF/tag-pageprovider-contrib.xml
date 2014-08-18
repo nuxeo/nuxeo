@@ -33,7 +33,21 @@
       <pageSize>1</pageSize>
     </genericPageProvider>
 
+    <!-- page provider that can be optimized using ES for instance -->
     <genericPageProvider name="GET_TAGS_FOR_DOCUMENT"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <property name="language">NXTAG</property>
+      <pattern>
+        TAGISTARGET: SELECT DISTINCT tag:label FROM Tagging WHERE
+        relation:source = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <!-- page provider that should keep on using the VCS storage -->
+    <genericPageProvider name="GET_TAGS_FOR_DOCUMENT_CORE"
       class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
       <property name="useUnrestrictedSession">true</property>
       <property name="language">NXTAG</property>
@@ -57,7 +71,21 @@
       <maxPageSize>0</maxPageSize>
     </genericPageProvider>
 
+    <!-- page provider that can be optimized using ES for instance -->
     <genericPageProvider name="GET_TAGS_FOR_DOCUMENT_AND_USER"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <property name="useUnrestrictedSession">true</property>
+      <property name="language">NXTAG</property>
+      <pattern>
+        TAGISTARGET: SELECT DISTINCT tag:label FROM Tagging WHERE
+        relation:source = ? AND dc:creator = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
+    <!-- page provider that should keep on using the VCS storage -->
+    <genericPageProvider name="GET_TAGS_FOR_DOCUMENT_AND_USER_CORE"
       class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
       <property name="useUnrestrictedSession">true</property>
       <property name="language">NXTAG</property>
