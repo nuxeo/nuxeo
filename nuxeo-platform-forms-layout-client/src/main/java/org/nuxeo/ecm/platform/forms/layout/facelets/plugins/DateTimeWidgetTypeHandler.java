@@ -95,16 +95,17 @@ public class DateTimeWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     tagConfig, widget.getTagConfigId(), attributes, leaf,
                     UICalendar.COMPONENT_TYPE, null);
             ComponentHandler input = new InputDateTimeTagHandler(config);
+            String styleClass = "inputDate";
             if (widget.getProperty("styleClass") != null) {
-                // add a surrounding span tag with associated class, see
-                // NXP-14963
-                input = helper.getHtmlComponentHandler(
-                        widgetTagConfigId,
-                        FaceletHandlerHelper.getTagAttributes(helper.createAttribute(
-                                "styleClass",
-                                (String) widget.getProperty("styleClass"))),
-                        input, HtmlPanelGroup.COMPONENT_TYPE, null);
+                styleClass += " " + (String) widget.getProperty("styleClass");
             }
+            // always add a surrounding span tag with associated style class,
+            // see NXP-14963
+            input = helper.getHtmlComponentHandler(
+                    widgetTagConfigId,
+                    FaceletHandlerHelper.getTagAttributes(helper.createAttribute(
+                            "styleClass", styleClass)), input,
+                    HtmlPanelGroup.COMPONENT_TYPE, null);
             String msgId = helper.generateMessageId(widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(
                     widgetTagConfigId, msgId, widgetId, null);
