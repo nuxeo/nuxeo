@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.cache;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.services.event.Event;
 
 import com.google.common.cache.Cache;
@@ -33,20 +35,25 @@ import com.google.common.cache.CacheBuilder;
  */
 public class CacheManagerImpl<K,V> extends AbstractCacheManager<K,V> {
 
+    private static final Log log = LogFactory.getLog(CacheManagerImpl.class);
+    
     protected Cache<K,V> cache = null;
     
     @Override
-    public boolean aboutToHandleEvent(Event arg0) {
-        // TODO Auto-generated method stub
-        // return false;
-        throw new UnsupportedOperationException();
+    public boolean aboutToHandleEvent(Event event) {
+        return true;
     }
 
     @Override
-    public void handleEvent(Event arg0) {
-        // TODO Auto-generated method stub
-        // 
-        throw new UnsupportedOperationException();
+    public void handleEvent(Event event) {
+        final String id = event.getId();
+        if (CacheManagerService.INVALIDATE_ALL.equals(id)) {
+            try {
+                invalidateAll();
+            } catch (Exception e) {
+                log.error("Failed invalidate all cache", e);
+            }
+        }
     }
     
     private void createCache()

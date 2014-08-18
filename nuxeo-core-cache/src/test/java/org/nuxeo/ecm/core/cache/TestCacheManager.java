@@ -71,7 +71,7 @@ public class TestCacheManager<T> {
     public void getCacheManager() {
 
         if (cacheManagerService.getCacheManager(CACHEMANAGER_NAME) instanceof CacheManagerImpl<?, ?>) {
-            cacheManager = (CacheManager<String, String>) cacheManagerService.getCacheManager(CACHEMANAGER_NAME);
+            cacheManager = (CacheManagerImpl<String, String>) cacheManagerService.getCacheManager(CACHEMANAGER_NAME);
         }
 
         Cache<String, String> cache = null;

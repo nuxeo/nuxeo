@@ -26,7 +26,7 @@ package org.nuxeo.ecm.core.cache;
  */
 public interface CacheManager<K,V> {
 
-    public static final String CORECACHEMANAGER_TOPIC = "corecachemanager";
+    public static final String CACHEMANAGER_TOPIC = "cachemanager";
 
     public String getName();
 

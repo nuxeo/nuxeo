@@ -114,14 +114,14 @@ public final class CacheManagerRegistry extends
     protected void addListener (CacheManager<?,?> cacheManager)
     {
         EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.addListener(CacheManager.CORECACHEMANAGER_TOPIC,
+        eventService.addListener(CacheManager.CACHEMANAGER_TOPIC,
                 (EventListener) cacheManager);
     }
     protected void removeListener(CacheManager<?,?> cacheManager)
     {
         EventService eventService = Framework.getLocalService(EventService.class);
         if (eventService != null) {
-            eventService.removeListener(CacheManager.CORECACHEMANAGER_TOPIC,
+            eventService.removeListener(CacheManager.CACHEMANAGER_TOPIC,
                     (EventListener) cacheManager);
         }
     }

@@ -39,6 +39,8 @@ public class CacheManagerService extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(CacheManagerService.class);
 
+    public static final String INVALIDATE_ALL = "invalidateAll";
+
     protected static CacheManagerRegistry cacheRegistry;
 
     public CacheManager<?,?> getCacheManager(String name) {
