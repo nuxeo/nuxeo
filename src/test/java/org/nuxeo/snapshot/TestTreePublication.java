@@ -89,7 +89,8 @@ public class TestTreePublication {
     }
 
     protected void debugCreationDate(DocumentModel doc) {
-        debug.append(doc.getName() + "@time=" + System.currentTimeMillis() + ", ");
+        debug.append(doc.getName() + "@time=" + System.currentTimeMillis()
+                + ", ");
     }
 
     protected void buildTree() throws Exception {
@@ -239,11 +240,11 @@ public class TestTreePublication {
                     || doc.getName().startsWith("folder13")
                     || doc.getName().equals("folder1")
                     || doc.getName().equals("root")) {
-                assertEquals(debug + " bad version for: " + doc.getName(), "0.2",
-                        doc.getVersionLabel());
+                assertEquals(debug + " bad version for: " + doc.getName(),
+                        "0.2", doc.getVersionLabel());
             } else {
-                assertEquals(debug + " bad version for: " + doc.getName(), "0.1",
-                        doc.getVersionLabel());
+                assertEquals(debug + " bad version for: " + doc.getName(),
+                        "0.1", doc.getVersionLabel());
             }
         }
     }
