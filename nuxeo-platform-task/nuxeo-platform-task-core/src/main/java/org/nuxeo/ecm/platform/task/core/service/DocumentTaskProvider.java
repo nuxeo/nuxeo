@@ -336,9 +336,11 @@ public class DocumentTaskProvider implements TaskProvider {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         // first retrieve potential props from definition
         PageProviderDefinition def = ppService.getPageProviderDefinition(pageProviderName);
-        Map<String, String> defProps = def.getProperties();
-        if (defProps != null) {
-            props.putAll(defProps);
+        if (def != null) {
+            Map<String, String> defProps = def.getProperties();
+            if (defProps != null) {
+                props.putAll(defProps);
+            }
         }
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
