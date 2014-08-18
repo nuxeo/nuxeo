@@ -271,6 +271,15 @@
       <pageSize>2</pageSize>
     </genericPageProvider>
 
+    <coreQueryPageProvider name="CURRENT_DOCUMENT_MAX_PAGE_SIZE">
+      <pattern>
+        SELECT * FROM Document
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>100</pageSize>
+      <maxPageSize>2</maxPageSize>
+    </coreQueryPageProvider>
+
   </extension>
 
 </component>

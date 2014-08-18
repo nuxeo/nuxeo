@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,6 +34,7 @@ import javax.faces.context.FacesContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -49,6 +51,7 @@ import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewService;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
@@ -741,6 +744,29 @@ public class TestDefaultPageProviders extends SQLRepositoryTestCase {
                 break;
             }
         }
+    }
+
+    @Test
+    public void testCoreQueryWithMaxResults() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        assertNotNull(pps);
+
+        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
+                (AbstractSession) session);
+        PageProvider<?> pp = pps.getPageProvider(
+                "CURRENT_DOCUMENT_MAX_PAGE_SIZE", (DocumentModel) null, null,
+                null, null, props);
+
+        assertNotNull(pp);
+
+        List<?> p = pp.getCurrentPage();
+        assertNotNull(p);
+        assertEquals(2, p.size());
+        assertEquals(5, pp.getResultsCount());
+        assertEquals(100, pp.getPageSize());
+        assertEquals(2, pp.getMaxPageSize());
+        assertEquals(3, pp.getNumberOfPages());
     }
 
 }
