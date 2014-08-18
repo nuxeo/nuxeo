@@ -78,7 +78,7 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         if (tagService != null) {
             jg.writeArrayFieldStart("ecm:tag");
             for (Tag tag : tagService.getDocumentTags(doc.getCoreSession(),
-                    doc.getId(), null)) {
+                    doc.getId(), null, true)) {
                 jg.writeString(tag.getLabel());
             }
             jg.writeEndArray();
