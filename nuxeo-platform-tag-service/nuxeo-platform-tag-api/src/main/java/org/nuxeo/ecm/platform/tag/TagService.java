@@ -73,9 +73,24 @@ public interface TagService {
      * @param username the user name, or {@code null} for all users
      * @return the list of tags
      */
-
     List<Tag> getDocumentTags(CoreSession session, String docId, String username)
             throws ClientException;
+
+    /**
+     * Gets the tags applied to a document by a given user, or by all users.
+     * <p>
+     * Alternative method allowing to specify whether the core should be used
+     * for this query.
+     *
+     * @param session the session
+     * @param docId the document id
+     * @param username the user name, or {@code null} for all users
+     * @param useCore if true, the core should be used to retrieve tags.
+     * @return the list of tags
+     * @since 5.9.6
+     */
+    List<Tag> getDocumentTags(CoreSession session, String docId,
+            String username, boolean useCore) throws ClientException;
 
     /**
      * Removes all the tags applied to a document.
@@ -120,8 +135,8 @@ public interface TagService {
             String username) throws ClientException;
 
     /**
-     * Gets the tag cloud for a set of documents (tags with weight corresponding
-     * to their popularity).
+     * Gets the tag cloud for a set of documents (tags with weight
+     * corresponding to their popularity).
      * <p>
      * If a docId is passed, only documents under it are considered, otherwise
      * all documents in the database are used.
@@ -129,8 +144,8 @@ public interface TagService {
      * The cloud is returned unsorted.
      *
      * @param session the session
-     * @param docId the document id under which to look, or {@code null} for all
-     *            documents
+     * @param docId the document id under which to look, or {@code null} for
+     *            all documents
      * @param username the user name, or {@code null} for all users
      * @param normalize null for no weight normalization (a count is returned),
      *            {@code FALSE} for 0-100 normalization, {@code TRUE} for

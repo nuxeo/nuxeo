@@ -59,10 +59,14 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         GET_FIRST_TAGGING_FOR_DOC_AND_TAG,
         //
         GET_TAGS_FOR_DOCUMENT,
+        // core version: should keep on querying VCS
+        GET_TAGS_FOR_DOCUMENT_CORE,
         //
         GET_DOCUMENTS_FOR_TAG,
         //
         GET_TAGS_FOR_DOCUMENT_AND_USER,
+        // core version: should keep on querying VCS
+        GET_TAGS_FOR_DOCUMENT_AND_USER_CORE,
         //
         GET_DOCUMENTS_FOR_TAG_AND_USER,
         //
@@ -253,8 +257,13 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
     public List<Tag> getDocumentTags(CoreSession session, String docId,
             String username) throws ClientException {
+        return getDocumentTags(session, docId, username, true);
+    }
+
+    public List<Tag> getDocumentTags(CoreSession session, String docId,
+            String username, boolean useCore) throws ClientException {
         UnrestrictedGetDocumentTags r = new UnrestrictedGetDocumentTags(
-                session, docId, username);
+                session, docId, username, useCore);
         r.runUnrestricted();
         return r.tags;
     }
@@ -268,11 +277,15 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
         protected final List<Tag> tags;
 
+        protected final boolean useCore;
+
         protected UnrestrictedGetDocumentTags(CoreSession session,
-                String docId, String username) throws ClientException {
+                String docId, String username, boolean useCore)
+                throws ClientException {
             super(session);
             this.docId = docId;
             this.username = cleanUsername(username);
+            this.useCore = useCore;
             tags = new ArrayList<Tag>();
         }
 
@@ -280,12 +293,17 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         public void run() throws ClientException {
             List<Map<String, Serializable>> res;
             if (username == null) {
-                res = getItems(PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENT.name(),
-                        session, docId);
+                String ppName = PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENT.name();
+                if (useCore) {
+                    ppName = PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENT_CORE.name();
+                }
+                res = getItems(ppName, session, docId);
             } else {
-                res = getItems(
-                        PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENT_AND_USER.name(),
-                        session, docId, username);
+                String ppName = PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENT_AND_USER.name();
+                if (useCore) {
+                    ppName = PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENT_AND_USER_CORE.name();
+                }
+                res = getItems(ppName, session, docId, username);
             }
             if (res != null) {
                 for (Map<String, Serializable> map : res) {
@@ -610,9 +628,11 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         // first retrieve potential props from definition
         PageProviderDefinition def = ppService.getPageProviderDefinition(pageProviderName);
-        Map<String, String> defProps = def.getProperties();
-        if (defProps != null) {
-            props.putAll(defProps);
+        if (def != null) {
+            Map<String, String> defProps = def.getProperties();
+            if (defProps != null) {
+                props.putAll(defProps);
+            }
         }
         props.put(CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
