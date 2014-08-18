@@ -127,11 +127,11 @@ public class TestImportedModelRendering {
         assertNotNull(textBH);
         String text = textBH.getBlob().getString();
 
-        // check TOC
-        String checkedText = "1   Overview";
+        // check TOC (well, content: spaces vary within the TOC)
+        String checkedText = "1 Overview";
         assertTrue(String.format("Expecting text '%s' inside '%s'",
                 checkedText, text), text.contains(checkedText));
-        checkedText = "1.1   Introduction";
+        checkedText = "1.1 Introduction";
         assertTrue(String.format("Expecting text '%s' inside '%s'",
                 checkedText, text), text.contains(checkedText));
 
