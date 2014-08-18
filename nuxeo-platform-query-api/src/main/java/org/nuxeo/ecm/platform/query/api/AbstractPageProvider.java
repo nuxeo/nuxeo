@@ -191,6 +191,12 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     public long getNumberOfPages() {
         long pageSize = getPageSize();
+        // ensure 1 if no pagination
+        if (pageSize == 0) {
+            return 1;
+        }
+        // take max page size into into account
+        pageSize = getMinMaxPageSize();
         if (pageSize == 0) {
             return 1;
         }
