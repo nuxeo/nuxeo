@@ -328,8 +328,8 @@ public class DocumentTaskProvider implements TaskProvider {
     @SuppressWarnings("unchecked")
     public static List<Task> getTasks(String pageProviderName,
             CoreSession session, boolean unrestricted,
-            List<SortInfo> sortInfos, Object... params) {
-        PageProviderService ppService = Framework.getService(PageProviderService.class);
+            List<SortInfo> sortInfos, Object... params) throws ClientException {
+        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
         if (ppService == null) {
             throw new RuntimeException("Missing PageProvider service");
         }
