@@ -339,16 +339,28 @@ author: lkemen@nuxeo.com
 .mce-toolbar .mce-btn.mce-disabled {
   filter: none }
 
+.mce-btn {
+  background: #f0f0f0 }
+
+.mce-btn:hover {
+  background: #f4f4f4;
+  border-radius: none }
+
+.mce-tinymce .mce-btn button {
+	padding: 0 }
+
 .mce-toolbar .mce-btn i {
   color: "default (__FLAVOR__ color)";
-  text-shadow: none; }
+  font-size: 13px;
+  text-shadow: none }
 
 .mce-toolbar .mce-btn:hover i {
   color: "link.hover (__FLAVOR__ color)" }
 
 .mce-toolbar .mce-btn,
 .mce-toolbar .mce-btn.mce-disabled {
-  background: none 0; }
+  background: none 0;
+  padding: 4px }
 
 .mce-toolbar .mce-btn.mce-disabled {
   opacity: .3;
@@ -371,13 +383,6 @@ author: lkemen@nuxeo.com
 
 .mce-floatpanel {
   box-shadow: 0 3px 5px rgba(0,0,0,0.1) }
-
-.mce-btn {
-  background: #f0f0f0 }
-
-.mce-btn:hover {
-  background: #f4f4f4;
-  border-radius: none; }
 
 .mce-textbox:focus {
   border-color: #2e9cff }
