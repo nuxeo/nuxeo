@@ -8,6 +8,7 @@
   </parent>
 
   <artifactId>nuxeo-platform-web-common</artifactId>
+  <version>5.9.5.1</version>
   <name>Nuxeo Common Web Framework</name>
   <description>
    Provides common infrastructure for the different nuxeo web frontends (JSF/Seam and WebEngine)

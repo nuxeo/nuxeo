@@ -29,14 +29,20 @@ import org.nuxeo.runtime.api.Framework;
 
 public class VirtualHostHelper {
 
+
+    private static final int HTTP_PORT_NUMBER = 80;
+
+    private static final int HTTPS_PORT_NUMBER = 443;
+
     private static final Log log = LogFactory.getLog(VirtualHostHelper.class);
 
     private static final String X_FORWARDED_HOST = "x-forwarded-host";
 
     private static final String X_FORWARDED_PROTO = "x-forwarded-proto";
 
-    private static final String VH_HEADER = "nuxeo-virtual-host";
+    private static final String X_FORWARDED_PORT = "x-forwarded-port";
 
+    private static final String VH_HEADER = "nuxeo-virtual-host";
 
     // Utility class.
     private VirtualHostHelper() {
@@ -71,8 +77,8 @@ public class VirtualHostHelper {
         sbaseURL.append("://");
         sbaseURL.append(serverName);
         if (serverPort != 0) {
-            if ("http".equals(scheme) && serverPort != 80
-                    || "https".equals(scheme) && serverPort != 443) {
+            if ("http".equals(scheme) && serverPort != HTTP_PORT_NUMBER
+                    || "https".equals(scheme) && serverPort != HTTPS_PORT_NUMBER) {
                 sbaseURL.append(':');
                 sbaseURL.append(serverPort);
             }
@@ -96,7 +102,24 @@ public class VirtualHostHelper {
                 // default values
                 String serverName = httpRequest.getServerName();
                 int serverPort = httpRequest.getServerPort();
+                String scheme = httpRequest.getScheme();
+
                 if (!local) {
+                    String forwardedPort = httpRequest.getHeader(X_FORWARDED_PORT);
+
+                    if (forwardedPort != null) {
+                        try {
+                            serverPort = Integer.parseInt(forwardedPort);
+                        } catch (NumberFormatException e) {
+                            log.error("Unable to get forwarded port from header", e);
+                        }
+                    }
+
+                    String forwardedProto = httpRequest.getHeader(X_FORWARDED_PROTO);
+                    if (forwardedProto != null) {
+                        scheme = forwardedProto;
+                    }
+
                     // Detect virtual hosting based in standard header
                     String forwardedHost = httpRequest.getHeader(X_FORWARDED_HOST);
                     if (forwardedHost != null) {
@@ -105,17 +128,12 @@ public class VirtualHostHelper {
                             serverPort = Integer.valueOf(forwardedHost.split(":")[1]);
                         } else {
                             serverName = forwardedHost;
-                            serverPort = 80; // fallback
+                            serverPort = HTTP_PORT_NUMBER; // fallback
                         }
                     }
                 }
 
-                String scheme = httpRequest.getScheme();
 
-                String forwardedProto = httpRequest.getHeader(X_FORWARDED_PROTO);
-                if(forwardedProto != null) {
-                    scheme = forwardedProto;
-                }
 
                 baseURL = getServerUrl(scheme, serverName, serverPort);
             }
