@@ -653,8 +653,9 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
      */
     @SuppressWarnings("unchecked")
     protected static List<Map<String, Serializable>> getItems(
-            String pageProviderName, CoreSession session, Object... params) {
-        PageProviderService ppService = Framework.getService(PageProviderService.class);
+            String pageProviderName, CoreSession session, Object... params)
+            throws ClientException {
+        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
         if (ppService == null) {
             throw new RuntimeException("Missing PageProvider service");
         }
