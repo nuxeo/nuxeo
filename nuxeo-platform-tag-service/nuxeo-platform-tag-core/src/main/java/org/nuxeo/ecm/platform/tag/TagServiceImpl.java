@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -142,7 +141,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             // Find tag
             List<Map<String, Serializable>> res = getItems(
                     PAGE_PROVIDERS.GET_DOCUMENT_IDS_FOR_TAG.name(), session,
-                    null, label);
+                    label);
             String tagId = (res != null && !res.isEmpty()) ? (String) res.get(0).get(
                     NXQL.ECM_UUID)
                     : null;
@@ -160,11 +159,11 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             if (username != null) {
                 res = getItems(
                         PAGE_PROVIDERS.GET_FIRST_TAGGING_FOR_DOC_AND_TAG_AND_USER.name(),
-                        session, null, docId, tagId, username);
+                        session, docId, tagId, username);
             } else {
                 res = getItems(
                         PAGE_PROVIDERS.GET_FIRST_TAGGING_FOR_DOC_AND_TAG.name(),
-                        session, null, docId, tagId);
+                        session, docId, tagId);
             }
             if (res != null && !res.isEmpty()) {
                 // tagging already exists
@@ -215,7 +214,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                 // Find tag
                 List<Map<String, Serializable>> res = getItems(
                         PAGE_PROVIDERS.GET_DOCUMENT_IDS_FOR_TAG.name(),
-                        session, null, label);
+                        session, label);
                 tagId = (res != null && !res.isEmpty()) ? (String) res.get(0).get(
                         NXQL.ECM_UUID)
                         : null;
@@ -282,11 +281,11 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             List<Map<String, Serializable>> res;
             if (username == null) {
                 res = getItems(PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENT.name(),
-                        session, null, docId);
+                        session, docId);
             } else {
                 res = getItems(
                         PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENT_AND_USER.name(),
-                        session, null, docId, username);
+                        session, docId, username);
             }
             if (res != null) {
                 for (Map<String, Serializable> map : res) {
@@ -339,7 +338,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             Set<String> existingTags = new HashSet<>();
             List<Map<String, Serializable>> dstTagsRes = getItems(
                     PAGE_PROVIDERS.GET_TAGS_TO_COPY_FOR_DOCUMENT.name(),
-                    session, null, dstDocId);
+                    session, dstDocId);
             if (dstTagsRes != null) {
                 for (Map<String, Serializable> map : dstTagsRes) {
                     existingTags.add(String.format("%s/%s",
@@ -349,7 +348,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
             List<Map<String, Serializable>> srcTagsRes = getItems(
                     PAGE_PROVIDERS.GET_TAGS_TO_COPY_FOR_DOCUMENT.name(),
-                    session, null, srcDocId);
+                    session, srcDocId);
             if (srcTagsRes != null) {
                 for (Map<String, Serializable> map : srcTagsRes) {
                     String key = String.format("%s/%s", map.get("tag:label"),
@@ -410,11 +409,11 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             List<Map<String, Serializable>> res;
             if (username == null) {
                 res = getItems(PAGE_PROVIDERS.GET_DOCUMENTS_FOR_TAG.name(),
-                        session, null, label);
+                        session, label);
             } else {
                 res = getItems(
                         PAGE_PROVIDERS.GET_DOCUMENTS_FOR_TAG_AND_USER.name(),
-                        session, null, label, username);
+                        session, label, username);
             }
             if (res != null) {
                 for (Map<String, Serializable> map : res) {
@@ -458,11 +457,10 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             List<Map<String, Serializable>> res;
             if (docId == null) {
                 if (username == null) {
-                    res = getItems(PAGE_PROVIDERS.GET_ALL_TAGS.name(), session,
-                            null);
+                    res = getItems(PAGE_PROVIDERS.GET_ALL_TAGS.name(), session);
                 } else {
                     res = getItems(PAGE_PROVIDERS.GET_ALL_TAGS_FOR_USER.name(),
-                            session, null, username);
+                            session, username);
                 }
             } else {
                 // find all docs under docid
@@ -472,7 +470,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                 docIds.add(docId);
                 List<Map<String, Serializable>> docRes = getItems(
                         PAGE_PROVIDERS.GET_TAGGED_DOCUMENTS_UNDER.name(),
-                        session, null, path);
+                        session, path);
                 if (docRes != null) {
                     for (Map<String, Serializable> map : docRes) {
                         docIds.add((String) map.get(NXQL.ECM_UUID));
@@ -482,11 +480,11 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                 if (username == null) {
                     res = getItems(
                             PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENTS.name(),
-                            session, null, docIds);
+                            session, docIds);
                 } else {
                     res = getItems(
                             PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENTS_AND_USER.name(),
-                            session, null, docIds, username);
+                            session, docIds, username);
                 }
             }
 
@@ -578,11 +576,11 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             List<Map<String, Serializable>> res;
             if (username == null) {
                 res = getItems(PAGE_PROVIDERS.GET_TAG_SUGGESTIONS.name(),
-                        session, null, label);
+                        session, label);
             } else {
                 res = getItems(
                         PAGE_PROVIDERS.GET_TAG_SUGGESTIONS_FOR_USER.name(),
-                        session, null, label, username);
+                        session, label, username);
             }
             if (res != null) {
                 for (Map<String, Serializable> map : res) {
@@ -604,8 +602,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
      */
     @SuppressWarnings("unchecked")
     protected static List<Map<String, Serializable>> getItems(
-            String pageProviderName, CoreSession session,
-            List<SortInfo> sortInfos, Object... params) {
+            String pageProviderName, CoreSession session, Object... params) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         if (ppService == null) {
             throw new RuntimeException("Missing PageProvider service");
@@ -620,7 +617,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         props.put(CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY,
                 (Serializable) session);
         PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) ppService.getPageProvider(
-                pageProviderName, sortInfos, null, null, props, params);
+                pageProviderName, null, null, null, props, params);
         if (pp == null) {
             throw new ClientException("Page provider not found: "
                     + pageProviderName);
