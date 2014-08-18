@@ -59,15 +59,12 @@
     <c:set var="hideIcon" value="#{widgetProperty_hideIcon}" />
 
     <div class="UserSuggestionInput">
-      <h:dataTable value="#{field}" var="item"
-        rendered="#{not empty field}">
-        <h:column>
+      <c:forEach items="#{field}" var="item">
           <nxu:set var="info"
             value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(item) : userSuggestionActions.getUserInfo(item)}">
             <ui:include src="user_group_display_template.xhtml" />
           </nxu:set>
-        </h:column>
-      </h:dataTable>
+      </c:forEach>
     </div>
 
   </c:if>
