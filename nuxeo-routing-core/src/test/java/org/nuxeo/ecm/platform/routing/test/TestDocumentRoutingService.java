@@ -868,6 +868,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         deployBundle("org.nuxeo.runtime.reload");
         deployBundle("org.nuxeo.ecm.platform.filemanager.core");
         deployBundle("org.nuxeo.ecm.platform.mimetype.core");
+        deployBundle("org.nuxeo.ecm.platform.query.api");
         deployBundle("org.nuxeo.ecm.platform.task.core");
         deployBundle(TEST_BUNDLE);
         Framework.getLocalService(ReloadService.class).reloadRepository();
