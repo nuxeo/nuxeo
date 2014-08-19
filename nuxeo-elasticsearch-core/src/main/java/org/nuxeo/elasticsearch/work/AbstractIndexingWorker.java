@@ -18,6 +18,7 @@
 package org.nuxeo.elasticsearch.work;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -48,6 +49,7 @@ public abstract class AbstractIndexingWorker extends AbstractWork {
         activeWorker.incrementAndGet();
         this.cmd = cmd;
         path = cmd.getTargetDocument().getPathAsString();
+        cmd.disconnect();
     }
 
     @Override

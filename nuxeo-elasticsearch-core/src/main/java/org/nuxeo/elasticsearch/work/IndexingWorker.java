@@ -43,8 +43,8 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
     @Override
     public String getTitle() {
         String title = " ElasticSearch indexing for doc "
-                + cmd.getTargetDocument().getId() + " in repository "
-                + cmd.getTargetDocument().getRepositoryName();
+                + cmd.getDocId() + " in repository "
+                + cmd.getRepository();
         if (path != null) {
             title = title + " (" + path + ")";
         }

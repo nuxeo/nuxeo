@@ -23,8 +23,8 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -278,7 +278,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
             throws ClientException {
         BulkRequestBuilder bulkRequest = getClient().prepareBulk();
         for (IndexingCommand cmd : cmds) {
-            if ((cmd.getTargetDocument() == null)
+            String id = cmd.getDocId();
+            if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(id)
                     || (IndexingCommand.DELETE.equals(cmd.getName()))) {
                 continue;
             }
@@ -305,15 +306,17 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public void indexNow(IndexingCommand cmd) throws ClientException {
-        if (cmd.getTargetDocument() == null) {
-            return;
-        }
         if (!indexInitDone) {
             stackedCommands.add(cmd);
             log.debug("Delaying indexing command: Waiting for Index to be initialized.");
             return;
         }
         markCommandInProgress(cmd);
+        if (cmd.getTargetDocument() == null
+                && IndexingCommand.UNKOWN_DOCUMENT_ID.equals(cmd.getDocId())) {
+            totalCommandProcessed.addAndGet(1);
+            return;
+        }
         totalCommandRunning.incrementAndGet();
         if (log.isTraceEnabled()) {
             log.trace("Sending indexing request to Elasticsearch: "
@@ -342,14 +345,14 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected void processIndexCommand(IndexingCommand cmd)
             throws ClientException {
-        DocumentModel doc = cmd.getTargetDocument();
-        assert (doc != null);
+        String docId = cmd.getDocId();
+        assert (!cmd.getDocId().equals(IndexingCommand.UNKOWN_DOCUMENT_ID));
         IndexRequestBuilder request = buildEsIndexingRequest(cmd);
         if (log.isDebugEnabled()) {
             log.debug(String
                     .format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                            getRepositoryIndex(doc.getRepositoryName()),
-                            DOC_TYPE, doc.getId(), request.request().toString()));
+                            getRepositoryIndex(cmd.getRepository()),
+                            DOC_TYPE, docId, request.request().toString()));
         }
         request.execute().actionGet();
     }
@@ -440,12 +443,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
             JsonESDocumentWriter.writeESDocument(jsonGen, doc,
                     cmd.getSchemas(), null);
             return getClient().prepareIndex(
-                    getRepositoryIndex(doc.getRepositoryName()), DOC_TYPE,
-                    doc.getId()).setSource(builder);
+                    getRepositoryIndex(cmd.getRepository()), DOC_TYPE,
+                    cmd.getDocId()).setSource(builder);
         } catch (Exception e) {
             throw new ClientException(
                     "Unable to create index request for Document "
-                            + doc.getId(), e);
+                            + cmd.getDocId(), e);
         }
     }
 
@@ -465,8 +468,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public void scheduleIndexing(IndexingCommand cmd) throws ClientException {
-        DocumentModel doc = cmd.getTargetDocument();
-        if (doc == null) {
+        String id = cmd.getDocId();
+        if (IndexingCommand.UNKOWN_DOCUMENT_ID.equals(id)) {
             return;
         }
         if (isAlreadyScheduled(cmd)) {
