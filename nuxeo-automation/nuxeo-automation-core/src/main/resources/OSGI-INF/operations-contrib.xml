@@ -191,6 +191,8 @@
       class="org.nuxeo.ecm.automation.core.operations.traces.AutomationTraceGetOperation" />
     <operation
       class="org.nuxeo.ecm.automation.core.operations.traces.AutomationTraceToggleOperation" />
+    <operation
+            class="org.nuxeo.ecm.automation.core.operations.traces.JsonStackToggleDisplayOperation" />
 
   </extension>
 
