@@ -144,15 +144,14 @@ public class AutomationResource extends ModuleRoot {
                 if (cause instanceof ConflictOperationException) {
                     return WebException.newException(
                             "Failed to invoke operation: " + oid, cause,
-                            HttpServletResponse.SC_CONFLICT).toResponse();
+                            HttpServletResponse.SC_CONFLICT);
                 } else if (cause instanceof OperationNotFoundException) {
-                    return WebException.newException(
-                            "Failed to invoke operation: " + oid, cause,
-                            HttpServletResponse.SC_NOT_FOUND).toResponse();
+                    return WebException.newException("Failed to invoke " +
+                                    "operation: " + oid, cause,
+                            HttpServletResponse.SC_NOT_FOUND);
                 } else {
-                    return WebException.newException(
-                            "Failed to invoke operation: " + oid,
-                            cause).toResponse();
+                    return WebException.newException("Failed to invoke " +
+                            "operation: " + oid, cause);
                 }
             }
         }
