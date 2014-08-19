@@ -255,9 +255,8 @@ public class WebException extends WebApplicationException {
         return sw.toString();
     }
 
-    public Response toResponse() {
-        return Response.status(status).entity(this).type(MediaType
-                .APPLICATION_JSON).build();
+    public Response toResponse(MediaType mediaType) {
+        return Response.status(status).entity(this).type(mediaType).build();
     }
 
     public int getStatus() {

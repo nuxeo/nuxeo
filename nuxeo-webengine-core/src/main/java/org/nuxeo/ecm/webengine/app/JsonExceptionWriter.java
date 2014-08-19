@@ -34,7 +34,8 @@ import java.lang.reflect.Type;
  * @since 5.9.6
  */
 @Provider
-@Produces({ "application/json+nxentity", "application/json" })
+@Produces({ MediaType.APPLICATION_JSON,
+        MediaType.APPLICATION_JSON + "+nxentity" })
 public class JsonExceptionWriter implements MessageBodyWriter<WebException> {
 
     @Override
