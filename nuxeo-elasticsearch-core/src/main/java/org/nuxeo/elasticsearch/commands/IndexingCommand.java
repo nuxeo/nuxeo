@@ -64,6 +64,8 @@ public class IndexingCommand implements Serializable {
 
     public static final String PREFIX = "IndexingCommand-";
 
+    public static final String UNKOWN_DOCUMENT_ID = "unknown";
+
     protected String name;
 
     protected boolean sync;
@@ -98,6 +100,14 @@ public class IndexingCommand implements Serializable {
         this.name = command;
         this.sync = sync;
         this.recurse = recurse;
+        this.uid = targetDocument != null ? targetDocument.getId() : UNKOWN_DOCUMENT_ID;
+        if (targetDocument != null) {
+            repository = targetDocument.getRepositoryName();
+        } else {
+            RepositoryManager mgr = Framework
+                    .getLocalService(RepositoryManager.class);
+            repository = mgr.getDefaultRepository().getName();
+        }
         this.targetDocument = targetDocument;
         markUpdated();
     }
@@ -108,27 +118,19 @@ public class IndexingCommand implements Serializable {
     }
 
     public void refresh(CoreSession session) throws ClientException {
-        if (session.exists(targetDocument.getRef())) {
-            targetDocument = session.getDocument(targetDocument.getRef());
+        IdRef idref = new IdRef(uid);
+        if (session.exists(idref)) {
+            targetDocument = session.getDocument(idref);
         } else {
             // Doc was deleted : no way we can fetch it
             // re-attach ???
             log.info("Can not refresh document because it was deleted: "
-                    + targetDocument.getRef());
+                    + idref);
         }
         markUpdated();
     }
 
     public String getRepository() {
-        if (repository == null) {
-            if (targetDocument != null) {
-                repository = targetDocument.getRepositoryName();
-            } else {
-                RepositoryManager mgr = Framework
-                        .getLocalService(RepositoryManager.class);
-                repository = mgr.getDefaultRepository().getName();
-            }
-        }
         return repository;
     }
 
@@ -265,13 +267,6 @@ public class IndexingCommand implements Serializable {
     }
 
     public String getDocId() {
-        if (uid == null) {
-            if (targetDocument != null) {
-                uid = targetDocument.getId();
-            } else {
-                uid = "unknown";
-            }
-        }
         return uid;
     }
 
@@ -355,5 +350,9 @@ public class IndexingCommand implements Serializable {
                 markUpdated();
             }
         }
+    }
+
+    public void disconnect() {
+       targetDocument = null;
     }
 }
