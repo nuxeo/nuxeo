@@ -198,9 +198,12 @@ table.noHover tr:hover {
   background-color: transparent }
 
 .buttonsGadget {
-  margin: .4em 0 .4em 13em }
+  margin: .4em 0 .4em 12.6em }
 .smallButtonsGadget {
   margin: 0 0 .4em 7em }
+
+.buttonsGadget .actionsWidgetPanel {
+  padding: 0 }
 
 .iconColumn .nxDraggable {
   cursor: move }
