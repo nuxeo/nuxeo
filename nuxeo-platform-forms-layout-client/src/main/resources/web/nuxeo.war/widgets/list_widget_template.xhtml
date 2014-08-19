@@ -223,10 +223,9 @@
         actionListener="#{editableListBean.performAction}"
         reRender="#{widget.id}_panel"
         id="#{widget.id}_add"
-        styleClass="listWidgetActionAdd">
+        styleClass="button smallButton listWidgetActionAdd">
         <f:param name="for" value="#{widget.id}_input" />
         <f:param name="type" value="add" />
-        <h:graphicImage value="/widgets/img/action_add.gif" />
         <h:outputText value="#{messages['command.add']}" />
       </a4j:commandLink>
     </c:if>

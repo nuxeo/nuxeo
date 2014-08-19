@@ -85,10 +85,10 @@
     <a4j:commandLink immediate="true"
       actionListener="#{editableListBean.performAction}"
       reRender="#{layout.id}_panel"
-      id="#{layout.id}_add">
+      id="#{layout.id}_add"
+      styleClass="button smallButton">
       <f:param name="for" value="#{layout.id}_input" />
       <f:param name="type" value="add" />
-      <h:graphicImage value="/widgets/img/action_add.gif" />
       <h:outputText value="#{messages['command.add']}" />
     </a4j:commandLink>
 
