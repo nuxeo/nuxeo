@@ -438,6 +438,11 @@
         <scope>test</scope>
         <version>${nuxeo.core.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-storage-redis</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
 
       <!-- Nuxeo Services -->
       <dependency>
