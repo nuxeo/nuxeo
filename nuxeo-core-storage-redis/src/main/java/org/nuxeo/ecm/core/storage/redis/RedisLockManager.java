@@ -194,14 +194,10 @@ public class RedisLockManager extends AbstractLockManager {
 
     @Override
     public void close() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
     }
 
     @Override
     public void clearCaches() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
     }
 
 }
