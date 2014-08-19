@@ -26,8 +26,9 @@ Import-Package: javax.security.auth,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.api.login,
  org.nuxeo.runtime.model,
- org.nuxeo.runtime.services.streaming
+ org.nuxeo.runtime.services.streaming,
+ org.nuxeo.ecm.core.redis
 Bundle-SymbolicName: org.nuxeo.ecm.core.cache;singleton:=true
 Eclipse-RegisterBuddy: org.nuxeo.runtime
 Eclipse-ExtensibleAPI: true
-Require-Bundle: org.nuxeo.ecm.core
+Require-Bundle: org.nuxeo.ecm.core.redis

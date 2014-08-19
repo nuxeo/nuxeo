@@ -63,10 +63,11 @@ public class TestCacheManager<T> {
     public void setUp() throws Exception {
 
         // Config for the tested bundle
-        harness.deployContrib(TEST_BUNDLE, "cachemanager-config.xml");
+        harness.deployContrib(TEST_BUNDLE, "OSGI-INF/cachemanager-config.xml");
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void getCacheManager() {
 

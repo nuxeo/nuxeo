@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.core.cache.CacheManagerService"
     point="caches">
 
-    <cacheManager name="default-test-cachemanager" class="org.nuxeo.ecm.core.cache.CacheManagerImpl">
+    <cacheManager name="redis-test-cachemanager" class="org.nuxeo.ecm.core.redis.RedisCacheManagerImpl">
       <maxSize>100</maxSize>
       <ttl>20</ttl>
       <concurrency-level>10</concurrency-level>
