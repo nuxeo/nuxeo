@@ -110,21 +110,15 @@ public class JSFResetActionsBean {
     /**
      * Looks up the parent naming container for the component source of the
      * action event, and reset components recursively within this container.
-     *
-     * @deprecated since 5.9.4-JSF2: use
-     *             {@link #resetComponents(AjaxBehaviorEvent)} instead.
      */
-    @Deprecated
     public void resetComponents(ActionEvent event) {
-        log.warn(String.format(
-                "The method #resetComponents(ActionEvent) on component "
-                        + "'jsfResetActions' at '%s' is deprecated, please "
-                        + "use #resetComponents(AjaxBehaviorEvent) instead",
-                this.getClass().getName()));
         resetComponents((FacesEvent) event);
     }
 
     /**
+     * Looks up the parent naming container for the component source of the
+     * action event, and reset components recursively within this container.
+     *
      * @since 5.9.4-JSF2
      */
     public void resetComponents(AjaxBehaviorEvent event) {
