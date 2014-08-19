@@ -47,39 +47,6 @@
               onchanged="#{widgetProperty_onclick}"
               placeholder="#{widgetProperty_placeholder}"/>
         </span>
-        <rich:suggestionbox id="#{widget.id}_suggestionBox"
-            for="#{widget.id}_suggest" tokens=""
-            suggestionAction="#{tagActions.getSuggestions}"
-            var="sugtag" fetchValue=""
-            nothingLabel="#{messages['label.suggestion.noSearchResults']}"
-            minChars="1" frequency="0" requestDelay="100">
-          <f:param name="canSelectNewTag" value="#{widgetProperty_canSelectNewTag}" />
-          <!-- TODO migrate this properly according to JSF2 -->
-	  <a4j:ajax event="select"
-              focus="#{widget.id}_suggest"
-              bypassUpdates="true"
-              render="#{widget.id}_listRegion"
-              id="#{widget.id}_listRegion_select">
-            <f:setPropertyActionListener value="#{sugtag.label}"
-                target="#{suggestionActions.selectedValue}" />
-            <nxu:actionListenerMethod value="#{suggestionActions.addBoundSelectionToList}" />
-            <f:param name="suggestionSelectionListId" value="#{widget.id}_list" />
-            <f:param name="canSelectNewTag" value="#{widgetProperty_canSelectNewTag}" />
-          </a4j:ajax>
-          <h:column>
-            <f:subview rendered="#{sugtag.weight eq -1}">
-              <span class="tag newTag">
-                <h:outputText value="${sugtag.label}" />
-              </span>
-            </f:subview>
-            <f:subview rendered="#{sugtag.weight gt -1}">
-              <span class="tag tagLink">
-                <h:outputText value="${sugtag.label}" />
-              </span>
-            </f:subview>
-          </h:column>
-        </rich:suggestionbox>
-
         <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_listRegion"
             layout="block">
           <nxu:inputList id="#{widget.id}_list" value="#{field}" model="model"
