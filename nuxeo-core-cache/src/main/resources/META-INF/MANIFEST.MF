@@ -7,7 +7,7 @@ Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Version: 5.4.2.qualifier
 Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/CacheManager.xml
+Nuxeo-Component: OSGI-INF/CacheService.xml
 Import-Package: javax.security.auth,
  javax.security.auth.callback,
  javax.security.auth.login,
