@@ -133,7 +133,6 @@ input.rich-calendar-input[type="text"] {
 .inputDate {
   white-space: nowrap }
 
-
 /* RichFaces calendar styles override */
 table.rich-calendar-exterior {
   border: 1px solid #ddd;
@@ -141,7 +140,7 @@ table.rich-calendar-exterior {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);}
 
 table.rich-calendar-exterior tr td {
-  padding: .15em;
+  padding: .15em!important;
   vertical-align: middle }
 
 .rich-calendar-tool,
@@ -237,6 +236,7 @@ div.rich-calendar-editor-btn-over,
   border: medium none;
   border-radius: 3px;
   font-weight: bold;
+  margin: .3em;
   padding: .4em }
 
 table.rich-calendar-date-layout td {
