@@ -33,7 +33,7 @@ input[type="password"] {
   border: 1px solid;
   border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 2px;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.07) inset;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07) inset;
   display: inline-block;
   font-size: 1em;
   margin-bottom: .5em;
