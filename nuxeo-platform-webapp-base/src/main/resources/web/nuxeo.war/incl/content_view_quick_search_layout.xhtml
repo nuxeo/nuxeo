@@ -85,7 +85,7 @@ empty:
             value="#{jsfResetActions.resetComponents}" />
           <nxu:actionListenerMethod
             value="#{contentView.resetSearchDocumentModel()}" />
-          <f:param value="true" name="selectedValue"/>
+          <f:param value="false" name="selectedValue"/>
           <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
           <f:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.onClick}"/>
         </h:commandLink>
@@ -103,9 +103,18 @@ empty:
   <h:panelGroup id="#{filterFormId}_panel" layout="block">
       <nxu:valueHolder id="#{cvid}_showFilterFormBox"
         var="showFilterFormBox" defaultValue="#{nxu:hasMessages(filterFormId)}">
+        <h:form>
+          <a4j:jsFunction name="#{filterFormId}closeFancybox"
+            render="#{elementsToReRender}">
+            <f:attribute name="selectedValue" value="false" />
+            <f:attribute name="targetComponentId" value="#{cvid}_showFilterFormBox" />
+            <nxu:actionListenerMethod value="#{selectionActions.setStaticValue}"/>
+          </a4j:jsFunction>
+        </h:form>
+
         <c:if test="#{showFilterFormBox}">
           <script>
-            openFancyBox('##{filterFormId}_box');
+            openFancyBox('##{filterFormId}_box', {onClosed: #{filterFormId}closeFancybox});
             jQuery('##{filterFormId}').focusFirst();
           </script>
         </c:if>
@@ -128,9 +137,7 @@ empty:
                 action="#{contentView.resetPageProvider()}">
                 <nxu:actionListenerMethod
                   value="#{jsfResetActions.resetComponents}" />
-                <f:param value="false" name="selectedValue"/>
-                <f:param value="#{cvid}_showFilterFormBox" name="valueHolderId"/>
-                <f:ajax execute="@form" render="#{elementsToReRender}" listener="#{selectionActions.onClick}"/>
+                <f:ajax execute="@form" render="#{elementsToReRender}" />
               </h:commandButton>
               <h:commandButton
                 value="#{messages['label.contentview.filter.clearFilterButton']}"

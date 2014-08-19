@@ -32,7 +32,7 @@ empty:
   <nxu:set var="openBox" value="#{nxu:hasMessages(filterFormId) or contentView.searchLayout.filterUnfolded}"
     cache="true">
   <nxu:set var="elementsToReRender"
-    value="#{contentIdToBeReRendered}, #{resetFilterFormId}, #{filterFormId}, #{cvid}_contentViewActionsPanel"
+    value="#{contentIdToBeReRendered} #{resetFilterFormId} #{filterFormId} #{cvid}_contentViewActionsPanel"
     cache="true">
 
   <div class="foldableLightBox">
@@ -43,64 +43,55 @@ empty:
       </a>
 
       <div class="action_bar_message">
-        <h:form id="#{cvid}_resetFilterForm"
-          ajaxSubmit="true">
-          <a4j:commandLink
+        <h:form id="#{cvid}_resetFilterForm">
+          <h:commandLink
             value="#{messages['label.contentview.filter.clearFilter']}"
             id="resetFilter"
-            execute="@this"
             rendered="#{nxd:isDirty(contentView.searchDocumentModel)}"
-            render="#{elementsToReRender}"
-            ignoreDupResponses="true"
-            requestDelay="100"
             styleClass="button warningLink">
             <nxu:actionListenerMethod
               value="#{jsfResetActions.resetComponents}" />
             <nxu:actionListenerMethod
               value="#{contentView.resetSearchDocumentModel()}" />
-          </a4j:commandLink>
+            <f:ajax execute="@this" render="#{elementsToReRender}" />
+          </h:commandLink>
         </h:form>
       </div>
     </div>
 
     <div class="boxBody"
       style="#{nxu:test(openBox, '', 'overflow: visible; display: none;')}">
-      <h:form id="#{filterFormId}" ajaxSubmit="true"
-        render="#{elementsToReRender}"
-        oncomplete="jQuery.fancybox.close();"
-        ignoreDupResponses="true"
-        requestDelay="100">
+      <h:form id="#{filterFormId}">
         <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
           value="#{contentView.searchDocumentModel}" />
         <p class="buttonsGadget">
           <h:commandButton
             value="#{messages['label.contentview.filter.filterAction']}"
             id="submitFilter"
-            action="#{contentView.resetPageProvider()}"
+            action="#{contentView.resetPageProvider}"
             styleClass="button">
             <nxu:actionListenerMethod
               value="#{jsfResetActions.resetComponents}" />
+            <f:ajax execute="@form" render="#{elementsToReRender}" />
           </h:commandButton>
-          <a4j:commandButton
+          <h:commandButton
             value="#{messages['label.contentview.filter.clearFilterButton']}"
             id="resetFilter"
             execute="@this"
             disabled="#{not nxd:isDirty(contentView.searchDocumentModel)}"
-            render="#{elementsToReRender}"
-            ignoreDupResponses="true"
-            requestDelay="100"
             styleClass="button">
             <nxu:actionListenerMethod
               value="#{jsfResetActions.resetComponents}" />
             <nxu:actionListenerMethod
               value="#{contentView.resetSearchDocumentModel()}" />
-          </a4j:commandButton>
+            <f:ajax execute="@this" render="#{filterFormId}" />
+          </h:commandButton>
         </p>
       </h:form>
     </div>
 
   </div>
-  
+
   </nxu:set>
   </nxu:set>
   </nxu:set>
