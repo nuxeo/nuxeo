@@ -20,6 +20,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject(value = "lockmanager")
 public class LockManagerDescriptor {
 
+    public LockManagerDescriptor() {
+    }
+
     @XNode("@name")
     public String name;
 
