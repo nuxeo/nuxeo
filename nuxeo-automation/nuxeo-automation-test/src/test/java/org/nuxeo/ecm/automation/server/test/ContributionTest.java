@@ -34,7 +34,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.io",
-        "org.nuxeo.ecm.automation.server" })
+        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.webengine.core" })
 @LocalDeploy("org.nuxeo.ecm.automation.server:test-bindings.xml")
 // @RepositoryConfig(cleanup=Granularity.METHOD)
 public class ContributionTest {

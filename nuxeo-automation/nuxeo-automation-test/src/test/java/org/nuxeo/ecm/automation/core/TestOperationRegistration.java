@@ -24,7 +24,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.test", "org.nuxeo.ecm.automation.io",
-        "org.nuxeo.ecm.automation.server" })
+        "org.nuxeo.ecm.automation.server", "org.nuxeo.ecm.webengine.core" })
 @LocalDeploy("org.nuxeo.ecm.automation.test:test-bindings-compat.xml")
 public class TestOperationRegistration {
 
