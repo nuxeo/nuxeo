@@ -43,7 +43,7 @@ nuxeo.db.transactiontimeout=300
 
 # Redis
 nuxeo.redis.enabled=false
-nuxeo.redis.prefix=nuxeo:work:
+nuxeo.redis.prefix=nuxeo:
 nuxeo.redis.host=localhost
 nuxeo.redis.port=6379
 nuxeo.redis.password=
