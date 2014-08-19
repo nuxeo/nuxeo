@@ -66,7 +66,6 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
     public static final String CONNECT_FORM_TITLE = "Nuxeo Connect & Nuxeo Studio";
 
     @Test
-    @Ignore("for the release, since there are wait problem on iframes")
     public void testAll() throws Exception {
         runWizardAndRestart();
         installPackageAndRestart();
@@ -165,9 +164,7 @@ public class ITWizardAndUpdateCenterTests extends AbstractTest {
         assertFalse(connectWizardPage.hasError());
 
         // enter embedded IFrame
-        System.out.println(driver.getCurrentUrl());
         ConnectWizardPage connectPage1 = connectWizardPage.getConnectPage();
-        System.out.println(driver.getCurrentUrl());
         assertNotNull(connectPage1);
         assertEquals(CONNECT_FORM_TITLE, connectPage1.getTitle());
 

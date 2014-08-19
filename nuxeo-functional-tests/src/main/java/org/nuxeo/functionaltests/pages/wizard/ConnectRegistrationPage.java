@@ -13,48 +13,27 @@
  *
  * Contributors:
  *     dmetzler
+ *     akervern
  */
 package org.nuxeo.functionaltests.pages.wizard;
-
-import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- *
- *
+ * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.9.5
  */
-public class ConnectRegistrationPage extends AbstractWizardPage{
+public class ConnectRegistrationPage extends ConnectWizardPage {
 
-    /**
-     * @param driver
-     */
     public ConnectRegistrationPage(WebDriver driver) {
         super(driver);
-        IFrameHelper.focusOnConnectFrame(driver);
     }
 
     @Override
     public String getTitle() {
-        WebElement title = findElementWithTimeout(By.xpath("//h1"), ((Long)TimeUnit.SECONDS.toMillis(20)).intValue());
+        WebElement title = findElementWithTimeout(By.xpath("//h1"));
         return title.getText().trim();
     }
-
-    @Override
-    protected String getNextButtonLocator() {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected String getPreviousButtonLocator() {
-        // TODO Auto-generated method stub
-        // return null;
-        throw new UnsupportedOperationException();
-    }
-
 }
