@@ -57,46 +57,6 @@
 
   </script>
 
-  <a id="#{widget.id}_openPopup" href="##{widget.id}_tree"><img src="#{contextPath}/icons/add_popup.png" alt="Pop up" /></a>
-
-  <div style="display:none">
-    <div id="#{widget.id}_tree">
-      <rich:tree
-        id="#{widget.id}_treeId"
-        iconExpanded="/icons/toggle_minus.png"
-        iconCollapsed="/icons/toggle_plus.png">
-        <rich:recursiveTreeNodesAdaptor
-          id="#{widget.id}_recursiveTreeNodesAdaptorId"
-          roots="#{vocabularyTreeActions.getRoots(widget.properties.directoryName, widget.properties.showObsolete, widget.properties.sortByOrdering)}"
-          nodes="#{node.children}"
-          var="node">
-          <rich:treeNode
-            id="#{widget.id}_treeNodeId"
-            highlightedClass="treeNodeHighlightedClass"
-            selectedClass="treeNodeSelectedClass">
-            <a4j:commandLink immediate="true"
-              id="#{widget.id}_addMultipleValueLink"
-              actionListener="#{treeWidgetActions.addSelectionToList}"
-              styleClass="treeLink" reRender="#{widget.id}_multipleValuePanel"
-              rendered="#{widget.properties.multipleValues}">
-              <f:param name="selectionListId" value="#{widget.id}_list" />
-              <f:param name="selectedPath" value="#{widget.properties.selectIdOnly ? node.id : node.path}" />
-              <h:outputText value="#{node.label}" />
-            </a4j:commandLink>
-            <a4j:commandLink
-              id="#{widget.id}_setSingleValueLink"
-              immediate="true"
-              onclick="set#{widget.id}SingleValue('#{widget.properties.selectIdOnly ? node.label : vocabularyTreeActions.getLabelFor(widget.properties.directoryName, node.path)}', '#{widget.properties.selectIdOnly ? node.id : node.path}')"
-              rendered="#{!widget.properties.multipleValues}"
-              styleClass="treeLink">
-              <h:outputText value="#{node.label}" />
-            </a4j:commandLink>
-          </rich:treeNode>
-        </rich:recursiveTreeNodesAdaptor>
-      </rich:tree>
-    </div>
-  </div>
-
   <a4j:outputPanel id="#{widget.id}_multipleValuePanel"
     layout="block"
     ajaxRendered="true"
@@ -138,6 +98,47 @@
       <h:inputText id="#{widget.id}_inputHidden" styleClass="#{widget.id}_inputHidden" style="display:none" value="#{field}" />
     </span>
   </f:subview >
+
+  <a id="#{widget.id}_openPopup" href="##{widget.id}_tree"><img src="#{contextPath}/icons/add_popup.png" alt="Pop up" /></a>
+
+  <div style="display:none">
+    <div id="#{widget.id}_tree">
+      <rich:tree
+        id="#{widget.id}_treeId"
+        iconExpanded="/icons/toggle_minus.png"
+        iconCollapsed="/icons/toggle_plus.png">
+        <rich:recursiveTreeNodesAdaptor
+          id="#{widget.id}_recursiveTreeNodesAdaptorId"
+          roots="#{vocabularyTreeActions.getRoots(widget.properties.directoryName, widget.properties.showObsolete, widget.properties.sortByOrdering)}"
+          nodes="#{node.children}"
+          var="node">
+          <rich:treeNode
+            id="#{widget.id}_treeNodeId"
+            highlightedClass="treeNodeHighlightedClass"
+            selectedClass="treeNodeSelectedClass">
+            <a4j:commandLink immediate="true"
+              id="#{widget.id}_addMultipleValueLink"
+              actionListener="#{treeWidgetActions.addSelectionToList}"
+              styleClass="treeLink" reRender="#{widget.id}_multipleValuePanel"
+              rendered="#{widget.properties.multipleValues}">
+              <f:param name="selectionListId" value="#{widget.id}_list" />
+              <f:param name="selectedPath" value="#{widget.properties.selectIdOnly ? node.id : node.path}" />
+              <h:outputText value="#{node.label}" />
+            </a4j:commandLink>
+            <a4j:commandLink
+              id="#{widget.id}_setSingleValueLink"
+              immediate="true"
+              onclick="set#{widget.id}SingleValue('#{widget.properties.selectIdOnly ? node.label : vocabularyTreeActions.getLabelFor(widget.properties.directoryName, node.path)}', '#{widget.properties.selectIdOnly ? node.id : node.path}')"
+              rendered="#{!widget.properties.multipleValues}"
+              styleClass="treeLink">
+              <h:outputText value="#{node.label}" />
+            </a4j:commandLink>
+          </rich:treeNode>
+        </rich:recursiveTreeNodesAdaptor>
+      </rich:tree>
+    </div>
+  </div>
+
 </c:if>
 
 </div>
