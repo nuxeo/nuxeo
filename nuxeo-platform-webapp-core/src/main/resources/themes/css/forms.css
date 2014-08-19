@@ -111,10 +111,6 @@ input[placeholder] {
 .dataTableNoBorder input[type="text"] {
   max-width: 49em }
 
-input.rich-calendar-input[type="text"] {
-  max-width: 14em;
-  width: 80%; }
-
 .chainSelect input[type="image"] {
   margin: -0.1em 0 0 0.2em;
   padding: 0;
@@ -130,10 +126,9 @@ input.tagInput {
   min-width: 10em }
 
 /* =Calendar */
-.calendarTrigger {
-  cursor: pointer;
-  margin: 0 0 .4em;
-  vertical-align: bottom }
+input.rich-calendar-input[type="text"] {
+  max-width: 14em;
+  width: 85%; }
 
 .inputDate {
   white-space: nowrap }
