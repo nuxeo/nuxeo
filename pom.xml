@@ -433,9 +433,10 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-redis-test</artifactId>
-        <version>${nuxeo.core.version}</version>
+        <artifactId>nuxeo-core-redis</artifactId>
+        <type>test-jar</type>
         <scope>test</scope>
+        <version>${nuxeo.core.version}</version>
       </dependency>
 
       <!-- Nuxeo Services -->
