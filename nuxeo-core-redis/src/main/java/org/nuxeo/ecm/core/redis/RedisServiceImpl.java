@@ -36,7 +36,7 @@ public class RedisServiceImpl extends DefaultComponent implements RedisService {
 
     private static final Log log = LogFactory.getLog(RedisServiceImpl.class);
 
-    public static final String DEFAULT_PREFIX = "nuxeo:work:";
+    public static final String DEFAULT_PREFIX = "nuxeo:";
 
     protected RedisConfigurationDescriptor redisConfigurationDescriptor;
 

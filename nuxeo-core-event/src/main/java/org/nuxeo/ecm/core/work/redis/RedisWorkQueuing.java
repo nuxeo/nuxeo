@@ -53,6 +53,12 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     private static final Log log = LogFactory.getLog(RedisWorkQueuing.class);
 
+    /**
+     * Prefix for keys, added after the globally configured prefix of the
+     * {@link RedisService}.
+     */
+    public static final String PREFIX = "work:";
+
     protected static final String UTF_8 = "UTF-8";
 
     /**
@@ -350,7 +356,7 @@ public class RedisWorkQueuing implements WorkQueuing {
     protected RedisService getRedisService() {
         if (redisService == null) {
             redisService = Framework.getLocalService(RedisService.class);
-            redisPrefix = redisService.getPrefix();
+            redisPrefix = redisService.getPrefix() + PREFIX;
         }
         return redisService;
     }
