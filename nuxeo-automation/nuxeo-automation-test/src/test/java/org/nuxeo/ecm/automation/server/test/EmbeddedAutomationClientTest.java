@@ -71,6 +71,9 @@ import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.operations.services.AuditLog;
 import org.nuxeo.ecm.automation.core.operations.services.AuditPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
+
+import org.nuxeo.ecm.automation.core.operations.traces
+        .JsonStackToggleDisplayOperation;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.AutomationServerComponent;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
@@ -888,5 +891,26 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 TestBusinessArray.ID).execute();
         assertNotNull(businessBeans);
         assertEquals(2, businessBeans.length);
+    }
+
+    @Test
+    public void testRemoteException() throws Exception {
+        // Check if the json stack display activation operation exists
+        OperationDocumentation opd = session.getOperation(JsonStackToggleDisplayOperation.ID);
+        assertNotNull(opd);
+        try {
+            // get a wrong doc
+            Document wrongDoc = (Document) session.newRequest(FetchDocument.ID).set(
+                    "value", "/test").execute();
+            Assert.fail();
+        }catch(RemoteException e){
+            assertNotNull(e);
+            assertEquals("404 - Server Error\n" +
+                    "{\"entity-type\":\"exception\",\"code\":\"org.nuxeo.ecm" +
+                    ".webengine.WebException\",\"status\":404," +
+                    "\"message\":\"Failed to invoke operation: Document.Fetch\"}",e.getRemoteStackTrace());
+        }catch(Exception e){
+            Assert.fail();
+        }
     }
 }

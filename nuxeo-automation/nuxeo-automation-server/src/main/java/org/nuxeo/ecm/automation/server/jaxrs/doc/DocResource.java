@@ -40,6 +40,7 @@ import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.automation.io.yaml.YamlWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
@@ -158,6 +159,21 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
         TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
         tracerFactory.toggleRecording();
         HttpServletRequest request = RequestContext.getActiveContext().getRequest();
+        String url = request.getHeader("Referer");
+        return Response.seeOther(new URI(url)).build();
+    }
+
+    @GET
+    @Path("/toggleStackDisplay")
+    public Object toggleStackDisplay() throws Exception {
+        if (!canManageTraces()) {
+            return "You can not manage json exception stack display";
+        }
+        JsonFactoryManager jsonFactoryManager = Framework.getLocalService
+                (JsonFactoryManager.class);
+        jsonFactoryManager.toggleStackDisplay();
+        HttpServletRequest request = RequestContext.getActiveContext()
+                .getRequest();
         String url = request.getHeader("Referer");
         return Response.seeOther(new URI(url)).build();
     }
