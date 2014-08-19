@@ -183,7 +183,6 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   padding: 0 }
 
 .compactLayout .widgetLabel {
-  color: "gray.dark (__FLAVOR__ color)";
   padding: 0 .7em .4em .3em }
 
 .compactLayout input[type="image"],
@@ -198,13 +197,17 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   margin: .1em .3em .5em 0em }
 
 .compactLayout .tinyLabel {
+  color: "gray.dark (__FLAVOR__ color)";
   display: inline-block;
   text-align: right;
-  padding-right: .2em;
-  width: 30px }
+  padding: .4em .2em 0;
+  max-width: 30px }
 
 .compactLayout .fieldColumn {
   padding-left: .1em }
+
+.compactLayout .fieldColumn > div {
+  padding-bottom: 1.3em }
 
 .compactLayout .fieldColumn img {
   margin: 0 }
@@ -221,15 +224,14 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .compactLayout .fieldColumn .button,
 .compactLayout .actionsWidgetPanel .containerField .button {
   font-weight: bold;
-  margin: 0 0 .1em .5em;
+  margin: 0 .5em .1em 0em;
   padding: .1em .4em .2em;
   width: auto }
 
+.compactLayout .fieldColumn .smallButton,
 .compactLayout .actionsWidgetPanel .containerField a.button {
+  margin: .4em .5em .5em 0;
   padding: 0 .4em }
-
-.compactLayout .fieldColumn .button {
-	float: right }
 
 .compactLayout .sticker {
   margin: .1em .2em .1em 0 }
@@ -270,12 +272,12 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 /* Compact Widgets */
 .compactLayout .widgetPanel {
-  color: "gray.dark (__FLAVOR__ color)";
   padding: 0 }
 
 .compactLayout .widgetHeader.foldedDisabled {
-  background-color: "neutral.light (__FLAVOR__ background)";
-  border: none;
+  border-style: none none solid;
+  border-width: 1px;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
   color: "default (__FLAVOR__ color)";
   font-size: 1em;
   font-weight: bold;
@@ -284,8 +286,11 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   text-transform: none }
 
 .compactLayout .containerLabel {
-  width: 30%;
-  padding-right: .2em }
+  width: 30% }
+
+.compactLayout .dataInput .containerLabel span {
+  color: "gray.dark (__FLAVOR__ color)";
+  padding-top: .4em }
 
 /* Compact Tables */
 .compactLayout .dataTableNoBorder.containerWidgetTable {
