@@ -18,6 +18,7 @@
 package org.nuxeo.elasticsearch.commands;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,9 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  *
  */
-public class IndexingCommand {
+public class IndexingCommand implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final String INSERT = "ES_INSERT";
 
@@ -67,7 +70,7 @@ public class IndexingCommand {
 
     protected boolean recurse;
 
-    protected DocumentModel targetDocument;
+    protected transient DocumentModel targetDocument;
 
     protected String uid;
 
