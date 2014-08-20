@@ -9,6 +9,7 @@
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-datasource</artifactId>
+  <version>5.9.5-01-NXP-14985</version>
   <name>Nuxeo Runtime DataSource Implementation</name>
   <description>Nuxeo Runtime: DataSource Implementation</description>
 
@@ -16,6 +17,7 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
+      <version>5.9.5-01-NXP-14985</version>
     </dependency>
     <dependency>
 	<groupId>org.apache.tomcat</groupId>
@@ -29,6 +31,7 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-jtajca</artifactId>
+      <version>5.9.5-01-NXP-14985</version>
     </dependency>
 
     <dependency>

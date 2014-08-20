@@ -9,6 +9,7 @@
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-jtajca</artifactId>
+  <version>5.9.5-01-NXP-14985</version>
   <name>Nuxeo Runtime JTA/JCA Implementation</name>
   <description>Nuxeo Runtime: JTA/JCA Implementation</description>
 
@@ -16,6 +17,7 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
+      <version>5.9.5-01-NXP-14985</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

@@ -9,6 +9,7 @@
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime</artifactId>
+  <version>5.9.5-01-NXP-14985</version>
   <name>Nuxeo Runtime</name>
 
   <description>Nuxeo Runtime: The Nuxeo Runtime.</description>
