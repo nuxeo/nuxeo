@@ -9,6 +9,7 @@
   </parent>
 
   <artifactId>nuxeo-core-persistence</artifactId>
+  <version>5.9.5-01-NXP-14985</version>
   <name>Nuxeo Core Persistence </name>
   <description>Provide shared logic for accessing to datasources
                and transaction management.</description>

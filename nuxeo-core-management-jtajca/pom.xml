@@ -8,6 +8,7 @@
   </parent>
 
   <artifactId>nuxeo-core-management-jtajca</artifactId>
+  <version>5.9.5-01-NXP-14985</version>
   <name>Nuxeo Core Management JTA/JCA</name>
 
   <dependencies>
