@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -42,12 +40,12 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+
 import org.nuxeo.connect.client.status.ConnectStatusHolder;
 import org.nuxeo.connect.client.status.ConnectUpdateStatusInfo;
 import org.nuxeo.connect.client.status.SubscriptionStatusWrapper;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
 import org.nuxeo.connect.connector.http.ConnectUrlConfig;
-import org.nuxeo.connect.data.ConnectProject;
 import org.nuxeo.connect.data.SubscriptionStatusType;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.InvalidCLID;
@@ -82,7 +80,7 @@ public class ConnectStatusActionBean implements Serializable {
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
 
-    @In(create = true, required = true, value="appsViews")
+    @In(create = true, required = true, value = "appsViews")
     protected AppCenterViewsManager appsViews;
 
     @In(create = true)
@@ -117,7 +115,7 @@ public class ConnectStatusActionBean implements Serializable {
     }
 
     public List<SelectItem> getInstanceTypes() {
-        List<SelectItem> types = new ArrayList<SelectItem>();
+        List<SelectItem> types = new ArrayList<>();
         for (NuxeoClientInstanceType itype : NuxeoClientInstanceType.values()) {
             SelectItem item = new SelectItem(itype.getValue(),
                     "label.instancetype." + itype.getValue());
