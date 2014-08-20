@@ -56,11 +56,11 @@
                         }
                       </script>
 
-                      <a4j:form>
+                      <h:form>
                         <a4j:jsFunction name="registerInstanceCallback" render="connectStatusPanel">
-                          <a4j:actionparam name="param1" assignTo="#{connectStatus.token}"  />
+                          <a4j:param name="param1" assignTo="#{connectStatus.token}"  />
                         </a4j:jsFunction>
-                      </a4j:form>
+                      </h:form>
 
                       <a href="#" onclick="openInstanceRegistration(); return false;" class="button" target="_blank">
                       #{messages['action.connect.register']}</a>
