@@ -24,6 +24,7 @@ import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.runtime.api.Framework;
 
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -45,13 +46,14 @@ public class JsonWebengineWriter {
         return getFactory().createJsonGenerator(out, JsonEncoding.UTF8);
     }
 
-    public static void writeException(OutputStream out, WebException eh)
+    public static void writeException(OutputStream out,
+            WebException webException, MediaType mediaType)
             throws IOException {
-        writeException(createGenerator(out), eh);
+        writeException(createGenerator(out), webException, mediaType);
     }
 
     public static void writeException(JsonGenerator jg,
-            WebException webException)
+            WebException webException, MediaType mediaType)
             throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", "exception");
@@ -60,7 +62,8 @@ public class JsonWebengineWriter {
         //jg.writeStringField("help_url", eh.getHelpUrl());
         //jg.writeStringField("request_id", eh.getRequestId());
         jg.writeStringField("message", webException.getMessage());
-        if (jsonFactoryManager.isStackDisplay()) {
+        if (jsonFactoryManager.isStackDisplay() || MediaType.valueOf
+                (MediaType.APPLICATION_JSON + "+nxentity").equals(mediaType)) {
             jg.writeStringField("stacktrace",
                     webException.getStackTraceString());
             jg.writeObjectField("exception", webException.getCause());
