@@ -4,13 +4,15 @@ author: lkemen@nuxeo.com
 */
 
 /* Borders, color, corners and fonts */
+.select2-container {
+  margin-bottom: .5em }
+
 .select2-container .select2-choice,
 .select2-container-multi .select2-choices {
   background-image: none;
   border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 2px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07) inset;
-  margin-bottom: .5em }
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07) inset }
 
 .select2-container .select2-choice {
   border-radius: 2px 4px 4px 2px }
@@ -23,8 +25,8 @@ author: lkemen@nuxeo.com
  -webkit-transition: none;
  transition: none }
 
-.select2-container-multi .select2-search-field {
-  margin: 0 0 0 .5em }
+.select2-search .select2-input {
+  margin-bottom: 0 }
 
 .select2-container-multi .select2-choices .select2-search-field input {
 	font-family: inherit }
