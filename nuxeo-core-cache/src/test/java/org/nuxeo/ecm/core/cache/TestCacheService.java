@@ -45,7 +45,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.cache" })
+@Deploy({ "org.nuxeo.ecm.core.cache" })
 public class TestCacheService {
 
     private static final String TEST_BUNDLE = "org.nuxeo.ecm.core.cache.tests";
