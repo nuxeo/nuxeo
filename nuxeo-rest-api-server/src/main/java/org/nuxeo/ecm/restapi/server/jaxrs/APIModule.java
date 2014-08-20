@@ -80,7 +80,6 @@ public class APIModule extends WebEngineModule {
         Set<Object> result = new HashSet<Object>();
 
         result.add(new JsonRequestReader());
-        result.add(new JsonExceptionWriter());
         result.add(new JsonAutomationInfoWriter());
         result.add(new JsonDocumentWriter());
         result.add(new JsonDocumentListWriter());
