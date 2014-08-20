@@ -1,12 +1,10 @@
-package org.nuxeo.ecm.core.cache.redis.test;
-
 /*
- * (C) Copyright 2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,10 +12,11 @@ package org.nuxeo.ecm.core.cache.redis.test;
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     mhilaire
- *
- * $Id: TestMultiDirectory.java 30378 2008-02-20 17:37:26Z gracinet $
+ *     Maxime Hilaire
  */
+
+package org.nuxeo.ecm.core.cache.redis.test;
+
 
 import static org.junit.Assume.assumeTrue;
 import junit.framework.Assert;
@@ -46,10 +45,10 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import com.google.inject.Inject;
 
 /**
- * @author Maxime Hilaire
- *
+ * Unit test of cache implementation on tof of redis
+ * 
+ * since 5.9.6
  */
-
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
