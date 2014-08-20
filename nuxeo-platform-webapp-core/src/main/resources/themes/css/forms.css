@@ -50,7 +50,7 @@ textarea {
 
 select {
   margin: 0 .5em .5em 0;
-  min-width: 9em }
+  min-width: 14em }
 
 label {
   padding-right: .4em }
@@ -128,7 +128,7 @@ input.tagInput {
 /* =Calendar */
 input.rich-calendar-input[type="text"] {
   max-width: 14em;
-  width: 85%; }
+  width: 80%; }
 
 .inputDate {
   white-space: nowrap }

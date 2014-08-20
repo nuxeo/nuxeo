@@ -13,6 +13,7 @@ author: lkemen@nuxeo.com
   border-width: 1px; border-style: solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-radius: 3px;
+  box-sizing: border-box;
   float: left;
   font-family: arial,sans-serif;
   font-size: 1em;

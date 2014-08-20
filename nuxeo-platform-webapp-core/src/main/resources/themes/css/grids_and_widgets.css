@@ -206,9 +206,6 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .compactLayout .fieldColumn {
   padding-left: .1em }
 
-.compactLayout .fieldColumn > div {
-  padding-bottom: 1.3em }
-
 .compactLayout .fieldColumn img {
   margin: 0 }
 
@@ -281,7 +278,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   color: "default (__FLAVOR__ color)";
   font-size: 1em;
   font-weight: bold;
-  margin: 0 0 .5em;
+  margin: .5em 0;
   padding: .4em .3em;
   text-transform: none }
 
