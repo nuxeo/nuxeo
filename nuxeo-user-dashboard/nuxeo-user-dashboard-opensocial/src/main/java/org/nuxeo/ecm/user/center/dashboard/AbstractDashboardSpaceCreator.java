@@ -81,11 +81,13 @@ public abstract class AbstractDashboardSpaceCreator extends
             Locale locale) throws ClientException {
         // first column
         WebContentHelper.createOpenSocialGadget(space, session, locale,
-                "userworkspaces", 0, 0, 0);
+                "favorites", 0, 0, 0);
         WebContentHelper.createOpenSocialGadget(space, session, locale,
-                "userdocuments", 0, 0, 1);
+                "userworkspaces", 0, 0, 1);
         WebContentHelper.createOpenSocialGadget(space, session, locale,
-                "lastdocuments", 0, 0, 2);
+                "userdocuments", 0, 0, 2);
+        WebContentHelper.createOpenSocialGadget(space, session, locale,
+                "lastdocuments", 0, 0, 3);
         // second column
         WebContentHelper.createOpenSocialGadget(space, session, locale,
                 "quicksearch", 0, 1, 0);
