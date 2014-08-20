@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.work.api;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,16 +38,16 @@ public class WorkQueueDescriptor {
     public String id;
 
     @XNode("@queueing")
-    public Boolean queuing;
+    public Boolean queuing = Boolean.TRUE;
 
     @XNode("@processing")
-    public Boolean processing;
+    public Boolean processing = Boolean.TRUE;
 
     @XNode("name")
     public String name;
 
     @XNode("maxThreads")
-    public int maxThreads;
+    public int maxThreads = 4;
 
     /**
      * If this is {@code true}, then a priority queue is used instead of a
@@ -57,13 +58,13 @@ public class WorkQueueDescriptor {
      * @since 5.7
      */
     @XNode("usePriority")
-    public boolean usePriority;
+    public boolean usePriority = false;
 
     @XNode("clearCompletedAfterSeconds")
     public int clearCompletedAfterSeconds = 3600;
 
     @XNodeList(value = "category", type = HashSet.class, componentType = String.class)
-    public Set<String> categories;
+    public Set<String> categories = Collections.emptySet();
 
     /**
      * When specified, make the blocking queue bounded, so submission will

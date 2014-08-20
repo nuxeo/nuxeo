@@ -16,27 +16,12 @@
  */
 package org.nuxeo.ecm.core.redis;
 
-import redis.clients.jedis.JedisPool;
-
 /**
  * Service allowing configuration and access to a Redis instance.
  *
  * @since 5.8
  */
-public interface RedisService {
-
-    /**
-     * Gets the configured Jedis pool, or {@code null} if not configured.
-     * <p>
-     * From the pool, you get a {@link redis.clients.jedis.Jedis Jedis}
-     * connection using {@link JedisPool#getResource}, which MUST BE FOLLOWED by
-     * a {@code try} and a {@code finally} block in which
-     * {@link JedisPool#returnResource} MUST BE CALLED.
-     *
-     * @return the configured Jedis pool, or {@code null} if none
-     * @since 5.8
-     */
-    JedisPool getJedisPool();
+public interface RedisConfiguration {
 
     /**
      * Gets the prefix to use when construction Redis keys.
@@ -45,5 +30,6 @@ public interface RedisService {
      * @return the prefix
      */
     String getPrefix();
+
 
 }

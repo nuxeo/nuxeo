@@ -96,8 +96,8 @@ public class EventServiceImpl implements EventService, EventServiceAdmin,
         listenerDescriptors = new EventListenerList();
         postCommitExec = new PostCommitEventExecutor();
         asyncExec = new AsyncEventExecutor();
-        init();
     }
+
 
     public void init() {
         asyncExec.init();
@@ -506,5 +506,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin,
             }
         }
     }
+
 
 }

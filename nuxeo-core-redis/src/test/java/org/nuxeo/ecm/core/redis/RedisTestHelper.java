@@ -16,14 +16,15 @@
  */
 package org.nuxeo.ecm.core.redis;
 
-import java.util.Set;
+import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor;
+import junit.framework.Assert;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Pipeline;
+import org.junit.Assume;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+
+import redis.clients.jedis.Protocol;
 
 /**
  * This defines system properties that can be used to run Redis tests with a
@@ -33,80 +34,105 @@ import redis.clients.jedis.Pipeline;
  */
 public class RedisTestHelper {
 
+    private static final String REDIS_DEFAULT_MODE = "disabled";
+
+    private static final int REDIS_SENTINEL_PORT_OFFSET = 20000;
+
+    public static final String REDIS_MODE_PROP = "nuxeo.test.redis.mode";
+
     public static final String REDIS_HOST_PROP = "nuxeo.test.redis.host";
 
     public static final String REDIS_PORT_PROP = "nuxeo.test.redis.port";
 
+    public static final String REDIS_SENTINEL_HOST_PROP = "nuxeo.test.redis.sentinel.host";
+
+    public static final String REDIS_SENTINEL_PORT_PROP = "nuxeo.test.redis.sentinel.port";
+
     public static final String REDIS_PREFIX_PROP = "nuxeo.test.redis.prefix";
 
-    // SET THIS TO RUN REDIS TESTS
-    public static final String REDIS_HOST_DEFAULT = null;
-
-    public static final String REDIS_PORT_DEFAULT = null;
-
-    public static final String REDIS_PREFIX_DEFAULT = null;
-
-    static {
-        setPropertyDefault(REDIS_HOST_PROP, REDIS_HOST_DEFAULT);
-        setPropertyDefault(REDIS_PORT_PROP, REDIS_PORT_DEFAULT);
-        setPropertyDefault(REDIS_PREFIX_PROP, REDIS_PREFIX_DEFAULT);
+    enum Mode {
+        disabled, server
     }
 
-    public static String setPropertyDefault(String name, String def) {
-        String value = System.getProperty(name);
-        if (value == null || value.equals("")
-                || value.equals("${" + name + "}")) {
-            if (def == null) {
-                System.getProperties().remove(name);
-            } else {
-                System.setProperty(name, def);
-            }
-        }
-        return value;
+    public static Mode getMode() {
+        return Mode.valueOf(Framework.getProperty(REDIS_MODE_PROP,
+                REDIS_DEFAULT_MODE));
     }
 
     public static String getHost() {
-        return System.getProperty(REDIS_HOST_PROP);
+        return Framework.getProperty(REDIS_HOST_PROP, "localhost");
     }
 
     public static int getPort() {
-        String port = System.getProperty(REDIS_PORT_PROP);
-        return StringUtils.isBlank(port) ? 0 : Integer.parseInt(port);
+        String port = Framework.getProperty(REDIS_PORT_PROP,
+                Integer.toString(Protocol.DEFAULT_PORT));
+        return Integer.parseInt(port);
+    }
+
+    public static String getSentinelHost() {
+        return Framework.getProperty(REDIS_SENTINEL_HOST_PROP, "localhost");
+    }
+
+    public static int getSentinelPort() {
+        String port = Framework.getProperty(
+                REDIS_SENTINEL_PORT_PROP,
+                Integer.toString(REDIS_SENTINEL_PORT_OFFSET
+                        + Protocol.DEFAULT_PORT));
+        return Integer.parseInt(port);
     }
 
     public static String getPrefix() {
-        return System.getProperty(REDIS_PREFIX_PROP);
+        return Framework.getProperty(REDIS_PREFIX_PROP, "nuxeo:test:");
     }
 
-    public static RedisConfigurationDescriptor getRedisConfigurationDescriptor() {
-        String host = getHost();
-        if (StringUtils.isBlank(host)) {
-            return null;
+    public static RedisConfigurationDescriptor getRedisDescriptor() {
+        switch (getMode()) {
+        case server:
+            return getRedisServerDescriptor();
+        default:
+            return getRedisDisabledDescriptor();
         }
+    }
+
+    public static RedisConfigurationDescriptor getRedisDisabledDescriptor() {
         RedisConfigurationDescriptor desc = new RedisConfigurationDescriptor();
-        desc.host = host;
-        desc.port = getPort();
+        desc.disabled = true;
+        desc.prefix = "nuxeo:test";
+        return desc;
+    }
+
+    public static RedisConfigurationDescriptor getRedisServerDescriptor() {
+        RedisConfigurationDescriptor desc = new RedisConfigurationDescriptor();
+        desc.hosts = new RedisConfigurationHostDescriptor[] { new RedisConfigurationHostDescriptor(
+                getHost(), getPort()) };
         desc.prefix = getPrefix();
         return desc;
     }
 
-    public static void clearRedis(RedisService redisService) {
-        JedisPool jedisPool = redisService.getJedisPool();
-        Jedis jedis = jedisPool.getResource();
-        try {
-            delKeys(redisService.getPrefix(), jedis);
-        } finally {
-            jedisPool.returnResource(jedis);
-        }
+    public static void clearRedis(RedisConfiguration redisService) throws IOException {
+        Framework.getService(RedisServiceImpl.class).clear();
     }
 
-    protected static void delKeys(String prefix, Jedis jedis) {
-        Set<String> keys = jedis.keys(prefix + "*");
-        Pipeline pipe = jedis.pipelined();
-        for (String key : keys) {
-            pipe.del(key);
+
+    public static void setup(RuntimeHarness harness) throws Exception {
+        if (harness.getOSGiAdapter().getBundle("org.nuxeo.ecm.core.event") == null) {
+            harness.deployBundle("org.nuxeo.ecm.core.event");
         }
-        pipe.sync();
+        if (harness.getOSGiAdapter().getBundle("org.nuxeo.ecm.core.storage") == null) {
+            harness.deployBundle("org.nuxeo.ecm.core.storage");
+        }
+        harness.deployBundle("org.nuxeo.ecm.core.redis");
+        final RedisConfigurationDescriptor config = getRedisDescriptor();
+        Assume.assumeTrue(!config.disabled);
+        final RedisServiceImpl redis = Framework.getService(RedisServiceImpl.class);
+        if (!redis.activate(config)) {
+            Assert.fail("Cannot configure redis pool");
+        }
+        redis.clear();
+    }
+
+    public static void teardown(RuntimeHarness harness) {
+        Framework.getService(RedisServiceImpl.class).deactivate();
     }
 
 }

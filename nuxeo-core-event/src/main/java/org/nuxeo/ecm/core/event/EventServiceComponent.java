@@ -47,6 +47,11 @@ public class EventServiceComponent extends DefaultComponent {
     }
 
     @Override
+    public int getApplicationStartedOrder() {
+        return -500;
+    }
+
+    @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {

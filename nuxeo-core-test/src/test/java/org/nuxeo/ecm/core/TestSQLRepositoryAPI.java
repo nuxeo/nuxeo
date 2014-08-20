@@ -109,6 +109,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
+        fireFrameworkStarted();
         openSession();
     }
 
@@ -3456,7 +3457,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         ver = session.getDocument(new IdRef(vid));
         // assertEquals(name, doc.getName()); // no path -> no name...
         assertEquals("Ver title",
-                (String) ver.getProperty("dublincore", "title"));
+                ver.getProperty("dublincore", "title"));
         assertEquals(mod, ver.getProperty("dublincore", "modified"));
         assertEquals("v lcp", ver.getLifeCyclePolicy());
         assertEquals("v lcst", ver.getCurrentLifeCycleState());
@@ -3489,7 +3490,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         proxy = session.getDocument(new IdRef(pid));
         assertEquals(name, proxy.getName());
         assertEquals("Ver title",
-                (String) proxy.getProperty("dublincore", "title"));
+                proxy.getProperty("dublincore", "title"));
         assertEquals(mod, proxy.getProperty("dublincore", "modified"));
         assertEquals("v lcp", proxy.getLifeCyclePolicy());
         assertEquals("v lcst", proxy.getCurrentLifeCycleState());
@@ -3520,7 +3521,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         doc = session.getDocument(new IdRef(id));
         assertEquals(name, doc.getName());
         assertEquals("Live title",
-                (String) doc.getProperty("dublincore", "title"));
+                doc.getProperty("dublincore", "title"));
         assertEquals(folderId, doc.getParentRef().toString());
         assertEquals("lcp", doc.getLifeCyclePolicy());
         assertEquals("lcst", doc.getCurrentLifeCycleState());
@@ -3816,7 +3817,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertNull(doc.getParentRef());
 
         assertEquals("The title",
-                (String) doc.getProperty("dublincore", "title"));
+                doc.getProperty("dublincore", "title"));
         assertNull(doc.getProperty("dublincore", "description"));
 
         doc2 = session.getDocument(new IdRef(doc2.getId()));

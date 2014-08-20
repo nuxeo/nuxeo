@@ -41,7 +41,6 @@
     <module>nuxeo-core-storage-mem</module>
     <module>nuxeo-core-storage-mongodb</module>
     <module>nuxeo-core-redis</module>
-    <module>nuxeo-core-storage-redis</module>
   </modules>
 
   <scm>

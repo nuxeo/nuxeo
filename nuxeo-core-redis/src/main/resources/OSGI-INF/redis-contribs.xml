@@ -1,0 +1,8 @@
+<component name="org.nuxeo.ecm.core.redis.contribs">
+  <extension target="org.nuxeo.ecm.core.work.service" point="implementation">
+    <queuing class="org.nuxeo.ecm.core.work.redis.RedisWorkQueuing"/>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.storage.lock.LockManagerService" point="lockmanager">
+    <lockmanager name="default" class="org.nuxeo.ecm.core.storage.redis.RedisLockManager" />
+  </extension>
+</component>

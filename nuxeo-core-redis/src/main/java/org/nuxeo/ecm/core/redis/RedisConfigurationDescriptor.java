@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.redis;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
+import redis.clients.jedis.Protocol;
+
 /**
  * Descriptor for a Redis configuration.
  *
@@ -28,24 +30,42 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class RedisConfigurationDescriptor {
 
     @XNode("@disabled")
-    public boolean disabled;
+    public boolean disabled = false;
 
     @XNode("prefix")
-    public String prefix;
-
-    @XNode("host")
-    public String host;
-
-    @XNode("port")
-    public int port;
+    public String prefix = "nuxeo:";
 
     @XNode("password")
     public String password;
 
     @XNode("database")
-    public int database;
+    public int database = Protocol.DEFAULT_DATABASE;
 
     @XNode("timeout")
-    public int timeout;
+    public int timeout = Protocol.DEFAULT_TIMEOUT;
 
+    @XNode("hosts")
+    public RedisConfigurationHostDescriptor[] hosts = new RedisConfigurationHostDescriptor[0];
+
+    @XNode("host")
+    public void setHost(String name) {
+        if (hosts.length == 0) {
+            hosts = new RedisConfigurationHostDescriptor[] {
+                    new RedisConfigurationHostDescriptor(name, Protocol.DEFAULT_PORT)
+            };
+        } else {
+            hosts[0].name = name;
+        }
+    }
+
+    @XNode("port")
+    public void setHost(int port) {
+        if (hosts.length == 0) {
+            hosts = new RedisConfigurationHostDescriptor[] {
+                    new RedisConfigurationHostDescriptor("localhost", port)
+            };
+        } else {
+            hosts[0].port = port;
+        }
+    }
 }

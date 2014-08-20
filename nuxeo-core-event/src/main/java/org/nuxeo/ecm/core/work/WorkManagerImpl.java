@@ -72,6 +72,8 @@ import com.codahale.metrics.Timer;
  */
 public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
+    public static final String NAME = "org.nuxeo.ecm.core.work.service";
+
     private static final Log log = LogFactory.getLog(WorkManagerImpl.class);
 
     protected static final String QUEUES_EP = "queues";
@@ -82,14 +84,12 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     public static final String DEFAULT_CATEGORY = "default";
 
-    protected static final int DEFAULT_MAX_POOL_SIZE = 4;
-
     protected static final String THREAD_PREFIX = "Nuxeo-Work-";
 
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
     // @GuardedBy("itself")
-    protected final WorkQueueDescriptorRegistry workQueueDescriptors = new WorkQueueDescriptorRegistry();
+    protected final WorkQueueDescriptorRegistry workQueueDescriptors = new WorkQueueDescriptorRegistry(this);
 
     // used synchronized
     protected final Map<String, WorkThreadPoolExecutor> executors = new HashMap<String, WorkThreadPoolExecutor>();
@@ -103,7 +103,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
-        init();
         shutdownListener = new ShutdownListener();
         Framework.addListener(shutdownListener);
     }
@@ -115,12 +114,13 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         super.deactivate(context);
     }
 
+
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (QUEUES_EP.equals(extensionPoint)) {
-            registerWorkQueueDescriptor((WorkQueueDescriptor) contribution);
+            workQueueDescriptors.addContribution((WorkQueueDescriptor) contribution);
         } else if (IMPL_EP.equals(extensionPoint)) {
             registerWorkQueuingDescriptor((WorkQueuingImplDescriptor) contribution);
         } else {
@@ -134,7 +134,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (QUEUES_EP.equals(extensionPoint)) {
-            unregisterWorkQueueDescriptor((WorkQueueDescriptor) contribution);
+            workQueueDescriptors.removeContribution((WorkQueueDescriptor) contribution);
         } else if (IMPL_EP.equals(extensionPoint)) {
             unregisterWorkQueuingDescriptor((WorkQueuingImplDescriptor) contribution);
         } else {
@@ -143,7 +143,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
     }
 
-    public void registerWorkQueueDescriptor(
+    protected void activateQueue(
             WorkQueueDescriptor workQueueDescriptor) {
         Boolean processing = workQueueDescriptor.processing;
         Boolean queuing = workQueueDescriptor.queuing;
@@ -162,54 +162,67 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             what += queuing == null ? "" : (" queuing=" + queuing);
             log.info("Setting on all work queues " + queueIds + what);
             for (String queueId : queueIds) {
+                if (WorkQueueDescriptor.ALL_QUEUES.equals(queueId)) {
+                    continue;
+                }
                 // add a contribution redefining processing/queueing
                 WorkQueueDescriptor wqd = workQueueDescriptors.get(queueId);
                 wqd.processing = processing;
                 wqd.queuing = queuing;
-                addWorkQueueDescriptor(wqd);
+                activateQueue(wqd);
             }
             return;
         }
         String what = Boolean.FALSE.equals(processing) ? " (no processing)"
                 : "";
         what += Boolean.FALSE.equals(queuing) ? " (no queuing)" : "";
-        log.info("Registered work queue " + workQueueDescriptor.id + what);
-        addWorkQueueDescriptor(workQueueDescriptor);
+        String id = workQueueDescriptor.id;
+        WorkThreadPoolExecutor executor = executors.get(id);
+        if (executor == null) {
+            ThreadFactory threadFactory = new NamedThreadFactory(THREAD_PREFIX
+                    + id + "-");
+            int maxPoolSize = workQueueDescriptor.maxThreads;
+            executor = new WorkThreadPoolExecutor(id, maxPoolSize, maxPoolSize,
+                    0, TimeUnit.SECONDS, threadFactory);
+            // prestart all core threads so that direct additions to the queue
+            // (from another Nuxeo instance) can be seen
+            executor.prestartAllCoreThreads();
+            executors.put(id, executor);
+        }
+        NuxeoBlockingQueue queue = (NuxeoBlockingQueue) executor.getQueue();
+        // get merged contrib
+        // set active state
+        queue.setActive(processing);
+        log.info("Activated work queue " + workQueueDescriptor.id + what);
     }
 
-    public void unregisterWorkQueueDescriptor(
+    public void deactivateQueue(
             WorkQueueDescriptor workQueueDescriptor) {
         if (WorkQueueDescriptor.ALL_QUEUES.equals(workQueueDescriptor.id)) {
-            // cannot unregister
             return;
         }
-        log.info("Unregistered work queue " + workQueueDescriptor.id);
-        synchronized (workQueueDescriptors) {
-            workQueueDescriptors.removeContribution(workQueueDescriptor);
-        }
+        WorkThreadPoolExecutor executor = executors.get(workQueueDescriptor.id);
+        executor.shutdownAndSuspend();
+        log.info("Deactivated work queue " + workQueueDescriptor.id);
     }
 
-    protected void addWorkQueueDescriptor(
-            WorkQueueDescriptor workQueueDescriptor) {
-        synchronized (workQueueDescriptors) {
-            workQueueDescriptors.addContribution(workQueueDescriptor);
-            String id = workQueueDescriptor.id;
-            NuxeoBlockingQueue queue = (NuxeoBlockingQueue) getExecutor(id).getQueue();
-            // get merged contrib
-            WorkQueueDescriptor wqd = workQueueDescriptors.get(id);
-            // set active state
-            queue.setActive(wqd.isProcessingEnabled());
-        }
-    }
 
-    protected void registerWorkQueuingDescriptor(WorkQueuingImplDescriptor descr) {
+    public void registerWorkQueuingDescriptor(WorkQueuingImplDescriptor descr) {
         WorkQueuing q = newWorkQueuing(descr.getWorkQueuingClass());
+        registerWorkQueuing(q);
+    }
+
+    public void registerWorkQueuing(WorkQueuing q) {
         closeQueuing();
         queuing = q;
     }
 
-    protected void unregisterWorkQueuingDescriptor(
+    public void unregisterWorkQueuingDescriptor(
             WorkQueuingImplDescriptor descr) {
+        unregisterWorkQueing();
+    }
+
+    public void unregisterWorkQueing() {
         closeQueuing();
         queuing = newWorkQueuing(MemoryWorkQueuing.class);
     }
@@ -275,19 +288,30 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     @Override
-    public void init() {
-        queuing.init();
-        startExecutors();
+    public int getApplicationStartedOrder() {
+        return ((DefaultComponent)Framework.getRuntime().getComponent("org.nuxeo.ecm.core.event.EventServiceComponent")).getApplicationStartedOrder()-1;
     }
 
-    protected void startExecutors() {
-        for (String queueId : getWorkQueueIds()) {
-            // make sure the executor runs (even if processing disabled)
-            getExecutor(queueId);
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        init();
+    }
+
+    protected boolean started = false;
+
+    @Override
+    public void init() {
+        started = true;
+        queuing.init();
+        for (String id:workQueueDescriptors.getQueueIds()) {
+            activateQueue(workQueueDescriptors.get(id));
         }
     }
 
     protected synchronized WorkThreadPoolExecutor getExecutor(String queueId) {
+        if (!started) {
+            init();
+        }
         WorkQueueDescriptor workQueueDescriptor;
         synchronized (workQueueDescriptors) {
             workQueueDescriptor = workQueueDescriptors.get(queueId);
@@ -296,23 +320,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             throw new IllegalArgumentException("No such work queue: " + queueId);
         }
 
-        WorkThreadPoolExecutor executor = executors.get(queueId);
-        if (executor == null) {
-            ThreadFactory threadFactory = new NamedThreadFactory(THREAD_PREFIX
-                    + queueId + "-");
-            int maxPoolSize = workQueueDescriptor.maxThreads;
-            if (maxPoolSize <= 0) {
-                maxPoolSize = DEFAULT_MAX_POOL_SIZE;
-                workQueueDescriptor.maxThreads = maxPoolSize;
-            }
-            executor = new WorkThreadPoolExecutor(queueId, maxPoolSize,
-                    maxPoolSize, 0, TimeUnit.SECONDS, threadFactory);
-            // prestart all core threads so that direct additions to the queue
-            // (from another Nuxeo instance) can be seen
-            executor.prestartAllCoreThreads();
-            executors.put(queueId, executor);
-        }
-        return executor;
+        return executors.get(queueId);
     }
 
     @Override
@@ -366,13 +374,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     @Override
     public synchronized boolean shutdown(long timeout, TimeUnit unit)
             throws InterruptedException {
-        if (executors == null) {
-            return true;
-        }
         List<WorkThreadPoolExecutor> executorList = new ArrayList<WorkThreadPoolExecutor>(
                 executors.values());
         executors.clear();
-
+        started = false;
         return shutdownExecutors(executorList, timeout, unit);
     }
 

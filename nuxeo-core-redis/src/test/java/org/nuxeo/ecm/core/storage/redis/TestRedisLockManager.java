@@ -21,7 +21,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 import java.util.Calendar;
 
@@ -30,9 +29,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor;
-import org.nuxeo.ecm.core.redis.RedisService;
-import org.nuxeo.ecm.core.redis.RedisServiceImpl;
 import org.nuxeo.ecm.core.redis.RedisTestHelper;
+import org.nuxeo.ecm.core.storage.lock.LockManager;
+import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -44,22 +43,14 @@ public class TestRedisLockManager extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("org.nuxeo.ecm.core.redis");
-
-        redisConfigurationDescriptor = RedisTestHelper.getRedisConfigurationDescriptor();
-        boolean enabled = redisConfigurationDescriptor != null;
-        assumeTrue(enabled);
-        RedisServiceImpl redisService = (RedisServiceImpl) Framework.getLocalService(RedisService.class);
-        redisService.registerConfiguration(redisConfigurationDescriptor);
-        RedisTestHelper.clearRedis(redisService);
+        RedisTestHelper.setup(this);
     }
 
     @Override
     @After
     public void tearDown() throws Exception {
-        RedisServiceImpl redisService = (RedisServiceImpl) Framework.getLocalService(RedisService.class);
+        RedisTestHelper.teardown(this);
         super.tearDown();
-        redisService.unregisterConfiguration(redisConfigurationDescriptor);
     }
 
     protected static void assertTimeEquals(Calendar expected, Lock lock) {
@@ -69,7 +60,7 @@ public class TestRedisLockManager extends NXRuntimeTestCase {
 
     @Test
     public void testRedisLockManager() throws Exception {
-        RedisLockManager lockManager = new RedisLockManager("test");
+        LockManager lockManager = Framework.getLocalService(LockManagerService.class).getLockManager("default");
         String id = "1234";
 
         // no lock initially present

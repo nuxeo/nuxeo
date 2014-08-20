@@ -44,6 +44,7 @@ public class TestEventServiceComponent extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.event");
+        fireFrameworkStarted();
         // 2 quartz threads launched by the event contribs above
         Thread.sleep(100);
         initialThreadCount = Thread.activeCount();

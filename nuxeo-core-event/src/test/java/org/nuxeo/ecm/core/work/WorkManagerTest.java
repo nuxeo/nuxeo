@@ -19,7 +19,6 @@ package org.nuxeo.ecm.core.work;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.work.api.Work.State.CANCELED;
@@ -63,6 +62,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         doDeploy();
+        fireFrameworkStarted();
         service = Framework.getLocalService(WorkManager.class);
     }
 
@@ -103,8 +103,6 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals(QUEUE, service.getCategoryQueueId(CATEGORY));
         WorkQueueDescriptor qd = service.getWorkQueueDescriptor(QUEUE);
         assertEquals("SleepWork", qd.id);
-        assertNull(qd.queuing);
-        assertNull(qd.processing);
         assertEquals("Sleep Work Queue", qd.name);
         assertEquals(2, qd.maxThreads);
         assertFalse(qd.usePriority);
@@ -138,6 +136,8 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
     @Test
     public void testWorkManagerScheduling() throws Exception {
+        assertEquals(Collections.emptyList(),
+                service.listWorkIds(QUEUE, COMPLETED));
         int duration = 5000; // 2s
         SleepWork work1 = new SleepWork(duration, false, "1");
         SleepWork work2 = new SleepWork(duration, false, "2");
@@ -262,7 +262,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         descr.id = "SleepWork";
         descr.processing = Boolean.TRUE;
         descr.categories = Collections.emptySet();
-        ((WorkManagerImpl) service).registerWorkQueueDescriptor(descr);
+        ((WorkManagerImpl) service).activateQueue(descr);
 
         Thread.sleep(duration / 2);
         assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
@@ -303,7 +303,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         descr.id = "SleepWork";
         descr.processing = Boolean.TRUE;
         descr.categories = Collections.emptySet();
-        ((WorkManagerImpl) service).registerWorkQueueDescriptor(descr);
+        ((WorkManagerImpl) service).activateQueue(descr);
 
         Thread.sleep(duration / 2);
         assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));

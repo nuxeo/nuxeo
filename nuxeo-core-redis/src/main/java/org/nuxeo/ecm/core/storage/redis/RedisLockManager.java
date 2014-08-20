@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.storage.redis;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -23,12 +24,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Lock;
-import org.nuxeo.ecm.core.redis.RedisService;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.redis.RedisCallable;
+import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
 import org.nuxeo.runtime.api.Framework;
-
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
 /**
  * Redis-based lock manager.
@@ -78,7 +78,7 @@ public class RedisLockManager extends AbstractLockManager {
 
     protected final String repositoryName;
 
-    protected RedisService redisService;
+    protected RedisExecutor redisExecutor;
 
     protected String prefix;
 
@@ -93,41 +93,24 @@ public class RedisLockManager extends AbstractLockManager {
      */
     public RedisLockManager(String repositoryName) {
         this.repositoryName = repositoryName;
+        redisExecutor = Framework.getService(RedisExecutor.class);
+        init();
     }
 
-    protected RedisService getRedisService() {
-        if (redisService == null) {
-            redisService = Framework.getService(RedisService.class);
-            prefix = redisService.getPrefix() + PREFIX + repositoryName + ':';
-            init();
-        }
-        return redisService;
-    }
-
-    protected void init() {
-        Jedis jedis = getJedis();
+    protected void init()  {
         try {
-            scriptSetSha = jedis.scriptLoad(SCRIPT_SET);
-            scriptRemoveSha = jedis.scriptLoad(SCRIPT_REMOVE);
-        } finally {
-            closeJedis(jedis);
-        }
-    }
+            redisExecutor.execute(new RedisCallable<Void>() {
 
-    protected Jedis getJedis() {
-        RedisService redisService = getRedisService();
-        if (redisService == null) {
-            return null;
+                @Override
+                public Void call()  {
+                    scriptSetSha = jedis.scriptLoad(SCRIPT_SET);
+                    scriptRemoveSha = jedis.scriptLoad(SCRIPT_REMOVE);
+                    return null;
+                }
+            });
+        } catch (Exception cause) {
+           throw new NuxeoException("Cannot load lock scripts in redis", cause);
         }
-        JedisPool jedisPool = redisService.getJedisPool();
-        if (jedisPool == null) {
-            return null;
-        }
-        return jedisPool.getResource();
-    }
-
-    protected void closeJedis(Jedis jedis) {
-        getRedisService().getJedisPool().returnResource(jedis);
     }
 
     protected String stringFromLock(Lock lock) {
@@ -152,43 +135,59 @@ public class RedisLockManager extends AbstractLockManager {
     }
 
     @Override
-    public Lock getLock(String id) {
-        Jedis jedis = getJedis();
+    public Lock getLock(final String id) {
         try {
-            String lockString = jedis.get(prefix + id);
-            return lockFromString(lockString);
-        } finally {
-            closeJedis(jedis);
+            return redisExecutor.execute(new RedisCallable<Lock>() {
+
+                @Override
+                public Lock call()  {
+                    String lockString = jedis.get(prefix + id);
+                    return lockFromString(lockString);
+                }
+            });
+        } catch (IOException cause) {
+            throw new RuntimeException("Lock read error on " + id, cause);
         }
     }
 
     @Override
-    public Lock setLock(String id, Lock lock) {
-        Jedis jedis = getJedis();
+    public Lock setLock(final String id, final Lock lock) {
         try {
-            String lockString = (String) jedis.evalsha(scriptSetSha,
-                    Arrays.asList(prefix + id),
-                    Arrays.asList(stringFromLock(lock)));
-            return lockFromString(lockString); // existing lock
-        } finally {
-            closeJedis(jedis);
+            return redisExecutor.execute(new RedisCallable<Lock>() {
+
+                @Override
+                public Lock call()  {
+                    String lockString = (String) jedis.evalsha(scriptSetSha,
+                            Arrays.asList(prefix + id),
+                            Arrays.asList(stringFromLock(lock)));
+                    return lockFromString(lockString); // existing lock
+                }
+            });
+        } catch (IOException cause) {
+            throw new RuntimeException("Lock write error on " + id, cause);
         }
     }
 
     @Override
-    public Lock removeLock(String id, String owner) {
-        Jedis jedis = getJedis();
+    public Lock removeLock(final String id, final String owner) {
         try {
-            String lockString = (String) jedis.evalsha(scriptRemoveSha,
-                    Arrays.asList(prefix + id),
-                    Arrays.asList(owner == null ? "" : owner));
-            Lock lock = lockFromString(lockString);
-            if (lock != null && owner != null && !owner.equals(lock.getOwner())) {
-                lock = new Lock(lock, true); // failed removal
-            }
-            return lock;
-        } finally {
-            closeJedis(jedis);
+            return redisExecutor.execute(new RedisCallable<Lock>() {
+
+                @Override
+                public Lock call() {
+                    String lockString = (String) jedis.evalsha(scriptRemoveSha,
+                            Arrays.asList(prefix + id),
+                            Arrays.asList(owner == null ? "" : owner));
+                    Lock lock = lockFromString(lockString);
+                    if (lock != null && owner != null
+                            && !owner.equals(lock.getOwner())) {
+                        lock = new Lock(lock, true); // failed removal
+                    }
+                    return lock;
+                }
+            });
+        } catch (IOException cause) {
+            throw new RuntimeException("Lock write error on " + id, cause);
         }
     }
 

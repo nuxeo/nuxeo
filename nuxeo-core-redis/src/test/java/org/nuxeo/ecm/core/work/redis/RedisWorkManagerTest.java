@@ -16,15 +16,10 @@
  */
 package org.nuxeo.ecm.core.work.redis;
 
-import static org.junit.Assume.assumeTrue;
-
 import org.junit.After;
 import org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor;
-import org.nuxeo.ecm.core.redis.RedisService;
-import org.nuxeo.ecm.core.redis.RedisServiceImpl;
 import org.nuxeo.ecm.core.redis.RedisTestHelper;
 import org.nuxeo.ecm.core.work.WorkManagerTest;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Test of the WorkManager using Redis. Does not run if no Redis is configured
@@ -44,23 +39,14 @@ public class RedisWorkManagerTest extends WorkManagerTest {
     @Override
     protected void doDeploy() throws Exception {
         super.doDeploy();
-        deployBundle("org.nuxeo.ecm.core.redis");
-        deployContrib("org.nuxeo.ecm.core.event.test",
-                "test-workmanager-redis-config.xml");
-        redisConfigurationDescriptor = RedisTestHelper.getRedisConfigurationDescriptor();
-        boolean enabled = redisConfigurationDescriptor != null;
-        assumeTrue(enabled);
-        RedisServiceImpl redisService = (RedisServiceImpl) Framework.getLocalService(RedisService.class);
-        redisService.registerConfiguration(redisConfigurationDescriptor);
-        RedisTestHelper.clearRedis(redisService);
+        RedisTestHelper.setup(this);
     }
 
     @Override
     @After
     public void tearDown() throws Exception {
-        RedisServiceImpl redisService = (RedisServiceImpl) Framework.getLocalService(RedisService.class);
+        RedisTestHelper.teardown(this);
         super.tearDown();
-        redisService.unregisterConfiguration(redisConfigurationDescriptor);
     }
 
 }
