@@ -571,7 +571,7 @@ public class TestFileSystemItemOperations {
                             session.getPrincipal()).getId()).execute();
             fail("Top level folder item deletion should be unsupported.");
         } catch (Exception e) {
-            assertEquals("Failed to execute operation: NuxeoDrive.Delete",
+            assertEquals("Failed to invoke operation: NuxeoDrive.Delete",
                     e.getMessage());
         }
     }
@@ -670,7 +670,7 @@ public class TestFileSystemItemOperations {
                     "New name for top level folder").execute();
             fail("Top level folder renaming shoud be unsupported.");
         } catch (Exception e) {
-            assertEquals("Failed to execute operation: NuxeoDrive.Rename",
+            assertEquals("Failed to invoke operation: NuxeoDrive.Rename",
                     e.getMessage());
         }
     }
@@ -817,7 +817,7 @@ public class TestFileSystemItemOperations {
                     DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file2.getId()).execute();
             fail("Move to a non folder item should fail.");
         } catch (Exception e) {
-            assertEquals("Failed to execute operation: NuxeoDrive.Move",
+            assertEquals("Failed to invoke operation: NuxeoDrive.Move",
                     e.getMessage());
         }
 
@@ -831,7 +831,7 @@ public class TestFileSystemItemOperations {
                     SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
             fail("Should not be able to move a synchronization root folder item.");
         } catch (Exception e) {
-            assertEquals("Failed to execute operation: NuxeoDrive.Move",
+            assertEquals("Failed to invoke operation: NuxeoDrive.Move",
                     e.getMessage());
         }
 
@@ -846,7 +846,7 @@ public class TestFileSystemItemOperations {
                     SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId()).execute();
             fail("Should not be able to move the top level folder item.");
         } catch (Exception e) {
-            assertEquals("Failed to execute operation: NuxeoDrive.Move",
+            assertEquals("Failed to invoke operation: NuxeoDrive.Move",
                     e.getMessage());
         }
 
