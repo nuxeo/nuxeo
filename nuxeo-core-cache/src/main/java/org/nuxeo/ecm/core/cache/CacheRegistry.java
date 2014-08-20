@@ -93,6 +93,11 @@ public final class CacheRegistry extends
             }
         }
     }
+    
+    @Override
+    public boolean isSupportingMerge() {
+        return false;
+    }
 
     @Override
     public void contributionRemoved(String id,
