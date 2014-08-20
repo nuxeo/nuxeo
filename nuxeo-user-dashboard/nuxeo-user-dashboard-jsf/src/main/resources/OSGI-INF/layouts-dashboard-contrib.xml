@@ -132,6 +132,15 @@
       </properties>
     </widget>
 
+    <widget name="dashboard_user_favorites" type="contentViewWithForms">
+      <properties widgetMode="any">
+        <property name="contentViewName">user_favorites</property>
+        <property name="foldable">true</property>
+        <property name="hideEmpty">false</property>
+        <property name="useAjaxPagination">true</property>
+      </properties>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -143,7 +152,14 @@
       @since 5.6
     </documentation>
 
-    <action id="dashboard_user_tasks" type="widget" order="20">
+    <action id="dashboard_user_favorites" type="widget" order="20">
+      <category>DASHBOARD_LEFT</category>
+      <properties>
+        <property name="widgetName">dashboard_user_favorites</property>
+      </properties>
+    </action>
+
+    <action id="dashboard_user_tasks" type="widget" order="40">
       <category>DASHBOARD_LEFT</category>
       <properties>
         <property name="widgetName">dashboard_user_tasks</property>

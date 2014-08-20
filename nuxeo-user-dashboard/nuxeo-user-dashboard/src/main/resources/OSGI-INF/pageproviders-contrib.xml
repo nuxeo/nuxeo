@@ -98,6 +98,17 @@
       <pageSize>5</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="user_favorites">
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+      <pattern>
+        SELECT * FROM Document where ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+        'deleted' AND collectionMember:collectionIds/* = ?
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>5</pageSize>
+    </coreQueryPageProvider>
+
   </extension>
 
 </component>
