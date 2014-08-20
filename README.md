@@ -12,7 +12,7 @@ This plugin is available for Nuxeo Platform 5.8 and above.
 
 - Unzip it
 
-- Install _nuxeo-duoweb-authentication_ plugin from command line
+- Install _nuxeo-duoweb-authentication_ Marketplace Package from command line
   - Linux/Mac:
     - `NUXEO_HOME/bin/nuxeoctl mp-init`
     - `NUXEO_HOME/bin/nuxeoctl mp-install nuxeo-duoweb-authentication`
@@ -44,47 +44,47 @@ You must [subscribe](https://signup.duosecurity.com/) to DuoWeb services and fol
 After installing the plugin, make sure before starting to include your DuoWeb Keys (provided by DuoWeb) in the following configuration file `NUXEO_HOME/templates/duoweb-authentication/config/duo-authentication-config.xml`:
 
     <?xml version="1.0"?>
-	<component name="org.nuxeo.duo.factors.login.contrib">
+  <component name="org.nuxeo.duo.factors.login.contrib">
 
-	  <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+    <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
 
-	  <documentation>
-	    This authentication plugin processes DuoWeb Two Factors Authentication
-	  </documentation>
+    <documentation>
+      This authentication plugin processes DuoWeb Two Factors Authentication
+    </documentation>
 
-	  <extension
-	          target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-	          point="authenticators">
-	    <authenticationPlugin name="DUO_TWO_FACTORS_AUTH"
-	                          enabled="true"
-	                          class="org.nuxeo.duo.factors.DuoFactorsAuthenticator">
-	      <loginModulePlugin>Trusting_LM</loginModulePlugin>
-	      <parameters>
-	        <parameter name="IKEY">YOUR_INTEGRATION_KEY</parameter>
-	        <parameter name="SKEY">YOUR_SECRET_KEY</parameter>
-	        <parameter name="AKEY">YOUR_APPLICATION_KEY</parameter>
-	        <parameter name="HOST">YOUR_API_HOSTNAME</parameter>
-	      </parameters>
-	    </authenticationPlugin>
-	  </extension>
+    <extension
+            target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+            point="authenticators">
+      <authenticationPlugin name="DUO_TWO_FACTORS_AUTH"
+                            enabled="true"
+                            class="org.nuxeo.duo.factors.DuoFactorsAuthenticator">
+        <loginModulePlugin>Trusting_LM</loginModulePlugin>
+        <parameters>
+          <parameter name="IKEY">YOUR_INTEGRATION_KEY</parameter>
+          <parameter name="SKEY">YOUR_SECRET_KEY</parameter>
+          <parameter name="AKEY">YOUR_APPLICATION_KEY</parameter>
+          <parameter name="HOST">YOUR_API_HOSTNAME</parameter>
+        </parameters>
+      </authenticationPlugin>
+    </extension>
 
-	  <extension
-	          target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-	          point="chain">
-	    <authenticationChain>
-	      <plugins>
-	        <plugin>DUO_TWO_FACTORS_AUTH</plugin>
-	      </plugins>
-	    </authenticationChain>
-	  </extension>
+    <extension
+            target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+            point="chain">
+      <authenticationChain>
+        <plugins>
+          <plugin>DUO_TWO_FACTORS_AUTH</plugin>
+        </plugins>
+      </authenticationChain>
+    </extension>
 
-	  <extension point="openUrl" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
-	    <openUrl name="duoFactorsPattern">
-	      <grantPattern>/nuxeo/duofactors.jsp</grantPattern>
-	    </openUrl>
-	  </extension>
+    <extension point="openUrl" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+      <openUrl name="duoFactorsPattern">
+        <grantPattern>/nuxeo/duofactors.jsp</grantPattern>
+      </openUrl>
+    </extension>
 
-	</component>
+  </component>
 
 The `YOUR_APPLICATION_KEY` can be generated as followed in [DuoWeb documentation](https://www.duosecurity.com/docs/duoweb#1.-generate-an-akey)
 

@@ -1,12 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>5.9.5-SNAPSHOT</version>
+    <version>5.9.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.duoweb.authentication</groupId>
@@ -18,7 +17,6 @@
     <dependency>
       <groupId>com.duosecurity</groupId>
       <artifactId>com-duosecurity-java-client</artifactId>
-      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -26,7 +24,7 @@
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <artifactId>javax.servlet-api</artifactId>
     </dependency>
   </dependencies>
 
@@ -55,10 +53,9 @@
   </repositories>
 
   <scm>
-    <connection>scm:git:git://github.com/nuxeo/nuxeo-duo-factors.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-duo-factors.git
-    </developerConnection>
-    <url>https://github.com/nuxeo/nuxeo-duo-factors</url>
+    <connection>scm:git:git://github.com/nuxeo/nuxeo-duoweb-authentication.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-duoweb-authentication.git</developerConnection>
+    <url>https://github.com/nuxeo/nuxeo-duoweb-authentication</url>
   </scm>
 
 </project>
