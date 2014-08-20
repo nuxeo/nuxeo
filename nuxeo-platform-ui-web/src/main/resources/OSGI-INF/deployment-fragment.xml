@@ -204,14 +204,6 @@
 
   </extension>
 
-  <extension target="web#CONTEXT-PARAM-RICHFACES" mode="replace">
-    <!-- Plugging the "BlueGrayDM" skin into the project -->
-    <context-param>
-      <param-name>org.richfaces.SKIN</param-name>
-      <param-value>blueGrayDM</param-value>
-    </context-param>
-  </extension>
-
   <extension target="web#CONTEXT-PARAM">
     <context-param>
       <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
