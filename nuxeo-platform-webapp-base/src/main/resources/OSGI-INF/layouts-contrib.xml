@@ -1088,7 +1088,7 @@
         <properties>
           <defaultValues mode="edit">
             <property name="minChars">3</property>
-            <property name="width">300</property>
+            <property name="width">100%</property>
           </defaultValues>
           <layouts mode="view">
             <layout name="singleUserSuggestion_widget_type_properties_view">
@@ -1225,7 +1225,7 @@
         <properties>
           <defaultValues mode="edit">
             <property name="minChars">3</property>
-            <property name="width">300</property>
+            <property name="width">100%</property>
           </defaultValues>
           <layouts mode="view">
             <layout name="multipleUsersSuggestion_widget_type_properties_view">
@@ -1373,7 +1373,7 @@
         <properties>
           <defaultValues mode="edit">
             <property name="minChars">0</property>
-            <property name="width">300</property>
+            <property name="width">100%</property>
           </defaultValues>
           <layouts mode="view">
             <layout name="suggestOneDirectory_type_properties_view">
@@ -1524,7 +1524,7 @@
         <properties>
           <defaultValues mode="edit">
             <property name="minChars">0</property>
-            <property name="width">300</property>
+            <property name="width">100%</property>
           </defaultValues>
           <layouts mode="view">
             <layout name="suggestManyDirectory_widget_type_properties_view">
@@ -1753,7 +1753,7 @@
             <property name="pageProviderName">default_document_suggestion</property>
             <property name="documentSchemas">dublincore,common</property>
             <property name="minChars">3</property>
-            <property name="width">300</property>
+            <property name="width">100%</property>
             <property name="restoreSeamCtx">true</property>
           </defaultValues>
           <layouts mode="view">
@@ -1870,7 +1870,7 @@
             <property name="pageProviderName">default_document_suggestion</property>
             <property name="documentSchemas">dublincore,common</property>
             <property name="minChars">3</property>
-            <property name="width">300</property>
+            <property name="width">100%</property>
             <property name="restoreSeamCtx">true</property>
           </defaultValues>
           <layouts mode="view">
