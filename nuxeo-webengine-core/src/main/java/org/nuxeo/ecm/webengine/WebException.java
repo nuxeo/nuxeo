@@ -49,6 +49,9 @@ public class WebException extends WebApplicationException {
 
     protected int status;
 
+    public WebException() {
+    }
+
     public WebException(Response response) {
         super(response);
     }
@@ -99,7 +102,7 @@ public class WebException extends WebApplicationException {
         this.status = code;
     }
 
-    protected WebException(String message, Throwable cause, int status) {
+    public WebException(String message, Throwable cause, int status) {
         if (cause == null) {
             throw new IllegalArgumentException(
                     "the cause parameter cannot be null");
@@ -110,7 +113,7 @@ public class WebException extends WebApplicationException {
         this.type = cause.getClass().getName();
     }
 
-    protected WebException(String message, Throwable cause) {
+    public WebException(String message, Throwable cause) {
         if (cause == null) {
             throw new IllegalArgumentException(
                     "the cause parameter cannot be null");
@@ -173,8 +176,7 @@ public class WebException extends WebApplicationException {
                 return new WebResourceNotFoundException(cause.getMessage(),
                         cause);
             } else {
-                return new WebDocumentException(message,
-                        (ClientException) cause);
+                return new WebDocumentException(message, cause);
             }
         } else {
             return new WebException(message, exception);
@@ -255,8 +257,8 @@ public class WebException extends WebApplicationException {
         return sw.toString();
     }
 
-    public Response toResponse(MediaType mediaType) {
-        return Response.status(status).entity(this).type(mediaType).build();
+    public Response toResponse() {
+        return Response.status(status).entity(this).build();
     }
 
     public int getStatus() {

@@ -39,7 +39,7 @@ public class WebDocumentException extends WebException {
         super(null, cause);
     }
 
-    public WebDocumentException(String message, ClientException cause) {
+    public WebDocumentException(String message, Throwable cause) {
         super(message, cause);
     }
 

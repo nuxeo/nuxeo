@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.Activator;
 import org.nuxeo.ecm.webengine.jaxrs.servlet.ApplicationServlet;
 

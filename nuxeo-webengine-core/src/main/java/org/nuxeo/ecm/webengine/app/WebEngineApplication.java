@@ -50,6 +50,7 @@ public class WebEngineApplication extends Application {
         result.add(new FileWriter());
         result.add(new URLWriter());
         result.add(new TemplateViewWriter());
+        result.add(new JsonExceptionWriter());
         return result;
     }
 

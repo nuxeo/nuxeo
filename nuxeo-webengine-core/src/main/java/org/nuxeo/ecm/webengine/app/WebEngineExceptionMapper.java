@@ -48,8 +48,7 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
             log.error("Exception in JAX-RS processing", cause);
         }
         return WebException.newException(cause.getMessage(),
-                WebException.wrap(cause)).toResponse(headers
-                .getAcceptableMediaTypes().get(0));
+                WebException.wrap(cause)).toResponse();
     }
 
 }
