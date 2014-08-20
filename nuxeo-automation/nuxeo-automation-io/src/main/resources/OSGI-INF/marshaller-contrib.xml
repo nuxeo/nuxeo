@@ -6,8 +6,6 @@
     <marshaller>
       <reader>org.nuxeo.ecm.automation.jaxrs.io.operations.JsonRequestReader
       </reader>
-      <writer>org.nuxeo.ecm.webengine.app.JsonExceptionWriter
-      </writer>
       <writer>org.nuxeo.ecm.automation.jaxrs.io.operations.JsonAutomationInfoWriter
       </writer>
       <writer>org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter
