@@ -137,6 +137,7 @@
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-easyshare</module>
     <module>nuxeo-elasticsearch</module>
+    <module>nuxeo-duoweb-authentication</module>
   </modules>
 
   <dependencyManagement>
@@ -1197,6 +1198,13 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-audit-web-access</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- DuoWeb Authentication -->
+      <dependency>
+        <groupId>org.nuxeo.duoweb.authentication</groupId>
+        <artifactId>nuxeo-duoweb-authentication</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
