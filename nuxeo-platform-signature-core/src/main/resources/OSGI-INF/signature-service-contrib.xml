@@ -15,7 +15,7 @@
 
   <extension-point name="signature">
     <documentation>
-      @since 5.8.0-HF20-SNAPSHOT
+      @since 5.8.0-HF21-SNAPSHOT
       @author Vladimir Pasquier (vpasquier@nuxeo.com)
 
       Signature registration.
