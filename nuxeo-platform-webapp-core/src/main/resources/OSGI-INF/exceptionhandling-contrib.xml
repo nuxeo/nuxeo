@@ -19,6 +19,8 @@
       class="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.DefaultRequestDumper">
       <notListed>
         <attribute>org.jboss.seam.international.messages</attribute>
+        <attribute>org.nuxeo.ecm.platform.layouts.LAYOUT_ID_COUNTERS</attribute>
+        <attribute>org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper_MARKER</attribute>
       </notListed>
     </requestdump>
   </extension>
