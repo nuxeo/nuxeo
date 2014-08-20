@@ -4133,6 +4133,11 @@
         <version>2.12.1</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.duosecurity</groupId>
+        <artifactId>com-duosecurity-java-client</artifactId>
+        <version>1.0.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
