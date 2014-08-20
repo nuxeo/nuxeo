@@ -234,10 +234,11 @@ public class ConnectStatusActionBean implements Serializable {
         try {
             pus.addPackage(tmpFile);
         } catch (Exception e) {
+            log.warn(e, e);
             facesMessages.add(
                     StatusMessage.Severity.ERROR,
-                    messages.get("label.connect.wrong.package" + ":"
-                            + e.getMessage()));
+                    messages.get("label.connect.wrong.package") + ":"
+                            + e.getMessage());
             return;
         } finally {
             tmpFile.delete();
