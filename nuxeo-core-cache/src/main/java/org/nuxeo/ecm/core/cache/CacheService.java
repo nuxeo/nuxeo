@@ -17,6 +17,12 @@
  */
 package org.nuxeo.ecm.core.cache;
 
+/**
+ * 
+ * Nuxeo cache interface
+ *
+ * @since 5.9.6
+ */
 public interface CacheService {
     public static final String INVALIDATE_ALL = "invalidateAll";
     

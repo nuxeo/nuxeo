@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.core.cache.CacheService">
+<component name="org.nuxeo.ecm.core.cache.CacheServiceImpl">
 
   
   <documentation>
@@ -13,22 +13,6 @@
     <provide interface="org.nuxeo.ecm.core.cache.CacheService" />
   </service>
 
-
-  <!-- <require>org.nuxeo.ecm.core.redis.RedisServiceImpl</require> -->
-
-
-  <!-- <extension target="org.nuxeo.ecm.core.redis.RedisServiceImpl" point="configuration"> -->
-  <!-- <code> -->
-  <!-- <redis disabled="false"> -->
-  <!-- <prefix>nuxeo:cache:</prefix> -->
-  <!-- <host>localhost</host> -->
-  <!-- <port>6379</port> -->
-  <!-- <password>secret</password> -->
-  <!-- <database>0</database> -->
-  <!-- <timeout>2000</timeout> -->
-  <!-- </redis> -->
-  <!-- </code> -->
-  <!-- </extension> -->
 
   <extension-point name="caches">
 

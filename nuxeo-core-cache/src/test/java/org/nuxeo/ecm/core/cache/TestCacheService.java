@@ -46,7 +46,7 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.cache" })
-public class TestCacheService<T> {
+public class TestCacheService {
 
     private static final String TEST_BUNDLE = "org.nuxeo.ecm.core.cache.tests";
 
@@ -80,11 +80,11 @@ public class TestCacheService<T> {
         Assert.assertNotNull(memoryCache);
 
         cache = ((CacheImpl) memoryCache).getCache();
-        memoryCache.put("test", "toto");
+        memoryCache.put("key1", "val1");
         Assert.assertNotNull(cache);
-        cache.put("test2", "toto2");
+        cache.put("key2", "val2");
 
-        String testGet = (String) memoryCache.get("test2");
+        String testGet = (String) memoryCache.get("key2");
         Assert.assertNotNull(testGet);
 
     }
