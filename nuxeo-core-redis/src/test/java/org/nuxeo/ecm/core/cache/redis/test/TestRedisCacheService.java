@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.redis.RedisCacheImpl;
 import org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor;
 import org.nuxeo.ecm.core.redis.RedisService;
 import org.nuxeo.ecm.core.redis.RedisServiceImpl;
+import org.nuxeo.ecm.core.redis.RedisTestHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
