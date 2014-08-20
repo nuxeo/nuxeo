@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -54,7 +53,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.core.cache",
         "org.nuxeo.ecm.core.redis" })
-public class TestRedisCacheService extends NXRuntimeTestCase {
+public class TestRedisCacheService {
 
     private static final String TEST_BUNDLE = "org.nuxeo.ecm.core.redis.tests";
 
