@@ -142,6 +142,17 @@ table.smallTable th,
 table.smallTable td {
   padding: .2em .4em .3em 0 }
 
+.fieldColumn .dataTable.widgetTable {
+  border: 1px solid;
+  border-color: "neutral.lighter (__FLAVOR__ border)" }
+
+.fieldColumn .dataTable.widgetTable td,
+.fieldColumn .dataTable.widgetTable th {
+  padding: .3em }
+
+.fieldColumn .dataTable tr:hover {
+  background-color: inherit }
+
 .buttonsGadgetNoForm {
   margin: 0 .4em }
 

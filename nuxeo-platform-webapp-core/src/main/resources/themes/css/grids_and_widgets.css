@@ -136,6 +136,9 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .containerWidgetTable {
   width: 100% }
 
+.dataInput .fieldColumn .widgetPanel {
+  padding: 0 }
+
 /* =Advanced Widgets */
 .containerField {
   padding-bottom: 1.5em }
@@ -143,7 +146,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 /* =Listing Widgets */
 .listWidgetPanel {
   display: block;
-  margin-left: -0.5em }
+  margin-left: -0.3em }
 
 /* =Specifics */
 .indicators {
