@@ -63,9 +63,16 @@ The associated document can be any Document type and the Freemarker template wil
 **Example of URLs**
 
 The URL to access the document with the template applied is the following :
-http://<nuxeo_server_url>/nxtemplate/<path_to_the_document>@<template_name>
-ex : http://localhost:8080/nuxeo/nxtemplate/default/default-domain/UserWorkspaces/Administrator/MyDocument@MyTemplate
-or for a published document : http://localhost:8080/nuxeo/nxtemplate/default/default-domain/sections/MySection/MyDocument@MyTemplate
+
+http://**nuxeo\_server\_url**/nxtemplate/**path\_to\_the\_document**@**template\_name**
+
+ex :
+
+http://localhost:8080/nuxeo/nxtemplate/default/default-domain/UserWorkspaces/Administrator/MyDocument@MyTemplate
+
+or for a published document :
+
+http://localhost:8080/nuxeo/nxtemplate/default/default-domain/sections/MySection/MyDocument@MyTemplate
 
 ### Composition
 
