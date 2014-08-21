@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -165,17 +166,14 @@ public class DocResource extends AbstractResource<ResourceTypeImpl> {
 
     @GET
     @Path("/toggleStackDisplay")
+    @Produces("text/plain")
     public Object toggleStackDisplay() throws Exception {
         if (!canManageTraces()) {
             return "You can not manage json exception stack display";
         }
         JsonFactoryManager jsonFactoryManager = Framework.getLocalService
                 (JsonFactoryManager.class);
-        jsonFactoryManager.toggleStackDisplay();
-        HttpServletRequest request = RequestContext.getActiveContext()
-                .getRequest();
-        String url = request.getHeader("Referer");
-        return Response.seeOther(new URI(url)).build();
+        return String.valueOf(jsonFactoryManager.toggleStackDisplay());
     }
 
     @GET
