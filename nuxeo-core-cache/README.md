@@ -33,7 +33,7 @@ The configuration require the following steps :
       
   
   =>Redis configuration
-      Make sure you have a contrib such as below :
+      <br/>Make sure you have a contrib such as below :
       
     <extension target="org.nuxeo.ecm.core.redis.RedisServiceImpl" point="configuration">
       <redis disabled="false">
@@ -58,13 +58,14 @@ The configuration require the following steps :
   
 ## Prerequisite 
 Prerequisite to use the cache :
-	- define mandatory attributes : ttl, concurrency level,maxSize
-	- get your cache by calling the cacheService.getCache method
-	- The key of values must be a String
-	- The values must implement the Serializable interface
-	- If you want to use a cache on top of redis, you must have one contrib that define a redis server
-	- If you use redis, make sure your redis server is running
-
+<ul>
+<li>define mandatory attributes : ttl, concurrency level,maxSize</li>
+<li>get your cache by calling the cacheService.getCache method</li>
+<li>The key of values must be a String</li>
+<li>The values must implement the Serializable interface</li>
+<li>If you want to use a cache on top of redis, you must have one contrib that define a redis server</li>
+<li>If you use redis, make sure your redis server is running</li>
+</ul>
 
 ## History
 
