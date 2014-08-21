@@ -64,7 +64,8 @@ function openFancyBox(ele, options) {
     'transitionOut': 'none',
     'enableEscapeButton': true,
     'centerOnScroll': true,
-    'scrolling': 'auto'
+    'scrolling': 'auto',
+    'padding': 0
   };
 
   if (options) {

@@ -25,19 +25,20 @@ author: lkemen@nuxeo.com
   text-decoration: underline }
 
 #fancybox-content h3 {
-  border-bottom: 2px dotted #ddd;
-  margin: 0 0 .5em;
-  padding: .5em 0 }
+  background-color: "neutral.light (__FLAVOR__ background)";
+  border-top: 1px solid #e7e7e7;
+  padding: 1em 1.7em }
 
 #fancybox-content .content {
   padding: 2em 2em 2.5em;
   overflow: auto }
 
 #fancybox-content .buttonsGadget {
-  border-top: 2px dotted #e9e9e9;
+  background-color: "neutral.light (__FLAVOR__ background)";
+  border-top: 1px solid #e7e7e7;
   font-size: 1.1em;
-  margin: .5em 0 0;
-  padding: .8em 0 0 }
+  margin: 0;
+  padding: 1em 1.8em 0 }
 
 #fancybox-content .popUpDescription {
   padding: 0 0 1em }
