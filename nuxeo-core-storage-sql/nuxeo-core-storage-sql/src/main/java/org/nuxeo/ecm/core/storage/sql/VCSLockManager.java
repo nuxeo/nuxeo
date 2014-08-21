@@ -133,6 +133,10 @@ public class VCSLockManager extends AbstractLockManager {
         return mapper;
     }
 
+    protected Serializable idFromString(String id) {
+        return repository.getModel().idFromString(id);
+    }
+
     @Override
     public void close() {
         serializationLock.lock();
@@ -157,7 +161,7 @@ public class VCSLockManager extends AbstractLockManager {
             }
             // no transaction needed, single operation
             try {
-                lock = getMapper().getLock(id);
+                lock = getMapper().getLock(idFromString(id));
             } catch (StorageException e) {
                 throw new LockException(e);
             }
@@ -252,7 +256,7 @@ public class VCSLockManager extends AbstractLockManager {
         return false;
     }
 
-    protected Lock setLockInternal(final Serializable id, final Lock lock)
+    protected Lock setLockInternal(String id, Lock lock)
             throws StorageException {
         serializationLock.lock();
         try {
@@ -261,7 +265,7 @@ public class VCSLockManager extends AbstractLockManager {
                     && oldLock != NULL_LOCK) {
                 return oldLock;
             }
-            oldLock = getMapper().setLock(id, lock);
+            oldLock = getMapper().setLock(idFromString(id), lock);
             if (caching && oldLock == null) {
                 lockCache.put(id, lock == null ? NULL_LOCK : lock);
             }
@@ -285,11 +289,12 @@ public class VCSLockManager extends AbstractLockManager {
             } else {
                 try {
                     if (oldLock == null) {
-                        oldLock = getMapper().removeLock(id, owner, false);
+                        oldLock = getMapper().removeLock(idFromString(id),
+                                owner, false);
                     } else {
                         // we know the previous lock, we can force
                         // no transaction needed, single operation
-                        getMapper().removeLock(id, owner, true);
+                        getMapper().removeLock(idFromString(id), owner, true);
                     }
                 } catch (StorageException e) {
                     throw new LockException(e);
