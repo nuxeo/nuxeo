@@ -60,6 +60,13 @@ It can reference any attribute of the target Document, but also history in order
 
 The associated document can be any Document type and the Freemarker template will be used to provide an HTML view on it 
 
+**Example of URLs**
+
+The URL to access the document with the template applied is the following :
+http://<nuxeo_server_url>/nxtemplate/<path_to_the_document>@<template_name>
+ex : http://localhost:8080/nuxeo/nxtemplate/default/default-domain/UserWorkspaces/Administrator/MyDocument@MyTemplate
+or for a published document : http://localhost:8080/nuxeo/nxtemplate/default/default-domain/sections/MySection/MyDocument@MyTemplate
+
 ### Composition
 
 **The Template**
