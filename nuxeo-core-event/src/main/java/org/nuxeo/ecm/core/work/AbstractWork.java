@@ -157,13 +157,8 @@ public abstract class AbstractWork implements Work {
 
     public void setDocuments(String repositoryName, List<String> docIds) {
         this.repositoryName = repositoryName;
-        if (docIds.size() == 1) {
-            docId = docIds.get(0);
-            this.docIds = null;
-        } else {
-            docId = null;
-            this.docIds = new ArrayList<String>(docIds);
-        }
+        docId = null;
+        this.docIds = new ArrayList<String>(docIds);
     }
 
     @Override
