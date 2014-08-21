@@ -216,6 +216,12 @@ table.noHover tr:hover {
 .buttonsGadget .actionsWidgetPanel {
   padding: 0 }
 
+.buttonsGadget .smallButton:first-child {
+  margin-left: 1.1em }
+
+.buttonsGadget .actionsWidgetPanel {
+  padding-left: .2em }
+
 .iconColumn .nxDraggable {
   cursor: move }
 
@@ -242,6 +248,9 @@ table.noHover tr:hover {
 /* =Generic table styles for Widgets in Layouts */
 .containerSubWidget {
   margin: 0 .6em .6em 0 }
+
+.dataInput .fieldColumn .containerSubWidget {
+  margin-right: 0 }
 
 .widgetTable .widgetPanel {
   margin: 0;
