@@ -28,7 +28,7 @@ import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 6.0
+ * @since 5.9.6
  */
 @Operation(id = JsonStackToggleDisplayOperation.ID,
         category = Constants.CAT_EXECUTION, label = "Json Error Stack Display",
