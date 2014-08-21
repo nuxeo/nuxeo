@@ -331,6 +331,21 @@ public class DialectPostgreSQL extends Dialect {
         case SEQUENCE:
             setIdLong(ps, index, value);
             break;
+        default:
+            throw new AssertionError();
+        }
+    }
+
+    @SuppressWarnings("boxing")
+    public Serializable getId(ResultSet rs, int index) throws SQLException {
+        switch (idType) {
+        case VARCHAR:
+        case UUID:
+            return rs.getString(index);
+        case SEQUENCE:
+            return rs.getLong(index);
+        default:
+            throw new AssertionError();
         }
     }
 
@@ -418,7 +433,13 @@ public class DialectPostgreSQL extends Dialect {
             } else {
                 return (Serializable) array.getArray();
             }
-        };
+        case Types.OTHER:
+            ColumnType type = column.getType();
+            if (type.isId()) {
+                return getId(rs, index);
+            }
+            throw new SQLException("Unhandled type: " + column.getType());
+        }
         throw new SQLException("Unhandled JDBC type: " + column.getJdbcType()
                 + " for type " + column.getType().toString());
     }
