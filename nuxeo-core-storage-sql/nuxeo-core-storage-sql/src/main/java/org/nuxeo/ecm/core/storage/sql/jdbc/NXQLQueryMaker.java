@@ -1953,8 +1953,7 @@ public class NXQLQueryMaker implements QueryMaker {
             } else {
                 visitReference(hierTable.getColumn(model.MAIN_KEY));
                 visitOperator(node.operator);
-                buf.append('?');
-                whereParams.add(id);
+                visitId(model.idToString(id));
             }
         }
 
