@@ -23,7 +23,6 @@ import java.io.Serializable;
 
 import junit.framework.Assert;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,9 +32,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
-
-import com.google.inject.Inject;
 
 /**
  * @author Maxime Hilaire
@@ -46,52 +42,29 @@ import com.google.inject.Inject;
 @Features(CoreFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @Deploy({ "org.nuxeo.ecm.core.cache" })
-public class TestCacheService {
+public class TestCacheService extends AbstractTestCache {
 
     private static final String TEST_BUNDLE = "org.nuxeo.ecm.core.cache.tests";
 
-    @Inject
-    protected CacheService cacheService;
-
-    @Inject
-    protected RuntimeHarness harness;
-
-    protected Cache memoryCache;
-
-    protected static String CACHE_NAME = "default-test-cache";
-
     @Before
     public void setUp() throws Exception {
-
-        // Config for the tested bundle
+        // Config for the tested bundle, first to set the implementation cache
         harness.deployContrib(TEST_BUNDLE, "OSGI-INF/cache-config.xml");
-
+        // Call the abstract setUp once the specific contrib has been deployed
+        super.setUp();
     }
 
     @Test
-    public void getCache() {
-
-        memoryCache = (CacheImpl) cacheService.getCache(CACHE_NAME);
-
-        com.google.common.cache.Cache<String, Serializable> cache = null;
-
-        cache = ((CacheImpl) memoryCache).getCache();
-
-        Assert.assertNotNull(memoryCache);
-
-        cache = ((CacheImpl) memoryCache).getCache();
-        memoryCache.put("key1", "val1");
+    public void testCast() {
+        cache = ((CacheImpl) cacheService.getCache(DEFAULT_TEST_CACHE_NAME));
         Assert.assertNotNull(cache);
-        cache.put("key2", "val2");
-
-        String testGet = (String) memoryCache.get("key2");
-        Assert.assertNotNull(testGet);
-
     }
 
-    @After
-    public void tearDown() throws Exception {
-        // cacheManagerService.unregisterExtension();
+    @Test
+    public void getGuavaCache() {
+        com.google.common.cache.Cache<String, Serializable> guavaCache = null;
+        guavaCache = ((CacheImpl) cache).getCache();
+        Assert.assertNotNull(guavaCache);
     }
 
 }

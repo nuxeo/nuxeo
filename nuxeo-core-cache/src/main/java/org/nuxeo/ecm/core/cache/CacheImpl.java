@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.services.event.Event;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -38,22 +37,6 @@ public class CacheImpl extends AbstractCache {
     
     protected Cache<String, Serializable> cache = null;
     
-    @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return true;
-    }
-
-    @Override
-    public void handleEvent(Event event) {
-        final String id = event.getId();
-        if (CacheService.INVALIDATE_ALL.equals(id)) {
-            try {
-                invalidateAll();
-            } catch (Exception e) {
-                log.error("Failed invalidate all cache", e);
-            }
-        }
-    }
     
     private void createCache()
     {

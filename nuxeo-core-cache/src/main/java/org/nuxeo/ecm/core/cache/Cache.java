@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.cache;
 
 import java.io.Serializable;
 
+import org.nuxeo.runtime.services.event.EventListener;
+
 
 
 /**
@@ -26,7 +28,7 @@ import java.io.Serializable;
  *
  * @since 5.9.6
  */
-public interface Cache {
+public interface Cache extends EventListener{
 
     public static final String CACHE_TOPIC = "cache-topic";
 

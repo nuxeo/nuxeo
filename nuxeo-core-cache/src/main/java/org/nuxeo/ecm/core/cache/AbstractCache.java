@@ -17,15 +17,18 @@
  */
 package org.nuxeo.ecm.core.cache;
 
-import org.nuxeo.runtime.services.event.EventListener;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.services.event.Event;
 
 /**
- * Abstract class to extend to provide new cache technologies 
+ * Abstract class to be extended to provide new cache technologies
  *
  * @since 5.9.6
  */
-public abstract class AbstractCache implements Cache,
-        EventListener {
+public abstract class AbstractCache implements Cache {
+
+    private static final Log log = LogFactory.getLog(AbstractCache.class);
 
     protected String name = null;
 
@@ -65,6 +68,26 @@ public abstract class AbstractCache implements Cache,
 
     public void setConcurrencyLevel(Integer concurrencyLevel) {
         this.concurrencyLevel = concurrencyLevel;
+    }
+
+    @Override
+    public boolean aboutToHandleEvent(Event event) {
+        return false;
+    }
+
+    @Override
+    public void handleEvent(Event event) {
+        final String id = event.getId();
+        if (CacheService.INVALIDATE_ALL.equals(id)) {
+            try {
+                invalidateAll();
+            } catch (Exception e) {
+                log.error(
+                        String.format("Failed to invalidate cache '%s'", name),
+                        e);
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 }

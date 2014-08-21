@@ -14,7 +14,7 @@ Typical use case ensure that wherever the layer you need caching, you may get a 
  - Google Guava (standard implementation 'org.nuxeo.ecm.core.cache.CacheImpl' that does not support distributed cache)
  - Redis (Use 'org.nuxeo.ecm.core.redis.RedisCacheImpl' for distributed cache purpose)
 
-You may provide new Cache implementation if needed by extending the abstract class AbstractCache and then add a new contrib with the given implClass name pointing to your implementation.
+You may provide new Cache implementation if needed by extending the abstract class AbstractCache and then add a new contrib with the given class name pointing to your implementation in the contrib. Make sure also to provide a unit test class that extends the AbstractTestCache class to match the behavior for caching system in the unit test.
 
 (useful sample configuration can be found in the src/test/resources folder)
 The configuration require the following steps :

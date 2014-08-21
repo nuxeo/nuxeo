@@ -60,7 +60,7 @@ public final class CacheRegistry extends
             Class<?> klass = descriptor.getImplClass();
             if (klass == null) {
                 throw new RuntimeException(String.format(
-                        "No class specified for the cacheManager ",
+                        "Class specified not found for the implementation cache ",
                         descriptor.name));
             } else {
                 AbstractCache cache = null;
