@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 import java.io.IOException;
 
 /**
- * @since 6.0
+ * @since 5.9.6
  */
 public class JsonFactoryManagerImpl implements JsonFactoryManager {
 
