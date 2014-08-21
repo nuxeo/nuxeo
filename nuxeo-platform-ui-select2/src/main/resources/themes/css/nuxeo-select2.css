@@ -31,6 +31,10 @@ author: lkemen@nuxeo.com
 .select2-container-multi .select2-choices .select2-search-field input {
 	font-family: inherit }
 
+.select2-container .select2-choice .select2-arrow {
+  background: none 0;
+  border-color: "neutral.light (__FLAVOR__ border)" }
+
 .select2-container-multi.select2-container-disabled .select2-choices .select2-search-choice {
   -webkit-user-select: text;
   -moz-user-select: text;
@@ -51,6 +55,10 @@ author: lkemen@nuxeo.com
 .select2-choices .select2-search-choice img {
   margin: 0 .2em -0.3em -0.4em }
 
+.select2-choices .detail {
+  display: inline-block;
+  padding-left: 1.4em }
+
 .select2-choice .select2-chosen img {
   margin: .4em .4em 0 0 }
 
@@ -59,10 +67,12 @@ author: lkemen@nuxeo.com
   box-shadow: none }
 
 .select2-container-multi .select2-choices .select2-search-choice {
-  background: none #fff }
+  background: none #fff;
+  padding: 3px 18px 3px 5px }
 
 .select2-container-multi .select2-search-choice-close {
-  top: 3px }
+  left: auto;
+  right: 3px }
 
 .select2-drop,
 .select2-results .select2-highlighted {
