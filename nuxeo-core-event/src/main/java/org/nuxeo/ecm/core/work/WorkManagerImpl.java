@@ -422,6 +422,13 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             Thread thread = new Thread(group, r, name);
             // do not set daemon
             thread.setPriority(Thread.NORM_PRIORITY);
+            thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+
+                @Override
+                public void uncaughtException(Thread t, Throwable e) {
+                    LogFactory.getLog(WorkManagerImpl.class).error("Uncaught error on thread " + t.getName(), e);
+                }
+            });
             return thread;
         }
     }
@@ -867,10 +874,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     protected int getScheduledOrRunningSize(String queueId) {
-        // check the thread pool directly, this avoids race conditions
-        // because queueing.getRunningSize takes a bit of time to be
-        // accurate after a work is scheduled
-        return getExecutor(queueId).getScheduledOrRunningSize();
+        return queuing.getQueueSize(queueId, State.SCHEDULED) + queuing.getQueueSize(queueId, State.RUNNING);
     }
 
     protected int getCompletedSize(String queueId) {
