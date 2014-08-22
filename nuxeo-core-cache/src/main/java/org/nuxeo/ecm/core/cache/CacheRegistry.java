@@ -38,12 +38,11 @@ public final class CacheRegistry extends
         ContributionFragmentRegistry<CacheDescriptor> {
 
     private static final Log log = LogFactory.getLog(CacheRegistry.class);
-
+    
+    
     // cache of cacheManager
     protected Map<String, Cache> caches = new HashMap<String, Cache>();
 
-    
-    
     @Override
     public String getContributionId(CacheDescriptor contrib) {
         return contrib.name;
@@ -54,6 +53,10 @@ public final class CacheRegistry extends
             CacheDescriptor descriptor,
             CacheDescriptor newOrigContrib) {
         String name = descriptor.name;
+        if(name == null)
+        {
+            throw new RuntimeException("The cache name must not be null!");
+        }
         if (descriptor.remove) {
             contributionRemoved(id, descriptor);
         } else {
@@ -73,10 +76,14 @@ public final class CacheRegistry extends
                     throw new RuntimeException("Failed to instantiate class "
                             + klass, e);
                 }
-
+                
                 cache.setName(name);
                 cache.setMaxSize(descriptor.maxSize);
                 cache.setConcurrencyLevel(descriptor.concurrencyLevel);
+                if(descriptor.ttl <= 0)
+                {
+                    throw new RuntimeException(String.format("TTL of cache '%s' must be greater than 0 !",name));
+                }
                 cache.setTtl(descriptor.ttl);
 
                 if (caches.containsKey(name)) {
