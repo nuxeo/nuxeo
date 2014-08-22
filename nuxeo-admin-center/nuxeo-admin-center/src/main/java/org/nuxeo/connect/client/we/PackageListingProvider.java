@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,7 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
 
 package org.nuxeo.connect.client.we;
@@ -28,6 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.nuxeo.connect.client.status.ConnectStatusHolder;
 import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
@@ -76,7 +76,7 @@ public class PackageListingProvider extends DefaultObject {
         if (targetPF == null) {
             return pkgs;
         } else {
-            List<DownloadablePackage> filteredPackages = new ArrayList<DownloadablePackage>();
+            List<DownloadablePackage> filteredPackages = new ArrayList<>();
             for (DownloadablePackage pkg : pkgs) {
                 if (PlatformVersionHelper.isCompatible(pkg.getTargetPlatforms())) {
                     filteredPackages.add(pkg);
@@ -214,9 +214,8 @@ public class PackageListingProvider extends DefaultObject {
         }
         return getView("simpleListing").arg("pkgs", pm.sort(pkgs)).arg(
                 "showCommunityInfo", false).arg("source", "remote").arg(
-                "filterOnPlatform", filterOnPlatform.toString()).arg(
-                        "type", pkgType.toString()).arg(
-                                "onlyRemote", onlyRemote.toString());
+                "filterOnPlatform", filterOnPlatform.toString()).arg("type",
+                pkgType.toString()).arg("onlyRemote", onlyRemote.toString());
     }
 
     /**
