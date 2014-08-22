@@ -22,12 +22,14 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.SubscriptionStatusType;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.packages.PackageManager;
+import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
 import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.ecm.admin.runtime.PlatformVersionHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -160,7 +162,8 @@ public class ConnectUpdateStatusInfo {
         List<DownloadablePackage> applicablePkgs = new ArrayList<>();
 
         for (DownloadablePackage pkg : pkgs) {
-            if (PlatformVersionHelper.isCompatible(pkg.getTargetPlatforms())) {
+            if (TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(pkg,
+                    targetPlatform)) {
                 boolean isInstalled = false;
                 for (DownloadablePackage localPkg : localHotFixes) {
                     if (localPkg.getId().equals(pkg.getId())) {

@@ -37,6 +37,7 @@ import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.data.SubscriptionStatusType;
 import org.nuxeo.connect.packages.PackageManager;
+import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
@@ -79,7 +80,8 @@ public class PackageListingProvider extends DefaultObject {
         } else {
             List<DownloadablePackage> filteredPackages = new ArrayList<>();
             for (DownloadablePackage pkg : pkgs) {
-                if (PlatformVersionHelper.isCompatible(pkg.getTargetPlatforms())) {
+                if (TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(
+                        pkg, PlatformVersionHelper.getPlatformFilter())) {
                     filteredPackages.add(pkg);
                 }
             }

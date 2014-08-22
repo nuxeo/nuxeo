@@ -32,9 +32,12 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
+import org.nuxeo.connect.packages.LocalPackageAsDownloadablePackage;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.packages.dependencies.DependencyResolution;
+import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.Package;
 import org.nuxeo.connect.update.PackageUpdateService;
@@ -156,8 +159,11 @@ public class InstallHandler extends DefaultObject {
             }
             Task installTask = pkg.getInstallTask();
             ValidationStatus status = installTask.validate();
-            if (!PlatformVersionHelper.isCompatible(pkg.getTargetPlatforms())) {
-                status.addWarning("This package is not validated for you current platform");
+            String targetPlatform = PlatformVersionHelper.getPlatformFilter();
+            if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(
+                    new LocalPackageAsDownloadablePackage(pkg), targetPlatform)) {
+                status.addWarning("This package is not validated for you current platform: "
+                        + targetPlatform);
             }
             if (status.hasErrors()) {
                 return getView("canNotInstall").arg("status", status).arg(
@@ -290,16 +296,20 @@ public class InstallHandler extends DefaultObject {
                 rmPkgIds.add(id);
             }
             for (String id : pkgIds) {
-                Package pkg = pus.getPackage(id);
+                LocalPackage pkg = pus.getPackage(id);
                 if (pkg == null) {
                     return getView("installError").arg(
                             "e",
                             new ClientException("Unable to find local package "
                                     + id)).arg("source", source);
                 }
-                if (!PlatformVersionHelper.isCompatible(pkg.getTargetPlatforms())) {
+                String targetPlatform = PlatformVersionHelper.getPlatformFilter();
+                if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(
+                        new LocalPackageAsDownloadablePackage(pkg),
+                        targetPlatform)) {
                     warns.add("Package " + id
-                            + " is not validated for your current platform");
+                            + " is not validated for your current platform: "
+                            + targetPlatform);
                 }
                 descs.add(pkg.getDescription());
             }
