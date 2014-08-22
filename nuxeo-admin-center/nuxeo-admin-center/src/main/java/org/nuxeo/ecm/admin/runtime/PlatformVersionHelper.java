@@ -17,6 +17,9 @@
  */
 package org.nuxeo.ecm.admin.runtime;
 
+import org.nuxeo.connect.connector.fake.FakeDownloadablePackage;
+import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
+import org.nuxeo.connect.update.Version;
 import org.nuxeo.runtime.api.Framework;
 
 public class PlatformVersionHelper {
@@ -54,18 +57,23 @@ public class PlatformVersionHelper {
         return Framework.getProperty("org.nuxeo.distribution.server", UNKNOWN);
     }
 
-    public static boolean isCompatible(String[] targetPlatforms, String currentPlatform) {
-        if (targetPlatforms == null || targetPlatforms.length == 0 || currentPlatform == null) {
-            return true;
-        }
-        for (String target : targetPlatforms) {
-            if (currentPlatform.equalsIgnoreCase(target)) {
-                return true;
-            }
-        }
-        return false;
+    /**
+     * @deprecated Since 5.9.6. Badly duplicates
+     *             {@link TargetPlatformFilterHelper#isCompatibleWithTargetPlatform(org.nuxeo.connect.update.Package, String)}
+     */
+    @Deprecated
+    public static boolean isCompatible(final String[] targetPlatforms2,
+            String currentPlatform) {
+        return TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(
+                new FakeDownloadablePackage("wrapper", Version.ZERO) {
+                    @Override
+                    public String[] getTargetPlatforms() {
+                        return targetPlatforms2;
+                    }
+                }, currentPlatform);
     }
 
+    @Deprecated
     public static boolean isCompatible(String[] targetPlatforms) {
         return isCompatible(targetPlatforms, getPlatformFilter());
     }
