@@ -5,7 +5,7 @@ var NXRequestParams = {
   operationId: 'Collection.GetElementsInFavorite',
   operationParams: {},
   operationContext: {},
-  operationInput: '/default-domain/UserWorkspaces/Administrator/',
+  operationInput: getTargetContextPath(),
   operationDocumentProperties: "common,dublincore",
   entityType: 'documents',
   usePagination: true,
