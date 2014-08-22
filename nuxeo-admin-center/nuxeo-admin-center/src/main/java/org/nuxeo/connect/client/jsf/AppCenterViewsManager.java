@@ -51,6 +51,7 @@ import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.packages.PackageManager;
 import org.nuxeo.connect.packages.dependencies.DependencyResolution;
+import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageDependency;
 import org.nuxeo.connect.update.PackageException;
@@ -391,29 +392,30 @@ public class AppCenterViewsManager implements Serializable {
                                 packageId));
                         return;
                     }
-                    String[] targetPlatforms = remotePkg.getTargetPlatforms();
                     PackageDependency[] pkgDeps = remotePkg.getDependencies();
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("%s target platforms: %s",
-                                remotePkg, ArrayUtils.toString(targetPlatforms)));
+                        log.debug(String.format(
+                                "%s target platforms: %s",
+                                remotePkg,
+                                ArrayUtils.toString(remotePkg.getTargetPlatforms())));
                         log.debug(String.format("%s dependencies: %s",
                                 remotePkg, ArrayUtils.toString(pkgDeps)));
                     }
 
                     // TODO NXP-11776: replace errors by internationalized
                     // labels
-                    if (!PlatformVersionHelper.isCompatible(targetPlatforms)) {
+                    String targetPlatform = PlatformVersionHelper.getPlatformFilter();
+                    if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(
+                            remotePkg, targetPlatform)) {
                         status.addError(String.format(
                                 "This package is not validated for your current platform: %s",
-                                PlatformVersionHelper.getPlatformFilter()));
+                                targetPlatform));
                     }
                     // check deps requirements
                     if (pkgDeps != null && pkgDeps.length > 0) {
                         DependencyResolution resolution = pm.resolveDependencies(
-                                packageId,
-                                PlatformVersionHelper.getPlatformFilter());
-                        if (resolution.isFailed()
-                                && PlatformVersionHelper.getPlatformFilter() != null) {
+                                packageId, targetPlatform);
+                        if (resolution.isFailed() && targetPlatform != null) {
                             // retry without PF filter in case it gives more
                             // information
                             resolution = pm.resolveDependencies(packageId, null);
