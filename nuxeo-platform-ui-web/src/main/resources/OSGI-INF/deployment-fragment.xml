@@ -156,6 +156,17 @@
       <url-pattern>/seam/resource/*</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+      <servlet-name>Richfaces Resource Servlet</servlet-name>
+      <servlet-class>org.richfaces.webapp.ResourceServlet</servlet-class>
+      <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+      <servlet-name>Richfaces Resource Servlet</servlet-name>
+      <url-pattern>/org.richfaces.resources/*</url-pattern>
+    </servlet-mapping>
+
     <!-- restlet API mapping -->
     <servlet>
       <servlet-name>Nuxeo Restlet Servlet</servlet-name>

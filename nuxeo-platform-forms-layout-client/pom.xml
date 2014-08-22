@@ -60,9 +60,10 @@
       <artifactId>jsf-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.richfaces.ui</groupId>
-      <artifactId>richfaces-components-ui</artifactId>
+      <groupId>org.richfaces</groupId>
+      <artifactId>richfaces</artifactId>
     </dependency>
+
 
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
