@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.work.SleepWork;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -57,20 +56,17 @@ public class WorkManagerAdminBean implements Serializable {
         List<String> workQueueIds = workManager.getWorkQueueIds();
         Collections.sort(workQueueIds);
         for (String queueId : workQueueIds) {
-            WorkQueueDescriptor descr = workManager.getWorkQueueDescriptor(queueId);
             List<Work> running = workManager.listWork(queueId, State.RUNNING);
-            List<Work> scheduled = workManager.listWork(queueId,
-                    State.SCHEDULED);
-            List<Work> completed = workManager.listWork(queueId,
+            int scheduled = workManager.getQueueSize(queueId, State.SCHEDULED);
+            int completed = workManager.getQueueSize(queueId,
                     State.COMPLETED);
             Map<String, Object> map = new HashMap<String, Object>();
             info.add(map);
             map.put("id", queueId);
-            map.put("threads", String.valueOf(running.size()));
-            map.put("maxThreads", String.valueOf(descr.maxThreads));
-            map.put("running", running);
             map.put("scheduled", scheduled);
+            map.put("running", running.size());
             map.put("completed", completed);
+            map.put("runningWorks", running);
         }
         return info;
     }
