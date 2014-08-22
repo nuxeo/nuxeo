@@ -928,7 +928,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     protected int getScheduledOrRunningSize(String queueId) {
-        return queuing.getQueueSize(queueId, State.SCHEDULED) + queuing.getQueueSize(queueId, State.RUNNING);
+        // check the thread pool directly, this avoids race conditions
+        // because queueing.getRunningSize takes a bit of time to be
+        // accurate after a work is scheduled
+        return getExecutor(queueId).getScheduledOrRunningSize();
     }
 
     protected int getCompletedSize(String queueId) {
