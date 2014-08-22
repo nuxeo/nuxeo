@@ -114,7 +114,7 @@ public abstract class AbstractWork implements Work {
 
     protected transient CoreSession session;
 
-    protected transient WorkSchedulePath schedulePath;
+    protected WorkSchedulePath schedulePath;
 
     /**
      * Constructs a {@link Work} instance with a unique id.

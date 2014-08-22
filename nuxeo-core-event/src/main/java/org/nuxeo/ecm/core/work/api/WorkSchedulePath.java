@@ -132,4 +132,9 @@ public class WorkSchedulePath implements Serializable {
         return scheduleStackTrace;
     }
 
+    @Override
+    public String toString() {
+        return "[parentPath=" + parentPath + ", name=" + name + "]";
+    }
+
 }
