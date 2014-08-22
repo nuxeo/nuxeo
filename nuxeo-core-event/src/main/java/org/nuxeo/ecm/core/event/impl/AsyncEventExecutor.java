@@ -81,7 +81,7 @@ public class AsyncEventExecutor {
         WorkManager workManager = getWorkManager();
         int n = 0;
         for (String queueId : workManager.getWorkQueueIds()) {
-            n += workManager.getQueueSize(queueId, null);
+            n += workManager.getQueueSize(queueId, State.SCHEDULED) + workManager.getQueueSize(queueId, State.RUNNING);
         }
         return n;
     }
@@ -113,7 +113,7 @@ public class AsyncEventExecutor {
 
         public ListenerWork(EventListenerDescriptor listener, EventBundle bundle) {
             super(); // random id, for unique job
-            this.listenerName = listener.getName();
+            listenerName = listener.getName();
             if (bundle instanceof ReconnectedEventBundle) {
                 this.bundle = (ReconnectedEventBundle) bundle;
             } else {
