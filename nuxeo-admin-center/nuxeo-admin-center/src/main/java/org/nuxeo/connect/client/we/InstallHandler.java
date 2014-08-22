@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -71,7 +71,7 @@ public class InstallHandler extends DefaultObject {
         Map<String, String> params = (Map<String, String>) getContext().getRequest().getAttribute(
                 getStorageKey(pkgId));
         if (params == null) {
-            params = new HashMap<String, String>();
+            params = new HashMap<>();
         }
         return params;
     }
@@ -278,12 +278,12 @@ public class InstallHandler extends DefaultObject {
             }
 
             List<String> pkgIds = resolution.getOrderedPackageIdsToInstall();
-            List<String> warns = new ArrayList<String>();
-            List<String> descs = new ArrayList<String>();
+            List<String> warns = new ArrayList<>();
+            List<String> descs = new ArrayList<>();
             if (!pkgIds.contains(pkgId)) {
                 pkgIds.add(pkgId);
             }
-            List<String> rmPkgIds = new ArrayList<String>();
+            List<String> rmPkgIds = new ArrayList<>();
             for (Entry<String, Version> rmEntry : resolution.getLocalPackagesToRemove().entrySet()) {
                 String id = rmEntry.getKey() + "-"
                         + rmEntry.getValue().toString();

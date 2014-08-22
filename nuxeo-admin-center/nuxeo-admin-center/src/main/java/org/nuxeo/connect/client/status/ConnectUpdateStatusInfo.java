@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 
 package org.nuxeo.connect.client.status;
@@ -42,10 +40,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ConnectUpdateStatusInfo {
 
-    protected static final String UNREGISTERED ="unregistered";
-    protected static final String ONLINE_REGISTERED ="onlineregistered";
-    protected static final String CONNECT_UNREACHABLE="unreachable";
-    protected static final String EXPIRED ="expired";
+    protected static final String UNREGISTERED = "unregistered";
+
+    protected static final String ONLINE_REGISTERED = "onlineregistered";
+
+    protected static final String CONNECT_UNREACHABLE = "unreachable";
+
+    protected static final String EXPIRED = "expired";
 
     protected String type;
 
@@ -61,47 +62,46 @@ public class ConnectUpdateStatusInfo {
 
     public static ConnectUpdateStatusInfo unregistered() {
         ConnectUpdateStatusInfo status = new ConnectUpdateStatusInfo();
-        status.type=UNREGISTERED;
+        status.type = UNREGISTERED;
         status.setBannerPath("clientSideBanner");
         status.feedUrl = buildFeedUrl(false);
-        status.availableUpdateCount=0;
-        status.registered=false;
+        status.availableUpdateCount = 0;
+        status.registered = false;
         return status;
     }
 
     public static ConnectUpdateStatusInfo ok() {
         ConnectUpdateStatusInfo status = new ConnectUpdateStatusInfo();
-        status.type=ONLINE_REGISTERED;
-        status.registered=true;
+        status.type = ONLINE_REGISTERED;
+        status.registered = true;
         return status;
     }
 
     public static ConnectUpdateStatusInfo connectServerUnreachable() {
         ConnectUpdateStatusInfo status = new ConnectUpdateStatusInfo();
-        status.type=CONNECT_UNREACHABLE;
+        status.type = CONNECT_UNREACHABLE;
         status.setBannerPath("clientSideBanner");
         status.feedUrl = buildFeedUrl(true);
-        status.availableUpdateCount=0;
-        status.registered=true;
+        status.availableUpdateCount = 0;
+        status.registered = true;
         return status;
     }
 
     public static ConnectUpdateStatusInfo notValid() {
         ConnectUpdateStatusInfo status = new ConnectUpdateStatusInfo();
-        status.type=EXPIRED;
+        status.type = EXPIRED;
         status.setBannerPath("serverSideBanner");
-        status.registered=true;
+        status.registered = true;
         return status;
     }
-
 
     protected static String buildFeedUrl(boolean registred) {
 
         StringBuffer sb = new StringBuffer();
 
-        sb.append(Framework.getProperty("org.nuxeo.connect.client.feedUrl", ConnectUrlConfig.getBaseUrl()));
+        sb.append(Framework.getProperty("org.nuxeo.connect.client.feedUrl",
+                ConnectUrlConfig.getBaseUrl()));
         sb.append("connect-gateway/jsonp/");
-
 
         if (registred) {
             sb.append("registered");
@@ -128,12 +128,13 @@ public class ConnectUpdateStatusInfo {
         try {
             return LogicalInstanceIdentifier.instance().getCLID1();
         } catch (NoCLID e) {
-           return "";
+            return "";
         }
     }
 
     public String getDistributionLabel() {
-        return PlatformVersionHelper.getDistributionName().toUpperCase() + " " + PlatformVersionHelper.getDistributionVersion();
+        return PlatformVersionHelper.getDistributionName().toUpperCase() + " "
+                + PlatformVersionHelper.getDistributionVersion();
     }
 
     public String getDistributionName() {
@@ -144,7 +145,6 @@ public class ConnectUpdateStatusInfo {
         return PlatformVersionHelper.getDistributionVersion();
     }
 
-
     protected int computeAvailableUpdateCount() {
         if (ConnectStatusHolder.instance().getStatus().isConnectServerUnreachable()) {
             return 0;
@@ -152,18 +152,19 @@ public class ConnectUpdateStatusInfo {
         PackageManager pm = Framework.getLocalService(PackageManager.class);
         String targetPlatform = PlatformVersionHelper.getPlatformFilter();
 
-        List<DownloadablePackage> pkgs = pm.listUpdatePackages(PackageType.HOT_FIX, targetPlatform);
+        List<DownloadablePackage> pkgs = pm.listUpdatePackages(
+                PackageType.HOT_FIX, targetPlatform);
 
         List<DownloadablePackage> localHotFixes = pm.listLocalPackages(PackageType.HOT_FIX);
 
-        List<DownloadablePackage> applicablePkgs = new ArrayList<DownloadablePackage>();
+        List<DownloadablePackage> applicablePkgs = new ArrayList<>();
 
         for (DownloadablePackage pkg : pkgs) {
             if (PlatformVersionHelper.isCompatible(pkg.getTargetPlatforms())) {
                 boolean isInstalled = false;
                 for (DownloadablePackage localPkg : localHotFixes) {
                     if (localPkg.getId().equals(pkg.getId())) {
-                        isInstalled=true;
+                        isInstalled = true;
                         break;
                     }
                 }
@@ -174,7 +175,6 @@ public class ConnectUpdateStatusInfo {
         }
         return applicablePkgs.size();
     }
-
 
     public String getBannerPath() {
         return bannerPath;
@@ -192,7 +192,7 @@ public class ConnectUpdateStatusInfo {
     }
 
     public int getAvailableUpdateCount() {
-        if (availableUpdateCount==null) {
+        if (availableUpdateCount == null) {
             availableUpdateCount = computeAvailableUpdateCount();
         }
         return availableUpdateCount;
