@@ -34,37 +34,46 @@ import com.google.common.cache.CacheBuilder;
 public class CacheImpl extends AbstractCache {
 
     private static final Log log = LogFactory.getLog(CacheImpl.class);
-    
+
     protected Cache<String, Serializable> cache = null;
-    
-    
-    private void createCache()
-    {
-        if(this.cache == null)
-        {
-            cache = CacheBuilder.newBuilder().concurrencyLevel(
-                concurrencyLevel).maximumSize(
-                maxSize).expireAfterWrite(
-                ttl, TimeUnit.MINUTES).build();
+
+    private void createCache() {
+        if (this.cache == null) {
+            cache = CacheBuilder.newBuilder().concurrencyLevel(concurrencyLevel).maximumSize(
+                    maxSize).expireAfterWrite(ttl, TimeUnit.MINUTES).build();
         }
-        
+
     }
-    
-    public Cache<String, Serializable> getCache()
-    {
+
+    /**
+     * Get the instance cache
+     * 
+     * @return the Guava instance cache used in this nuxeo cache
+     *
+     * @since 5.9.6
+     */
+    public Cache<String, Serializable> getCache() {
         createCache();
         return cache;
     }
 
     @Override
     public Serializable get(String key) {
-        return getCache().getIfPresent(key);
+        if (key == null) {
+            return null;
+        } else {
+            return getCache().getIfPresent(key);
+        }
     }
-
 
     @Override
     public void invalidate(String key) {
-        getCache().invalidate(key);
+        if (key != null) {
+            getCache().invalidate(key);
+        } else {
+            log.warn(String.format(
+                    "Can't invalidate a null key for the cache '%s'!", name));
+        }
     }
 
     @Override
@@ -74,9 +83,14 @@ public class CacheImpl extends AbstractCache {
 
     @Override
     public void put(String key, Serializable value) {
-        getCache().put(key, value);
+        if (key != null && value != null) {
+            getCache().put(key, value);
+        }
+        else
+        {
+            log.warn(String.format(
+                    "Can't put a null key nor a null value in the cache '%s'!", name));
+        }
     }
-    
-
 
 }

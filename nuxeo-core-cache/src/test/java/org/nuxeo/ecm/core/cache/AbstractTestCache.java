@@ -1,17 +1,13 @@
 package org.nuxeo.ecm.core.cache;
 
-import static org.junit.Assert.fail;
-
 import javax.security.auth.login.LoginException;
 
 import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import com.google.inject.Inject;
@@ -44,10 +40,8 @@ public class AbstractTestCache {
 
     @Test
     public void getValue() {
-        String key = "key1";
-        String val = (String) cache.get(key);
-
-        Assert.assertEquals("val1", val);
+        String cachedVal = (String) cache.get(key);
+        Assert.assertEquals(val, cachedVal);
     }
 
     @Test
@@ -65,20 +59,16 @@ public class AbstractTestCache {
 
     @Test
     public void putNullKey() {
-        try {
-            cache.put(null, "val-null");
-            fail("Should raise exception !");
-        } catch (Exception e) {
-        }
+        // The aim of the test here is to make sure no exception is raised
+        cache.put(null, "val-null");
+        Assert.assertNull(cache.get(null));
     }
 
     @Test
     public void putNullValue() {
-        try {
-            cache.put(null, "val-null");
-            fail("Should raise exception !");
-        } catch (Exception e) {
-        }
+        // The aim of the test here is to make sure no exception is raised
+        cache.put("key-null", null);
+        Assert.assertNull(cache.get("key-null"));
     }
 
     @Test
@@ -88,75 +78,6 @@ public class AbstractTestCache {
         String expiredVal = (String) cache.get(key);
         Assert.assertNull(expiredVal);
     }
-
-    @Test
-    public void maxSizeZero() {
-        Cache maxSizeCache = cacheService.getCache(MAXSIZE_TEST_CACHE_NAME);
-        maxSizeCache.put(key, val);
-        Assert.assertNull(maxSizeCache.get(key));
-    }
-
-    @Test
-    // TODO : check the behavior with redis
-    public void maxSizeExceeded() {
-        // Default test config set to 3 the maxSize, and the cache already
-        // contains the key1
-        cache.put("key2", "val2");
-        cache.put("key3", "val3");
-
-        // Value inserted afterwards will remove the first inserted (size-based
-        // eviction system)
-        cache.put("key4", "val4");
-        cache.put("key5", "val5");
-
-        // Check that new values have been stored
-        Assert.assertNotNull(cache.get("key4"));
-        Assert.assertNotNull(cache.get("key5"));
-
-        // Check that the oldest values have been evicted
-        Assert.assertNull(cache.get("key1"));
-        Assert.assertNull(cache.get("key2"));
-    }
-
-    // protected class TestCacheConcurrency implements Runnable
-    // {
-    // protected boolean oneThreadDone = false;
-    //
-    // @Override
-    // public void run() {
-    //
-    // Random rand = new Random();
-    //
-    // int id = rand.nextInt(100) + 1;
-    //
-    // Cache currentCache = cacheService.getCache(DEFAULT_TEST_CACHE_NAME);
-    // currentCache.put("key-concurrent-"+id,"val-"+id);
-    // System.out.println(id);
-    // //int sec = rand.nextInt((max - min) + 1) + min;
-    // //Thread.sleep((long)(Math.random() * 1000));
-    // String value = (String) currentCache.get("key-concurrent-"+id);
-    // synchronized (this) {
-    // if(!oneThreadDone)
-    // {
-    // Assert.assertNotNull(value);
-    // }else
-    // {
-    // Assert.assertNull(value);
-    // }
-    // }
-    // }
-    //
-    // }
-    // @Test
-    // public void concurrencyExceeded() {
-    // //Default config set to only one thread the concurrency level
-    // ExecutorService es = Executors.newFixedThreadPool(10);
-    // es.execute(new TestCacheConcurrency());
-    // es.shutdown();
-    // while (!es.isTerminated()) {
-    // }
-    //
-    // }
 
     @Test
     public void invalidateKey() {
@@ -177,6 +98,7 @@ public class AbstractTestCache {
 
     @Test
     public void fireInvalidateAllEvent() throws LoginException {
+        Assert.assertNotNull(cache.get(key));
         Event event = new Event(Cache.CACHE_TOPIC, CacheService.INVALIDATE_ALL,
                 this, null);
         eventService.sendEvent(event);

@@ -24,18 +24,18 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.cache.AbstractCache;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.event.Event;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 /**
- * Cache implementation for on top of Redis
+ * Cache implementation on top of Redis
  * 
  * @since 5.9.6
  */
@@ -46,7 +46,6 @@ public class RedisCacheImpl extends AbstractCache {
     private static final Log log = LogFactory.getLog(RedisCacheImpl.class);
 
     private RedisService redisService = null;
-
 
     protected String prefix;
 
@@ -63,9 +62,16 @@ public class RedisCacheImpl extends AbstractCache {
     protected RedisService getRedisService() {
         if (redisService == null) {
             redisService = Framework.getLocalService(RedisService.class);
-            prefix = redisService.getPrefix() + PREFIX + name + ":";
         }
         return redisService;
+    }
+    
+    @Override
+    public
+    void setName(String name)
+    {
+        super.setName(name);
+        prefix = getRedisService().getPrefix() + PREFIX + getName() + ":";
     }
 
     protected Jedis getJedis() {
@@ -77,17 +83,16 @@ public class RedisCacheImpl extends AbstractCache {
         if (jedisPool == null) {
             return null;
         }
+
         return jedisPool.getResource();
     }
 
     protected void closeJedis(Jedis jedis) {
-        if(getRedisService().getJedisPool() != null)
-        {
-            getRedisService().getJedisPool().returnResource(jedis);
-        }
+        getRedisService().getJedisPool().returnResource(jedis);
     }
-    
-    protected Serializable deserializeValue(byte[] workBytes) throws IOException {
+
+    protected Serializable deserializeValue(byte[] workBytes)
+            throws IOException {
         if (workBytes == null) {
             return null;
         }
@@ -111,16 +116,19 @@ public class RedisCacheImpl extends AbstractCache {
 
     @Override
     public Serializable get(String key) {
-        Jedis jedis = getJedis();
-        try {
-            return deserializeValue(jedis.get(bytes(prefix + key)));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (key == null) {
+            return null;
+        } else {
+            Jedis jedis = getJedis();
+            try {
+                return deserializeValue(jedis.get(bytes(prefix + key)));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                closeJedis(jedis);
+            }
         }
-        finally
-        {
-            closeJedis(jedis);
-        }
+
     }
 
     protected byte[] serializeValue(Serializable value) throws IOException {
@@ -134,50 +142,55 @@ public class RedisCacheImpl extends AbstractCache {
 
     @Override
     public void invalidate(String key) {
-        Jedis jedis = getJedis();
-        try {
-            jedis.del(key);
-        }
-        finally
-        {
-            closeJedis(jedis);
+        if (key != null) {
+            Jedis jedis = getJedis();
+            try {
+                jedis.del(prefix + key);
+            } finally {
+                closeJedis(jedis);
+            }
+        } else {
+            log.warn(String.format(
+                    "Can't invalidate a null key for the cache '%s'!", name));
         }
     }
 
     @Override
     public void invalidateAll() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void put(String key, Serializable value) {
         Jedis jedis = getJedis();
         try {
-            byte[] bkey = bytes(prefix + key);
-            jedis.set(bkey, serializeValue(value));
-            jedis.expire(bkey, ttl);
-        } catch (IOException e) {
-            log.error(
-                    String.format("Could not set value in the cache %s", name),
-                    e);
-            throw new RuntimeException(e);
+            Set<String> keys = jedis.keys(prefix + "*");
+            for (String key : keys) {
+                jedis.del(key);
+            }
         } finally {
             closeJedis(jedis);
         }
     }
 
     @Override
-    public boolean aboutToHandleEvent(Event event) {
-        // TODO Auto-generated method stub
-        // return false;
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void handleEvent(Event event) {
-        // TODO Auto-generated method stub
-        //
-        throw new UnsupportedOperationException();
+    public void put(String key, Serializable value) {
+        if (key != null && value != null) {
+            Jedis jedis = getJedis();
+            try {
+                byte[] bkey = bytes(prefix + key);
+                jedis.set(bkey, serializeValue(value));
+                // Redis set in second ttl but descriptor set as mn
+                int ttlKey = ttl * 60;
+                jedis.expire(bkey, ttlKey);
+            } catch (IOException e) {
+                log.error(String.format(
+                        "Could not set value with key '%s' in the cache %s",
+                        key, name), e);
+                throw new RuntimeException(e);
+            } finally {
+                closeJedis(jedis);
+            }
+        } else {
+            log.warn(String.format(
+                    "Can't put a null key nor a null value in the cache '%s'!",
+                    name));
+        }
     }
 
 }

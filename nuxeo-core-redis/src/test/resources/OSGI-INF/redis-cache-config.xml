@@ -1,25 +1,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.cache.config">
-
-<!--   <extension target="org.nuxeo.ecm.core.redis.RedisServiceImpl" point="configuration"> -->
-<!--     <code> -->
-<!--       <redis disabled="false"> -->
-<!--         <prefix>nuxeo:</prefix> -->
-<!--         <host>localhost</host> -->
-<!--         <port>6379</port> -->
-<!--         <password>secret</password> -->
-<!--         <database>0</database> -->
-<!--         <timeout>2000</timeout> -->
-<!--       </redis> -->
-<!--     </code> -->
-<!--   </extension> -->
-
   <extension target="org.nuxeo.ecm.core.cache.CacheServiceImpl" point="caches">
-
-    <cache name="redis-test-cache" class="org.nuxeo.ecm.core.redis.RedisCacheImpl">
-      <maxSize>100</maxSize>
-      <ttl>20</ttl>
-      <concurrency-level>10</concurrency-level>
+    <cache name="default-test-cache" class="org.nuxeo.ecm.core.redis.RedisCacheImpl">
+      <!-- Note that maxSize and concurrency-level are not used by the redis impls -->
+      <ttl>1</ttl>
     </cache>
 
   </extension>
