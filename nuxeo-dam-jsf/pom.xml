@@ -215,9 +215,11 @@
       <artifactId>hibernate-validator</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.richfaces.ui</groupId>
-      <artifactId>richfaces-components-api</artifactId>
+      <groupId>org.richfaces</groupId>
+      <artifactId>richfaces</artifactId>
+      <version>4.5.0.Alpha3</version>
     </dependency>
+
 
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
