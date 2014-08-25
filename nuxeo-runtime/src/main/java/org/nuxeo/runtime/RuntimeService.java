@@ -243,4 +243,6 @@ public interface RuntimeService {
      */
     boolean getStatusMessage(StringBuilder msg);
 
+    RuntimeContext getContext(String name);
+
 }

@@ -183,6 +183,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         return contexts.get(bundle.getSymbolicName());
     }
 
+    @Override
     public synchronized RuntimeContext getContext(String symbolicName) {
         return contexts.get(symbolicName);
     }

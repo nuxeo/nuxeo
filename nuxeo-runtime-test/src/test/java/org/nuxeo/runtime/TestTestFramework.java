@@ -22,12 +22,7 @@
 package org.nuxeo.runtime;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.net.URL;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -51,30 +46,6 @@ public class TestTestFramework extends NXRuntimeTestCase {
     public void testSetProperty() {
         runtime.getProperties().put("toto", "titi");
         assertEquals("titi", runtime.getProperty("toto"));
-    }
-
-    @Test
-    public void testLookupBundleUrl() throws Exception {
-
-        urls = new URL[] {
-                new URL("file:/repo/org/nuxeo/nuxeo-runtime-1.4-SNAPSHOT.jar"),
-                new URL("file:/projects/nuxeo-core-test/bin/test"),
-                new URL("file:/projects/nuxeo-core-test/bin/main"),
-                new URL("file:/projects/nuxeo-common/target/test-classes"),
-                new URL("file:/projects/nuxeo-common/target/classes"),
-        };
-        assertEquals(urls[0], lookupBundleUrl("nuxeo-runtime"));
-        assertEquals(urls[2], lookupBundleUrl("nuxeo-core-test"));
-        assertEquals(urls[4], lookupBundleUrl("nuxeo-common"));
-    }
-
-    @Test
-    public void testIsVersionSuffix() {
-        assertTrue(isVersionSuffix(""));
-        assertTrue(isVersionSuffix("-1.4-SNAPSHOT"));
-        assertTrue(isVersionSuffix("-1.3.2"));
-        assertTrue(isVersionSuffix("-1.3.2.jar"));
-        assertFalse(isVersionSuffix("-api-5.1.1.jar"));
     }
 
 }

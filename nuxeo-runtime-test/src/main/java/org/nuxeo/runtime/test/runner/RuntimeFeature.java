@@ -34,9 +34,9 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
+import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.DataSourceHelper;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.osgi.framework.Bundle;
 
 import com.google.common.base.Supplier;
@@ -203,7 +203,7 @@ public class RuntimeFeature extends SimpleFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        harness = new NXRuntimeTestCase(runner.getTargetTestClass());
+        harness = new DefaultRuntimeHarness();
         scanDeployments(runner);
     }
 
@@ -256,6 +256,7 @@ public class RuntimeFeature extends SimpleFeature {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
+        binder.bind(RuntimeService.class).toInstance(Framework.getRuntime());
         for (String svc : Framework.getRuntime().getComponentManager().getServices()) {
             try {
                 Class clazz = Thread.currentThread().getContextClassLoader().loadClass(

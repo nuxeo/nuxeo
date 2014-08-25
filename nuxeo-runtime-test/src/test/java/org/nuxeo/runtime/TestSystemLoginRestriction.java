@@ -12,26 +12,16 @@
 
 package org.nuxeo.runtime;
 
-import java.io.File;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.SystemLoginRestrictionManager;
-import org.nuxeo.runtime.util.SimpleRuntime;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestSystemLoginRestriction {
+public class TestSystemLoginRestriction extends NXRuntimeTestCase{
 
-    @Before
-    public void setUp() throws Exception {
-        System.setProperty("org.nuxeo.runtime.testing", "true");
-        Environment env = new Environment(new File(System.getProperty("java.io.tmpdir")));
-        Environment.setDefault(env);
-        Framework.initialize(new SimpleRuntime());
-    }
 
     @Test
     public void testRestrictions() {

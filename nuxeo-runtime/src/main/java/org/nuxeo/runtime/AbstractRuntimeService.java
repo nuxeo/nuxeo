@@ -254,6 +254,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         return context;
     }
 
+
     protected void startExtensions() {
         for (RuntimeExtension ext : extensions) {
             try {
@@ -301,6 +302,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
      * @param msg summary message about all components loading status
      * @return true if there was no detected error, else return false
      */
+    @Override
     public boolean getStatusMessage(StringBuilder msg) {
         String hr = "======================================================================";
         if (!warnings.isEmpty()) {

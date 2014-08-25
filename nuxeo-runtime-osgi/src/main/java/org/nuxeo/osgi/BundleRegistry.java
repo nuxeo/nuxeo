@@ -167,6 +167,7 @@ public class BundleRegistry {
         log.info("Registering resolved bundle: " + name);
         bundles.put(name, reg);
         bundlesById.put(reg.bundle.getBundleId(), reg);
+        reg.bundle.setInstalled();
         reg.bundle.setResolved();
 
         String hostBundleId = getFragmentHost(reg);

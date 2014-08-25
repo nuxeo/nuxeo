@@ -25,8 +25,6 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
 import org.junit.Before;
-import org.junit.After;
-
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -60,13 +58,6 @@ public abstract class ManagementTestCase extends NXRuntimeTestCase {
 
         locatorService = (ServerLocatorService) Framework.getLocalService(ServerLocator.class);
         publisherService = (ResourcePublisherService) Framework.getLocalService(ResourcePublisher.class);
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        Framework.getRuntime().stop();
-        super.tearDown();
     }
 
     protected void doBindResources() throws InstanceNotFoundException,

@@ -96,29 +96,15 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
                 break;
             case BundleEvent.STARTING:
             case BundleEvent.LAZY_ACTIVATION:
-                if (componentsList != null) {
-                    bundleDebug(
-                            "Bundle changed: %s STARTING with components: " +
-                                    componentsList, name);
-                    runtime.createContext(bundle);
-                } else {
-                    bundleDebug(
-                            "Bundle changed: %s STARTING with no components",
-                            name);
-                }
+                runtime.createContext(bundle);
+                bundleDebug("Bundle changed: %s STARTING with components: "
+                        + componentsList, name);
                 break;
             case BundleEvent.STOPPED:
             case BundleEvent.UNRESOLVED:
-                if (componentsList != null) {
-                    bundleDebug(
-                            "Bundle changed: %s STOPPING with components: " +
-                                    componentsList, name);
-                    runtime.destroyContext(bundle);
-                } else {
-                    bundleDebug(
-                            "Bundle changed: %s STOPPING with no components",
-                            name);
-                }
+                bundleDebug("Bundle changed: %s STOPPING with components: "
+                        + componentsList, name);
+                runtime.destroyContext(bundle);
                 break;
             }
         } catch (Exception e) {
