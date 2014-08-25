@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.redis;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +33,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.JedisSentinelPool;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.util.Pool;
@@ -134,9 +137,23 @@ public class RedisServiceImpl extends DefaultComponent implements
             return false;
         }
         config = desc;
-        pool = new JedisPool(new JedisPoolConfig(), desc.hosts[0].name,
-                desc.hosts[0].port, desc.timeout, StringUtils.defaultIfBlank(
-                        desc.password, null), desc.database);
+        if (!desc.isSentinel()) {
+            pool = new JedisPool(new JedisPoolConfig(), desc.hosts[0].name,
+                    desc.hosts[0].port, desc.timeout,
+                    StringUtils.defaultIfBlank(desc.password, null),
+                    desc.database);
+        } else {
+            try {
+                pool = new JedisSentinelPool(desc.master,
+                        toSentinels(desc.hosts), new JedisPoolConfig(),
+                        desc.timeout, StringUtils.defaultIfBlank(desc.password,
+                                null), desc.database);
+            } catch (Exception cause) {
+                pool = null;
+                config = null;
+                throw new RuntimeException("Cannot connect to redis", cause);
+            }
+        }
         try {
             contributionInfo = context.getRuntimeContext().deploy(
                     "OSGI-INF/redis-contribs.xml");
@@ -209,6 +226,49 @@ public class RedisServiceImpl extends DefaultComponent implements
         if (pool == null) {
             throw new NullPointerException("redis unavailable");
         }
+        if (!config.isSentinel()) {
+            return doExecute(callable);
+        }
+        // retry calling jedis statement until failover timeout elapsed
+        return doExecute(callable, System.currentTimeMillis()
+                + config.failoverTimeout);
+    }
+
+    protected <T> T doExecute(RedisCallable<T> callable, long end)
+            throws RuntimeException, JedisConnectionException {
+        do {
+            try {
+                return doExecute(callable);
+            } catch (JedisConnectionException cause) {
+                if (end >= System.currentTimeMillis()) {
+                    throw cause;
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        } while (true);
+    }
+
+    protected long now() {
+        if (config.failoverTimeout < 0) {
+            return -1L;
+        }
+        return System.currentTimeMillis();
+    }
+
+    protected long timestamp(int seconds) {
+        long now = now();
+        if (now == -1L) {
+            return now;
+        }
+        return now + TimeUnit.SECONDS.convert(seconds, TimeUnit.MILLISECONDS);
+    }
+
+    protected <T> T doExecute(RedisCallable<T> callable)
+            throws JedisConnectionException, RuntimeException {
         Jedis jedis = pool.getResource();
         boolean brokenResource = false;
         try {

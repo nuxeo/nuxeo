@@ -51,7 +51,7 @@ public class RedisTestHelper {
     public static final String REDIS_PREFIX_PROP = "nuxeo.test.redis.prefix";
 
     enum Mode {
-        disabled, server
+        disabled, server, sentinel
     }
 
     public static Mode getMode() {
@@ -89,6 +89,8 @@ public class RedisTestHelper {
         switch (getMode()) {
         case server:
             return getRedisServerDescriptor();
+        case sentinel:
+            return getRedisSentinelDescriptor();
         default:
             return getRedisDisabledDescriptor();
         }
@@ -105,6 +107,15 @@ public class RedisTestHelper {
         RedisConfigurationDescriptor desc = new RedisConfigurationDescriptor();
         desc.hosts = new RedisConfigurationHostDescriptor[] { new RedisConfigurationHostDescriptor(
                 getHost(), getPort()) };
+        desc.prefix = getPrefix();
+        return desc;
+    }
+
+    public static RedisConfigurationDescriptor getRedisSentinelDescriptor() {
+        RedisConfigurationDescriptor desc = new RedisConfigurationDescriptor();
+        desc.master = "mymaster";
+        desc.hosts = new RedisConfigurationHostDescriptor[] { new RedisConfigurationHostDescriptor(
+                getSentinelHost(), getSentinelPort()) };
         desc.prefix = getPrefix();
         return desc;
     }

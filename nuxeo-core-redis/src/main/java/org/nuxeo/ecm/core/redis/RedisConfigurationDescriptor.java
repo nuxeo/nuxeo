@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.redis;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -47,6 +48,12 @@ public class RedisConfigurationDescriptor {
     @XNode("hosts")
     public RedisConfigurationHostDescriptor[] hosts = new RedisConfigurationHostDescriptor[0];
 
+    @XNode("master")
+    public String master;
+
+    @XNode("faileoverTimeout")
+    public long failoverTimeout = 3000;
+
     @XNode("host")
     public void setHost(String name) {
         if (hosts.length == 0) {
@@ -67,5 +74,9 @@ public class RedisConfigurationDescriptor {
         } else {
             hosts[0].port = port;
         }
+    }
+
+    protected boolean isSentinel() {
+        return StringUtils.isNotEmpty(master);
     }
 }
