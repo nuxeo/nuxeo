@@ -44,10 +44,9 @@ import org.jclouds.domain.Location;
 import org.jclouds.domain.LocationBuilder;
 import org.jclouds.domain.LocationScope;
 
-import org.nuxeo.common.utils.SizeUtils;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerRootDescriptor;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.storage.binary.CachingBinaryManager;
 import org.nuxeo.ecm.core.storage.binary.FileStorage;
@@ -81,20 +80,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
 
     public static final String DEFAULT_CACHE_SIZE = "100 MB";
 
-    // TODO define these constants globally somewhere
-    public static final String PROXY_HOST_KEY = "nuxeo.http.proxy.host";
-
-    public static final String PROXY_PORT_KEY = "nuxeo.http.proxy.port";
-
-    public static final String PROXY_LOGIN_KEY = "nuxeo.http.proxy.login";
-
-    public static final String PROXY_PASSWORD_KEY = "nuxeo.http.proxy.password";
-
-    private static final String MD5 = "MD5"; // must be MD5 for Etag
-
     private static final Pattern MD5_RE = Pattern.compile("[0-9a-f]{32}");
-
-    protected String repositoryName;
 
     protected String storeName;
 
@@ -105,14 +91,9 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
     @Override
     public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
             throws IOException {
-        repositoryName = binaryManagerDescriptor.repositoryName;
-        descriptor = new BinaryManagerRootDescriptor();
-        descriptor.digest = MD5; // matches ETag computation
-        log.info("Repository '" + repositoryName + "' using "
-                + getClass().getSimpleName());
+        super.initialize(binaryManagerDescriptor);
 
         // Get settings from the configuration
-
         storeProvider = Framework.getProperty(BLOBSTORE_PROVIDER_KEY);
         if (isBlank(storeProvider)) {
             throw new RuntimeException("Missing conf: "
@@ -145,10 +126,10 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
             cacheSizeStr = DEFAULT_CACHE_SIZE;
         }
 
-        String proxyHost = Framework.getProperty(PROXY_HOST_KEY);
-        String proxyPort = Framework.getProperty(PROXY_PORT_KEY);
-        final String proxyLogin = Framework.getProperty(PROXY_LOGIN_KEY);
-        final String proxyPassword = Framework.getProperty(PROXY_PASSWORD_KEY);
+        String proxyHost = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
+        String proxyPort = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
+        final String proxyLogin = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
+        final String proxyPassword = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PASSWORD);
 
         // Set up proxy
         if (isNotBlank(proxyHost)) {
@@ -190,15 +171,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
         storeMap = context.createBlobMap(storeName);
 
         // Create file cache
-        File dir = File.createTempFile("nxbincache.", "", null);
-        dir.delete();
-        dir.mkdir();
-        Framework.trackFile(dir, dir);
-        long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
-        initializeCache(dir, cacheSize, new JCloudsFileStorage());
-        log.info("Using binary cache directory: " + dir.getPath() + " size: "
-                + cacheSizeStr);
-
+        initializeCache(cacheSizeStr, new JCloudsFileStorage());
         createGarbageCollector();
     }
 
@@ -358,7 +331,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
             }
             startTime = System.currentTimeMillis();
             status = new BinaryManagerStatus();
-            marked = new HashSet<String>();
+            marked = new HashSet<>();
         }
 
         @Override
@@ -373,7 +346,7 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
             }
 
             Set<Map.Entry<String, Blob>> blobList = binaryManager.storeMap.entrySet();
-            Set<String> unmarked = new HashSet<String>();
+            Set<String> unmarked = new HashSet<>();
             for (Map.Entry<String, Blob> blobEntry : blobList) {
                 String digest = blobEntry.getKey();
                 if (!isMD5(digest)) {
