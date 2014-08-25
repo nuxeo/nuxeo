@@ -27,8 +27,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -340,7 +340,6 @@ public class MultiDirectorySession extends BaseSession {
         }
     }
 
-
     @Override
     public String getIdField() {
         return schemaIdField;
@@ -602,7 +601,25 @@ public class MultiDirectorySession extends BaseSession {
         init();
         for (SourceInfo sourceInfo : sourceInfos) {
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
-                dirInfo.getSession().deleteEntry(id);
+                // Check if the platform is able to manage entry
+                if (!sourceInfo.source.creation
+                        && !dirInfo.getSession().isReadOnly()) {
+                    // If not check if entry exist to prevent exception that may
+                    // stop the deletion loop to other subdirectories
+                    // Do not raise exception, because creation is not managed
+                    // by the platform
+                    DocumentModel docModel = dirInfo.getSession().getEntry(id);
+                    if (docModel == null) {
+                        log.warn(String.format(
+                                "MultiDirectory '%s' : The entry id '%s' could not be deleted on subdirectory '%s' because it does not exist",
+                                descriptor.name, id, dirInfo.dirName));
+                    }else
+                    {
+                        dirInfo.getSession().deleteEntry(id);
+                    }
+                } else {
+                    dirInfo.getSession().deleteEntry(id);
+                }
             }
         }
     }
@@ -644,7 +661,8 @@ public class MultiDirectorySession extends BaseSession {
             } else {
                 final DocumentModel entry = BaseSession.createEntryModel(null,
                         dirInfo.dirSchemaName, id, null);
-                // Do not set dataModel values with constructor to force fields dirty
+                // Do not set dataModel values with constructor to force fields
+                // dirty
                 entry.getDataModel(dirInfo.dirSchemaName).setMap(map);
                 dirInfo.getSession().updateEntry(entry);
             }
