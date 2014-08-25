@@ -18,10 +18,6 @@
 
 package org.nuxeo.opensocial.helper;
 
-import static org.nuxeo.launcher.config.Environment.NUXEO_HTTP_PROXY_HOST;
-import static org.nuxeo.launcher.config.Environment.NUXEO_HTTP_PROXY_LOGIN;
-import static org.nuxeo.launcher.config.Environment.NUXEO_HTTP_PROXY_PASSWORD;
-import static org.nuxeo.launcher.config.Environment.NUXEO_HTTP_PROXY_PORT;
 import static org.nuxeo.launcher.config.Environment.NUXEO_LOOPBACK_URL;
 import static org.nuxeo.launcher.config.Environment.OPENSOCIAL_GADGETS_HOST;
 
@@ -31,12 +27,14 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Helper class to provide easy proxy configuration for OpenSocial using default
  * Nuxeo properties.
- * 
+ *
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
 
@@ -79,18 +77,18 @@ public class ProxyHelper {
     }
 
     protected static int getProxyPort() {
-        return Integer.parseInt(Framework.getProperty(NUXEO_HTTP_PROXY_PORT));
+        return Integer.parseInt(Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PORT));
     }
 
     protected static String getProxyHost() {
-        return Framework.getProperty(NUXEO_HTTP_PROXY_HOST);
+        return Framework.getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
     }
 
     protected static String getProxyPassword() {
-        return Framework.getProperty(NUXEO_HTTP_PROXY_PASSWORD);
+        return Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PASSWORD);
     }
 
     protected static String getProxyLogin() {
-        return Framework.getProperty(NUXEO_HTTP_PROXY_LOGIN);
+        return Framework.getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
     }
 }
