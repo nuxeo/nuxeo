@@ -2,9 +2,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.runtime.datasource.server.contrib">
 
-<#if nuxeo.db.embeddedDatasources == "true">
+<#if "${nuxeo.server.declare_datasources}" == "false">
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
-<#if nuxeo.db.xaMode == "false">
+<#if "${nuxeo.db.singleDataSource}"!="">
     <datasource name="${nuxeo.db.commonds}" driverClassName="${nuxeo.db.driver}"
       maxActive="${nuxeo.db["max-pool-size"]}" maxIdle="5" maxWait="10000"
       url="${nuxeo.db.jdbc.url}" validationQuery="${nuxeo.db.validationQuery}"
