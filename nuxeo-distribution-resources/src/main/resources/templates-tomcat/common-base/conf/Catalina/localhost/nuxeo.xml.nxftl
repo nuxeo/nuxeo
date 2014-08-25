@@ -36,7 +36,7 @@
     For example java:comp/env/jdbc/nxsqldirectory This means you need to update corresponding
     JNDI bindings in nuxeo data source definitions in the config directory -->
 
-<#if "${nuxeo.server.declare_datasources}" == "true">
+<#if nuxeo.db.embeddedDatasources == "false">
   <ResourceLink name="jdbc/NuxeoDS" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
   <ResourceLink name="jdbc/nxsqldirectory" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
   <ResourceLink name="jdbc/nxrelations-default-jena" global="${nuxeo.db.commonds}" type="javax.sql.DataSource" />
