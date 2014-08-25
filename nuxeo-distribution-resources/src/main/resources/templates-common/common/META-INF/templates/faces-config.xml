@@ -11,6 +11,8 @@
 
   </factory>
 
+  %{NAVIGATION-RULE}%
+
   <navigation-rule>
 
     %{NAVIGATION}%
