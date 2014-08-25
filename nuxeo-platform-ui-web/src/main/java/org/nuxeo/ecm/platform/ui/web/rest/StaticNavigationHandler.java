@@ -24,9 +24,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import javax.faces.FactoryFinder;
 import javax.faces.application.NavigationCase;
 import javax.faces.context.FacesContext;
+import javax.faces.context.FacesContextFactory;
+import javax.faces.lifecycle.Lifecycle;
+import javax.faces.lifecycle.LifecycleFactory;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,21 +59,35 @@ public class StaticNavigationHandler {
 
     private final HashMap<String, String> viewIdToOutcome = new HashMap<String, String>();
 
-    public StaticNavigationHandler(ServletContext context) {
-        ApplicationAssociate associate = ApplicationAssociate.getCurrentInstance();
+    public StaticNavigationHandler(ServletContext context,
+            HttpServletRequest request, HttpServletResponse response) {
+        boolean created = false;
         FacesContext faces = FacesContext.getCurrentInstance();
+        if (faces == null) {
+            // Acquire the FacesContext instance for this request
+            FacesContextFactory facesContextFactory = (FacesContextFactory) FactoryFinder.getFactory(FactoryFinder.FACES_CONTEXT_FACTORY);
+            LifecycleFactory lifecycleFactory = (LifecycleFactory) FactoryFinder.getFactory(FactoryFinder.LIFECYCLE_FACTORY);
+            // force using default lifecycle instead of performing lookup on
+            // conf
+            Lifecycle lifecycle = lifecycleFactory.getLifecycle(LifecycleFactory.DEFAULT_LIFECYCLE);
+            faces = facesContextFactory.getFacesContext(context, request,
+                    response, lifecycle);
+            created = true;
+        }
+        ApplicationAssociate associate = ApplicationAssociate.getCurrentInstance();
         for (Set<NavigationCase> cases : associate.getNavigationCaseListMappings().values()) {
             for (NavigationCase cnc : cases) {
-                // FIXME: cases view ids now require the faces context not to be null
-                // String toViewId = cnc.getToViewId(faces);
-                // String fromOutcome = cnc.getFromOutcome();
-                // outcomeToViewId.put(fromOutcome, toViewId);
-                // viewIdToOutcome.put(toViewId, fromOutcome);
+                String toViewId = cnc.getToViewId(faces);
+                String fromOutcome = cnc.getFromOutcome();
+                outcomeToViewId.put(fromOutcome, toViewId);
+                viewIdToOutcome.put(toViewId, fromOutcome);
             }
         }
-        // FIXME: disable this when not in dev mode, until above nav is fixed
-        if (Framework.isDevModeSet() || true) {
+        if (Framework.isDevModeSet()) {
             handleHotReloadResources(context);
+        }
+        if (created) {
+            faces.release();
         }
     }
 

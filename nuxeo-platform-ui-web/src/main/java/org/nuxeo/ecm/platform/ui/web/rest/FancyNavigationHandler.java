@@ -21,8 +21,11 @@ package org.nuxeo.ecm.platform.ui.web.rest;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 import javax.faces.FacesException;
+import javax.faces.application.ConfigurableNavigationHandler;
+import javax.faces.application.NavigationCase;
 import javax.faces.application.NavigationHandler;
 import javax.faces.application.ViewHandler;
 import javax.faces.component.UIViewRoot;
@@ -45,14 +48,14 @@ import com.sun.faces.util.Util;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class FancyNavigationHandler extends NavigationHandler {
+public class FancyNavigationHandler extends ConfigurableNavigationHandler {
 
     private static final Log log = LogFactory.getLog(FancyNavigationHandler.class);
 
-    private final NavigationHandler baseNavigationHandler;
+    private final NavigationHandler parent;
 
     public FancyNavigationHandler(NavigationHandler navigationHandler) {
-        baseNavigationHandler = navigationHandler;
+        parent = navigationHandler;
     }
 
     @Override
@@ -72,7 +75,7 @@ public class FancyNavigationHandler extends NavigationHandler {
         }
         // get old root to check if it's changed
         UIViewRoot oldRoot = context.getViewRoot();
-        baseNavigationHandler.handleNavigation(context, fromAction, outcome);
+        parent.handleNavigation(context, fromAction, outcome);
         UIViewRoot newRoot = context.getViewRoot();
         boolean rootChanged = !oldRoot.equals(newRoot);
         if (outcome != null && !context.getResponseComplete() && !rootChanged
@@ -123,4 +126,21 @@ public class FancyNavigationHandler extends NavigationHandler {
         }
     }
 
+    @Override
+    public NavigationCase getNavigationCase(FacesContext context,
+            String fromAction, String outcome) {
+        if (parent instanceof ConfigurableNavigationHandler) {
+            return ((ConfigurableNavigationHandler) parent).getNavigationCase(
+                    context, fromAction, outcome);
+        }
+        return null;
+    }
+
+    @Override
+    public Map<String, Set<NavigationCase>> getNavigationCases() {
+        if (parent instanceof ConfigurableNavigationHandler) {
+            return ((ConfigurableNavigationHandler) parent).getNavigationCases();
+        }
+        return null;
+    }
 }

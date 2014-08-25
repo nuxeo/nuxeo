@@ -31,6 +31,7 @@ import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -569,9 +570,11 @@ public class URLPolicyServiceImpl implements URLPolicyService {
     }
 
     @Override
-    public void initViewIdManager(ServletContext context) {
+    public void initViewIdManager(ServletContext context,
+            HttpServletRequest request, HttpServletResponse response) {
         if (viewIdManager == null) {
-            viewIdManager = new StaticNavigationHandler(context);
+            viewIdManager = new StaticNavigationHandler(context, request,
+                    response);
         }
     }
 

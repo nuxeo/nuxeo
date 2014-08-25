@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.rest.api;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.rest.StaticNavigationHandler;
@@ -169,8 +170,10 @@ public interface URLPolicyService {
      * the given servlet context.
      *
      * @since 5.5
+     * @since 5.9.6, passes the request and response too
      */
-    void initViewIdManager(ServletContext context);
+    void initViewIdManager(ServletContext context, HttpServletRequest request,
+            HttpServletResponse response);
 
     /**
      * Returns the view id given an outcome, to dispatch to the right view

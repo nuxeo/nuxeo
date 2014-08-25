@@ -20,6 +20,11 @@ package org.nuxeo.ecm.platform.ui.web.rest;
 
 import java.io.IOException;
 
+import javax.faces.FactoryFinder;
+import javax.faces.context.FacesContext;
+import javax.faces.context.FacesContextFactory;
+import javax.faces.lifecycle.Lifecycle;
+import javax.faces.lifecycle.LifecycleFactory;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -33,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
@@ -86,7 +92,8 @@ public class FancyURLFilter implements Filter {
         try {
             getUrlService();
             // initialize its view id manager if necessary
-            urlService.initViewIdManager(servletContext);
+            urlService.initViewIdManager(servletContext, httpRequest,
+                    httpResponse);
 
             // check if this is an URL that needs to be parsed
             if (urlService.isCandidateForDecoding(httpRequest)) {
