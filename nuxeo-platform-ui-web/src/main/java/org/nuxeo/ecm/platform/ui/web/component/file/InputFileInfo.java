@@ -49,6 +49,11 @@ public class InputFileInfo {
 
     protected Object mimeType;
 
+    // empty constructor needed by JSF restore method
+    public InputFileInfo() {
+        super();
+    }
+
     public InputFileInfo(Object choice, Object blob, Object filename,
             Object mimeType) {
         this.choice = choice;

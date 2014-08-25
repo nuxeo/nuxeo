@@ -25,11 +25,13 @@ import java.util.Map;
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
+import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
+import javax.faces.component.html.HtmlInputFile;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
@@ -37,12 +39,11 @@ import javax.faces.convert.ConverterException;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
+import javax.servlet.http.Part;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.ui.component.UIFileUpload;
-import org.jboss.seam.ui.component.html.HtmlFileUpload;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
@@ -88,14 +89,15 @@ public class UIInputFile extends UIInput implements NamingContainer {
     protected String onselect;
 
     public UIInputFile() {
-        // initiate sub components otherwise they won't be available when
-        // restoring the view.
+        // initiate sub components
+        FacesContext faces = FacesContext.getCurrentInstance();
+        Application app = faces.getApplication();
         ComponentUtils.initiateSubComponent(this, DEFAULT_DOWNLOAD_FACET_NAME,
-                new UIOutputFile());
+                app.createComponent(UIOutputFile.COMPONENT_TYPE));
         ComponentUtils.initiateSubComponent(this, EDIT_FILENAME_FACET_NAME,
-                new HtmlInputText());
+                app.createComponent(HtmlInputText.COMPONENT_TYPE));
         ComponentUtils.initiateSubComponent(this, UPLOAD_FACET_NAME,
-                new HtmlFileUpload());
+                app.createComponent(HtmlInputFile.COMPONENT_TYPE));
     }
 
     // component will render itself
@@ -383,11 +385,22 @@ public class UIInputFile extends UIInput implements NamingContainer {
             throws ValidatorException {
         // validate blob
         UIComponent uploadFacet = getFacet(UPLOAD_FACET_NAME);
-        if (uploadFacet instanceof UIFileUpload) {
-            UIFileUpload uploadComp = (UIFileUpload) uploadFacet;
-            submitted.setBlob(uploadComp.getLocalInputStream());
-            submitted.setFilename(uploadComp.getLocalFileName());
-            submitted.setMimeType(uploadComp.getLocalContentType());
+        if (uploadFacet instanceof HtmlInputFile) {
+            HtmlInputFile uploadComp = (HtmlInputFile) uploadFacet;
+            Object submittedFile = uploadComp.getSubmittedValue();
+            if (submittedFile instanceof Part) {
+                Part file = (Part) submittedFile;
+                try {
+                    submitted.setBlob(file.getInputStream());
+                } catch (IOException e) {
+                    ComponentUtils.addErrorMessage(context, this,
+                            e.getMessage());
+                    setValid(false);
+                    return;
+                }
+                submitted.setFilename(retrieveFilename(file));
+                submitted.setMimeType(file.getContentType());
+            }
             Blob blob = null;
             try {
                 blob = submitted.getConvertedBlob();
@@ -416,6 +429,18 @@ public class UIInputFile extends UIInput implements NamingContainer {
             submitted.setBlob(blob);
             submitted.setFilename(filename);
         }
+    }
+
+    // protected method waiting for servlet-api improvements
+    protected String retrieveFilename(Part part) {
+        for (String cd : part.getHeader("content-disposition").split(";")) {
+            if (cd.trim().startsWith("filename")) {
+                String filename = cd.substring(cd.indexOf('=') + 1).trim().replace(
+                        "\"", "");
+                return filename;
+            }
+        }
+        return null;
     }
 
     public void updateFilename(FacesContext context, String newFilename) {
@@ -500,8 +525,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 FacesMessage message;
                 if (null == messageStr) {
                     message = MessageFactory.getMessage(context,
-                            UPDATE_MESSAGE_ID, MessageFactory.getLabel(context,
-                                    this));
+                            UPDATE_MESSAGE_ID,
+                            MessageFactory.getLabel(context, this));
                 } else {
                     message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
                             messageStr, messageStr);
@@ -510,14 +535,14 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 setValid(false);
             } catch (IllegalArgumentException e) {
                 FacesMessage message = MessageFactory.getMessage(context,
-                        UPDATE_MESSAGE_ID, MessageFactory.getLabel(context,
-                                this));
+                        UPDATE_MESSAGE_ID,
+                        MessageFactory.getLabel(context, this));
                 context.addMessage(getClientId(context), message);
                 setValid(false);
             } catch (Exception e) {
                 FacesMessage message = MessageFactory.getMessage(context,
-                        UPDATE_MESSAGE_ID, MessageFactory.getLabel(context,
-                                this));
+                        UPDATE_MESSAGE_ID,
+                        MessageFactory.getLabel(context, this));
                 context.addMessage(getClientId(context), message);
                 setValid(false);
             }
@@ -677,8 +702,6 @@ public class UIInputFile extends UIInput implements NamingContainer {
                     downloadFacet = getFacet(DEFAULT_DOWNLOAD_FACET_NAME);
                     if (downloadFacet != null) {
                         UIOutputFile downloadComp = (UIOutputFile) downloadFacet;
-                        ComponentUtils.hookSubComponent(context, this,
-                                downloadComp, DEFAULT_DOWNLOAD_FACET_NAME);
                         downloadComp.setQueryParent(true);
                         ComponentUtils.copyValues(
                                 this,
@@ -693,8 +716,6 @@ public class UIInputFile extends UIInput implements NamingContainer {
                     UIComponent filenameFacet = getFacet(EDIT_FILENAME_FACET_NAME);
                     if (filenameFacet instanceof HtmlInputText) {
                         HtmlInputText filenameComp = (HtmlInputText) filenameFacet;
-                        ComponentUtils.hookSubComponent(context, this,
-                                filenameComp, EDIT_FILENAME_FACET_NAME);
                         filenameComp.setValue(filename);
                         filenameComp.setLocalValueSet(false);
                         String onClick = "document.getElementById('%s').checked='checked'";
@@ -770,10 +791,8 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 }
                 // encode upload component
                 UIComponent uploadFacet = getFacet(UPLOAD_FACET_NAME);
-                if (uploadFacet instanceof HtmlFileUpload) {
-                    HtmlFileUpload uploadComp = (HtmlFileUpload) uploadFacet;
-                    ComponentUtils.hookSubComponent(context, this, uploadComp,
-                            UPLOAD_FACET_NAME);
+                if (uploadFacet instanceof HtmlInputFile) {
+                    HtmlInputFile uploadComp = (HtmlInputFile) uploadFacet;
                     String onClick = "document.getElementById('%s').checked='checked'";
                     uploadComp.setOnfocus(String.format(onClick, id));
                     // TODO: add size limit info

@@ -84,7 +84,9 @@ public final class ComponentUtils {
      * When adding sub components dynamically, the tree fetching could be a
      * problem so all possible sub components must be added.
      * <p>
-     * By default initiated component are marked as not rendered.
+     * Since 5.9.6, does not mark component as not rendered anymore, calls
+     * {@link #hookSubComponent(FacesContext, UIComponent, UIComponent, String)}
+     * directly.
      *
      * @param parent
      * @param child
@@ -93,11 +95,13 @@ public final class ComponentUtils {
     public static void initiateSubComponent(UIComponent parent,
             String facetName, UIComponent child) {
         parent.getFacets().put(facetName, child);
-        child.setRendered(false);
+        hookSubComponent(null, parent, child, facetName);
     }
 
     /**
-     * Add a sub component to a UI component, marking is as rendered.
+     * Add a sub component to a UI component.
+     * <p>
+     * Since 5.9.6, does not the set the component as rendered anymore.
      *
      * @param context
      * @param parent
@@ -120,7 +124,6 @@ public final class ComponentUtils {
         // reset client id
         child.setId(childId);
         child.setParent(parent);
-        child.setRendered(true);
         return child;
     }
 

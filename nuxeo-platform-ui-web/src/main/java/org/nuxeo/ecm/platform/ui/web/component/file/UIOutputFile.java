@@ -22,11 +22,15 @@ import javax.el.ExpressionFactory;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
+import javax.faces.application.Application;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UICommand;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIOutcomeTarget;
 import javax.faces.component.UIOutput;
 import javax.faces.component.html.HtmlCommandLink;
+import javax.faces.component.html.HtmlInputFile;
+import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
@@ -83,12 +87,14 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
     // XXX AT: maybe add action listeners
 
     public UIOutputFile() {
+        FacesContext faces = FacesContext.getCurrentInstance();
+        Application app = faces.getApplication();
         ComponentUtils.initiateSubComponent(this, DOWNLOAD_FACET_NAME,
-                new UIOutputFileCommandLink());
+                app.createComponent(UIOutputFileCommandLink.COMPONENT_TYPE));
         ComponentUtils.initiateSubComponent(this, CONVERT_PDF_FACET_NAME,
-                new HtmlCommandLink());
+                app.createComponent(HtmlCommandLink.COMPONENT_TYPE));
         ComponentUtils.initiateSubComponent(this, EDITONLINE_FACET_NAME,
-                new HtmlCommandLink());
+                app.createComponent(HtmlCommandLink.COMPONENT_TYPE));
     }
 
     // component will render itself
@@ -335,8 +341,6 @@ public class UIOutputFile extends UIOutput implements NamingContainer {
                 Blob blob = (Blob) value;
                 String filenameSet = getFilename();
                 UICommand downloadComp = (UICommand) downloadFacet;
-                ComponentUtils.hookSubComponent(context, this, downloadComp,
-                        DOWNLOAD_FACET_NAME);
                 // action expression will be set thanks to parent values
                 downloadComp.setValue(getDownloadLinkValue(context, blob,
                         filenameSet));
