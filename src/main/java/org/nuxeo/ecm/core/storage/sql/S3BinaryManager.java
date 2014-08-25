@@ -36,10 +36,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.nuxeo.common.utils.SizeUtils;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerRootDescriptor;
 import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.storage.binary.CachingBinaryManager;
 import org.nuxeo.ecm.core.storage.binary.FileStorage;
@@ -73,6 +72,13 @@ import com.google.common.base.Objects;
  * it is also cached in a simple text file if accessed before the stream.
  */
 public class S3BinaryManager extends CachingBinaryManager {
+
+    private static final String MD5 = "MD5"; // must be MD5 for Etag
+
+    @Override
+    protected String getDigest() {
+        return MD5;
+    }
 
     private static final Log log = LogFactory.getLog(S3BinaryManager.class);
 
@@ -118,17 +124,6 @@ public class S3BinaryManager extends CachingBinaryManager {
 
     public static final String ENDPOINT_KEY = "nuxeo.s3storage.endpoint";
 
-    // TODO define these constants globally somewhere
-    public static final String PROXY_HOST_KEY = "nuxeo.http.proxy.host";
-
-    public static final String PROXY_PORT_KEY = "nuxeo.http.proxy.port";
-
-    public static final String PROXY_LOGIN_KEY = "nuxeo.http.proxy.login";
-
-    public static final String PROXY_PASSWORD_KEY = "nuxeo.http.proxy.password";
-
-    private static final String MD5 = "MD5"; // must be MD5 for Etag
-
     private static final Pattern MD5_RE = Pattern.compile("(.*/)?[0-9a-f]{32}");
 
     protected String bucketName;
@@ -143,19 +138,14 @@ public class S3BinaryManager extends CachingBinaryManager {
 
     protected CryptoConfiguration cryptoConfiguration;
 
-    protected String repositoryName;
-
     protected AmazonS3 amazonS3;
 
+    // SuppressWarnings because of confok (keystorePass, privkeyPass)
+    @SuppressWarnings("null")
     @Override
     public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
             throws IOException {
-
-        repositoryName = binaryManagerDescriptor.repositoryName;
-        descriptor = new BinaryManagerRootDescriptor();
-        descriptor.digest = MD5; // matches ETag computation
-        log.info("Repository '" + repositoryName + "' using "
-                + getClass().getSimpleName());
+        super.initialize(binaryManagerDescriptor);
 
         // Get settings from the configuration
         bucketName = Framework.getProperty(BUCKET_NAME_KEY);
@@ -168,10 +158,10 @@ public class S3BinaryManager extends CachingBinaryManager {
         String awsID = Framework.getProperty(AWS_ID_KEY);
         String awsSecret = Framework.getProperty(AWS_SECRET_KEY);
 
-        String proxyHost = Framework.getProperty(PROXY_HOST_KEY);
-        String proxyPort = Framework.getProperty(PROXY_PORT_KEY);
-        String proxyLogin = Framework.getProperty(PROXY_LOGIN_KEY);
-        String proxyPassword = Framework.getProperty(PROXY_PASSWORD_KEY);
+        String proxyHost = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
+        String proxyPort = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
+        String proxyLogin = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
+        String proxyPassword = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PASSWORD);
 
         String cacheSizeStr = Framework.getProperty(CACHE_SIZE_KEY);
         if (isBlank(cacheSizeStr)) {
@@ -317,15 +307,7 @@ public class S3BinaryManager extends CachingBinaryManager {
         }
 
         // Create file cache
-        File dir = File.createTempFile("nxbincache.", "", null);
-        dir.delete();
-        dir.mkdir();
-        Framework.trackFile(dir, dir);
-        long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
-        initializeCache(dir, cacheSize, newFileStorage());
-        log.info("Using binary cache directory: " + dir.getPath() + " size: "
-                + cacheSizeStr);
-
+        initializeCache(cacheSizeStr, newFileStorage());
         createGarbageCollector();
     }
 
