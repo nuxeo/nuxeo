@@ -193,6 +193,27 @@ public class Environment {
 
     public static final String DISTRIBUTION_VERSION = "org.nuxeo.distribution.version";
 
+    // proxy
+    /**
+     * @since 5.9.6
+     */
+    public static final String NUXEO_HTTP_PROXY_HOST = "nuxeo.http.proxy.host";
+
+    /**
+     * @since 5.9.6
+     */
+    public static final String NUXEO_HTTP_PROXY_PORT = "nuxeo.http.proxy.port";
+
+    /**
+     * @since 5.9.6
+     */
+    public static final String NUXEO_HTTP_PROXY_LOGIN = "nuxeo.http.proxy.login";
+
+    /**
+     * @since 5.9.6
+     */
+    public static final String NUXEO_HTTP_PROXY_PASSWORD = "nuxeo.http.proxy.password";
+
     public Environment(File home) {
         this(home, null);
     }
