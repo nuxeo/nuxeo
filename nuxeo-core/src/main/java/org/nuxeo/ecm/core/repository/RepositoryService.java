@@ -26,6 +26,8 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
@@ -46,10 +48,6 @@ public class RepositoryService extends DefaultComponent {
     // @GuardedBy("itself")
     private final Map<String, Repository> repositories = new HashMap<String, Repository>();
 
-    @Override
-    public void deactivate(ComponentContext context) throws Exception {
-        shutdown();
-    }
 
     public void shutdown() {
         log.info("Shutting down repository manager");
@@ -68,6 +66,17 @@ public class RepositoryService extends DefaultComponent {
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
+                    return;
+                }
+                Framework.removeListener(this);
+                shutdown();
+            }
+        });
         RepositoryInitializationHandler handler = RepositoryInitializationHandler.getInstance();
         if (handler == null) {
             return;
