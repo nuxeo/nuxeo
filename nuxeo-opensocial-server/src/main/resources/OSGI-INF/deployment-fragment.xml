@@ -19,7 +19,6 @@
         org.nuxeo.opensocial.services.NuxeoCryptoModule:
         org.apache.shindig.social.core.config.SocialApiGuiceModule:
         org.nuxeo.opensocial.shindig.gadgets.NXGadgetModule:
-        org.apache.shindig.common.cache.ehcache.EhCacheModule
       </param-value>
     </context-param>
   </extension>

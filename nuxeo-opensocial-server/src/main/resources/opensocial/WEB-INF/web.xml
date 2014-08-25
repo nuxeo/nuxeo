@@ -28,7 +28,6 @@
       org.nuxeo.opensocial.shindig.gadgets.NXGadgetSpecFactoryModule:
       org.apache.shindig.gadgets.DefaultGuiceModule:
       org.apache.shindig.gadgets.oauth.OAuthModule:
-      org.apache.shindig.common.cache.ehcache.EhCacheModule
     </param-value>
   </context-param>
 
