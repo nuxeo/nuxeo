@@ -334,8 +334,8 @@ public class WidgetTagHandler extends MetaTagHandler {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     protected MetaRuleset createMetaRuleset(Class type) {
-        // TODO Auto-generated method stub
         return null;
     }
 

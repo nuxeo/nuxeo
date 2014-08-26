@@ -101,7 +101,6 @@ public class MethodResultTagHandler extends MetaTagHandler {
 
     @Override
     protected MetaRuleset createMetaRuleset(Class type) {
-        // TODO Auto-generated method stub
         return null;
     }
 
