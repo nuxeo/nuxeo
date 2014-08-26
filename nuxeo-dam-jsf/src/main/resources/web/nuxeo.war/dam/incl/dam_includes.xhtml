@@ -1,6 +1,8 @@
 <c:if test="true"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
@@ -20,7 +22,7 @@
   <h:form>
     <a4j:jsFunction name="damSelectDocument" render="nxw_damAssetView_panel"
       oncomplete="nuxeo.dam.afterDocumentSelected(data);" data="#{damActions.selectedDocumentId}">
-      <a4j:actionparam name="param1" assignTo="#{damActions.selectedDocumentId}"  />
+      <a4j:param name="param1" assignTo="#{damActions.selectedDocumentId}"  />
       <f:setPropertyActionListener
         value="nxw_damAssetView_panel"
         target="#{jsfResetActions.baseComponentId}" />
