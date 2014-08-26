@@ -31,7 +31,10 @@
       </h:panelGroup>
     </nxu:methodResult>
 
-    <nxu:methodResult name="isLiveEditable"
+    <nxu:set var="document"
+      value="#{nxu:test(empty widgetProperty_document, value, widgetProperty_document)}"
+      cache="true">
+    <nxu:set var="isLiveEditable"
       value="#{liveEditHelper.isLiveEditable(document, field_0)}">
       <h:panelGroup
         rendered="#{isLiveEditable}">
@@ -41,7 +44,8 @@
           <h:outputText value="#{messages['label.document.directEdit']}" />
         </h:outputLink>
       </h:panelGroup>
-    </nxu:methodResult>
+    </nxu:set>
+    </nxu:set>
 
   </c:if>
 

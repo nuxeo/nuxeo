@@ -32,21 +32,6 @@
       </h:panelGroup>
     </nxu:methodResult>
 
-    <f:subview rendered="false">
-      FIXME AT: re-enable when NXP-2306 is fixed
-    <nxu:methodResult name="isLiveEditable"
-      value="#{liveEditHelper.isLiveEditable(field_0)}">
-      <h:panelGroup
-        rendered="#{isLiveEditable}">
-        <h:outputText value=" | " />
-        <h:outputLink
-          value="#{nxd:complexLiveEditUrl(layoutValue, widget_0.fieldDefinitions[0].propertyName, model.rowIndex, widget.fieldDefinitions[0].propertyName, widget.fieldDefinitions[1].propertyName)}">
-          <h:outputText value="#{messages['label.document.directEdit']}" />
-        </h:outputLink>
-      </h:panelGroup>
-    </nxu:methodResult>
-    </f:subview>
-
   </c:if>
 
   <c:if test="#{widget.mode == 'edit'}">
