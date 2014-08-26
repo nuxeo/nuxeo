@@ -2,18 +2,18 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.runtime.datasource.server.contrib">
 
-<#if "${nuxeo.server.declare_datasources}" == "false">
+<#if nuxeo.db.embeddedDatasources == "true">
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
-<#if "${nuxeo.db.singleDataSource}"!="">
+<#if nuxeo.db.xaMode == "false">
     <datasource name="${nuxeo.db.commonds}" driverClassName="${nuxeo.db.driver}"
-      maxActive="${nuxeo.db["max-pool-size"]}" maxIdle="5" maxWait="10000"
+      maxPoolSize="${nuxeo.db["max-pool-size"]}" minPoolSize="5" blockingTimeoutMillis="10000"
       url="${nuxeo.db.jdbc.url}" validationQuery="${nuxeo.db.validationQuery}"
       username="${nuxeo.db.user}" password="${nuxeo.db.password}"
       accessToUnderlyingConnectionAllowed="true" >
     </datasource>
 <#else>
     <datasource name="${nuxeo.db.commonds}" xaDataSource="${nuxeo.db.xadatasource}"
-      maxActive="${nuxeo.db["max-pool-size"]}" maxIdle="5" maxWait="10000">
+      maxPoolSize="${nuxeo.db["max-pool-size"]}" minPoolSize="5" blockTimeoutMillis="10000">
 <#include "xadatasource-params.ftl" parse=true />
     </datasource>
 </#if>
