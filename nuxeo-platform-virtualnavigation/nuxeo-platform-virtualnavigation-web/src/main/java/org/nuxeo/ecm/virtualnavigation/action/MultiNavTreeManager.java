@@ -34,6 +34,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.contexts.Context;
+import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.virtualnavigation.service.NavTreeService;
@@ -85,7 +87,7 @@ public class MultiNavTreeManager implements Serializable {
 
     /**
      * Checks timestamp on service to handle cache reset when using hot reload
-     * 
+     *
      * @since 5.6
      */
     protected boolean shouldResetCache() {
@@ -131,6 +133,12 @@ public class MultiNavTreeManager implements Serializable {
         Events.instance().raiseEvent(
                 EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED,
                 new DocumentModelImpl("Folder"));
+        // since JSF2 upgrade, both variables are retrieved at restore phase,
+        // and action is called after => need to force re-compute of variables
+        // after action
+        Context eventContext = Contexts.getEventContext();
+        eventContext.remove("selectedNavigationTree");
+        eventContext.remove("selectedNavigationTreeDescriptor");
     }
 
     @Observer(value = { "PATH_PROCESSED" }, create = false)
