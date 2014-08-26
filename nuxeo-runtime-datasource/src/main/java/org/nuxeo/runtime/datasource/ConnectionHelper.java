@@ -773,6 +773,9 @@ public class ConnectionHelper {
                 connection = h.getUnwrappedConnection();
             }
         }
+        if (connection instanceof org.tranql.connector.jdbc.ConnectionHandle) {
+            return ((org.tranql.connector.jdbc.ConnectionHandle)connection).getAssociation().getPhysicalConnection();
+        }
         // now try Apache DBCP unwrap (standard or Tomcat), to skip datasource
         // wrapping layers
         // this needs accessToUnderlyingConnectionAllowed=true in the pool
@@ -791,7 +794,7 @@ public class ConnectionHelper {
                 | IllegalAccessException | InvocationTargetException e) {
             // ignore missing method, connection not coming from Apache pool
         }
-        return connection;
+        throw new UnsupportedOperationException("unknown pooled connection " + connection.getClass());
     }
 
     /**
