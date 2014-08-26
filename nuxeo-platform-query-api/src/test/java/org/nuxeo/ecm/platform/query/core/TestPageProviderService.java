@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -170,4 +171,35 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
         assertTrue(pp.getProperties().containsKey("dummy"));
     }
 
+    @Test
+    public void testAggregateDefinitionEmpty() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        assertNotNull(pps);
+
+        PageProviderDefinition ppd = pps.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+        AggregateDefinition[] aggs = ppd.getAggregates();
+        assertNotNull(aggs);
+        assertEquals(0, aggs.length);
+    }
+
+    @Test
+    public void testAggregateDefinition() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        assertNotNull(pps);
+
+        PageProviderDefinition ppd = pps.getPageProviderDefinition("TEST_AGGREGATES");
+        AggregateDefinition[] aggs = ppd.getAggregates();
+        assertNotNull(aggs);
+        assertEquals(3, aggs.length);
+        assertEquals("agg1", aggs[0].getId());
+        assertEquals("term", aggs[0].getType());
+        assertEquals("dc:title", aggs[0].getDocumentField());
+        assertEquals("advanced_search", aggs[0].getSearchField().getSchema());
+        assertEquals("{\"foo\":\"val1\",\"bar\":\"val2\"}", aggs[0].getPropertiesAsJson());
+        assertEquals("{\"foo\" : \"bar\"}", aggs[1].getPropertiesAsJson());
+        assertEquals("{}", aggs[2].getPropertiesAsJson());
+        assertNotNull(aggs[0].getProperties());
+        assertEquals(2, aggs[0].getProperties().size());
+        assertEquals(0, aggs[2].getProperties().size());
+   }
 }
