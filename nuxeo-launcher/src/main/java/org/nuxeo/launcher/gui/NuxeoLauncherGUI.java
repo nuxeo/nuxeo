@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Julien Carsique
  *
- * $Id$
  */
 
 package org.nuxeo.launcher.gui;
@@ -45,6 +44,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.artofsolving.jodconverter.util.PlatformUtils;
+
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.launcher.NuxeoLauncher;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
@@ -71,7 +71,7 @@ public class NuxeoLauncherGUI {
      * @since 5.6
      */
     protected ExecutorService newExecutor() {
-        return Executors.newFixedThreadPool(5, new DaemonThreadFactory(
+        return Executors.newCachedThreadPool(new DaemonThreadFactory(
                 "NuxeoLauncherGUITask"));
     }
 
@@ -324,6 +324,7 @@ public class NuxeoLauncherGUI {
 
     /**
      * Get internationalized message with parameters
+     *
      * @param key Message key
      * @param params
      * @return Localized message value
