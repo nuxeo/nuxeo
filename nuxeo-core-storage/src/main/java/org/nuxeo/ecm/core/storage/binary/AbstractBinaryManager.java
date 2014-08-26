@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -42,8 +42,8 @@ public abstract class AbstractBinaryManager implements BinaryManager {
     protected BinaryGarbageCollector garbageCollector;
 
     @Override
-    abstract public void initialize(BinaryManagerDescriptor descriptor)
-            throws IOException;
+    abstract public void initialize(
+            BinaryManagerDescriptor binaryManagerDescriptor) throws IOException;
 
     @Override
     abstract public Binary getBinary(InputStream in) throws IOException;
@@ -69,7 +69,7 @@ public abstract class AbstractBinaryManager implements BinaryManager {
         } else {
             desc = new BinaryManagerRootDescriptor();
             // TODO fetch from repo descriptor
-            desc.digest = DEFAULT_DIGEST;
+            desc.digest = getDigest();
             desc.depth = DEFAULT_DEPTH;
             desc.write(configFile); // may throw IOException
         }
@@ -135,6 +135,15 @@ public abstract class AbstractBinaryManager implements BinaryManager {
     }
 
     /**
+     * Gets the message digest to use to hash binaries.
+     *
+     * @since 5.9.6
+     */
+    protected String getDigest() {
+        return DEFAULT_DIGEST;
+    }
+
+    /**
      * A {@link BinaryScrambler} that does nothing.
      */
     public static class NullBinaryScrambler implements BinaryScrambler {
@@ -173,14 +182,11 @@ public abstract class AbstractBinaryManager implements BinaryManager {
 
         private static final long serialVersionUID = 1L;
 
-        private final File file;
-
         protected final BinaryScrambler scrambler;
 
         public ScrambledBinary(File file, String digest, String repoName,
                 BinaryScrambler scrambler) {
             super(file, digest, repoName);
-            this.file = file;
             this.scrambler = scrambler;
         }
 

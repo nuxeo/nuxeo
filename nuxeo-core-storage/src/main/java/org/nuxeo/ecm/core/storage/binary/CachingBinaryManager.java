@@ -27,8 +27,12 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.file.FileCache;
 import org.nuxeo.common.file.LRUFileCache;
+import org.nuxeo.common.utils.SizeUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -41,6 +45,18 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7
  */
 public abstract class CachingBinaryManager extends AbstractBinaryManager {
+
+    private static final Log log = LogFactory.getLog(CachingBinaryManager.class);
+
+    @Override
+    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
+            throws IOException {
+        repositoryName = binaryManagerDescriptor.repositoryName;
+        descriptor = new BinaryManagerRootDescriptor();
+        descriptor.digest = getDigest();
+        log.info("Repository '" + repositoryName + "' using "
+                + getClass().getSimpleName());
+    }
 
     protected static final String LEN_DIGEST_SUFFIX = "-len";
 
@@ -58,9 +74,33 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
      *
      * @since 5.9.2
      */
-    public void initializeCache(File dir, long maxSize, FileStorage fileStorage) {
+    public void initializeCache(File dir, long maxSize,
+            @SuppressWarnings("hiding") FileStorage fileStorage) {
         fileCache = new LRUFileCache(dir, maxSize);
         this.fileStorage = fileStorage;
+    }
+
+    /**
+     * Initialize the cache.
+     *
+     * @param cacheSizeStr the maximum size of the cache (as a String)
+     * @param fileStorage the file storage mechanism to use to store and fetch
+     *            files
+     * @since 5.9.6
+     * @see #initializeCache(File, long, FileStorage)
+     * @see SizeUtils#parseSizeInBytes(String)
+     */
+    public void initializeCache(String cacheSizeStr,
+            @SuppressWarnings("hiding") FileStorage fileStorage)
+            throws IOException {
+        File dir = File.createTempFile("nxbincache.", "", null);
+        dir.delete();
+        dir.mkdir();
+        Framework.trackFile(dir, dir);
+        long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
+        initializeCache(dir, cacheSize, fileStorage);
+        log.info("Using binary cache directory: " + dir.getPath() + " size: "
+                + cacheSizeStr);
     }
 
     @Override

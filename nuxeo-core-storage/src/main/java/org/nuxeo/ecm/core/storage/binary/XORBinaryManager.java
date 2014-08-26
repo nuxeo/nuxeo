@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -38,14 +38,12 @@ public class XORBinaryManager extends LocalBinaryManager {
         if (key == null || key.length() == 0) {
             key = "U"; // 0x55
         }
-        byte[] pattern;
         try {
             pattern = key.getBytes("UTF-8");
         } catch (Exception e) {
             // cannot happen
             pattern = new byte[] { 'U' };
         }
-        this.pattern = pattern;
     }
 
     @Override
@@ -83,7 +81,8 @@ public class XORBinaryManager extends LocalBinaryManager {
         }
 
         @Override
-        public Binary getUnscrambledBinary(File file, String digest, String repoName) {
+        public Binary getUnscrambledBinary(File file, String digest,
+                String repoName) {
             return new ScrambledBinary(file, digest, repoName, this);
         }
 
