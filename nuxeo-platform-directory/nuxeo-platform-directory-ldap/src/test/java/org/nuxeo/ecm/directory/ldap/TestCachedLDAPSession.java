@@ -29,16 +29,26 @@ import org.nuxeo.ecm.directory.DirectoryCache;
  */
 public class TestCachedLDAPSession extends TestLDAPSession {
 
+    protected final static String CACHE_CONTRIB = "ldap-directory-cache-config.xml";
+
+    protected final static String ENTRY_CACHE_NAME = "ldap-entry-cache";
+
+    protected final static String ENTRY_CACHE_WITHOUT_REFERENCES_NAME = "ldap-entry-cache-without-references";
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
+
+        deployBundle("org.nuxeo.ecm.core.cache");
+        deployTestContrib(TEST_BUNDLE, CACHE_CONTRIB);
+
         List<String> directories = Arrays.asList("userDirectory",
                 "groupDirectory");
         for (String directoryName : directories) {
             LDAPDirectory dir = getLDAPDirectory(directoryName);
             DirectoryCache cache = dir.getCache();
-            cache.setMaxSize(2);
-            cache.setTimeout(10);
+            cache.setEntryCacheName(ENTRY_CACHE_NAME);
+            cache.setEntryCacheWithoutReferencesName(ENTRY_CACHE_WITHOUT_REFERENCES_NAME);
         }
     }
 

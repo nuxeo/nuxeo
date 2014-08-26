@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 
-<!-- This is a test setup for SQL directories that is similar to the
-  default-sql-directories-bundles.xml setup except that the datasource is set
-  to a in memory backend -->
+<!-- This is a test setup for SQL directories that is similar to the default-sql-directories-bundles.xml 
+  setup except that the datasource is set to a in memory backend -->
 
 <component name="org.nuxeo.ecm.directory.sql.storage.override">
 
@@ -19,9 +18,9 @@
       <querySizeLimit>123</querySizeLimit>
       <autoincrementIdField>true</autoincrementIdField>
       <computeMultiTenantId>false</computeMultiTenantId>
-      <cacheTimeout>123</cacheTimeout>
-      <cacheMaxSize>456</cacheMaxSize>
-
+      <cacheEntryName>override-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>override-entry-cache-wo-ref
+      </cacheEntryWithoutReferencesName>
     </directory>
 
   </extension>

@@ -146,8 +146,8 @@ public class SQLDirectory extends AbstractDirectory {
         addReferences(config.getTableReferences());
 
         // cache parameterization
-        cache.setMaxSize(config.getCacheMaxSize());
-        cache.setTimeout(config.getCacheTimeout());
+        cache.setEntryCacheName(config.cacheEntryName);
+        cache.setEntryCacheWithoutReferencesName(config.cacheEntryWithoutReferencesName);
 
     }
 
