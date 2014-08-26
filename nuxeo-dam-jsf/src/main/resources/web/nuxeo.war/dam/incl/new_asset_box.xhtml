@@ -48,7 +48,7 @@
               <td class="fieldColumn">
                   <h:selectOneListbox size="1" value="#{damImportActions.selectedNewAssetType}"
                     id="#{widget.id}_select">
-                    <a4j:ajax event="change" listener="#{damImportActions.selectNewAssetType()}"
+                    <f:ajax event="change" listener="#{damImportActions.selectNewAssetType()}"
                       render="newAssetLayout_panel" execute="@this"/>
                     <nxu:selectItems value="#{damImportActions.allowedImportFolderSubTypes}"
                       var="type"
@@ -83,11 +83,12 @@
       <nxh:commandButton value="#{messages['command.create']}"
         action="#{damImportActions.saveNewAsset()}"
         styleClass="button" />
-      <a4j:commandButton value="#{messages['command.cancel']}"
-        immediate="true" execute="@this"
+      <h:commandButton value="#{messages['command.cancel']}"
+        immediate="true"
         action="#{damImportActions.cancelNewAsset()}"
-        oncomplete="jQuery.fancybox.close()"
-        styleClass="button" />
+        styleClass="button">
+        <f:ajax execute="@this" onevent="jQuery.fancybox.close" />
+      </h:commandButton>
     </div>
 
   </h:form>
