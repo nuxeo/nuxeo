@@ -445,7 +445,18 @@
         <scope>test</scope>
         <version>${nuxeo.core.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-cache</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-cache</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
       <!-- Nuxeo Services -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
