@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Julien Carsique
  *
- * $Id$
  */
 
 package org.nuxeo.launcher.gui;
@@ -65,6 +64,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
 import org.joda.time.DateTime;
+
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.log4j.Log4JHelper;
 import org.nuxeo.shell.Shell;
@@ -352,6 +352,13 @@ public class NuxeoFrame extends JFrame {
         JTabbedPane logsTabbedPane = new JTabbedPane(SwingConstants.TOP);
         // Get Launcher log file(s)
         ArrayList<String> logFiles = Log4JHelper.getFileAppendersFiles(LogManager.getLoggerRepository());
+        // Add nuxeoctl log file
+        File nuxeoctlLog = new File(
+                controller.getConfigurationGenerator().getLogDir(),
+                "nuxeoctl.log");
+        if (nuxeoctlLog.exists()) {
+            logFiles.add(nuxeoctlLog.getAbsolutePath());
+        }
         // Get server log file(s)
         logFiles.addAll(controller.getConfigurationGenerator().getLogFiles());
         for (String logFile : logFiles) {
