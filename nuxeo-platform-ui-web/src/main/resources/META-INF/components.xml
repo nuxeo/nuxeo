@@ -32,6 +32,12 @@
     </property>
   </component>
 
+  <!-- disable "transaction failed" message, a custom event listener
+    handles it, see NuxeoFacesTransactionEvents class -->
+  <component name="org.jboss.seam.transaction.facesTransactionEvents">
+    <property name="transactionFailedMessageEnabled">false</property>
+  </component>
+
   <!-- disable filters not useful in Nuxeo -->
   <component name="org.jboss.seam.web.wicketFilter" disabled="true" />
   <component name="org.jboss.seam.web.authenticationFilter" disabled="true" />
