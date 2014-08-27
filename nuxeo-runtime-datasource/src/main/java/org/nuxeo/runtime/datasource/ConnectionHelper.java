@@ -794,7 +794,7 @@ public class ConnectionHelper {
                 | IllegalAccessException | InvocationTargetException e) {
             // ignore missing method, connection not coming from Apache pool
         }
-        throw new UnsupportedOperationException("unknown pooled connection " + connection.getClass());
+        return connection;
     }
 
     /**
