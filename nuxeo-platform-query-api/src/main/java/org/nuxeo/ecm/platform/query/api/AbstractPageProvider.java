@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -95,6 +96,10 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     protected PageProviderDefinition definition;
 
     protected PageProviderChangedListener pageProviderChangedListener;
+
+    protected static final AggregateQuery[] EMPTY_AGGREGATION_QUERY = new AggregateQuery[0];
+
+    protected  AggregateQuery[] aggregateQuery;
 
     /**
      * Returns the list of current page items.
@@ -868,6 +873,28 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public AggregateQuery[] getAggregatesQuery() {
+        if (aggregateQuery == null) {
+            AggregateDefinition[] aggDefinitions = definition.getAggregates();
+            if (aggDefinitions.length == 0) {
+                aggregateQuery = EMPTY_AGGREGATION_QUERY;
+            } else {
+                aggregateQuery = new AggregateQuery[aggDefinitions.length];
+                int i = 0;
+                for(AggregateDefinition def: aggDefinitions){
+                    aggregateQuery[i++] = new AggregateQuery(def, searchDocumentModel);
+                }
+            }
+        }
+        return aggregateQuery;
+    }
+
+    @Override
+    public Aggregate[] getAggregates() {
+        throw new NotImplementedException();
     }
 
 }

@@ -14,42 +14,28 @@
  * Contributors:
  *     Benoit Delbosc
  */
-
 package org.nuxeo.ecm.platform.query.api;
 
-import java.util.Map;
+/**
+ * @since 5.9.6
+ */
+public class Bucket {
 
-public interface AggregateDefinition {
+    protected String id;
 
-    String getId();
+    protected int count;
 
-    void setId(String id);
+    public Bucket(String id, int count) {
+        this.id = id;
+        this.count = count;
+    }
 
-    String getType();
+    public String getId() {
+        return id;
+    }
 
-    void setType(String type);
-
-    Map<String, String> getProperties();
-
-    String getPropertiesAsJson();
-
-    void setPropertiesAsJson(String json);
-
-    /**
-     * Get the document aggregator field
-     */
-    String getDocumentField();
-
-    void setDocumentField(String parameter);
-
-    /**
-     * Get the ref of the search input, the type of the field
-     * must be nxs:stringList
-     */
-    PredicateFieldDefinition getSearchField();
-
-    void setSearchField(PredicateFieldDefinition field);
-
-    AggregateDefinition clone();
+    public int getCount() {
+        return count;
+    }
 
 }
