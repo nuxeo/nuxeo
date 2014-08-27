@@ -261,7 +261,7 @@ public class SQLSession implements Session {
         }
         Document doc = newDocument(node);
         if (doc == null) {
-            throw new NoSuchDocumentException("No such document: " + path);
+            throw new NoSuchDocumentException(path);
         }
         return doc;
     }
@@ -714,7 +714,7 @@ public class SQLSession implements Session {
         }
         Document doc = newDocument(childNode);
         if (doc == null) {
-            throw new NoSuchDocumentException("No such document: " + name);
+            throw new NoSuchDocumentException(name);
         }
         return doc;
     }
