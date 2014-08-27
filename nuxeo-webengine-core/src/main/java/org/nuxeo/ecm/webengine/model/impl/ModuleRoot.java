@@ -143,11 +143,7 @@ public class ModuleRoot extends DefaultObject implements ModuleResource {
     }
 
     public Object handleError(WebApplicationException e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        pw.close();
-        return Response.status(500).entity(sw.toString()).build();
+        return e;
     }
 
 }

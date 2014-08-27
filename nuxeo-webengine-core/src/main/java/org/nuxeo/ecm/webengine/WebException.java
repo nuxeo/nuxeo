@@ -24,13 +24,14 @@ import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
+import org.nuxeo.ecm.webengine.model.ModuleResource;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebDocumentException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -48,6 +49,8 @@ public class WebException extends WebApplicationException {
     protected String message;
 
     protected int status;
+
+    protected boolean byPassAppResponse = false;
 
     public WebException() {
     }
@@ -70,6 +73,7 @@ public class WebException extends WebApplicationException {
         super(cause, response);
         this.cause = cause;
         this.status = response.getStatus();
+        byPassAppResponse = true;
     }
 
     /**
@@ -173,10 +177,10 @@ public class WebException extends WebApplicationException {
                 }
             }
             if (notFound) {
-                return new WebResourceNotFoundException(cause.getMessage(),
+                return new WebResourceNotFoundException(message,
                         cause);
             } else {
-                return new WebDocumentException(message, cause);
+                return new WebDocumentException(message, exception);
             }
         } else {
             return new WebException(message, exception);
@@ -240,6 +244,14 @@ public class WebException extends WebApplicationException {
         return getStatus(t) == HttpServletResponse.SC_FORBIDDEN;
     }
 
+    /**
+     * For compatibility only.
+     */
+    @Deprecated
+    public static Response toResponse(Throwable t) {
+        return Response.status(500).entity(toString(t)).build();
+    }
+
     @Override
     public String getMessage() {
         return message;
@@ -257,7 +269,36 @@ public class WebException extends WebApplicationException {
         return sw.toString();
     }
 
+    /**
+     * For compatibility only.
+     */
+    @Deprecated
+    public int getReturnCode() {
+        return super.getResponse().getStatus();
+    }
+
+    /**
+     * Handle if needed custom error webengine module handler.
+     */
     public Response toResponse() {
+        Response response = super.getResponse();
+        if (!byPassAppResponse) {
+            WebContext ctx = WebEngine.getActiveContext();
+            if (ctx != null) {
+                if (ctx.head() instanceof ModuleResource) {
+                    ModuleResource mr = (ModuleResource) ctx.head();
+                    Object result = mr.handleError((WebApplicationException)
+                            this.getCause());
+                    if (result instanceof Response) {
+                        response = (Response) result;
+                    } else if (result != null) {
+                        response = Response.fromResponse(response).status
+                                (status).entity(result).build();
+                    }
+                    return response;
+                }
+            }
+        }
         return Response.status(status).entity(this).build();
     }
 
