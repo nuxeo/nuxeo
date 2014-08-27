@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
 import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -104,7 +105,7 @@ public class TestAggregates {
         aggDef1.setId("source");
         aggDef1.setDocumentField("dc:source");
         aggDef1.setSearchField(new FieldDescriptor("advanced_search",
-                "sourge_agg"));
+                "source_agg"));
 
         AggregateDefinition aggDef2 = new AggregateDescriptor();
         aggDef2.setType("terms");
@@ -116,6 +117,10 @@ public class TestAggregates {
 
         DocumentModel model = new DocumentModelImpl("/", "doc",
                 "AdvancedSearch");
+        String[] sources = {"foo", "bar"};
+        String[] natures = {"foobar"};
+        model.setProperty("advanced_search", "source_agg", sources);
+        // model.setProperty("advanced_search", "nature_agg", natures);
         NxQueryBuilder qb = new NxQueryBuilder(session)
                 .nxql("SELECT * FROM Document")
                 .addAggregate(new AggregateQuery(aggDef1, model))
@@ -133,7 +138,13 @@ public class TestAggregates {
                         + "    \"match_all\" : { }\n"
                         + "  },\n"
                         + "  \"post_filter\" : {\n"
-                        + "    \"match_all\" : { }\n"
+                        + "    \"and\" : {\n"
+                        + "      \"filters\" : [ {\n"
+                        + "        \"term\" : {\n"
+                        + "          \"dc:source\" : [ \"foo\", \"bar\" ]\n"
+                        + "        }\n"
+                        + "      } ]\n"
+                        + "    }\n"
                         + "  },\n"
                         + "  \"aggregations\" : {\n"
                         + "    \"source\" : {\n"
@@ -150,7 +161,13 @@ public class TestAggregates {
                         + "    },\n"
                         + "    \"nature\" : {\n"
                         + "      \"filter\" : {\n"
-                        + "        \"match_all\" : { }\n"
+                        + "        \"and\" : {\n"
+                        + "          \"filters\" : [ {\n"
+                        + "            \"term\" : {\n"
+                        + "              \"dc:source\" : [ \"foo\", \"bar\" ]\n"
+                        + "            }\n"
+                        + "          } ]\n"
+                        + "        }\n"
                         + "      },\n"
                         + "      \"aggregations\" : {\n"
                         + "        \"nature\" : {\n"
@@ -167,7 +184,7 @@ public class TestAggregates {
     }
 
     @Test
-    public void testFoo() throws Exception {
+    public void testPageProvider() throws Exception {
         PageProviderService pps = Framework
                 .getService(PageProviderService.class);
         Assert.assertNotNull(pps);
@@ -176,17 +193,14 @@ public class TestAggregates {
                 .getPageProviderDefinition("aggregates_1");
         Assert.assertNotNull(ppdef);
 
-        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, null,
-                null, null, (long) 0, null);
-
         DocumentModel model = new DocumentModelImpl("/", "doc",
                 "AdvancedSearch");
-        pp.setSearchDocumentModel(model);
+        String[] sources = {"foo", "bar"};
+        model.setProperty("advanced_search", "source_agg", sources);
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
+                null, null, (long) 0, null);
 
-        AggregateQuery[] aggs = pp.getAggregatesQuery();
-
-        NxQueryBuilder qb = new NxQueryBuilder(session);
-        qb.addAggregates(aggs);
+        Aggregate[] aggs = pp.getAggregates();
 
     }
 

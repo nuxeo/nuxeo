@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.query.PageProviderQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 
@@ -70,9 +71,13 @@ public class ElasticSearchNativePageProvider extends
         ElasticSearchService ess = Framework
                 .getLocalService(ElasticSearchService.class);
         try {
-            DocumentModelList dmList = ess.query(getCoreSession(), query,
-                    (int) getMinMaxPageSize(), (int) getCurrentPageOffset(),
-                    sortArray);
+            NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession())
+                    .esQuery(query)
+                    .offset((int) getCurrentPageOffset())
+                    .limit((int) getMinMaxPageSize())
+                    .addSort(sortArray)
+                    .addAggregates(getAggregatesQuery());
+            DocumentModelList dmList = ess.query(nxQuery);
             setResultsCount(dmList.totalSize());
             currentPageDocuments = dmList;
         } catch (ClientException e) {

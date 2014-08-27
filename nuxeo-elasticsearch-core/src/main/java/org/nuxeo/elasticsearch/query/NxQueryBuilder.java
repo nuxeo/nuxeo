@@ -216,10 +216,36 @@ public class NxQueryBuilder {
         return ret;
     }
 
-    public FilterBuilder getAggregateFilter() {
-        // TODO process all aggregate selection
-        return FilterBuilders.matchAllFilter();
+    protected FilterBuilder getAggregateFilter() {
+        boolean hasFilter = false;
+        AndFilterBuilder ret = FilterBuilders.andFilter();
+        for (AggregateQuery aggQuery: aggregates) {
+            if (aggQuery.getSelection().length > 0) {
+                ret.add(FilterBuilders.termFilter(aggQuery.getField(), aggQuery.getSelection()));
+                hasFilter = true;
+            }
+        }
+        if (! hasFilter) {
+            return null;
+        }
+        return ret;
     }
+
+    protected FilterBuilder getAggregateFilterExceptFor(String id) {
+        boolean hasFilter = false;
+        AndFilterBuilder ret = FilterBuilders.andFilter();
+        for (AggregateQuery aggQuery: aggregates) {
+            if (aggQuery.getSelection().length > 0 && ! aggQuery.getId().equals(id)) {
+                ret.add(FilterBuilders.termFilter(aggQuery.getField(), aggQuery.getSelection()));
+                hasFilter = true;
+            }
+        }
+        if (! hasFilter) {
+            return FilterBuilders.matchAllFilter();
+        }
+        return ret;
+    }
+
 
     public List<AbstractAggregationBuilder> getAggregates() {
         List<AbstractAggregationBuilder> ret = new ArrayList<AbstractAggregationBuilder>(
@@ -230,10 +256,9 @@ public class NxQueryBuilder {
                 TermsBuilder agg = getTermsBuilder(aggQuery);
                 FilterAggregationBuilder fagg = new FilterAggregationBuilder(
                         aggQuery.getId());
-                // TODO add filters from other aggregates selection
-                fagg.filter(FilterBuilders.matchAllFilter());
+                fagg.filter(getAggregateFilterExceptFor(aggQuery.getId()));
                 fagg.subAggregation(agg);
-                ret.add((AbstractAggregationBuilder) fagg);
+                ret.add(fagg);
                 break;
             default:
                 throw new NotImplementedException(String.format(
@@ -277,7 +302,10 @@ public class NxQueryBuilder {
             request.addAggregation(aggregate);
         }
         // Add Aggregate post filter
-        request.setPostFilter(getAggregateFilter());
+        FilterBuilder aggFilter = getAggregateFilter();
+        if (aggFilter != null) {
+            request.setPostFilter(aggFilter);
+        }
     }
 
     protected QueryBuilder addSecurityFilter(QueryBuilder query) {
