@@ -14,6 +14,8 @@ Accepted parameters:
 - addForm: boolean stating if a form should be added (optional, defaults to false)
 - formId: the form id (required if addForm is true)
 - useAjaxForm: boolean stating if form should be ajaxified (optional, defaults to false)
+- disableMultiPartForm: boolean stating if non-ajaxified form should *not* use send
+  multipart request
 - reRender: ajax elements ids to rerender (optional)
 - formStyleClass: style class to put on the form (optional)
 
@@ -25,7 +27,7 @@ Templating zone to define:
 <c:if test="#{addForm}">
   <c:if test="#{not useAjaxForm}">
 
-    <h:form id="#{formId}" enctype="multipart/form-data"
+    <h:form id="#{formId}" enctype="#{disableMultipartForm?'':'multipart/form-data'}"
       styleClass="#{formStyleClass}">
       <ui:insert name="form_template_content" />
     </h:form>
