@@ -236,7 +236,6 @@
         /WEB-INF/nxweb-html.taglib.xml;
         /WEB-INF/nxweb-util.taglib.xml;
         /WEB-INF/nxweb-document.taglib.xml;
-        /WEB-INF/nxweb-ajax4jsf.taglib.xml;
         /WEB-INF/nxweb-pdf.taglib.xml;
         /WEB-INF/nx-seam-excel.taglib.xml;
         /WEB-INF/nx-seam-rss.taglib.xml;
