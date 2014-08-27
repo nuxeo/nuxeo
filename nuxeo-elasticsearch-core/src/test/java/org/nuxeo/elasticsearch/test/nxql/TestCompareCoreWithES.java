@@ -19,6 +19,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -137,7 +138,8 @@ public class TestCompareCoreWithES {
     protected void compareESAndCore(String nxql) throws Exception {
 
         DocumentModelList coreResult = session.query(nxql);
-        DocumentModelList esResult = ess.query(session, nxql, 20, 0);
+        DocumentModelList esResult = ess.query(new NxQueryBuilder(session)
+                .nxql(nxql).limit(20));
         try {
             assertSameDocumentLists(coreResult, esResult);
         } catch (AssertionError e) {

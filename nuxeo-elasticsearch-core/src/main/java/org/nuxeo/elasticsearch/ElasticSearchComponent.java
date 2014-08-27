@@ -658,7 +658,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return query(query);
     }
 
-    @Override
+    @Deprecated @Override
     public DocumentModelList query(CoreSession session,
             QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) throws ClientException {

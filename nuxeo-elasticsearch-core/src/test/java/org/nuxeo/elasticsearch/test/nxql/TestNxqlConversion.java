@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.query.NxqlQueryConverter;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -133,7 +134,8 @@ public class TestNxqlConversion {
     protected void checkNXQL(String nxql, int expectedNumberOfHis)
             throws Exception {
         //System.out.println(NXQLQueryConverter.toESQueryString(nxql));
-        DocumentModelList docs = ess.query(session, nxql, 10, 0);
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session)
+                .nxql(nxql).limit(10));
         Assert.assertEquals(expectedNumberOfHis, docs.size());
     }
 

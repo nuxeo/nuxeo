@@ -291,12 +291,13 @@ public class TestAutomaticIndexing {
         waitForIndexing();
 
         startTransaction();
-        DocumentModelList ret = ess.query(session, "SELECT * FROM Document",
-                10, 0);
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session)
+                .nxql("SELECT * FROM Document").limit(10));
         Assert.assertEquals(1, ret.totalSize());
 
-        ret = ess.query(session,
-                "SELECT * FROM Document WHERE ecm:fulltext='search'", 10, 0);
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document WHERE ecm:fulltext='search'")
+                .limit(10));
         Assert.assertEquals(1, ret.totalSize());
     }
 

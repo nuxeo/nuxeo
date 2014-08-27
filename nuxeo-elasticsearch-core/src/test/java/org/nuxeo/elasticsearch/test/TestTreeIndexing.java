@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
+import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -269,8 +270,9 @@ public class TestTreeIndexing {
 
         buildAndIndexTree();
 
-        DocumentModelList docs = ess.query(session, "select * from Document",
-                10, 0);
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session)
+                .nxql("select * from Document")
+                .limit(10));
         Assert.assertEquals(10, docs.totalSize());
 
         // check for user with no rights
@@ -278,7 +280,9 @@ public class TestTreeIndexing {
         CoreSession restrictedSession = getRestrictedSession("toto");
         try {
             docs = ess
-                    .query(restrictedSession, "select * from Document", 10, 0);
+                    .query(new NxQueryBuilder(restrictedSession)
+                            .nxql("select * from Document")
+                            .limit(10));
             Assert.assertEquals(0, docs.totalSize());
 
             // add READ rights and check that user now has access
@@ -303,7 +307,8 @@ public class TestTreeIndexing {
 
             startTransaction();
             docs = ess
-                    .query(restrictedSession, "select * from Document", 10, 0);
+                    .query(new NxQueryBuilder(restrictedSession)
+                            .nxql("select * from Document").limit(10));
             Assert.assertEquals(8, docs.totalSize());
 
             // block rights and check that blocking is taken into account
@@ -334,7 +339,8 @@ public class TestTreeIndexing {
             }
 
             docs = ess
-                    .query(restrictedSession, "select * from Document", 10, 0);
+                    .query(new NxQueryBuilder(restrictedSession)
+                            .nxql("select * from Document").limit(10));
             Assert.assertEquals(3, docs.totalSize());
         } finally {
             restrictedSession.close();
@@ -344,13 +350,14 @@ public class TestTreeIndexing {
     @Test
     public void shouldDenyAccessOnUnsupportedACL() throws Exception {
         buildAndIndexTree();
-        DocumentModelList docs = ess.query(session, "select * from Document",
-                10, 0);
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session)
+                .nxql("select * from Document").limit(10));
         Assert.assertEquals(10, docs.totalSize());
 
         // check for user with no rights
         CoreSession restrictedSession = getRestrictedSession("toto");
-        docs = ess.query(restrictedSession, "select * from Document", 10, 0);
+        docs = ess.query(new NxQueryBuilder(restrictedSession)
+                .nxql("select * from Document").limit(10));
         Assert.assertEquals(0, docs.totalSize());
 
         // add READ rights and check that user now has access
@@ -365,8 +372,9 @@ public class TestTreeIndexing {
         waitForIndexing();
 
         startTransaction();
-        docs = ess.query(restrictedSession,
-                "select * from Document order by dc:title", 10, 0);
+        docs = ess.query(new NxQueryBuilder(restrictedSession)
+                .nxql("select * from Document order by dc:title")
+                .limit(10));
         Assert.assertEquals(8, docs.totalSize());
 
         // Add an unsupported negative ACL
@@ -382,8 +390,9 @@ public class TestTreeIndexing {
         waitForIndexing();
 
         startTransaction();
-        docs = ess.query(restrictedSession,
-                "select * from Document order by dc:title", 10, 0);
+        docs = ess.query(new NxQueryBuilder(restrictedSession)
+                .nxql("select * from Document order by dc:title")
+                .limit(10));
         // can view folder2, folder3 and folder4
         Assert.assertEquals(3, docs.totalSize());
 
@@ -407,9 +416,9 @@ public class TestTreeIndexing {
 
         startTransaction();
         DocumentModelList docs = ess
-                .query(session,
-                        "select * from Document where ecm:currentLifeCycleState != 'deleted'",
-                        20, 0);
+                .query(new NxQueryBuilder(session)
+                        .nxql("select * from Document where ecm:currentLifeCycleState != 'deleted'")
+                        .limit(20));
         // for (DocumentModel doc : docs) {
         // System.out.println(doc.getPathAsString());
         // }
@@ -428,8 +437,8 @@ public class TestTreeIndexing {
         waitForIndexing();
 
         startTransaction();
-        DocumentModelList docs = ess.query(session, "select * from Document",
-                20, 0);
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session)
+                .nxql("select * from Document").limit(20));
         Assert.assertEquals(18, docs.totalSize());
     }
 

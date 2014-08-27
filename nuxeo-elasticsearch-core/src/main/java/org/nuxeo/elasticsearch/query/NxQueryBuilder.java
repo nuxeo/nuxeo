@@ -246,7 +246,6 @@ public class NxQueryBuilder {
         return ret;
     }
 
-
     public List<AbstractAggregationBuilder> getAggregates() {
         List<AbstractAggregationBuilder> ret = new ArrayList<AbstractAggregationBuilder>(
                 aggregates.size());
