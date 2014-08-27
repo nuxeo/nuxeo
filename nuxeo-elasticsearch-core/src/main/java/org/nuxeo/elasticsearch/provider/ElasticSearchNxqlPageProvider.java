@@ -17,6 +17,8 @@
 
 package org.nuxeo.elasticsearch.provider;
 
+import org.nuxeo.ecm.platform.query.api.Aggregate;
+
 /**
  * Page provider that uses Elasticsearch and understand NXQL for fixedPart and
  * pattern.
@@ -34,4 +36,7 @@ public class ElasticSearchNxqlPageProvider extends
         return false;
     }
 
+    @Override public Aggregate[] getAggregates() {
+        return null;
+    }
 }

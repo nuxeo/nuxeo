@@ -173,6 +173,27 @@
       <pageSize>20</pageSize>
     </genericPageProvider>
 
+    <genericPageProvider name="aggregates_1"
+                         class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <property name="coreSession">#{documentManager}</property>
+      <property name="maxResults">-1</property>
+      <pageSize>20</pageSize>
+      <fixedPart>SELECT * FROM Document</fixedPart>
+      <aggregates>
+        <aggregate id="source" type="terms" parameter="dc:source">
+          <field schema="advanced_search" name="source_agg"/>
+          <property name="size">5</property>
+        </aggregate>
+        <aggregate id="coverage" type="terms" parameter="dc:coverage">
+          <field schema="advanced_search" name="coverage_agg"/>
+          <property name="size">5</property>
+        </aggregate>
+        <aggregate id="nature" type="terms" parameter="dc:nature">
+          <field schema="advanced_search" name="nature_agg"/>
+          <property name="size">5</property>
+        </aggregate>
+      </aggregates>
+    </genericPageProvider>
 
   </extension>
 

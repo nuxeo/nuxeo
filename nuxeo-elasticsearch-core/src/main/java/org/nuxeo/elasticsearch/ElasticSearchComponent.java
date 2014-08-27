@@ -79,6 +79,8 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -94,6 +96,7 @@ import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -710,8 +713,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         SearchRequestBuilder request = getClient().prepareSearch(
                 getSearchIndexes()).setTypes(
                 DOC_TYPE)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setFrom(query.getOffset()).setSize(query.getLimit());
+                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
         if (query.isFetchFromElasticsearch()) {
             // fetch the _source without the binaryfulltext field
             request.setFetchSource(getIncludeSourceFields(),
@@ -719,13 +721,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         } else {
             request.addField(ID_FIELD);
         }
-        // Add security filter
-        request.setQuery(
-                addSecurityFilter(query.getSession(), query.makeQuery()));
-        // Add sort
-        for (SortBuilder sortBuilder : query.getSortBuilders()) {
-            request.addSort(sortBuilder);
-        }
+        query.updateRequest(request);
         return request;
     }
 
@@ -744,23 +740,6 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-    protected QueryBuilder addSecurityFilter(CoreSession session,
-            QueryBuilder queryBuilder) {
-        AndFilterBuilder aclFilter;
-        Principal principal = session.getPrincipal();
-        if (principal == null
-                || (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal)
-                        .isAdministrator())) {
-            return queryBuilder;
-        }
-        String[] principals = SecurityService.getPrincipalsToCheck(principal);
-        // we want an ACL that match principals but we discard
-        // unsupported ACE that contains negative ACE
-        aclFilter = FilterBuilders.andFilter(FilterBuilders.inFilter(ACL_FIELD,
-                principals), FilterBuilders.notFilter(FilterBuilders.inFilter(
-                ACL_FIELD, UNSUPPORTED_ACL)));
-        return QueryBuilders.filteredQuery(queryBuilder, aclFilter);
-    }
 
     protected DocumentModelListImpl fetchDocumentsFromElasticsearch(
             NxQueryBuilder queryBuilder, SearchResponse response) {

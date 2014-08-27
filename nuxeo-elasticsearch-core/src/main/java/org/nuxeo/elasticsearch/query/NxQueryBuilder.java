@@ -14,21 +14,37 @@
  * Contributors:
  *     bdelbosc
  */
-
 package org.nuxeo.elasticsearch.query;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.NotImplementedException;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.index.query.AndFilterBuilder;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,6 +62,7 @@ public class NxQueryBuilder {
     private String nxql;
     private org.elasticsearch.index.query.QueryBuilder esQueryBuilder;
     private boolean fetchFromElasticsearch = false;
+    private List<AggregateQuery> aggregates = new ArrayList<AggregateQuery>();
 
     public NxQueryBuilder(CoreSession coreSession) {
         session = coreSession;
@@ -129,6 +146,18 @@ public class NxQueryBuilder {
         return this;
     }
 
+    public NxQueryBuilder addAggregate(AggregateQuery aggregate) {
+        aggregates.add(aggregate);
+        return this;
+    }
+
+    public NxQueryBuilder addAggregates(AggregateQuery[] aggregates) {
+        if (aggregates != null && aggregates.length > 0) {
+            Collections.addAll(this.aggregates, aggregates);
+        }
+        return this;
+    }
+
     public int getLimit() {
         return limit;
     }
@@ -156,7 +185,7 @@ public class NxQueryBuilder {
     /**
      * Get the Elasticsearch queryBuilder.
      */
-    public org.elasticsearch.index.query.QueryBuilder makeQuery() {
+    public QueryBuilder makeQuery() {
         if (esQueryBuilder == null) {
             if (nxql != null) {
                 esQueryBuilder = NxqlQueryConverter.toESQueryBuilder(nxql);
@@ -166,6 +195,7 @@ public class NxQueryBuilder {
                             .getSortInfo(nxql);
                     sortInfos.addAll(builtInSortInfos);
                 }
+                esQueryBuilder = addSecurityFilter(esQueryBuilder);
             }
         }
         return esQueryBuilder;
@@ -185,4 +215,86 @@ public class NxQueryBuilder {
         }
         return ret;
     }
+
+    public FilterBuilder getAggregateFilter() {
+        // TODO process all aggregate selection
+        return FilterBuilders.matchAllFilter();
+    }
+
+    public List<AbstractAggregationBuilder> getAggregates() {
+        List<AbstractAggregationBuilder> ret = new ArrayList<AbstractAggregationBuilder>(
+                aggregates.size());
+        for (AggregateQuery aggQuery : aggregates) {
+            switch (aggQuery.getType()) {
+            case "terms":
+                TermsBuilder agg = getTermsBuilder(aggQuery);
+                FilterAggregationBuilder fagg = new FilterAggregationBuilder(
+                        aggQuery.getId());
+                // TODO add filters from other aggregates selection
+                fagg.filter(FilterBuilders.matchAllFilter());
+                fagg.subAggregation(agg);
+                ret.add((AbstractAggregationBuilder) fagg);
+                break;
+            default:
+                throw new NotImplementedException(String.format(
+                        "%s aggregation type is unknown for agg: %s",
+                        aggQuery.getType(), aggQuery.getId()));
+            }
+        }
+        return ret;
+    }
+
+    private TermsBuilder getTermsBuilder(AggregateQuery aggQuery) {
+        TermsBuilder agg = AggregationBuilders.terms(aggQuery.getId()).field(
+                aggQuery.getField());
+        Map<String, String> props = aggQuery.getProperties();
+        if (props.containsKey("size")) {
+            agg.size(Integer.parseInt(props.get("size")));
+        }
+        if (props.containsKey("minDocCount")) {
+            agg.minDocCount(Long.parseLong(props.get("minDocCount")));
+        }
+        if (props.containsKey("exclude")) {
+            agg.exclude(props.get("exclude"));
+        }
+        if (props.containsKey("include")) {
+            agg.include(props.get("include"));
+        }
+        return agg;
+    }
+
+    public void updateRequest(SearchRequestBuilder request) {
+        // Set limits
+        request.setFrom(getOffset()).setSize(getLimit());
+        // Build query with security checks
+        request.setQuery(makeQuery());
+        // Add sort
+        for (SortBuilder sortBuilder : getSortBuilders()) {
+            request.addSort(sortBuilder);
+        }
+        // Add Aggregate
+        for (AbstractAggregationBuilder aggregate : getAggregates()) {
+            request.addAggregation(aggregate);
+        }
+        // Add Aggregate post filter
+        request.setPostFilter(getAggregateFilter());
+    }
+
+    protected QueryBuilder addSecurityFilter(QueryBuilder query) {
+        AndFilterBuilder aclFilter;
+        Principal principal = session.getPrincipal();
+        if (principal == null
+                || (principal instanceof NuxeoPrincipal && ((NuxeoPrincipal) principal)
+                        .isAdministrator())) {
+            return query;
+        }
+        String[] principals = SecurityService.getPrincipalsToCheck(principal);
+        // we want an ACL that match principals but we discard
+        // unsupported ACE that contains negative ACE
+        aclFilter = FilterBuilders.andFilter(FilterBuilders.inFilter(ACL_FIELD,
+                principals), FilterBuilders.notFilter(FilterBuilders.inFilter(
+                ACL_FIELD, UNSUPPORTED_ACL)));
+        return QueryBuilders.filteredQuery(query, aclFilter);
+    }
+
 }
