@@ -1,11 +1,8 @@
-<components xmlns:core="http://jboss.com/products/seam/core"
-  xmlns:framework="http://jboss.com/products/seam/framework" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://jboss.com/products/seam/core http://jboss.com/products/seam/core-2.1.xsd
-                 http://jboss.com/products/seam/framework http://jboss.com/products/seam/framework-2.1.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<components xmlns="http://jboss.org/schema/seam/components">
 
-  <core:init debug="false">
-  <core:interceptors>
-
+  <component name="org.jboss.seam.core.init">
+    <property name="interceptors">
       <value>org.jboss.seam.core.SynchronizationInterceptor</value>
       <value>org.jboss.seam.async.AsynchronousInterceptor</value>
       <value>org.jboss.seam.ejb.RemoveInterceptor</value>
@@ -20,19 +17,20 @@
       <!-- <value>org.jboss.seam.bpm.BusinessProcessInterceptor</value> -->
       <value>org.jboss.seam.core.ConversationInterceptor</value>
 
-      <value>org.nuxeo.ecm.platform.ui.web.util.NuxeoExceptionInterceptor</value>
-      <!-- NXP-5988: patch on bijection interceptor is now inside Seam lib-->
+      <value>
+        org.nuxeo.ecm.platform.ui.web.util.NuxeoExceptionInterceptor
+      </value>
+      <!-- NXP-5988: patch on bijection interceptor is now inside Seam lib -->
       <value>org.jboss.seam.core.BijectionInterceptor</value>
-      <!-- <value>org.nuxeo.ecm.platform.ui.web.util.NuxeoBijectionInterceptor</value>-->
+      <!-- <value>org.nuxeo.ecm.platform.ui.web.util.NuxeoBijectionInterceptor</value> -->
 
       <value>org.jboss.seam.transaction.RollbackInterceptor</value>
       <value>org.jboss.seam.transaction.TransactionInterceptor</value>
 
       <!-- <value>org.jboss.seam.webservice.WSSecurityInterceptor</value> -->
       <!-- <value>org.jboss.seam.security.SecurityInterceptor</value> -->
-
-    </core:interceptors>
-  </core:init>
+    </property>
+  </component>
 
   <!-- disable filters not useful in Nuxeo -->
   <component name="org.jboss.seam.web.wicketFilter" disabled="true" />
@@ -44,7 +42,9 @@
   <component name="org.jboss.seam.excel.excelFactory">
     <property name="implementations">
       <key>jxl</key>
-      <value>org.nuxeo.ecm.platform.ui.web.component.seam.JXLExcelWorkbook</value>
+      <value>
+        org.nuxeo.ecm.platform.ui.web.component.seam.JXLExcelWorkbook
+      </value>
     </property>
   </component>
 
