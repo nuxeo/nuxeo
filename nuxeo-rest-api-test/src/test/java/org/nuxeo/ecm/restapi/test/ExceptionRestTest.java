@@ -26,8 +26,6 @@ import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -90,6 +88,6 @@ public class ExceptionRestTest extends BaseTest {
         assertNotNull(node.get("stacktrace").getTextValue());
         assertEquals(NoSuchDocumentException.class.getCanonicalName(),
                 node.get("exception").get
-                ("className").getTextValue());
+                        ("className").getTextValue());
     }
 }
