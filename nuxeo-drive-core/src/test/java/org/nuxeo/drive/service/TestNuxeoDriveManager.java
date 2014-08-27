@@ -388,7 +388,7 @@ public class TestNuxeoDriveManager {
                 SecurityConstants.EVERYTHING, false));
         localACL.addAll(aceList);
         folder_2_1.setACP(acp, true);
-        folder_2_1 = session.saveDocument(folder_2_1);
+        session.save();
 
         // Check that the user1 has no longer access to folder_2_1
         assertFalse(session.hasPermission(
@@ -402,7 +402,7 @@ public class TestNuxeoDriveManager {
         localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         localACL.add(new ACE("user1", SecurityConstants.READ_WRITE, true));
         folder_2_1_1.setACP(acp, true);
-        folder_2_1_1 = session.saveDocument(folder_2_1_1);
+        session.save();
         assertTrue(session.hasPermission(
                 Framework.getLocalService(UserManager.class).getPrincipal(
                         "user1"), folder_2_1_1.getRef(),
