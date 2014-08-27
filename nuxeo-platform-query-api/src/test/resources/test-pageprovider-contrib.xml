@@ -110,17 +110,17 @@
       <sort column="dc:title" ascending="true" />
       <pageSize>2</pageSize>
       <aggregates>
-        <aggregate id="agg1" type="term" parameter="dc:title">
-          <field schema="advanced_search" name="title_agg"/>
-          <property name="foo">val1</property>
-          <property name="bar">val2</property>
+        <aggregate id="source_agg" type="terms" parameter="dc:source">
+          <field schema="advanced_search" name="source_agg"/>
+          <property name="size">5</property>
+          <property name="otherTermsProp">foo</property>
         </aggregate>
-        <aggregate id="agg2" type="term" parameter="dc:title">
-          <field schema="advanced_search" name="desc_agg"/>
-          <jsonProperties>{"foo" : "bar"}</jsonProperties>
+        <aggregate id="coverage_agg" type="histogram" parameter="dc:coverage">
+          <field schema="search" name="coverage_agg"/>
+          <jsonProperties>{"interval" : 50}</jsonProperties>
         </aggregate>
-        <aggregate id="agg3" type="term" parameter="dc:title">
-          <field schema="advanced_search" name="desc_agg"/>
+        <aggregate id="subject_agg" type="terms" parameter="dc:subjects">
+          <field schema="search" name="subjects_agg"/>
         </aggregate>
       </aggregates>
     </genericPageProvider>
