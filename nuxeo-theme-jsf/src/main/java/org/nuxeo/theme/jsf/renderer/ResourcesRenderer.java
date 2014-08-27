@@ -44,7 +44,7 @@ import com.sun.faces.renderkit.html_basic.ScriptStyleBaseRenderer;
  */
 @ResourceDependencies({
         @ResourceDependency(library = "javax.faces", name = "jsf.js"),
-        @ResourceDependency(name = "jquery.js") })
+        @ResourceDependency(library = "org.richfaces", name = "jquery.js") })
 public class ResourcesRenderer extends ScriptStyleBaseRenderer {
 
     @Override
