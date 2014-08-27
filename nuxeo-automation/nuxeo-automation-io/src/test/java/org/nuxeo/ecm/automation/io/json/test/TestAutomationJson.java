@@ -194,6 +194,27 @@ public class TestAutomationJson {
         res.append("    \"order\" : 0,\n");
         res.append("    \"values\" : [ ]\n");
         res.append("  } ],\n");
+        res.append("  \"widgets\" : [ {\n");
+        res.append("    \"name\" : \"xpath\",\n");
+        res.append("    \"type\" : \"codearea\",\n");
+        res.append("    \"labels\" : {\n");
+        res.append("      \"any\" : \"XPath\"\n");
+        res.append("    },\n");
+        res.append("    \"translated\" : true,\n");
+        res.append("    \"handlingLabels\" : false,\n");
+        res.append("    \"fields\" : [ {\n");
+        res.append("      \"fieldName\" : \"xpath\",\n");
+        res.append("      \"propertyName\" : \"xpath\"\n");
+        res.append("    } ],\n");
+        res.append("    \"properties\" : {\n");
+        res.append("      \"any\" : {\n");
+        res.append("        \"height\" : \"100%\",\n");
+        res.append("        \"language\" : \"xpath\",\n");
+        res.append("        \"width\" : \"100%\"\n");
+        res.append("      }\n");
+        res.append("    }\n");
+        res.append("  } ]\n");
+        res.append("}");
         res.append("}");
         checkEquals(res.toString(), chain);
     }
