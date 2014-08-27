@@ -86,17 +86,4 @@ public class APIRoot extends ModuleRoot {
     public Object doGetConfig() {
         return newObject("config");
     }
-
-    @Override
-    public Object handleError(WebApplicationException e) {
-        if (e instanceof WebSecurityException) {
-            return Response.status(401).entity("not authorized").type(
-                    "text/plain").build();
-        } else if (e instanceof WebResourceNotFoundException) {
-            return Response.status(404).entity(e.getMessage()).type(
-                    "text/plain").build();
-        } else {
-            return super.handleError(e);
-        }
-    }
 }

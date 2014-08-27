@@ -16,11 +16,13 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
+import com.sun.jersey.api.NotFoundException;
 import com.sun.jersey.api.client.ClientResponse;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
@@ -55,7 +57,7 @@ public class ExceptionRestTest extends BaseTest {
 
         // Then i get an exception and parse it to check json payload
         assertEquals("exception", node.get("entity-type").getTextValue());
-        assertEquals(WebException.class.getCanonicalName(),
+        assertEquals(NotFoundException.class.getCanonicalName(),
                 node.get("code").getTextValue());
         assertEquals(500, node.get("status").getIntValue());
         assertEquals("null for uri: " +
@@ -80,13 +82,13 @@ public class ExceptionRestTest extends BaseTest {
 
         // Then i get an exception and parse it to check json payload
         assertEquals("exception", node.get("entity-type").getTextValue());
-        assertEquals(WebResourceNotFoundException.class.getCanonicalName(),
+        assertEquals(NoSuchDocumentException.class.getCanonicalName(),
                 node.get("code").getTextValue());
         assertEquals(404, node.get("status").getIntValue());
-        assertEquals("Failed to get document /wrongID",
+        assertEquals("No such document: No such document: /wrongID",
                 node.get("message").getTextValue());
         assertNotNull(node.get("stacktrace").getTextValue());
-        assertEquals(WebResourceNotFoundException.class.getCanonicalName(),
+        assertEquals(NoSuchDocumentException.class.getCanonicalName(),
                 node.get("exception").get
                 ("className").getTextValue());
     }
