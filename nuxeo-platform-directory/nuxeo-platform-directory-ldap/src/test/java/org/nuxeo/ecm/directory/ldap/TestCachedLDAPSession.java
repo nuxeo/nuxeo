@@ -38,7 +38,7 @@ public class TestCachedLDAPSession extends TestLDAPSession {
 
     protected final static String CACHE_CONFIG = "ldap-directory-cache-config.xml";
 
-    protected final static String REDIS_CACHE_CONFIG = "ldap-directory-cache-config.xml";
+    protected final static String REDIS_CACHE_CONFIG = "ldap-directory-redis-cache-config.xml";
 
     protected final static String ENTRY_CACHE_NAME = "ldap-entry-cache";
 
