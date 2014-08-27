@@ -596,13 +596,6 @@
       <component-class>org.nuxeo.ecm.platform.ui.web.component.NXHtmlForm</component-class>
       </component>
       <component>
-      <component-type>org.ajax4jsf.Form</component-type>
-      <component-class>org.nuxeo.ecm.platform.ui.web.component.NXAjaxForm</component-class>
-      <component-extension>
-      <component-family>javax.faces.Form</component-family>
-      <renderer-type>org.ajax4jsf.FormRenderer</renderer-type>
-      </component-extension>
-      </component>
     -->
 
   </extension>
