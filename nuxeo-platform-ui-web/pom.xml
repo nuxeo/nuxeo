@@ -117,20 +117,18 @@
       <artifactId>jboss-seam-ui</artifactId>
     </dependency>
     <!-- depends on facelets -->
-    <!--
-      <dependency>
+    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam-pdf</artifactId>
-      </dependency>
-      <dependency>
+    </dependency>
+    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam-rss</artifactId>
-      </dependency>
-      <dependency>
+    </dependency>
+    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam-excel</artifactId>
-      </dependency>
-    -->
+    </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-el-api</artifactId>
