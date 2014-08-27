@@ -43,9 +43,9 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
     public Response toResponse(Throwable cause) {
         if (cause instanceof NotFoundException) {
             NotFoundException nfe = (NotFoundException) cause;
-            log.error("JAX-RS 404 Not Found: " + nfe.getNotFoundUri());
+            log.warn("JAX-RS 404 Not Found: " + nfe.getNotFoundUri());
         } else {
-            log.error("Exception in JAX-RS processing", cause);
+            log.warn("Exception in JAX-RS processing", cause);
         }
         return WebException.newException(cause.getMessage(),
                 WebException.wrap(cause)).toResponse();
