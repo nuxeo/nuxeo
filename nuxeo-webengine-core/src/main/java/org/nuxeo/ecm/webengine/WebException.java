@@ -50,8 +50,6 @@ public class WebException extends WebApplicationException {
 
     protected int status;
 
-    protected boolean byPassAppResponse = false;
-
     public WebException() {
     }
 
@@ -67,13 +65,6 @@ public class WebException extends WebApplicationException {
     public WebException(Response.Status status) {
         super(status);
         this.status = status.getStatusCode();
-    }
-
-    protected WebException(Throwable cause, Response response) {
-        super(cause, response);
-        this.cause = cause;
-        this.status = response.getStatus();
-        byPassAppResponse = true;
     }
 
     /**
@@ -249,7 +240,7 @@ public class WebException extends WebApplicationException {
      */
     @Deprecated
     public static Response toResponse(Throwable t) {
-        return Response.status(500).entity(toString(t)).build();
+        return new WebException(t).toResponse();
     }
 
     @Override
@@ -281,25 +272,25 @@ public class WebException extends WebApplicationException {
      * Handle if needed custom error webengine module handler.
      */
     public Response toResponse() {
-        Response response = super.getResponse();
-        if (!byPassAppResponse) {
-            WebContext ctx = WebEngine.getActiveContext();
-            if (ctx != null) {
-                if (ctx.head() instanceof ModuleResource) {
-                    ModuleResource mr = (ModuleResource) ctx.head();
-                    Object result = mr.handleError((WebApplicationException)
-                            this.getCause());
-                    if (result instanceof Response) {
-                        response = (Response) result;
-                    } else if (result != null) {
-                        response = Response.fromResponse(response).status
-                                (status).entity(result).build();
-                    }
-                    return response;
-                }
-            }
+        WebContext ctx = WebEngine.getActiveContext();
+        if (ctx != null && ctx.head() instanceof ModuleResource) {
+            return toWebModuleResponse(ctx);
         }
         return Response.status(status).entity(this).build();
+    }
+
+    /**
+     * Ask Webengine module for custom error handling and response.
+     */
+    protected Response toWebModuleResponse(WebContext ctx) {
+        ModuleResource mr = (ModuleResource) ctx.head();
+        Object result = mr.handleError((WebApplicationException)
+                this.getCause());
+        if (result instanceof Response) {
+            return (Response) result;
+        }
+        return Response.fromResponse(getResponse()).status
+                (status).entity(result).build();
     }
 
     public int getStatus() {
