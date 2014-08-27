@@ -85,7 +85,7 @@ public class ExceptionRestTest extends BaseTest {
         assertEquals(NoSuchDocumentException.class.getCanonicalName(),
                 node.get("code").getTextValue());
         assertEquals(404, node.get("status").getIntValue());
-        assertEquals("No such document: No such document: /wrongID",
+        assertEquals("No such document: /wrongID",
                 node.get("message").getTextValue());
         assertNotNull(node.get("stacktrace").getTextValue());
         assertEquals(NoSuchDocumentException.class.getCanonicalName(),
