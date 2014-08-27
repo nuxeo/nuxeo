@@ -17,6 +17,7 @@
       <filter-id>isSearchEnabled</filter-id>
       <properties>
         <property name="template">/search/suggestbox.xhtml</property>
+        <property name="disableMultipartForm">true</property>
       </properties>
     </action>
 
