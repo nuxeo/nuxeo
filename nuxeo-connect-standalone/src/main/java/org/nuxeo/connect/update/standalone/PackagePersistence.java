@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,6 +31,7 @@ import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
@@ -89,11 +90,11 @@ public class PackagePersistence {
     }
 
     public synchronized Map<String, PackageState> getStates() {
-        return new HashMap<String, PackageState>(states);
+        return new HashMap<>(states);
     }
 
     protected Map<String, PackageState> loadStates() throws IOException {
-        Map<String, PackageState> result = new HashMap<String, PackageState>();
+        Map<String, PackageState> result = new HashMap<>();
         File file = new File(root, ".packages");
         if (file.isFile()) {
             List<String> lines = FileUtils.readLines(file);
@@ -241,14 +242,14 @@ public class PackagePersistence {
             throws PackageException {
         File[] list = store.listFiles();
         if (list != null) {
-            List<LocalPackage> pkgs = new ArrayList<LocalPackage>(list.length);
+            List<LocalPackage> pkgs = new ArrayList<>(list.length);
             for (File file : list) {
                 pkgs.add(new LocalPackageImpl(file, getState(file.getName()),
                         service));
             }
             return pkgs;
         }
-        return new ArrayList<LocalPackage>();
+        return new ArrayList<>();
     }
 
     public synchronized void removePackage(String id) throws PackageException {

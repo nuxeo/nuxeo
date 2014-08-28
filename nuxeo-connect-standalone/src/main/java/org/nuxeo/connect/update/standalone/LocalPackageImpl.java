@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -191,6 +191,7 @@ public class LocalPackageImpl implements LocalPackage {
         return def.getTitle();
     }
 
+    @Deprecated
     @Override
     public int getState() {
         return state.getValue();

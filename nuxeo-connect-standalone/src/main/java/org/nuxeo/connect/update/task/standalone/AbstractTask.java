@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -30,6 +30,7 @@ import java.util.Properties;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.StringUtils;
@@ -117,7 +118,7 @@ public abstract class AbstractTask implements Task {
 
     public AbstractTask(PackageUpdateService pus) {
         service = pus;
-        env = new HashMap<String, String>();
+        env = new HashMap<>();
         Environment nxenv = Environment.getDefault();
         File serverHome = nxenv.getServerHome();
         File nxHome = nxenv.getRuntimeHome();
@@ -191,8 +192,7 @@ public abstract class AbstractTask implements Task {
     }
 
     protected Map<Object, Object> createContextMap(Map<String, String> params) {
-        Map<Object, Object> map = new HashMap<Object, Object>(
-                System.getProperties());
+        Map<Object, Object> map = new HashMap<>(System.getProperties());
         map.putAll(env);
         if (params != null && !params.isEmpty()) {
             map.putAll(params);

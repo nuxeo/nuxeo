@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -225,7 +225,7 @@ public class ConfigurationGenerator {
     private final File nuxeoConf;
 
     // Chosen templates
-    private final List<File> includedTemplates = new ArrayList<File>();
+    private final List<File> includedTemplates = new ArrayList<>();
 
     // Common default configuration file
     private File nuxeoDefaultConf;
@@ -286,7 +286,6 @@ public class ConfigurationGenerator {
         return storedConfig;
     }
 
-    @SuppressWarnings("serial")
     protected static final Map<String, String> parametersMigration = new HashMap<String, String>() {
         /**
          *
@@ -316,8 +315,7 @@ public class ConfigurationGenerator {
     public ConfigurationGenerator(boolean quiet, boolean debug) {
         this.quiet = quiet;
         this.debug = debug;
-        Environment env = Environment.getDefault();
-        String nuxeoHomePath = env.getServerHome().getAbsolutePath();
+        String nuxeoHomePath = Environment.getDefault().getServerHome().getAbsolutePath();
         if (nuxeoHomePath != null) {
             nuxeoHome = new File(nuxeoHomePath);
         } else {
@@ -621,7 +619,7 @@ public class ConfigurationGenerator {
      */
     protected HashMap<String, String> evalDynamicProperties()
             throws ConfigurationException {
-        HashMap<String, String> newParametersToSave = new HashMap<String, String>();
+        HashMap<String, String> newParametersToSave = new HashMap<>();
         evalLoopbackURL();
         evalServerStatusKey(newParametersToSave);
         return newParametersToSave;
@@ -784,7 +782,7 @@ public class ConfigurationGenerator {
 
     private List<File> includeTemplates(String templatesList)
             throws IOException {
-        List<File> orderedTemplates = new ArrayList<File>();
+        List<File> orderedTemplates = new ArrayList<>();
         StringTokenizer st = new StringTokenizer(templatesList, ",");
         while (st.hasMoreTokens()) {
             String nextToken = st.nextToken();
@@ -922,7 +920,7 @@ public class ConfigurationGenerator {
         if (changedParameters.containsValue(null)
                 || changedParameters.containsValue("")) {
             // There are properties to unset
-            Set<String> propertiesToUnset = new HashSet<String>();
+            Set<String> propertiesToUnset = new HashSet<>();
             for (String key : changedParameters.keySet()) {
                 if (StringUtils.isEmpty(changedParameters.get(key))) {
                     propertiesToUnset.add(key);
@@ -973,7 +971,7 @@ public class ConfigurationGenerator {
      */
     public Map<String, String> getChangedParameters(
             Map<String, String> changedParameters) {
-        Map<String, String> filteredChangedParameters = new HashMap<String, String>();
+        Map<String, String> filteredChangedParameters = new HashMap<>();
         for (String key : changedParameters.keySet()) {
             String oldParam = getStoredConfig().getProperty(key);
             String newParam = changedParameters.get(key);
@@ -998,7 +996,7 @@ public class ConfigurationGenerator {
             // Write changed parameters
             writer.write(BOUNDARY_BEGIN + " " + new Date().toString()
                     + System.getProperty("line.separator"));
-            for (Object o : new TreeSet<Object>(userConfig.keySet())) {
+            for (Object o : new TreeSet<>(userConfig.keySet())) {
                 String key = (String) o;
                 // Ignore parameters already stored in newContent
                 if (PARAM_FORCE_GENERATION.equals(key)
@@ -1036,7 +1034,7 @@ public class ConfigurationGenerator {
         wizardParam = userConfig.getProperty(PARAM_WIZARD_DONE);
         // Will change templatesParam value instead of appending it
         templatesParam = userConfig.getProperty(PARAM_TEMPLATES_NAME);
-        ArrayList<String> newLines = new ArrayList<String>();
+        ArrayList<String> newLines = new ArrayList<>();
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(nuxeoConf));
@@ -1456,7 +1454,7 @@ public class ConfigurationGenerator {
         if (currentDBTemplate == null) {
             currentDBTemplate = extractDatabaseTemplateName();
         }
-        List<String> templatesList = new ArrayList<String>();
+        List<String> templatesList = new ArrayList<>();
         templatesList.addAll(Arrays.asList(templates.split(",")));
         int dbIdx = templatesList.indexOf(currentDBTemplate);
         if (dbIdx < 0) {
@@ -1537,7 +1535,7 @@ public class ConfigurationGenerator {
      * @since 5.5
      */
     public void addTemplate(String template) throws ConfigurationException {
-        HashMap<String, String> newParametersToSave = new HashMap<String, String>();
+        HashMap<String, String> newParametersToSave = new HashMap<>();
         String oldTemplates = userConfig.getProperty(PARAM_TEMPLATES_NAME);
         String[] oldTemplatesSplit = oldTemplates.split(",");
         if (!Arrays.asList(oldTemplatesSplit).contains(template)) {
@@ -1558,11 +1556,11 @@ public class ConfigurationGenerator {
      */
     public void rmTemplate(String template) throws ConfigurationException {
         String oldTemplates = userConfig.getProperty(PARAM_TEMPLATES_NAME);
-        List<String> templatesList = new ArrayList<String>();
+        List<String> templatesList = new ArrayList<>();
         templatesList.addAll(Arrays.asList(oldTemplates.split(",")));
         if (templatesList.remove(template)) {
             String newTemplates = StringUtils.join(templatesList, ",");
-            HashMap<String, String> newParametersToSave = new HashMap<String, String>();
+            HashMap<String, String> newParametersToSave = new HashMap<>();
             newParametersToSave.put(PARAM_TEMPLATES_NAME, newTemplates);
             saveFilteredConfiguration(newParametersToSave);
             changeTemplates(newTemplates);
@@ -1581,7 +1579,7 @@ public class ConfigurationGenerator {
     public String setProperty(String key, String value)
             throws ConfigurationException {
         String oldValue = getStoredConfig().getProperty(key);
-        HashMap<String, String> newParametersToSave = new HashMap<String, String>();
+        HashMap<String, String> newParametersToSave = new HashMap<>();
         newParametersToSave.put(key, value);
         saveFilteredConfiguration(newParametersToSave);
         setBasicConfiguration();
@@ -1672,7 +1670,7 @@ public class ConfigurationGenerator {
         File[] files = (File[]) ArrayUtils.addAll( //
                 new File(databaseTemplateDir, "lib").listFiles(), //
                 serverConfigurator.getServerLibDir().listFiles());
-        List<URL> urlsList = new ArrayList<URL>();
+        List<URL> urlsList = new ArrayList<>();
         if (files != null) {
             for (File file : files) {
                 if (file.getName().endsWith("jar")) {
@@ -1771,6 +1769,7 @@ public class ConfigurationGenerator {
         }
         Properties p = new Properties();
         p.load(propsIS);
+        @SuppressWarnings("unchecked")
         Enumeration<String> pEnum = (Enumeration<String>) p.propertyNames();
         while (pEnum.hasMoreElements()) {
             String key = pEnum.nextElement();

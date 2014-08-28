@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -36,7 +36,7 @@ public class CommandSetInfo {
     }
 
     @XmlElement(name = "command")
-    public List<CommandInfo> commands = new ArrayList<CommandInfo>();
+    public List<CommandInfo> commands = new ArrayList<>();
 
     /**
      * @param cmdType Command type. See constants in {@link CommandInfo}
