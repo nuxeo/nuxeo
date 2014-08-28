@@ -47,7 +47,7 @@ public class PackageDefinitionImpl implements PackageDefinition {
     @XNode("@type")
     protected PackageType type;
 
-    @XNode("@visibility")
+    @XNode("visibility")
     protected PackageVisibility visibility;
 
     @XNode("title")
