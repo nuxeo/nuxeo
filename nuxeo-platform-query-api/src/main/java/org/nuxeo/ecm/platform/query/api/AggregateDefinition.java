@@ -19,6 +19,9 @@ package org.nuxeo.ecm.platform.query.api;
 
 import java.util.Map;
 
+/**
+ * @since 5.9.6
+ */
 public interface AggregateDefinition {
 
     String getId();

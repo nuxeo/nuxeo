@@ -30,8 +30,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class AggregateQuery {
 
     protected final AggregateDefinition definition;
-
     protected final DocumentModel searchDocument;
+    protected List<String> selection;
 
     public AggregateQuery(AggregateDefinition definition,
             DocumentModel searchDocument) {
@@ -60,14 +60,20 @@ public class AggregateQuery {
     }
 
     public List<String> getSelection() {
-        PredicateFieldDefinition field = definition.getSearchField();
-        // TODO add assertion on property type that must be nxs:stringList
-        ArrayList<String> ret = (ArrayList<String>) searchDocument.getProperty(
-                field.getSchema(), field.getName());
-        if (ret == null) {
-            return Collections.<String>emptyList();
+        if (selection == null) {
+            PredicateFieldDefinition field = definition.getSearchField();
+            // TODO add assertion on property type that must be nxs:stringList
+            List<String> selection = (ArrayList<String>) searchDocument.getProperty(
+                    field.getSchema(), field.getName());
+            if (selection == null) {
+                selection = Collections.<String>emptyList();
+            }
         }
-        return ret;
+        return selection;
+    }
+
+    public void setSelection(List<String> selection) {
+        this.selection = selection;
     }
 
     @Override
