@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.query.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -67,5 +68,11 @@ public class AggregateQuery {
             return EMPTY_SELECTION;
         }
         return ret.toArray(new String[ret.size()]);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("AggregateQuery(%s, %s, %s, %s)", getId(), getType(), getField(),
+                Arrays.toString(getSelection()));
     }
 }

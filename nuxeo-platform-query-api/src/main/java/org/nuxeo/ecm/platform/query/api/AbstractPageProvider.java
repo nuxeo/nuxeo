@@ -893,7 +893,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     @Override
-    public Aggregate[] getAggregates() {
+    public List<Aggregate> getAggregates() {
         throw new NotImplementedException();
     }
 

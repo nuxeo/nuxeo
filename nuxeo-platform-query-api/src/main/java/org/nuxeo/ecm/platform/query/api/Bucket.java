@@ -21,21 +21,24 @@ package org.nuxeo.ecm.platform.query.api;
  */
 public class Bucket {
 
-    protected String id;
+    protected String key;
+    protected long docCount;
 
-    protected int count;
-
-    public Bucket(String id, int count) {
-        this.id = id;
-        this.count = count;
+    public Bucket(String key, long docCount) {
+        this.key = key;
+        this.docCount = docCount;
     }
 
-    public String getId() {
-        return id;
+    public String getKey() {
+        return key;
     }
 
-    public int getCount() {
-        return count;
+    public long getDocCount() {
+        return docCount;
     }
 
+    @Override
+    public String toString() {
+        return String.format("Bucket(%s, %d)", key, docCount);
+    }
 }

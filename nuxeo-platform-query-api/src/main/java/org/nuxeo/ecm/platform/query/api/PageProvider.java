@@ -409,6 +409,6 @@ public interface PageProvider<T> extends Serializable {
     /**
      * @since 5.9.6
      */
-    Aggregate[] getAggregates();
+    List<Aggregate> getAggregates();
 
 }
