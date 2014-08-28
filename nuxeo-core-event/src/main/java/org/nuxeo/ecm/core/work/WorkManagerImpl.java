@@ -44,6 +44,7 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.event.EventServiceComponent;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -277,10 +278,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         if (category == null) {
             category = DEFAULT_CATEGORY;
         }
-        String queueId;
-        synchronized (workQueueDescriptors) {
-            queueId = workQueueDescriptors.getQueueId(category);
-        }
+        String queueId = workQueueDescriptors.getQueueId(category);
         if (queueId == null) {
             queueId = DEFAULT_QUEUE_ID;
         }
@@ -289,7 +287,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public int getApplicationStartedOrder() {
-        return ((DefaultComponent)Framework.getRuntime().getComponent("org.nuxeo.ecm.core.event.EventServiceComponent")).getApplicationStartedOrder()-1;
+        return EventServiceComponent.APPLICATION_STARTED_ORDER-1;
     }
 
     @Override
@@ -297,18 +295,26 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         init();
     }
 
-    protected boolean started = false;
+    protected volatile boolean started = false;
 
     @Override
     public void init() {
-        started = true;
-        queuing.init();
-        for (String id:workQueueDescriptors.getQueueIds()) {
-            activateQueue(workQueueDescriptors.get(id));
+        if (started) {
+            return;
+        }
+        synchronized(this) {
+            if (started) {
+                return;
+            }
+            started = true;
+            queuing.init();
+            for (String id : workQueueDescriptors.getQueueIds()) {
+                activateQueue(workQueueDescriptors.get(id));
+            }
         }
     }
 
-    protected synchronized WorkThreadPoolExecutor getExecutor(String queueId) {
+    protected WorkThreadPoolExecutor getExecutor(String queueId) {
         if (!started) {
             init();
         }
@@ -372,7 +378,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     @Override
-    public synchronized boolean shutdown(long timeout, TimeUnit unit)
+    public boolean shutdown(long timeout, TimeUnit unit)
             throws InterruptedException {
         List<WorkThreadPoolExecutor> executorList = new ArrayList<WorkThreadPoolExecutor>(
                 executors.values());
@@ -579,7 +585,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 int maximumPoolSize, long keepAliveTime, TimeUnit unit,
                 ThreadFactory threadFactory) {
             super(corePoolSize, maximumPoolSize, keepAliveTime, unit,
-                    queuing.getScheduledQueue(queueId), threadFactory);
+                    queuing.initScheduleQueue(queueId), threadFactory);
             this.queueId = queueId;
             completionSynchronizer = new WorkCompletionSynchronizer(queueId);
             running = new LinkedList<Work>();

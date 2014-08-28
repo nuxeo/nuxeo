@@ -44,6 +44,13 @@ public interface WorkQueuing {
     void init();
 
     /**
+     * @since 5.9.6
+     * @param queueId
+     * @return
+     */
+    BlockingQueue<Runnable> initScheduleQueue(String queueId);
+
+    /**
      * Gets the blocking queue for scheduled work, to be used in a
      * {@link ThreadPoolExecutor}.
      *

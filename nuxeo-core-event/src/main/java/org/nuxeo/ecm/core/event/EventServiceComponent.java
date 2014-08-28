@@ -25,6 +25,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class EventServiceComponent extends DefaultComponent {
 
+    public static final int APPLICATION_STARTED_ORDER = -500;
+
     public static final String EVENT_LISTENER_XP = "listener";
 
     public static final long DEFAULT_SHUTDOWN_TIMEOUT = 5 * 1000; // 5 seconds
@@ -48,7 +50,7 @@ public class EventServiceComponent extends DefaultComponent {
 
     @Override
     public int getApplicationStartedOrder() {
-        return -500;
+        return APPLICATION_STARTED_ORDER;
     }
 
     @Override

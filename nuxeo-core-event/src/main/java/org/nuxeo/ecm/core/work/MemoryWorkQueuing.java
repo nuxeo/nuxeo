@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -79,13 +80,21 @@ public class MemoryWorkQueuing implements WorkQueuing {
     }
 
     @Override
-    public synchronized BlockingQueue<Runnable> getScheduledQueue(String queueId) {
-        BlockingQueue<Runnable> scheduled = allScheduled.get(queueId);
-        if (scheduled == null) {
-            allScheduled.put(queueId,
-                    scheduled = newBlockingQueue(getDescriptor(queueId)));
+    public BlockingQueue<Runnable> initScheduleQueue(String queueId) {
+        if (allScheduled.containsKey(queueId)) {
+            throw new IllegalStateException(queueId + " was already configured");
         }
-        return scheduled;
+        final BlockingQueue<Runnable> queue = newBlockingQueue(getDescriptor(queueId));
+        allScheduled.put(queueId, queue);
+        return queue;
+    }
+
+    @Override
+    public BlockingQueue<Runnable> getScheduledQueue(String queueId) {
+        if (!allScheduled.containsKey(queueId)) {
+            throw new IllegalStateException(queueId + " was not configured yet");
+        }
+        return allScheduled.get(queueId);
     }
 
     // called synchronized
