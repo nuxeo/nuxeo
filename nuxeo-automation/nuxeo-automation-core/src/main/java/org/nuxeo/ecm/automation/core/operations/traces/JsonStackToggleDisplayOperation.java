@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 @Operation(id = JsonStackToggleDisplayOperation.ID,
         category = Constants.CAT_EXECUTION, label = "Json Error Stack Display",
         description = "Toggle stack display in json response for all rest api" +
-                " calls in Nuxeo", addToStudio = false)
+                " calls in Nuxeo", addToStudio = false, since = "5.9.6")
 public class JsonStackToggleDisplayOperation {
 
     public static final String ID = "JsonStack.ToggleDisplay";
