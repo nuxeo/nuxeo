@@ -61,16 +61,15 @@ import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.DeleteDocument;
+import org.nuxeo.ecm.automation.core.operations.document.DocumentQuery;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 import org.nuxeo.ecm.automation.core.operations.document.LockDocument;
-import org.nuxeo.ecm.automation.core.operations.document.Query;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
 
-import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.inject.Inject;
@@ -261,7 +260,7 @@ public abstract class AbstractAutomationClientTest {
                 "Note").set("name", "note2").set("properties", "dc:title=Note2").execute();
 
         // now query the two files
-        Documents docs = (Documents) session.newRequest(Query.ID).set(
+        Documents docs = (Documents) session.newRequest(DocumentQuery.ID).set(
                 "query",
                 "SELECT * FROM Note WHERE ecm:path STARTSWITH '/automation-test-folder/queryTest' ").execute();
         assertEquals(2, docs.size());
@@ -527,7 +526,7 @@ public abstract class AbstractAutomationClientTest {
                     "properties", "dc:title=Note" + i).execute();
         }
 
-        Documents docs = (Documents) session.newRequest(Query.ID).set("query",
+        Documents docs = (Documents) session.newRequest(DocumentQuery.ID).set("query",
                 "SELECT * from Document WHERE ecm:path STARTSWITH '/automation-test-folder/'").execute();
 
         PaginableDocuments cursor = (PaginableDocuments) session.newRequest(

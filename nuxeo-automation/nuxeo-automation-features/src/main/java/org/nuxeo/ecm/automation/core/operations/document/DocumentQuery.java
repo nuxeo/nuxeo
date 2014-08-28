@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     bstefanescu
+ *      Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
@@ -21,31 +21,29 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated Since 5.9.6, document query operation logic has been moved.
- * This class is not used/registered anymore into the platform as Automation
- * Operation. Replaced by {@link org.nuxeo.ecm.automation.core.operations
- * .document.DocumentQuery}.
+ * @since 5.9.6
+ * Document query operation to perform queries on the repository.
  */
-@Deprecated
-@Operation(id = Query.ID, category = Constants.CAT_FETCH, label = "Query",
-        description = "Perform a query on the repository. The query result " +
-                "will become the input for the next operation.",
-        addToStudio = false, deprecatedSince = "5.9.6")
-public class Query {
+@Operation(id = DocumentQuery.ID, category = Constants.CAT_FETCH,
+        label = "Query", description = "Perform a query on the repository. " +
+        "The query document list result will become the input for the next " +
+        "operation.", since = "5.9.6", addToStudio = true)
+public class DocumentQuery {
 
     public static final String ID = "Document.Query";
 
     @Context
     protected CoreSession session;
 
-    @Param(name = "query")
+    @Param(name = "query", required = true, description = "The query to " +
+            "perform.")
     protected String query;
 
-    @Param(name = "language", required = false, widget = Constants.W_OPTION,
-            values = {
-                    NXQL.NXQL, "CMISQL" })
+    @Param(name = "language", required = false, description = "The query " +
+            "language.", widget = Constants.W_OPTION,
+            values = { NXQL.NXQL, "CMISQL", "ESQL" })
     protected String lang = NXQL.NXQL;
+
 
     @OperationMethod
     public DocumentModelList run() throws Exception {

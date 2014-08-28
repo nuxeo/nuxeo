@@ -426,33 +426,6 @@ public class CoreOperationsTest {
     }
 
     /**
-     * Query | Update.
-     */
-    @Test
-    public void testChain5() throws Exception {
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(src);
-
-        OperationChain chain = new OperationChain("testChain");
-        chain.add(Query.ID).set("query", "SELECT * FROM Workspace");
-        chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set(
-                "value", "samedesc");
-        chain.add(SaveDocument.ID);
-        DocumentModelList list = (DocumentModelList) service.run(ctx, chain);
-        assertEquals(2, list.size());
-        assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
-        assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
-        assertEquals(
-                "samedesc",
-                session.getDocument(src.getRef()).getPropertyValue(
-                        "dc:description"));
-        assertEquals(
-                "samedesc",
-                session.getDocument(dst.getRef()).getPropertyValue(
-                        "dc:description"));
-    }
-
-    /**
      * Test a chain running a sub-chain.
      */
     @Test
