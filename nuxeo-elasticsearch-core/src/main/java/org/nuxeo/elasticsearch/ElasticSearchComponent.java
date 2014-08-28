@@ -19,7 +19,6 @@
 package org.nuxeo.elasticsearch;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
@@ -27,7 +26,6 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -77,7 +75,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.bucket.filter.InternalFilter;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
@@ -92,8 +89,8 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -184,8 +181,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 indexNames.put(idx.getRepositoryName(), idx.getName());
                 Set<String> set = new LinkedHashSet<String>();
                 if (includeSourceFields != null) {
-                    set.addAll(
-                            Arrays.asList(includeSourceFields));
+                    set.addAll(Arrays.asList(includeSourceFields));
                 }
                 set.addAll(Arrays.asList(idx.getIncludes()));
                 if (set.contains(ALL_FIELDS)) {
@@ -195,8 +191,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 includeSourceFields = set.toArray(new String[set.size()]);
                 set.clear();
                 if (excludeSourceFields != null) {
-                    set.addAll(
-                            Arrays.asList(excludeSourceFields));
+                    set.addAll(Arrays.asList(excludeSourceFields));
                 }
                 set.addAll(Arrays.asList(idx.getExcludes()));
                 excludeSourceFields = set.toArray(new String[set.size()]);
@@ -256,7 +251,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             } finally {
                 stopWatch.stop();
             }
-        } finally  {
+        } finally {
             totalCommandRunning.addAndGet(-nbCommands);
         }
         totalCommandProcessed.addAndGet(nbCommands);
@@ -353,8 +348,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         if (log.isDebugEnabled()) {
             log.debug(String
                     .format("Index request: curl -XPUT 'http://localhost:9200/%s/%s/%s' -d '%s'",
-                            getRepositoryIndex(cmd.getRepository()),
-                            DOC_TYPE, docId, request.request().toString()));
+                            getRepositoryIndex(cmd.getRepository()), DOC_TYPE,
+                            docId, request.request().toString()));
         }
         request.execute().actionGet();
     }
@@ -381,33 +376,33 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected void processDeleteCommandRecursive(IndexingCommand cmd) {
         String indexName = getRepositoryIndex(cmd.getRepository());
-        // we don't want to rely on target document because the document can be already removed
+        // we don't want to rely on target document because the document can be
+        // already removed
         String docPath = getPathOfDocFromEs(cmd.getRepository(), cmd.getDocId());
         if (docPath == null) {
-            if (! Framework.isTestModeSet()) {
-                log.warn("Trying to delete a non existing doc: " + cmd
-                        .toString());
+            if (!Framework.isTestModeSet()) {
+                log.warn("Trying to delete a non existing doc: "
+                        + cmd.toString());
             }
             return;
         }
         QueryBuilder query = QueryBuilders.constantScoreQuery(FilterBuilders
                 .termFilter(CHILDREN_FIELD, docPath));
         DeleteByQueryRequestBuilder deleteRequest = getClient()
-                .prepareDeleteByQuery(indexName).setTypes(DOC_TYPE).setQuery(query);
+                .prepareDeleteByQuery(indexName).setTypes(DOC_TYPE)
+                .setQuery(query);
         if (log.isDebugEnabled()) {
             log.debug(String
                     .format("Delete byQuery request: curl -XDELETE 'http://localhost:9200/%s/%s/_query' -d '%s'",
                             indexName, DOC_TYPE, query.toString()));
         }
-        DeleteByQueryResponse responses = deleteRequest.execute()
-                .actionGet();
+        DeleteByQueryResponse responses = deleteRequest.execute().actionGet();
         for (IndexDeleteByQueryResponse response : responses) {
             // there is no way to trace how many docs are removed
             if (response.getFailedShards() > 0) {
                 log.error(String.format(
                         "Delete byQuery fails on shard: %d out of %d",
-                        response.getFailedShards(),
-                        response.getTotalShards()));
+                        response.getFailedShards(), response.getTotalShards()));
             }
         }
     }
@@ -417,16 +412,14 @@ public class ElasticSearchComponent extends DefaultComponent implements
      */
     protected String getPathOfDocFromEs(String repository, String docId) {
         String indexName = getRepositoryIndex(repository);
-        GetRequestBuilder getRequest = getClient()
-                .prepareGet(indexName, DOC_TYPE, docId)
-                .setFields(PATH_FIELD);
+        GetRequestBuilder getRequest = getClient().prepareGet(indexName,
+                DOC_TYPE, docId).setFields(PATH_FIELD);
         if (log.isDebugEnabled()) {
             log.debug(String
                     .format("Get path of doc: curl -XGET 'http://localhost:9200/%s/%s/%s?fields=%s'",
                             indexName, DOC_TYPE, docId, PATH_FIELD));
         }
-        GetResponse ret = getRequest.execute()
-                .actionGet();
+        GetResponse ret = getRequest.execute().actionGet();
         if (!ret.isExists()) {
             // doc not found
             return null;
@@ -649,7 +642,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return client;
     }
 
-    @Deprecated @Override
+    @Deprecated
+    @Override
     public DocumentModelList query(CoreSession session, String nxql, int limit,
             int offset, SortInfo... sortInfos) throws ClientException {
         NxQueryBuilder query = new NxQueryBuilder(session).nxql(nxql)
@@ -657,7 +651,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return query(query);
     }
 
-    @Deprecated @Override
+    @Deprecated
+    @Override
     public DocumentModelList query(CoreSession session,
             QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) throws ClientException {
@@ -667,10 +662,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return query(query);
     }
 
-
     @Override
-    public DocumentModelList query(
-            NxQueryBuilder queryBuilder)
+    public DocumentModelList query(NxQueryBuilder queryBuilder)
             throws ClientException {
         return queryAndAggregate(queryBuilder).getDocuments();
     }
@@ -695,8 +688,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         Context stopWatch = fetchTimer.time();
         try {
             if (queryBuilder.isFetchFromElasticsearch()) {
-                ret = fetchDocumentsFromElasticsearch(queryBuilder,
-                        response);
+                ret = fetchDocumentsFromElasticsearch(queryBuilder, response);
             } else {
                 ret = fetchDocumentsFromVcs(queryBuilder, response);
             }
@@ -727,8 +719,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 Collection<Terms.Bucket> buckets = terms.getBuckets();
                 List<Bucket> nxBuckets = new ArrayList<Bucket>(buckets.size());
                 for (Terms.Bucket bucket : buckets) {
-                    nxBuckets.add(new Bucket(bucket.getKey(),
-                            bucket.getDocCount()));
+                    nxBuckets.add(new Bucket(bucket.getKey(), bucket
+                            .getDocCount()));
                 }
                 ret.add(new Aggregate(agg, nxBuckets));
                 break;
@@ -754,9 +746,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
     }
 
     protected SearchRequestBuilder buildEsSearchRequest(NxQueryBuilder query) {
-        SearchRequestBuilder request = getClient().prepareSearch(
-                getSearchIndexes()).setTypes(
-                DOC_TYPE)
+        SearchRequestBuilder request = getClient()
+                .prepareSearch(getSearchIndexes()).setTypes(DOC_TYPE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
         if (query.isFetchFromElasticsearch()) {
             // fetch the _source without the binaryfulltext field
@@ -784,20 +775,19 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-
     protected DocumentModelListImpl fetchDocumentsFromElasticsearch(
             NxQueryBuilder queryBuilder, SearchResponse response) {
-        DocumentModelListImpl ret = new DocumentModelListImpl(response.getHits()
-                .getHits().length);
+        DocumentModelListImpl ret = new DocumentModelListImpl(response
+                .getHits().getHits().length);
         DocumentModel doc;
         String sid = queryBuilder.getSession().getSessionId();
         for (SearchHit hit : response.getHits()) {
-            doc = DocumentModelReaders.fromSource(hit.getSource()).sid(sid).getDocumentModel();
+            doc = DocumentModelReaders.fromSource(hit.getSource()).sid(sid)
+                    .getDocumentModel();
             ret.add(doc);
         }
         return ret;
     }
-
 
     protected DocumentModelListImpl fetchDocumentsFromVcs(
             NxQueryBuilder queryBuilder, SearchResponse response) {
@@ -922,7 +912,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 if (!Framework.isTestModeSet()) {
                     log.warn(String
                             .format("Initializing index: %s, type: %s with "
-                                            + "dropIfExists flag, deleting an existing index",
+                                    + "dropIfExists flag, deleting an existing index",
                                     conf.getName(), conf.getType()));
                 }
                 getClient().admin().indices()
@@ -990,7 +980,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     @Override
     public int getPendingCommands() {
-        return pendingCommands.size() + ChildrenIndexingWorker.getRunningWorkers();
+        return pendingCommands.size()
+                + ChildrenIndexingWorker.getRunningWorkers();
     }
 
     @Override
@@ -998,11 +989,13 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return totalCommandProcessed.get();
     }
 
-    @Override public int getRunningCommands() {
+    @Override
+    public int getRunningCommands() {
         return totalCommandRunning.get();
     }
 
-    @Override public boolean isIndexingInProgress() {
+    @Override
+    public boolean isIndexingInProgress() {
         return (getRunningCommands() > 0 || getPendingCommands() > 0);
     }
 

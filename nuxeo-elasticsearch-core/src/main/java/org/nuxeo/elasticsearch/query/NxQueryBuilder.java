@@ -54,8 +54,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NxQueryBuilder {
 
-    private static final int DEFAULT_LIMIT = 10;
     public static final String AGG_FILTER_SUFFIX = "_filter";
+    private static final int DEFAULT_LIMIT = 10;
     private int limit = DEFAULT_LIMIT;
     private final CoreSession session;
     private int offset = 0;
@@ -69,6 +69,10 @@ public class NxQueryBuilder {
         session = coreSession;
         fetchFromElasticsearch = Boolean.parseBoolean(Framework.getProperty(
                 FETCH_DOC_FROM_ES_PROPERTY, "false"));
+    }
+
+    public static String getAggregateFilderId(AggregateQuery aggQuery) {
+        return aggQuery.getId() + AGG_FILTER_SUFFIX;
     }
 
     /**
@@ -153,7 +157,7 @@ public class NxQueryBuilder {
     }
 
     public NxQueryBuilder addAggregates(List<AggregateQuery> aggregates) {
-        if (aggregates != null && ! aggregates.isEmpty()) {
+        if (aggregates != null && !aggregates.isEmpty()) {
             this.aggregates.addAll(aggregates);
         }
         return this;
@@ -220,13 +224,14 @@ public class NxQueryBuilder {
     protected FilterBuilder getAggregateFilter() {
         boolean hasFilter = false;
         AndFilterBuilder ret = FilterBuilders.andFilter();
-        for (AggregateQuery aggQuery: aggregates) {
-            if (! aggQuery.getSelection().isEmpty()) {
-                ret.add(FilterBuilders.termFilter(aggQuery.getField(), aggQuery.getSelection()));
+        for (AggregateQuery aggQuery : aggregates) {
+            if (!aggQuery.getSelection().isEmpty()) {
+                ret.add(FilterBuilders.termFilter(aggQuery.getField(),
+                        aggQuery.getSelection()));
                 hasFilter = true;
             }
         }
-        if (! hasFilter) {
+        if (!hasFilter) {
             return null;
         }
         return ret;
@@ -235,13 +240,15 @@ public class NxQueryBuilder {
     protected FilterBuilder getAggregateFilterExceptFor(String id) {
         boolean hasFilter = false;
         AndFilterBuilder ret = FilterBuilders.andFilter();
-        for (AggregateQuery aggQuery: aggregates) {
-            if (! aggQuery.getSelection().isEmpty() && ! aggQuery.getId().equals(id)) {
-                ret.add(FilterBuilders.termFilter(aggQuery.getField(), aggQuery.getSelection()));
+        for (AggregateQuery aggQuery : aggregates) {
+            if (!aggQuery.getSelection().isEmpty()
+                    && !aggQuery.getId().equals(id)) {
+                ret.add(FilterBuilders.termFilter(aggQuery.getField(),
+                        aggQuery.getSelection()));
                 hasFilter = true;
             }
         }
-        if (! hasFilter) {
+        if (!hasFilter) {
             return FilterBuilders.matchAllFilter();
         }
         return ret;
@@ -271,10 +278,6 @@ public class NxQueryBuilder {
             }
         }
         return ret;
-    }
-
-    public static String getAggregateFilderId(AggregateQuery aggQuery) {
-        return aggQuery.getId() + AGG_FILTER_SUFFIX;
     }
 
     private TermsBuilder getTermsBuilder(AggregateQuery aggQuery) {

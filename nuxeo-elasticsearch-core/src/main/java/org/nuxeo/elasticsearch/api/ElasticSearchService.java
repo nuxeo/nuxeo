@@ -32,23 +32,19 @@ import org.nuxeo.elasticsearch.query.NxQueryBuilder;
  */
 public interface ElasticSearchService {
 
-
     /**
      * Returns a document list using an {@link NxQueryBuilder}.
      *
      * @since 5.9.5
      */
-    DocumentModelList query(
-            NxQueryBuilder queryBuilder)
-            throws ClientException;
+    DocumentModelList query(NxQueryBuilder queryBuilder) throws ClientException;
 
     /**
      * Returns documents and aggregates.
      *
      * @since 5.9.6
      */
-    EsResult queryAndAggregate(
-            NxQueryBuilder queryBuilder)
+    EsResult queryAndAggregate(NxQueryBuilder queryBuilder)
             throws ClientException;
 
     /**
@@ -75,6 +71,5 @@ public interface ElasticSearchService {
     DocumentModelList query(CoreSession session, QueryBuilder queryBuilder,
             int limit, int offset, SortInfo... sortInfos)
             throws ClientException;
-
 
 }
