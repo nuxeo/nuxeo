@@ -404,7 +404,7 @@ public interface PageProvider<T> extends Serializable {
     /**
      * @since 5.9.6
      */
-    AggregateQuery[] getAggregatesQuery();
+    List<AggregateQuery> getAggregatesQuery();
 
     /**
      * @since 5.9.6

@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.query.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,9 +84,9 @@ public class BasePageProviderDescriptor {
         }
     }
 
-    @XNodeList(value = "aggregates/aggregate", type = AggregateDefinition[].class,
+    @XNodeList(value = "aggregates/aggregate", type = ArrayList.class,
             componentType = AggregateDescriptor.class)
-    protected AggregateDescriptor[] aggregates;
+    protected List<AggregateDescriptor> aggregates;
 
     public boolean getQuotePatternParameters() {
         return quotePatternParameters;
@@ -156,8 +157,8 @@ public class BasePageProviderDescriptor {
     /**
      * @since 5.9.6
      */
-    public AggregateDescriptor[] getAggregates() {
-        return aggregates;
+    public List<AggregateDefinition> getAggregates() {
+        return (List<AggregateDefinition>)(List<?>) aggregates;
     }
 
 }

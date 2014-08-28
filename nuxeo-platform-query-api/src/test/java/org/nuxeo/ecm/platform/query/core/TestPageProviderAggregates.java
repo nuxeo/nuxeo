@@ -21,7 +21,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -75,32 +78,39 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
 
         PageProviderDefinition ppd = pps
                 .getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN");
-        AggregateDefinition[] aggs = ppd.getAggregates();
+        List<AggregateDefinition> aggs = ppd.getAggregates();
         assertNotNull(aggs);
-        assertEquals(0, aggs.length);
+        assertEquals(0, aggs.size());
+        assertEquals(Collections.<AggregateDefinition>emptyList(), aggs);
     }
 
     @Test
     public void testAggregateDefinition() throws Exception {
         PageProviderDefinition ppd = pps
                 .getPageProviderDefinition("TEST_AGGREGATES");
-        AggregateDefinition[] aggs = ppd.getAggregates();
+        List<AggregateDefinition> aggs = ppd.getAggregates();
         assertNotNull(aggs);
-        assertEquals(3, aggs.length);
-        assertEquals("source_agg", aggs[0].getId());
-        assertEquals("terms", aggs[0].getType());
-        assertEquals("dc:source", aggs[0].getDocumentField());
-        assertEquals("advanced_search", aggs[0].getSearchField().getSchema());
-        assertEquals("source_agg", aggs[0].getSearchField().getName());
-        assertTrue(aggs[0].getPropertiesAsJson().contains("size"));
-        assertTrue(aggs[0].getProperties().containsKey("size"));
+        assertEquals(3, aggs.size());
+        AggregateDefinition source_agg = aggs.get(0);
+        AggregateDefinition coverage_agg = aggs.get(1);
+        AggregateDefinition subject_agg = aggs.get(2);
 
-        assertEquals("{\"interval\" : 50}", aggs[1].getPropertiesAsJson());
-        assertEquals("{}", aggs[2].getPropertiesAsJson());
+        assertEquals("source_agg", source_agg.getId());
+        assertEquals("terms", source_agg.getType());
+        assertEquals("dc:source", source_agg.getDocumentField());
+        assertEquals("advanced_search", source_agg.getSearchField().getSchema());
+        assertEquals("source_agg", source_agg.getSearchField().getName());
+        assertTrue(source_agg.getPropertiesAsJson().contains("size"));
+        assertTrue(source_agg.getProperties().containsKey("size"));
 
-        assertNotNull(aggs[0].getProperties());
-        assertEquals(2, aggs[0].getProperties().size());
-        assertEquals(0, aggs[2].getProperties().size());
+        assertEquals("coverage_agg", coverage_agg.getId());
+        assertEquals("{\"interval\" : 50}", coverage_agg.getPropertiesAsJson());
+
+        assertEquals("{}", subject_agg.getPropertiesAsJson());
+
+        assertNotNull(source_agg.getProperties());
+        assertEquals(2, source_agg.getProperties().size());
+        assertEquals(0, subject_agg.getProperties().size());
     }
 
     @Test
@@ -118,19 +128,24 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
                 searchDoc, null, Long.valueOf(1), Long.valueOf(0), null);
         assertNotNull(pp);
 
-        AggregateQuery[] qaggs = pp.getAggregatesQuery();
-        assertEquals(3, qaggs.length);
+        List<AggregateQuery> qaggs = pp.getAggregatesQuery();
+        assertEquals(3, qaggs.size());
 
-        assertEquals("source_agg", qaggs[0].getId());
-        assertEquals("terms", qaggs[0].getType());
+        AggregateQuery source_agg = qaggs.get(0);
+        assertEquals("source_agg", source_agg.getId());
+        assertEquals("terms", source_agg.getType());
+        assertEquals("AggregateQuery(source_agg, terms, dc:source, [for search, you know])",
+                source_agg.toString());
 
-        assertNotNull(qaggs[0].getSelection());
-        assertEquals(2, qaggs[0].getSelection().length);
-        assertEquals("for search", qaggs[0].getSelection()[0]);
+        assertNotNull(source_agg.getSelection());
+        assertEquals(2, source_agg.getSelection().size());
+        assertEquals("for search", source_agg.getSelection().get(0));
 
-        assertNotNull(qaggs[1].getSelection());
-        assertEquals(0, qaggs[1].getSelection().length);
-
+        AggregateQuery coverage_agg = qaggs.get(1);
+        assertNotNull(coverage_agg.getSelection());
+        assertEquals(0, coverage_agg.getSelection().size());
+        assertEquals("AggregateQuery(coverage_agg, histogram, dc:coverage, [])",
+                coverage_agg.toString());
     }
 
 }
