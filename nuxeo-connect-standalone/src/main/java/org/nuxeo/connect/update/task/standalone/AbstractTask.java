@@ -233,7 +233,7 @@ public abstract class AbstractTask implements Task {
         if (isInstallTask()) {
             LocalPackage oldpkg = service.getActivePackage(pkg.getName());
             if (oldpkg != null) {
-                if (oldpkg.getState() == PackageState.INSTALLING.getValue()) {
+                if (oldpkg.getPackageState() == PackageState.INSTALLING) {
                     throw new PackageException(
                             "Another package with the same name is installing: "
                                     + oldpkg.getName());
@@ -310,7 +310,7 @@ public abstract class AbstractTask implements Task {
             throws PackageException {
         LocalPackage oldpkg = service.getActivePackage(pkg.getName());
         if (oldpkg != null) {
-            if (oldpkg.getState() == PackageState.INSTALLING.getValue()) {
+            if (oldpkg.getPackageState() == PackageState.INSTALLING) {
                 status.addWarning("A package with the same name: "
                         + oldpkg.getId()
                         + " is being installing. Try again later.");

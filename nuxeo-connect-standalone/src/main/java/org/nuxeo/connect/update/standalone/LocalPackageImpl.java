@@ -50,7 +50,7 @@ public class LocalPackageImpl implements LocalPackage {
 
     protected String id;
 
-    protected PackageState state;
+    protected PackageState state = PackageState.UNKNOWN;
 
     protected LocalPackageData data;
 
@@ -195,6 +195,11 @@ public class LocalPackageImpl implements LocalPackage {
     @Override
     public int getState() {
         return state.getValue();
+    }
+
+    @Override
+    public PackageState getPackageState() {
+        return state;
     }
 
     @Override

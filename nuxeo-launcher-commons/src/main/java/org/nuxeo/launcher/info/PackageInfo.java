@@ -100,7 +100,7 @@ public class PackageInfo {
         name = pkg.getName();
         version = pkg.getVersion().toString();
         id = pkg.getId();
-        state = PackageState.getByValue(pkg.getState());
+        state = pkg.getPackageState();
         title = pkg.getTitle();
         description = pkg.getDescription();
         homePage = pkg.getHomePage();

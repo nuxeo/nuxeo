@@ -182,7 +182,7 @@ public class PackagePersistence {
                     throw new AlreadyExistsPackageException("Package "
                             + pkg.getId() + " already exists");
                 }
-                if (PackageState.getByValue(oldpkg.getState()).isInstalled()) {
+                if (oldpkg.getPackageState().isInstalled()) {
                     throw new AlreadyExistsPackageException("Package "
                             + pkg.getId() + " is already installed");
                 }

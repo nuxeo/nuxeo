@@ -499,6 +499,11 @@ public class PackageDefinitionImpl implements PackageDefinition {
     }
 
     @Override
+    public PackageState getPackageState() {
+        return PackageState.UNKNOWN;
+    }
+
+    @Override
     public boolean isLocal() {
         throw new UnsupportedOperationException();
     }
