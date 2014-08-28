@@ -7,7 +7,7 @@ Bundle-Name: org.nuxeo.drive.jsf
 Nuxeo-Component: OSGI-INF/nuxeodrive-actions.xml,
  OSGI-INF/nuxeodrive-layouts-contrib.xml,
  OSGI-INF/nuxeodrive-types.xml,
- OSGI-INF/nuxeodrive-theme.xml,
+ OSGI-INF/nuxeodrive-theme-component-contrib.xml,
  OSGI-INF/nuxeodrive-token-authentication-contrib.xml
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.drive.jsf;singleton:=true

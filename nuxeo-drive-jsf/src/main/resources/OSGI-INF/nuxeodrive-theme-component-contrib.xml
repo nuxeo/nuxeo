@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.theme.component" version="1.0">
+
+  <documentation>
+    @author Antoine Taillefer (ataillefer@nuxeo.com)
+
+    This
+    component is used to deploy the Nuxeo Drive theme contribution only
+    when not using hot-reload to avoid the Nuxeo IDE crash at login.
+    Uses the activate method of the component.
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.drive.theme.NuxeoDriveThemeActivationComponent" />
+
+</component>
