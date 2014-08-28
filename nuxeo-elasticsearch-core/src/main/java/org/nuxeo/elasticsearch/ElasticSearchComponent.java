@@ -725,11 +725,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
                     continue;
                 }
                 Collection<Terms.Bucket> buckets = terms.getBuckets();
-                Bucket[] nxBuckets = new Bucket[buckets.size()];
-                int i = 0;
+                List<Bucket> nxBuckets = new ArrayList<Bucket>(buckets.size());
                 for (Terms.Bucket bucket : buckets) {
-                    nxBuckets[i++] = new Bucket(bucket.getKey(),
-                            bucket.getDocCount());
+                    nxBuckets.add(new Bucket(bucket.getKey(),
+                            bucket.getDocCount()));
                 }
                 ret.add(new Aggregate(agg, nxBuckets));
                 break;

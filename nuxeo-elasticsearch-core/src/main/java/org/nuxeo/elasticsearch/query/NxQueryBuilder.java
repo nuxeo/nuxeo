@@ -152,9 +152,9 @@ public class NxQueryBuilder {
         return this;
     }
 
-    public NxQueryBuilder addAggregates(AggregateQuery[] aggregates) {
-        if (aggregates != null && aggregates.length > 0) {
-            Collections.addAll(this.aggregates, aggregates);
+    public NxQueryBuilder addAggregates(List<AggregateQuery> aggregates) {
+        if (aggregates != null && ! aggregates.isEmpty()) {
+            this.aggregates.addAll(aggregates);
         }
         return this;
     }
@@ -221,7 +221,7 @@ public class NxQueryBuilder {
         boolean hasFilter = false;
         AndFilterBuilder ret = FilterBuilders.andFilter();
         for (AggregateQuery aggQuery: aggregates) {
-            if (aggQuery.getSelection().length > 0) {
+            if (! aggQuery.getSelection().isEmpty()) {
                 ret.add(FilterBuilders.termFilter(aggQuery.getField(), aggQuery.getSelection()));
                 hasFilter = true;
             }
@@ -236,7 +236,7 @@ public class NxQueryBuilder {
         boolean hasFilter = false;
         AndFilterBuilder ret = FilterBuilders.andFilter();
         for (AggregateQuery aggQuery: aggregates) {
-            if (aggQuery.getSelection().length > 0 && ! aggQuery.getId().equals(id)) {
+            if (! aggQuery.getSelection().isEmpty() && ! aggQuery.getId().equals(id)) {
                 ret.add(FilterBuilders.termFilter(aggQuery.getField(), aggQuery.getSelection()));
                 hasFilter = true;
             }
