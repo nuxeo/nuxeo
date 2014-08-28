@@ -108,6 +108,7 @@ public class TestAggregates {
         aggDef.setProperty("size", "10");
         aggDef.setProperty("exclude", "foo*");
         aggDef.setProperty("include", "bar*");
+        aggDef.setProperty("order", "count asc");
 
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document").addAggregate(
@@ -134,6 +135,9 @@ public class TestAggregates {
                         + "            \"field\" : \"dc:source\",\n" //
                         + "            \"size\" : 10,\n" //
                         + "            \"min_doc_count\" : 10,\n" //
+                        + "            \"order\" : {\n" //
+                        + "              \"_count\" : \"asc\"\n" //
+                        + "            },\n" //
                         + "            \"include\" : \"bar*\",\n" //
                         + "            \"exclude\" : \"foo*\"\n" //
                         + "          }\n" //

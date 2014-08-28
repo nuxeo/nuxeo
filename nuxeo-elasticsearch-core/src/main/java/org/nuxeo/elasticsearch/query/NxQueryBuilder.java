@@ -37,6 +37,7 @@ import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.significant.SignificantTermsBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
@@ -46,6 +47,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.platform.query.api.AggregateQuery;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -55,7 +57,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NxQueryBuilder {
 
-    public static final String AGG_FILTER_SUFFIX = "_filter";
     private static final int DEFAULT_LIMIT = 10;
     private int limit = DEFAULT_LIMIT;
     private final CoreSession session;
@@ -65,6 +66,7 @@ public class NxQueryBuilder {
     private org.elasticsearch.index.query.QueryBuilder esQueryBuilder;
     private boolean fetchFromElasticsearch = false;
     private List<AggregateQuery> aggregates = new ArrayList<AggregateQuery>();
+    private static final String AGG_FILTER_SUFFIX = "_filter";
 
     public NxQueryBuilder(CoreSession coreSession) {
         session = coreSession;
@@ -287,17 +289,35 @@ public class NxQueryBuilder {
         TermsBuilder ret = AggregationBuilders.terms(aggQuery.getId()).field(
                 aggQuery.getField());
         Map<String, String> props = aggQuery.getProperties();
-        if (props.containsKey("size")) {
-            ret.size(Integer.parseInt(props.get("size")));
+        if (props.containsKey(ElasticSearchConstants.AGG_SIZE_PROP)) {
+            ret.size(Integer.parseInt(props.get(
+                    ElasticSearchConstants.AGG_SIZE_PROP)));
         }
-        if (props.containsKey("minDocCount")) {
-            ret.minDocCount(Long.parseLong(props.get("minDocCount")));
+        if (props.containsKey(ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP)) {
+            ret.minDocCount(Long.parseLong(props.get(
+                    ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP)));
         }
-        if (props.containsKey("exclude")) {
-            ret.exclude(props.get("exclude"));
+        if (props.containsKey(ElasticSearchConstants.AGG_EXCLUDE_PROP)) {
+            ret.exclude(props.get(ElasticSearchConstants.AGG_EXCLUDE_PROP));
         }
-        if (props.containsKey("include")) {
-            ret.include(props.get("include"));
+        if (props.containsKey(ElasticSearchConstants.AGG_INCLUDE_PROP)) {
+            ret.include(props.get(ElasticSearchConstants.AGG_INCLUDE_PROP));
+        }
+        if (props.containsKey(ElasticSearchConstants.AGG_ORDER_PROP)) {
+            switch (props.get(ElasticSearchConstants.AGG_ORDER_PROP).toLowerCase()) {
+            case ElasticSearchConstants.AGG_ORDER_COUNT_DESC:
+                ret.order(Terms.Order.count(false));
+                break;
+            case ElasticSearchConstants.AGG_ORDER_COUNT_ASC:
+                ret.order(Terms.Order.count(true));
+                break;
+            case ElasticSearchConstants.AGG_ORDER_TERM_DESC:
+                ret.order(Terms.Order.term(false));
+                break;
+            case ElasticSearchConstants.AGG_ORDER_TERM_ASC:
+                ret.order(Terms.Order.term(true));
+                break;
+            }
         }
         return ret;
     }
@@ -307,15 +327,16 @@ public class NxQueryBuilder {
         SignificantTermsBuilder ret = AggregationBuilders.significantTerms(
                 aggQuery.getId()).field(aggQuery.getField());
         Map<String, String> props = aggQuery.getProperties();
-        if (props.containsKey("size")) {
-            ret.size(Integer.parseInt(props.get("size")));
+        if (props.containsKey(ElasticSearchConstants.AGG_SIZE_PROP)) {
+            ret.size(Integer.parseInt(props.get(
+                    ElasticSearchConstants.AGG_SIZE_PROP)));
         }
-        if (props.containsKey("minDocCount")) {
-            ret.minDocCount(Integer.parseInt(props.get("minDocCount")));
+        if (props.containsKey(ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP)) {
+            ret.minDocCount(Integer.parseInt(props.get(
+                    ElasticSearchConstants.AGG_MIN_DOC_COUNT_PROP)));
         }
         return ret;
     }
-
 
     public void updateRequest(SearchRequestBuilder request) {
         // Set limits
