@@ -97,9 +97,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     protected PageProviderChangedListener pageProviderChangedListener;
 
-    protected static final AggregateQuery[] EMPTY_AGGREGATION_QUERY = new AggregateQuery[0];
-
-    protected  AggregateQuery[] aggregateQuery;
+    protected  List<AggregateQuery> aggregateQuery;
 
     /**
      * Returns the list of current page items.
@@ -876,16 +874,15 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     @Override
-    public AggregateQuery[] getAggregatesQuery() {
+    public List<AggregateQuery> getAggregatesQuery() {
         if (aggregateQuery == null) {
-            AggregateDefinition[] aggDefinitions = definition.getAggregates();
-            if (aggDefinitions.length == 0) {
-                aggregateQuery = EMPTY_AGGREGATION_QUERY;
+            List<AggregateDefinition> aggDefinitions = definition.getAggregates();
+            if (aggDefinitions.isEmpty()) {
+                aggregateQuery = Collections.<AggregateQuery>emptyList();
             } else {
-                aggregateQuery = new AggregateQuery[aggDefinitions.length];
-                int i = 0;
+                aggregateQuery = new ArrayList<AggregateQuery>(aggDefinitions.size());
                 for(AggregateDefinition def: aggDefinitions){
-                    aggregateQuery[i++] = new AggregateQuery(def, searchDocumentModel);
+                    aggregateQuery.add(new AggregateQuery(def, searchDocumentModel));
                 }
             }
         }

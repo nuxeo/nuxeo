@@ -1,0 +1,94 @@
+diff --git a/nuxeo-platform-query-api/src/main/java/org/nuxeo/ecm/platform/query/nxql/CoreQueryDocumentPageProvider.java b/nuxeo-platform-query-api/src/main/java/org/nuxeo/ecm/platform/query/nxql/CoreQueryDocumentPageProvider.java
+index 91c7ba4..08b2a53 100644
+--- a/nuxeo-platform-query-api/src/main/java/org/nuxeo/ecm/platform/query/nxql/CoreQueryDocumentPageProvider.java
++++ b/nuxeo-platform-query-api/src/main/java/org/nuxeo/ecm/platform/query/nxql/CoreQueryDocumentPageProvider.java
+@@ -34,6 +34,8 @@ import org.nuxeo.ecm.core.api.SortInfo;
+ import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
+ import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+ import org.nuxeo.ecm.platform.query.api.PageSelections;
++import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
++import org.nuxeo.ecm.platform.query.core.WhereClauseDescriptor;
+ import org.nuxeo.runtime.api.Framework;
+ 
+ /**
+@@ -70,6 +72,8 @@ public class CoreQueryDocumentPageProvider extends
+ 
+     private static final long serialVersionUID = 1L;
+ 
++    private static final String SORTED_COLUMN = "SORTED_COLUMN";
++
+     protected String query;
+ 
+     protected List<DocumentModel> currentPageDocuments;
+@@ -109,13 +113,13 @@ public class CoreQueryDocumentPageProvider extends
+ 
+                 DocumentModelList docs;
+                 if (getMaxResults() > 0) {
+-                    docs = coreSession.query(query, getFilter(), minMaxPageSize,
+-                            offset, getMaxResults());
++                    docs = coreSession.query(query, getFilter(),
++                            minMaxPageSize, offset, getMaxResults());
+                 } else {
+                     // use a totalCount=true instead of countUpTo=-1 to enable
+                     // global limitation described in NXP-9381
+-                    docs = coreSession.query(query, getFilter(), minMaxPageSize,
+-                            offset, true);
++                    docs = coreSession.query(query, getFilter(),
++                            minMaxPageSize, offset, true);
+                 }
+                 long resultsCount = docs.totalSize();
+                 if (resultsCount < 0) {
+@@ -197,9 +201,15 @@ public class CoreQueryDocumentPageProvider extends
+             }
+             String newQuery;
+             PageProviderDefinition def = getDefinition();
++            String sortedColumn = "1";
++            if (sortInfos != null) {
++                sortedColumn = sortArray[0].getSortColumn();
++            }
+             if (def.getWhereClause() == null) {
+-                newQuery = NXQLQueryBuilder.getQuery(def.getPattern(),
+-                        getParameters(), def.getQuotePatternParameters(),
++                String pattern = def.getPattern().replace(SORTED_COLUMN,
++                        sortedColumn);
++                newQuery = NXQLQueryBuilder.getQuery(pattern, getParameters(),
++                        def.getQuotePatternParameters(),
+                         def.getEscapePatternParameters(), sortArray);
+             } else {
+                 DocumentModel searchDocumentModel = getSearchDocumentModel();
+@@ -209,8 +219,11 @@ public class CoreQueryDocumentPageProvider extends
+                                     + "no search document model is set",
+                             getName()));
+                 }
++                WhereClauseDefinition whereClause = ((WhereClauseDescriptor) def.getWhereClause()).clone();
++                whereClause.setFixedPart(whereClause.getFixedPart().replace(
++                        SORTED_COLUMN, sortedColumn));
+                 newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel,
+-                        def.getWhereClause(), getParameters(), sortArray);
++                        whereClause, getParameters(), sortArray);
+             }
+ 
+             if (query != null && newQuery != null && !newQuery.equals(query)) {
+@@ -251,7 +264,8 @@ public class CoreQueryDocumentPageProvider extends
+     public long getMaxResults() {
+         if (maxResults == null) {
+             maxResults = 0L;
+-            String maxResultsStr = (String) getProperties().get(MAX_RESULTS_PROPERTY);
++            String maxResultsStr = (String) getProperties().get(
++                    MAX_RESULTS_PROPERTY);
+             if (maxResultsStr != null) {
+                 if (DEFAULT_NAVIGATION_RESULTS_KEY.equals(maxResultsStr)) {
+                     maxResultsStr = Framework.getProperty(
+diff --git a/nuxeo-platform-query-api/src/test/java/org/nuxeo/ecm/platform/query/core/TestPageProviderService.java b/nuxeo-platform-query-api/src/test/java/org/nuxeo/ecm/platform/query/core/TestPageProviderService.java
+index 5caabbd..2009da1 100644
+--- a/nuxeo-platform-query-api/src/test/java/org/nuxeo/ecm/platform/query/core/TestPageProviderService.java
++++ b/nuxeo-platform-query-api/src/test/java/org/nuxeo/ecm/platform/query/core/TestPageProviderService.java
+@@ -141,7 +141,7 @@ public class TestPageProviderService extends SQLRepositoryTestCase {
+         assertNotNull(pps);
+ 
+         PageProviderDefinition ppd = pps.getPageProviderDefinition(CURRENT_DOCUMENT_CHILDREN);
+-        ppd.setPattern("SELECT * FROM Document");
++        ppd.setPattern("SELECT * FROM Document WHERE SORTED_COLUMN IS NOT NULL");
+         HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY,
+                 (AbstractSession) session);

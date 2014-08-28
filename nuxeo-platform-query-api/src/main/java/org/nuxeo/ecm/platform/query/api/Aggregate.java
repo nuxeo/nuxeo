@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.query.api;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @since 5.9.6
@@ -25,9 +26,9 @@ public class Aggregate {
 
     protected final AggregateQuery query;
 
-    protected final Bucket[] buckets;
+    protected final List<Bucket> buckets;
 
-    public Aggregate(AggregateQuery query, Bucket[] buckets) {
+    public Aggregate(AggregateQuery query, List<Bucket> buckets) {
         assert (query != null);
         assert (buckets != null);
         this.query = query;
@@ -42,7 +43,7 @@ public class Aggregate {
         return query.getType();
     }
 
-    public Bucket[] getBuckets() {
+    public List<Bucket> getBuckets() {
         return buckets;
     }
 
@@ -53,6 +54,6 @@ public class Aggregate {
     @Override
     public String toString() {
         return String.format("Aggregate(%s, %s, %s)", getId(), getType(),
-                Arrays.toString(buckets));
+                Arrays.toString(buckets.toArray()));
     }
 }

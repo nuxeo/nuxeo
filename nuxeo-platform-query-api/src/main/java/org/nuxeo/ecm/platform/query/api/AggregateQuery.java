@@ -18,6 +18,8 @@ package org.nuxeo.ecm.platform.query.api;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -30,8 +32,6 @@ public class AggregateQuery {
     protected final AggregateDefinition definition;
 
     protected final DocumentModel searchDocument;
-
-    protected final static String[] EMPTY_SELECTION = new String[0];
 
     public AggregateQuery(AggregateDefinition definition,
             DocumentModel searchDocument) {
@@ -59,20 +59,20 @@ public class AggregateQuery {
         return definition.getProperties();
     }
 
-    public String[] getSelection() {
+    public List<String> getSelection() {
         PredicateFieldDefinition field = definition.getSearchField();
         // TODO add assertion on property type that must be nxs:stringList
         ArrayList<String> ret = (ArrayList<String>) searchDocument.getProperty(
                 field.getSchema(), field.getName());
         if (ret == null) {
-            return EMPTY_SELECTION;
+            return Collections.<String>emptyList();
         }
-        return ret.toArray(new String[ret.size()]);
+        return ret;
     }
 
     @Override
     public String toString() {
         return String.format("AggregateQuery(%s, %s, %s, %s)", getId(), getType(), getField(),
-                Arrays.toString(getSelection()));
+                Arrays.toString(getSelection().toArray()));
     }
 }

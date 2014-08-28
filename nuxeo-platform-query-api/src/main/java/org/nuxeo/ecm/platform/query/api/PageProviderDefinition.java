@@ -75,5 +75,5 @@ public interface PageProviderDefinition extends Serializable {
     /**
      * @since 5.9.6
      */
-    AggregateDefinition[] getAggregates();
+    List<AggregateDefinition> getAggregates();
 }
