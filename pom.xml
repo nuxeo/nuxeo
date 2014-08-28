@@ -2042,6 +2042,13 @@
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam-pdf</artifactId>
         <version>${seam.version}</version>
+        <exclusions>
+          <!-- dep conflicting with JSF2 -->
+          <exclusion>
+            <groupId>org.jboss.spec.javax.faces</groupId>
+            <artifactId>jboss-jsf-api_2.1_spec</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
