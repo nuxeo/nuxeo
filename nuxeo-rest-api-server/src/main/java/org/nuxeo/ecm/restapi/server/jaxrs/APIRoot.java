@@ -82,6 +82,11 @@ public class APIRoot extends ModuleRoot {
         return newObject("doc");
     }
 
+    @Path("/query")
+    public Object doQuery() {
+        return newObject("query");
+    }
+
     @Path("/config")
     public Object doGetConfig() {
         return newObject("config");

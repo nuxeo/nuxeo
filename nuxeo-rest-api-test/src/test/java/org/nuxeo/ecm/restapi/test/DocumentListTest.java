@@ -19,7 +19,10 @@ package org.nuxeo.ecm.restapi.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -33,6 +36,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.restapi.server.jaxrs.QueryObject;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.ChildrenAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.PageProviderAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
@@ -99,6 +103,104 @@ public class DocumentListTest extends BaseTest {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, getLogEntries(node).size());
 
+    }
+
+    @Test
+    public void iCanPerformQueriesOnRepository() throws IOException {
+        // Given a repository, when I perform a query in NXQL on it
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("query", "SELECT * FROM Document");
+        ClientResponse response = getResponse(RequestType.GET,
+                "query", queryParams);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(15, getLogEntries(node).size());
+
+        // Given a repository, when I perform a query in NXQL on it
+        response = getResponse(RequestType.GET, QueryObject.PATH + "/" +
+                QueryObject.NXQL, queryParams);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(15, getLogEntries(node).size());
+
+        // Given parameters as page size and ordered parameters
+        queryParams.clear();
+        queryParams.add("pageSize", "2");
+        queryParams.add("queryParams", "$currentUser");
+        queryParams.add("query", "select * from Document where " +
+                "dc:creator = ?");
+
+        // Given a repository, when I perform a query in NXQL on it
+        response = getResponse(RequestType.GET, QueryObject.PATH + "/" +
+                QueryObject.NXQL, queryParams);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, getLogEntries(node).size());
+    }
+
+    @Test
+    public void iCanPerformQueriesWithNamedParametersOnRepository() throws
+            IOException {
+        // Given a repository and named parameters, when I perform a query in
+        // NXQL on it
+        DocumentModel folder = RestServerInit.getFolder(1, session);
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("query", "SELECT * FROM Document WHERE " +
+                "ecm:parentId = :parentIdVar AND\n" +
+                "        ecm:mixinType != 'HiddenInNavigation' AND dc:title " +
+                "IN (:note1,:note2)\n" +
+                "        AND ecm:isCheckedInVersion = 0 AND " +
+                "ecm:currentLifeCycleState !=\n" +
+                "        'deleted'");
+        queryParams.add("note1", "Note 1");
+        queryParams.add("note2", "Note 2");
+        queryParams.add("parentIdVar", folder.getId());
+        ClientResponse response = getResponse(RequestType.GET,
+                "query", queryParams);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, getLogEntries(node).size());
+    }
+
+    @Test
+    public void iCanPerformPageProviderOnRepository() throws IOException {
+        // Given a repository, when I perform a pageprovider on it
+        DocumentModel folder = RestServerInit.getFolder(1, session);
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("queryParams", folder.getId());
+        ClientResponse response = getResponse(RequestType.GET,
+                "query/TEST_PP", queryParams);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, getLogEntries(node).size());
+    }
+
+    @Test
+    public void iCanPerformPageProviderWithNamedParametersOnRepository() throws
+            IOException {
+        // Given a repository, when I perform a pageprovider on it
+        DocumentModel folder = RestServerInit.getFolder(1, session);
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("note1", "Note 1");
+        queryParams.add("note2", "Note 2");
+        queryParams.add("parentIdVar", folder.getId());
+        ClientResponse response = getResponse(RequestType.GET,
+                "query/TEST_PP_PARAM", queryParams);
+
+        // Then I get document listing as result
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, getLogEntries(node).size());
     }
 
     @Test
