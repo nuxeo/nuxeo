@@ -1606,12 +1606,18 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
         assertIdSet(dml, version.getId(), v2.toString(), proxy.getId());
         dml = session.query("SELECT * FROM Document WHERE ecm:isLatestVersion = 1 AND ecm:isProxy = 0");
         assertIdSet(dml, version.getId(), v2.toString());
+        dml = session.query("SELECT * FROM Document WHERE ecm:isLatestVersion = 0");
+        assertEquals(8, dml.size()); // 7 folder/docs, 1 proxy
+        dml = session.query("SELECT * FROM Document WHERE ecm:isLatestVersion = 0 AND ecm:isProxy = 0");
+        assertEquals(8, dml.size()); // 7 folder/docs, 1 proxy
 
         /*
          * ecm:isLatestMajorVersion
          */
         dml = session.query("SELECT * FROM Document WHERE ecm:isLatestMajorVersion = 1");
         assertIdSet(dml, v2.toString());
+        dml = session.query("SELECT * FROM Document WHERE ecm:isLatestMajorVersion = 0");
+        assertEquals(10, dml.size());
 
         /*
          * ecm:versionLabel

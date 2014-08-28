@@ -1741,9 +1741,11 @@ public class NXQLQueryMaker implements QueryMaker {
                 visitExpressionIsProxy(node);
             } else if (NXQL.ECM_ISVERSION_OLD.equals(name)
                     || NXQL.ECM_ISVERSION.equals(name)) {
-                visitExpressionIsVersion(name, node);
-            } else if (NXQL.ECM_ISCHECKEDIN.equals(name)) {
-                visitExpressionIsCheckedIn(node);
+                visitExpressionWhereFalseIsNull(node);
+            } else if (NXQL.ECM_ISCHECKEDIN.equals(name)
+                    || NXQL.ECM_ISLATESTVERSION.equals(name)
+                    || NXQL.ECM_ISLATESTMAJORVERSION.equals(name)) {
+                visitExpressionWhereFalseMayBeNull(node);
             } else if (NXQL.ECM_MIXINTYPE.equals(name)) {
                 visitExpressionMixinType(node);
             } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)
@@ -1973,7 +1975,8 @@ public class NXQLQueryMaker implements QueryMaker {
             buf.append(isProxies == bool ? "1=1" : "0=1");
         }
 
-        protected void visitExpressionIsVersion(String name, Expression node) {
+        protected void visitExpressionWhereFalseIsNull(Expression node) {
+            String name = ((Reference) node.lvalue).name;
             boolean bool = getBooleanRValue(name, node);
             node.lvalue.accept(this);
             if (bool) {
@@ -1984,8 +1987,9 @@ public class NXQLQueryMaker implements QueryMaker {
             }
         }
 
-        protected void visitExpressionIsCheckedIn(Expression node) {
-            boolean bool = getBooleanRValue(NXQL.ECM_ISCHECKEDIN, node);
+        protected void visitExpressionWhereFalseMayBeNull(Expression node) {
+            String name = ((Reference) node.lvalue).name;
+            boolean bool = getBooleanRValue(name, node);
             if (bool) {
                 node.lvalue.accept(this);
                 buf.append(" = ");
