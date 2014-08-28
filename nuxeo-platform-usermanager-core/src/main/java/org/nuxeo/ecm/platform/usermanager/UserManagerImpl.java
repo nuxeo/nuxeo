@@ -52,6 +52,8 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.cache.Cache;
+import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -62,7 +64,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
 
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 /**
@@ -104,6 +105,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     protected final DirectoryService dirService;
 
+    protected final CacheService cacheService;
+    
+    protected Cache principalCache = null;
+            
     public UserMultiTenantManagement multiTenantManagement = new DefaultUserMultiTenantManagement();
 
     /**
@@ -165,12 +170,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     protected final Map<String, VirtualUserDescriptor> virtualUsers;
 
-    protected static final Integer CACHE_CONCURRENCY_LEVEL = 10;
-
-    protected Cache<String, NuxeoPrincipal> principalCache = null;
-
     public UserManagerImpl() {
         dirService = Framework.getLocalService(DirectoryService.class);
+        cacheService = Framework.getLocalService(CacheService.class);
         virtualUsers = new HashMap<String, VirtualUserDescriptor>();
         userConfig = new UserConfig();
     }
@@ -221,11 +223,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         userConfig.schemaName = userSchemaName;
         userConfig.nameKey = userIdField;
 
-        if (descriptor.userCacheMaxSize > 0) {
-            principalCache = CacheBuilder.newBuilder().concurrencyLevel(
-                    CACHE_CONCURRENCY_LEVEL).maximumSize(
-                    descriptor.userCacheMaxSize).expireAfterWrite(
-                    descriptor.userCacheTimeout, TimeUnit.MINUTES).build();
+        if (descriptor.userCacheName != null) {
+            principalCache = cacheService.getCache(descriptor.userCacheName);
         }
 
     }
@@ -567,7 +566,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
         NuxeoPrincipal principal = null;
         if (useCache()) {
-            principal = principalCache.getIfPresent(username);
+            principal = (NuxeoPrincipal) principalCache.get(username);
         }
         if (principal == null) {
             principal = getPrincipal(username, null);

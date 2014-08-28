@@ -27,8 +27,8 @@
       <artifactId>nuxeo-platform-directory-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-cache</artifactId>
     </dependency>
 
     <dependency>
