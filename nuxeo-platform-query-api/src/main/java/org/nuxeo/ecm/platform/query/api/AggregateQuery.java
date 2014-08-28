@@ -35,6 +35,7 @@ public class AggregateQuery {
 
     public AggregateQuery(AggregateDefinition definition,
             DocumentModel searchDocument) {
+        assert(definition != null);
         this.definition = definition;
         this.searchDocument = searchDocument;
     }
@@ -62,9 +63,11 @@ public class AggregateQuery {
     public List<String> getSelection() {
         if (selection == null) {
             PredicateFieldDefinition field = definition.getSearchField();
-            // TODO add assertion on property type that must be nxs:stringList
-            List<String> selection = (ArrayList<String>) searchDocument.getProperty(
-                    field.getSchema(), field.getName());
+            if (searchDocument != null) {
+                // property must be nxs:stringList
+                selection = (List<String>) searchDocument.getProperty(
+                        field.getSchema(), field.getName());
+            }
             if (selection == null) {
                 selection = Collections.<String>emptyList();
             }
