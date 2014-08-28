@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.routing.test;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -30,6 +31,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.content.template.service.ContentTemplateService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -74,6 +76,8 @@ public class DocumentRoutingTestCase extends SQLRepositoryTestCase {
         deployContrib(TEST_BUNDLE, "OSGI-INF/test-graph-types-contrib.xml");
         deployBundle(TestConstants.CORE_BUNDLE);
         CounterListener.resetCouner();
+
+        Framework.getLocalService(WorkManager.class).init();
 
         openSession();
         DocumentModel root = session.getRootDocument();

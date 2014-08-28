@@ -863,6 +863,15 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
     }
 
     @Test
+    public void testTemplateResourceExtensionParsing() throws Exception {
+        deployBundle(TEST_BUNDLE);
+        deployTestContrib(TEST_BUNDLE,
+                "OSGI-INF/test-document-routing-route-models-template-resource-contrib.xml");
+        List<URL> urls = service.getRouteModelTemplateResources();
+        assertEquals(1, urls.size());
+    }
+
+    @Test
     public void testImportRouteModel() throws Exception {
         closeSession();
         deployBundle("org.nuxeo.runtime.reload");
@@ -873,12 +882,6 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         deployBundle(TEST_BUNDLE);
         Framework.getLocalService(ReloadService.class).reloadRepository();
         openSession();
-        // test contrib parsing and deployment
-        deployTestContrib(TEST_BUNDLE,
-                "OSGI-INF/test-document-routing-route-models-template-resource-contrib.xml");
-        List<URL> urls = service.getRouteModelTemplateResources();
-        assertEquals(1, urls.size());
-
         // create an initial route to test that is override at import
         DocumentModel root = createDocumentModel(session,
                 "document-route-models-root", "DocumentRouteModelsRoot", "/");

@@ -729,13 +729,14 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             throw new ClientRuntimeException(e);
         }
         try {
+            final String file = modelToImport.getFile();
             DocumentModel doc = getFileManager().createDocumentFromBlob(
                     session,
                     fb,
                     persister.getParentFolderForDocumentRouteModels(session).getPathAsString(),
-                    true, modelToImport.getFile());
+                    true, file);
             if (doc == null) {
-                throw new ClientException("Can not import document");
+                throw new ClientException("Can not import document " + file);
             }
             // remove model from cache if any model with the same id existed
             if (modelsChache != null) {
