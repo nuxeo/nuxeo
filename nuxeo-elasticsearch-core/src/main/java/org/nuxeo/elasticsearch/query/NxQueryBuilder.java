@@ -36,6 +36,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.significant.SignificantTermsBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
@@ -262,42 +263,59 @@ public class NxQueryBuilder {
         List<AbstractAggregationBuilder> ret = new ArrayList<AbstractAggregationBuilder>(
                 aggregates.size());
         for (AggregateQuery aggQuery : aggregates) {
+            FilterAggregationBuilder fagg = new FilterAggregationBuilder(
+                    getAggregateFilderId(aggQuery));
+            fagg.filter(getAggregateFilterExceptFor(aggQuery.getId()));
             switch (aggQuery.getType()) {
             case "terms":
-                TermsBuilder agg = getTermsBuilder(aggQuery);
-                FilterAggregationBuilder fagg = new FilterAggregationBuilder(
-                        getAggregateFilderId(aggQuery));
-                fagg.filter(getAggregateFilterExceptFor(aggQuery.getId()));
-                fagg.subAggregation(agg);
-                ret.add(fagg);
+                fagg.subAggregation(getTermsBuilder(aggQuery));
+                break;
+            case "significant_terms":
+                fagg.subAggregation(getSignificantTermsBuilder(aggQuery));
                 break;
             default:
                 throw new NotImplementedException(String.format(
                         "%s aggregation type is unknown for agg: %s",
-                        aggQuery.getType(), aggQuery.getId()));
+                        aggQuery.getType(), aggQuery));
             }
+            ret.add(fagg);
         }
         return ret;
     }
 
-    private TermsBuilder getTermsBuilder(AggregateQuery aggQuery) {
-        TermsBuilder agg = AggregationBuilders.terms(aggQuery.getId()).field(
+    protected TermsBuilder getTermsBuilder(AggregateQuery aggQuery) {
+        TermsBuilder ret = AggregationBuilders.terms(aggQuery.getId()).field(
                 aggQuery.getField());
         Map<String, String> props = aggQuery.getProperties();
         if (props.containsKey("size")) {
-            agg.size(Integer.parseInt(props.get("size")));
+            ret.size(Integer.parseInt(props.get("size")));
         }
         if (props.containsKey("minDocCount")) {
-            agg.minDocCount(Long.parseLong(props.get("minDocCount")));
+            ret.minDocCount(Long.parseLong(props.get("minDocCount")));
         }
         if (props.containsKey("exclude")) {
-            agg.exclude(props.get("exclude"));
+            ret.exclude(props.get("exclude"));
         }
         if (props.containsKey("include")) {
-            agg.include(props.get("include"));
+            ret.include(props.get("include"));
         }
-        return agg;
+        return ret;
     }
+
+    protected SignificantTermsBuilder getSignificantTermsBuilder(
+            AggregateQuery aggQuery) {
+        SignificantTermsBuilder ret = AggregationBuilders.significantTerms(
+                aggQuery.getId()).field(aggQuery.getField());
+        Map<String, String> props = aggQuery.getProperties();
+        if (props.containsKey("size")) {
+            ret.size(Integer.parseInt(props.get("size")));
+        }
+        if (props.containsKey("minDocCount")) {
+            ret.minDocCount(Integer.parseInt(props.get("minDocCount")));
+        }
+        return ret;
+    }
+
 
     public void updateRequest(SearchRequestBuilder request) {
         // Set limits

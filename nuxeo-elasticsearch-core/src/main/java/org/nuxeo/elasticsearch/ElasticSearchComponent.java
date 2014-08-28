@@ -75,6 +75,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.filter.InternalFilter;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
@@ -706,19 +707,21 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 .getAggregatesQuery().size());
         for (AggregateQuery agg : queryBuilder.getAggregatesQuery()) {
             switch (agg.getType()) {
+            case "significant_terms":
             case "terms":
                 InternalFilter filter = response.getAggregations().get(
                         NxQueryBuilder.getAggregateFilderId(agg));
                 if (filter == null) {
                     continue;
                 }
-                Terms terms = filter.getAggregations().get(agg.getId());
+                MultiBucketsAggregation terms = filter.getAggregations().get(agg.getId());
                 if (terms == null) {
                     continue;
                 }
-                Collection<Terms.Bucket> buckets = terms.getBuckets();
+                Collection<? extends MultiBucketsAggregation.Bucket> buckets = terms
+                        .getBuckets();
                 List<Bucket> nxBuckets = new ArrayList<Bucket>(buckets.size());
-                for (Terms.Bucket bucket : buckets) {
+                for (MultiBucketsAggregation.Bucket bucket : buckets) {
                     nxBuckets.add(new Bucket(bucket.getKey(), bucket
                             .getDocCount()));
                 }

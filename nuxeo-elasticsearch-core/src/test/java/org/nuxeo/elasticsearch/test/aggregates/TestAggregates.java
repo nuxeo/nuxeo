@@ -18,14 +18,12 @@
 package org.nuxeo.elasticsearch.test.aggregates;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.SystemUtils;
 import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -99,6 +97,98 @@ public class TestAggregates {
     }
 
     @Test
+    public void testAggregateTermsQuery() throws Exception {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setType("terms");
+        aggDef.setId("source");
+        aggDef.setDocumentField("dc:source");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search",
+                "source_agg"));
+        aggDef.setProperty("minDocCount", "10");
+        aggDef.setProperty("size", "10");
+        aggDef.setProperty("exclude", "foo*");
+        aggDef.setProperty("include", "bar*");
+
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document").addAggregate(
+                new AggregateQuery(aggDef, null));
+
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME);
+        qb.updateRequest(request);
+
+        assertEqualsEvenUnderWindows("{\n" //
+                        + "  \"from\" : 0,\n" //
+                        + "  \"size\" : 10,\n" //
+                        + "  \"query\" : {\n" //
+                        + "    \"match_all\" : { }\n" //
+                        + "  },\n" //
+                        + "  \"aggregations\" : {\n" //
+                        + "    \"source_filter\" : {\n" //
+                        + "      \"filter\" : {\n" //
+                        + "        \"match_all\" : { }\n" //
+                        + "      },\n" //
+                        + "      \"aggregations\" : {\n" //
+                        + "        \"source\" : {\n" //
+                        + "          \"terms\" : {\n" //
+                        + "            \"field\" : \"dc:source\",\n" //
+                        + "            \"size\" : 10,\n" //
+                        + "            \"min_doc_count\" : 10,\n" //
+                        + "            \"include\" : \"bar*\",\n" //
+                        + "            \"exclude\" : \"foo*\"\n" //
+                        + "          }\n" //
+                        + "        }\n" //
+                        + "      }\n" //
+                        + "    }\n" //
+                        + "  }\n" //
+                        + "}", //
+                request.toString());
+    }
+
+    @Test
+    public void testAggregateSignificantTermsQuery() throws Exception {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setType("significant_terms");
+        aggDef.setId("source");
+        aggDef.setDocumentField("dc:source");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search",
+                "source_agg"));
+        aggDef.setProperty("minDocCount", "10");
+
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
+                "SELECT * FROM Document").addAggregate(
+                new AggregateQuery(aggDef, null));
+
+        SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
+                .setTypes(TYPE_NAME);
+        qb.updateRequest(request);
+
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"from\" : 0,\n" //
+                + "  \"size\" : 10,\n" //
+                + "  \"query\" : {\n" //
+                + "    \"match_all\" : { }\n" //
+                + "  },\n" //
+                + "  \"aggregations\" : {\n" //
+                + "    \"source_filter\" : {\n" //
+                + "      \"filter\" : {\n" //
+                + "        \"match_all\" : { }\n" //
+                + "      },\n" //
+                + "      \"aggregations\" : {\n" //
+                + "        \"source\" : {\n" //
+                + "          \"significant_terms\" : {\n" //
+                + "            \"field\" : \"dc:source\",\n" //
+                + "            \"minDocCount\" : 10\n" //
+                + "          }\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", //
+                request.toString());
+    }
+
+    @Test
     public void testAggregateQuery() throws Exception {
 
         AggregateDefinition aggDef1 = new AggregateDescriptor();
@@ -128,58 +218,57 @@ public class TestAggregates {
                 .addAggregate(new AggregateQuery(aggDef2, model));
 
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
-                .setTypes(TYPE_NAME)
-                .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+                .setTypes(TYPE_NAME);
         qb.updateRequest(request);
 
         assertEqualsEvenUnderWindows("{\n" + "  \"from\" : 0,\n" //
-                + "  \"size\" : 10,\n" //
-                + "  \"query\" : {\n" //
-                + "    \"match_all\" : { }\n" //
-                + "  },\n" //
-                + "  \"post_filter\" : {\n" //
-                + "    \"and\" : {\n" //
-                + "      \"filters\" : [ {\n" //
-                + "        \"term\" : {\n" //
-                + "          \"dc:source\" : [ \"foo\", \"bar\" ]\n" //
-                + "        }\n" //
-                + "      } ]\n" //
-                + "    }\n" //
-                + "  },\n" //
-                + "  \"aggregations\" : {\n" //
-                + "    \"source_filter\" : {\n" //
-                + "      \"filter\" : {\n" //
-                + "        \"match_all\" : { }\n" //
-                + "      },\n" //
-                + "      \"aggregations\" : {\n" //
-                + "        \"source\" : {\n" //
-                + "          \"terms\" : {\n" //
-                + "            \"field\" : \"dc:source\"\n" //
-                + "          }\n" //
-                + "        }\n" //
-                + "      }\n" //
-                + "    },\n" //
-                + "    \"nature_filter\" : {\n" //
-                + "      \"filter\" : {\n" //
-                + "        \"and\" : {\n" //
-                + "          \"filters\" : [ {\n" //
-                + "            \"term\" : {\n" //
-                + "              \"dc:source\" : [ \"foo\", \"bar\" ]\n" //
-                + "            }\n" //
-                + "          } ]\n" //
-                + "        }\n" //
-                + "      },\n" //
-                + "      \"aggregations\" : {\n" //
-                + "        \"nature\" : {\n" //
-                + "          \"terms\" : {\n" //
-                + "            \"field\" : \"dc:nature\",\n" //
-                + "            \"size\" : 10\n" //
-                + "          }\n" //
-                + "        }\n" //
-                + "      }\n" //
-                + "    }\n" //
-                + "  }\n" //
-                + "}", //
+                        + "  \"size\" : 10,\n" //
+                        + "  \"query\" : {\n" //
+                        + "    \"match_all\" : { }\n" //
+                        + "  },\n" //
+                        + "  \"post_filter\" : {\n" //
+                        + "    \"and\" : {\n" //
+                        + "      \"filters\" : [ {\n" //
+                        + "        \"term\" : {\n" //
+                        + "          \"dc:source\" : [ \"foo\", \"bar\" ]\n" //
+                        + "        }\n" //
+                        + "      } ]\n" //
+                        + "    }\n" //
+                        + "  },\n" //
+                        + "  \"aggregations\" : {\n" //
+                        + "    \"source_filter\" : {\n" //
+                        + "      \"filter\" : {\n" //
+                        + "        \"match_all\" : { }\n" //
+                        + "      },\n" //
+                        + "      \"aggregations\" : {\n" //
+                        + "        \"source\" : {\n" //
+                        + "          \"terms\" : {\n" //
+                        + "            \"field\" : \"dc:source\"\n" //
+                        + "          }\n" //
+                        + "        }\n" //
+                        + "      }\n" //
+                        + "    },\n" //
+                        + "    \"nature_filter\" : {\n" //
+                        + "      \"filter\" : {\n" //
+                        + "        \"and\" : {\n" //
+                        + "          \"filters\" : [ {\n" //
+                        + "            \"term\" : {\n" //
+                        + "              \"dc:source\" : [ \"foo\", \"bar\" ]\n" //
+                        + "            }\n" //
+                        + "          } ]\n" //
+                        + "        }\n" //
+                        + "      },\n" //
+                        + "      \"aggregations\" : {\n" //
+                        + "        \"nature\" : {\n" //
+                        + "          \"terms\" : {\n" //
+                        + "            \"field\" : \"dc:nature\",\n" //
+                        + "            \"size\" : 10\n" //
+                        + "          }\n" //
+                        + "        }\n" //
+                        + "      }\n" //
+                        + "    }\n" //
+                        + "  }\n" //
+                        + "}", //
                 request.toString());
     }
 
