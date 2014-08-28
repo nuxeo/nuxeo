@@ -8,6 +8,7 @@
   </parent>
 
   <artifactId>nuxeo-connect-standalone</artifactId>
+  <version>5.9.3-NXP-14568</version>
   <name>Nuxeo Connect standalone client</name>
   <description>Standalone client for Nuxeo connect features (i.e. package management)</description>
 
