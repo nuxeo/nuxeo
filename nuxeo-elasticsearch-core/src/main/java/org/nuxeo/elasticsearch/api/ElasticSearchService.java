@@ -43,6 +43,15 @@ public interface ElasticSearchService {
             throws ClientException;
 
     /**
+     * Returns documents and aggregates.
+     *
+     * @since 5.9.6
+     */
+    EsResult queryAndAggregate(
+            NxQueryBuilder queryBuilder)
+            throws ClientException;
+
+    /**
      * Returns a document list using an NXQL query.
      *
      * Fetch documents from the VCS repository.

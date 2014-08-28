@@ -31,8 +31,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
+import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.query.PageProviderQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
@@ -40,14 +42,19 @@ import org.nuxeo.runtime.api.Framework;
 public class ElasticSearchNativePageProvider extends
         AbstractPageProvider<DocumentModel> {
 
-    private static final long serialVersionUID = 1L;
-
     public static final String CORE_SESSION_PROPERTY = "coreSession";
-
     protected static final Log log = LogFactory
             .getLog(ElasticSearchNativePageProvider.class);
-
+    private static final long serialVersionUID = 1L;
     protected List<DocumentModel> currentPageDocuments;
+
+    protected List<Aggregate> currentAggregates;
+
+    @Override
+    public List<Aggregate> getAggregates() {
+        getCurrentPage();
+        return currentAggregates;
+    }
 
     @Override
     public List<DocumentModel> getCurrentPage() {
@@ -72,12 +79,12 @@ public class ElasticSearchNativePageProvider extends
                 .getLocalService(ElasticSearchService.class);
         try {
             NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession())
-                    .esQuery(query)
-                    .offset((int) getCurrentPageOffset())
-                    .limit((int) getMinMaxPageSize())
-                    .addSort(sortArray)
+                    .esQuery(query).offset((int) getCurrentPageOffset())
+                    .limit((int) getMinMaxPageSize()).addSort(sortArray)
                     .addAggregates(getAggregatesQuery());
-            DocumentModelList dmList = ess.query(nxQuery);
+            EsResult ret = ess.queryAndAggregate(nxQuery);
+            DocumentModelList dmList = ret.getDocuments();
+            currentAggregates = ret.getAggregates();
             setResultsCount(dmList.totalSize());
             currentPageDocuments = dmList;
         } catch (ClientException e) {
@@ -114,12 +121,14 @@ public class ElasticSearchNativePageProvider extends
     @Override
     protected void pageChanged() {
         currentPageDocuments = null;
+        currentAggregates = null;
         super.pageChanged();
     }
 
     @Override
     public void refresh() {
         currentPageDocuments = null;
+        currentAggregates = null;
         super.refresh();
     }
 

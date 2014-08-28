@@ -1,4 +1,4 @@
-    /*
+/*
  * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
@@ -17,8 +17,10 @@
 
 package org.nuxeo.elasticsearch.test.aggregates;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
-
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.SystemUtils;
@@ -42,6 +44,7 @@ import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
@@ -80,8 +83,9 @@ public class TestAggregates {
             String name = "doc" + i;
             DocumentModel doc = session.createDocumentModel("/", name, "File");
             doc.setPropertyValue("dc:title", "File" + i);
-            doc.setPropertyValue("dc:nature", "Nature" + i);
-            doc.setPropertyValue("dc:rights", "Rights" + i % 2);
+            doc.setPropertyValue("dc:source", "Source" + i);
+            doc.setPropertyValue("dc:nature", "Nature" + i % 2);
+            doc.setPropertyValue("dc:coverage", "Coverage" + i % 3);
             doc = session.createDocument(doc);
         }
         TransactionHelper.commitOrRollbackTransaction();
@@ -90,11 +94,8 @@ public class TestAggregates {
         Assert.assertTrue(wm.awaitCompletion(20, TimeUnit.SECONDS));
         Assert.assertEquals(0, esa.getPendingCommands());
         Assert.assertEquals(0, esa.getPendingDocs());
-
         esa.refresh();
-
         TransactionHelper.startTransaction();
-
     }
 
     @Test
@@ -117,9 +118,9 @@ public class TestAggregates {
 
         DocumentModel model = new DocumentModelImpl("/", "doc",
                 "AdvancedSearch");
-        String[] sources = {"foo", "bar"};
-        String[] natures = {"foobar"};
+        String[] sources = { "foo", "bar" };
         model.setProperty("advanced_search", "source_agg", sources);
+        // String[] natures = { "foobar" };
         // model.setProperty("advanced_search", "nature_agg", natures);
         NxQueryBuilder qb = new NxQueryBuilder(session)
                 .nxql("SELECT * FROM Document")
@@ -131,60 +132,61 @@ public class TestAggregates {
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
         qb.updateRequest(request);
 
-        assertEqualsEvenUnderWindows("{\n"
-                        + "  \"from\" : 0,\n"
-                        + "  \"size\" : 10,\n"
-                        + "  \"query\" : {\n"
-                        + "    \"match_all\" : { }\n"
-                        + "  },\n"
-                        + "  \"post_filter\" : {\n"
-                        + "    \"and\" : {\n"
-                        + "      \"filters\" : [ {\n"
-                        + "        \"term\" : {\n"
-                        + "          \"dc:source\" : [ \"foo\", \"bar\" ]\n"
-                        + "        }\n"
-                        + "      } ]\n"
-                        + "    }\n"
-                        + "  },\n"
-                        + "  \"aggregations\" : {\n"
-                        + "    \"source\" : {\n"
-                        + "      \"filter\" : {\n"
-                        + "        \"match_all\" : { }\n"
-                        + "      },\n"
-                        + "      \"aggregations\" : {\n"
-                        + "        \"source\" : {\n"
-                        + "          \"terms\" : {\n"
-                        + "            \"field\" : \"dc:source\"\n"
-                        + "          }\n"
-                        + "        }\n"
-                        + "      }\n"
-                        + "    },\n"
-                        + "    \"nature\" : {\n"
-                        + "      \"filter\" : {\n"
-                        + "        \"and\" : {\n"
-                        + "          \"filters\" : [ {\n"
-                        + "            \"term\" : {\n"
-                        + "              \"dc:source\" : [ \"foo\", \"bar\" ]\n"
-                        + "            }\n"
-                        + "          } ]\n"
-                        + "        }\n"
-                        + "      },\n"
-                        + "      \"aggregations\" : {\n"
-                        + "        \"nature\" : {\n"
-                        + "          \"terms\" : {\n"
-                        + "            \"field\" : \"dc:nature\",\n"
-                        + "            \"size\" : 10\n"
-                        + "          }\n"
-                        + "        }\n"
-                        + "      }\n"
-                        + "    }\n"
-                        + "  }\n"
-                        + "}",
+        assertEqualsEvenUnderWindows("{\n" + "  \"from\" : 0,\n" //
+                + "  \"size\" : 10,\n" //
+                + "  \"query\" : {\n" //
+                + "    \"match_all\" : { }\n" //
+                + "  },\n" //
+                + "  \"post_filter\" : {\n" //
+                + "    \"and\" : {\n" //
+                + "      \"filters\" : [ {\n" //
+                + "        \"term\" : {\n" //
+                + "          \"dc:source\" : [ \"foo\", \"bar\" ]\n" //
+                + "        }\n" //
+                + "      } ]\n" //
+                + "    }\n" //
+                + "  },\n" //
+                + "  \"aggregations\" : {\n" //
+                + "    \"source_filter\" : {\n" //
+                + "      \"filter\" : {\n" //
+                + "        \"match_all\" : { }\n" //
+                + "      },\n" //
+                + "      \"aggregations\" : {\n" //
+                + "        \"source\" : {\n" //
+                + "          \"terms\" : {\n" //
+                + "            \"field\" : \"dc:source\"\n" //
+                + "          }\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    },\n" //
+                + "    \"nature_filter\" : {\n" //
+                + "      \"filter\" : {\n" //
+                + "        \"and\" : {\n" //
+                + "          \"filters\" : [ {\n" //
+                + "            \"term\" : {\n" //
+                + "              \"dc:source\" : [ \"foo\", \"bar\" ]\n" //
+                + "            }\n" //
+                + "          } ]\n" //
+                + "        }\n" //
+                + "      },\n" //
+                + "      \"aggregations\" : {\n" //
+                + "        \"nature\" : {\n" //
+                + "          \"terms\" : {\n" //
+                + "            \"field\" : \"dc:nature\",\n" //
+                + "            \"size\" : 10\n" //
+                + "          }\n" //
+                + "        }\n" //
+                + "      }\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", //
                 request.toString());
     }
 
     @Test
     public void testPageProvider() throws Exception {
+        buildDocs();
+
         PageProviderService pps = Framework
                 .getService(PageProviderService.class);
         Assert.assertNotNull(pps);
@@ -195,12 +197,26 @@ public class TestAggregates {
 
         DocumentModel model = new DocumentModelImpl("/", "doc",
                 "AdvancedSearch");
-        String[] sources = {"foo", "bar"};
+        String[] sources = { "Source1", "Source2" };
         model.setProperty("advanced_search", "source_agg", sources);
-        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
-                null, null, (long) 0, null);
 
-        Aggregate[] aggs = pp.getAggregates();
+        HashMap<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+
+        PageProvider<?> pp = pps.getPageProvider("aggregates_1", ppdef, model,
+                null, null, (long) 0, props);
+
+        List<Aggregate> aggs = pp.getAggregates();
+        Assert.assertEquals(3, aggs.size());
+        Assert.assertEquals(
+                "Aggregate(source, terms, [Bucket(Source0, 1), Bucket(Source1, 1), Bucket(Source2, 1), Bucket(Source3, 1), Bucket(Source4, 1)])",
+                aggs.get(0).toString());
+        Assert.assertEquals(
+                "Aggregate(coverage, terms, [Bucket(Coverage2, 1)])",
+                aggs.get(1).toString());
+        Assert.assertEquals("Aggregate(nature, terms, [Bucket(Nature0, 1)])",
+                aggs.get(2).toString());
 
     }
 

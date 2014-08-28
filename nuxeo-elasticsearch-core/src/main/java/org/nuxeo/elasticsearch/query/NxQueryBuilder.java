@@ -55,6 +55,7 @@ import org.nuxeo.runtime.api.Framework;
 public class NxQueryBuilder {
 
     private static final int DEFAULT_LIMIT = 10;
+    public static final String AGG_FILTER_SUFFIX = "_filter";
     private int limit = DEFAULT_LIMIT;
     private final CoreSession session;
     private int offset = 0;
@@ -246,6 +247,10 @@ public class NxQueryBuilder {
         return ret;
     }
 
+    public List<AggregateQuery> getAggregatesQuery() {
+        return aggregates;
+    }
+
     public List<AbstractAggregationBuilder> getAggregates() {
         List<AbstractAggregationBuilder> ret = new ArrayList<AbstractAggregationBuilder>(
                 aggregates.size());
@@ -254,7 +259,7 @@ public class NxQueryBuilder {
             case "terms":
                 TermsBuilder agg = getTermsBuilder(aggQuery);
                 FilterAggregationBuilder fagg = new FilterAggregationBuilder(
-                        aggQuery.getId());
+                        getAggregateFilderId(aggQuery));
                 fagg.filter(getAggregateFilterExceptFor(aggQuery.getId()));
                 fagg.subAggregation(agg);
                 ret.add(fagg);
@@ -266,6 +271,10 @@ public class NxQueryBuilder {
             }
         }
         return ret;
+    }
+
+    public static String getAggregateFilderId(AggregateQuery aggQuery) {
+        return aggQuery.getId() + AGG_FILTER_SUFFIX;
     }
 
     private TermsBuilder getTermsBuilder(AggregateQuery aggQuery) {

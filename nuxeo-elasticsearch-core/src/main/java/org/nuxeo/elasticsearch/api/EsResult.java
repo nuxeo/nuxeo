@@ -12,25 +12,32 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bdelbosc
+ *     Benoit Delbosc
  */
+package org.nuxeo.elasticsearch.api;
 
-package org.nuxeo.elasticsearch.provider;
+import java.util.List;
+
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.platform.query.api.Aggregate;
 
 /**
- * Page provider that uses Elasticsearch and understand NXQL for fixedPart and
- * pattern.
- *
- *
- * @since 5.9.3
+ * @since 5.9.6
  */
-public class ElasticSearchNxqlPageProvider extends
-        ElasticSearchNativePageProvider {
+public class EsResult {
+    private final DocumentModelList documents;
+    private final List<Aggregate> aggregates;
 
-    private static final long serialVersionUID = 1L;
+    public EsResult(DocumentModelList documents, List<Aggregate> aggregates) {
+        this.documents = documents;
+        this.aggregates = aggregates;
+    }
 
-    @Override
-    public boolean isNativeQuery() {
-        return false;
+    public DocumentModelList getDocuments() {
+        return documents;
+    }
+
+    public List<Aggregate> getAggregates() {
+        return aggregates;
     }
 }

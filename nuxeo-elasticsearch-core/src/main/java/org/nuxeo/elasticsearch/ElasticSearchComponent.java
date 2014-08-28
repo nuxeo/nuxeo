@@ -20,7 +20,6 @@ package org.nuxeo.elasticsearch;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
@@ -72,34 +71,34 @@ import org.elasticsearch.common.settings.ImmutableSettings.Builder;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.index.query.AndFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.bucket.filter.InternalFilter;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.AggregateQuery;
+import org.nuxeo.ecm.platform.query.api.Aggregate;
+import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
 import org.nuxeo.elasticsearch.config.ElasticSearchLocalConfig;
@@ -650,7 +649,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return client;
     }
 
-    @Override
+    @Deprecated @Override
     public DocumentModelList query(CoreSession session, String nxql, int limit,
             int offset, SortInfo... sortInfos) throws ClientException {
         NxQueryBuilder query = new NxQueryBuilder(session).nxql(nxql)
@@ -668,32 +667,78 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return query(query);
     }
 
+
     @Override
     public DocumentModelList query(
             NxQueryBuilder queryBuilder)
             throws ClientException {
+        return queryAndAggregate(queryBuilder).getDocuments();
+    }
+
+    @Override
+    public EsResult queryAndAggregate(NxQueryBuilder queryBuilder)
+            throws ClientException {
         SearchResponse response = search(queryBuilder);
+        DocumentModelListImpl docs = getDocumentModels(queryBuilder, response);
+        List<Aggregate> aggs = getAggregates(queryBuilder, response);
+        return new EsResult(docs, aggs);
+    }
+
+    protected DocumentModelListImpl getDocumentModels(
+            NxQueryBuilder queryBuilder, SearchResponse response) {
         DocumentModelListImpl ret;
         if (response.getHits().getHits().length == 0) {
             ret = new DocumentModelListImpl(0);
+            ret.setTotalSize(0);
+            return ret;
         }
-        else {
-            Context stopWatch = fetchTimer.time();
-            try {
-                if (queryBuilder.isFetchFromElasticsearch()) {
-                    ret = fetchDocumentsFromElasticsearch(queryBuilder,
-                            response);
-                } else {
-                    ret = fetchDocumentsFromVcs(queryBuilder, response);
-                }
-            } finally {
-                stopWatch.stop();
+        Context stopWatch = fetchTimer.time();
+        try {
+            if (queryBuilder.isFetchFromElasticsearch()) {
+                ret = fetchDocumentsFromElasticsearch(queryBuilder,
+                        response);
+            } else {
+                ret = fetchDocumentsFromVcs(queryBuilder, response);
             }
+        } finally {
+            stopWatch.stop();
         }
         long totalSize = response.getHits().getTotalHits();
         ret.setTotalSize(totalSize);
         return ret;
+    }
 
+    protected List<Aggregate> getAggregates(NxQueryBuilder queryBuilder,
+            SearchResponse response) {
+        List<Aggregate> ret = new ArrayList<Aggregate>(queryBuilder
+                .getAggregatesQuery().size());
+        for (AggregateQuery agg : queryBuilder.getAggregatesQuery()) {
+            switch (agg.getType()) {
+            case "terms":
+                InternalFilter filter = response.getAggregations().get(
+                        NxQueryBuilder.getAggregateFilderId(agg));
+                if (filter == null) {
+                    continue;
+                }
+                Terms terms = filter.getAggregations().get(agg.getId());
+                if (terms == null) {
+                    continue;
+                }
+                Collection<Terms.Bucket> buckets = terms.getBuckets();
+                Bucket[] nxBuckets = new Bucket[buckets.size()];
+                int i = 0;
+                for (Terms.Bucket bucket : buckets) {
+                    nxBuckets[i++] = new Bucket(bucket.getKey(),
+                            bucket.getDocCount());
+                }
+                ret.add(new Aggregate(agg, nxBuckets));
+                break;
+            default:
+                // not implemented
+            }
+
+        }
+        return ret;
     }
 
     protected SearchResponse search(NxQueryBuilder query) {
