@@ -49,6 +49,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.CallbackHolder;
 import org.nuxeo.connect.NuxeoConnectClient;
@@ -73,8 +76,6 @@ import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.launcher.info.CommandInfo;
 import org.nuxeo.launcher.info.CommandSetInfo;
 import org.nuxeo.launcher.info.PackageInfo;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 /**
  * @since 5.6
@@ -217,7 +218,7 @@ public class ConnectBroker {
         List<LocalPackage> localPackages = getPkgList();
         List<LocalPackage> installedPackages = new ArrayList<LocalPackage>();
         for (LocalPackage pkg : localPackages) {
-            if (PackageState.getByValue(pkg.getState()).isInstalled()) {
+            if (pkg.getPackageState().isInstalled()) {
                 installedPackages.add(pkg);
             }
         }
@@ -402,9 +403,9 @@ public class ConnectBroker {
                     // - For snapshots, until we have timestamp support, assume
                     // distribution version is newer than cached version.
                     // - This may (will) break the server if there are
-                    // dependencies/compatibility changes or it the package is
+                    // dependencies/compatibility changes or if the package is
                     // in installed state.
-                    if (!PackageState.getByValue(localPackage.getState()).isInstalled()) {
+                    if (!localPackage.getPackageState().isInstalled()) {
                         pkgRemove(localPackage.getId());
                         ret = addDistributionPackage(md5) && ret;
                     }
@@ -446,7 +447,7 @@ public class ConnectBroker {
                 StringBuilder sb = new StringBuilder();
                 for (Package pkg : packagesList) {
                     newPackageInfo(cmdInfo, pkg);
-                    PackageState packageState = PackageState.getByValue(pkg.getState());
+                    PackageState packageState = pkg.getPackageState();
                     String packageDescription = packageState.getLabel();
                     packageDescription = String.format("%6s %11s\t",
                             pkg.getType(), packageDescription);
@@ -521,7 +522,7 @@ public class ConnectBroker {
         // Remove packages in DOWNLOADED state first
         // This will avoid extending the CUDF universe needlessly
         for (LocalPackage pkg : service.getPackages()) {
-            if (PackageState.getByValue(pkg.getState()) == PackageState.DOWNLOADED) {
+            if (pkg.getPackageState() == PackageState.DOWNLOADED) {
                 pkgRemove(pkg.getId());
             }
         }
@@ -650,12 +651,12 @@ public class ConnectBroker {
             if (pkg == null) {
                 throw new PackageException("Package not found: " + pkgId);
             }
-            if (PackageState.getByValue(pkg.getState()).isInstalled()) {
+            if (pkg.getPackageState().isInstalled()) {
                 pkgUninstall(pkgId);
                 // Refresh state
                 pkg = service.getPackage(pkgId);
             }
-            if (PackageState.getByValue(pkg.getState()) != PackageState.DOWNLOADED) {
+            if (pkg.getPackageState() != PackageState.DOWNLOADED) {
                 throw new PackageException(
                         "Can only remove packages in DOWNLOADED, INSTALLED or STARTED state");
             }
@@ -791,8 +792,7 @@ public class ConnectBroker {
         cmdInfo.param = pkgId;
         try {
             LocalPackage pkg = getLocalPackage(pkgId);
-            if (pkg != null
-                    && PackageState.getByValue(pkg.getState()).isInstalled()) {
+            if (pkg != null && pkg.getPackageState().isInstalled()) {
                 if (pkg.getVersion().isSnapshot()) {
                     log.info(String.format("Updating package %s...", pkg));
                     // First remove it to allow SNAPSHOT upgrade
@@ -987,7 +987,7 @@ public class ConnectBroker {
             try {
                 LocalPackage localPackage = getLocalPackage(pkg);
                 if (localPackage != null) {
-                    if (PackageState.getByValue(localPackage.getState()).isInstalled()) {
+                    if (localPackage.getPackageState().isInstalled()) {
                         log.error(String.format(
                                 "Package %s is installed. Download skipped.",
                                 pkg));
@@ -1054,7 +1054,7 @@ public class ConnectBroker {
                         cmdInfo.exitCode = 1;
                         cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR,
                                 "Wrong digest for package " + pkg.getName());
-                    } else if (PackageState.getByValue(pkg.getState()) == PackageState.DOWNLOADED) {
+                    } else if (pkg.getPackageState() == PackageState.DOWNLOADED) {
                         cmdInfo.newMessage(SimpleLog.LOG_LEVEL_DEBUG,
                                 "Downloaded " + pkg);
                     } else {
@@ -1088,12 +1088,13 @@ public class ConnectBroker {
     public boolean pkgRequest(List<String> pkgsToAdd,
             List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove) {
-        return pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove, true);
+        return pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall,
+                pkgsToRemove, true);
     }
 
     /**
      * @param keepExisting If false, the request will remove existing packages
-     *                     that are not part of the resolution
+     *            that are not part of the resolution
      * @since 5.9.2
      */
     public boolean pkgRequest(List<String> pkgsToAdd,
@@ -1228,7 +1229,8 @@ public class ConnectBroker {
                     // Don't use IDs to avoid downgrade instead of uninstall
                     packageIdsToRemove.addAll(resolution.getLocalPackagesToUpgrade().keySet());
                     DependencyResolution uninstallResolution = getPackageManager().resolveDependencies(
-                            null, packageIdsToRemove, null, requestPlatform, allowSNAPSHOT, keepExisting);
+                            null, packageIdsToRemove, null, requestPlatform,
+                            allowSNAPSHOT, keepExisting);
                     log.debug("Sub-resolution (uninstall) "
                             + uninstallResolution);
                     if (uninstallResolution.isFailed()) {
@@ -1249,7 +1251,8 @@ public class ConnectBroker {
                     // Add list of packages uninstalled because of upgrade
                     packageIdsToInstall.addAll(packagesIdsToReInstall);
                     DependencyResolution installResolution = getPackageManager().resolveDependencies(
-                            packageIdsToInstall, null, null, requestPlatform, allowSNAPSHOT, keepExisting);
+                            packageIdsToInstall, null, null, requestPlatform,
+                            allowSNAPSHOT, keepExisting);
                     log.debug("Sub-resolution (install) " + installResolution);
                     if (installResolution.isFailed()) {
                         return false;
@@ -1271,6 +1274,7 @@ public class ConnectBroker {
 
     /**
      * Installs a list of packages and uninstalls the rest (no dependency check)
+     *
      * @since 5.9.2
      */
     public boolean pkgSet(List<String> pkgList) {
@@ -1279,7 +1283,8 @@ public class ConnectBroker {
         List<DownloadablePackage> installedPkgs = getPackageManager().listInstalledPackages();
         List<String> pkgsToUninstall = new ArrayList<String>();
         for (DownloadablePackage pkg : installedPkgs) {
-            if ((!pkgList.contains(pkg.getName())) && (!pkgList.contains(pkg.getId()))) {
+            if ((!pkgList.contains(pkg.getName()))
+                    && (!pkgList.contains(pkg.getId()))) {
                 pkgsToUninstall.add(pkg.getId());
             }
         }

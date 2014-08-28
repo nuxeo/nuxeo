@@ -79,7 +79,6 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
-import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
@@ -2119,7 +2118,7 @@ public abstract class NuxeoLauncher {
             nxInstance.packages.add(new PackageInfo(pkg));
             log.info(String.format("- %s (version: %s - id: %s - state: %s)",
                     pkg.getName(), pkg.getVersion(), pkg.getId(),
-                    PackageState.getByValue(pkg.getState()).getLabel()));
+                    pkg.getPackageState().getLabel()));
             // store template(s) added by this package
             try {
                 File installFile = pkg.getInstallFile();
