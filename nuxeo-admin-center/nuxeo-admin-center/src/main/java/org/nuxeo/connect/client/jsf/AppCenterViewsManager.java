@@ -322,7 +322,7 @@ public class AppCenterViewsManager implements Serializable {
             if (pkg == null) {
                 return translate(LABEL_STUDIO_UPDATE_STATUS + "noStatus");
             }
-            PackageState studioPkgState = PackageState.getByValue(pkg.getState());
+            PackageState studioPkgState = pkg.getPackageState();
             if (studioPkgState == PackageState.DOWNLOADING) {
                 studioSnapshotStatus = SnapshotStatus.downloading;
             } else if (studioPkgState == PackageState.DOWNLOADED) {
@@ -459,7 +459,7 @@ public class AppCenterViewsManager implements Serializable {
                         if (pkg != null) {
                             log.info(String.format("Updating package %s...",
                                     pkg));
-                            if (PackageState.getByValue(pkg.getState()).isInstalled()) {
+                            if (pkg.getPackageState().isInstalled()) {
                                 // First remove it to allow SNAPSHOT upgrade
                                 log.info("Uninstalling " + packageId);
                                 Task uninstallTask = pkg.getUninstallTask();

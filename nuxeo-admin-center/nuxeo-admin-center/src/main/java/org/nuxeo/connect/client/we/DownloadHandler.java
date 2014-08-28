@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -28,6 +28,7 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.connect.connector.ConnectServerError;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
@@ -103,16 +104,15 @@ public class DownloadHandler extends DefaultObject {
         if (pkg == null) {
             PackageManager pm = Framework.getLocalService(PackageManager.class);
             pkg = pm.getPackage(pkgId);
-            if (pkg.getState() != PackageState.DOWNLOADING.getValue()) {
+            if (pkg.getPackageState() != PackageState.DOWNLOADING) {
                 downloadOver = true;
             }
         }
         return getView("downloadStarted").arg("pkg", pkg).arg("source", source).arg(
                 "over", downloadOver).arg("install", install).arg("depCheck",
-                depCheck).arg(
-                        "filterOnPlatform", filterOnPlatform.toString()).arg(
-                                "type", pkgType.toString()).arg(
-                                        "onlyRemote", onlyRemote.toString());
+                depCheck).arg("filterOnPlatform", filterOnPlatform.toString()).arg(
+                "type", pkgType.toString()).arg("onlyRemote",
+                onlyRemote.toString());
     }
 
     protected DownloadingPackage getDownloadingPackage(String pkgId) {
@@ -163,9 +163,8 @@ public class DownloadHandler extends DefaultObject {
         return getView("downloadStarted").arg("pkg",
                 getDownloadingPackage(pkgId)).arg("source", source).arg("over",
                 false).arg("install", install).arg("depCheck", depCheck).arg(
-                        "filterOnPlatform", filterOnPlatform.toString()).arg(
-                                "type", pkgType.toString()).arg(
-                                        "onlyRemote", onlyRemote.toString());
+                "filterOnPlatform", filterOnPlatform.toString()).arg("type",
+                pkgType.toString()).arg("onlyRemote", onlyRemote.toString());
     }
 
     @GET

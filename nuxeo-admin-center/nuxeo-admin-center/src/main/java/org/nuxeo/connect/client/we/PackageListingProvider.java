@@ -245,7 +245,7 @@ public class PackageListingProvider extends DefaultObject {
     }
 
     public String getStateLabel(Package pkg) {
-        PackageState state = PackageState.getByValue(pkg.getState());
+        PackageState state = pkg.getPackageState();
         switch (state) {
         case REMOTE:
         case DOWNLOADED:
@@ -265,18 +265,18 @@ public class PackageListingProvider extends DefaultObject {
     }
 
     public boolean canInstall(Package pkg) {
-        return PackageState.DOWNLOADED == PackageState.getByValue(pkg.getState())
+        return PackageState.DOWNLOADED == pkg.getPackageState()
                 && !InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId());
     }
 
     public boolean needsRestart(Package pkg) {
         return InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getId())
-                || PackageState.INSTALLED == PackageState.getByValue(pkg.getState())
+                || PackageState.INSTALLED == pkg.getPackageState()
                 || InstallAfterRestart.isMarkedForUninstallAfterRestart(pkg.getName());
     }
 
     public boolean canUnInstall(Package pkg) {
-        return (PackageState.getByValue(pkg.getState()).isInstalled())
+        return pkg.getPackageState().isInstalled()
                 && !InstallAfterRestart.isMarkedForUninstallAfterRestart(pkg.getName());
     }
 
@@ -284,8 +284,9 @@ public class PackageListingProvider extends DefaultObject {
      * @since 5.8
      */
     public boolean canUpgrade(Package pkg) {
-        return (PackageState.getByValue(pkg.getState()).isInstalled()
-                && pkg.getVersion().isSnapshot() && !InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getName()));
+        return pkg.getPackageState().isInstalled()
+                && pkg.getVersion().isSnapshot()
+                && !InstallAfterRestart.isMarkedForInstallAfterRestart(pkg.getName());
     }
 
     public boolean canRemove(Package pkg) {
@@ -296,11 +297,11 @@ public class PackageListingProvider extends DefaultObject {
      * @since 5.6
      */
     public boolean canCancel(Package pkg) {
-        return PackageState.DOWNLOADING == PackageState.getByValue(pkg.getState());
+        return PackageState.DOWNLOADING == pkg.getPackageState();
     }
 
     public boolean canDownload(Package pkg) {
-        return PackageState.getByValue(pkg.getState()) == PackageState.REMOTE
+        return pkg.getPackageState() == PackageState.REMOTE
                 && (pkg.getType() == PackageType.STUDIO
                         || pkg.getVisibility() == PackageVisibility.PUBLIC //
                 || (ConnectStatusHolder.instance().isRegistred() //
@@ -325,7 +326,7 @@ public class PackageListingProvider extends DefaultObject {
      * @return true if registration is required for download
      */
     public boolean registrationRequired(Package pkg) {
-        return PackageState.getByValue(pkg.getState()) == PackageState.REMOTE
+        return pkg.getPackageState() == PackageState.REMOTE
                 && pkg.getType() != PackageType.STUDIO
                 && pkg.getVisibility() != PackageVisibility.PUBLIC
                 && (!ConnectStatusHolder.instance().isRegistred() //
