@@ -209,7 +209,7 @@
       well with url service -->
     <navigation-case>
       <from-outcome>seam_docstore</from-outcome>
-      <to-view-id>/seam-docstore.xhtml</to-view-id>
+      <to-view-id>/seam/docstore/document.xhtml</to-view-id>
       <redirect />
     </navigation-case>
 
@@ -820,10 +820,12 @@
     <mkdir path="nxwebplatform.tmp" />
 
     <unzip from="${bundle.fileName}" to="nxwebplatform.tmp">
+      <include>web/nuxeo.war/**</include>
       <include>WEB/**</include>
       <include>tinymce/**</include>
     </unzip>
 
+    <copy from="nxwebplatform.tmp/web/nuxeo.war/" to="nuxeo.war/" />
     <copy from="nxwebplatform.tmp/WEB/" to="nuxeo.war/WEB-INF/" />
     <copy from="nxwebplatform.tmp/tinymce/" to="nuxeo.war/tinymce/" />
 
