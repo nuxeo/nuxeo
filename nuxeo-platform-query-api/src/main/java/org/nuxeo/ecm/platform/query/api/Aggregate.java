@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.query.api;
 
+import java.util.Arrays;
+
 /**
  * @since 5.9.6
  */
@@ -48,4 +50,9 @@ public class Aggregate {
         return query;
     }
 
+    @Override
+    public String toString() {
+        return String.format("Aggregate(%s, %s, %s)", getId(), getType(),
+                Arrays.toString(buckets));
+    }
 }

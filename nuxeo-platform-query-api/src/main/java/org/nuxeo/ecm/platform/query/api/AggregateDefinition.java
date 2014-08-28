@@ -29,6 +29,8 @@ public interface AggregateDefinition {
 
     void setType(String type);
 
+    void setProperty(String name, String value);
+
     Map<String, String> getProperties();
 
     String getPropertiesAsJson();

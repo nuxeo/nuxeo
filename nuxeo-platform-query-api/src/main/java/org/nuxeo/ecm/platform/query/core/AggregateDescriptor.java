@@ -74,6 +74,11 @@ public class AggregateDescriptor implements AggregateDefinition {
     }
 
     @Override
+    public void setProperty(String name, String value) {
+        properties.put(name, value);
+    }
+
+    @Override
     public String getPropertiesAsJson() {
         if (jsonProperties == null) {
             StringWriter out = new StringWriter();
@@ -133,5 +138,4 @@ public class AggregateDescriptor implements AggregateDefinition {
         }
         return clone;
     }
-
 }
