@@ -426,8 +426,8 @@ public final class Framework {
     }
 
     /**
-     * Returns true if given property is false when compared to a boolean value.
-     * Returns false if given property in unset.
+     * Returns true if given property is false when compared to a boolean
+     * value. Returns false if given property in unset.
      * <p>
      * Checks for the system properties if property is not found in the runtime
      * properties.
@@ -435,15 +435,7 @@ public final class Framework {
      * @since 5.8
      */
     public static boolean isBooleanPropertyFalse(String propName) {
-        String test = getProperty(propName);
-        if (test == null) {
-            test = System.getProperty(propName);
-        }
-        if (test == null) {
-            return false;
-        } else {
-            return Boolean.FALSE.equals(Boolean.valueOf(test));
-        }
+        return !isBooleanPropertyTrue(propName);
     }
 
     /**
@@ -455,11 +447,11 @@ public final class Framework {
      * @since 5.6
      */
     public static boolean isBooleanPropertyTrue(String propName) {
-        String test = getProperty(propName);
-        if (test == null) {
-            test = System.getProperty(propName);
+        String v = getProperty(propName);
+        if (v == null) {
+            v = System.getProperty(propName);
         }
-        return Boolean.TRUE.equals(Boolean.valueOf(test));
+        return Boolean.parseBoolean(v);
     }
 
     /**
