@@ -17,12 +17,17 @@
  */
 package org.nuxeo.ecm.core.cache;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * Descriptor of cache contrib
- * 
+ *
  * @since 5.9.6
  */
 @XObject("cache")
@@ -32,37 +37,34 @@ public class CacheDescriptor {
     public String name;
 
     @XNode("@remove")
-    public boolean remove;
+    public boolean remove = false;
 
     @XNode("@class")
-    protected Class<?> implClass;
+    protected Class<? extends Cache> implClass = InMemoryCacheImpl.class;
 
     @XNode("ttl")
-    protected Integer ttl;
+    protected int ttl = 1;
 
-    @XNode("maxSize")
-    protected Integer maxSize;
+    @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
+    protected Map<String,String> options = new HashMap<String,String>();
 
-    @XNode("concurrency-level")
-    protected Integer concurrencyLevel;
+    protected Cache cache;
 
     public CacheDescriptor()
     {
-        
+        super();
     }
-    
-    public CacheDescriptor(String name, Class<?> implClass, Integer ttl,
-            Integer concurrencyLevel, Integer maxSize) {
+
+    protected CacheDescriptor(String name, Class<? extends Cache> implClass, Integer ttl, Map<String,String> options) {
         this.name = name;
         this.implClass = implClass;
         this.ttl = ttl;
-        this.concurrencyLevel = concurrencyLevel;
-        this.maxSize = maxSize;
+        this.options.putAll(options);
     }
 
+    @Override
     public CacheDescriptor clone() {
-        return new CacheDescriptor(name, implClass, ttl,
-                concurrencyLevel, maxSize);
+        return new CacheDescriptor(name, implClass, ttl,options);
     }
 
     public Class<?> getImplClass() {
@@ -75,31 +77,24 @@ public class CacheDescriptor {
 
     @Override
     public String toString() {
-        return name + ": " + implClass + ": " + ttl + ": " + concurrencyLevel;
+        return name + ": " + implClass + ": " + ttl + ": " + options;
     }
 
-    public Integer getTtl() {
-        return ttl;
+
+    public void start() {
+        try {
+            cache =  implClass.getConstructor(CacheDescriptor.class).newInstance(
+                    this);
+        } catch (InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            throw new RuntimeException("Failed to instantiate class "
+                    + implClass, e);
+        }
     }
 
-    public void setTtl(Integer ttl) {
-        this.ttl = ttl;
-    }
-
-    public Integer getConcurrencyLevel() {
-        return concurrencyLevel;
-    }
-
-    public void setConcurrencyLevel(Integer concurrencyLevel) {
-        this.concurrencyLevel = concurrencyLevel;
-    }
-
-    public Integer getMaxSize() {
-        return maxSize;
-    }
-
-    public void setMaxSize(Integer maxSize) {
-        this.maxSize = maxSize;
+    public void stop() {
+        cache = null;
     }
 
 }

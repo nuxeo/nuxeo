@@ -17,10 +17,6 @@
  */
 package org.nuxeo.ecm.core.cache;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.services.event.Event;
-
 /**
  * Abstract class to be extended to provide new cache technologies
  *
@@ -28,66 +24,16 @@ import org.nuxeo.runtime.services.event.Event;
  */
 public abstract class AbstractCache implements Cache {
 
-    private static final Log log = LogFactory.getLog(AbstractCache.class);
+    protected final String name;
 
-    protected String name = null;
+    protected AbstractCache(CacheDescriptor desc) {
+       name = desc.name;
+    }
 
-    protected Integer maxSize = 0;
-
-    protected Integer ttl = 0;
-
-    protected Integer concurrencyLevel = 0;
-
+    @Override
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getMaxSize() {
-        return maxSize;
-    }
-
-    public void setMaxSize(Integer maxSize) {
-        this.maxSize = maxSize;
-    }
-
-    public Integer getTtl() {
-        return ttl;
-    }
-
-    public void setTtl(Integer ttl) {
-        this.ttl = ttl;
-    }
-
-    public Integer getConcurrencyLevel() {
-        return concurrencyLevel;
-    }
-
-    public void setConcurrencyLevel(Integer concurrencyLevel) {
-        this.concurrencyLevel = concurrencyLevel;
-    }
-
-    @Override
-    public boolean aboutToHandleEvent(Event event) {
-        return false;
-    }
-
-    @Override
-    public void handleEvent(Event event) {
-        final String id = event.getId();
-        if (CacheService.INVALIDATE_ALL.equals(id)) {
-            try {
-                invalidateAll();
-            } catch (Exception e) {
-                log.error(
-                        String.format("Failed to invalidate cache '%s'", name),
-                        e);
-                throw new RuntimeException(e);
-            }
-        }
-    }
 
 }

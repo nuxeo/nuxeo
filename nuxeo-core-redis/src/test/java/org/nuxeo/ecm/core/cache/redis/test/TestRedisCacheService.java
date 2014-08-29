@@ -17,83 +17,41 @@
 
 package org.nuxeo.ecm.core.cache.redis.test;
 
-import static org.junit.Assume.assumeTrue;
 import junit.framework.Assert;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.cache.AbstractTestCache;
 import org.nuxeo.ecm.core.cache.Cache;
-import org.nuxeo.ecm.core.redis.RedisCacheImpl;
-import org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor;
-import org.nuxeo.ecm.core.redis.RedisService;
-import org.nuxeo.ecm.core.redis.RedisServiceImpl;
 import org.nuxeo.ecm.core.redis.RedisTestHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
-
-import com.google.inject.Inject;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Unit test of cache implementation on top of redis
- * 
+ *
  * since 5.9.6
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, RedisTestHelper.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @Deploy({  "org.nuxeo.ecm.core.cache","org.nuxeo.ecm.core.redis" })
+@LocalDeploy("org.nuxeo.ecm.core.cache:OSGI-INF/redis-cache-config.xml")
 public class TestRedisCacheService extends AbstractTestCache{
-
-    private static final String TEST_BUNDLE = "org.nuxeo.ecm.core.redis.tests";
 
     protected Cache redisCache;
 
 
-    @Inject
-    protected RuntimeHarness harness;
-
-    private RedisConfigurationDescriptor redisConfigurationDescriptor;
-
-
-    @Before
-    public void setUp() throws Exception {
-
-        redisConfigurationDescriptor = RedisTestHelper.getRedisConfigurationDescriptor();
-        boolean enabled = redisConfigurationDescriptor != null;
-        assumeTrue(enabled);
-        RedisServiceImpl redisService = (RedisServiceImpl) Framework.getLocalService(RedisService.class);
-        redisService.registerConfiguration(redisConfigurationDescriptor);
-        RedisTestHelper.clearRedis(redisService);
-
-        // Config for the tested bundle
-        harness.deployContrib(TEST_BUNDLE, "OSGI-INF/redis-cache-config.xml");
-
-        super.setUp();
-        
-    }
-
     @Test
     public void castTest() {
-        redisCache = (RedisCacheImpl) cacheService.getCache(DEFAULT_TEST_CACHE_NAME);
+        redisCache = cacheService.getCache(DEFAULT_TEST_CACHE_NAME);
         Assert.assertNotNull(redisCache);
-        
     }
-    
-    @After
-    void tearDown()
-    {
-        if(cache != null)
-        {
-            cache.invalidateAll();
-        }
-    }
+
+
 }

@@ -24,30 +24,25 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.cache.AbstractCache;
 import org.nuxeo.runtime.api.Framework;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-
 /**
  * Cache implementation on top of Redis
- * 
+ *
  * @since 5.9.6
  */
 public class RedisCacheImpl extends AbstractCache {
 
     protected static final String UTF_8 = "UTF-8";
 
-    private static final Log log = LogFactory.getLog(RedisCacheImpl.class);
+    protected static final Log log = LogFactory.getLog(RedisCacheImpl.class);
 
-    private RedisService redisService = null;
+    protected final RedisExecutor executor;
 
-    protected String prefix;
+    protected final String prefix;
 
     /**
      * Prefix for keys, added after the globally configured prefix of the
@@ -55,40 +50,14 @@ public class RedisCacheImpl extends AbstractCache {
      */
     public static final String PREFIX = "cache:";
 
-    public RedisCacheImpl() {
-        redisService = getRedisService();
+    public RedisCacheImpl(String name) {
+        super(name);
+        executor = Framework.getService(RedisExecutor.class);
+        prefix = Framework.getService(RedisConfiguration.class).getPrefix() + PREFIX + name + ":";
     }
 
-    protected RedisService getRedisService() {
-        if (redisService == null) {
-            redisService = Framework.getLocalService(RedisService.class);
-        }
-        return redisService;
-    }
-    
-    @Override
-    public
-    void setName(String name)
-    {
-        super.setName(name);
-        prefix = getRedisService().getPrefix() + PREFIX + getName() + ":";
-    }
-
-    protected Jedis getJedis() {
-        RedisService redisService = getRedisService();
-        if (redisService == null) {
-            return null;
-        }
-        JedisPool jedisPool = redisService.getJedisPool();
-        if (jedisPool == null) {
-            return null;
-        }
-
-        return jedisPool.getResource();
-    }
-
-    protected void closeJedis(Jedis jedis) {
-        getRedisService().getJedisPool().returnResource(jedis);
+    protected String prefix(String name) {
+        return prefix + name + ":";
     }
 
     protected Serializable deserializeValue(byte[] workBytes)
@@ -115,19 +84,17 @@ public class RedisCacheImpl extends AbstractCache {
     }
 
     @Override
-    public Serializable get(String key) {
+    public Serializable get(final String key) {
         if (key == null) {
             return null;
-        } else {
-            Jedis jedis = getJedis();
-            try {
-                return deserializeValue(jedis.get(bytes(prefix + key)));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                closeJedis(jedis);
-            }
         }
+        return executor.equals(new RedisCallable<Serializable>() {
+
+            @Override
+            public Serializable call() throws Exception {
+                return deserializeValue(jedis.get(bytes(prefix + key)));
+            }
+        });
 
     }
 
@@ -141,56 +108,48 @@ public class RedisCacheImpl extends AbstractCache {
     }
 
     @Override
-    public void invalidate(String key) {
-        if (key != null) {
-            Jedis jedis = getJedis();
-            try {
-                jedis.del(prefix + key);
-            } finally {
-                closeJedis(jedis);
-            }
-        } else {
-            log.warn(String.format(
+    public void invalidate(final String key) throws IOException {
+        if (key == null) {
+            throw new IllegalArgumentException(String.format(
                     "Can't invalidate a null key for the cache '%s'!", name));
         }
-    }
+        executor.execute(new RedisCallable<Void>() {
 
-    @Override
-    public void invalidateAll() {
-        Jedis jedis = getJedis();
-        try {
-            Set<String> keys = jedis.keys(prefix + "*");
-            for (String key : keys) {
-                jedis.del(key);
+            @Override
+            public Void call() throws Exception {
+                jedis.del(RedisCacheImpl.this.prefix + key);
+                return null;
             }
-        } finally {
-            closeJedis(jedis);
-        }
+        });
     }
 
     @Override
-    public void put(String key, Serializable value) {
-        if (key != null && value != null) {
-            Jedis jedis = getJedis();
-            try {
+    public void invalidateAll() throws IOException {
+        invalidate("*");
+    }
+
+    @Override
+    public void put(final String key, final Serializable value) throws IOException {
+        if (key == null) {
+            throw new IllegalArgumentException(String.format(
+                    "Can't put a null key for the cache '%s'!", name));
+        }
+        if (value == null) {
+            throw new IllegalArgumentException(String.format(
+                    "Can't put a null value for the cache '%s'!", name));
+        }
+        executor.execute(new RedisCallable<Void>() {
+
+            @Override
+            public Void call() throws Exception {
                 byte[] bkey = bytes(prefix + key);
                 jedis.set(bkey, serializeValue(value));
                 // Redis set in second ttl but descriptor set as mn
                 int ttlKey = ttl * 60;
                 jedis.expire(bkey, ttlKey);
-            } catch (IOException e) {
-                log.error(String.format(
-                        "Could not set value with key '%s' in the cache %s",
-                        key, name), e);
-                throw new RuntimeException(e);
-            } finally {
-                closeJedis(jedis);
+                return null;
             }
-        } else {
-            log.warn(String.format(
-                    "Can't put a null key nor a null value in the cache '%s'!",
-                    name));
-        }
+        });
     }
 
 }

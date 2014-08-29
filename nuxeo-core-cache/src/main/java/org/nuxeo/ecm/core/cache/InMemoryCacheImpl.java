@@ -28,32 +28,37 @@ import com.google.common.cache.CacheBuilder;
 
 /**
  * Default in memory implementation for cache management based on guava
- * 
+ *
  * @since 5.9.6
  */
-public class CacheImpl extends AbstractCache {
+public class InMemoryCacheImpl extends AbstractCache {
 
-    private static final Log log = LogFactory.getLog(CacheImpl.class);
-
-    protected Cache<String, Serializable> cache = null;
-
-    private void createCache() {
-        if (this.cache == null) {
-            cache = CacheBuilder.newBuilder().concurrencyLevel(concurrencyLevel).maximumSize(
-                    maxSize).expireAfterWrite(ttl, TimeUnit.MINUTES).build();
+    public InMemoryCacheImpl(CacheDescriptor desc) {
+        super(desc);
+        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
+        builder =  builder.expireAfterWrite(desc.ttl, TimeUnit.MINUTES);
+        if (desc.options.containsKey("concurrencyLevel")) {
+            builder = builder.concurrencyLevel(Integer.valueOf(desc.options.get("concurrencyLevel")).intValue());
         }
-
+        if (desc.options.containsKey("maxSize")) {
+            builder = builder.maximumSize(Integer.valueOf(desc.options.get("maxSize")).intValue());
+        }
+        cache = builder.build();
     }
+
+    protected static final Log log = LogFactory.getLog(InMemoryCacheImpl.class);
+
+    protected final Cache<String, Serializable> cache;
+
 
     /**
      * Get the instance cache
-     * 
+     *
      * @return the Guava instance cache used in this nuxeo cache
      *
      * @since 5.9.6
      */
     public Cache<String, Serializable> getCache() {
-        createCache();
         return cache;
     }
 
@@ -85,11 +90,10 @@ public class CacheImpl extends AbstractCache {
     public void put(String key, Serializable value) {
         if (key != null && value != null) {
             getCache().put(key, value);
-        }
-        else
-        {
+        } else {
             log.warn(String.format(
-                    "Can't put a null key nor a null value in the cache '%s'!", name));
+                    "Can't put a null key nor a null value in the cache '%s'!",
+                    name));
         }
     }
 

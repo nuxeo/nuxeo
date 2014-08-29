@@ -20,13 +20,16 @@ package org.nuxeo.ecm.core.cache;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
 /**
- * 
+ *
  * Cache service implementation to manage nuxeo cache
  *
  * @since 5.9.6
@@ -53,17 +56,35 @@ public class CacheServiceImpl extends DefaultComponent implements
             cacheRegistry = new CacheRegistry();
         }
 
-        log.info("CacheManagerService activated");
+        log.info("Cache Service activated");
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-
-        log.info("CacheManagerService deactivated");
-        if (cacheRegistry != null) {
-            cacheRegistry.removeAllCache();
+        if (cacheRegistry.caches.size() > 0) {
+            for (CacheDescriptor desc:cacheRegistry.caches.values()) {
+                log.warn("Unregistery leaked contribution " + desc.name);
+                cacheRegistry.contributionRemoved(desc.name, desc);
+            }
         }
         cacheRegistry = null;
+        log.info("Cache Service deactivated");
+    }
+
+    @Override
+    public void applicationStarted(ComponentContext context) throws Exception {
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (RuntimeServiceEvent.RUNTIME_ABOUT_TO_START != event.id) {
+                    return;
+                }
+                Framework.removeListener(this);
+                cacheRegistry.stop();
+            }
+        });
+        cacheRegistry.start();
     }
 
     @Override

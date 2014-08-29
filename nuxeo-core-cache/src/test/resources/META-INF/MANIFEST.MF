@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo ECM Core Cache Testing
-Bundle-SymbolicName: org.nuxeo.ecm.core.cache.tests;singleton:=true
-Bundle-Vendor: Nuxeo

@@ -24,24 +24,20 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
-import org.nuxeo.runtime.services.event.EventListener;
-import org.nuxeo.runtime.services.event.EventService;
 
 /**
  * Registry to register cache
- * 
+ *
  * @since 5.9.6
  */
 public final class CacheRegistry extends
         ContributionFragmentRegistry<CacheDescriptor> {
 
     private static final Log log = LogFactory.getLog(CacheRegistry.class);
-    
-    
+
     // cache of cacheManager
-    protected Map<String, Cache> caches = new HashMap<String, Cache>();
+    protected final Map<String, CacheDescriptor> caches = new HashMap<String, CacheDescriptor>();
 
     @Override
     public String getContributionId(CacheDescriptor contrib) {
@@ -49,97 +45,48 @@ public final class CacheRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            CacheDescriptor descriptor,
+    public void contributionUpdated(String id, CacheDescriptor descriptor,
             CacheDescriptor newOrigContrib) {
         String name = descriptor.name;
-        if(name == null)
-        {
+        if (name == null) {
             throw new RuntimeException("The cache name must not be null!");
         }
         if (descriptor.remove) {
             contributionRemoved(id, descriptor);
-        } else {
-            Class<?> klass = descriptor.getImplClass();
-            if (klass == null) {
-                throw new RuntimeException(String.format(
-                        "Class specified not found for the implementation cache ",
-                        descriptor.name));
-            } else {
-                AbstractCache cache = null;
-                try {
-                    cache = (AbstractCache) klass.newInstance();
-                } catch (InstantiationException e) {
-                    throw new RuntimeException("Failed to instantiate class "
-                            + klass, e);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Failed to instantiate class "
-                            + klass, e);
-                }
-                
-                cache.setName(name);
-                cache.setMaxSize(descriptor.maxSize);
-                cache.setConcurrencyLevel(descriptor.concurrencyLevel);
-                if(descriptor.ttl <= 0)
-                {
-                    throw new RuntimeException(String.format("TTL of cache '%s' must be greater than 0 !",name));
-                }
-                cache.setTtl(descriptor.ttl);
-
-                if (caches.containsKey(name)) {
-                    log.warn(String.format(
-                            "Another cacheManager has already been registered for the given name %s, the cache will be overriden",
-                            name));
-                    // TODO : destroy/fire event to remove the former instance
-                    // cache
-                } else {
-                    log.info("CacheManager registered: " + name);
-                }
-                addListener(cache);
-                caches.put(name, cache);
-            }
+            return;
         }
+
+        if (caches.containsKey(name)) {
+            throw new IllegalStateException(
+                    String.format(
+                            "Another cache has already been registered for the given name %s",
+                            name));
+        }
+
+        caches.put(name, descriptor);
+        log.info("cache registered: " + name);
     }
-    
+
     @Override
     public boolean isSupportingMerge() {
         return false;
     }
 
     @Override
-    public void contributionRemoved(String id,
-            CacheDescriptor origContrib) {
-        String cacheManagerName = origContrib.name;
-        Cache cache = caches.remove(cacheManagerName);
-        if (cache != null) {
-            try {
-                // TODO : destroy/fire event to remove the former instance cache
-                // cacheManager.shutdown();
-                
-                
-            } catch (RuntimeException e) {
-                log.error(String.format(
-                        "Error while removing cacheManager '%s'",
-                        cacheManagerName), e);
-            }
+    public void contributionRemoved(String id, CacheDescriptor origContrib) {
+        String name = origContrib.name;
+        CacheDescriptor cache = caches.remove(name);
+        if (cache == null) {
+            throw new IllegalStateException("No such cache registered" + name);
         }
-        log.info("CacheManager removed: " + cacheManagerName);
+        try {
+            cache.stop();
+        } catch (RuntimeException e) {
+            log.error(String.format("Error while removing cache '%s'", name), e);
+        }
+        log.info("cache removed: " + name);
     }
 
-    protected void addListener (Cache cache)
-    {
-        EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.addListener(Cache.CACHE_TOPIC,
-                (EventListener) cache);
-    }
-    protected void removeListener(Cache cache)
-    {
-        EventService eventService = Framework.getLocalService(EventService.class);
-        if (eventService != null) {
-            eventService.removeListener(Cache.CACHE_TOPIC,
-                    (EventListener) cache);
-        }
-    }
     @Override
     public CacheDescriptor clone(CacheDescriptor orig) {
         return orig.clone();
@@ -157,24 +104,47 @@ public final class CacheRegistry extends
         }
 
     }
-    
-    public void removeAllCache()
-    {
-        for (Cache cache : caches.values()) {
-            removeListener(cache);
-        }
-        caches = new HashMap<String, Cache>();
-    }
 
     public Cache getCache(String name) {
-        return caches.get(name);
+        return caches.get(name).cache;
     }
 
-    public List<Cache> getCacheManagers() {
-        List<Cache> res = new ArrayList<Cache>(
-                caches.size());
-        res.addAll(caches.values());
+    public List<Cache> getCaches() {
+        List<Cache> res = new ArrayList<Cache>(caches.size());
+        for (CacheDescriptor desc : caches.values()) {
+            res.add(desc.cache);
+        }
         return res;
+    }
+
+    public void start() {
+        RuntimeException errors = new RuntimeException(
+                "Cannot start caches, check suppressed error");
+        for (CacheDescriptor desc : caches.values()) {
+            try {
+                desc.start();
+            } catch (RuntimeException cause) {
+                errors.addSuppressed(cause);
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
+    }
+
+    public void stop() {
+        RuntimeException errors = new RuntimeException(
+                "Cannot stop caches, check suppressed error");
+        for (CacheDescriptor desc : caches.values()) {
+            try {
+                desc.stop();
+            } catch (RuntimeException cause) {
+                errors.addSuppressed(cause);
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
     }
 
 }

@@ -19,63 +19,44 @@
 
 package org.nuxeo.ecm.core.cache;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import junit.framework.Assert;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author Maxime Hilaire
  *
  */
 
-@RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.core.cache" })
-public class TestCacheService extends AbstractTestCache {
-
-    private static final String TEST_BUNDLE = "org.nuxeo.ecm.core.cache.tests";
-
-    @Before
-    public void setUp() throws Exception {
-        // Config for the tested bundle, first to set the implementation cache
-        harness.deployContrib(TEST_BUNDLE, "OSGI-INF/cache-config.xml");
-        // Call the abstract setUp once the specific contrib has been deployed
-        super.setUp();
-    }
+@LocalDeploy("org.nuxeo.ecm.core.cache:inmemory-cache-config.xml")
+public class TestInMemoryCacheService extends AbstractTestCache {
 
     @Test
     public void testCast() {
-        cache = ((CacheImpl) cacheService.getCache(DEFAULT_TEST_CACHE_NAME));
+        cache = (cacheService.getCache(DEFAULT_TEST_CACHE_NAME));
         Assert.assertNotNull(cache);
     }
 
     @Test
     public void getGuavaCache() {
         com.google.common.cache.Cache<String, Serializable> guavaCache = null;
-        guavaCache = ((CacheImpl) cache).getCache();
+        guavaCache = ((InMemoryCacheImpl) cache).getCache();
         Assert.assertNotNull(guavaCache);
     }
 
     @Test
-    public void maxSizeZero() {
+    public void maxSizeZero() throws IOException {
         Cache maxSizeCache = cacheService.getCache(MAXSIZE_TEST_CACHE_NAME);
         maxSizeCache.put(key, val);
         Assert.assertNull(maxSizeCache.get(key));
     }
 
     @Test
-    public void maxSizeExceeded() {
+    public void maxSizeExceeded() throws IOException {
         // Default test config set to 3 the maxSize, and the cache already
         // contains the key1
         cache.put("key2", "val2");
