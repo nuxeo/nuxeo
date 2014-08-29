@@ -27,6 +27,7 @@
         });
       </script>
       <nxl:documentLayout mode="create" value="#{changeableDocument}" />
+      #{documentTemplatesActions.setTargetType(changeableDocument.type)}
       <f:subview rendered="#{! empty availableTemplates}">
         <h4>
           <h:outputText value="#{messages['label.templates.createFrom']}"/>
@@ -38,20 +39,11 @@
                    itemValue="#{template.id}" itemLabel="#{template.dublincore.title}"/>
         </h:selectOneMenu>
       </f:subview>
-      <p class="buttonsGadget">
-        <nxu:set var="actions"
-          value="#{webActions.getActionsList('CREATE_DOCUMENT_FORM')}"
-          cache="true">
-          <c:forEach var="action" items="#{actions}">
-            <nxh:commandButton action="#{action.getLink()}"
-              immediate="#{action.immediate}"
-              onclick="#{action.confirm}"
-              id="create_doc_#{action.id}"
-              value="#{messages[action.label]}"
-              styleClass="button" />
-          </c:forEach>
-        </nxu:set>
-      </p>
+      <div class="buttonsGadget">
+        <input type="hidden" name="parentDocumentPath"
+          value="#{currentDocument.pathAsString}" />
+        <nxl:widget name="documentCreateButtons" mode="view" value="#{changeableDocument}" />
+      </div>
     </h:form>
     </div>
   </ui:define>
