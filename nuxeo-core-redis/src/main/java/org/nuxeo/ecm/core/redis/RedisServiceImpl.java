@@ -27,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 import redis.clients.jedis.Jedis;
@@ -83,8 +82,6 @@ public class RedisServiceImpl extends DefaultComponent implements
     }
 
     protected RedisConfigurationDescriptor config;
-
-    protected RegistrationInfo contributionInfo;
 
     protected Pool<Jedis> pool;
 
@@ -154,12 +151,6 @@ public class RedisServiceImpl extends DefaultComponent implements
                 throw new RuntimeException("Cannot connect to redis", cause);
             }
         }
-        try {
-            contributionInfo = context.getRuntimeContext().deploy(
-                    "OSGI-INF/redis-contribs.xml");
-        } catch (Exception cause) {
-            throw new RuntimeException("Cannot contribute services", cause);
-        }
         return true;
     }
 
@@ -205,17 +196,8 @@ public class RedisServiceImpl extends DefaultComponent implements
             return;
         }
         try {
-            try {
-                contributionInfo.getContext().undeploy(
-                        "OSGI-INF/redis-contribs.xml");
-            } catch (Exception cause) {
-                throw new RuntimeException(
-                        "Cannot undeploy redis contributions", cause);
-            } finally {
-                pool.destroy();
-            }
+            pool.destroy();
         } finally {
-            contributionInfo = null;
             pool = null;
             config = null;
         }

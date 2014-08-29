@@ -133,6 +133,7 @@ public class RedisTestHelper {
             harness.deployBundle("org.nuxeo.ecm.core.storage");
         }
         harness.deployBundle("org.nuxeo.ecm.core.redis");
+        harness.deployTestContrib("org.nuxeo.ecm.core.redis", RedisTestHelper.class.getResource("/redis-contribs.xml"));
         final RedisConfigurationDescriptor config = getRedisDescriptor();
         Assume.assumeTrue(!config.disabled);
         final RedisServiceImpl redis = Framework.getService(RedisServiceImpl.class);
