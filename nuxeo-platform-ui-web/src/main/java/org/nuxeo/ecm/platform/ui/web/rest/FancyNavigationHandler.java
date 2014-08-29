@@ -84,10 +84,13 @@ public class FancyNavigationHandler extends ConfigurableNavigationHandler {
             // navigation again using local code because it uses
             // information from the StaticNavigationHandler that is
             // hot-reloaded correctly
+            // TODO: check if still relevant in JSF2
             handleHotReloadNavigation(pservice, context, fromAction, outcome);
         }
         // XXX AT: force redirect if outcome is null so that url can be
         // re-written except in an ajax request
+        // TODO: check whether other criteria would be useful like a blacklist
+        // to avoid unnecessary redirects for third-party resources (seam pdf/xl export)
         boolean ajaxRequest = context.getPartialViewContext().isAjaxRequest();
         if (outcome == null && !ajaxRequest && !context.getResponseComplete()) {
             String url = httpRequest.getRequestURL().toString();

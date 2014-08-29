@@ -74,20 +74,23 @@ public class StaticNavigationHandler {
                     response, lifecycle);
             created = true;
         }
-        ApplicationAssociate associate = ApplicationAssociate.getCurrentInstance();
-        for (Set<NavigationCase> cases : associate.getNavigationCaseListMappings().values()) {
-            for (NavigationCase cnc : cases) {
-                String toViewId = cnc.getToViewId(faces);
-                String fromOutcome = cnc.getFromOutcome();
-                outcomeToViewId.put(fromOutcome, toViewId);
-                viewIdToOutcome.put(toViewId, fromOutcome);
+        try {
+            ApplicationAssociate associate = ApplicationAssociate.getCurrentInstance();
+            for (Set<NavigationCase> cases : associate.getNavigationCaseListMappings().values()) {
+                for (NavigationCase cnc : cases) {
+                    String toViewId = cnc.getToViewId(faces);
+                    String fromOutcome = cnc.getFromOutcome();
+                    outcomeToViewId.put(fromOutcome, toViewId);
+                    viewIdToOutcome.put(toViewId, fromOutcome);
+                }
             }
-        }
-        if (Framework.isDevModeSet()) {
-            handleHotReloadResources(context);
-        }
-        if (created) {
-            faces.release();
+            if (Framework.isDevModeSet()) {
+                handleHotReloadResources(context);
+            }
+        } finally {
+            if (created) {
+                faces.release();
+            }
         }
     }
 
