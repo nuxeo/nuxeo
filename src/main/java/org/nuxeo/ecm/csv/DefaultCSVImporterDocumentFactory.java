@@ -41,10 +41,11 @@ public class DefaultCSVImporterDocumentFactory implements
             String name, String type, Map<String, Serializable> values)
             throws ClientException {
         DocumentModel doc = session.createDocumentModel(parentPath, name, type);
+        session.createDocument(doc);
         for (Map.Entry<String, Serializable> entry : values.entrySet()) {
             doc.setPropertyValue(entry.getKey(), entry.getValue());
         }
-        session.createDocument(doc);
+        session.saveDocument(doc);
     }
 
     @Override
