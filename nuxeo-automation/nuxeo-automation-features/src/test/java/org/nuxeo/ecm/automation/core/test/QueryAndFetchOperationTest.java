@@ -27,6 +27,8 @@ import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.PaginableRecordSetImpl;
 import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation;
+
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -105,6 +107,35 @@ public class QueryAndFetchOperationTest {
         assertEquals(ws1.getId(), result.get(0).get("ecm:uuid"));
 
         providerName = "simpleProviderTest3";
+
+    }
+
+    @Test
+    public void testResultSetPageProviderWithNamedParams() throws Exception {
+
+        OperationContext ctx = new OperationContext(session);
+
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        String providerName = "CURRENT_DOCUMENT_CHILDREN_FETCH_NAMED_PARAMS";
+
+        params.put("providerName", providerName);
+        Map<String, String> namedParameters = new HashMap<>();
+        namedParameters.put("parentIdVar", session.getRootDocument().getId());
+        Properties namedProperties = new Properties(namedParameters);
+        params.put("namedParameters", namedProperties);
+
+        PaginableRecordSetImpl result = (PaginableRecordSetImpl) service.run(
+                ctx, ResultSetPageProviderOperation.ID, params);
+
+        // test page size
+        assertEquals(2, result.getPageSize());
+        assertEquals(2, result.getNumberOfPages());
+        assertEquals(2, result.size());
+
+        // test column
+        assertEquals("WS1", result.get(0).get("dc:title"));
+        assertEquals(ws1.getId(), result.get(0).get("ecm:uuid"));
 
     }
 

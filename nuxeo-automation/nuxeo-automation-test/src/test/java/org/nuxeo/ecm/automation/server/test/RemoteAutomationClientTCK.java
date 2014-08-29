@@ -41,7 +41,7 @@ import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
-import org.nuxeo.ecm.automation.core.operations.document.DocumentQuery;
+import org.nuxeo.ecm.automation.core.operations.services.query.DocumentQuery;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;
 import org.nuxeo.runtime.api.Framework;

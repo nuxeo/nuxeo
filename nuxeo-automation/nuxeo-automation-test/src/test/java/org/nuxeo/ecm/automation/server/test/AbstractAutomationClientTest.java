@@ -61,7 +61,7 @@ import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.DeleteDocument;
-import org.nuxeo.ecm.automation.core.operations.document.DocumentQuery;
+import org.nuxeo.ecm.automation.core.operations.services.query.DocumentQuery;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 import org.nuxeo.ecm.automation.core.operations.document.LockDocument;

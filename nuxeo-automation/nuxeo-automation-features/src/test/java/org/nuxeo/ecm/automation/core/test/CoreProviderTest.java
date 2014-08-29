@@ -24,9 +24,10 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
+
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -250,4 +251,28 @@ public class CoreProviderTest {
         assertEquals(3, list.size());
     }
 
+    /**
+     * @since 5.9.6
+     */
+    @Test
+    public void testPageProviderWithNamedParameters() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = new HashMap<String, Object>();
+        String providerName = "namedParamProvider1";
+
+        params.put("providerName", providerName);
+        Map<String, String> namedParameters = new HashMap<>();
+        namedParameters.put("parameter1", "WS1");
+        Properties namedProperties = new Properties(namedParameters);
+        params.put("namedParameters", namedProperties);
+
+        PaginableDocumentModelListImpl result =
+                (PaginableDocumentModelListImpl) service.run(ctx,
+                        DocumentPageProviderOperation.ID, params);
+
+        // test page size
+        assertEquals(2, result.getPageSize());
+        assertEquals(1, result.getNumberOfPages());
+        assertEquals(1, result.size());
+    }
 }

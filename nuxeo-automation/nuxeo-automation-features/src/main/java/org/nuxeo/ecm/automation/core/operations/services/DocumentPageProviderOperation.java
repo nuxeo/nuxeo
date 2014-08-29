@@ -12,6 +12,7 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.el.lang.FunctionMapperImpl;
 import org.jboss.seam.el.EL;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -20,18 +21,21 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.jaxrs.io.documents
         .PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.actions.seam.SeamActionContext;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
+import org.nuxeo.ecm.platform.query.core.PageProviderServiceImpl;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
 
@@ -65,6 +69,10 @@ public class DocumentPageProviderOperation {
 
     private static final String SORT_PARAMETER_SEPARATOR = " ";
 
+    public static final String ASC = "ASC";
+
+    public static final String DESC = "DESC";
+
     @Context
     protected OperationContext context;
 
@@ -77,6 +85,11 @@ public class DocumentPageProviderOperation {
     @Param(name = "providerName", required = false)
     protected String providerName;
 
+    /**
+     * @deprecated since 5.9.6 use instead {@link org.nuxeo.ecm.automation
+     * .core.operations.services.query.DocumentQuery}.
+     */
+    @Deprecated
     @Param(name = "query", required = false)
     protected String query;
 
@@ -94,6 +107,10 @@ public class DocumentPageProviderOperation {
     @Param(name = "pageSize", required = false)
     protected Integer pageSize;
 
+    /**
+     * @deprecated since 5.9.6 use instead {@link #sortBy and @link #sortOrder}.
+     */
+    @Deprecated
     @Param(name = "sortInfo", required = false)
     protected StringList sortInfoAsStringList;
 
@@ -108,6 +125,29 @@ public class DocumentPageProviderOperation {
      */
     @Param(name = "maxResults", required = false)
     protected String maxResults = "100";
+
+    /**
+     * @since 5.9.6
+     */
+    @Param(name = PageProviderServiceImpl.NAMED_PARAMETERS, required = false,
+            description = "Named parameters to pass to the page provider to " +
+                    "fill in query variables.")
+    protected Properties namedParameters;
+
+    /**
+     * @since 5.9.6
+     */
+    @Param(name = "sortBy", required = false, description = "Sort by " +
+            "properties (separated by comma)")
+    protected String sortBy;
+
+    /**
+     * @since 5.9.6
+     */
+    @Param(name = "sortOrder", required = false, description = "Sort order, " +
+            "ASC or DESC", widget = Constants.W_OPTION,
+            values = { ASC, DESC })
+    protected String sortOrder;
 
     @SuppressWarnings("unchecked")
     @OperationMethod
@@ -130,6 +170,22 @@ public class DocumentPageProviderOperation {
                     sortInfo = new SortInfo(sortInfoDesc, true);
                 }
                 sortInfos.add(sortInfo);
+            }
+        } else {
+            // Sort Info Management
+            if (!StringUtils.isBlank(sortBy)) {
+                sortInfos = new ArrayList<>();
+                String[] sorts = sortBy.split(",");
+                String[] orders = null;
+                if (!StringUtils.isBlank(sortOrder)) {
+                    orders = sortOrder.split(",");
+                }
+                for (int i = 0; i < sorts.length; i++) {
+                    String sort = sorts[i];
+                    boolean sortAscending = (orders != null && orders.length
+                            > i && "asc".equals(orders[i].toLowerCase()));
+                    sortInfos.add(new SortInfo(sort, sortAscending));
+                }
             }
         }
 
@@ -161,14 +217,22 @@ public class DocumentPageProviderOperation {
 
         Long targetPage = null;
         if (page != null) {
-            targetPage = Long.valueOf(page.longValue());
+            targetPage = page.longValue();
         }
         if (currentPageIndex != null) {
             targetPage = currentPageIndex.longValue();
         }
         Long targetPageSize = null;
         if (pageSize != null) {
-            targetPageSize = Long.valueOf(pageSize.longValue());
+            targetPageSize = pageSize.longValue();
+        }
+
+        SimpleDocumentModel searchDocumentModel = null;
+        if (namedParameters != null && !namedParameters.isEmpty()) {
+            searchDocumentModel = new SimpleDocumentModel();
+            searchDocumentModel.putContextData(PageProviderServiceImpl
+                            .NAMED_PARAMETERS,
+                    namedParameters);
         }
 
         if (query != null) {
@@ -182,19 +246,17 @@ public class DocumentPageProviderOperation {
             }
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider("", desc,
-                            null, sortInfos, targetPageSize, targetPage, props,
-                            parameters), documentLinkBuilder);
+                            searchDocumentModel, sortInfos, targetPageSize,
+                            targetPage, props, parameters),
+                    documentLinkBuilder);
         } else {
             return new PaginableDocumentModelListImpl(
                     (PageProvider<DocumentModel>) pps.getPageProvider(
-                            providerName,
-                            sortInfos,
-                            targetPageSize,
-                            targetPage,
-                            props,
-                            context.containsKey("seamActionContext") ?
-                                    getParameters(
-                                    providerName, parameters) : parameters),
+                            providerName, searchDocumentModel,
+                            sortInfos, targetPageSize, targetPage,
+                            props, context.containsKey("seamActionContext") ?
+                                    getParameters(providerName,
+                                            parameters) : parameters),
                     documentLinkBuilder);
         }
 

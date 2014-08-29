@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -78,6 +79,10 @@ public class AuditPageProviderOperation {
     @Param(name = "pageSize", required = false)
     protected Integer pageSize;
 
+    /**
+     * @deprecated since 5.9.6 use instead sortBy and sortOrder
+     */
+    @Deprecated
     @Param(name = "sortInfo", required = false)
     protected StringList sortInfoAsStringList;
 
@@ -89,6 +94,20 @@ public class AuditPageProviderOperation {
 
     @Param(name = "maxResults", required = false)
     protected Integer maxResults = 100;
+
+    /**
+     * @since 5.9.6
+     */
+    @Param(name = "sortBy", required = false, description = "Sort by " +
+            "properties (separated by comma)")
+    protected String sortBy;
+
+    /**
+     * @since 5.9.6
+     */
+    @Param(name = "sortOrder", required = false, description = "Sort order, " +
+            "ASC or DESC")
+    protected String sortOrder;
 
     @SuppressWarnings("unchecked")
     @OperationMethod
@@ -109,6 +128,22 @@ public class AuditPageProviderOperation {
                     sortInfo = new SortInfo(sortInfoDesc, true);
                 }
                 sortInfos.add(sortInfo);
+            }
+        } else {
+            // Sort Info Management
+            if (!StringUtils.isBlank(sortBy)) {
+                sortInfos = new ArrayList<>();
+                String[] sorts = sortBy.split(",");
+                String[] orders = null;
+                if (!StringUtils.isBlank(sortOrder)) {
+                    orders = sortOrder.split(",");
+                }
+                for (int i = 0; i < sorts.length; i++) {
+                    String sort = sorts[i];
+                    boolean sortAscending = (orders != null && orders.length
+                            > i && "asc".equals(orders[i].toLowerCase()));
+                    sortInfos.add(new SortInfo(sort, sortAscending));
+                }
             }
         }
 

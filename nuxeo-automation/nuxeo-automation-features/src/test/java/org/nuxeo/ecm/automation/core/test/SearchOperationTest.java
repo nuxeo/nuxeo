@@ -18,21 +18,24 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.core.operations.document.DocumentQuery;
+import org.nuxeo.ecm.automation.core.operations.services.query.DocumentQuery;
 import org.nuxeo.ecm.automation.core.operations.document.SaveDocument;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty;
+import org.nuxeo.ecm.automation.core.operations.services.query.ResultSetQuery;
+import org.nuxeo.ecm.automation.core.util.PaginableRecordSet;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
@@ -73,9 +76,8 @@ public class SearchOperationTest {
      * Query | Update.
      */
     @Test
-    public void testQueryOperation() throws Exception {
+    public void iCanPerformDocumentQueryInChain() throws Exception {
         OperationContext ctx = new OperationContext(session);
-        ctx.setInput(src);
 
         OperationChain chain = new OperationChain("testChain");
         chain.add(DocumentQuery.ID).set("query", "SELECT * FROM Workspace");
@@ -96,5 +98,49 @@ public class SearchOperationTest {
                 "samedesc",
                 session.getDocument(dst.getRef()).getPropertyValue(
                         "dc:description"));
+    }
+
+    @Test
+    public void iCanPerformResultSetQuery() throws Exception {
+        // Given an operation context and following parameters
+        OperationContext ctx = new OperationContext(session);
+
+        // When I give a query on all Workspace documents
+        Map<String, Object> params = new HashMap<>();
+        params.put("query", "SELECT * FROM Workspace");
+        PaginableRecordSet list = (PaginableRecordSet) service.run(ctx,
+                ResultSetQuery.ID, params);
+
+        // And verify number results and id entry
+        assertEquals(2, list.size());
+        assertNotNull(list.get(0).get("ecm:uuid"));
+    }
+
+    @Test
+    public void iCanApplySortParametersWithQuery() throws Exception {
+        // Given an operation context and following parameters
+        OperationContext ctx = new OperationContext(session);
+
+        // When I give a query and sort
+        Map<String, Object> params = new HashMap<>();
+        params.put("query", "SELECT * FROM Workspace");
+        params.put("sortBy", "dc:title");
+        params.put("sortOrder", "ASC");
+        DocumentModelList list = (DocumentModelList) service.run(ctx,
+                DocumentQuery.ID, params);
+
+        // And verify number results and id entry
+        assertEquals(2, list.size());
+        assertEquals("Destination",list.get(0).getTitle());
+
+        params.put("query", "SELECT * FROM Workspace");
+        params.put("sortBy", "dc:title");
+        params.put("sortOrder", "DESC");
+        list = (DocumentModelList) service.run(ctx,
+                DocumentQuery.ID, params);
+
+        // And verify number results and id entry
+        assertEquals(2, list.size());
+        assertEquals("Destination",list.get(1).getTitle());
     }
 }
