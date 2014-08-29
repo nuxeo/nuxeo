@@ -205,6 +205,7 @@ public final class Framework {
         if (provider != null) {
             return provider.getService(serviceClass);
         }
+        checkRuntimeInitialized();
         // TODO impl a runtime service provider
         return runtime.getService(serviceClass);
     }
@@ -231,9 +232,7 @@ public final class Framework {
      * @throws LoginException on login failure
      */
     public static LoginContext login() throws LoginException {
-        if (null == runtime) {
-            throw new IllegalStateException("runtime not initialized");
-        }
+        checkRuntimeInitialized();
         LoginService loginService = runtime.getService(LoginService.class);
         if (loginService != null) {
             return loginService.login();
@@ -251,9 +250,7 @@ public final class Framework {
      * @throws LoginException on login failure
      */
     public static LoginContext loginAs(String username) throws LoginException {
-        if (null == runtime) {
-            throw new IllegalStateException("runtime not initialized");
-        }
+        checkRuntimeInitialized();
         LoginService loginService = runtime.getService(LoginService.class);
         if (loginService != null) {
             return loginService.loginAs(username);
@@ -284,6 +281,7 @@ public final class Framework {
      */
     public static LoginContext login(String username, Object password)
             throws LoginException {
+        checkRuntimeInitialized();
         LoginService loginService = runtime.getService(LoginService.class);
         if (loginService != null) {
             return loginService.login(username, password);
@@ -301,6 +299,7 @@ public final class Framework {
      */
     public static LoginContext login(CallbackHandler cbHandler)
             throws LoginException {
+        checkRuntimeInitialized();
         LoginService loginService = runtime.getService(LoginService.class);
         if (loginService != null) {
             return loginService.login(cbHandler);
@@ -362,6 +361,7 @@ public final class Framework {
      * @return the property value if any otherwise the default value
      */
     public static String getProperty(String key, String defValue) {
+        checkRuntimeInitialized();
         return runtime.getProperty(key, defValue);
     }
 
@@ -372,6 +372,7 @@ public final class Framework {
      * @return the framework properties map. Never returns null.
      */
     public static Properties getProperties() {
+        checkRuntimeInitialized();
         return runtime.getProperties();
     }
 
@@ -384,6 +385,7 @@ public final class Framework {
      * System properties are also expanded.
      */
     public static String expandVars(String expression) {
+        checkRuntimeInitialized();
         return runtime.expandVars(expression);
     }
 
@@ -517,6 +519,15 @@ public final class Framework {
     public static void trackFile(File file, Object marker,
             FileDeleteStrategy fileDeleteStrategy) {
         fileCleaningTracker.track(file, marker, fileDeleteStrategy);
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    protected static void checkRuntimeInitialized() {
+        if (!isInitialized()) {
+            throw new IllegalStateException("Runtime not initialized");
+        }
     }
 
     public static void main(String[] args) {
