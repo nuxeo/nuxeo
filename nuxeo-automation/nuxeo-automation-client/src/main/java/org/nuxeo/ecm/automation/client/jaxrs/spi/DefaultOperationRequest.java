@@ -74,7 +74,8 @@ public class DefaultOperationRequest implements OperationRequest {
 
     protected final void checkInput(String type) {
         if (!acceptInput(type)) {
-            throw new IllegalArgumentException("Input not supported: " + type);
+            throw new IllegalArgumentException("Input not supported: " + type
+                    + " for the operation: " + op.id);
         }
     }
 
