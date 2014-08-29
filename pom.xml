@@ -67,6 +67,7 @@
     <nuxeo.imaging.recompute.version>5.9.6-SNAPSHOT</nuxeo.imaging.recompute.version>
     <nuxeo.box.version>5.9.6-SNAPSHOT</nuxeo.box.version>
     <nuxeo.easyshare.version>5.9.6-SNAPSHOT</nuxeo.easyshare.version>
+    <nuxeo.logs.viewer.version>5.9.6-SNAPSHOT</nuxeo.logs.viewer.version>
 
     <!-- optional addons -->
     <nuxeo.jbpm.version>5.9.6-SNAPSHOT</nuxeo.jbpm.version>
@@ -140,6 +141,7 @@
     <module>nuxeo-elasticsearch</module>
     <module>nuxeo-duoweb-authentication</module>
     <module>nuxeo-sample-project</module>
+    <module>nuxeo-logs-viewer</module>
   </modules>
 
   <dependencyManagement>
@@ -1208,6 +1210,13 @@
         <groupId>org.nuxeo.duoweb.authentication</groupId>
         <artifactId>nuxeo-duoweb-authentication</artifactId>
         <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Logs Viewer -->
+      <dependency>
+        <groupId>org.nuxeo.logs.viewer</groupId>
+        <artifactId>nuxeo-logs-viewer</artifactId>
+        <version>${nuxeo.logs.viewer.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
