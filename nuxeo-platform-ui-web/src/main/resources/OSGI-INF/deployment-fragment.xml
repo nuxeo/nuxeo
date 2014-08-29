@@ -3,6 +3,11 @@
 
   <extension target="web#LISTENER">
     <listener>
+      <listener-class>
+        org.nuxeo.ecm.platform.ui.web.application.config.JSFConfigureListener
+      </listener-class>
+    </listener>
+    <listener>
       <listener-class>org.jboss.seam.servlet.SeamListener</listener-class>
     </listener>
   </extension>
@@ -216,11 +221,10 @@
   </extension>
 
   <extension target="web#CONTEXT-PARAM">
+
+    <!-- default webapp not ready for client state saving -->
     <context-param>
       <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
-      <!-- XXX warning: before changing this value, note that some libraries may
-        not like the client saving method (gwt for instance) -->
-      <!-- <param-value>client</param-value> -->
       <param-value>server</param-value>
     </context-param>
 
@@ -249,7 +253,7 @@
       Setting a low refresh period helps during development to be able to edit
       pages in a running application but slows down page rendering.
 
-      Default: 2 seconds.
+      Default: -1 (no refresh)
     -->
     <context-param>
       <param-name>javax.faces.FACELETS_REFRESH_PERIOD</param-name>

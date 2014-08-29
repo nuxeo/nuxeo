@@ -20,6 +20,8 @@ import javax.faces.view.facelets.Facelet;
 import javax.faces.view.facelets.FaceletCache;
 import javax.faces.view.facelets.FaceletCacheFactory;
 
+import org.nuxeo.runtime.api.Framework;
+
 import com.sun.faces.config.WebConfiguration;
 
 /**
@@ -34,10 +36,16 @@ public class NXFaceletCacheFactory extends FaceletCacheFactory {
     }
 
     @Override
-    public FaceletCache getFaceletCache() {
+    public FaceletCache<Facelet> getFaceletCache() {
         WebConfiguration webConfig = WebConfiguration.getInstance();
-        String refreshPeriod = webConfig.getOptionValue(WebConfiguration.WebContextInitParameter.FaceletsDefaultRefreshPeriod);
-        long period = Long.parseLong(refreshPeriod) * 1000;
+        long period;
+        if (Framework.isInitialized() && Framework.isDevModeSet()) {
+            // force refreshPeriod to "2" when dev mode is set
+            period = 2 * 1000;
+        } else {
+            String refreshPeriod = webConfig.getOptionValue(WebConfiguration.WebContextInitParameter.FaceletsDefaultRefreshPeriod);
+            period = Long.parseLong(refreshPeriod) * 1000;
+        }
         FaceletCache<Facelet> result = new DefaultFaceletCache(period);
         return result;
     }
