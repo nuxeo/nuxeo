@@ -89,6 +89,8 @@ public class MongoDBQueryBuilder {
             return walkStartsWith(lvalue, rvalue);
         } else if (NXQL.ECM_PATH.equals(name)) {
             return walkEcmPath(op, rvalue);
+        } else if (NXQL.ECM_ANCESTORID.equals(name)) {
+            return walkAncestorId(op, rvalue);
         } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)
                 && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
             return walkEcmFulltext(name, op, rvalue);
@@ -172,6 +174,24 @@ public class MongoDBQueryBuilder {
         } else {
             return new BasicDBObject(field, new BasicDBObject(
                     QueryOperators.NE, id));
+        }
+    }
+
+    protected DBObject walkAncestorId(Operator op, Operand rvalue) {
+        if (op != Operator.EQ && op != Operator.NOTEQ) {
+            throw new RuntimeException(NXQL.ECM_ANCESTORID
+                    + " requires = or <> operator");
+        }
+        if (!(rvalue instanceof StringLiteral)) {
+            throw new RuntimeException(NXQL.ECM_ANCESTORID
+                    + " requires literal id as right argument");
+        }
+        String ancestorId = ((StringLiteral) rvalue).value;
+        if (op == Operator.EQ) {
+            return new BasicDBObject(DBSDocument.KEY_ANCESTOR_IDS, ancestorId);
+        } else {
+            return new BasicDBObject(DBSDocument.KEY_ANCESTOR_IDS,
+                    new BasicDBObject(QueryOperators.NE, ancestorId));
         }
     }
 
