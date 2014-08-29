@@ -51,7 +51,7 @@ public class RedisConfigurationDescriptor {
     @XNode("master")
     public String master;
 
-    @XNode("faileoverTimeout")
+    @XNode("failoverTimeout")
     public long failoverTimeout = 3000;
 
     @XNode("host")
@@ -77,6 +77,6 @@ public class RedisConfigurationDescriptor {
     }
 
     protected boolean isSentinel() {
-        return StringUtils.isNotEmpty(master);
+        return StringUtils.isNotBlank(master);
     }
 }
