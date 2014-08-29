@@ -548,7 +548,7 @@ public class RedisWorkQueuing implements WorkQueuing {
 
             @Override
             public Set<String> call() throws IOException {
-                int offset = keyBytes(prefix).length;
+                int offset = keyBytes(queuePrefix).length;
                 Set<byte[]> keys = jedis.keys(keyBytes(queuePrefix, "*"));
                 Set<String> queueIds = new HashSet<String>(keys.size());
                 for (byte[] bytes : keys) {

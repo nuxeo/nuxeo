@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.redis.RedisCallable;
+import org.nuxeo.ecm.core.redis.RedisConfiguration;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
 import org.nuxeo.runtime.api.Framework;
@@ -44,6 +45,8 @@ public class RedisLockManager extends AbstractLockManager {
      * {@link RedisService}.
      */
     public static final String PREFIX = "lock:";
+
+    protected final String redisPrefix;
 
     private static final String SCRIPT_SET = "" //
             + "local v = redis.call('GET', KEYS[1]) " //
@@ -94,6 +97,7 @@ public class RedisLockManager extends AbstractLockManager {
     public RedisLockManager(String repositoryName) {
         this.repositoryName = repositoryName;
         redisExecutor = Framework.getService(RedisExecutor.class);
+        redisPrefix = Framework.getService(RedisConfiguration.class) + PREFIX + repositoryName + ':';
         init();
     }
 
@@ -126,8 +130,7 @@ public class RedisLockManager extends AbstractLockManager {
         }
         String[] split = lockString.split(":");
         if (split.length != 2 || !StringUtils.isNumeric(split[1])) {
-            log.warn("Invalid Redis lock : " + lockString);
-            return null;
+            throw new IllegalArgumentException("Invalid Redis lock : " + lockString + ", should be " + redisPrefix + "<id>");
         }
         Calendar created = Calendar.getInstance();
         created.setTimeInMillis(Long.parseLong(split[1]));
@@ -141,7 +144,7 @@ public class RedisLockManager extends AbstractLockManager {
 
                 @Override
                 public Lock call()  {
-                    String lockString = jedis.get(prefix + id);
+                    String lockString = jedis.get(redisPrefix + id);
                     return lockFromString(lockString);
                 }
             });
@@ -158,7 +161,7 @@ public class RedisLockManager extends AbstractLockManager {
                 @Override
                 public Lock call()  {
                     String lockString = (String) jedis.evalsha(scriptSetSha,
-                            Arrays.asList(prefix + id),
+                            Arrays.asList(redisPrefix + id),
                             Arrays.asList(stringFromLock(lock)));
                     return lockFromString(lockString); // existing lock
                 }
@@ -176,7 +179,7 @@ public class RedisLockManager extends AbstractLockManager {
                 @Override
                 public Lock call() {
                     String lockString = (String) jedis.evalsha(scriptRemoveSha,
-                            Arrays.asList(prefix + id),
+                            Arrays.asList(redisPrefix + id),
                             Arrays.asList(owner == null ? "" : owner));
                     Lock lock = lockFromString(lockString);
                     if (lock != null && owner != null
