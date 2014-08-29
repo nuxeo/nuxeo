@@ -875,6 +875,44 @@ public class TestSQLRepositoryQuery extends SQLRepositoryTestCase {
     }
 
     @Test
+    public void testAncestorId() throws Exception {
+        DocumentModelList dml;
+        createDocs();
+
+        String query = "SELECT * FROM Document WHERE ecm:ancestorId = '%s'";
+        dml = session.query(String.format(query,
+                session.getRootDocument().getId()));
+        assertEquals(7, dml.size());
+
+        dml = session.query(String.format(query, "nosuchid"));
+        assertEquals(0, dml.size());
+
+        dml = session.query(String.format(query,
+                session.getDocument(new PathRef("/testfolder1")).getId()));
+        assertEquals(3, dml.size());
+
+        dml = session.query(String.format(query,
+                session.getDocument(new PathRef("/testfolder2")).getId()));
+        assertEquals(2, dml.size());
+
+        // negative query
+        dml = session.query(String.format(
+                "SELECT * FROM Document WHERE ecm:ancestorId <> '%s'",
+                session.getDocument(new PathRef("/testfolder1")).getId()));
+        assertEquals(4, dml.size());
+
+        dml = session.query(String.format(
+                "SELECT * FROM document WHERE dc:title='testfile1_Title' AND ecm:ancestorId = '%s'",
+                session.getRootDocument().getId()));
+        assertEquals(1, dml.size());
+
+        dml = session.query(String.format(
+                "SELECT * FROM document WHERE dc:title LIKE 'testfile%%' AND ecm:ancestorId = '%s'",
+                session.getRootDocument().getId()));
+        assertEquals(4, dml.size());
+    }
+
+    @Test
     public void testStartsWithNonPath() throws Exception {
         String sql;
         createDocs();

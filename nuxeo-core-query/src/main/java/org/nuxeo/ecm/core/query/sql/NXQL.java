@@ -94,6 +94,9 @@ public class NXQL {
     /** @since 5.7.3 */
     public static final String ECM_VERSION_VERSIONABLEID = "ecm:versionVersionableId";
 
+    /** @since 5.9.6 */
+    public static final String ECM_ANCESTORID = "ecm:ancestorId";
+
     /**
      * Escapes a string into a single-quoted string for NXQL.
      * <p>

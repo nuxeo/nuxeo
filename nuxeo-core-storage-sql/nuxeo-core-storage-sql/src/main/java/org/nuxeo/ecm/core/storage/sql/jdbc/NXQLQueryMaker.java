@@ -1227,6 +1227,7 @@ public class NXQLQueryMaker implements QueryMaker {
             }
             String name = node.name;
             if (NXQL.ECM_PATH.equals(name) || //
+                    NXQL.ECM_ANCESTORID.equals(name) || //
                     NXQL.ECM_ISPROXY.equals(name) || //
                     NXQL.ECM_MIXINTYPE.equals(name)) {
                 if (inSelect) {
@@ -1737,6 +1738,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 visitExpressionStartsWith(node);
             } else if (NXQL.ECM_PATH.equals(name)) {
                 visitExpressionEcmPath(node);
+            } else if (NXQL.ECM_ANCESTORID.equals(name)) {
+                visitExpressionAncestorId(node);
             } else if (NXQL.ECM_ISPROXY.equals(name)) {
                 visitExpressionIsProxy(node);
             } else if (NXQL.ECM_ISVERSION_OLD.equals(name)
@@ -1967,6 +1970,28 @@ public class NXQLQueryMaker implements QueryMaker {
                 visitReference(hierTable.getColumn(model.MAIN_KEY));
                 visitOperator(node.operator);
                 visitId(model.idToString(id));
+            }
+        }
+
+        protected void visitExpressionAncestorId(Expression node) {
+            if (node.operator != Operator.EQ && node.operator != Operator.NOTEQ) {
+                throw new QueryMakerException(NXQL.ECM_ANCESTORID
+                        + " requires = or <> operator");
+            }
+            if (!(node.rvalue instanceof StringLiteral)) {
+                throw new QueryMakerException(NXQL.ECM_ANCESTORID
+                        + " requires literal id as right argument");
+            }
+            boolean not = node.operator == Operator.NOTEQ;
+            String id = ((StringLiteral) node.rvalue).value;
+            if (not) {
+                buf.append("(NOT (");
+            }
+            buf.append(dialect.getInTreeSql(hierTable.getColumn(
+                    model.MAIN_KEY).getFullQuotedName()));
+            whereParams.add(id);
+            if (not) {
+                buf.append("))");
             }
         }
 
