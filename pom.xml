@@ -133,7 +133,7 @@
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.0.2</ant.assembly.version>
-    <nuxeo.ftest.version>1.7.15</nuxeo.ftest.version>
+    <nuxeo.ftest.version>1.7.16-SNAPSHOT</nuxeo.ftest.version>
 
     <jsf.version>2.2.6</jsf.version>
     <richfaces.version>4.5.0.Alpha3</richfaces.version>
@@ -4689,11 +4689,9 @@
                 <onlyWhenRelease>true</onlyWhenRelease>
                 <excludes>
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
-                  <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
-                  <exclude>org.richfaces.framework:richfaces-impl:*</exclude>
-                  <exclude>org.richfaces.ui:richfaces-ui:*</exclude>
+                  <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
                   <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
-                  <!-- <exclude>org.jboss.seam:*</exclude> -->
+                  <exclude>org.jboss.seam:*</exclude>
                 </excludes>
               </requireReleaseDeps>
               <requireMavenVersion>
