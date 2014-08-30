@@ -457,6 +457,25 @@
       </fields>
     </widget>
 
+    <widget name="rest_document_link_pattern" type="text">
+      <categories>
+        <category>actionWidgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Pattern</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Specific pattern to use for the rest document link.
+          Available since 5.9.4-JSF2.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>pattern</field>
+      </fields>
+    </widget>
+
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
@@ -775,6 +794,9 @@
                 </row>
                 <row>
                   <widget category="actionWidgetTypeConf">rest_document_link_view</widget>
+                </row>
+                <row>
+                  <widget category="actionWidgetTypeConf">rest_document_link_pattern</widget>
                 </row>
               </rows>
             </layout>

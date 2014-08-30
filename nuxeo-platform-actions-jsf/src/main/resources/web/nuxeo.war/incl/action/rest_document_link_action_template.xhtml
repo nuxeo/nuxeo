@@ -22,7 +22,8 @@
 <c:if test="#{not useAjaxForm}">
   <nxd:restDocumentLink
     document="#{fieldOrValue}"
-    view="#{action.properties.view}"
+    view="#{nxu:test(empty action.properties.view, widgetProperty_view, action.properties.view)}"
+    pattern="#{nxu:test(empty action.properties.pattern, widgetProperty_pattern, action.properties.pattern)}"
     tabs="#{tabIds}"
     addTabInfo="false"
     accesskey="#{action.accessKey}"
@@ -45,7 +46,8 @@
 
     <nxd:restDocumentLink
       document="#{fieldOrValue}"
-      view="#{action.properties.view}"
+      view="#{nxu:test(empty action.properties.view, widgetProperty_view, action.properties.view)}"
+      pattern="#{nxu:test(empty action.properties.pattern, widgetProperty_pattern, action.properties.pattern)}"
       tabs="#{tabIds}"
       addTabInfo="false"
       accesskey="#{action.accessKey}"
@@ -77,7 +79,14 @@
 
 <c:if test="#{widget.mode == 'tab_content'}">
   <c:if test="#{not empty action.link}">
-    <ui:include src="#{action.link}" />
+    <c:choose>
+      <c:when test="#{action.link.startsWith('/')}">
+        <ui:include src="#{action.link}" />
+      </c:when>
+      <c:otherwise>
+        <ui:include src="/#{action.link}" />
+      </c:otherwise>
+    </c:choose>
   </c:if>
 </c:if>
 
