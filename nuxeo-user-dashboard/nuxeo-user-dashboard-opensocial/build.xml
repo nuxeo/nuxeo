@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<project name="nuxeo-user-dashboard-jsf" default="web-tomcat" basedir=".">
+
+  <import file="../../../../build.xml" />
+  <property file="build.properties" />
+
+</project>
