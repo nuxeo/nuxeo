@@ -27,12 +27,10 @@
   <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
     <resource name="automation.js">
       <path>scripts/automation.js</path>
-      <require>jquery.js</require>
     </resource>
     <resource name="jquery.flot.pie.min.js">
       <path>scripts/jquery/flot/jquery.flot.min.js</path>
       <path>scripts/jquery/flot/jquery.flot.pie.min.js</path>
-      <require>jquery.js</require>
     </resource>
     <resource name="displayQuotaStats.js">
       <path>scripts/displayQuotaStats.js</path>
