@@ -124,7 +124,7 @@
         <label mode="any">
           Boolean stating if the action supports ajax. Mandatory
           for this action to be ajaxified when caller asks for an ajax form to
-          be used.
+          be used. Default value depends on the action type policy.
         </label>
       </helpLabels>
       <fields>
@@ -471,6 +471,9 @@
         <title>Link</title>
         <description>
           Widget displaying a link for an action.
+          <p>
+            Configured by default not to support ajax actions.
+          </p>
         </description>
         <categories>
           <category>action</category>
@@ -725,8 +728,12 @@
         <sinceVersion>5.7.3</sinceVersion>
         <title>Document Rest Link</title>
         <description>
-          Widget displaying a restful document link for an action
-          (typically a tab link).
+          Widget displaying a restful document link for an action (typically a
+          tab link).
+          <p>
+            Configured by default to avoid adding a form around the link if not
+            ajaxified, and to support ajax actions.
+          </p>
         </description>
         <categories>
           <category>action</category>
