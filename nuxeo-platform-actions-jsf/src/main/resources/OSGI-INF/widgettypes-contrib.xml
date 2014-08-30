@@ -246,6 +246,24 @@
       </selectOptions>
     </widget>
 
+    <widget name="tabs_hideSingleTab" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide single tab</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Boolean stating if the tabs bar should be hidden in case there is only one tab.
+          Defaults to false, available since 5.9.4-JSF2.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideSingleTab</field>
+      </fields>
+    </widget>
+
     <widget name="actions_maxActionsNumber" type="int">
       <categories>
         <category>widgetTypeConf</category>
@@ -491,6 +509,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">tabs_overallDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">tabs_hideSingleTab</widget>
                 </row>
               </rows>
               <widget name="actions" type="actions">

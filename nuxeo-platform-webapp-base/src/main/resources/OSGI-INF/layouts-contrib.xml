@@ -3999,6 +3999,9 @@
                 <row>
                   <widget category="widgetTypeConf">tabs_overallDisplay</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">tabs_hideSingleTab</widget>
+                </row>
               </rows>
             </layout>
           </layouts>

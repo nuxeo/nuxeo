@@ -19,23 +19,25 @@
 <nxu:set var="tabsPanelId" value="#{widget.id}_panel" cache="true">
 <nxu:set var="tabContentPanelId" value="#{widget.id}_tab_content" cache="true">
 <nxu:set var="verticalTabs" value="#{widgetProperty_overallDisplay == 'vertical_block'}" cache="true">
+<nxu:set var="showTabsBar" value="#{not widgetProperty_hideSingleTab or widgetProperty_actions.size > 1}">
 <nxu:valueHolder id="#{clickedActionIdHolder}"
   var="clickedActionId"
   defaultValue="#{widgetProperty_currentTabAction.id}">
-
 <c:choose>
 
   <c:when test="#{verticalTabs}">
     <div class="gridContainer">
       <div class="gridRow">
-        <div class="gridBox verticalTabsColumn gridStyle2">
-          <a4j:outputPanel id="#{tabsPanelId}" layout="block"
-            styleClass="tabsBar vertical #{widgetProperty_styleClass}">
-            <ui:include src="/widgets/actions/tabs_widget_bar_template.xhtml" />
-          </a4j:outputPanel>
-          <div class="clear" />
-        </div>
-        <div class="gridBox verticalTabsContent gridStyle10">
+        <c:if test="#{showTabsBar}">
+          <div class="gridBox verticalTabsColumn gridStyle2">
+            <a4j:outputPanel id="#{tabsPanelId}" layout="block"
+              styleClass="tabsBar vertical #{widgetProperty_styleClass}">
+              <ui:include src="/widgets/actions/tabs_widget_bar_template.xhtml" />
+            </a4j:outputPanel>
+            <div class="clear" />
+          </div>
+        </c:if>
+        <div class="gridBox verticalTabsContent #{showTabsBar?'gridStyle10':'gridStyle12'}">
           <a4j:outputPanel id="#{tabContentPanelId}" layout="block"
             styleClass="tabsContent ">
             <ui:include src="/widgets/actions/tabs_widget_content_template.xhtml" />
@@ -46,11 +48,13 @@
   </c:when>
 
   <c:otherwise>
-    <a4j:outputPanel id="#{tabsPanelId}" layout="block"
-      styleClass="tabsBar #{widgetProperty_styleClass}">
-      <ui:include src="/widgets/actions/tabs_widget_bar_template.xhtml" />
-    </a4j:outputPanel>
-    <div class="clear" />
+    <c:if test="#{showTabsBar}">
+      <a4j:outputPanel id="#{tabsPanelId}" layout="block"
+        styleClass="tabsBar #{widgetProperty_styleClass}">
+        <ui:include src="/widgets/actions/tabs_widget_bar_template.xhtml" />
+      </a4j:outputPanel>
+      <div class="clear" />
+    </c:if>
     <a4j:outputPanel id="#{tabContentPanelId}" layout="block"
       styleClass="tabsContent">
       <ui:include src="/widgets/actions/tabs_widget_content_template.xhtml" />
@@ -60,6 +64,7 @@
 </c:choose>
 
 </nxu:valueHolder>
+</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>
