@@ -12,8 +12,7 @@
       <properties mode="view">
         <property name="actionsDisplay">links</property>
         <property name="addForm">true</property>
-        <!-- no ajax for now: opensocial dashboard action does not support it anyway -->
-        <property name="useAjaxForm">false</property>
+        <property name="useAjaxForm">#{useAjaxTabs}</property>
         <property name="category">USER_CENTER</property>
         <property name="actions">#{userCenterViews.availableActions}</property>
         <property name="currentTabAction">#{userCenterViews.currentView}</property>
@@ -25,8 +24,7 @@
       <properties mode="view">
         <property name="actionsDisplay">links</property>
         <property name="addForm">true</property>
-        <!-- no ajax for now: opensocial dashboard action does not support it anyway -->
-        <property name="useAjaxForm">false</property>
+        <property name="useAjaxForm">#{useAjaxTabs}</property>
         <property name="category">USER_CENTER</property>
         <property name="actions">#{userCenterViews.availableActions}</property>
         <property name="currentTabAction">#{userCenterViews.currentView}</property>
@@ -38,8 +36,7 @@
       <properties mode="view">
         <property name="actionsDisplay">links</property>
         <property name="addForm">true</property>
-        <!-- use ajax only if bookmarkable URLs can be preserved -->
-        <property name="useAjaxForm">#{canUseAjaxTabs}</property>
+        <property name="useAjaxForm">#{useAjaxTabs}</property>
         <property name="actions">
           #{userCenterViews.availableSubActions}
         </property>
