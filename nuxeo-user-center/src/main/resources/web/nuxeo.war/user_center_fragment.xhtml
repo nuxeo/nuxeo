@@ -1,26 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:a4j="http://richfaces.org/a4j">
-
-     <a4j:outputPanel id="user_center_subtab" layout="block">
-
-      <ui:include src="/incl/message_banner.xhtml"/>
-      <c:if test="#{!empty currentUserCenterView.properties.alwaysDisplaySubTabs or userCenterViews.availableSubActions.size > 1}">
-        <ui:include src="/incl/user_center_subview_selector.xhtml"/>
-      </c:if>
-
-      <div style="clear:both"></div>
-      <div class="tabsContent">
-        <ui:include src="#{currentUserCenterSubView.link}"/>
-      </div>
-
-   </a4j:outputPanel>
-
-</div>
-
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  <ui:include src="/incl/message_banner.xhtml"/>
+  <nxl:widget name="userCenterSubTabs" mode="view" value="#{currentDocument}" />
+</ui:composition>

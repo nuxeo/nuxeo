@@ -1,0 +1,117 @@
+<component name="org.nuxeo.ecm.user.center.action.widgets">
+
+  <documentation>
+    @since 5.9.4-JSF2, global widgets used to render actions/tabs
+    in Home.
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="homeLinks" type="actions">
+      <properties mode="view">
+        <property name="actionsDisplay">links</property>
+        <property name="addForm">true</property>
+        <!-- no ajax for now: opensocial dashboard action does not support it anyway -->
+        <property name="useAjaxForm">false</property>
+        <property name="category">USER_CENTER</property>
+        <property name="actions">#{userCenterViews.availableActions}</property>
+        <property name="currentTabAction">#{userCenterViews.currentView}</property>
+        <property name="overallDisplay">vertical_block</property>
+      </properties>
+    </widget>
+
+    <widget name="homeTabs" type="tabs">
+      <properties mode="view">
+        <property name="actionsDisplay">links</property>
+        <property name="addForm">true</property>
+        <!-- no ajax for now: opensocial dashboard action does not support it anyway -->
+        <property name="useAjaxForm">false</property>
+        <property name="category">USER_CENTER</property>
+        <property name="actions">#{userCenterViews.availableActions}</property>
+        <property name="currentTabAction">#{userCenterViews.currentView}</property>
+        <property name="overallDisplay">vertical_block</property>
+      </properties>
+    </widget>
+
+    <widget name="userCenterSubTabs" type="tabs">
+      <properties mode="view">
+        <property name="actionsDisplay">links</property>
+        <property name="addForm">true</property>
+        <!-- use ajax only if bookmarkable URLs can be preserved -->
+        <property name="useAjaxForm">#{canUseAjaxTabs}</property>
+        <property name="actions">
+          #{userCenterViews.availableSubActions}
+        </property>
+        <property name="currentTabAction">#{userCenterViews.currentSubView}</property>
+        <property name="hideSingleTab">
+          #{not
+          currentUserCenterView.properties.alwaysDisplaySubTabs}
+        </property>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgettypes">
+
+    <widgetType name="home_rest_document_link">
+      <categories>
+        <category>jsfAction</category>
+      </categories>
+      <configuration>
+        <sinceVersion>5.9.4-JSF2</sinceVersion>
+        <title>Document Home Rest Link</title>
+        <description>
+          Widget displaying a restful document link for an action
+          (typically a tab link). Useful for Home tabs migration to tabs
+          widget,
+          to apply compatibility changes on existing actions.
+        </description>
+        <categories>
+          <category>action</category>
+        </categories>
+        <supportedModes>
+          <mode>view</mode>
+        </supportedModes>
+        <properties>
+          <defaultValues mode="any">
+            <property name="discardSurroundingForm">true</property>
+            <property name="supportAjax">#{canUseAjaxTabs}</property>
+            <property name="view">view_home</property>
+            <property name="pattern">home</property>
+          </defaultValues>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /incl/action/rest_document_link_action_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="typeCompatibility">
+
+    <typeCompatibility type="home_rest_document_link">
+      <category>USER_CENTER</category>
+      <category>UsersGroupsHome_sub_tab</category>
+      <category>Dashboard_sub_tab</category>
+      <category>MiniMessages_sub_tab</category>
+      <category>Collections_sub_tab</category>
+      <category>Certificate_sub_tab</category>
+      <category>WorkflowHome_sub_tab</category>
+      <category>ActivityStream_sub_tab</category>
+      <category>AuthorizedApplication_sub_tab</category>
+      <category>Profile_sub_tab</category>
+      <category>Preferences_sub_tab</category>
+      <category>relationship_network_sub_tab</category>
+    </typeCompatibility>
+
+  </extension>
+
+</component>

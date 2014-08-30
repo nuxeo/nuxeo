@@ -3,38 +3,24 @@
 <nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:a4j="http://richfaces.org/a4j">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <ui:define name="page title">
+    <h:outputText value="#{nuxeoApplicationName} - #{nxd:titleOrId(currentDocument)}"/>
+  </ui:define>
 
   <ui:define name="body">
 
-    <a4j:outputPanel id="user_center_divtab" layout="block">
-      <table class="adminViewContent">
-        <tr>
-          <td class="adminTabsColumn">
-            <ui:include src="/incl/user_center_view_selector.xhtml"/>
-          </td>
-          <td class="adminContentColumn">
-            <!-- view document layout -->
-            <div>
-              <nxl:documentLayout documentMode="header" mode="view"
-                value="#{currentDocument}" defaultLayout="document_header"
-                includeAnyMode="false" />
+    <nxl:widget name="homeLinks" mode="view" value="#{currentDocument}" />
 
-              <ui:include src="/incl/document_action_tabs.xhtml"/>
-              <div style="clear:both"></div>
-              <div class="tabsContent">
-                <ui:include src="#{webActions.currentTabAction.link}"/>
-              </div>
-            </div>
-          </td>
-        </tr>
-      </table>
-    </a4j:outputPanel>
+    <h:form id="document_header_layout_form" class="titleBlock">
+      <nxl:documentLayout documentMode="header" mode="view"
+        value="#{currentDocument}" defaultLayout="document_header"
+        includeAnyMode="false" />
+    </h:form>
+
+    <nxl:widget name="documentTabs" mode="view" value="#{currentDocument}" />
 
   </ui:define>
 
