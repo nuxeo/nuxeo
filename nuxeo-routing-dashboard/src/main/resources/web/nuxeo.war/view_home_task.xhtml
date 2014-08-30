@@ -8,33 +8,22 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:a4j="http://richfaces.org/a4j">
 
-  <a4j:outputPanel id="user_center_subtab" layout="block">
-    <ui:include src="/incl/message_banner.xhtml" />
-    <c:if test="#{routingTaskActions.currentTask ==null}">
+  <ui:include src="/incl/message_banner.xhtml" />
 
-      <c:if
-        test="#{!empty currentUserCenterView.properties.alwaysDisplaySubTabs or userCenterViews.availableSubActions.size > 1}">
-        <ui:include src="/incl/user_center_subview_selector.xhtml" />
-      </c:if>
+  <c:if test="#{routingTaskActions.currentTask ==null}">
+    <nxl:widget name="userCenterSubTabs" mode="view" value="#{currentDocument}" />
+  </c:if>
 
-      <div style="clear: both"></div>
-      <div class="tabsContent">
-        <ui:include src="#{currentUserCenterSubView.link}" />
-      </div>
-    </c:if>
-    <c:if test="#{routingTaskActions.currentTask !=null}">
-      <a4j:outputPanel id="user_center_tab" layout="block">
-        <table class="adminViewContent">
-          <tr>
-            <td class="adminContentColumn"><nxl:layout
-                value="#{routingTaskActions.currentTask}" mode="view"
-                name="routing_task_resolution_layout" /></td>
-          </tr>
-        </table>
-      </a4j:outputPanel>
-    </c:if>
-
-  </a4j:outputPanel>
+  <c:if test="#{routingTaskActions.currentTask !=null}">
+    <table class="adminViewContent">
+      <tr>
+        <td class="adminContentColumn">
+          <nxl:layout value="#{routingTaskActions.currentTask}" mode="view"
+            name="routing_task_resolution_layout" />
+        </td>
+      </tr>
+    </table>
+  </c:if>
 
 </div>
 
