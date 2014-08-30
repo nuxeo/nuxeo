@@ -40,7 +40,7 @@ public class WorkspaceFormPage extends AbstractPage {
     WebElement descriptionTextInput;
 
     @Required
-    @FindBy(id = "document_create:create_doc_CREATE_WORKSPACE")
+    @FindBy(id = "document_create:nxw_documentCreateButtons_CREATE_WORKSPACE")
     WebElement createButton;
 
     public WorkspaceFormPage(WebDriver driver) {

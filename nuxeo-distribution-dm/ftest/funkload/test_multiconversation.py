@@ -33,7 +33,7 @@ class Multiconversation(NuxeoTestCase):
             ['document_create', 'document_create'],
             ['document_create:nxl_heading:nxw_title', 'aaaa'],
             ['document_create:nxl_heading:nxw_description', ''],
-            ['document_create:create_doc_CREATE_WORKSPACE', 'Create'],
+            ['document_create:nxw_documentCreateButtons_CREATE_WORKSPACE', 'Create'],
             ['javax.faces.ViewState', self.getLastJsfState()]],
             description="Create workspace")
         self.get(server_url + "/nxpath/default/default-domain/workspaces/aaaa@view_documents?tabIds=%3ATAB_WORKSPACE_EDIT&conversationId=0NXMAIN",

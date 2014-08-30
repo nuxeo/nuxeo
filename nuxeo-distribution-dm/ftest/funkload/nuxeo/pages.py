@@ -504,7 +504,7 @@ class FolderPage(BasePage):
             ['document_create', 'document_create'],
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
-            ['document_create:create_doc_CREATE_WORKSPACE', 'Create'],
+            ['document_create:nxw_documentCreateButtons_CREATE_WORKSPACE', 'Create'],
             ['document_create', 'document_create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
                 description="Create workspace submit")
