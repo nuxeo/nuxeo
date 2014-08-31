@@ -84,16 +84,20 @@ Templating zones that can be filled when useAjaxForm is set to true:
     <nxu:set var="supportAjax"
       value="#{widget.properties.supportAjax}"
       resolveTwice="true">
+    <nxu:set var="disableMultipartForm"
+      value="#{widget.properties.disableMultipartForm}"
+      resolveTwice="true">
       <ui:decorate template="/widgets/incl/form_template.xhtml">
         <ui:param name="addForm" value="#{addForm and (!discardForm or useAjaxForm)}" />
         <ui:param name="formId" value="#{widget.id}_form" />
         <ui:param name="useAjaxForm" value="#{useAjaxForm and (action.properties.containsKey('ajaxSupport') ? action.properties.ajaxSupport : supportAjax)}" />
-        <ui:param name="disableMultipartForm" value="#{action.properties.disableMultipartForm}" />
+        <ui:param name="disableMultipartForm" value="#{action.properties.containsKey('disableMultipartForm') ? action.properties.disableMultipartForm : disableMultipartForm}" />
         <ui:param name="formStyleClass" value="#{formStyleClass}" />
         <ui:define name="form_template_content">
           <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
         </ui:define>
       </ui:decorate>
+    </nxu:set>
     </nxu:set>
     </nxu:set>
   </nxl:widgetType>

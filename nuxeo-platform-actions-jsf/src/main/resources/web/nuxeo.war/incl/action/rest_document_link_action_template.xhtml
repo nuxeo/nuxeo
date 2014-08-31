@@ -28,7 +28,7 @@
     addTabInfo="false"
     accesskey="#{action.accessKey}"
     id="#{widget.id}"
-    target="#{action.properties.target}"
+    target="#{nxu:test(empty action.properties.target, widgetProperty_target, action.properties.target)}"
     onclick="#{onclick}">
     <ui:include src="/incl/action/action_icon_label_template.xhtml" />
     <ui:insert name="inside_action" />
@@ -54,7 +54,6 @@
       id="#{widget.id}_restLink"
       resolveOnly="true"
       var="docUrl">
-
       <h:commandLink
         id="#{widget.id}"
         action="#{webActions.setCurrentTabIds(tabIds)}"
