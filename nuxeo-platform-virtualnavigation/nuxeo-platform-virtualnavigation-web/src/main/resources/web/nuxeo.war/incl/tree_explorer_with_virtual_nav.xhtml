@@ -36,7 +36,7 @@
 
       <c:if test="#{selectedNavigationTreeDescriptor.directoryTreeBased}">
         <ui:include src="/incl/single_directory_tree_explorer.xhtml">
-          <ui:param name="treeModel" value="#{directoryTreeManager.selectedTree}" />
+          <ui:param name="treeModel" value="#{directoryTreeManager.selectedTreeAsList}" />
         </ui:include>
       </c:if>
 
