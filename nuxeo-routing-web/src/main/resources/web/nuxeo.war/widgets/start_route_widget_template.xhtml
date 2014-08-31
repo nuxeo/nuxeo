@@ -11,7 +11,8 @@
     value="#{routingActions.filteredRouteModels}"
     cache="true">
 
-  <a4j:region renderRegionOnly="true">
+  <a4j:region renderRegionOnly="true" id="#{widget.id}_region">
+
     <h:panelGrid columns="3">
 
       <c:choose>
@@ -25,24 +26,21 @@
               <nxu:selectItems
                 var="routeModel" value="#{routeModels}"
                 itemValue="#{routeModel.id}" itemLabel="#{messages[routeModel.title]}" />
-              <a4j:ajax event="change"
-                bypassUpdates="true"
-                listener="#{selectionActions.onSelection}"
-                render="#{widget.id}_preview"
-                id="#{widget.id}_ajax_select">
-              </a4j:ajax>
-              <f:param name="selectorId" value="#{widget.id}" />
-              <f:param name="valueHolderId" value="#{widget.id}_valueHolder" />
+              <f:attribute name="sourceComponentId" value="#{widget.id}" />
+              <f:attribute name="targetComponentId" value="#{widget.id}_valueHolder" />
+              <f:ajax execute="@this" render="#{widget.id}_preview"
+                listener="#{selectionActions.setValueFromComponent}"
+                id="#{widget.id}_ajax_select" />
             </h:selectOneListbox>
             <h:message for="#{widget.id}" id="#{widget.id}_message"
               styleClass="errorStyleClass" />
           </h:panelGroup>
 
-          <nxu:valueHolder id="#{widget.id}_valueHolder"
-            var="selectedRouteModelId"
-            defaultValue="#{routeModels.get(0).id}"
-            submitChanges="false">
-            <a4j:outputPanel id="#{widget.id}_preview" layout="block">
+          <a4j:outputPanel id="#{widget.id}_preview" layout="block">
+            <nxu:valueHolder id="#{widget.id}_valueHolder"
+              var="selectedRouteModelId"
+              defaultValue="#{routeModels.get(0).id}"
+              submitChanges="false">
               <c:if test="#{not empty selectedRouteModelId}">
                 <nxu:set var="selectedRouteModel"
                   value="#{routingActions.getRouteModel(selectedRouteModelId)}"
@@ -52,8 +50,9 @@
                   </span>
                 </nxu:set>
               </c:if>
-            </a4j:outputPanel>
-          </nxu:valueHolder>
+            </nxu:valueHolder>
+          </a4j:outputPanel>
+
         </c:otherwise>
       </c:choose>
 
@@ -64,13 +63,14 @@
       </a4j:status>
 
       <c:if test="#{not empty routeModels}">
-        <nxh:commandButton type="submit" class="button smallButton"
+        <h:commandButton type="submit" class="button smallButton"
           value="#{messages['action.start.related.document.route']}"
           action="#{routingActions.startRouteRelatedToCurrentDocument()}"
           id="#{widget.id}_start_route"/>
       </c:if>
 
     </h:panelGrid>
+
   </a4j:region>
 
   </nxu:set>

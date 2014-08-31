@@ -66,6 +66,7 @@
       </properties>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
+        <control name="disableMultiPartForm">true</control>
       </controls>
     </widget>
 
