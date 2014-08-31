@@ -242,7 +242,7 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
             try {
                 trItem.findElement(By.xpath("td[text()=\"" + versionLabel
                         + "\"]"));
-                WebElement actionButton = trItem.findElement(By.xpath("td/div/span[@id=\""
+                WebElement actionButton = trItem.findElement(By.xpath("td/span[@id=\""
                         + actionId + "\"]/input"));
                 actionButton.click();
                 break;

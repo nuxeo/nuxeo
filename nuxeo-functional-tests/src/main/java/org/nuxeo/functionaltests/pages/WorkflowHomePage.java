@@ -83,7 +83,7 @@ public class WorkflowHomePage extends AbstractPage {
         taskBox.waitForTextToBePresent(taskDirective);
         Select2WidgetElement particpants = new Select2WidgetElement(
                 driver,
-                driver.findElement(By.xpath("//div[contains(@id, 'nxl_workflowTaskReassignmentLayout:nxw_task_reassignment_actors_select2')]")),
+                driver.findElement(By.xpath("//div[contains(@id, 'nxl_workflowTaskReassignmentLayout_1:nxw_task_reassignment_actors_1_select2')]")),
                 true);
         particpants.selectValue(user);
         taskBox.submit();
@@ -109,7 +109,7 @@ public class WorkflowHomePage extends AbstractPage {
     public TaskFancyBoxFragment showTaskFancyBox(String taskAction) {
         driver.findElement(
                 By.xpath(String.format(
-                        "//input[@type='button' and @value='%s']", taskAction))).click();
+                        "//input[@type='submit' and @value='%s']", taskAction))).click();
         WebElement element = this.getFancyBoxContent();
         return getWebFragment(element,
                 WorkflowHomePage.TaskFancyBoxFragment.class);
