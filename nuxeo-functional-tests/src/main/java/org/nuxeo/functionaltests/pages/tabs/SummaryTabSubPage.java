@@ -19,6 +19,7 @@ package org.nuxeo.functionaltests.pages.tabs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -65,12 +66,16 @@ public class SummaryTabSubPage extends AbstractPage {
     }
 
     public void startDefaultWorkflow() {
+        AjaxRequestManager a = new AjaxRequestManager(driver);
+        a.watchAjaxRequests();
         selectItemInDropDownMenu(workflowSelector, "Serial document review");
+        a.waitForAjaxRequests();
         startWorkflowBtn.click();
     }
 
     public void startDefaultParallelWorkflow() {
         selectItemInDropDownMenu(workflowSelector, "Parallel document review");
+
         startWorkflowBtn.click();
     }
 
