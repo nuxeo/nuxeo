@@ -181,6 +181,15 @@ public class DirectoryTreeManagerBean implements DirectoryTreeManager {
         selectedTree = treeName;
     }
 
+    public List<DirectoryTreeNode> getSelectedTreeAsList() {
+        List<DirectoryTreeNode> res = new ArrayList<>();
+        DirectoryTreeNode selected = getSelectedTree();
+        if (selected != null) {
+            res.add(selected);
+        }
+        return res;
+    }
+
     public DirectoryTreeNode getSelectedTree() {
         return get(getSelectedTreeName());
     }
