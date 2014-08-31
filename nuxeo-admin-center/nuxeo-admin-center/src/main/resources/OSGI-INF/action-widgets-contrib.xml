@@ -12,8 +12,8 @@
       <properties mode="view">
         <property name="actionsDisplay">links</property>
         <property name="addForm">true</property>
-        <!-- no ajax for now: opensocial dashboard action does not support it anyway -->
-        <property name="useAjaxForm">false</property>
+        <!-- use ajax only if bookmarkable URLs can be preserved -->
+        <property name="useAjaxForm">#{canUseAjaxTabs}</property>
         <property name="category">NUXEO_ADMIN</property>
         <property name="actions">#{adminViews.availableActions}</property>
         <property name="currentTabAction">#{adminViews.currentView}</property>
@@ -58,6 +58,7 @@
         <properties>
           <defaultValues mode="any">
             <property name="discardSurroundingForm">true</property>
+            <property name="disableMultiPartForm">true</property>
             <property name="supportAjax">#{canUseAjaxTabs}</property>
             <property name="view">view_admin</property>
             <property name="pattern">admin</property>
