@@ -75,6 +75,7 @@
         <properties>
           <defaultValues mode="any">
             <property name="discardSurroundingForm">true</property>
+            <property name="disableMultiPartForm">true</property>
             <property name="supportAjax">#{canUseAjaxTabs}</property>
             <property name="view">view_home</property>
             <property name="pattern">home</property>
