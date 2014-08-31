@@ -26,12 +26,12 @@
         iconCollapsed="/icons/toggle_plus.png"
         rowKeyVar="rowKey"
         id="directoryNavTree"
-        stateVar="nodeState">
+        stateVar="nodeState"
+        var="node">
         <rich:treeModelRecursiveAdaptor
           roots="#{treeModel}"
           nodes="#{node.children}"
-          id="directoryNavRecursiveAdaptor"
-          var="node">
+          id="directoryNavRecursiveAdaptor">
           <rich:treeNode
             highlightedClass="treeNodeHighlightedClass"
             id="directoryNavTreeNode"
