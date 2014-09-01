@@ -43,7 +43,7 @@ import redis.clients.jedis.Protocol;
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 public class RedisFeature extends SimpleFeature {
 
-    private static final String REDIS_DEFAULT_MODE = "server";
+    private static final String REDIS_DEFAULT_MODE = "disabled";
 
     private static final int REDIS_SENTINEL_PORT_OFFSET = 20000;
 
