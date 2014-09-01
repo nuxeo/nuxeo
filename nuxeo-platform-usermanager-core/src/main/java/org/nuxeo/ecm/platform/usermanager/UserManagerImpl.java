@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.platform.usermanager;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,8 +63,6 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
-
-import com.google.common.cache.CacheBuilder;
 
 /**
  * Standard implementation of the Nuxeo UserManager.
@@ -106,9 +104,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     protected final DirectoryService dirService;
 
     protected final CacheService cacheService;
-    
+
     protected Cache principalCache = null;
-            
+
     public UserMultiTenantManagement multiTenantManagement = new DefaultUserMultiTenantManagement();
 
     /**
@@ -565,14 +563,18 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     @Override
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
         NuxeoPrincipal principal = null;
-        if (useCache()) {
-            principal = (NuxeoPrincipal) principalCache.get(username);
-        }
-        if (principal == null) {
-            principal = getPrincipal(username, null);
-            if (useCache() && principal != null) {
-                principalCache.put(username, principal);
+        try {
+            if (useCache()) {
+                principal = (NuxeoPrincipal) principalCache.get(username);
             }
+            if (principal == null) {
+                principal = getPrincipal(username, null);
+                if (useCache() && principal != null) {
+                    principalCache.put(username, principal);
+                }
+            }
+        } catch (IOException e) {
+            throw new ClientException(e);
         }
         return principal;
     }
@@ -784,7 +786,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     protected void invalidatePrincipal(String userName) {
         if (useCache()) {
-            principalCache.invalidate(userName);
+            try {
+                principalCache.invalidate(userName);
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
         }
     }
 
@@ -799,7 +805,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     protected void invalidateAllPrincipals() {
         if (useCache()) {
-            principalCache.invalidateAll();
+            try {
+                principalCache.invalidateAll();
+            } catch (IOException e) {
+                throw new ClientException(e);
+            }
         }
     }
 
