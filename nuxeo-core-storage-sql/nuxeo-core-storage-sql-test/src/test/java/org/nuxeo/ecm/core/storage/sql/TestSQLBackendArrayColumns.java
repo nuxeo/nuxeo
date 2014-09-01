@@ -63,6 +63,11 @@ public class TestSQLBackendArrayColumns extends TestSQLBackend {
         // ignored
     }
 
+    @Override
+    protected boolean useArrayColumns() {
+        return DatabaseHelper.DATABASE.supportsArrayColumns();
+    }
+
     // TODO add to TestSQLBackend these tests that exercise arrays:
     // TestSQLRepositoryQuery.testQueryMultiple
     // TestSQLRepositoryQuery.testQueryNegativeMultiple
