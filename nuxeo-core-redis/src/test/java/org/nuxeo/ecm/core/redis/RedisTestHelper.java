@@ -143,8 +143,5 @@ public class RedisTestHelper {
         redis.clear();
     }
 
-    public static void teardown(RuntimeHarness harness) {
-        Framework.getService(RedisServiceImpl.class).deactivate();
-    }
 
 }

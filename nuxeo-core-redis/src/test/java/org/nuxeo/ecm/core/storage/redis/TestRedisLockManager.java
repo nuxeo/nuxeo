@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Lock;
@@ -44,13 +43,6 @@ public class TestRedisLockManager extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         RedisTestHelper.setup(this);
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        RedisTestHelper.teardown(this);
-        super.tearDown();
     }
 
     protected static void assertTimeEquals(Calendar expected, Lock lock) {
