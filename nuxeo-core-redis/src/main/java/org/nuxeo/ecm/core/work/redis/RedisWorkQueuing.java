@@ -145,6 +145,7 @@ public class RedisWorkQueuing implements WorkQueuing {
             throw new IllegalStateException(queueId + " is already configured");
         }
         final BlockingQueue<Runnable> scheduled = newBlockingQueue(queueId);
+        allScheduled.put(queueId, scheduled);
         return scheduled;
     }
 
