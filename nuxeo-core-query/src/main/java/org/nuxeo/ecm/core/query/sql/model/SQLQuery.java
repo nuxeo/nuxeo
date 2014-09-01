@@ -32,7 +32,7 @@ public class SQLQuery implements ASTNode {
 
     public final WhereClause where;
 
-    public final OrderByClause orderBy;
+    public OrderByClause orderBy;
 
     public final GroupByClause groupBy;
 

@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FullTextUtils;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -57,7 +57,6 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
-import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQueryException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
@@ -194,20 +193,9 @@ public class NXQLQueryMaker implements QueryMaker {
 
     protected PathResolver pathResolver;
 
-    /** Do we match only relations (and therefore no proxies). */
-    protected boolean onlyRelations;
-
-    protected final List<String> whatColumnNames = new LinkedList<String>();
-
-    protected final List<String> orderByColumnNames = new LinkedList<String>();
-
     protected final Map<String, String> aliasesByName = new HashMap<String, String>();
 
     protected final List<String> aliases = new LinkedList<String>();
-
-    protected boolean hasWildcardIndex;
-
-    protected boolean orderByHasWildcardIndex;
 
     /**
      * Whether the query must match only proxies (TRUE), no proxies (FALSE), or
@@ -284,7 +272,8 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         /*
-         * Find all relevant types and keys for the criteria.
+         * Analyze query to find all relevant types and keys for the criteria,
+         * and fulltext matches.
          */
 
         QueryAnalyzer queryAnalyzer = newQueryAnalyzer(queryFilter.getFacetFilter());
@@ -295,6 +284,36 @@ public class NXQLQueryMaker implements QueryMaker {
             return null;
         } catch (QueryMakerException e) {
             throw new StorageException(e.getMessage(), e);
+        }
+
+        boolean distinct = sqlQuery.select.isDistinct();
+        if (selectStar && queryAnalyzer.hasWildcardIndex) {
+            distinct = true;
+        }
+
+        boolean reAnalyze = false;
+        // add a default ORDER BY ecm:fulltextScore DESC
+        if (queryAnalyzer.ftCount == 1 && !distinct && sqlQuery.orderBy == null) {
+            sqlQuery.orderBy = new OrderByClause(new OrderByList(
+                    new OrderByExpr(new Reference(NXQL.ECM_FULLTEXT_SCORE),
+                            true)), false);
+            queryAnalyzer.orderByScore = true;
+            reAnalyze = true;
+        }
+        // if ORDER BY ecm:fulltextScore, make sure we SELECT on it too
+        if (queryAnalyzer.orderByScore && !queryAnalyzer.selectScore) {
+            sqlQuery.select.add(new Reference(NXQL.ECM_FULLTEXT_SCORE));
+            reAnalyze = true;
+        }
+        if (reAnalyze) {
+            queryAnalyzer.visitQuery(sqlQuery);
+        }
+
+        if (queryAnalyzer.ftCount > 1
+                && (queryAnalyzer.orderByScore || queryAnalyzer.selectScore)) {
+            throw new StorageException("Cannot use "
+                    + NXQL.ECM_FULLTEXT_SCORE
+                    + " with more than one fulltext match expression");
         }
 
         /*
@@ -309,7 +328,7 @@ public class NXQLQueryMaker implements QueryMaker {
             }
             proxyClause = Boolean.FALSE;
         }
-        if (onlyRelations) {
+        if (queryAnalyzer.onlyRelations) {
             if (proxyClause == Boolean.TRUE) {
                 // no proxies to relations, query cannot match
                 return null;
@@ -331,12 +350,8 @@ public class NXQLQueryMaker implements QueryMaker {
          */
 
         Set<String> onlyOrderByColumnNames = new HashSet<String>(
-                orderByColumnNames);
-        onlyOrderByColumnNames.removeAll(whatColumnNames);
-        boolean distinct = sqlQuery.select.isDistinct();
-        if (selectStar && hasWildcardIndex) {
-            distinct = true;
-        }
+                queryAnalyzer.orderByColumnNames);
+        onlyOrderByColumnNames.removeAll(queryAnalyzer.whatColumnNames);
 
         if (doUnion || distinct) {
             // if UNION, we need all the ORDER BY columns in the SELECT list
@@ -351,7 +366,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
                 // for a SELECT *, we can add the needed columns if they
                 // don't involve wildcard index array elements
-                if (orderByHasWildcardIndex) {
+                if (queryAnalyzer.orderByHasWildcardIndex) {
                     throw new StorageException(
                             "For SELECT * the ORDER BY columns cannot use wildcard indexes");
                 }
@@ -416,9 +431,7 @@ public class NXQLQueryMaker implements QueryMaker {
             }
             fixInitialJoins();
 
-            /*
-             * Process WHAT to select.
-             */
+            // init builder
 
             WhereBuilder whereBuilder;
             try {
@@ -429,30 +442,6 @@ public class NXQLQueryMaker implements QueryMaker {
             }
             whatColumns = whereBuilder.whatColumns;
             whatKeys = whereBuilder.whatKeys;
-
-            // alias columns in all cases to simplify logic
-            List<String> whatNames = new ArrayList<String>(1);
-            List<Serializable> whatNamesParams = new ArrayList<Serializable>(1);
-            String mainAlias = hierId;
-            aliasesByName.clear();
-            aliases.clear();
-            for (int i = 0; i < whatColumns.size(); i++) {
-                Column col = whatColumns.get(i);
-                String key = whatKeys.get(i);
-                String alias = dialect.openQuote() + COL_ALIAS_PREFIX + (i + 1)
-                        + dialect.closeQuote();
-                aliasesByName.put(key, alias);
-                aliases.add(alias);
-                String whatName = getSelectColName(col, key);
-                whatName += " AS " + alias;
-                if (col.getTable().getRealTable() == hier
-                        && col.getKey().equals(model.MAIN_KEY)) {
-                    mainAlias = alias;
-                }
-                whatNames.add(whatName);
-            }
-
-            fixWhatColumns(whatColumns);
 
             /*
              * Process WHERE.
@@ -472,34 +461,61 @@ public class NXQLQueryMaker implements QueryMaker {
             }
 
             /*
-             * Process ORDER BY.
+             * Process WHAT to select.
              */
 
-            boolean orderByScoreDesc = sqlQuery.orderBy == null
-                    && whereBuilder.ftJoinNumber == 1 && !distinct;
-            FulltextMatchInfo ftMatchInfo = whereBuilder.ftMatchInfo;
+            // alias columns in all cases to simplify logic
+            List<String> whatNames = new ArrayList<String>(1);
+            List<Serializable> whatNamesParams = new ArrayList<Serializable>(1);
+            String mainAlias = hierId;
+            aliasesByName.clear();
+            aliases.clear();
+            for (int i = 0; i < whatColumns.size(); i++) {
+                Column col = whatColumns.get(i);
+                String key = whatKeys.get(i);
+                String alias;
+                String whatName;
+                if (NXQL.ECM_FULLTEXT_SCORE.equals(key)) {
+                    FulltextMatchInfo ftMatchInfo = whereBuilder.ftMatchInfo;
+                    if (ftMatchInfo == null) {
+                        throw new QueryMakerException(NXQL.ECM_FULLTEXT_SCORE
+                                + " cannot be used without "
+                                + NXQL.ECM_FULLTEXT);
+                    }
+                    alias = ftMatchInfo.scoreAlias;
+                    whatName = ftMatchInfo.scoreExpr;
+                    if (ftMatchInfo.scoreExprParam != null) {
+                        whatNamesParams.add(ftMatchInfo.scoreExprParam);
+                    }
+                } else {
+                    alias = dialect.openQuote() + COL_ALIAS_PREFIX + (i + 1)
+                            + dialect.closeQuote();
+                    whatName = getSelectColName(col, key);
+                    if (col.getTable().getRealTable() == hier
+                            && col.getKey().equals(model.MAIN_KEY)) {
+                        mainAlias = alias;
+                    }
+                }
+                aliasesByName.put(key, alias);
+                aliases.add(alias);
+                whatNames.add(whatName + " AS " + alias);
+            }
+
+            fixWhatColumns(whatColumns);
+
+            /*
+             * Process ORDER BY.
+             */
 
             // ORDER BY computed just once; may use just aliases
             if (orderBy == null) {
                 if (sqlQuery.orderBy != null) {
+                    // needs aliasesByName
                     whereBuilder.aliasOrderByColumns = doUnion;
                     whereBuilder.buf.setLength(0);
                     sqlQuery.orderBy.accept(whereBuilder);
                     // ends up in WhereBuilder#visitOrderByExpr
                     orderBy = whereBuilder.buf.toString();
-                } else if (orderByScoreDesc) {
-                    // add order by score desc
-                    orderBy = ftMatchInfo.scoreAlias + " DESC";
-                }
-            }
-
-            if (orderByScoreDesc) {
-                // add score expression to selected columns
-                String scoreExprSql = ftMatchInfo.scoreExpr + " AS "
-                        + ftMatchInfo.scoreAlias;
-                whatNames.add(scoreExprSql);
-                if (ftMatchInfo.scoreExprParam != null) {
-                    whatNamesParams.add(ftMatchInfo.scoreExprParam);
                 }
             }
 
@@ -599,7 +615,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
             StringBuilder fromb = new StringBuilder(from);
             if (dialect.needsOracleJoins() && doUnion
-                    && !securityJoins.isEmpty() && ftMatchInfo != null) {
+                    && !securityJoins.isEmpty() && queryAnalyzer.ftCount != 0) {
                 // NXP-5410 we must use Oracle joins
                 // when there's union all + fulltext + security
                 for (Join join : joins) {
@@ -957,29 +973,71 @@ public class NXQLQueryMaker implements QueryMaker {
 
         private static final long serialVersionUID = 1L;
 
+        protected FacetFilter facetFilter;
+
         protected boolean inSelect;
 
         protected boolean inOrderBy;
 
-        protected final LinkedList<Operand> toplevelOperands = new LinkedList<Operand>();
+        protected LinkedList<Operand> toplevelOperands;
 
         protected MultiExpression wherePredicate;
 
+        /** Do we match only relations (and therefore no proxies). */
+        protected boolean onlyRelations;
+
+        protected List<String> whatColumnNames;
+
+        protected List<String> orderByColumnNames;
+
+        protected boolean hasWildcardIndex;
+
+        protected boolean orderByHasWildcardIndex;
+
+        protected int ftCount;
+
+        protected boolean selectScore;
+
+        protected boolean orderByScore;
+
         public QueryAnalyzer(FacetFilter facetFilter) {
+            this.facetFilter = facetFilter;
+        }
+
+        protected void init() {
+            toplevelOperands = new LinkedList<Operand>();
+            whatColumnNames = new LinkedList<String>();
+            orderByColumnNames = new LinkedList<String>();
+            hasWildcardIndex = false;
+            orderByHasWildcardIndex = false;
+            ftCount = 0;
+            selectScore = false;
+            orderByScore = false;
+        }
+
+        @Override
+        public void visitQuery(SQLQuery node) {
+            init();
             if (facetFilter != null) {
                 addFacetFilterClauses(facetFilter);
+            }
+            visitSelectClause(node.select);
+            visitFromClause(node.from);
+            visitWhereClause(node.where); // may be null
+            if (node.orderBy != null) {
+                visitOrderByClause(node.orderBy);
             }
         }
 
         public void addFacetFilterClauses(FacetFilter facetFilter) {
-            Expression expr;
             for (String mixin : facetFilter.required) {
                 // every facet is required, not just any of them,
                 // so do them one by one
                 // expr = getMixinsMatchExpression(Collections.singleton(facet),
                 // true);
-                expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE),
-                        Operator.EQ, new StringLiteral(mixin));
+                Expression expr = new Expression(new Reference(
+                        NXQL.ECM_MIXINTYPE), Operator.EQ, new StringLiteral(
+                        mixin));
                 toplevelOperands.add(expr);
             }
             if (!facetFilter.excluded.isEmpty()) {
@@ -988,19 +1046,9 @@ public class NXQLQueryMaker implements QueryMaker {
                 for (String mixin : facetFilter.excluded) {
                     list.add(new StringLiteral(mixin));
                 }
-                expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE),
-                        Operator.NOTIN, list);
+                Expression expr = new Expression(new Reference(
+                        NXQL.ECM_MIXINTYPE), Operator.NOTIN, list);
                 toplevelOperands.add(expr);
-            }
-        }
-
-        @Override
-        public void visitQuery(SQLQuery node) {
-            visitSelectClause(node.select);
-            visitFromClause(node.from);
-            visitWhereClause(node.where); // may be null
-            if (node.orderBy != null) {
-                visitOrderByClause(node.orderBy);
             }
         }
 
@@ -1218,6 +1266,39 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         @Override
+        public void visitExpression(Expression node) {
+            Reference ref = node.lvalue instanceof Reference ? (Reference) node.lvalue
+                    : null;
+            String name = ref != null ? ref.name : null;
+            if (name != null && name.startsWith(NXQL.ECM_FULLTEXT)
+                    && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
+                visitExpressionFulltext(node, name);
+            } else {
+                super.visitExpression(node);
+            }
+        }
+
+        protected void visitExpressionFulltext(Expression node, String name) {
+            if (node.operator != Operator.EQ && node.operator != Operator.LIKE) {
+                throw new QueryMakerException(NXQL.ECM_FULLTEXT
+                        + " requires = or LIKE operator");
+            }
+            if (!(node.rvalue instanceof StringLiteral)) {
+                throw new QueryMakerException(NXQL.ECM_FULLTEXT
+                        + " requires literal string as right argument");
+            }
+            if (model.getRepositoryDescriptor().getFulltextDisabled()) {
+                throw new QueryMakerException(
+                        "Fulltext disabled by configuration");
+            }
+            String[] nameref = new String[] { name };
+            boolean useIndex = findFulltextIndexOrField(model, nameref);
+            if (useIndex) {
+                ftCount++;
+            }
+        }
+
+        @Override
         public void visitReference(Reference node) {
             boolean hasTag = false;
             if (node.cast != null) {
@@ -1263,6 +1344,16 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (NXQL.ECM_TAG.equals(name)
                     || name.startsWith(ECM_TAG_STAR)) {
                 hasTag = true;
+            } else if (NXQL.ECM_FULLTEXT_SCORE.equals(name)) {
+                if (inOrderBy) {
+                    orderByScore = true;
+                } else if (inSelect) {
+                    selectScore = true;
+                } else {
+                    throw new QueryMakerException(
+                            "Can only use column in SELECT or ORDER BY: "
+                                    + name);
+                }
             } else if (name.startsWith(NXQL.ECM_FULLTEXT)) {
                 if (inSelect) {
                     throw new QueryMakerException("Cannot select on column: "
@@ -1271,10 +1362,6 @@ public class NXQLQueryMaker implements QueryMaker {
                 if (inOrderBy) {
                     throw new QueryMakerException("Cannot order by column: "
                             + name);
-                }
-                if (model.getRepositoryDescriptor().getFulltextDisabled()) {
-                    throw new QueryMakerException(
-                            "Fulltext disabled by configuration");
                 }
                 String[] nameref = new String[] { name };
                 boolean useIndex = findFulltextIndexOrField(model, nameref);
@@ -1509,6 +1596,9 @@ public class NXQLQueryMaker implements QueryMaker {
                 fragmentKey = model.PROXY_VERSIONABLE_KEY;
             } else if (NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
                 propertyName = model.FULLTEXT_JOBID_PROP;
+            } else if (NXQL.ECM_FULLTEXT_SCORE.equals(name)) {
+                throw new QueryMakerException(NXQL.ECM_FULLTEXT_SCORE
+                        + " cannot be used in WHERE clause");
             } else if (name.startsWith(NXQL.ECM_FULLTEXT)) {
                 throw new QueryMakerException(NXQL.ECM_FULLTEXT
                         + " must be used as left-hand operand");
@@ -2164,14 +2254,6 @@ public class NXQLQueryMaker implements QueryMaker {
             String[] nameref = new String[] { name };
             boolean useIndex = findFulltextIndexOrField(model, nameref);
             name = nameref[0];
-            if (node.operator != Operator.EQ && node.operator != Operator.LIKE) {
-                throw new QueryMakerException(NXQL.ECM_FULLTEXT
-                        + " requires = or LIKE operator");
-            }
-            if (!(node.rvalue instanceof StringLiteral)) {
-                throw new QueryMakerException(NXQL.ECM_FULLTEXT
-                        + " requires literal string as right argument");
-            }
             if (useIndex) {
                 // use actual fulltext query using a dedicated index
                 String fulltextQuery = ((StringLiteral) node.rvalue).value;
@@ -2181,7 +2263,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 FulltextMatchInfo info = dialect.getFulltextScoredMatchInfo(
                         fulltextQuery, name, ftJoinNumber, mainColumn, model,
                         database);
-                ftMatchInfo = info; // used for order by if only one
+                ftMatchInfo = info;
                 if (info.joins != null) {
                     joins.addAll(info.joins);
                 }
@@ -2300,6 +2382,10 @@ public class NXQLQueryMaker implements QueryMaker {
         @Override
         public void visitReference(Reference node) {
             String name = node.name;
+            if (NXQL.ECM_FULLTEXT_SCORE.equals(name)) {
+                visitScore();
+                return;
+            }
             ColumnInfo info = getColumnInfo(name);
             if (info.needsSubSelect && !allowSubSelect) {
                 String msg = inOrderBy ? "Cannot use collection %s in ORDER BY clause"
@@ -2427,6 +2513,7 @@ public class NXQLQueryMaker implements QueryMaker {
 
             // replace column info with aggregate
             Column col = whatColumns.removeLast();
+            String key = whatKeys.removeLast();
             final String aggFQN = func + "(" + col.getFullQuotedName() + ")";
             final ColumnType aggType = getAggregateType(func, col.getType());
             final int aggJdbcType = dialect.getJDBCTypeAndString(aggType).jdbcType;
@@ -2446,8 +2533,17 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
             };
             whatColumns.add(cc);
-            String key = whatKeys.removeLast();
-            whatKeys.addLast(func + "(" + key + ")");
+            whatKeys.add(func + "(" + key + ")");
+        }
+
+        protected void visitScore() {
+            if (inSelect) {
+                Column col = new Column(hierTable, null, ColumnType.DOUBLE, null);
+                whatColumns.add(col);
+                whatKeys.add(NXQL.ECM_FULLTEXT_SCORE);
+            } else {
+                buf.append(aliasesByName.get(NXQL.ECM_FULLTEXT_SCORE));
+            }
         }
 
         protected ColumnType getAggregateType(String func, ColumnType arg) {
