@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.core.work.redis;
 
-import org.junit.After;
 import org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor;
 import org.nuxeo.ecm.core.redis.RedisTestHelper;
 import org.nuxeo.ecm.core.work.WorkManagerTest;
@@ -40,13 +39,6 @@ public class RedisWorkManagerTest extends WorkManagerTest {
     protected void doDeploy() throws Exception {
         super.doDeploy();
         RedisTestHelper.setup(this);
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        RedisTestHelper.teardown(this);
-        super.tearDown();
     }
 
 }

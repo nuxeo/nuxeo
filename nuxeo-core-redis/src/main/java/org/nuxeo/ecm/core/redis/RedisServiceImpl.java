@@ -116,6 +116,9 @@ public class RedisServiceImpl extends DefaultComponent implements
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
+        if (config != null) {
+            deactivate(config);
+        }
         this.context = null;
     }
 
