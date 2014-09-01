@@ -12,8 +12,7 @@
       <properties mode="view">
         <property name="actionsDisplay">links</property>
         <property name="addForm">true</property>
-        <!-- use ajax only if bookmarkable URLs can be preserved -->
-        <property name="useAjaxForm">#{canUseAjaxTabs}</property>
+        <property name="useAjaxForm">#{useAjaxTabs}</property>
         <property name="category">NUXEO_ADMIN</property>
         <property name="actions">#{adminViews.availableActions}</property>
         <property name="currentTabAction">#{adminViews.currentView}</property>
