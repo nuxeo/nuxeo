@@ -31,8 +31,6 @@ import org.nuxeo.ecm.core.cache.AbstractCache;
 import org.nuxeo.ecm.core.cache.CacheDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
-import redis.clients.jedis.exceptions.JedisException;
-
 /**
  * Cache implementation on top of Redis
  *
@@ -58,6 +56,10 @@ public class RedisCacheImpl extends AbstractCache {
         super(desc);
         executor = Framework.getService(RedisExecutor.class);
         prefix = Framework.getService(RedisConfiguration.class).getPrefix() + PREFIX + name + ":";
+    }
+
+    protected String computeKey(String key) {
+        return prefix.concat(key);
     }
 
     protected Serializable deserializeValue(byte[] workBytes)
@@ -89,7 +91,7 @@ public class RedisCacheImpl extends AbstractCache {
 
             @Override
             public Serializable call() throws Exception {
-                return deserializeValue(jedis.get(bytes(prefix + key)));
+                return deserializeValue(jedis.get(bytes(computeKey(key))));
             }
         });
 
@@ -110,7 +112,18 @@ public class RedisCacheImpl extends AbstractCache {
 
             @Override
             public Void call() throws Exception {
-                jedis.del(RedisCacheImpl.this.prefix + key);
+                StringBuffer script = new StringBuffer();
+                script.append("local keys = redis.call('keys', ARGV[1])").append(
+                        System.lineSeparator());
+                script.append("for i=1,#keys,5000").append(
+                        System.lineSeparator());
+                script.append("do").append(System.lineSeparator());
+                script.append(
+                        "redis.call('del', unpack(keys, i, math.min(i+4999, #keys)))").append(
+                        System.lineSeparator());
+                script.append("end").append(System.lineSeparator());
+                jedis.eval(script.toString(), 0, computeKey("*"));
+                jedis.del(computeKey(key));
                 return null;
             }
         });
@@ -127,7 +140,7 @@ public class RedisCacheImpl extends AbstractCache {
 
             @Override
             public Void call() throws Exception {
-                byte[] bkey = bytes(prefix + key);
+                byte[] bkey = bytes(computeKey(key));
                 jedis.set(bkey, serializeValue(value));
                 // Redis set in second ttl but descriptor set as mn
                 int ttlKey = ttl * 60;
