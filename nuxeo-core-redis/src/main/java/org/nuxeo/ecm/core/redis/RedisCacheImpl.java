@@ -55,7 +55,8 @@ public class RedisCacheImpl extends AbstractCache {
     public RedisCacheImpl(CacheDescriptor desc) {
         super(desc);
         executor = Framework.getService(RedisExecutor.class);
-        prefix = Framework.getService(RedisConfiguration.class).getPrefix() + PREFIX + name + ":";
+        prefix = Framework.getService(RedisConfiguration.class).getPrefix()
+                + PREFIX + name + ":";
     }
 
     protected String computeKey(String key) {
@@ -112,6 +113,18 @@ public class RedisCacheImpl extends AbstractCache {
 
             @Override
             public Void call() throws Exception {
+                jedis.del(computeKey(key));
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public void invalidateAll() throws IOException {
+        executor.execute(new RedisCallable<Void>() {
+
+            @Override
+            public Void call() throws Exception {
                 StringBuffer script = new StringBuffer();
                 script.append("local keys = redis.call('keys', ARGV[1])").append(
                         System.lineSeparator());
@@ -123,19 +136,14 @@ public class RedisCacheImpl extends AbstractCache {
                         System.lineSeparator());
                 script.append("end").append(System.lineSeparator());
                 jedis.eval(script.toString(), 0, computeKey("*"));
-                jedis.del(computeKey(key));
                 return null;
             }
         });
     }
 
     @Override
-    public void invalidateAll() throws IOException {
-        invalidate("*");
-    }
-
-    @Override
-    public void put(final String key, final Serializable value) throws IOException {
+    public void put(final String key, final Serializable value)
+            throws IOException {
         executor.execute(new RedisCallable<Void>() {
 
             @Override
