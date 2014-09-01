@@ -91,6 +91,8 @@ public abstract class ExpressionEvaluator {
             return walkStartsWith(lvalue, rvalue);
         } else if (NXQL.ECM_PATH.equals(name)) {
             return walkEcmPath(op, rvalue);
+        } else if (NXQL.ECM_ANCESTORID.equals(name)) {
+            return walkAncestorId(op, rvalue);
         } else if (op == Operator.SUM) {
             throw new UnsupportedOperationException("SUM");
         } else if (op == Operator.SUB) {
@@ -165,6 +167,31 @@ public abstract class ExpressionEvaluator {
         }
         Boolean eq = eq(id, walkReference(new Reference(NXQL.ECM_UUID)));
         return op == Operator.EQ ? eq : not(eq);
+    }
+
+    protected Boolean walkAncestorId(Operator op, Operand rvalue) {
+        if (op != Operator.EQ && op != Operator.NOTEQ) {
+            throw new RuntimeException(NXQL.ECM_ANCESTORID
+                    + " requires = or <> operator");
+        }
+        if (!(rvalue instanceof StringLiteral)) {
+            throw new RuntimeException(NXQL.ECM_ANCESTORID
+                    + " requires literal id as right argument");
+        }
+        String ancestorId = ((StringLiteral) rvalue).value;
+        Object[] ancestorIds = (Object[]) walkReference(new Reference(
+                NXQL_ECM_ANCESTOR_IDS));
+        boolean eq = op == Operator.EQ ? true : false;
+        if (ancestorIds == null) {
+            // placeless
+            return eq ? FALSE : TRUE;
+        }
+        for (Object id : ancestorIds) {
+            if (ancestorId.equals(id)) {
+                return eq ? TRUE : FALSE;
+            }
+        }
+        return eq ? FALSE : TRUE;
     }
 
     public Boolean walkNot(Operand value) {
