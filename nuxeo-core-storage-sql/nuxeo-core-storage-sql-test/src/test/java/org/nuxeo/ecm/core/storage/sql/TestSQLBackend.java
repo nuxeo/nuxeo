@@ -103,6 +103,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
         return descriptor;
     }
 
+    protected boolean useArrayColumns() {
+        return false;
+    }
+
     @Test
     public void testRootNode() throws Exception {
         Session session = repository.getConnection();
@@ -3264,7 +3268,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // delete
         session.removeNode(doc);
         session.save(); // send invalidations
-        assertSessionInvalidations(s2, false, isProxiesEnabled() ? 5 : 3, 8);
+        assertSessionInvalidations(s2, false, isProxiesEnabled() ? 5 : 3,
+                useArrayColumns() ? 6 : 8);
 
         s2.close();
         session.close();
