@@ -119,7 +119,8 @@ public class DialectMySQL extends Dialect {
             return jdbcInfo("VARCHAR(36) BINARY", Types.VARCHAR);
         case SYSNAME:
         case SYSNAMEARRAY:
-            return jdbcInfo("VARCHAR(256) BINARY", Types.VARCHAR);
+            // 255 is max for a column to have an index in UTF8
+            return jdbcInfo("VARCHAR(255) BINARY", Types.VARCHAR);
         case TINYINT:
             return jdbcInfo("TINYINT", Types.TINYINT);
         case INTEGER:
