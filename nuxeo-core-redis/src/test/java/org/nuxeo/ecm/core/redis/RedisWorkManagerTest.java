@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.work.WorkManagerTest;
 
 /**
  * Test of the WorkManager using Redis. Does not run if no Redis is configured
- * through the properties of {@link RedisTestHelper}.
+ * through the properties of {@link RedisFeature}.
  *
  * @since 5.8
  */
@@ -37,7 +37,7 @@ public class RedisWorkManagerTest extends WorkManagerTest {
     @Override
     protected void doDeploy() throws Exception {
         super.doDeploy();
-        RedisTestHelper.setup(this);
+        RedisFeature.setup(this);
     }
 
 }

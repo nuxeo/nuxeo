@@ -41,7 +41,7 @@ import redis.clients.jedis.Protocol;
  */
 @Features({ CoreFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-public class RedisTestHelper extends SimpleFeature {
+public class RedisFeature extends SimpleFeature {
 
     private static final String REDIS_DEFAULT_MODE = "disabled";
 
@@ -59,7 +59,7 @@ public class RedisTestHelper extends SimpleFeature {
 
     public static final String REDIS_PREFIX_PROP = "nuxeo.test.redis.prefix";
 
-    enum Mode {
+    public enum Mode {
         disabled, server, sentinel
     }
 
@@ -142,7 +142,7 @@ public class RedisTestHelper extends SimpleFeature {
             harness.deployBundle("org.nuxeo.ecm.core.storage");
         }
         harness.deployBundle("org.nuxeo.ecm.core.redis");
-        harness.deployTestContrib("org.nuxeo.ecm.core.redis", RedisTestHelper.class.getResource("/redis-contribs.xml"));
+        harness.deployTestContrib("org.nuxeo.ecm.core.redis", RedisFeature.class.getResource("/redis-contribs.xml"));
         final RedisConfigurationDescriptor config = getRedisDescriptor();
         Assume.assumeTrue(!config.disabled);
         final RedisServiceImpl redis = Framework.getService(RedisServiceImpl.class);

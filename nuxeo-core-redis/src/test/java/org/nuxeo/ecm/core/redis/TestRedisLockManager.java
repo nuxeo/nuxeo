@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor;
-import org.nuxeo.ecm.core.redis.RedisTestHelper;
+import org.nuxeo.ecm.core.redis.RedisFeature;
 import org.nuxeo.ecm.core.storage.lock.LockManager;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.runtime.api.Framework;
@@ -42,7 +42,7 @@ public class TestRedisLockManager extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        RedisTestHelper.setup(this);
+        RedisFeature.setup(this);
     }
 
     protected static void assertTimeEquals(Calendar expected, Lock lock) {
