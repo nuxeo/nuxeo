@@ -21,8 +21,15 @@ import java.io.IOException;
 import junit.framework.Assert;
 
 import org.junit.Assume;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import redis.clients.jedis.Protocol;
 
@@ -32,7 +39,9 @@ import redis.clients.jedis.Protocol;
  *
  * @since 5.8
  */
-public class RedisTestHelper {
+@Features({ CoreFeature.class })
+@RepositoryConfig(init = DefaultRepositoryInit.class)
+public class RedisTestHelper extends SimpleFeature {
 
     private static final String REDIS_DEFAULT_MODE = "disabled";
 
@@ -120,10 +129,10 @@ public class RedisTestHelper {
         return desc;
     }
 
-    public static void clearRedis(RedisConfiguration redisService) throws IOException {
+    public static void clearRedis(RedisConfiguration redisService)
+            throws IOException {
         Framework.getService(RedisServiceImpl.class).clear();
     }
-
 
     public static void setup(RuntimeHarness harness) throws Exception {
         if (harness.getOSGiAdapter().getBundle("org.nuxeo.ecm.core.event") == null) {
@@ -143,5 +152,10 @@ public class RedisTestHelper {
         redis.clear();
     }
 
+
+    @Override
+    public void start(FeaturesRunner runner) throws Exception {
+        setup(runner.getFeature(RuntimeFeature.class).getHarness());
+    }
 
 }

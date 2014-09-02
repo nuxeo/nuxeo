@@ -37,6 +37,10 @@
       <artifactId>nuxeo-core-event</artifactId>
       <type>test-jar</type>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-test</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

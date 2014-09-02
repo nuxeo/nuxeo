@@ -14,7 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.redis;
+package org.nuxeo.ecm.core.redis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

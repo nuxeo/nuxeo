@@ -14,10 +14,9 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.work.redis;
+package org.nuxeo.ecm.core.redis;
 
 import org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor;
-import org.nuxeo.ecm.core.redis.RedisTestHelper;
 import org.nuxeo.ecm.core.work.WorkManagerTest;
 
 /**
