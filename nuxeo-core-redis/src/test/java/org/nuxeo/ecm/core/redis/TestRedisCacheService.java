@@ -19,7 +19,7 @@ package org.nuxeo.ecm.core.redis;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
-import org.nuxeo.ecm.core.cache.TestCache;
+import org.nuxeo.ecm.core.cache.CacheComplianceFixture;
 import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 
@@ -30,7 +30,7 @@ import org.nuxeo.runtime.test.runner.Features;
  */
 @RunWith(ContributableFeaturesRunner.class)
 @Features({ RedisFeature.class })
-@SuiteClasses(TestCache.class)
+@SuiteClasses(CacheComplianceFixture.class)
 public class TestRedisCacheService {
 
 //

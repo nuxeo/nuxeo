@@ -6,8 +6,8 @@ import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 
 @RunWith(ContributableFeaturesRunner. class)
-@SuiteClasses(TestCache.class)
+@SuiteClasses(CacheComplianceFixture.class)
 @Features(InMemoryCacheFeature.class)
-public class RunInMemoryTestCache {
+public class TestCacheInMemory {
 
 }

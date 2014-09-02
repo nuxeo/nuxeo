@@ -3,7 +3,7 @@ package org.nuxeo.ecm.core.cache;
 import java.io.IOException;
 
 import org.junit.Assert;
-import org.junit.runner.RunWith;
+import org.junit.Assume;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -17,7 +17,6 @@ import com.google.inject.Binder;
 import com.google.inject.Provider;
 import com.google.inject.name.Names;
 
-@RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @Deploy({ "org.nuxeo.ecm.core.cache" })
@@ -25,13 +24,19 @@ public class CacheFeature extends SimpleFeature {
 
     public static final String DEFAULT_TEST_CACHE_NAME = "default-test-cache";
 
-
     public static final String KEY = "key1";
 
     public static final String VAL = "val1";
 
-    public interface Contribution {
+    boolean enabled = false;
 
+    public void enable() {
+        enabled = true;
+    }
+
+    @Override
+    public void start(FeaturesRunner runner) throws Exception {
+        Assume.assumeTrue(enabled);
     }
 
     @Override
@@ -40,8 +45,7 @@ public class CacheFeature extends SimpleFeature {
     }
 
     protected void bindCache(Binder binder, final String name) {
-        binder.bind(Cache.class).annotatedWith(
-                Names.named(name)).toProvider(
+        binder.bind(Cache.class).annotatedWith(Names.named(name)).toProvider(
                 new Provider<Cache>() {
 
                     @Override
@@ -55,18 +59,19 @@ public class CacheFeature extends SimpleFeature {
 
     @Override
     public void beforeSetup(FeaturesRunner runner) throws Exception {
-        Framework.getService(CacheService.class).getCache(DEFAULT_TEST_CACHE_NAME).put(KEY, VAL);
+        Framework.getService(CacheService.class).getCache(
+                DEFAULT_TEST_CACHE_NAME).put(KEY, VAL);
     }
 
     @Override
     public void afterTeardown(FeaturesRunner runner) throws IOException {
-        IOException errors = new IOException("Check suppressed errors for cache cleanup");
+        IOException errors = new IOException(
+                "Check suppressed errors for cache cleanup");
         clearCache(errors, DEFAULT_TEST_CACHE_NAME);
         if (errors.getSuppressed().length > 0) {
             throw errors;
         }
     }
-
 
     protected void clearCache(IOException errors, String name) {
         try {

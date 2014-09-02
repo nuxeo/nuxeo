@@ -21,6 +21,7 @@ import java.io.IOException;
 import junit.framework.Assert;
 
 import org.junit.Assume;
+import org.nuxeo.ecm.core.cache.CacheFeature;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -155,6 +156,11 @@ public class RedisFeature extends SimpleFeature {
         redis.clear();
     }
 
+
+    @Override
+    public void initialize(FeaturesRunner runner) throws Exception {
+        runner.getFeature(CacheFeature.class).enable();
+    }
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {

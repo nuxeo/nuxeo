@@ -17,7 +17,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CacheFeature.class })
-public class TestCache {
+public class CacheComplianceFixture {
 
     @Inject @Named(CacheFeature.DEFAULT_TEST_CACHE_NAME) Cache defaultCache;
 
