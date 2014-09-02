@@ -517,7 +517,7 @@ public final class Framework {
      * @since 5.9.6
      */
     protected static void checkRuntimeInitialized() {
-        if (!isInitialized()) {
+        if (runtime == null) {
             throw new IllegalStateException("Runtime not initialized");
         }
     }
