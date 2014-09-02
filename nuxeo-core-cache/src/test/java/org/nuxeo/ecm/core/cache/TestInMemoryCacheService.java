@@ -19,60 +19,60 @@
 package org.nuxeo.ecm.core.cache;
 
 import java.io.IOException;
-import java.io.Serializable;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.junit.runner.RunWith;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author Maxime Hilaire
  *
  */
 
-@LocalDeploy("org.nuxeo.ecm.core.cache:inmemory-cache-config.xml")
-public class TestInMemoryCacheService extends AbstractTestCache {
+@RunWith(FeaturesRunner.class)
+@Features({CacheFeature.class, InMemoryCacheFeature.class})
+public class TestInMemoryCacheService {
 
-    @Test
-    public void testGetCache() {
-        cacheChecker = (cacheService.getCache(DEFAULT_TEST_CACHE_NAME));
-        Assert.assertNotNull(cacheChecker);
-    }
+    @Inject @Named(CacheFeature.DEFAULT_TEST_CACHE_NAME) Cache defaultCache;
+
+    @Inject @Named(InMemoryCacheFeature.MAXSIZE_TEST_CACHE_NAME) Cache maxSizeCache;
 
     @Test
     public void getGuavaCache() {
-        com.google.common.cache.Cache<String, Serializable> guavaCache = null;
-        guavaCache = ((InMemoryCacheImpl) cacheChecker.getCache()).getGuavaCache();
+        InMemoryCacheImpl guavaCache = CacheFeature.unwrapImpl(InMemoryCacheImpl.class, defaultCache);
         Assert.assertNotNull(guavaCache);
     }
 
     @Test
     public void maxSizeZero() throws IOException {
-        Cache maxSizeCache = cacheService.getCache(MAXSIZE_TEST_CACHE_NAME);
-        maxSizeCache.put(key, val);
-        Assert.assertNull(maxSizeCache.get(key));
+        maxSizeCache.put("key", "val");
+        Assert.assertNull(maxSizeCache.get("key"));
     }
 
     @Test
     public void maxSizeExceeded() throws IOException {
         // Default test config set to 3 the maxSize, and the cache already
         // contains the key1
-        cacheChecker.put("key2", "val2");
-        cacheChecker.put("key3", "val3");
+        defaultCache.put("key2", "val2");
+        defaultCache.put("key3", "val3");
 
         // Value inserted afterwards will remove the first inserted (size-based
         // eviction system)
-        cacheChecker.put("key4", "val4");
-        cacheChecker.put("key5", "val5");
+        defaultCache.put("key4", "val4");
+        defaultCache.put("key5", "val5");
 
         // Check that new values have been stored
-        Assert.assertNotNull(cacheChecker.get("key4"));
-        Assert.assertNotNull(cacheChecker.get("key5"));
+        Assert.assertNotNull(defaultCache.get("key4"));
+        Assert.assertNotNull(defaultCache.get("key5"));
 
         // Check that the oldest values have been evicted
-        Assert.assertNull(cacheChecker.get("key1"));
-        Assert.assertNull(cacheChecker.get("key2"));
+        Assert.assertNull(defaultCache.get("key1"));
+        Assert.assertNull(defaultCache.get("key2"));
     }
 
     // protected class TestCacheConcurrency implements Runnable

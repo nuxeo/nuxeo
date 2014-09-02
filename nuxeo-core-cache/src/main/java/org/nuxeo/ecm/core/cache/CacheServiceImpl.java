@@ -43,20 +43,11 @@ public class CacheServiceImpl extends DefaultComponent implements
     private static final Log log = LogFactory.getLog(CacheServiceImpl.class);
 
 
-    protected static CacheRegistry cacheRegistry;
+    protected final CacheRegistry cacheRegistry = new CacheRegistry();
 
     @Override
     public CacheAttributesChecker getCache(String name) {
         return cacheRegistry.getCache(name);
-    }
-
-    @Override
-    public void activate(ComponentContext context) {
-        if (cacheRegistry == null) {
-            cacheRegistry = new CacheRegistry();
-        }
-
-        log.info("Cache Service activated");
     }
 
     @Override
@@ -67,8 +58,6 @@ public class CacheServiceImpl extends DefaultComponent implements
                 cacheRegistry.contributionRemoved(desc.name, desc);
             }
         }
-        cacheRegistry = null;
-        log.info("Cache Service deactivated");
     }
 
     @Override

@@ -17,33 +17,29 @@
 
 package org.nuxeo.ecm.core.redis;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.cache.AbstractTestCache;
-import org.nuxeo.ecm.core.cache.Cache;
-import org.nuxeo.ecm.core.test.CoreFeature;
+import org.junit.runners.Suite.SuiteClasses;
+import org.nuxeo.ecm.core.cache.TestCache;
+import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * Unit test of cache implementation on top of redis
  *
  * since 5.9.6
  */
-@RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, RedisTestHelper.class })
-public class TestRedisCacheService extends AbstractTestCache{
+@RunWith(ContributableFeaturesRunner.class)
+@Features({ RedisFeature.class })
+@SuiteClasses(TestCache.class)
+public class TestRedisCacheService {
 
-    protected Cache redisCache;
-
-
-    @Test
-    public void testGetCache() {
-        redisCache = cacheService.getCache(DEFAULT_TEST_CACHE_NAME);
-        Assert.assertNotNull(redisCache);
-    }
+//
+//
+//    @Test
+//    public void testGetCache() {
+//        redisCache = cacheService.getCache(DEFAULT_TEST_CACHE_NAME);
+//        Assert.assertNotNull(redisCache);
+//    }
 
 
 }
