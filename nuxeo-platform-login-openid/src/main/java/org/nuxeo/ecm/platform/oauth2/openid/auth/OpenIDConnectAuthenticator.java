@@ -43,9 +43,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Authenticator using OpenID to retrieve user identity
- * 
+ *
  * @author Nelson Silva <nelson.silva@inevo.pt>
- * 
+ *
  */
 public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
 
@@ -56,6 +56,8 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
     public static final String ERROR_URL_PARAM_NAME = "error";
 
     public static final String PROVIDER_URL_PARAM_NAME = "provider";
+
+    public static final String PROPERTY_OAUTH_CREATE_USER = "nuxeo.oauth.auth.create.user";
 
     protected UserResolverHelper userResolver = new UserResolverHelper();
 
@@ -112,7 +114,12 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
 
             OpenIdUserInfo info = provider.getUserInfo(accessToken);
 
-            String userId = userResolver.findNuxeoUser(info);
+            String userId;
+            if (Boolean.parseBoolean(Framework.getProperty(PROPERTY_OAUTH_CREATE_USER))) {
+                userId = userResolver.findOrCreateNuxeoUser(info);
+            } else {
+                userId = userResolver.findNuxeoUser(info);
+            }
 
             if (userId == null) {
                 sendError(req, "No user found with email: \"" + info.email
