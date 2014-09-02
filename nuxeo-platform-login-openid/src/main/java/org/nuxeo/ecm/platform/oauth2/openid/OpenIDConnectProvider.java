@@ -27,6 +27,7 @@ import java.security.SecureRandom;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDConnectAuthenticator;
@@ -173,8 +174,18 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
         String type = response.getContentType();
 
+
         try {
-            if (type.contains("text/plain") || type.contains("application/x-www-form")) {
+            // Try to parse as json
+            TokenResponse tokenResponse = response.parseAs(TokenResponse.class);
+            accessToken = tokenResponse.getAccessToken();
+        } catch (IOException e) {
+            log.debug("Unable to parse accesstoken as JSON", e);
+        }
+
+        if (StringUtils.isBlank(accessToken)) {
+            // Fallback as plain text format
+            try {
                 String str = response.parseAsString();
                 String[] params = str.split("&");
                 for (String param : params) {
@@ -184,14 +195,13 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
                         break;
                     }
                 }
-            } else { // try to parse as JSON
-
-                TokenResponse tokenResponse = response.parseAs(TokenResponse.class);
-                accessToken = tokenResponse.getAccessToken();
-
+            } catch (IOException e) {
+                log.warn("Unable to parse accesstoken as plain text", e);
             }
-        } catch (IOException e) {
-            log.error("Unable to parse server response", e);
+        }
+
+        if (StringUtils.isBlank(accessToken)) {
+            log.error("Unable to parse access token from response.");
         }
 
         return accessToken;

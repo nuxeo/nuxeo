@@ -57,6 +57,8 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
 
     public static final String USERINFO_KEY = "OPENID_USERINFO";
 
+    public static final String PROPERTY_OAUTH_CREATE_USER = "nuxeo.oauth.auth.create.user";
+
     protected void sendError(HttpServletRequest req, String msg) {
         req.setAttribute(LOGIN_ERROR, msg);
     }
@@ -102,7 +104,8 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
             }
 
             // Check the state token
-            if (!"true".equals(Framework.getProperty("nuxeo.skip.oauth.token.state.check")) && !provider.verifyStateToken(req)) {
+            if (!"true".equals(Framework.getProperty("nuxeo.skip.oauth.token.state.check"))
+                    && !provider.verifyStateToken(req)) {
                 sendError(req, "Invalid state parameter.");
             }
 
@@ -115,12 +118,18 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
 
             OpenIDUserInfo info = provider.getUserInfo(accessToken);
 
-            // Store the user info as a key in the request so apps can use it later in the chain
+            // Store the user info as a key in the request so apps can use it
+            // later in the chain
             req.setAttribute(USERINFO_KEY, info);
 
             UserResolver userResolver = provider.getUserResolver();
 
-            String userId = userResolver.findNuxeoUser(info);
+            String userId;
+            if (Boolean.parseBoolean(Framework.getProperty(PROPERTY_OAUTH_CREATE_USER))) {
+                userId = userResolver.findOrCreateNuxeoUser(info);
+            } else {
+                userId = userResolver.findNuxeoUser(info);
+            }
 
             if (userId == null) {
 
