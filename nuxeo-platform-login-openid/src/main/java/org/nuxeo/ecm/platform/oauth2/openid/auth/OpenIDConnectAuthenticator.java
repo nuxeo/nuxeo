@@ -58,6 +58,8 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
     public static final String USERINFO_KEY = "OPENID_USERINFO";
 
     public static final String PROPERTY_OAUTH_CREATE_USER = "nuxeo.oauth.auth.create.user";
+    
+    public static final String PROPERTY_SKIP_OAUTH_TOKEN = "nuxeo.skip.oauth.token.state.check";
 
     protected void sendError(HttpServletRequest req, String msg) {
         req.setAttribute(LOGIN_ERROR, msg);
@@ -104,7 +106,7 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
             }
 
             // Check the state token
-            if (!Boolean.parseBoolean(Framework.getProperty("nuxeo.skip.oauth.token.state.check"))
+            if (!Boolean.parseBoolean(Framework.getProperty(PROPERTY_SKIP_OAUTH_TOKEN))
                     && !provider.verifyStateToken(req)) {
                 sendError(req, "Invalid state parameter.");
             }
