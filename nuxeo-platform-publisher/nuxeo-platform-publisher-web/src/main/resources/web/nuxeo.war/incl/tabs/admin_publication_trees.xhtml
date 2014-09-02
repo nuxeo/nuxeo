@@ -27,7 +27,7 @@
                                var="root"
                                itemValue="#{root.id}"
                                itemLabel="#{root.dublincore.title} (#{adminPublishActions.getDomainNameFor(root)})"/>
-              <a4j:ajax event="change" render="sectionTree sectionList" />
+              <a4j:ajax event="change" render="sectionTree sectionList">
                 <a4j:attachQueue ignoreDupResponses="true" />
               </a4j:ajax>
             </h:selectOneListbox>
