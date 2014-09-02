@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.MDC;
 import org.junit.Ignore;
@@ -37,7 +38,6 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
-
 import org.nuxeo.runtime.mockito.MockProvider;
 import org.nuxeo.runtime.test.TargetResourceLocator;
 
@@ -62,7 +62,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
      */
     protected Injector injector;
 
-    protected List<RunnerFeature> features;
+    protected final Set<Class<? extends RunnerFeature>> featureClasses =
+            new LinkedHashSet<>();
+
+    protected final List<RunnerFeature> features = new ArrayList<>();
 
     protected final TargetResourceLocator locator;
 
@@ -83,8 +86,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         locator = new TargetResourceLocator(classToRun);
         try {
             loadFeatures(getTargetTestClass());
-            initialize();
-
         } catch (Throwable t) {
             throw new InitializationError(Collections.singletonList(t));
         }
@@ -103,7 +104,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void loadFeature(HashSet<Class<?>> cycles,
-            LinkedHashSet<Class<? extends RunnerFeature>> features,
+            Set<Class<? extends RunnerFeature>> features,
             Class<? extends RunnerFeature> clazz) throws Exception {
         if (features.contains(clazz)) {
             return;
@@ -129,9 +130,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                              // first
     }
 
-    protected void loadFeatures(Class<?> classToRun) throws Exception {
+    public void loadFeatures(Class<?> classToRun) throws Exception {
         scanner.scan(classToRun);
-        LinkedHashSet<Class<? extends RunnerFeature>> features = new LinkedHashSet<Class<? extends RunnerFeature>>();
         // load required features from annotation
         List<Features> annos = scanner.getAnnotations(classToRun,
                 Features.class);
@@ -139,16 +139,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             for (Features anno : annos) {
                 for (Class<? extends RunnerFeature> cl : anno.value()) {
                     if (!features.contains(cl)) {
-                        loadFeature(new HashSet<Class<?>>(), features, cl);
+                        loadFeature(new HashSet<Class<?>>(), featureClasses, cl);
                     }
                 }
             }
-        }
-        // register collected features
-        this.features = new ArrayList<RunnerFeature>();
-        for (Class<? extends RunnerFeature> fc : features) {
-            RunnerFeature rf = fc.newInstance();
-            this.features.add(rf);
         }
     }
 
@@ -201,6 +195,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void initialize() throws Exception {
+        for (Class<? extends RunnerFeature> fc : featureClasses) {
+            RunnerFeature rf = fc.newInstance();
+            features.add(rf);
+        }
         for (RunnerFeature feature : features) {
             feature.initialize(this);
         }
@@ -261,6 +259,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void start() throws Exception {
+        initialize();
         MDC.put("fclass", getTargetTestClass());
         for (RunnerFeature feature : features) {
             feature.start(this);
