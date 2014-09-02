@@ -38,7 +38,7 @@
     </script>
   </c:if>
 
-  <c:if test="#{request.getParameter('AJAXREQUEST') != null}">
+  <c:if test="#{facesContext.getPartialViewContext().isAjaxRequest()}">
     <script>
       initSelect2AjaxWidget("#{widget.id}", "#{model.rowIndex}");
     </script>
