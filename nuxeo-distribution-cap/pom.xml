@@ -356,7 +356,7 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-user-profile</artifactId>
     </dependency>
-    
+
     <!-- Invite users -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -410,7 +410,13 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-collections-jsf</artifactId>
     </dependency>
-    
+
+    <!-- Logs Viewer -->
+    <dependency>
+      <groupId>org.nuxeo.logs.viewer</groupId>
+      <artifactId>nuxeo-logs-viewer</artifactId>
+    </dependency>
+
     <!-- Scope test -->
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
