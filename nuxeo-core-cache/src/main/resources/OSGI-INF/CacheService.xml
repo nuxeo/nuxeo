@@ -19,10 +19,10 @@
 
     <documentation>
       Extension Point to define a new cache .
-      <cache name="newCache" class="org.nuxeo.ecm.core.cache.CacheImpl">
-        <maxSize>100</maxSize>
+      <cache name="newCache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
         <ttl>20</ttl>
-        <concurrency-level>true</concurrency-level>
+        <option name="maxSize">10</option>
+        <option name="concurrency-level">10</option>
       </cache>
       The class attribute must link a class that implements the
       CoreCache
@@ -44,7 +44,7 @@
       The Time To Live define in minutes the time before the cache will be
       destroyed
       <p />
-      The concurrency level ...???
+      The concurrency level, number of thread that can access at the same time the cache
     </documentation>
 
     <object class="org.nuxeo.ecm.core.cache.CacheDescriptor" />

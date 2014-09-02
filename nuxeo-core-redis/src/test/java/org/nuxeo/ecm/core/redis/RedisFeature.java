@@ -43,7 +43,7 @@ import redis.clients.jedis.Protocol;
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 public class RedisFeature extends SimpleFeature {
 
-    private static final String REDIS_DEFAULT_MODE = "disabled";
+    private static final String REDIS_DEFAULT_MODE = "server";
 
     private static final int REDIS_SENTINEL_PORT_OFFSET = 20000;
 
@@ -140,6 +140,9 @@ public class RedisFeature extends SimpleFeature {
         }
         if (harness.getOSGiAdapter().getBundle("org.nuxeo.ecm.core.storage") == null) {
             harness.deployBundle("org.nuxeo.ecm.core.storage");
+        }
+        if (harness.getOSGiAdapter().getBundle("org.nuxeo.ecm.core.cache") == null) {
+            harness.deployBundle("org.nuxeo.ecm.core.cache");
         }
         harness.deployBundle("org.nuxeo.ecm.core.redis");
         harness.deployTestContrib("org.nuxeo.ecm.core.redis", RedisFeature.class.getResource("/redis-contribs.xml"));

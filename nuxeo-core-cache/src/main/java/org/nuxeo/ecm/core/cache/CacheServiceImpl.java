@@ -46,7 +46,7 @@ public class CacheServiceImpl extends DefaultComponent implements
     protected static CacheRegistry cacheRegistry;
 
     @Override
-    public Cache getCache(String name) {
+    public CacheAttributesChecker getCache(String name) {
         return cacheRegistry.getCache(name);
     }
 

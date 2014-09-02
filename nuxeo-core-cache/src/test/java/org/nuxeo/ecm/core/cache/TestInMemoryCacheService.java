@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     mhilaire
  *
- * $Id: TestMultiDirectory.java 30378 2008-02-20 17:37:26Z gracinet $
  */
 
 package org.nuxeo.ecm.core.cache;
@@ -36,15 +35,15 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 public class TestInMemoryCacheService extends AbstractTestCache {
 
     @Test
-    public void testCast() {
-        cache = (cacheService.getCache(DEFAULT_TEST_CACHE_NAME));
-        Assert.assertNotNull(cache);
+    public void testGetCache() {
+        cacheChecker = (cacheService.getCache(DEFAULT_TEST_CACHE_NAME));
+        Assert.assertNotNull(cacheChecker);
     }
 
     @Test
     public void getGuavaCache() {
         com.google.common.cache.Cache<String, Serializable> guavaCache = null;
-        guavaCache = ((InMemoryCacheImpl) cache).getCache();
+        guavaCache = ((InMemoryCacheImpl) cacheChecker.getCache()).getGuavaCache();
         Assert.assertNotNull(guavaCache);
     }
 
@@ -59,21 +58,21 @@ public class TestInMemoryCacheService extends AbstractTestCache {
     public void maxSizeExceeded() throws IOException {
         // Default test config set to 3 the maxSize, and the cache already
         // contains the key1
-        cache.put("key2", "val2");
-        cache.put("key3", "val3");
+        cacheChecker.put("key2", "val2");
+        cacheChecker.put("key3", "val3");
 
         // Value inserted afterwards will remove the first inserted (size-based
         // eviction system)
-        cache.put("key4", "val4");
-        cache.put("key5", "val5");
+        cacheChecker.put("key4", "val4");
+        cacheChecker.put("key5", "val5");
 
         // Check that new values have been stored
-        Assert.assertNotNull(cache.get("key4"));
-        Assert.assertNotNull(cache.get("key5"));
+        Assert.assertNotNull(cacheChecker.get("key4"));
+        Assert.assertNotNull(cacheChecker.get("key5"));
 
         // Check that the oldest values have been evicted
-        Assert.assertNull(cache.get("key1"));
-        Assert.assertNull(cache.get("key2"));
+        Assert.assertNull(cacheChecker.get("key1"));
+        Assert.assertNull(cacheChecker.get("key2"));
     }
 
     // protected class TestCacheConcurrency implements Runnable

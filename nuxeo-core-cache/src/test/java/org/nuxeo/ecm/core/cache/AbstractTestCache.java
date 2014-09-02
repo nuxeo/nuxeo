@@ -1,5 +1,7 @@
 package org.nuxeo.ecm.core.cache;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 
 import junit.framework.Assert;
@@ -22,7 +24,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({  "org.nuxeo.ecm.core.cache" })
+@Deploy({ "org.nuxeo.ecm.core.cache" })
 public class AbstractTestCache {
     @Inject
     protected CacheService cacheService;
@@ -33,7 +35,7 @@ public class AbstractTestCache {
     @Inject
     protected RuntimeHarness harness;
 
-    protected Cache cache;
+    protected CacheAttributesChecker cacheChecker;
 
     protected static String DEFAULT_TEST_CACHE_NAME = "default-test-cache";
 
@@ -45,78 +47,79 @@ public class AbstractTestCache {
 
     @Before
     public void setUp() throws Exception {
-        cache = cacheService.getCache(DEFAULT_TEST_CACHE_NAME);
-        Assert.assertNotNull(cache);
-        cache.put(key, val);
+        cacheChecker = cacheService.getCache(DEFAULT_TEST_CACHE_NAME);
+        Assert.assertNotNull(cacheChecker);
+        cacheChecker.put(key, val);
     }
 
-
     @After
-    public void tearDown() throws IOException
-    {
-        if (cache == null) {
+    public void tearDown() throws IOException {
+        if (cacheChecker == null) {
             return;
         }
-        cache.invalidateAll();
+        cacheChecker.invalidateAll();
     }
 
     @Test
     public void getValue() throws IOException {
-        String cachedVal = (String) cache.get(key);
+        String cachedVal = (String) cacheChecker.get(key);
         Assert.assertEquals(val, cachedVal);
     }
 
     @Test
     public void keyNotExist() throws IOException {
-        Assert.assertNull(cache.get("key-not-exist"));
+        Assert.assertNull(cacheChecker.get("key-not-exist"));
     }
 
     @Test
     public void putUpdateGet() throws IOException {
         String val2 = "val2";
-        cache.put(key, val2);
-        val2 = (String) cache.get(key);
+        cacheChecker.put(key, val2);
+        val2 = (String) cacheChecker.get(key);
         Assert.assertEquals("val2", val2);
     }
 
     @Test
     public void putNullKey() throws IOException {
-        // The aim of the test here is to make sure no exception is raised
-        cache.put(null, "val-null");
-        Assert.assertNull(cache.get(null));
+        try {
+            cacheChecker.put(null, "val-null");
+            fail("Should raise exception !");
+        } catch (Exception e) {
+        }
     }
 
     @Test
     public void putNullValue() throws Exception {
-        // The aim of the test here is to make sure no exception is raised
-        cache.put("key-null", null);
-        Assert.assertNull(cache.get("key-null"));
+        try {
+            cacheChecker.put("key-null", null);
+            fail("Should raise exception !");
+        } catch (Exception e) {
+        }
     }
 
     @Test
     public void ttlExpire() throws InterruptedException, IOException {
         // Default config test set the TTL to 1mn, so wait 1mn and 1s
         Thread.sleep(61000);
-        String expiredVal = (String) cache.get(key);
+        String expiredVal = (String) cacheChecker.get(key);
         Assert.assertNull(expiredVal);
     }
 
     @Test
     public void invalidateKey() throws IOException {
-        Assert.assertNotNull(cache.get(key));
-        cache.invalidate(key);
-        Assert.assertNull(cache.get(key));
+        Assert.assertNotNull(cacheChecker.get(key));
+        cacheChecker.invalidate(key);
+        Assert.assertNull(cacheChecker.get(key));
     }
 
     @Test
     public void invalidateAll() throws IOException {
-        Assert.assertNotNull(cache.get(key));
-        cache.put("key2", "val2");
-        Assert.assertNotNull(cache.get("key2"));
-        cache.invalidateAll();
-        Assert.assertNull(cache.get(key));
-        Assert.assertNull(cache.get("key2"));
+        Assert.assertNotNull(cacheChecker.get(key));
+        cacheChecker.put("key2", "val2");
+        Assert.assertNotNull(cacheChecker.get("key2"));
+        cacheChecker.invalidateAll();
+        Assert.assertNull(cacheChecker.get(key));
+        Assert.assertNull(cacheChecker.get("key2"));
     }
-
 
 }

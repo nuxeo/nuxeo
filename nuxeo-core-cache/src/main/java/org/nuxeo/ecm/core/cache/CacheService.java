@@ -29,5 +29,5 @@ public interface CacheService {
 
     public static final String INVALIDATE_ALL = "invalidateAll";
 
-    public Cache getCache(String name);
+    public CacheAttributesChecker getCache(String name);
 }

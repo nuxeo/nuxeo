@@ -24,10 +24,14 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.cache.AbstractCache;
+import org.nuxeo.ecm.core.cache.CacheDescriptor;
 import org.nuxeo.runtime.api.Framework;
+
+import redis.clients.jedis.exceptions.JedisException;
 
 /**
  * Cache implementation on top of Redis
@@ -50,14 +54,10 @@ public class RedisCacheImpl extends AbstractCache {
      */
     public static final String PREFIX = "cache:";
 
-    public RedisCacheImpl(String name) {
-        super(name);
+    public RedisCacheImpl(CacheDescriptor desc) {
+        super(desc);
         executor = Framework.getService(RedisExecutor.class);
         prefix = Framework.getService(RedisConfiguration.class).getPrefix() + PREFIX + name + ":";
-    }
-
-    protected String prefix(String name) {
-        return prefix + name + ":";
     }
 
     protected Serializable deserializeValue(byte[] workBytes)
@@ -84,11 +84,8 @@ public class RedisCacheImpl extends AbstractCache {
     }
 
     @Override
-    public Serializable get(final String key) {
-        if (key == null) {
-            return null;
-        }
-        return executor.equals(new RedisCallable<Serializable>() {
+    public Serializable get(final String key) throws IOException {
+        return executor.execute(new RedisCallable<Serializable>() {
 
             @Override
             public Serializable call() throws Exception {
@@ -109,10 +106,6 @@ public class RedisCacheImpl extends AbstractCache {
 
     @Override
     public void invalidate(final String key) throws IOException {
-        if (key == null) {
-            throw new IllegalArgumentException(String.format(
-                    "Can't invalidate a null key for the cache '%s'!", name));
-        }
         executor.execute(new RedisCallable<Void>() {
 
             @Override
@@ -130,14 +123,6 @@ public class RedisCacheImpl extends AbstractCache {
 
     @Override
     public void put(final String key, final Serializable value) throws IOException {
-        if (key == null) {
-            throw new IllegalArgumentException(String.format(
-                    "Can't put a null key for the cache '%s'!", name));
-        }
-        if (value == null) {
-            throw new IllegalArgumentException(String.format(
-                    "Can't put a null value for the cache '%s'!", name));
-        }
         executor.execute(new RedisCallable<Void>() {
 
             @Override

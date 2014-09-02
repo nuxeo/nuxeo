@@ -105,14 +105,14 @@ public final class CacheRegistry extends
 
     }
 
-    public Cache getCache(String name) {
-        return caches.get(name).cache;
+    public CacheAttributesChecker getCache(String name) {
+        return caches.get(name).cacheChecker;
     }
 
-    public List<Cache> getCaches() {
-        List<Cache> res = new ArrayList<Cache>(caches.size());
+    public List<CacheAttributesChecker> getCaches() {
+        List<CacheAttributesChecker> res = new ArrayList<CacheAttributesChecker>(caches.size());
         for (CacheDescriptor desc : caches.values()) {
-            res.add(desc.cache);
+            res.add(desc.cacheChecker);
         }
         return res;
     }

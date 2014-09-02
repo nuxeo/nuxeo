@@ -15,7 +15,7 @@
  *     Maxime Hilaire
  */
 
-package org.nuxeo.ecm.core.cache.redis.test;
+package org.nuxeo.ecm.core.redis;
 
 import junit.framework.Assert;
 
@@ -23,14 +23,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.cache.AbstractTestCache;
 import org.nuxeo.ecm.core.cache.Cache;
-import org.nuxeo.ecm.core.redis.RedisTestHelper;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Unit test of cache implementation on top of redis
@@ -39,16 +34,13 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, RedisTestHelper.class })
-@RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({  "org.nuxeo.ecm.core.cache","org.nuxeo.ecm.core.redis" })
-@LocalDeploy("org.nuxeo.ecm.core.cache:OSGI-INF/redis-cache-config.xml")
 public class TestRedisCacheService extends AbstractTestCache{
 
     protected Cache redisCache;
 
 
     @Test
-    public void castTest() {
+    public void testGetCache() {
         redisCache = cacheService.getCache(DEFAULT_TEST_CACHE_NAME);
         Assert.assertNotNull(redisCache);
     }

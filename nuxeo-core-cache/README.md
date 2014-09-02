@@ -24,10 +24,10 @@ The configuration require the following steps :
      <extension target="org.nuxeo.ecm.core.cache.CacheServiceImpl"
 		point="caches">
 		<cache name="my-cache"
-			class="org.nuxeo.ecm.core.cache.CacheImpl">
-			<maxSize>100</maxSize>
+			class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
 			<ttl>20</ttl><!-- in minutes -->
-			<concurrency-level>10</concurrency-level>
+			<option name="maxSize">10</option>
+			<option name="concurrency-level">10</option>
 		</cache>
 	</extension>
       
@@ -50,16 +50,15 @@ The configuration require the following steps :
 
     <extension target="org.nuxeo.ecm.core.cache.CacheServiceImpl" point="caches">
 	    <cache name="my-redis-cache" class="org.nuxeo.ecm.core.redis.RedisCacheImpl">
-    	  <maxSize>100</maxSize>
       	  <ttl>20</ttl><!-- in minutes -->
-      	  <concurrency-level>10</concurrency-level>
     	</cache>
   </extension>
   
 ## Prerequisite 
 Prerequisite to use the cache :
 <ul>
-<li>define mandatory attributes : ttl, concurrency level,maxSize</li>
+<li>define mandatory attributes : ttl</li>
+<li> define optional attributes :  concurrency level,maxSize</li>
 <li>get your cache by calling the cacheService.getCache method</li>
 <li>The key of values must be a String</li>
 <li>The values must implement the Serializable interface</li>

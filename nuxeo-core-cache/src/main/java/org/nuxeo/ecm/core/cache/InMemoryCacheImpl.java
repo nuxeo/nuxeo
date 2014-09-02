@@ -58,7 +58,7 @@ public class InMemoryCacheImpl extends AbstractCache {
      *
      * @since 5.9.6
      */
-    public Cache<String, Serializable> getCache() {
+    public Cache<String, Serializable> getGuavaCache() {
         return cache;
     }
 
@@ -67,14 +67,14 @@ public class InMemoryCacheImpl extends AbstractCache {
         if (key == null) {
             return null;
         } else {
-            return getCache().getIfPresent(key);
+            return cache.getIfPresent(key);
         }
     }
 
     @Override
     public void invalidate(String key) {
         if (key != null) {
-            getCache().invalidate(key);
+            cache.invalidate(key);
         } else {
             log.warn(String.format(
                     "Can't invalidate a null key for the cache '%s'!", name));
@@ -83,13 +83,13 @@ public class InMemoryCacheImpl extends AbstractCache {
 
     @Override
     public void invalidateAll() {
-        getCache().invalidateAll();
+        cache.invalidateAll();
     }
 
     @Override
     public void put(String key, Serializable value) {
         if (key != null && value != null) {
-            getCache().put(key, value);
+            cache.put(key, value);
         } else {
             log.warn(String.format(
                     "Can't put a null key nor a null value in the cache '%s'!",

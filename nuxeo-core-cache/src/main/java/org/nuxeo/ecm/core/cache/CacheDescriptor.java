@@ -48,7 +48,7 @@ public class CacheDescriptor {
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
     protected Map<String,String> options = new HashMap<String,String>();
 
-    protected Cache cache;
+    protected CacheAttributesChecker cacheChecker;
 
     public CacheDescriptor()
     {
@@ -83,8 +83,9 @@ public class CacheDescriptor {
 
     public void start() {
         try {
-            cache =  implClass.getConstructor(CacheDescriptor.class).newInstance(
-                    this);
+            cacheChecker = new CacheAttributesChecker(this);
+            cacheChecker.setCache(implClass.getConstructor(CacheDescriptor.class).newInstance(
+                    this));
         } catch (InstantiationException | IllegalAccessException
                 | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
@@ -94,7 +95,8 @@ public class CacheDescriptor {
     }
 
     public void stop() {
-        cache = null;
+        cacheChecker.cache = null;
+        cacheChecker = null;
     }
 
 }
