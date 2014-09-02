@@ -16,14 +16,11 @@
  */
 package org.nuxeo.functionaltests;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
@@ -55,9 +52,11 @@ public class AjaxRequestManager {
         StringBuilder sb = new StringBuilder(
                 "window.NuxeoTestFaces = function() {");
         sb.append("  var e = {};");
+        sb.append("  e.jsf2AjaxRequestStarted = false;");
         sb.append("  e.jsf2AjaxRequestFinished = false;");
         sb.append("  e.jsf2AjaxRequestActiveCount = 0;");
         sb.append("  e.increment = function() {");
+        sb.append("    e.jsf2AjaxRequestStarted = true;");
         sb.append("    e.jsf2AjaxRequestFinished = false;");
         sb.append("    e.jsf2AjaxRequestActiveCount++;");
         sb.append("  };");
@@ -68,14 +67,16 @@ public class AjaxRequestManager {
         sb.append("    }");
         sb.append("  };");
         sb.append("  e.finished = function() {");
-        sb.append("    return e.jsf2AjaxRequestFinished;");
+        sb.append("    return e.jsf2AjaxRequestStarted && e.jsf2AjaxRequestFinished;");
         sb.append("  };");
         sb.append(" return e");
         sb.append("}();");
         sb.append("if (typeof jsf !== 'undefined') {");
-        sb.append("  jsf.ajax.addOnEvent(function(e) {if (e.status == 'begin') {window.NuxeoTestFaces.increment();}if (e.status == 'success') {window.NuxeoTestFaces.decrement();}})");
+        sb.append("  jsf.ajax.addOnEvent(function(e) {"
+                + "if (e.status == 'begin') {window.NuxeoTestFaces.increment();}"
+                + "if (e.status == 'success') {window.NuxeoTestFaces.decrement();}"
+                + "})");
         sb.append("}");
-        System.err.println(sb.toString());
         js.executeScript(sb.toString());
     }
 
@@ -86,9 +87,7 @@ public class AjaxRequestManager {
                 TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
         wait.until((new Function<WebDriver, Boolean>() {
             public Boolean apply(WebDriver driver) {
-                System.err.println(js.executeScript("window.NuxeoTestFaces"));
                 Boolean res = (Boolean) js.executeScript("return window.NuxeoTestFaces.finished();");
-                System.err.println(res);
                 return res;
             }
         }));
