@@ -86,7 +86,7 @@
 
 <c:if test="#{contentView != null}">
 
-  <c:if test="#{contentView.cacheSize &lt;= 0 and request.getParameter('AJAXREQUEST') == null}">
+  <c:if test="#{contentView.cacheSize &lt;= 0 and not facesContext.getPartialViewContext().isAjaxRequest()}">
     <nxu:set var="forceRefreshSoonEnough"
       value="#{contentView.refreshPageProvider()}"
       cache="true" />
