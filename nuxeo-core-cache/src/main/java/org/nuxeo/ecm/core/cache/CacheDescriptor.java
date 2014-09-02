@@ -46,16 +46,16 @@ public class CacheDescriptor {
     protected int ttl = 1;
 
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String,String> options = new HashMap<String,String>();
+    protected Map<String, String> options = new HashMap<String, String>();
 
     protected CacheAttributesChecker cacheChecker;
 
-    public CacheDescriptor()
-    {
+    public CacheDescriptor() {
         super();
     }
 
-    protected CacheDescriptor(String name, Class<? extends Cache> implClass, Integer ttl, Map<String,String> options) {
+    protected CacheDescriptor(String name, Class<? extends Cache> implClass,
+            Integer ttl, Map<String, String> options) {
         this.name = name;
         this.implClass = implClass;
         this.ttl = ttl;
@@ -64,7 +64,7 @@ public class CacheDescriptor {
 
     @Override
     public CacheDescriptor clone() {
-        return new CacheDescriptor(name, implClass, ttl,options);
+        return new CacheDescriptor(name, implClass, ttl, options);
     }
 
     public Class<?> getImplClass() {
@@ -80,12 +80,11 @@ public class CacheDescriptor {
         return name + ": " + implClass + ": " + ttl + ": " + options;
     }
 
-
     public void start() {
         try {
             cacheChecker = new CacheAttributesChecker(this);
-            cacheChecker.setCache(implClass.getConstructor(CacheDescriptor.class).newInstance(
-                    this));
+            cacheChecker.setCache(implClass.getConstructor(
+                    CacheDescriptor.class).newInstance(this));
         } catch (InstantiationException | IllegalAccessException
                 | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
