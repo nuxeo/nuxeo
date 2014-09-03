@@ -424,6 +424,11 @@ public class NuxeoSession implements Session {
     }
 
     @Override
+    public ObjectType getTypeDefinition(String typeId, boolean useCache) {
+        return getTypeDefinition(typeId);
+    }
+
+    @Override
     public List<Tree<ObjectType>> getTypeDescendants(String typeId, int depth,
             boolean includePropertyDefinitions) {
         // TODO Auto-generated method stub

@@ -38,6 +38,7 @@ import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
 import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
+import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.ExtensionLevel;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
@@ -348,6 +349,18 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public List<CmisExtensionElement> getExtensions(ExtensionLevel level) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean hasAllowableAction(Action action) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Set<String> getPermissonsForPrincipal(String principalId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
