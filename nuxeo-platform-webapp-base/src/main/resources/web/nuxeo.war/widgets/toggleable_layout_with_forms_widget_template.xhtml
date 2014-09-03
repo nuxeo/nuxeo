@@ -56,7 +56,7 @@
     <nxu:valueHolder
       id="#{modeValueHolderId}"
       var="layoutWidgetMode"
-      defaultValue="#{initialMode}"
+      defaultValue="#{nxu:test(widgetProperty_toggledByDefault and canToggleMode, toggledMode, initialMode)}"
       submitChanges="false">
     <c:if test="false">
       set toggled layout name after layout widget mode is set so that
