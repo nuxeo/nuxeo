@@ -36,7 +36,6 @@ Templating zone to define:
   <c:if test="#{useAjaxForm}">
 
     <h:form id="#{formId}"
-      render="#{reRender}"
       styleClass="#{formStyleClass}"
       onsubmit="removeAllTinyMCEEditors(); return true;">
       <c:if test="#{not empty render}">

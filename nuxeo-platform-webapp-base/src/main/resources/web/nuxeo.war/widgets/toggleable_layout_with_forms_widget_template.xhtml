@@ -175,13 +175,12 @@
                           <ui:decorate template="/incl/action/action_template.xhtml">
                             <ui:param name="idPrefix" value="#{widget.id}_" />
                             <ui:param name="useAjaxForm" value="true" />
+                            <ui:param name="ajaxReRender" value=":#{widgetPanelComponent.clientId}" />
                             <ui:param name="actionStyleClass" value="smallButton" />
-                            <ui:define name="after_action_trigger">
+                            <ui:define name="before_action_trigger">
                               <f:attribute name="selectedValue" value="#{initialMode}" />
                               <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
-                              <f:ajax execute="@this"
-                                render=":#{widgetPanelComponent.clientId}"
-                                listener="#{selectionActions.setStaticValue}" />
+                              <nxu:actionListenerMethod value="#{selectionActions.setStaticValue}"/>
                             </ui:define>
                           </ui:decorate>
                         </c:forEach>
@@ -195,12 +194,11 @@
                           <ui:decorate template="/incl/action/action_template.xhtml">
                             <ui:param name="idPrefix" value="#{widget.id}_" />
                             <ui:param name="useAjaxForm" value="true" />
-                            <ui:define name="after_action_trigger">
+                            <ui:param name="ajaxReRender" value=":#{widgetPanelComponent.clientId}" />
+                            <ui:define name="before_action_trigger">
                               <f:attribute name="selectedValue" value="#{initialMode}" />
                               <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
-                              <f:ajax execute="@this"
-                                render=":#{widgetPanelComponent.clientId}"
-                                listener="#{selectionActions.setStaticValue}" />
+                              <nxu:actionListenerMethod value="#{selectionActions.setStaticValue}"/>
                             </ui:define>
                           </ui:decorate>
                         </c:forEach>

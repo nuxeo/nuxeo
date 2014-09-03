@@ -38,43 +38,23 @@
   </c:if>
 
   <c:if test="#{useAjaxForm}">
-    <c:if test="#{empty elementsToReRender}">
-      <a4j:commandButton
-        id="#{widget.id}"
-        onclick="#{onclick}"
-        execute="#{action.immediate ? '@this' : '@form'}"
-        value="#{messages[action.label]}"
-        disabled="#{!action.available}"
-        styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
-        accesskey="#{action.accessKey}">
-        <ui:include src="/incl/action/action_icon_label_template.xhtml">
-          <ui:param name="hideLabel" value="true" />
-        </ui:include>
-        <ui:insert name="before_action_trigger" />
-        <nxu:actionListenerMethod
-          value="#{action.getLink()}" />
-        <ui:insert name="after_action_trigger" />
-      </a4j:commandButton>
-    </c:if>
-    <c:if test="#{not empty elementsToReRender}">
-      <a4j:commandButton
-        id="#{widget.id}"
-        onclick="#{onclick}"
-        execute="#{action.immediate ? '@this' : '@form'}"
-        value="#{messages[action.label]}"
-        disabled="#{!action.available}"
-        render="#{elementsToReRender}"
-        styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
-        accesskey="#{action.accessKey}">
-        <ui:include src="/incl/action/action_icon_label_template.xhtml">
-          <ui:param name="hideLabel" value="true" />
-        </ui:include>
-        <ui:insert name="before_action_trigger" />
-        <nxu:actionListenerMethod
-          value="#{action.getLink()}" />
-        <ui:insert name="after_action_trigger" />
-      </a4j:commandButton>
-    </c:if>
+    <h:commandButton
+      id="#{widget.id}"
+      onclick="#{onclick}"
+      value="#{messages[action.label]}"
+      disabled="#{!action.available}"
+      styleClass="button #{actionStyleClass} #{action.properties.styleClass}"
+      accesskey="#{action.accessKey}">
+      <ui:include src="/incl/action/action_icon_label_template.xhtml">
+        <ui:param name="hideLabel" value="true" />
+      </ui:include>
+      <ui:insert name="before_action_trigger" />
+      <nxu:actionListenerMethod
+        value="#{action.getLink()}" />
+      <f:ajax execute="#{action.immediate ? '@this' : '@form'}"
+        render="#{elementsToReRender}" />
+      <ui:insert name="after_action_trigger" />
+    </h:commandButton>
 
   </c:if>
 
@@ -97,37 +77,20 @@
   </c:if>
 
   <c:if test="#{useAjaxForm}">
-    <c:if test="#{empty elementsToReRender}">
-      <a4j:commandLink
-        id="#{widget.id}"
-        onclick="#{onclick}"
-        execute="#{action.immediate ? '@this' : '@form'}"
-        disabled="#{!action.available}"
-        styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
-        accesskey="#{action.accessKey}">
-        <ui:include src="/incl/action/action_icon_label_template.xhtml" />
-        <ui:insert name="before_action_trigger" />
-        <nxu:actionListenerMethod
-          value="#{action.getLink()}" />
-        <ui:insert name="after_action_trigger" />
-      </a4j:commandLink>
-    </c:if>
-    <c:if test="#{not empty elementsToReRender}">
-      <a4j:commandLink
-        id="#{widget.id}"
-        onclick="#{onclick}"
-        execute="#{action.immediate ? '@this' : '@form'}"
-        disabled="#{!action.available}"
-        render="#{elementsToReRender}"
-        styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
-        accesskey="#{action.accessKey}">
-        <ui:include src="/incl/action/action_icon_label_template.xhtml" />
-        <ui:insert name="before_action_trigger" />
-        <nxu:actionListenerMethod
-          value="#{action.getLink()}" />
-        <ui:insert name="after_action_trigger" />
-      </a4j:commandLink>
-    </c:if>
+    <h:commandLink
+      id="#{widget.id}"
+      onclick="#{onclick}"
+      disabled="#{!action.available}"
+      styleClass="actionLink #{actionStyleClass} #{action.properties.styleClass}"
+      accesskey="#{action.accessKey}">
+      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+      <ui:insert name="before_action_trigger" />
+      <nxu:actionListenerMethod
+        value="#{action.getLink()}" />
+      <f:ajax execute="#{action.immediate ? '@this' : '@form'}"
+        render="#{elementsToReRender}" />
+      <ui:insert name="after_action_trigger" />
+    </h:commandLink>
   </c:if>
 
 </c:if>
