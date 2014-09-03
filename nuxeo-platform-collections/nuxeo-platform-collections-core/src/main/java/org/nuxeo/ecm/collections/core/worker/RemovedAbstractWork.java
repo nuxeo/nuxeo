@@ -88,7 +88,7 @@ public abstract class RemovedAbstractWork extends AbstractWork {
         parameters[0] = docId;
 
         String query = NXQLQueryBuilder.getQuery(getQuery(), parameters, true,
-                false);
+                false, null);
 
         results = session.query(query, null,
                 CollectionAsynchrnonousQuery.MAX_RESULT, 0,

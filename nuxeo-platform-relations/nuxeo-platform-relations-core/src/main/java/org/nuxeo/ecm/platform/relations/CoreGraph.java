@@ -642,7 +642,7 @@ public class CoreGraph implements Graph {
             }
             query += " WHERE " + StringUtils.join(clauses, " OR ");
             query = NXQLQueryBuilder.getQuery(query, params.toArray(), true,
-                    true);
+                    true, null);
             return query;
         }
     }
@@ -753,7 +753,7 @@ public class CoreGraph implements Graph {
         if (!clauses.isEmpty()) {
             query += " WHERE " + StringUtils.join(clauses, " AND ");
             query = NXQLQueryBuilder.getQuery(query, params.toArray(), true,
-                    true);
+                    true, null);
         }
         return query;
     }
