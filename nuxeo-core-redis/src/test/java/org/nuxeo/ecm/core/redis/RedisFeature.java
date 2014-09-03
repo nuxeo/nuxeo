@@ -21,6 +21,7 @@ import java.io.IOException;
 import junit.framework.Assert;
 
 import org.junit.Assume;
+import org.nuxeo.ecm.core.cache.CacheFeature;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -141,6 +142,9 @@ public class RedisFeature extends SimpleFeature {
         if (harness.getOSGiAdapter().getBundle("org.nuxeo.ecm.core.storage") == null) {
             harness.deployBundle("org.nuxeo.ecm.core.storage");
         }
+        if (harness.getOSGiAdapter().getBundle("org.nuxeo.ecm.core.cache") == null) {
+            harness.deployBundle("org.nuxeo.ecm.core.cache");
+        }
         harness.deployBundle("org.nuxeo.ecm.core.redis");
         harness.deployTestContrib("org.nuxeo.ecm.core.redis", RedisFeature.class.getResource("/redis-contribs.xml"));
         final RedisConfigurationDescriptor config = getRedisDescriptor();
@@ -152,6 +156,11 @@ public class RedisFeature extends SimpleFeature {
         redis.clear();
     }
 
+
+    @Override
+    public void initialize(FeaturesRunner runner) throws Exception {
+        runner.getFeature(CacheFeature.class).enable();
+    }
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {

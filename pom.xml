@@ -27,6 +27,7 @@
     <module>nuxeo-core-storage</module>
     <module>nuxeo-core-storage-sql</module>
     <module>nuxeo-core-convert-api</module>
+    <module>nuxeo-core-cache</module>
     <module>nuxeo-core-convert</module>
     <module>nuxeo-core-convert-plugins</module>
     <module>nuxeo-core-convert-plugins-test</module>
