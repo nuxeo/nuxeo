@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.cache.config.usermanager">
+<component name="org.nuxeo.ecm.core.cache.config.usermanager.test">
   <extension target="org.nuxeo.ecm.core.cache.CacheServiceImpl" point="caches">
     <cache name="userManagerCache" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
       <option name="maxSize">1000</option>

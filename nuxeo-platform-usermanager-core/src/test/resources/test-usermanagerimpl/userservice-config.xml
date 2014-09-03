@@ -4,7 +4,6 @@
   <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
     point="userManager">
     <userManager class="org.nuxeo.ecm.platform.usermanager.UserManagerImpl">
-      <userCacheName>userManagerCache</userCacheName>
       <users>
         <directory>userDirectory</directory>
         <anonymousUser id="Guest">
