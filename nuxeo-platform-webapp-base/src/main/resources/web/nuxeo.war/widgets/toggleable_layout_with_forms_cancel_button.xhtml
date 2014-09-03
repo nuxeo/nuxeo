@@ -11,77 +11,61 @@
   <c:choose>
 
     <c:when test="#{display == 'buttons'}">
-      <a4j:commandButton
+      <h:commandButton
         id="#{widget.id}_#{idPrefix}cancelToggleAction"
-        immediate="true"
-        render="#{widget.id}_regionPanel"
         value="#{cancelActionLabel}"
         styleClass="button smallButton #{widgetProperty_actionStyleClass}">
-        <f:setPropertyActionListener
-          value="#{initialMode}"
-          target="#{selectionActions.selectedValue}" />
-        <f:param name="valueHolderId"
-          value="#{widget.id}_modeValueHolder" />
-        <nxu:actionListenerMethod
-          value="#{selectionActions.onClick}" />
-      </a4j:commandButton>
+        <f:attribute name="selectedValue" value="#{initialMode}" />
+        <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
+        <f:ajax execute="@this"
+          render=":#{widgetPanelComponent.clientId}"
+          listener="#{selectionActions.setStaticValue}" />
+      </h:commandButton>
     </c:when>
 
     <c:when test="#{display == 'icons'}">
-      <a4j:commandLink
+      <h:commandLink
         id="#{widget.id}_#{idPrefix}cancelToggleAction"
-        immediate="true"
-        render="#{widget.id}_regionPanel"
         styleClass="actionLink #{widgetProperty_actionStyleClass}">
         <nxh:graphicImage value="/icons/delete.png"
           title="#{cancelActionLabel}"
           alt="#{cancelActionLabel}" />
-        <f:param name="valueHolderId"
-          value="#{widget.id}_modeValueHolder" />
-        <f:setPropertyActionListener
-          value="#{initialMode}"
-          target="#{selectionActions.selectedValue}" />
-        <nxu:actionListenerMethod
-          value="#{selectionActions.onClick}" />
-      </a4j:commandLink>
+        <f:attribute name="selectedValue" value="#{initialMode}" />
+        <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
+        <f:ajax execute="@this"
+          render=":#{widgetPanelComponent.clientId}"
+          listener="#{selectionActions.setStaticValue}" />
+      </h:commandLink>
     </c:when>
 
     <c:when test="#{display == 'links'}">
-      <a4j:commandLink
+      <h:commandLink
         id="#{widget.id}_#{idPrefix}cancelToggleAction"
-        immediate="true"
-        render="#{widget.id}_regionPanel"
         value="#{cancelActionLabel}"
         styleClass="actionLink #{widgetProperty_actionStyleClass}">
-        <f:param name="valueHolderId"
-          value="#{widget.id}_modeValueHolder" />
-        <f:setPropertyActionListener
-          value="#{initialMode}"
-          target="#{selectionActions.selectedValue}" />
-        <nxu:actionListenerMethod
-          value="#{selectionActions.onClick}" />
-      </a4j:commandLink>
+        <f:attribute name="selectedValue" value="#{initialMode}" />
+        <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
+        <f:ajax execute="@this"
+          render=":#{widgetPanelComponent.clientId}"
+          listener="#{selectionActions.setStaticValue}" />
+      </h:commandLink>
     </c:when>
 
     <c:otherwise>
-      <a4j:commandLink
+      <h:commandLink
         id="#{widget.id}_#{idPrefix}cancelToggleAction"
-        immediate="true"
-        render="#{widget.id}_regionPanel"
         styleClass="actionLink #{widgetProperty_actionStyleClass}">
         <nxh:graphicImage value="/icons/delete.png"
           title="#{cancelActionLabel}"
           alt="#{cancelActionLabel}" />
         <h:outputText value=" #{cancelActionLabel}"
           styleClass="actionLabel" />
-        <f:param name="valueHolderId"
-          value="#{widget.id}_modeValueHolder" />
-        <f:setPropertyActionListener
-          value="#{initialMode}"
-          target="#{selectionActions.selectedValue}" />
-        <nxu:actionListenerMethod
-          value="#{selectionActions.onClick}" />
-      </a4j:commandLink>
+        <f:attribute name="selectedValue" value="#{initialMode}" />
+        <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
+        <f:ajax execute="@this"
+          render=":#{widgetPanelComponent.clientId}"
+          listener="#{selectionActions.setStaticValue}" />
+      </h:commandLink>
     </c:otherwise>
 
   </c:choose>

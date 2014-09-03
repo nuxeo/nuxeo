@@ -8,27 +8,21 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html">
 
-  <c:if test="#{canToggleMode}">
-    <a4j:commandLink
-      ignoreDupResponses="true"
-      id="#{widget.id}_#{idPrefix}toggleAction"
-      immediate="true"
-      render="#{widget.id}_regionPanel"
-      value="#{initialActionLabel}"
-      styleClass="button smallButton #{toggleButtonStyleClass} #{widgetProperty_actionStyleClass} #{widgetProperty_toggleActionStyleClass}">
-      <f:setPropertyActionListener
-        value="#{toggledMode}"
-        target="#{selectionActions.selectedValue}" />
-      <f:param name="valueHolderId"
-        value="#{widget.id}_modeValueHolder" />
-      <nxu:actionListenerMethod
-        value="#{selectionActions.onClick}" />
-    </a4j:commandLink>
-    <a4j:status>
-      <f:facet name="start">
-        <h:graphicImage value="/img/standart_waiter.gif" />
-      </f:facet>
-    </a4j:status>
-  </c:if>
+  <h:commandLink
+    id="#{widget.id}_#{idPrefix}toggleAction"
+    value="#{buttonLabel}"
+    immediate="true"
+    styleClass="button smallButton #{toggleButtonStyleClass} #{widgetProperty_actionStyleClass} #{widgetProperty_toggleActionStyleClass}">
+    <f:attribute name="selectedValue" value="#{modeSwitch}" />
+    <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
+    <f:ajax execute="@this"
+      render=":#{widgetPanelComponent.clientId}"
+      listener="#{selectionActions.setStaticValue}" />
+  </h:commandLink>
+  <a4j:status>
+    <f:facet name="start">
+      <h:graphicImage value="/img/standart_waiter.gif" />
+    </f:facet>
+  </a4j:status>
 
 </c:if>
