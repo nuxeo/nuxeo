@@ -20,8 +20,7 @@
   </a4j:outputPanel>
 
   <h:form>
-    <a4j:jsFunction name="damSelectDocument" render="nxw_damAssetView_panel"
-      oncomplete="nuxeo.dam.afterDocumentSelected(data);" data="#{damActions.selectedDocumentId}">
+    <a4j:jsFunction name="damSelectDocument" render="nxw_damAssetView_panel">
       <a4j:param name="param1" assignTo="#{damActions.selectedDocumentId}"  />
       <f:setPropertyActionListener
         value="nxw_damAssetView_panel"

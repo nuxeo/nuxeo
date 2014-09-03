@@ -14,6 +14,7 @@ nuxeo.dam = (function(m) {
       nuxeo.dam.displayLoading();
       lastSelectedDocument = docRef;
       damSelectDocument(docRef);
+      nuxeo.dam.afterDocumentSelected(docRef);
     }
   };
 
