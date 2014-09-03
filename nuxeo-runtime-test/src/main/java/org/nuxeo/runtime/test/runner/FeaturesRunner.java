@@ -62,8 +62,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
      */
     protected Injector injector;
 
-    protected final Set<Class<? extends RunnerFeature>> featureClasses =
-            new LinkedHashSet<>();
+    protected final Set<Class<? extends RunnerFeature>> featureClasses = new LinkedHashSet<>();
 
     protected final List<RunnerFeature> features = new ArrayList<>();
 
@@ -205,80 +204,84 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void beforeRun() throws Exception {
-        for (RunnerFeature feature : features) {
-            feature.beforeRun(this);
-        }
+        invokeFeatures(features, new FeatureCallable() {
+
+            @Override
+            public void call(RunnerFeature feature) throws Exception {
+                feature.beforeRun(FeaturesRunner.this);
+            }
+        });
     }
 
-    protected void beforeMethodRun(FrameworkMethod method, Object test)
-            throws Exception {
+    protected void beforeMethodRun(final FrameworkMethod method,
+            final Object test) throws Exception {
         MDC.put("fMethod", method.getMethod());
-        for (RunnerFeature feature : features) {
-            feature.beforeMethodRun(this, method, test);
-        }
+        invokeFeatures(features, new FeatureCallable() {
+
+            @Override
+            public void call(RunnerFeature feature) throws Exception {
+                feature.beforeMethodRun(FeaturesRunner.this, method, test);
+            }
+        });
         injector.injectMembers(test);
     }
 
-    protected void afterMethodRun(FrameworkMethod method, Object test)
-            throws Exception {
+    protected void afterMethodRun(final FrameworkMethod method,
+            final Object test) throws Exception {
         try {
-            AssertionError errors = new AssertionError("test cleanup failure");
-            for (RunnerFeature feature : reversed(features)) {
-                try {
-                    feature.afterMethodRun(this, method, test);
-                } catch (Throwable error) {
-                    errors.addSuppressed(error);
+            invokeFeatures(features, new FeatureCallable() {
+
+                @Override
+                public void call(RunnerFeature feature) throws Exception {
+                    feature.afterMethodRun(FeaturesRunner.this, method, test);
                 }
-            }
-            if (errors.getSuppressed().length > 0) {
-                throw errors;
-            }
+            });
         } finally {
             MDC.remove("fMethod");
         }
     }
 
     protected void afterRun() throws Exception {
-        AssertionError errors = new AssertionError("test cleanup failure");
-        for (RunnerFeature feature : reversed(features)) {
-            try {
-                feature.afterRun(this);
-            } catch (Throwable error) {
-                errors.addSuppressed(error);
+        invokeFeatures(reversed(features), new FeatureCallable() {
+
+            @Override
+            public void call(RunnerFeature feature) throws Exception {
+                feature.afterRun(FeaturesRunner.this);
             }
-        }
-        if (errors.getSuppressed().length > 0) {
-            throw errors;
-        }
+        });
     }
 
     protected void testCreated(Object test) throws Exception {
-        for (RunnerFeature feature : features) {
-            feature.testCreated(test);
-        }
+        invokeFeatures(features, new FeatureCallable() {
+
+            @Override
+            public void call(RunnerFeature feature) throws Exception {
+                feature.testCreated(FeaturesRunner.this);
+            }
+        });
     }
 
     protected void start() throws Exception {
-        initialize();
         MDC.put("fclass", getTargetTestClass());
-        for (RunnerFeature feature : features) {
-            feature.start(this);
-        }
+        initialize();
+        invokeFeatures(features, new FeatureCallable() {
+
+            @Override
+            public void call(RunnerFeature feature) throws Exception {
+                feature.start(FeaturesRunner.this);
+            }
+        });
     }
 
     protected void stop() throws Exception {
         try {
-            AssertionError errors = new AssertionError("test cleanup failure");
-            for (RunnerFeature feature : reversed(features)) {
-                try {
-                    feature.stop(this);
-                } catch (Throwable error) {
-                    errors.addSuppressed(error);
+            invokeFeatures(reversed(features), new FeatureCallable() {
+
+                @Override
+                public void call(RunnerFeature feature) throws Exception {
+                    feature.stop(FeaturesRunner.this);
                 }
-            }
-            if (errors.getSuppressed().length > 0) {
-                throw errors;
-            }
+            });
         } finally {
             MockProvider.INSTANCE.clearBindings();
             MDC.remove("fclass");
@@ -286,39 +289,38 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void beforeSetup() {
-        AssertionError errors = new AssertionError("Before setup errors");
-        for (RunnerFeature feature : features) {
-            try {
+        invokeFeatures(features, new FeatureCallable() {
+
+            @Override
+            public void call(RunnerFeature feature) throws Exception {
                 feature.beforeSetup(FeaturesRunner.this);
-            } catch (Exception error) {
-                errors.addSuppressed(error);
             }
-        }
-        if (errors.getSuppressed().length > 0) {
-            throw errors;
-        }
+
+        });
     }
 
     protected void afterTeardown() {
-        AssertionError errors = new AssertionError("teardown errors");
-        for (RunnerFeature feature : reversed(features)) {
-            try {
+        invokeFeatures(reversed(features), new FeatureCallable() {
+
+            @Override
+            public void call(RunnerFeature feature) throws Exception {
                 feature.afterTeardown(FeaturesRunner.this);
-            } catch (Throwable error) {
-                errors.addSuppressed(error);
             }
-        }
-        if (errors.getSuppressed().length > 0) {
-            throw errors;
-        }
+
+        });
     }
 
-    protected void configureBindings(Binder binder) {
+    protected void configureBindings(final Binder binder) {
         binder.bind(FeaturesRunner.class).toInstance(this);
         binder.bind(TargetResourceLocator.class).toInstance(locator);
-        for (RunnerFeature feature : features) {
-            feature.configure(this, binder);
-        }
+        invokeFeatures(reversed(features), new FeatureCallable() {
+
+            @Override
+            public void call(RunnerFeature feature) throws Exception {
+                feature.configure(FeaturesRunner.this, binder);
+            }
+
+        });
     }
 
     /**
@@ -353,8 +355,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             ignoreRule.check(getConfig(ConditionalIgnoreRule.Ignore.class),
                     getTargetTestClass());
         } catch (AssumptionViolatedException cause) {
-            notifier.fireTestIgnored(getDescription());
-            return;
+            throw cause;
         }
         AssertionError errors = new AssertionError("features error");
         try {
@@ -364,6 +365,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                     beforeRun();
                     resetInjector();
                     super.run(notifier); // launch tests
+                } catch (AssumptionViolatedException cause) {
+                    throw cause;
                 } catch (Exception error) {
                     errors.addSuppressed(error);
                 } finally {
@@ -461,5 +464,28 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         rules.add(ignoreRule);
         rules.add(randomBugRule);
         return rules;
+    }
+
+    protected interface FeatureCallable {
+        void call(RunnerFeature feature) throws Exception;
+    }
+
+    protected void invokeFeatures(List<RunnerFeature> features,
+            FeatureCallable callable) {
+        AssertionError errors = new AssertionError("invoke on features error "
+                + features);
+        for (RunnerFeature feature : features) {
+            try {
+                callable.call(feature);
+                ;
+            } catch (AssumptionViolatedException cause) {
+                throw cause;
+            } catch (Exception cause) {
+                errors.addSuppressed(cause);
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
     }
 }
