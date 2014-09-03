@@ -182,6 +182,7 @@
       </properties>
       <controls mode="any">
         <control name="requireSurroundingForm">true</control>
+        <property name="useAjaxForm">true</property>
       </controls>
       <subWidgetRefs>
         <widget>damSearchActions</widget>
@@ -203,7 +204,6 @@
         <property name="overallDisplay">horizontal_block</property>
         <property name="hideSubLabels">true</property>
         <property name="styleClass">searchFilterActions</property>
-        <property name="useAjaxForm">true</property>
       </properties>
     </widget>
 
