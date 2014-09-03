@@ -34,6 +34,8 @@ import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
+import org.nuxeo.ecm.core.query.sql.model.SelectClause;
+import org.nuxeo.ecm.core.query.sql.model.SelectList;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -68,13 +70,19 @@ public class QueryOptimizer {
         toplevelOperands = new LinkedList<Operand>();
     }
 
+    public boolean hasSelectFulltextScore(SQLQuery query) {
+        SelectClause node = query.select;
+        SelectList elements = node.elements;
+        for (int i = 0; i < elements.size(); i++) {
+            if (NXQL.ECM_FULLTEXT_SCORE.equals(elements.getKey(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public MultiExpression getOptimizedQuery(SQLQuery query,
             FacetFilter facetFilter) {
-        // SELECT * -> SELECT ecm:uuid
-        boolean selectStar = query.select.isEmpty();
-        if (selectStar) {
-            query.select.add(new Reference(NXQL.ECM_UUID));
-        }
         if (facetFilter != null) {
             addFacetFilterClauses(facetFilter);
         }

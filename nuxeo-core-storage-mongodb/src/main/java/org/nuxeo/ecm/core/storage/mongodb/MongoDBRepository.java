@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.mongodb;
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SCORE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
@@ -38,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
@@ -88,6 +90,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public static final String MONGODB_PUSH = "$push";
 
     public static final String MONGODB_EACH = "$each";
+
+    public static final String MONGODB_META = "$meta";
+
+    public static final String MONGODB_TEXT_SCORE = "textScore";
 
     private static final String MONGODB_INDEX_TEXT = "text";
 
@@ -580,29 +586,74 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public PartialList<State> queryAndFetch(Expression expression,
             DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
-            int limit, int offset, int countUpTo, boolean deepCopy) {
+            int limit, int offset, int countUpTo, boolean deepCopy,
+            boolean fulltextScore) {
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(
                 evaluator.pathResolver);
         DBObject query = builder.walkExpression(expression);
         addPrincipals(query, evaluator.principals);
-        List<State> list;
-        if (log.isTraceEnabled()) {
-            log.trace("MongoDB: QUERY " + query + " OFFSET " + offset
-                    + " LIMIT " + limit);
-        }
-        long totalSize;
-        DBCursor cursor = coll.find(query).skip(offset).limit(limit);
-        try {
-            if (orderByClause != null) {
-                DBObject orderBy = new BasicDBObject();
-                for (OrderByExpr ob : orderByClause.elements) {
-                    Reference ref = ob.reference;
-                    boolean desc = ob.isDescending;
-                    String field = builder.walkReference(ref).field;
-                    if (!orderBy.containsField(field)) {
-                        orderBy.put(field, desc ? MINUS_ONE : ONE);
+
+        // order by
+
+        BasicDBObject orderBy;
+        boolean sortScore = false;
+        if (orderByClause == null) {
+            orderBy = null;
+        } else {
+            orderBy = new BasicDBObject();
+            for (OrderByExpr ob : orderByClause.elements) {
+                Reference ref = ob.reference;
+                boolean desc = ob.isDescending;
+                String field = builder.walkReference(ref).field;
+                if (!orderBy.containsField(field)) {
+                    Object value;
+                    if (KEY_FULLTEXT_SCORE.equals(field)) {
+                        if (!desc) {
+                            throw new RuntimeException("Cannot sort by "
+                                    + NXQL.ECM_FULLTEXT_SCORE + " ascending");
+                        }
+                        sortScore = true;
+                        value = new BasicDBObject(MONGODB_META,
+                                MONGODB_TEXT_SCORE);
+                    } else {
+                        value = desc ? MINUS_ONE : ONE;
                     }
+                    orderBy.put(field, value);
                 }
+            }
+            if (sortScore && orderBy.size() > 1) {
+                throw new RuntimeException("Cannot sort by "
+                        + NXQL.ECM_FULLTEXT_SCORE + " and other criteria");
+            }
+        }
+
+        // projection
+
+        DBObject keys;
+        if (fulltextScore || sortScore) {
+            if (!builder.hasFulltext) {
+                throw new RuntimeException(NXQL.ECM_FULLTEXT_SCORE
+                        + " cannot be used without " + NXQL.ECM_FULLTEXT);
+            }
+            // because it's a $meta, it won't prevent all other keys
+            // from being returned
+            keys = new BasicDBObject(KEY_FULLTEXT_SCORE, new BasicDBObject(
+                    MONGODB_META, MONGODB_TEXT_SCORE));
+        } else {
+            keys = null; // all
+        }
+
+        if (log.isTraceEnabled()) {
+            log.trace("MongoDB: QUERY " + query
+                    + (orderBy == null ? "" : " ORDER BY " + orderBy)
+                    + " OFFSET " + offset + " LIMIT " + limit);
+        }
+
+        List<State> list;
+        long totalSize;
+        DBCursor cursor = coll.find(query, keys).skip(offset).limit(limit);
+        try {
+            if (orderBy != null) {
                 cursor = cursor.sort(orderBy);
             }
             list = new ArrayList<>();
@@ -634,7 +685,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             cursor.close();
         }
         if (log.isTraceEnabled() && list.size() != 0) {
-            log.trace("MongoDB: -> " + list.size());
+            log.trace("MongoDB:    -> " + list.size());
         }
         return new PartialList<>(list, totalSize);
     }

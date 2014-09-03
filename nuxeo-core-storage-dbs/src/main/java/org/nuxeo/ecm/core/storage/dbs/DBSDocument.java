@@ -195,6 +195,8 @@ public class DBSDocument implements Document {
 
     public static final String KEY_FULLTEXT_JOBID = "ecm:fulltextJobId";
 
+    public static final String KEY_FULLTEXT_SCORE = "ecm:fulltextScore";
+
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
     private static final String[] EMPTY_STRING_ARRAY = new String[0];

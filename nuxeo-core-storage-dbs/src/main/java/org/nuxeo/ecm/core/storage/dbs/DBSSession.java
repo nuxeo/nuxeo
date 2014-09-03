@@ -27,6 +27,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BASE_VERSION_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SCORE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_CHECKED_IN;
@@ -108,18 +109,16 @@ import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
-import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
-import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityException;
-import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.QueryOptimizer;
 import org.nuxeo.ecm.core.storage.State;
+import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator.OrderByComparator;
 import org.nuxeo.runtime.api.Framework;
@@ -1481,12 +1480,9 @@ public class DBSSession implements Session {
         }
         OrderByClause orderByClause = sqlQuery.orderBy;
 
-        if (onlyId) {
-            sqlQuery.select = new SelectClause();
-            sqlQuery.select.add(new Reference(NXQL.ECM_UUID));
-        }
-
-        MultiExpression expression = new QueryOptimizer().getOptimizedQuery(
+        QueryOptimizer optimizer = new QueryOptimizer();
+        boolean fulltextScore = optimizer.hasSelectFulltextScore(sqlQuery);
+        MultiExpression expression = optimizer.getOptimizedQuery(
                 sqlQuery, queryFilter.getFacetFilter());
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this,
                 expression, queryFilter.getPrincipals());
@@ -1520,7 +1516,8 @@ public class DBSSession implements Session {
         // query the repository
         boolean deepCopy = !onlyId;
         PartialList<State> pl = repository.queryAndFetch(expression, evaluator,
-                repoOrderByClause, repoLimit, repoOffset, countUpTo, deepCopy);
+                repoOrderByClause, repoLimit, repoOffset, countUpTo, deepCopy,
+                fulltextScore);
 
         List<State> states = pl.list;
         long totalSize = pl.totalSize;
@@ -1781,6 +1778,8 @@ public class DBSSession implements Session {
             return KEY_READ_ACL;
         case NXQL.ECM_FULLTEXT_JOBID:
             return KEY_FULLTEXT_JOBID;
+        case NXQL.ECM_FULLTEXT_SCORE:
+            return KEY_FULLTEXT_SCORE;
         case NXQL.ECM_FULLTEXT:
         case NXQL.ECM_TAG:
             throw new UnsupportedOperationException(name);
@@ -1834,6 +1833,8 @@ public class DBSSession implements Session {
             return "major_version"; // TODO XXX constant
         case KEY_MINOR_VERSION:
             return "minor_version";
+        case KEY_FULLTEXT_SCORE:
+            return NXQL.ECM_FULLTEXT_SCORE;
         case KEY_LIFECYCLE_POLICY:
         case KEY_ACP:
         case KEY_ANCESTOR_IDS:

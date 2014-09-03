@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -105,9 +106,11 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         try {
             DBCollection coll = MongoDBRepository.getCollection(descriptor,
                     mongoClient);
+            coll.dropIndexes();
             coll.remove(new BasicDBObject());
             coll = MongoDBRepository.getCountersCollection(descriptor,
                     mongoClient);
+            coll.dropIndexes();
             coll.remove(new BasicDBObject());
         } finally {
             mongoClient.close();
@@ -115,6 +118,7 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
     }
 
     protected void closeRepository() {
+        Framework.getService(RepositoryService.class).shutdown();
         MongoDBRepositoryService repositoryService = Framework.getLocalService(MongoDBRepositoryService.class);
         repositoryService.removeContribution(descriptor);
     }

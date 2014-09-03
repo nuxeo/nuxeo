@@ -166,11 +166,14 @@ public interface DBSRepository extends Repository {
      *            If {@code n}, count the total number if there are less than n
      *            documents otherwise set the total size to {@code -2}.
      * @param deepCopy whether returned state should be a copy
+     * @param fulltextScore whether returned state should include the fulltext
+     *            score
      * @return a partial list containing the limited documents required, and the
      *         total size according to countUpTo
      */
     PartialList<State> queryAndFetch(Expression expression,
             DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
-            int limit, int offset, int countUpTo, boolean deepCopy);
+            int limit, int offset, int countUpTo, boolean deepCopy,
+            boolean fulltextScore);
 
 }

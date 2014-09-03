@@ -74,6 +74,8 @@ public class MongoDBQueryBuilder {
 
     protected final PathResolver pathResolver;
 
+    public boolean hasFulltext;
+
     public MongoDBQueryBuilder(PathResolver pathResolver) {
         schemaManager = Framework.getLocalService(SchemaManager.class);
         this.pathResolver = pathResolver;
@@ -207,6 +209,7 @@ public class MongoDBQueryBuilder {
         String fulltextQuery = ((StringLiteral) rvalue).value;
         if (name.equals(NXQL.ECM_FULLTEXT)) {
             // standard fulltext query
+            hasFulltext = true;
             String ft = getMongoDBFulltextQuery(fulltextQuery);
             if (ft == null) {
                 // empty query, matches nothing

@@ -233,7 +233,8 @@ public class MemRepository extends DBSRepositoryBase {
     @Override
     public PartialList<State> queryAndFetch(Expression expression,
             DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
-            int limit, int offset, int countUpTo, boolean deepCopy) {
+            int limit, int offset, int countUpTo, boolean deepCopy,
+            boolean fulltextScore) {
         List<State> maps = new ArrayList<>();
         for (State state : states.values()) {
             if (evaluator.matches(state)) {
