@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.ldap.storage.cache">
+
+  <extension target="org.nuxeo.ecm.core.cache.CacheServiceImpl" point="caches">
+
+    <cache name="ldap-entry-cache" class="org.nuxeo.ecm.core.redis.RedisCacheImpl">
+      <ttl>1</ttl><!-- minutes -->
+    </cache>
+
+    <cache name="ldap-entry-cache-without-references" class="org.nuxeo.ecm.core.redis.RedisCacheImpl">
+      <ttl>1</ttl><!-- minutes -->
+    </cache>
+
+
+  </extension>
+
+</component>

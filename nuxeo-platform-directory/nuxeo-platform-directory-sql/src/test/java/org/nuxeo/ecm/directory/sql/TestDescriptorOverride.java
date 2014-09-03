@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.sql;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -40,8 +41,8 @@ public class TestDescriptorOverride extends SQLDirectoryTestCase {
         assertEquals(100, config.getQuerySizeLimit());
         assertFalse(config.isAutoincrementIdField());
         assertTrue(config.isComputeMultiTenantId());
-        assertEquals(0, config.getCacheTimeout());
-        assertEquals(0, config.getCacheMaxSize());
+        Assert.assertNull(config.cacheEntryName);
+        Assert.assertNull(config.cacheEntryWithoutReferencesName);
         assertEquals("test-users.csv", config.getDataFileName());
 
         deployContrib("org.nuxeo.ecm.directory.sql.tests",
@@ -56,8 +57,10 @@ public class TestDescriptorOverride extends SQLDirectoryTestCase {
         assertEquals(123, config.getQuerySizeLimit());
         assertTrue(config.isAutoincrementIdField());
         assertFalse(config.isComputeMultiTenantId());
-        assertEquals(123, config.getCacheTimeout());
-        assertEquals(456, config.getCacheMaxSize());
+        Assert.assertEquals("override-entry-cache", config.cacheEntryName);
+        Assert.assertEquals("override-entry-cache-wo-ref",
+                config.cacheEntryWithoutReferencesName);
+
         // inherit
         assertEquals("test-users.csv", config.getDataFileName());
         assertEquals(1, config.getTableReferences().length);

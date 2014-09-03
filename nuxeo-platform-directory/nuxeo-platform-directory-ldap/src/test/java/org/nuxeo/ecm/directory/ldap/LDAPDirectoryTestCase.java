@@ -61,6 +61,7 @@ public abstract class LDAPDirectoryTestCase extends SQLRepositoryTestCase {
 
     protected MockLdapServer server;
 
+    public static final String TEST_BUNDLE = "org.nuxeo.ecm.directory.ldap.tests";
     // change this flag to use an external LDAP directory instead of the
     // non networked default ApacheDS implementation
     public static final boolean USE_EXTERNAL_TEST_LDAP_SERVER = false;
@@ -103,19 +104,19 @@ public abstract class LDAPDirectoryTestCase extends SQLRepositoryTestCase {
 
         // setup the client environment
         deployBundle("org.nuxeo.ecm.directory.ldap.tests");
-        deployTestContrib("org.nuxeo.ecm.directory.ldap.tests",
+        deployTestContrib(TEST_BUNDLE,
                 "ldap-test-setup/DirectoryTypes.xml");
-        deployTestContrib("org.nuxeo.ecm.directory.ldap.tests",
+        deployTestContrib(TEST_BUNDLE,
                 "ldap-test-setup/DirectoryService.xml");
-        deployTestContrib("org.nuxeo.ecm.directory.ldap.tests",
+        deployTestContrib(TEST_BUNDLE,
                 "ldap-test-setup/LDAPDirectoryFactory.xml");
-        deployTestContrib("org.nuxeo.ecm.directory.ldap.tests",
+        deployTestContrib(TEST_BUNDLE,
                 "TestSQLDirectories.xml");
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            deployTestContrib("org.nuxeo.ecm.directory.ldap.tests",
+            deployTestContrib(TEST_BUNDLE,
                     EXTERNAL_SERVER_SETUP);
         } else {
-            deployTestContrib("org.nuxeo.ecm.directory.ldap.tests",
+            deployTestContrib(TEST_BUNDLE,
                     INTERNAL_SERVER_SETUP);
             server = new MockLdapServer(new File(Framework.getRuntime().getHome(), "ldap"));
             getLDAPDirectory("userDirectory").setTestServer(server);

@@ -46,9 +46,9 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -157,8 +157,8 @@ public class LDAPDirectory extends AbstractDirectory {
         searchControls = computeSearchControls();
 
         // cache parameterization
-        cache.setMaxSize(config.getCacheMaxSize());
-        cache.setTimeout(config.getCacheTimeout());
+        cache.setEntryCacheName(config.cacheEntryName);
+        cache.setEntryCacheWithoutReferencesName(config.cacheEntryWithoutReferencesName);
 
         log.debug(String.format(
                 "initialized LDAP directory %s with fields [%s] and references [%s]",

@@ -63,11 +63,11 @@ public class LDAPDirectoryDescriptor {
     @XNode("readOnly")
     public boolean readOnly = true;
 
-    @XNode("cacheTimeout")
-    public int cacheTimeout = 0;
+    @XNode("cacheEntryName")
+    public String cacheEntryName = null;
 
-    @XNode("cacheMaxSize")
-    public int cacheMaxSize = 0;
+    @XNode("cacheEntryWithoutReferencesName")
+    public String cacheEntryWithoutReferencesName = null;
 
     @XNodeMap(value = "fieldMapping", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> fieldMapping = new HashMap<String, String>();
@@ -340,14 +340,6 @@ public class LDAPDirectoryDescriptor {
 
     public void setEmptyRefMarker(String emptyRefMarker) {
         this.emptyRefMarker = emptyRefMarker;
-    }
-
-    public int getCacheTimeout() {
-        return cacheTimeout;
-    }
-
-    public int getCacheMaxSize() {
-        return cacheMaxSize;
     }
 
     public int getQuerySizeLimit() {
