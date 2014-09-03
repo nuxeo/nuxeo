@@ -21,9 +21,8 @@ import java.security.Principal;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
-import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 import org.nuxeo.ecm.core.security.AbstractSecurityPolicy;
 
 /**
@@ -56,37 +55,12 @@ public class TitleFilteringSecurityPolicy extends AbstractSecurityPolicy {
 
     @Override
     public boolean isRestrictingPermission(String permission) {
-        return permission.equals("Browse");
+        return permission.equals(SecurityConstants.BROWSE);
     }
 
     @Override
     public boolean isExpressibleInQuery() {
-        return true;
-    }
-
-    /**
-     * Transformer that adds {@code AND NOT dc:title LIKE 'SECRET%'} to the
-     * query.
-     */
-    /*
-     * Actually not implemented as this is for a CMISQL test and we don't call
-     * this.
-     */
-    public static class TitleFilteringTransformer implements Transformer {
-
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public SQLQuery transform(Principal principal, SQLQuery query) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    public static final Transformer TITLE_FILTERING_TRANSFORMER = new TitleFilteringTransformer();
-
-    @Override
-    public Transformer getQueryTransformer() {
-        return TITLE_FILTERING_TRANSFORMER;
+        return false;
     }
 
 }

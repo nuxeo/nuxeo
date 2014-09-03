@@ -57,6 +57,8 @@ public class NuxeoRepository {
 
     public static final String NUXEO_URL_PROP = "nuxeo.url";
 
+    public static final String SUPPORTS_JOINS_PROP = "org.nuxeo.cmis.joins";
+
     private static final String NUXEO_CONTEXT_PATH_PROP = "org.nuxeo.ecm.contextPath";
 
     private static final String NUXEO_CONTEXT_PATH_DEFAULT = "/nuxeo";
@@ -69,11 +71,24 @@ public class NuxeoRepository {
 
     protected final String rootFolderId;
 
+    protected boolean supportsJoins;
+
     protected TypeManagerImpl typeManager;
 
     public NuxeoRepository(String repositoryId, String rootFolderId) {
         this.repositoryId = repositoryId;
         this.rootFolderId = rootFolderId;
+        if (Framework.isBooleanPropertyTrue(SUPPORTS_JOINS_PROP)) {
+            setSupportsJoins(true);
+        }
+    }
+
+    public void setSupportsJoins(boolean supportsJoins) {
+        this.supportsJoins = supportsJoins;
+    }
+
+    public boolean supportsJoins() {
+        return supportsJoins;
     }
 
     public String getId() {
@@ -197,7 +212,8 @@ public class NuxeoRepository {
         caps.setCapabilityAcl(CapabilityAcl.NONE);
         caps.setCapabilityChanges(CapabilityChanges.OBJECTIDSONLY);
         caps.setCapabilityContentStreamUpdates(CapabilityContentStreamUpdates.PWCONLY);
-        caps.setCapabilityJoin(CapabilityJoin.INNERANDOUTER);
+        caps.setCapabilityJoin(supportsJoins ? CapabilityJoin.INNERANDOUTER
+                : CapabilityJoin.NONE);
         caps.setCapabilityQuery(CapabilityQuery.BOTHCOMBINED);
         caps.setCapabilityRendition(CapabilityRenditions.READ);
         caps.setIsPwcSearchable(Boolean.TRUE);

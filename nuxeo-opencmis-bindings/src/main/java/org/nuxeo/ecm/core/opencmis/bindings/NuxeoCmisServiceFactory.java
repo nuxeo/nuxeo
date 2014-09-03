@@ -12,9 +12,6 @@
 package org.nuxeo.ecm.core.opencmis.bindings;
 
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.impl.server.AbstractServiceFactory;
@@ -25,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Factory for a wrapped {@link NuxeoCmisService}.
@@ -41,36 +39,20 @@ public class NuxeoCmisServiceFactory extends AbstractServiceFactory {
     public static final BigInteger DEFAULT_MAX_ITEMS = BigInteger.valueOf(100);
     public static final BigInteger DEFAULT_DEPTH = BigInteger.valueOf(2);
 
-    protected Map<String, NuxeoRepository> repositories;
-
-    @Override
-    public void init(Map<String, String> parameters) {
-        repositories = Collections.synchronizedMap(new HashMap<String, NuxeoRepository>());
-    }
-
-    @Override
-    public void destroy() {
-        repositories = null;
-    }
-
     @Override
     public CmisService getService(CallContext context) {
         String repositoryId = context.getRepositoryId();
-        NuxeoRepository repository;
-        if (StringUtils.isEmpty(repositoryId)) {
-            repository = null;
+        if (StringUtils.isBlank(repositoryId)) {
+            repositoryId = null;
         } else {
-            repository = NuxeoRepositories.getRepository(repositoryId);
+            NuxeoRepository repository = Framework.getService(
+                    NuxeoRepositories.class).getRepository(repositoryId);
             if (repository == null) {
                 throw new CmisInvalidArgumentException("No such repository: "
                         + repositoryId);
             }
         }
-        NuxeoCmisService service = new NuxeoCmisService(repository, context);
-        if (repository != null && service.getCoreSession() == null) {
-            throw new CmisInvalidArgumentException("No such repository: "
-                    + repositoryId);
-        }
+        NuxeoCmisService service = new NuxeoCmisService(repositoryId, context);
 
         // wrap the service to provide default parameter checks
         return new CmisServiceWrapper<NuxeoCmisService>(service,

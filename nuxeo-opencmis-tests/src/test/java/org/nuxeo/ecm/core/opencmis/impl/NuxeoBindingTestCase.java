@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.runtime.api.Framework;
 
 public class NuxeoBindingTestCase {
 
@@ -48,9 +49,21 @@ public class NuxeoBindingTestCase {
 
     public CmisBinding binding;
 
+    protected boolean supportsJoins() {
+        return false;
+    }
+
+    protected boolean returnsRootInFolderQueries() {
+        return supportsJoins();
+    }
+
+    protected boolean supportsNXQLQueryTransformers() {
+        return !supportsJoins();
+    }
+
     public static class NuxeoTestCase extends SQLRepositoryTestCase {
         public String getRepositoryId() {
-            return REPOSITORY_NAME;
+            return database.repositoryName;
         }
 
         public CoreSession getSession() {
@@ -108,7 +121,10 @@ public class NuxeoBindingTestCase {
     public void init() throws Exception {
         repositoryId = nuxeotc.getRepositoryId();
         CoreSession coreSession = nuxeotc.getSession();
-        rootFolderId = coreSession.getRootDocument().getId();
+        NuxeoRepository repository = Framework.getService(
+                NuxeoRepositories.class).getRepository(repositoryId);
+        repository.setSupportsJoins(supportsJoins());
+        rootFolderId = repository.getRootFolderId();
 
         ThresholdOutputStreamFactory streamFactory = ThresholdOutputStreamFactory.newInstance(
                 new File((String) System.getProperty("java.io.tmpdir")),
@@ -121,11 +137,8 @@ public class NuxeoBindingTestCase {
                 new NuxeoCmisServiceFactory(), streamFactory);
         context.put(CallContext.USERNAME, USERNAME);
         context.put(CallContext.PASSWORD, PASSWORD);
-        NuxeoRepository repository = new NuxeoRepository(repositoryId,
-                rootFolderId);
         // use manual local bindings to keep the session open
-        NuxeoCmisService service = new NuxeoCmisService(repository, context,
-                coreSession);
+        NuxeoCmisService service = new NuxeoCmisService(coreSession, context);
         binding = new NuxeoBinding(service);
     }
 
@@ -146,7 +159,6 @@ public class NuxeoBindingTestCase {
             nuxeotc.closeSession();
             nuxeotc.tearDown();
         }
-        NuxeoRepositories.clear();
     }
 
 }

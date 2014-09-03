@@ -125,6 +125,7 @@ import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
@@ -176,20 +177,37 @@ public class NuxeoCmisService extends AbstractCmisService {
 
     protected final CallContext callContext;
 
-    /** Constructor called by binding. */
-    public NuxeoCmisService(NuxeoRepository repository, CallContext callContext) {
-        this.repository = repository;
+    /**
+     * Constructs a Nuxeo CMIS Service when no {@link CoreSession} is available
+     * but just a repository name.
+     *
+     * @param repositoryName the repository name
+     * @param callContext the call context
+     * @since 5.9.6
+     */
+    // Constructor called by binding.
+    public NuxeoCmisService(String repositoryName, CallContext callContext) {
+        repository = repositoryName == null ? null : Framework.getService(
+                NuxeoRepositories.class).getRepository(repositoryName);
         this.callContext = callContext;
-        this.coreSession = repository == null ? null
-                : openCoreSession(repository.getId());
+        coreSession = repositoryName == null ? null
+                : openCoreSession(repositoryName);
         coreSessionOwned = true;
         documentFilter = getDocumentFilter();
     }
 
-    /** Constructor called by high-level session from existing core session. */
-    public NuxeoCmisService(NuxeoRepository repository,
-            CallContext callContext, CoreSession coreSession) {
-        this.repository = repository;
+    /**
+     * Constructs a Nuxeo CMIS Service from an existing {@link CoreSession}.
+     *
+     * @param coreSession the session
+     * @param callContext the call context
+     * @since 5.9.6
+     */
+    // Constructor called by high-level session from existing core session.
+    public NuxeoCmisService(CoreSession coreSession, CallContext callContext) {
+        String repositoryName = coreSession.getRepositoryName();
+        repository = Framework.getService(
+                NuxeoRepositories.class).getRepository(repositoryName);
         this.callContext = callContext;
         this.coreSession = coreSession;
         coreSessionOwned = false;
@@ -259,7 +277,8 @@ public class NuxeoCmisService extends AbstractCmisService {
     /* This is the only method that does not have a repositoryId / coreSession. */
     @Override
     public List<RepositoryInfo> getRepositoryInfos(ExtensionsData extension) {
-        List<NuxeoRepository> repos = NuxeoRepositories.getRepositories();
+        List<NuxeoRepository> repos = Framework.getService(
+                NuxeoRepositories.class).getRepositories();
         List<RepositoryInfo> infos = new ArrayList<RepositoryInfo>(repos.size());
         for (NuxeoRepository repo : repos) {
             String latestChangeLogToken = getLatestChangeLogToken(repo.getId());
@@ -278,8 +297,9 @@ public class NuxeoCmisService extends AbstractCmisService {
             latestChangeLogToken = getLatestChangeLogToken(repositoryId);
             cachedChangeLogToken = latestChangeLogToken;
         }
-        return NuxeoRepositories.getRepository(repositoryId).getRepositoryInfo(
-                latestChangeLogToken, callContext);
+        NuxeoRepository repository = Framework.getService(
+                NuxeoRepositories.class).getRepository(repositoryId);
+        return repository.getRepositoryInfo(latestChangeLogToken, callContext);
     }
 
     @Override
@@ -495,7 +515,8 @@ public class NuxeoCmisService extends AbstractCmisService {
                 && name != null) {
             // infer filename from name property
             contentStream = new ContentStreamImpl(name,
-                    contentStream.getBigLength(), contentStream.getMimeType().trim(),
+                    contentStream.getBigLength(),
+                    contentStream.getMimeType().trim(),
                     contentStream.getStream());
         }
 
@@ -1346,10 +1367,10 @@ public class NuxeoCmisService extends AbstractCmisService {
         od.setChangeEventInfo(cei);
         // properties: id, doc type
         PropertiesImpl properties = new PropertiesImpl();
-        properties.addProperty(new PropertyIdImpl(
-                PropertyIds.OBJECT_ID, logEntry.getDocUUID()));
-        properties.addProperty(new PropertyIdImpl(
-                PropertyIds.OBJECT_TYPE_ID, docType));
+        properties.addProperty(new PropertyIdImpl(PropertyIds.OBJECT_ID,
+                logEntry.getDocUUID()));
+        properties.addProperty(new PropertyIdImpl(PropertyIds.OBJECT_TYPE_ID,
+                docType));
         od.setProperties(properties);
         return od;
     }
@@ -1399,11 +1420,9 @@ public class NuxeoCmisService extends AbstractCmisService {
         IterableQueryResult res = null;
         try {
             Map<String, PropertyDefinition<?>> typeInfo = new HashMap<String, PropertyDefinition<?>>();
-            if (searchAllVersions == null) {
-                searchAllVersions = Boolean.FALSE; // spec default 2.2.6.1.1
-            }
-            res = coreSession.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
-                    this, typeInfo, searchAllVersions);
+            // searchAllVersions defaults to false, spec 2.2.6.1.1
+            res = queryAndFetch(statement,
+                    Boolean.TRUE.equals(searchAllVersions), typeInfo);
 
             // convert from Nuxeo to CMIS format
             list = new ArrayList<ObjectData>();
@@ -1428,7 +1447,7 @@ public class NuxeoCmisService extends AbstractCmisService {
                         // TODO get relationships using a JOIN
                         // added to the original query
                         List<ObjectData> relationships = NuxeoObjectData.getRelationships(
-                                id, includeRelationships, coreSession, this);
+                                id, includeRelationships, this);
                         od.setRelationships(relationships);
                     }
                     if (renditionFilter != null && renditionFilter.length() > 0) {
@@ -1460,6 +1479,68 @@ public class NuxeoCmisService extends AbstractCmisService {
         objList.setNumItems(BigInteger.valueOf(numItems));
         objList.setHasMoreItems(Boolean.valueOf(numItems > skip + list.size()));
         return objList;
+    }
+
+    /**
+     * Makes a CMISQL query to the repository and returns an
+     * {@link IterableQueryResult}, which MUST be closed in a {@code finally}
+     * block.
+     *
+     * @param query the CMISQL query
+     * @param searchAllVersions whether to search all versions ({@code true}) or
+     *            only the latest version ({@code false}), for versionable types
+     * @param typeInfo a map filled with type information for each returned
+     *            property, or {@code null} if no such info is needed
+     * @return an {@link IterableQueryResult}, which MUST be closed in a
+     *         {@code finally} block
+     * @throws CmisRuntimeException if the query cannot be parsed or is invalid
+     * @since 5.9.6
+     */
+    public IterableQueryResult queryAndFetch(String query,
+            boolean searchAllVersions,
+            Map<String, PropertyDefinition<?>> typeInfo) {
+        if (repository.supportsJoins()) {
+            // straight to CoreSession as CMISQL, relies on proper QueryMaker
+            return coreSession.queryAndFetch(query, CMISQLQueryMaker.TYPE,
+                    this, typeInfo, Boolean.valueOf(searchAllVersions));
+        } else {
+            // convert to NXQL for evaluation
+            CMISQLtoNXQL converter = new CMISQLtoNXQL();
+            String nxql;
+            try {
+                nxql = converter.getNXQL(query, this, typeInfo,
+                        searchAllVersions);
+            } catch (QueryParseException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+            IterableQueryResult it;
+            try {
+                it = coreSession.queryAndFetch(nxql, NXQL.NXQL);
+            } catch (ClientException e) {
+                throw new CmisRuntimeException("Invalid query: CMISQL: "
+                        + query + ": " + e.toString(), e);
+            }
+            // wrap result
+            return converter.getIterableQueryResult(it, this);
+        }
+    }
+
+    /**
+     * Makes a CMISQL query to the repository and returns an
+     * {@link IterableQueryResult}, which MUST be closed in a {@code finally}
+     * block.
+     *
+     * @param query the CMISQL query
+     * @param searchAllVersions whether to search all versions ({@code true}) or
+     *            only the latest version ({@code false}), for versionable types
+     * @return an {@link IterableQueryResult}, which MUST be closed in a
+     *         {@code finally} block
+     * @throws CmisRuntimeException if the query cannot be parsed or is invalid
+     * @since 5.9.6
+     */
+    public IterableQueryResult queryAndFetch(String query,
+            boolean searchAllVersions) {
+        return queryAndFetch(query, searchAllVersions, null);
     }
 
     protected ObjectDataImpl makeObjectData(Map<String, Serializable> map,
@@ -1820,7 +1901,7 @@ public class NuxeoCmisService extends AbstractCmisService {
             includeRelationships = IncludeRelationships.BOTH;
         }
         List<ObjectData> rels = NuxeoObjectData.getRelationships(objectId,
-                includeRelationships, coreSession, this);
+                includeRelationships, this);
         BatchedList<ObjectData> batch = ListUtils.getBatchedList(rels,
                 maxItems, skipCount, DEFAULT_MAX_RELATIONSHIPS);
         ObjectListImpl res = new ObjectListImpl();
@@ -2000,9 +2081,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         // clause from folderId
         List<String> clauses = new ArrayList<String>(3);
         clauses.add(NuxeoTypeHelper.NX_ISVERSION + " = false");
-        // TODO optimize storage of ecm:isCheckedIn to avoid this OR
-        clauses.add("(" + NuxeoTypeHelper.NX_ISCHECKEDIN + " = false" //
-                + " OR " + NuxeoTypeHelper.NX_ISCHECKEDIN + " IS NULL)");
+        clauses.add(NuxeoTypeHelper.NX_ISCHECKEDIN + " = false");
         if (folderId != null) {
             String qid = "'" + folderId.replace("'", "''") + "'";
             clauses.add("IN_FOLDER(" + qid + ")");
@@ -2154,7 +2233,8 @@ public class NuxeoCmisService extends AbstractCmisService {
             DocumentRef docRef = doc.getRef();
             // find last version
             DocumentRef verRef = coreSession.getLastDocumentVersionRef(docRef);
-            // If doc has versions, is locked, and is checkedOut, then it was likely
+            // If doc has versions, is locked, and is checkedOut, then it was
+            // likely
             // explicitly checkedOut so invoke cancelCheckOut not delete
             if (verRef != null && doc.isLocked() && doc.isCheckedOut()) {
                 cancelCheckOut(repositoryId, objectId, extension);

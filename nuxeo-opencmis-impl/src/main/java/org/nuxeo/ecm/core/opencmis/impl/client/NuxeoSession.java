@@ -92,13 +92,11 @@ public class NuxeoSession implements Session {
 
     private OperationContext defaultContext = DEFAULT_CONTEXT;
 
-    public NuxeoSession(CoreSession coreSession, NuxeoRepository repository,
-            CallContext context) {
+    public NuxeoSession(CoreSession coreSession, CallContext context) {
         this.coreSession = coreSession;
-        repositoryId = repository.getId();
+        repositoryId = coreSession.getRepositoryName();
         objectFactory = new NuxeoObjectFactory(this);
-
-        service = new NuxeoCmisService(repository, context, coreSession);
+        service = new NuxeoCmisService(coreSession, context);
         binding = new NuxeoBinding(service);
     }
 

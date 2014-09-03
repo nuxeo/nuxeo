@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,10 +12,9 @@
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -34,33 +33,32 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class NuxeoRepositories extends DefaultComponent {
 
-    protected static Map<String, NuxeoRepository> repositories;
+    protected Map<String, NuxeoRepository> repositories;
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        repositories = new ConcurrentHashMap<String, NuxeoRepository>();
+    }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        clear();
-    }
-
-    public static void clear() {
         repositories = null;
     }
 
-    public static NuxeoRepository getRepository(String repositoryId) {
-        if (repositories == null) {
-            initRepositories();
-        }
+    public NuxeoRepository getRepository(String repositoryId) {
+        initRepositories();
         return repositories.get(repositoryId);
     }
 
-    public static List<NuxeoRepository> getRepositories() {
-        if (repositories == null) {
-            initRepositories();
-        }
+    public List<NuxeoRepository> getRepositories() {
+        initRepositories();
         return new ArrayList<NuxeoRepository>(repositories.values());
     }
 
-    protected static void initRepositories() {
-        repositories = Collections.synchronizedMap(new HashMap<String, NuxeoRepository>());
+    protected void initRepositories() {
+        if (!repositories.isEmpty()) {
+            return;
+        }
         try {
             RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
             for (String repositoryName : repositoryManager.getRepositoryNames()) {

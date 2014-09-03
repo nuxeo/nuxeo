@@ -165,7 +165,6 @@ public abstract class NuxeoSessionTestCase extends SQLRepositoryTestCase {
     public void tearDown() throws Exception {
         tearDownData();
         tearDownCmisSession();
-        NuxeoRepositories.clear();
         closeSession();
         super.tearDown();
     }

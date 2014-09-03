@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -99,6 +100,8 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Tests that hit directly the server APIs.
+ * <p>
+ * Uses CMISQL to NXQL conversion for queries, which disallows JOINs.
  */
 public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
@@ -256,7 +259,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 caps.getChangesCapability());
         assertEquals(CapabilityContentStreamUpdates.PWCONLY,
                 caps.getContentStreamUpdatesCapability());
-        assertEquals(CapabilityJoin.INNERANDOUTER, caps.getJoinCapability());
+        assertEquals(supportsJoins() ? CapabilityJoin.INNERANDOUTER
+                : CapabilityJoin.NONE, caps.getJoinCapability());
         assertEquals(CapabilityQuery.BOTHCOMBINED, caps.getQueryCapability());
         assertEquals(CapabilityRenditions.READ, caps.getRenditionsCapability());
         AclCapabilities aclCaps = info.getAclCapabilities();
@@ -1172,7 +1176,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(4, res.getNumItems().intValue());
         statement = "SELECT * FROM cmis:folder";
         res = query(statement);
-        assertEquals(5, res.getNumItems().intValue()); // root too
+        assertEquals(returnsRootInFolderQueries() ? 5 : 4,
+                res.getNumItems().intValue());
 
         statement = "SELECT cmis:objectId, dc:description" //
                 + " FROM File" //
@@ -1206,12 +1211,14 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         }
     }
 
-    @SuppressWarnings("boxing")
     protected void checkQueriedValue(String type, String term) {
         String statement = String.format(
                 "SELECT cmis:objectId FROM %s WHERE %s", type, term);
         ObjectList res = query(statement);
-        assertNotSame(0, res.getNumItems().intValue());
+        int num = res.getNumItems().intValue();
+        if (num == 0) {
+            fail("no result for: " + statement);
+        }
     }
 
     @Test
@@ -1710,6 +1717,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         assertEquals(1, res.getNumItems().intValue());
     }
 
+    @SuppressWarnings("boxing")
     @Test
     public void testQueryMixinTypes() throws Exception {
         String statement;
@@ -1743,12 +1751,7 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         statement = "SELECT * FROM File WHERE 'CustomFacetWithMySchema2' = ANY nuxeo:secondaryObjectTypeIds";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        // with several qualifiers (therefore a JOIN)
-        statement = "SELECT A.cmis:objectId FROM cmis:document A"
-                + " JOIN cmis:folder B ON A.nuxeo:parentId = B.cmis:objectId"
-                + " WHERE 'Versionable' = ANY A.nuxeo:secondaryObjectTypeIds";
-        res = query(statement);
-        assertEquals(4, res.getNumItems().intValue());
+        // additional test with JOIN in next method
 
         // ANY ... IN ...
         statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds IN ('Versionable')";
@@ -1783,6 +1786,35 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds NOT IN ('Versionable', 'CustomFacetWithoutSchema')";
         res = query(statement);
         assertEquals(0, res.getNumItems().intValue());
+    }
+
+    @SuppressWarnings("boxing")
+    @Test
+    public void testQueryMixinTypesJoin() throws Exception {
+        assumeTrue(supportsJoins());
+
+        String statement;
+        ObjectList res;
+
+        // add some instance facets on 2 documents
+        DocumentModel doc1 = nuxeotc.session.getDocument(new PathRef(
+                "/testfolder1/testfile1"));
+        assertTrue(doc1.addFacet("CustomFacetWithoutSchema"));
+        nuxeotc.session.saveDocument(doc1);
+        DocumentModel doc2 = nuxeotc.session.getDocument(new PathRef(
+                "/testfolder1/testfile2"));
+        assertTrue(doc2.addFacet("CustomFacetWithMySchema2"));
+        doc2.setPropertyValue("my2:long", 12);
+        nuxeotc.session.saveDocument(doc2);
+        nuxeotc.session.save();
+
+        // ... = ANY ...
+        // with several qualifiers (therefore a JOIN)
+        statement = "SELECT A.cmis:objectId FROM cmis:document A"
+                + " JOIN cmis:folder B ON A.nuxeo:parentId = B.cmis:objectId"
+                + " WHERE 'Versionable' = ANY A.nuxeo:secondaryObjectTypeIds";
+        res = query(statement);
+        assertEquals(4, res.getNumItems().intValue());
     }
 
     @Test
@@ -1968,7 +2000,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 "dc:title", "new title1");
         PropertyData<?> propDescription = factory.createPropertyStringData(
                 "dc:description", "new description1");
-        @SuppressWarnings("unchecked")
         Properties properties = factory.createPropertiesData(Arrays.asList(
                 propTitle, propDescription));
 
@@ -2010,14 +2041,15 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                     getString(res.getObjects().get(0), PropertyIds.NAME));
         }
 
-        // specific query for invalid index name should not break (but log a
-        // warning instead and fallback to the default index)
-        statement = "SELECT cmis:name FROM File" //
-                + " WHERE CONTAINS('nx:borked:title1')";
-        res = query(statement);
-        assertEquals(1, res.getNumItems().intValue());
-        assertEquals("new title1",
-                getString(res.getObjects().get(0), PropertyIds.NAME));
+        // query for invalid index name
+        try {
+            statement = "SELECT cmis:name FROM File" //
+                    + " WHERE CONTAINS('nx:borked:title1')";
+            res = query(statement);
+            fail();
+        } catch (CmisRuntimeException e) {
+            assertTrue(e.getMessage().contains("No such fulltext index: borked"));
+        }
     }
 
     @Test
@@ -2030,7 +2062,6 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
                 "dc:title", "new title1");
         PropertyData<?> propDescription = factory.createPropertyStringData(
                 "dc:description", "new description1");
-        @SuppressWarnings("unchecked")
         Properties properties = factory.createPropertiesData(Arrays.asList(
                 propTitle, propDescription));
 
@@ -2103,6 +2134,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoin() throws Exception {
+        assumeTrue(supportsJoins());
+
         String statement;
         ObjectList res;
         ObjectData data;
@@ -2134,6 +2167,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinWithSubQueryMulti() throws Exception {
+        assumeTrue(supportsJoins());
+
         String statement = "SELECT A.cmis:objectId, B.cmis:objectId" //
                 + " FROM cmis:document A" //
                 + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
@@ -2144,6 +2179,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinWithSubQueryMultiIsNull() throws Exception {
+        assumeTrue(supportsJoins());
+
         String statement = "SELECT A.cmis:objectId, B.cmis:objectId" //
                 + " FROM cmis:document A" //
                 + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
@@ -2154,6 +2191,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinWithSecurity() throws Exception {
+        assumeTrue(supportsJoins());
+
         nuxeotc.closeSession();
         nuxeotc.session = nuxeotc.openSessionAs("bob");
         // only testfile1 and testfile2 are accessible by bob
@@ -2199,6 +2238,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinWithFacets() throws Exception {
+        assumeTrue(supportsJoins());
+
         String statement = "SELECT A.cmis:objectId" //
                 + " FROM cmis:folder A" //
                 + " JOIN cmis:folder B ON A.cmis:objectId = B.cmis:parentId" //
@@ -2209,6 +2250,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinReturnVirtualColumns() throws Exception {
+        assumeTrue(supportsJoins());
+
         String statement = "SELECT A.cmis:objectId, A.nuxeo:contentStreamDigest, B.cmis:path" //
                 + " FROM cmis:document A" //
                 + " JOIN cmis:folder B ON A.nuxeo:parentId = B.cmis:objectId" //
@@ -2223,6 +2266,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinWithMultipleTypes() throws Exception {
+        assumeTrue(supportsJoins());
+
         String statement = "SELECT A.cmis:objectId, A.cmis:name, B.filename, C.note" //
                 + " FROM cmis:document A" //
                 + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
@@ -2236,6 +2281,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testQueryJoinWithMultipleTypes2() throws Exception {
+        assumeTrue(supportsJoins());
+
         String statement = "SELECT A.cmis:objectId, B.cmis:objectId, C.cmis:objectId" //
                 + " FROM cmis:document A" //
                 + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
@@ -2863,6 +2910,8 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
 
     @Test
     public void testRelationship() throws Exception {
+        assumeTrue(supportsJoins());
+
         String id1 = getObjectByPath("/testfolder1/testfile1").getId();
         String id2 = getObjectByPath("/testfolder1/testfile2").getId();
 
@@ -2970,28 +3019,32 @@ public class TestNuxeoBinding extends NuxeoBindingTestCase {
         res = query("SELECT cmis:objectId FROM File WHERE dc:title NOT LIKE 'SECRET%'");
         assertEquals(2, res.getNumItems().intValue());
 
-        // deploy a security policy with a non-trivial query transformer
-        // that has no CMISQL equivalent
-        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                "OSGI-INF/security-policy-contrib.xml");
-        // check that queries now fail
-        try {
-            query("SELECT cmis:objectId FROM File");
-            fail("Should be denied due to security policy");
-        } catch (CmisRuntimeException e) {
-            String msg = e.getMessage();
-            assertTrue(msg, msg.contains("Security policy"));
+        if (!supportsNXQLQueryTransformers()) {
+            // deploy a security policy with a non-trivial query transformer
+            // that has no CMISQL equivalent
+            nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                    "OSGI-INF/security-policy-contrib.xml");
+            // check that queries now fail
+            try {
+                query("SELECT cmis:objectId FROM File");
+                fail("Should be denied due to security policy");
+            } catch (CmisRuntimeException e) {
+                String msg = e.getMessage();
+                assertTrue(msg, msg.contains("Security policy"));
+            }
+
+            // without it it works again
+            nuxeotc.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
+                    "OSGI-INF/security-policy-contrib.xml");
+            res = query("SELECT cmis:objectId FROM File");
+            assertEquals(3, res.getNumItems().intValue());
         }
 
-        // without it it works again
-        nuxeotc.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                "OSGI-INF/security-policy-contrib.xml");
-        res = query("SELECT cmis:objectId FROM File");
-        assertEquals(3, res.getNumItems().intValue());
-
-        // deploy a security policy with a CMISQL transformer
-        nuxeotc.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
-                "OSGI-INF/security-policy-contrib2.xml");
+        // deploy a security policy with a transformer
+        nuxeotc.deployContrib(
+                "org.nuxeo.ecm.core.opencmis.tests.tests",
+                supportsNXQLQueryTransformers() ? "OSGI-INF/security-policy-contrib3.xml"
+                        : "OSGI-INF/security-policy-contrib2.xml");
         res = query("SELECT cmis:objectId FROM File");
         assertEquals(2, res.getNumItems().intValue());
         res = query("SELECT cmis:objectId FROM File WHERE dc:title <> 'something'");

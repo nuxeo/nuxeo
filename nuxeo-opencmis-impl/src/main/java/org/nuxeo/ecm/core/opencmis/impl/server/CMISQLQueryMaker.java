@@ -118,7 +118,8 @@ public class CMISQLQueryMaker implements QueryMaker {
             Arrays.asList(Model.HIER_TABLE_NAME + " "
                     + Model.MAIN_IS_VERSION_KEY, Model.VERSION_TABLE_NAME + " "
                     + Model.VERSION_IS_LATEST_KEY, Model.VERSION_TABLE_NAME
-                    + " " + Model.VERSION_IS_LATEST_MAJOR_KEY));
+                    + " " + Model.VERSION_IS_LATEST_MAJOR_KEY,
+                    Model.HIER_TABLE_NAME + " " + Model.MAIN_CHECKED_IN_KEY));
 
     /**
      * These mixins never match an instance mixin when used in a clause
@@ -1235,10 +1236,8 @@ public class CMISQLQueryMaker implements QueryMaker {
                     if (model.getFulltextConfiguration().indexNames.contains(requestedIndexName)) {
                         indexName = requestedIndexName;
                     } else {
-                        log.warn(String.format(
-                                "'%s' is not a registered fulltext index name:"
-                                        + " fallback to '%s'",
-                                requestedIndexName, indexName));
+                        throw new QueryParseException(
+                                "No such fulltext index: " + requestedIndexName);
                     }
                 } else {
                     log.warn(String.format(

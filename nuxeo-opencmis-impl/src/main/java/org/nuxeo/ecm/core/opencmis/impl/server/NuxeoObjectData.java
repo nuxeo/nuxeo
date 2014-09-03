@@ -390,13 +390,11 @@ public class NuxeoObjectData implements ObjectData {
 
     @Override
     public List<ObjectData> getRelationships() {
-        return getRelationships(getId(), includeRelationships,
-                doc.getCoreSession(), service);
+        return getRelationships(getId(), includeRelationships, service);
     }
 
     public static List<ObjectData> getRelationships(String id,
-            IncludeRelationships includeRelationships, CoreSession coreSession,
-            NuxeoCmisService service) {
+            IncludeRelationships includeRelationships, NuxeoCmisService service) {
         if (includeRelationships == null
                 || includeRelationships == IncludeRelationships.NONE) {
             return null;
@@ -419,8 +417,7 @@ public class NuxeoObjectData implements ObjectData {
         IterableQueryResult res = null;
         try {
             Map<String, PropertyDefinition<?>> typeInfo = new HashMap<String, PropertyDefinition<?>>();
-            res = coreSession.queryAndFetch(statement, CMISQLQueryMaker.TYPE,
-                    service, typeInfo);
+            res = service.queryAndFetch(statement, false, typeInfo);
             for (Map<String, Serializable> map : res) {
                 list.add(service.makeObjectData(map, typeInfo));
             }

@@ -46,7 +46,7 @@ public class TitleFilteringSecurityPolicy2 extends TitleFilteringSecurityPolicy 
     }
 
     /**
-     * Transformer that adds {@code AND NOT dc:title LIKE 'SECRET%'} to the
+     * Transformer that adds {@code AND dc:title NOT LIKE 'SECRET%'} to the
      * query.
      */
     public static class TitleFilteringTransformer implements QueryTransformer {
