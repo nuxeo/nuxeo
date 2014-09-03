@@ -33,7 +33,7 @@
       <properties>
         <property name="ajaxSupport">true</property>
         <property name="ajaxReRender">
-          damPanelCenter, damPanelRight, damPanelLeft
+          damPanelCenter damPanelRight damPanelLeft
         </property>
       </properties>
     </action>
@@ -44,7 +44,7 @@
       <properties>
         <property name="ajaxSupport">true</property>
         <property name="ajaxReRender">
-          damPanelLeft, damPanelCenter, damPanelRight
+          damPanelLeft damPanelCenter damPanelRight
         </property>
       </properties>
     </action>

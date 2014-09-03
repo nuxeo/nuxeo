@@ -167,7 +167,7 @@
           /dam/widgets/dam_searches_selector_widget_template.xhtml
         </property>
         <property name="ajaxReRender">
-          damPanelLeft, damPanelCenter, damPanelRight
+          damPanelLeft damPanelCenter damPanelRight
         </property>
       </properties>
       <controls mode="any">
