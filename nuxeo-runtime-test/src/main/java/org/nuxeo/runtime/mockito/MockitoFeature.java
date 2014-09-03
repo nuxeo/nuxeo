@@ -26,14 +26,18 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 public class MockitoFeature extends SimpleFeature {
 
+
+    protected final MockProvider provider = new MockProvider();
+
     @Override
     public void start(FeaturesRunner runner) throws Exception {
         InlineURLFactory.install();
+        provider.installSelf();
     }
 
     @Override
     public void testCreated(Object test) throws Exception {
-        DefaultServiceProvider.setProvider(MockProvider.INSTANCE);
+        DefaultServiceProvider.setProvider(provider);
         initMocks(test);
     }
 
@@ -45,6 +49,7 @@ public class MockitoFeature extends SimpleFeature {
     @Override
     public void stop(FeaturesRunner runner) throws Exception {
         InlineURLFactory.uninstall();
+        provider.uninstallSelf();
     }
 
     protected void cleanupThread() throws NoSuchFieldException,

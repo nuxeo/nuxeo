@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.internal.configuration.FieldAnnotationProcessor;
+import org.nuxeo.runtime.api.DefaultServiceProvider;
 
 /**
  *
@@ -45,13 +46,9 @@ public class NuxeoServiceMockAnnotationProcessor implements
         return mock;
     }
 
-    /**
-     * @param field
-     * @param mock
-     *
-     */
-    private void bindMockAsNuxeoService(final Field field, Object mock) {
-        MockProvider.INSTANCE.bind(field.getType(), mock);
+    protected void bindMockAsNuxeoService(final Field field, Object mock) {
+        MockProvider provider = (MockProvider) DefaultServiceProvider.getProvider();
+        provider.bind(field.getType(), mock);
     }
 
 }

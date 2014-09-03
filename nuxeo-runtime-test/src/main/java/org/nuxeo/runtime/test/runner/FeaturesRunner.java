@@ -38,7 +38,6 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
-import org.nuxeo.runtime.mockito.MockProvider;
 import org.nuxeo.runtime.test.TargetResourceLocator;
 
 import com.google.common.collect.Lists;
@@ -251,12 +250,12 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         });
     }
 
-    protected void testCreated(Object test) throws Exception {
+    protected void testCreated(final Object test) throws Exception {
         invokeFeatures(features, new FeatureCallable() {
 
             @Override
             public void call(RunnerFeature feature) throws Exception {
-                feature.testCreated(FeaturesRunner.this);
+                feature.testCreated(test);
             }
         });
     }
@@ -283,7 +282,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                 }
             });
         } finally {
-            MockProvider.INSTANCE.clearBindings();
             MDC.remove("fclass");
         }
     }

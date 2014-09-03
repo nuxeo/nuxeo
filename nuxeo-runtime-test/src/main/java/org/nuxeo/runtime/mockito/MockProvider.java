@@ -19,6 +19,7 @@ package org.nuxeo.runtime.mockito;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.runtime.api.DefaultServiceProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.ServiceProvider;
 
@@ -29,9 +30,13 @@ import org.nuxeo.runtime.api.ServiceProvider;
  */
 public class MockProvider implements ServiceProvider {
 
-    public static MockProvider INSTANCE = MockProvider.install();
+    protected ServiceProvider next;
 
-    private static Map<Class<?>, Object> mocks = new HashMap<>();
+    protected final Map<Class<?>, Object> mocks = new HashMap<>();
+
+
+    public MockProvider() {
+    }
 
     public void bind(Class<?> klass, Object mock) {
         mocks.put(klass, mock);
@@ -41,19 +46,23 @@ public class MockProvider implements ServiceProvider {
         mocks.clear();
     }
 
-
-    private MockProvider() {
-
+    public void installSelf() {
+        next = DefaultServiceProvider.getProvider();
+        DefaultServiceProvider.setProvider(this);
     }
 
-    private static MockProvider install() {
-        return new MockProvider();
+    public void uninstallSelf() {
+        DefaultServiceProvider.setProvider(next);
+        next = null;
     }
 
     @Override
     public <T> T getService(Class<T> serviceClass) {
         if (mocks.containsKey(serviceClass)) {
-            return (T) mocks.get(serviceClass);
+            return serviceClass.cast(mocks.get(serviceClass));
+        }
+        if (next != null) {
+            return next.getService(serviceClass);
         }
         return Framework.getRuntime().getService(serviceClass);
     }
