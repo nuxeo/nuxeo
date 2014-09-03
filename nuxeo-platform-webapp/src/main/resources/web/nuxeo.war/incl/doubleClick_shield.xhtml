@@ -13,16 +13,20 @@
       };
       return nuxeo;
     })(nuxeo || {});
-  </script>
 
-  <a4j:outputPanel ajaxRendered="true">
-    <script>
-          jQuery(document).ready(function() {
-            jQuery('form.doubleClickShielded').each(function() {
-              jQuery(this).preventDoubleSubmission();
-            });
-          });
-    </script>
-  </a4j:outputPanel>
+    jQuery(document).ready(function() {
+      jQuery('form.doubleClickShielded').each(function() {
+        jQuery(this).preventDoubleSubmission();
+      });
+    });
+    jsf.ajax.addOnEvent(function(data) {
+      var ajaxstatus = data.status;
+      if (ajaxstatus == "success") {
+        jQuery('form.doubleClickShielded').each(function() {
+          jQuery(this).preventDoubleSubmission();
+        });
+      }
+    });
+  </script>
 
 </ui:composition>

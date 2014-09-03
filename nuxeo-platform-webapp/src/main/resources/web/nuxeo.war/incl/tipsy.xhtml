@@ -6,12 +6,16 @@
   <script type="text/javascript" src="scripts/jquery.nuxeo.tipsy.js">
   </script>
 
-  <a4j:outputPanel ajaxRendered="true">
-    <script>
-      jQuery(document).ready(function() {
-	    jQuery('.tipsyShow').initTipsy(500, 5000);
-	  });
-    </script>
-  </a4j:outputPanel>
+  <script>
+    jQuery(document).ready(function() {
+      jQuery('.tipsyShow').initTipsy(500, 5000);
+    });
+    jsf.ajax.addOnEvent(function(data) {
+      var ajaxstatus = data.status;
+      if (ajaxstatus == "success") {
+        jQuery('.tipsyShow').initTipsy(500, 5000);
+      }
+    });
+  </script>
 
 </ui:composition>
