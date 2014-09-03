@@ -10,7 +10,7 @@
 <c:if test="#{widget.mode == 'edit'}">
 
   <a4j:region renderRegionOnly="true" id="#{widget.id}_region">
-    <a4j:outputPanel ajaxRendered="true" id="#{widget.id}_panel" layout="block">
+    <a4j:outputPanel id="#{widget.id}_panel" layout="block">
 
       <nxu:inputList value="#{field}" id="#{widget.id}_input" model="model"
         template="#{layoutValue.newCustomProperty}"
