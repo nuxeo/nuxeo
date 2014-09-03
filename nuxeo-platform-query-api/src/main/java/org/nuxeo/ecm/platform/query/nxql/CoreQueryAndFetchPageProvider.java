@@ -209,7 +209,7 @@ public class CoreQueryAndFetchPageProvider extends
             }
             String newQuery = NXQLQueryBuilder.getQuery(originalQuery,
                     getParameters(), def.getQuotePatternParameters(),
-                    def.getEscapePatternParameters(), sortArray);
+                    def.getEscapePatternParameters(), getSearchDocumentModel(), sortArray);
 
             if (query != null && newQuery != null && !newQuery.equals(query)) {
                 // query has changed => refresh

@@ -248,7 +248,7 @@ public class CoreQueryDocumentPageProvider extends
             if (def.getWhereClause() == null) {
                 newQuery = NXQLQueryBuilder.getQuery(def.getPattern(),
                         getParameters(), def.getQuotePatternParameters(),
-                        def.getEscapePatternParameters(), sortArray);
+                        def.getEscapePatternParameters(), getSearchDocumentModel(), sortArray);
             } else {
                 DocumentModel searchDocumentModel = getSearchDocumentModel();
                 if (searchDocumentModel == null) {

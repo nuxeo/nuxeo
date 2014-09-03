@@ -22,9 +22,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -80,7 +84,7 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
                 query);
 
         query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE ? = '?'",
-                new Object[] { "Document", "dc:title", null }, false, true);
+                new Object[] { "Document", "dc:title", null }, false, true, null);
         assertEquals("SELECT * FROM Document WHERE dc:title = ''", query);
     }
 
@@ -150,12 +154,12 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
     public void testBuildInIntegersEmptyQuery() throws Exception {
         String pattern = "SELECT * FROM Document WHERE ecm:parentId = ? and ecm:currentLifeCycleState IN (?)";
         Object[] params = new Object[] { "docId", "" };
-        String query = NXQLQueryBuilder.getQuery(pattern, params, true, true);
+        String query = NXQLQueryBuilder.getQuery(pattern, params, true, true, null);
         assertEquals(
                 "SELECT * FROM Document WHERE ecm:parentId = 'docId' and ecm:currentLifeCycleState IN ('')",
                 query);
         params = new Object[] { "docId", new String[] { "foo", "bar" } };
-        query = NXQLQueryBuilder.getQuery(pattern, params, true, true);
+        query = NXQLQueryBuilder.getQuery(pattern, params, true, true, null);
         assertEquals(
                 "SELECT * FROM Document WHERE ecm:parentId = 'docId' and ecm:currentLifeCycleState IN ('foo', 'bar')",
                 query);
@@ -165,16 +169,16 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
     @Test
     public void testSortedColumnQuery() throws Exception {
         String pattern = "SELECT * FROM Document WHERE SORTED_COLUMN IS NOT NULL";
-        String query = NXQLQueryBuilder.getQuery(pattern, null, true, true);
+        String query = NXQLQueryBuilder.getQuery(pattern, null, true, true, null);
         assertEquals("SELECT * FROM Document WHERE ecm:uuid IS NOT NULL", query);
         SortInfo sortInfo = new SortInfo("dc:title", true);
-        query = NXQLQueryBuilder.getQuery(pattern, null, true, true, sortInfo);
+        query = NXQLQueryBuilder.getQuery(pattern, null, true, true, null, sortInfo);
         assertEquals(
                 "SELECT * FROM Document WHERE dc:title IS NOT NULL ORDER BY dc:title",
                 query);
         sortInfo = new SortInfo("dc:created", true);
         SortInfo sortInfo2 = new SortInfo("dc:title", true);
-        query = NXQLQueryBuilder.getQuery(pattern, null, true, true, sortInfo,
+        query = NXQLQueryBuilder.getQuery(pattern, null, true, true, null, sortInfo,
                 sortInfo2);
         assertEquals(
                 "SELECT * FROM Document WHERE dc:created IS NOT NULL ORDER BY dc:created , dc:title",
@@ -197,6 +201,31 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
         assertEquals(
                 "SELECT * FROM Note WHERE dc:title LIKE 'bar' AND (ecm:parentId = 'foo')",
                 query);
+    }
+
+    @Test
+    public void iCanFindNamedParameters() {
+        //Given a regexp when I put named parameters
+        String pattern = "SELECT * FROM Document WHERE ecm:parentId = " +
+                ":parentIdVal AND ecm:currentLifeCycleState IN (:param1, " +
+                ":param2) AND dc:title = \":pouet\" AND dc:description = " +
+                "':desc' AND dc:description = 'ihfifehi:desc'";
+        String query = pattern.replaceAll(NXQLQueryBuilder
+                .REGEXP_EXCLUDE_DOUBLE_QUOTE, StringUtils.EMPTY);
+        query = query.replaceAll(NXQLQueryBuilder
+                .REGEXP_EXCLUDE_QUOTE, StringUtils.EMPTY);
+        Pattern p1 = Pattern.compile(NXQLQueryBuilder.REGEXP_NAMED_PARAMETER);
+        Matcher m1 = p1.matcher(query);
+
+        List<String> matches = new ArrayList<String>();
+        // I have to find them
+        while (m1.find()) {
+            matches.add(m1.group().substring(m1.group().indexOf(":") + 1));
+        }
+        assertEquals(3, matches.size());
+        assertEquals("parentIdVal", matches.get(0));
+        assertEquals("param1", matches.get(1));
+        assertEquals("param2", matches.get(2));
     }
 
 }

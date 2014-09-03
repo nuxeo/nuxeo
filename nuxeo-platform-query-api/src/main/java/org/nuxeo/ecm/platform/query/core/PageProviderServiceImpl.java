@@ -42,6 +42,8 @@ public class PageProviderServiceImpl extends DefaultComponent implements
 
     public static final String PROVIDER_EP = "providers";
 
+    public static final String NAMED_PARAMETERS = "namedParameters";
+
     protected PageProviderRegistry providerReg = new PageProviderRegistry();
 
     public PageProviderDefinition getPageProviderDefinition(String name) {

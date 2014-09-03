@@ -23,8 +23,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -38,6 +42,7 @@ import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
+import org.nuxeo.ecm.platform.query.core.PageProviderServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -53,6 +58,13 @@ public class NXQLQueryBuilder {
 
     // @since 5.9
     public static final String SORTED_COLUMN = "SORTED_COLUMN";
+
+    public static final String REGEXP_NAMED_PARAMETER = "[^a-zA-Z]:\\s*" +
+            "([a-zA-Z0-9]*)";
+
+    public static final String REGEXP_EXCLUDE_QUOTE = "'[^']*'";
+
+    public static final String REGEXP_EXCLUDE_DOUBLE_QUOTE = "\"[^\"]*\"";
 
     private NXQLQueryBuilder() {
     }
@@ -133,11 +145,11 @@ public class NXQLQueryBuilder {
             if (elements.isEmpty()) {
                 elements.add(getQuery(fixedPart, params,
                         whereClause.getQuoteFixedPartParameters(),
-                        whereClause.getEscapeFixedPartParameters()));
+                        whereClause.getEscapeFixedPartParameters(), model));
             } else {
                 elements.add('(' + getQuery(fixedPart, params,
                         whereClause.getQuoteFixedPartParameters(),
-                        whereClause.getEscapeFixedPartParameters()) + ')');
+                        whereClause.getEscapeFixedPartParameters(), model) + ')');
             }
         }
 
@@ -160,7 +172,8 @@ public class NXQLQueryBuilder {
     }
 
     public static String getQuery(String pattern, Object[] params,
-            boolean quoteParameters, boolean escape, SortInfo... sortInfos)
+            boolean quoteParameters, boolean escape,
+            DocumentModel searchDocumentModel, SortInfo... sortInfos)
             throws ClientException {
         String sortedColumn;
         if (sortInfos == null || sortInfos.length == 0) {
@@ -173,7 +186,57 @@ public class NXQLQueryBuilder {
             pattern = pattern.replace(SORTED_COLUMN, sortedColumn);
         }
         StringBuilder queryBuilder;
-        if (params == null) {
+        Map<String, Object> namedParameters = searchDocumentModel !=
+                null ? (Map<String, Object>) searchDocumentModel.getContextData().getScopedValue
+                (ScopeType.DEFAULT, PageProviderServiceImpl.NAMED_PARAMETERS) : null;
+        if (namedParameters != null) {
+            // Find all query named parameters as ":parameter" not between
+            // quotes and add them to matches
+            String query = pattern.replaceAll(REGEXP_EXCLUDE_DOUBLE_QUOTE, StringUtils.EMPTY);
+            query = query.replaceAll(REGEXP_EXCLUDE_QUOTE, StringUtils.EMPTY);
+            Pattern p1 = Pattern.compile(REGEXP_NAMED_PARAMETER);
+            Matcher m1 = p1.matcher(query);
+            List<String> matches = new ArrayList<String>();
+            while (m1.find()) {
+                matches.add(m1.group().substring(m1.group().indexOf(":") + 1));
+            }
+            for (String key : matches) {
+                Object parameter = namedParameters.get(key);
+                if (parameter == null) {
+                    continue;
+                }
+                key = ":" + key;
+                if (parameter instanceof String[]) {
+                    replaceStringList(pattern, Arrays.asList((String[])
+                            parameter), quoteParameters, escape, key);
+                } else if (parameter instanceof List) {
+                    replaceStringList(pattern, (List<?>) parameter,
+                            quoteParameters, escape, key);
+                } else if (parameter instanceof Boolean) {
+                    pattern = pattern.replaceAll(key,
+                            ((Boolean) parameter) ? "1" : "0");
+                } else if (parameter instanceof Number) {
+                    pattern = pattern.replaceAll(key, parameter.toString());
+                } else if (parameter instanceof Literal) {
+                    if (quoteParameters) {
+                        pattern = pattern.replaceAll(key,
+                                "'" + parameter.toString() +
+                                "'");
+                    } else {
+                        pattern = pattern.replaceAll(key,
+                                ((Literal) parameter).asString());
+                    }
+                } else {
+                    if (quoteParameters) {
+                        pattern = pattern.replaceAll(key,
+                                "'" + parameter + "'");
+                    } else {
+                        pattern = pattern.replaceAll(key, (String) parameter);
+                    }
+                }
+            }
+            queryBuilder = new StringBuilder(pattern);
+        } else if (params == null) {
             queryBuilder = new StringBuilder(pattern + ' ');
         } else {
             // XXX: the + " " is a workaround for the buggy implementation
@@ -233,6 +296,17 @@ public class NXQLQueryBuilder {
         if (addParentheses) {
             queryBuilder.append(')');
         }
+    }
+
+    public static String replaceStringList(String pattern, List<?> listParams,
+            boolean quoteParameters, boolean escape, String key) {
+        List<String> result = new ArrayList<String>(listParams.size());
+        for (Object param : listParams) {
+            result.add(prepareStringLiteral(param.toString(), quoteParameters,
+                    escape));
+        }
+        return pattern.replaceAll(key, '(' + StringUtils.join(result, ", " +
+                "") + ')');
     }
 
     /**
