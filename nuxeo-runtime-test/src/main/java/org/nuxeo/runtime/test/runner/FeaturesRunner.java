@@ -353,7 +353,8 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             ignoreRule.check(getConfig(ConditionalIgnoreRule.Ignore.class),
                     getTargetTestClass());
         } catch (AssumptionViolatedException cause) {
-            throw cause;
+            notifier.fireTestIgnored(getDescription());
+            return;
         }
         AssertionError errors = new AssertionError("features error");
         try {
@@ -363,8 +364,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
                     beforeRun();
                     resetInjector();
                     super.run(notifier); // launch tests
-                } catch (AssumptionViolatedException cause) {
-                    throw cause;
                 } catch (Exception error) {
                     errors.addSuppressed(error);
                 } finally {
