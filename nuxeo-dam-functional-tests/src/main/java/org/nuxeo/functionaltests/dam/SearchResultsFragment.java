@@ -55,8 +55,9 @@ public class SearchResultsFragment extends WebFragmentImpl {
             String description, String originalAuthor, String authoringDate) {
         newAssetButton.click();
         AssetCreationFancyBoxFragment fancyBoxFragment = showAssetCreation(damPage);
-        LayoutElement layout = new LayoutElement(driver,
-                "nxl_gridDamLayout:nxw_damSearchResultsActions_damNewAsset_fancyform");
+        LayoutElement layout = new LayoutElement(
+                driver,
+                "nxl_gridDamLayout:nxw_damSearchResultsActions_damNewAsset_fancy_subview:nxw_damSearchResultsActions_damNewAsset_fancyform");
         Select select = new Select(
                 layout.getSubElement("nxw_damNewAsset_after_view_select"));
         select.selectByValue(type);

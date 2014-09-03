@@ -95,12 +95,12 @@ public class ITAssetViewTest extends AbstractDAMTest {
 
         LayoutElement layout = new LayoutElement(driver,
                 "nxl_gridDamLayout:nxw_damAssetViewMetadata_toggledForm");
-        layout.getWidget("nxl_heading:nxw_title").setInputValue("New title");
-        layout.getWidget("nxl_heading:nxw_description").setInputValue(
+        layout.getWidget("nxl_heading_1:nxw_title_1").setInputValue("New title");
+        layout.getWidget("nxl_heading_1:nxw_description_1").setInputValue(
                 "New description");
-        layout.getWidget("nxl_dam_common_2:nxw_damc_author_3").setInputValue(
+        layout.getWidget("nxl_dam_common_3:nxw_damc_author_6").setInputValue(
                 "New author");
-        layout.getWidget("nxl_dam_common_2:nxw_damc_authoringDate_3InputDate").setInputValue(
+        layout.getWidget("nxl_dam_common_3:nxw_damc_authoringDate_6InputDate").setInputValue(
                 "10/10/2010");
         metadataBox.save();
 

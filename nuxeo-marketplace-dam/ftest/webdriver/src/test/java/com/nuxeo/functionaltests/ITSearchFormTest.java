@@ -63,6 +63,8 @@ public class ITSearchFormTest extends AbstractDAMTest {
         SearchFormFragment searchFormFragment = damPage.getSearchFormFragment();
         searchFormFragment.fillText("Another");
         searchFormFragment.doSearch();
+        // reload results after ajax update
+        searchResultsFragment = damPage.getSearchResultsFragment();
         Locator.waitForTextNotPresent(searchResultsFragment.getElement(), "One File");
         searchResultsFragment.getSelectedAsset().checkTextToBePresent("Another");
         searchResultsFragment.checkTextToBeNotPresent("One File");
@@ -70,6 +72,8 @@ public class ITSearchFormTest extends AbstractDAMTest {
         searchResultsFragment.checkTextToBeNotPresent("Sample doc");
 
         searchFormFragment.clearSearch();
+        // reload results after ajax update
+        searchResultsFragment = damPage.getSearchResultsFragment();
         Locator.waitForTextPresent(searchResultsFragment.getElement(), "One File");
         searchResultsFragment.getSelectedAsset().checkTextToBePresent("Another");
         searchResultsFragment.checkTextToBePresent("One File");
@@ -93,6 +97,8 @@ public class ITSearchFormTest extends AbstractDAMTest {
         SearchFormFragment searchFormFragment = damPage.getSearchFormFragment();
         searchFormFragment.fillText("Document");
         searchFormFragment.doSearch();
+        // reload results after ajax update
+        searchResultsFragment = damPage.getSearchResultsFragment();
         Locator.waitForTextNotPresent(searchResultsFragment.getElement(),
                 "Sample picture");
         searchResultsFragment.getSelectedAsset().containsText("One");
@@ -101,6 +107,8 @@ public class ITSearchFormTest extends AbstractDAMTest {
         searchResultsFragment.checkTextToBeNotPresent("Sample picture");
         searchFormFragment.fillOriginalAuthor("Fry");
         searchFormFragment.doSearch();
+        // reload results after ajax update
+        searchResultsFragment = damPage.getSearchResultsFragment();
         Locator.waitForTextNotPresent(searchResultsFragment.getElement(),
                 "One Document");
         searchResultsFragment.getSelectedAsset().checkTextToBePresent("Another");
@@ -111,6 +119,8 @@ public class ITSearchFormTest extends AbstractDAMTest {
         searchFormFragment.fillAuthoringDate("1/1/2011 3:06 PM",
                 "10/10/2011 3:06 PM");
         searchFormFragment.doSearch();
+        // reload results after ajax update
+        searchResultsFragment = damPage.getSearchResultsFragment();
         Locator.waitForTextPresent(searchResultsFragment.getElement(),
                 "No documents match your search criteria");
     }
