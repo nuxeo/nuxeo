@@ -26,6 +26,8 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.event.PhaseId;
 import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.TagAttribute;
@@ -58,7 +60,6 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
     @Override
     public void applyNextHandler(FaceletContext ctx, UIComponent c)
             throws IOException, FacesException, ELException {
-
         String varName = null;
         boolean varSet = false;
         if (var != null) {
@@ -83,20 +84,7 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
 
         try {
             if (varSet) {
-                Object valueToExpose = null;
-                if (c instanceof UIValueHolder) {
-                    UIValueHolder holder = (UIValueHolder) c;
-                    valueToExpose = holder.getValueToExpose();
-                } else {
-                    String className = null;
-                    if (c != null) {
-                        className = c.getClass().getName();
-                    }
-                    log.error(String.format(
-                            "Associated component with class '%s' is not"
-                                    + " a UIValueHolder instance => cannot "
-                                    + "retrieve value to expose.", className));
-                }
+                Object valueToExpose = retrieveValueToExpose(ctx, c);
                 ExpressionFactory eFactory = ctx.getExpressionFactory();
                 ValueExpression valueVe = eFactory.createValueExpression(
                         valueToExpose, Object.class);
@@ -114,6 +102,45 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
                 ctx.setVariableMapper(orig);
             }
         }
+    }
+
+    /**
+     * Returns the value to expose at build time for this tag handler.
+     * <p>
+     * Value can be retrieved directly from component in most of cases, but
+     * should be retrieved from view-scoped managed bean when the restore phase
+     * is called (as component has not been restored yet, so its value is not
+     * available to be exposed in the tree view being built).
+     *
+     * @since 5.9.4-JSF2
+     */
+    protected Object retrieveValueToExpose(FaceletContext context,
+            UIComponent comp) {
+        if (comp instanceof UIValueHolder) {
+            UIValueHolder c = (UIValueHolder) comp;
+            FacesContext faces = context.getFacesContext();
+            if (PhaseId.RESTORE_VIEW.equals(faces.getCurrentPhaseId())) {
+                // lookup backing bean
+                NuxeoValueHolderBean bean = ((UIValueHolder) c).lookupBean(faces);
+                if (bean != null) {
+                    String fid = ((UIValueHolder) c).getFaceletId();
+                    if (fid != null) {
+                        return bean.getState(fid);
+                    }
+                }
+            }
+            return c.getValueToExpose();
+        } else {
+            String className = null;
+            if (comp != null) {
+                className = comp.getClass().getName();
+            }
+            log.error(String.format(
+                    "Associated component with class '%s' is not"
+                            + " a UIValueHolder instance => cannot "
+                            + "retrieve value to expose.", className));
+        }
+        return null;
     }
 
 }

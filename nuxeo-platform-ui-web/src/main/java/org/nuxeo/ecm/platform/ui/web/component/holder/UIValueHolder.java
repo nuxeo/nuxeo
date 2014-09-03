@@ -58,6 +58,13 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
 
     protected String var;
 
+    /**
+     * <p>
+     * The submittedValue value of this {@link UIInput} component.
+     * </p>
+     */
+    protected transient Object submittedValue = null;
+
     protected Boolean submitValue;
 
     @Override
@@ -314,7 +321,7 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
     }
 
     public Object getValueToExpose() {
-        Object value = super.getSubmittedValue();
+        Object value = getSubmittedValue();
         if (value == null) {
             // get original value bound
             value = super.getValue();
@@ -327,8 +334,7 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
         Object value = getValueToExpose();
         AliasVariableMapper alias = new AliasVariableMapper();
         // reuse facelets id set on component
-        String aliasId = (String) getAttributes().get(
-                ComponentSupport.MARK_CREATED);
+        String aliasId = getFaceletId();
         alias.setId(aliasId);
         alias.setVariable(
                 var,
@@ -345,7 +351,7 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
         super.restoreState(context, values[0]);
         var = (String) values[1];
         submitValue = (Boolean) values[2];
-        setSubmittedValue(values[3]);
+        submittedValue = values[3];
     }
 
     /**
@@ -387,6 +393,52 @@ public class UIValueHolder extends UIInput implements ResettableComponent {
                         alias.getId());
             }
         }
+    }
+
+    public String getFaceletId() {
+        return (String) getAttributes().get(ComponentSupport.MARK_CREATED);
+    }
+
+    public NuxeoValueHolderBean lookupBean(FacesContext ctx) {
+        String expr = "#{" + NuxeoValueHolderBean.NAME + "}";
+        NuxeoValueHolderBean bean = (NuxeoValueHolderBean) ctx.getApplication().evaluateExpressionGet(
+                ctx, expr, Object.class);
+        if (bean == null) {
+            log.error("Managed bean not found: " + expr);
+            return null;
+        }
+        return bean;
+    }
+
+    protected void saveToBean(Object value) {
+        if (getFaceletId() == null) {
+            // not added to the view yet, do not bother
+            return;
+        }
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        if (ctx != null) {
+            NuxeoValueHolderBean bean = lookupBean(ctx);
+            if (bean != null) {
+                bean.saveState(this, value);
+            }
+        }
+    }
+
+    @Override
+    public void setSubmittedValue(Object submittedValue) {
+        this.submittedValue = submittedValue;
+        saveToBean(submittedValue);
+    }
+
+    @Override
+    public Object getSubmittedValue() {
+        return submittedValue;
+    }
+
+    @Override
+    public void setValue(Object value) {
+        super.setValue(value);
+        saveToBean(value);
     }
 
 }

@@ -811,6 +811,13 @@
       </managed-bean-class>
       <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
+    <managed-bean>
+      <managed-bean-name>nuxeoValueHolderBean</managed-bean-name>
+      <managed-bean-class>
+        org.nuxeo.ecm.platform.ui.web.component.holder.NuxeoValueHolderBean
+      </managed-bean-class>
+      <managed-bean-scope>view</managed-bean-scope>
+    </managed-bean>
   </extension>
 
   <install>
