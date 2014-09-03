@@ -34,9 +34,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 
 /**
- * APG-240 All attributes are defined public because the user manager service do not get
- * access to the fields. OSGI don't allow splitted packages having access to public members defined
- * from an another package provider.
+ * APG-240 All attributes are defined public because the user manager service do
+ * not get access to the fields. OSGI don't allow splitted packages having
+ * access to public members defined from an another package provider.
  *
  * @author matic
  */
@@ -94,16 +94,14 @@ public class UserManagerDescriptor implements Serializable {
 
     public Map<String, MatchType> userSearchFields = new LinkedHashMap<String, MatchType>();
 
-    @XNodeList(value = "users/searchFields/exactMatchSearchField",
-            componentType = String.class, type = String[].class)
+    @XNodeList(value = "users/searchFields/exactMatchSearchField", componentType = String.class, type = String[].class)
     public void setExactMatchUserSearchFields(String[] fields) {
         for (String field : fields) {
             userSearchFields.put(field, MatchType.EXACT);
         }
     }
 
-    @XNodeList(value = "users/searchFields/substringMatchSearchField",
-            componentType = String.class, type = String[].class)
+    @XNodeList(value = "users/searchFields/substringMatchSearchField", componentType = String.class, type = String[].class)
     public void setSubstringMatchUserSearchFields(String[] fields) {
         for (String field : fields) {
             userSearchFields.put(field, MatchType.SUBSTRING);
@@ -114,8 +112,7 @@ public class UserManagerDescriptor implements Serializable {
      * @deprecated use setSubstringMatchUserSearchFields instead
      */
     @Deprecated
-    @XNodeList(value = "users/searchFields/searchField",
-            componentType = String.class, type = String[].class)
+    @XNodeList(value = "users/searchFields/searchField", componentType = String.class, type = String[].class)
     public void setUserSearchFields(String[] fields) {
         setSubstringMatchUserSearchFields(fields);
     }
@@ -130,8 +127,7 @@ public class UserManagerDescriptor implements Serializable {
     @XNode("users/anonymousUser")
     public VirtualUserDescriptor anonymousUser;
 
-    @XNodeMap(value = "users/virtualUser", key = "@id",
-            type = HashMap.class, componentType = VirtualUserDescriptor.class)
+    @XNodeMap(value = "users/virtualUser", key = "@id", type = HashMap.class, componentType = VirtualUserDescriptor.class)
     public Map<String, VirtualUserDescriptor> virtualUsers;
 
     @XNode("groups/directory")
@@ -165,16 +161,14 @@ public class UserManagerDescriptor implements Serializable {
 
     public Map<String, MatchType> groupSearchFields = new LinkedHashMap<String, MatchType>();
 
-    @XNodeList(value = "groups/searchFields/exactMatchSearchField",
-            componentType = String.class, type = String[].class)
+    @XNodeList(value = "groups/searchFields/exactMatchSearchField", componentType = String.class, type = String[].class)
     public void setExactMatchGroupSearchFields(String[] fields) {
         for (String field : fields) {
             groupSearchFields.put(field, MatchType.EXACT);
         }
     }
 
-    @XNodeList(value = "groups/searchFields/substringMatchSearchField",
-            componentType = String.class, type = String[].class)
+    @XNodeList(value = "groups/searchFields/substringMatchSearchField", componentType = String.class, type = String[].class)
     public void setSubstringMatchGroupSearchFields(String[] fields) {
         for (String field : fields) {
             groupSearchFields.put(field, MatchType.SUBSTRING);
@@ -187,12 +181,8 @@ public class UserManagerDescriptor implements Serializable {
     @XNode("digestAuthRealm")
     public String digestAuthRealm;
 
-
-    @XNode("userCacheMaxSize")
-    public Integer userCacheMaxSize=1000;
-
-    @XNode("userCacheTimeout")
-    public Integer userCacheTimeout=10;
+    @XNode("userCacheName")
+    public String userCacheName;
 
     /**
      * Merge with data from another descriptor.
@@ -201,11 +191,8 @@ public class UserManagerDescriptor implements Serializable {
         if (other.userManagerClass != null) {
             userManagerClass = other.userManagerClass;
         }
-        if (other.userCacheMaxSize != null && other.userCacheMaxSize!=1000) {
-            userCacheMaxSize = other.userCacheMaxSize;
-        }
-        if (other.userCacheTimeout != null && other.userCacheTimeout!=10) {
-            userCacheTimeout = other.userCacheTimeout;
+        if (other.userCacheName != null) {
+            userCacheName = other.userCacheName;
         }
         if (other.userListingMode != null) {
             userListingMode = other.userListingMode;

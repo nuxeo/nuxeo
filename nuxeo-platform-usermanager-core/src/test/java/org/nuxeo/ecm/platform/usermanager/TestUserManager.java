@@ -19,7 +19,12 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -43,6 +48,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.redis.RedisFeature;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
@@ -60,6 +66,7 @@ public class TestUserManager extends NXRuntimeTestCase {
 
     protected UserService userService;
 
+        
     @Override
     @Before
     public void setUp() throws Exception {
@@ -69,17 +76,29 @@ public class TestUserManager extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.cache");
         deployBundle("org.nuxeo.ecm.directory.api");
         deployBundle("org.nuxeo.ecm.directory");
         deployBundle("org.nuxeo.ecm.directory.sql");
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
         deployBundle("org.nuxeo.ecm.platform.usermanager");
+        
+        if (!RedisFeature.getMode().equals(RedisFeature.Mode.disabled)) {
+            RedisFeature.setup(this);
+            deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                    "test-usermanagerimpl/usermanager-redis-cache-config.xml");
 
+        } else {
+            deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                    "test-usermanagerimpl/usermanager-inmemory-cache-config.xml");
+        }
+        
+        fireFrameworkStarted();
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/directory-config.xml");
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/userservice-config.xml");
-
+        
         userService = (UserService) Framework.getRuntime().getComponent(
                 UserService.NAME);
 
