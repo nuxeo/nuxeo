@@ -583,7 +583,8 @@
       <helpLabels>
         <label mode="any">
           The textarea width. Defaults to "640".
-          Give the exact size in pixels or percentage.
+          Give the exact
+          size in pixels or percentage.
         </label>
       </helpLabels>
       <fields>
@@ -601,7 +602,8 @@
       <helpLabels>
         <label mode="any">
           The textarea height. Defaults to "400".
-          Give the exact size in pixels or percentage.
+          Give the exact
+          size in pixels or percentage.
         </label>
       </helpLabels>
       <fields>
@@ -1881,10 +1883,12 @@
                   <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">directory_displayObsoleteEntries</widget>
+                  <widget category="widgetTypeConf">directory_displayObsoleteEntries
+                  </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">directory_notDisplayDefaultOption</widget>
+                  <widget category="widgetTypeConf">directory_notDisplayDefaultOption
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">directory_ordering</widget>
@@ -1936,6 +1940,37 @@
       </handler-class>
     </widgetType>
 
+    <widgetType name="selectManyListbox">
+      <configuration>
+        <sinceVersion>5.9.6</sinceVersion>
+        <title>Select Many Listbox</title>
+        <description></description>
+        <categories>
+          <!-- don't export it yet -->
+          <category>configuration_not_ready</category>
+          <!--
+            <category>document</category>
+          -->
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <!-- TODO
+            <mode>view</mode>
+          -->
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectManyListboxWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
     <widgetType name="selectOneMenu">
       <configuration>
         <sinceVersion>5.4.2</sinceVersion>
@@ -1967,6 +2002,37 @@
       </handler-class>
     </widgetType>
 
+    <widgetType name="selectManyMenu">
+      <configuration>
+        <sinceVersion>5.9.6</sinceVersion>
+        <title>Select Many Menu</title>
+        <description></description>
+        <categories>
+          <!-- don't export it yet -->
+          <category>configuration_not_ready</category>
+          <!--
+            <category>document</category>
+          -->
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <!-- TODO
+            <mode>view</mode>
+          -->
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectManyMenuWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
     <widgetType name="selectOneRadio">
       <configuration>
         <sinceVersion>5.7.3</sinceVersion>
@@ -1995,6 +2061,37 @@
       </configuration>
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectOneRadioWidgetTypeHandler
+      </handler-class>
+    </widgetType>
+
+    <widgetType name="selectManyCheckbox">
+      <configuration>
+        <sinceVersion>5.9.6</sinceVersion>
+        <title>Select Many Checbox</title>
+        <description></description>
+        <categories>
+          <!-- don't export it yet -->
+          <category>configuration_not_ready</category>
+          <!--
+            <category>document</category>
+          -->
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <!-- TODO
+            <mode>view</mode>
+          -->
+        </supportedModes>
+        <fields>
+          <list>true</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>string</type>
+          </supportedTypes>
+        </fields>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectManyChecboxWidgetTypeHandler
       </handler-class>
     </widgetType>
 
@@ -2066,10 +2163,12 @@
                   <widget category="widgetTypeConf">directory_displayIdAndLabel</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">directory_displayObsoleteEntries</widget>
+                  <widget category="widgetTypeConf">directory_displayObsoleteEntries
+                  </widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">directory_notDisplayDefaultOption</widget>
+                  <widget category="widgetTypeConf">directory_notDisplayDefaultOption
+                  </widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">directory_ordering</widget>
@@ -2306,7 +2405,8 @@
                   <widget category="widgetTypeConf">container_subwidgets_display</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">container_subwidgets_hideSubLabels</widget>
+                  <widget category="widgetTypeConf">container_subwidgets_hideSubLabels
+                  </widget>
                 </row>
                 <row>
                   <widget>foldable</widget>
@@ -2458,7 +2558,8 @@
       <handler-class>
         org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
       </handler-class>
-      <property name="template">/widgets/container_widget_template.xhtml</property>
+      <property name="template">/widgets/container_widget_template.xhtml
+      </property>
     </widgetType>
 
     <widgetType name="checkbox">
@@ -2767,7 +2868,8 @@
             <ul>
               <li>first field holds the text content</li>
               <li>second field holds the text mimetype (text/plain,
-                text/html...)</li>
+                text/html...)
+              </li>
             </ul>
           </p>
         </description>

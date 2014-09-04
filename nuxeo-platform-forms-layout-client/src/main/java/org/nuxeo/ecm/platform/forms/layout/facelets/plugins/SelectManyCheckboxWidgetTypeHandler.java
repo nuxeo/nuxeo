@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
-import javax.faces.component.html.HtmlSelectOneMenu;
+import javax.faces.component.html.HtmlSelectManyCheckbox;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagConfig;
@@ -25,14 +25,9 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 
 /**
- * Displays a select one menu in edit mode, taking into account select options
- * declared on the widget.
- * <p>
- * Only edit mode is implemented for now.
- *
- * @since 5.4.2
+ * @since 5.9.4-JSF2
  */
-public class SelectOneMenuWidgetTypeHandler extends
+public class SelectManyCheckboxWidgetTypeHandler extends
         AbstractSelectWidgetTypeHandler {
 
     private static final long serialVersionUID = 1L;
@@ -42,7 +37,7 @@ public class SelectOneMenuWidgetTypeHandler extends
             TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
             throws WidgetException {
         return getFaceletHandler(ctx, tagConfig, widget, subHandlers,
-                HtmlSelectOneMenu.COMPONENT_TYPE);
+                HtmlSelectManyCheckbox.COMPONENT_TYPE);
     }
 
 }
