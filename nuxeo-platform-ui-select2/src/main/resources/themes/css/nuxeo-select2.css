@@ -12,7 +12,9 @@ author: lkemen@nuxeo.com
   background-image: none;
   border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 2px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07) inset }
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07) inset;
+  font-family: inherit;
+  font-size: inherit; }
 
 .select2-container .select2-choice {
   border-radius: 2px 4px 4px 2px }
