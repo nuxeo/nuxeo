@@ -16,14 +16,14 @@
  */
 package org.nuxeo.ecm.automation.core.impl;
 
-import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.AutomationAdmin;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class ReloadListener implements EventListener {
 
@@ -36,7 +36,7 @@ public class ReloadListener implements EventListener {
     public void handleEvent(Event event) {
         final String id = event.getId();
         if ("flushCompiledChains".equals(id) || "flush".equals(id)) {
-            OperationServiceImpl svc = (OperationServiceImpl) Framework.getLocalService(AutomationService.class);
+            AutomationAdmin svc = Framework.getLocalService(AutomationAdmin.class);
             svc.flushCompiledChains();
         }
     }
