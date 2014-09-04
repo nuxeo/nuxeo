@@ -16,15 +16,16 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.webengine.model.WebAdapter;
+import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
+import org.nuxeo.runtime.api.Framework;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
-import org.nuxeo.ecm.platform.query.core.CoreQueryPageProviderDescriptor;
-import org.nuxeo.ecm.webengine.model.WebAdapter;
-import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 
 /**
  *
@@ -36,6 +37,8 @@ import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 public class SearchAdapter extends DocumentModelListPaginableAdapter {
 
     public static final String NAME = "search";
+
+    public static final  String pageProviderName = "SEARCH_ADAPTER";
 
     private String extractQueryFromRequest(final HttpServletRequest request) {
         String query = request.getParameter("query");
@@ -68,17 +71,18 @@ public class SearchAdapter extends DocumentModelListPaginableAdapter {
 
     @Override
     protected PageProviderDefinition getPageProviderDefinition() {
-        String query = extractQueryFromRequest(ctx.getRequest());
-        CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
 
-        desc.setPattern(query);
+        String query = extractQueryFromRequest(ctx.getRequest());
+        PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
+        PageProviderDefinition ppdefinition = ppService.getPageProviderDefinition(pageProviderName);
+        ppdefinition.setPattern(query);
+
         if (maxResults != null && !maxResults.isEmpty()
                 && !maxResults.equals("-1")) {
             // set the maxResults to avoid slowing down queries
-            desc.getProperties().put("maxResults", maxResults);
+            ppdefinition.getProperties().put("maxResults", maxResults);
         }
-        return desc;
-
+        return ppdefinition;
     }
 }
 
