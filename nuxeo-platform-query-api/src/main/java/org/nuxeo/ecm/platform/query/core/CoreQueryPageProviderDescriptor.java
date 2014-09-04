@@ -68,6 +68,12 @@ public class CoreQueryPageProviderDescriptor extends BasePageProviderDescriptor
         if (whereClause != null) {
             clone.whereClause = whereClause.clone();
         }
+        if (aggregates != null) {
+            clone.aggregates = new ArrayList<AggregateDescriptor>();
+            for (AggregateDescriptor agg : aggregates) {
+                clone.aggregates.add(agg.clone());
+            }
+        }
         return clone;
     }
 

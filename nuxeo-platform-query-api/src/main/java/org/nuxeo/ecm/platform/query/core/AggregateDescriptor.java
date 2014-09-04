@@ -127,10 +127,12 @@ public class AggregateDescriptor implements AggregateDefinition {
     @Override
     public AggregateDescriptor clone() {
         AggregateDescriptor clone = new AggregateDescriptor();
-        clone.id = clone.id;
+        clone.id = id;
         clone.parameter = parameter;
         clone.type = type;
-        clone.field = field.clone();
+        if (field != null) {
+            clone.field = field.clone();
+        }
         clone.jsonProperties = jsonProperties;
         if (properties != null) {
             clone.properties = new HashMap<String, String>();

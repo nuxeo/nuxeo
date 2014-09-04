@@ -27,8 +27,8 @@ import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 
 /**
  * Page provider descriptor accepting a custom class name. The expected
- * interface is {@link ContentViewPageProvider}, all other attributes are common
- * to other page provider descriptors.
+ * interface is {@link ContentViewPageProvider}, all other attributes are
+ * common to other page provider descriptors.
  *
  * @author Anahide Tchertchian
  * @since 5.4
@@ -79,6 +79,12 @@ public class GenericPageProviderDescriptor extends BasePageProviderDescriptor
         clone.escapePatternParameters = getEscapePatternParameters();
         if (whereClause != null) {
             clone.whereClause = whereClause.clone();
+        }
+        if (aggregates != null) {
+            clone.aggregates = new ArrayList<AggregateDescriptor>();
+            for (AggregateDescriptor agg : aggregates) {
+                clone.aggregates.add(agg.clone());
+            }
         }
         return clone;
     }
