@@ -68,7 +68,7 @@ public class TestSetupWizardActionBean {
 
         nuxeoConf = new File(nuxeoHome, "bin");
         nuxeoConf.mkdirs();
-        nuxeoConf = new File(nuxeoConf, "nuxeo.conf");
+        nuxeoConf = new File(nuxeoConf, ConfigurationGenerator.NUXEO_CONF);
         FileUtils.copy(
                 FileUtils.getResourceFileFromContext("configurator/nuxeo.conf"),
                 nuxeoConf);
@@ -119,9 +119,9 @@ public class TestSetupWizardActionBean {
             if (newStr.startsWith(ConfigurationGenerator.BOUNDARY_BEGIN)) {
                 // BOUNDARY is generated, we can't test an exact match
                 assertTrue(expStr.startsWith(ConfigurationGenerator.BOUNDARY_BEGIN));
-            } else if (newStr.startsWith("server.status.key")) {
+            } else if (newStr.startsWith(ConfigurationGenerator.PARAM_STATUS_KEY)) {
                 // server.status.key is generated, we can't test an exact match
-                assertTrue(expStr.startsWith("server.status.key"));
+                assertTrue(expStr.startsWith(ConfigurationGenerator.PARAM_STATUS_KEY));
             } else {
                 assertEquals(expStr, newStr);
             }
