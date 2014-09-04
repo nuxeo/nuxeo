@@ -60,11 +60,12 @@ Needed parameters:
                   mode="edit"
                   name="#{demoLayout.name}" />
                 <p class="buttonsGadget">
-                  <a4j:commandButton
+                  <h:commandButton
                     value="#{messages['label.layoutDemo.widgetDemo.submit']}"
                     styleClass="button"
-                    id="#{demoLayout.name}_edit_form_submitButton"
-                    render="#{demoLayout.name}_view_form, #{demoLayout.name}_edit_form" />
+                    id="#{demoLayout.name}_edit_form_submitButton">
+                    <f:ajax render="#{demoLayout.name}_view_form #{demoLayout.name}_edit_form" execute="@form" />
+                  </h:commandButton>
                   <a4j:status>
                     <f:facet name="start">
                       <h:graphicImage value="/img/standart_waiter.gif" />
