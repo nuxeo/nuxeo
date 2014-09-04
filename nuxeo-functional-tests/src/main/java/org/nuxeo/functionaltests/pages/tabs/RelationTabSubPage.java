@@ -52,7 +52,7 @@ public class RelationTabSubPage extends DocumentBasePage {
 
     private static final String OBJECT_DOCUMENT_UID_ID = "createForm:objectDocumentUid";
 
-    private static final String SELECT2_DOCUMENT_XPATH = "//*[@id='s2id_createForm:nxw_singleDocumentSuggestion_select2']";
+    private static final String SELECT2_DOCUMENT_XPATH = "//*[@id='s2id_createForm:nxw_singleDocumentSuggestion_1_select2']";
 
     @Required
     @FindBy(linkText = "Add a new relation")
