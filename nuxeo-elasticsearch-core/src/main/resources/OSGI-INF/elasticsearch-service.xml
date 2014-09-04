@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.ElasticSearchComponent" version="1.0">
-
+  <require>org.nuxeo.ecm.core.repository.RepositoryServiceComponent</require>
   <implementation class="org.nuxeo.elasticsearch.ElasticSearchComponent" />
 
   <service>

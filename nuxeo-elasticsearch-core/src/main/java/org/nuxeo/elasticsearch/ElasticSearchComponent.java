@@ -1011,4 +1011,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
         return excludeSourceFields;
     }
 
+    @Override
+    public int getApplicationStartedOrder() {
+        RepositoryService component = (RepositoryService) Framework
+                .getRuntime()
+                .getComponent(
+                        "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
+        return component.getApplicationStartedOrder()/2;
+    }
 }
