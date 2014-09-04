@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.nuxeo.ecm.automation.AutomationAdmin;
 import org.nuxeo.ecm.automation.AutomationFilter;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.ChainException;
@@ -58,7 +59,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class OperationServiceImpl implements AutomationService {
+public class OperationServiceImpl implements AutomationService, AutomationAdmin {
 
     private static final Log log = LogFactory.getLog(OperationServiceImpl.class);
 
@@ -309,6 +310,7 @@ public class OperationServiceImpl implements AutomationService {
         return chains;
     }
 
+    @Override
     public synchronized void flushCompiledChains() {
         compiledChains.clear();
     }
