@@ -16,9 +16,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -51,7 +52,7 @@ public class GlobalConfigDescriptor implements Serializable {
     protected boolean enableCache = true;
 
     @XNode("cachingDirectory")
-    protected String cachingDirectory;
+    protected String cachingDirectory = defaultCachingDirectory().getAbsolutePath();
 
     public long getGCInterval() {
         if (GCInterval == 0) {
@@ -90,23 +91,21 @@ public class GlobalConfigDescriptor implements Serializable {
         enableCache = other.enableCache;
     }
 
-    public String getCachingDirectory() {
-        if (cachingDirectory == null) {
-            File cacheFile = new File(System.getProperty("java.io.tmpdir"),
-                    CACHING_DIRECTORY);
-            if (cacheFile.exists() && !cacheFile.canWrite()) {
-                log.debug("change directory to avoid FileNotFoundException (permission denied)");
-                try {
-                    cacheFile = File.createTempFile(CACHING_DIRECTORY, null,
-                            cacheFile.getParentFile());
-                    cacheFile.delete();
-                } catch (IOException e) {
-                    log.error("Could not create caching directory", e);
-                }
+    protected File defaultCachingDirectory() {
+        File data = new File(Environment.getDefault().getData(), CACHING_DIRECTORY);
+        if (data.exists()) {
+            try {
+                FileUtils.deleteDirectory(data);
+            } catch (IOException cause) {
+                throw new RuntimeException("Cannot create cache dir " + data, cause);
             }
-            cacheFile.mkdirs();
-            cachingDirectory = cacheFile.getPath();
         }
+        data.mkdirs();
+        return data.getAbsoluteFile();
+    }
+
+    public String getCachingDirectory() {
         return cachingDirectory;
     }
+
 }
