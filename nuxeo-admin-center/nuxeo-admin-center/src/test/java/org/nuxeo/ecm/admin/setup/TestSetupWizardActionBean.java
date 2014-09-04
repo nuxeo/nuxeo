@@ -30,18 +30,30 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.admin.setup.TestSetupWizardActionBean.CustomLogFilter;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+
+import com.google.inject.Inject;
 
 /**
  * @author jcarsique
  *
  */
+@RunWith(FeaturesRunner.class)
+@Features(LogCaptureFeature.class)
+@LogCaptureFeature.FilterWith(value = CustomLogFilter.class)
 public class TestSetupWizardActionBean {
 
     private SetupWizardActionBean setupWizardActionBean;
@@ -51,6 +63,17 @@ public class TestSetupWizardActionBean {
     private File nuxeoHome, nuxeoConf, expectedNuxeoConf;
 
     private static final Log log = LogFactory.getLog(TestSetupWizardActionBean.class);
+
+    @Inject
+    LogCaptureFeature.Result capturedLog;
+
+    public static class CustomLogFilter implements LogCaptureFeature.Filter {
+        @Override
+        public boolean accept(LoggingEvent event) {
+            return Level.ERROR.equals(event.getLevel())
+                    || Level.WARN.equals(event.getLevel());
+        }
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -82,6 +105,18 @@ public class TestSetupWizardActionBean {
         setupWizardActionBean = new SetupWizardActionBean();
         // simulate Seam injection of variable setupConfigGenerator
         setupWizardActionBean.getConfigurationGenerator();
+
+        /*
+         * WARN [UnknownServerConfigurator] Unknown server.
+         * WARN [ConfigurationGenerator] Server will be considered as not
+         * configurable.
+         * ERROR [ConfigurationGenerator] Template 'oldchange' not found with
+         * relative or absolute path (...)
+         * WARN [ConfigurationGenerator] Missing value for nuxeo.db.type, using
+         * default
+         */
+        capturedLog.assertHasEvent();
+        assertEquals(4, capturedLog.getCaughtEvents().size());
     }
 
     @Test
