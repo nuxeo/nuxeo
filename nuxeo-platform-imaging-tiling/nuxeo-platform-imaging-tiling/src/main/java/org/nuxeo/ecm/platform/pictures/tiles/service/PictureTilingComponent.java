@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -76,7 +77,7 @@ public class PictureTilingComponent extends DefaultComponent implements
 
     protected static Thread gcThread;
 
-    private String workingDirPath;
+    private String workingDirPath = defaultWorkingDirPath();
 
     private static final Log log = LogFactory.getLog(PictureTilingComponent.class);
 
@@ -120,29 +121,30 @@ public class PictureTilingComponent extends DefaultComponent implements
     }
 
     protected String getWorkingDirPath() {
-        if (workingDirPath != null) {
-            return workingDirPath;
-        }
-        // FIXME: condition always true. What was intended?
-        if (workingDirPath == null || "".equals(workingDirPath)) {
-            workingDirPath = getEnvValue("WorkingDirPath",
-                    System.getProperty("java.io.tmpdir")
-                            + "/nuxeo-tiling-cache");
-            File workingDir = new File(workingDirPath);
-            if (!workingDir.exists()) {
-                workingDir.mkdir();
-            }
-        }
-
-        if (!workingDirPath.endsWith("/")) {
-            workingDirPath += "/";
-        }
-        log.debug("Setting working dirPath to" + workingDirPath);
         return workingDirPath;
     }
 
+    protected String defaultWorkingDirPath() {
+        String defaultPath = new File(Environment.getDefault().getData(), "nuxeo-tiling-cache").getAbsolutePath();
+        String path = getEnvValue("WorkingDirPath",
+                defaultPath);
+        return normalizeWorkingDirPath(path);
+    }
+
+    protected String normalizeWorkingDirPath(String path) {
+        File dir = new File(path);
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        path = dir.getAbsolutePath();
+        if (!path.endsWith("/")) {
+            path += "/";
+        }
+        return path;
+    }
+
     public void setWorkingDirPath(String path) {
-        workingDirPath = path;
+        workingDirPath = normalizeWorkingDirPath(path);
     }
 
     protected String getWorkingDirPathForRessource(ImageResource resource) {
@@ -455,6 +457,7 @@ public class PictureTilingComponent extends DefaultComponent implements
         if (ENV_PARAMETERS_EP.equals(extensionPoint)) {
             TilingConfigurationDescriptor desc = (TilingConfigurationDescriptor) contribution;
             envParameters.putAll(desc.getParameters());
+            workingDirPath = defaultWorkingDirPath();
         } else if (BLOB_PROPERTY_EP.equals(extensionPoint)) {
             TilingBlobPropertyDescriptor desc = (TilingBlobPropertyDescriptor) contribution;
             blobProperties.putAll(desc.getBlobProperties());
