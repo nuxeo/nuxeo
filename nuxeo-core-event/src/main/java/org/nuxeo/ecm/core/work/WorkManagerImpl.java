@@ -301,12 +301,15 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected WorkThreadPoolExecutor getExecutor(String queueId) {
         if (!started) {
-            if (Framework.isTestModeSet() && !Framework.getRuntime().isShuttingDown()) {
+            if (Framework.isTestModeSet()
+                    && !Framework.getRuntime().isShuttingDown()) {
                 LogFactory.getLog(WorkManagerImpl.class).warn(
                         "Lazy starting of work manager in test mode");
                 init();
+            } else {
+                throw new IllegalStateException(
+                        "Work manager not started, could not access to executors");
             }
-            throw new IllegalStateException("Work manager not started, could not access to executors");
         }
         WorkQueueDescriptor workQueueDescriptor;
         synchronized (workQueueDescriptors) {
