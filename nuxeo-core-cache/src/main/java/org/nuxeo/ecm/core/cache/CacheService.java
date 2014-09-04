@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.core.cache;
 
 /**
- *
  * Nuxeo cache interface
  *
  * @since 5.9.6

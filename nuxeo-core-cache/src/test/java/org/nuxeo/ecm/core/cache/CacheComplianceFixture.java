@@ -31,13 +31,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CacheFeature.class })
 public class CacheComplianceFixture {
 
-    @Inject @Named(CacheFeature.DEFAULT_TEST_CACHE_NAME) Cache defaultCache;
+    @Inject
+    @Named(CacheFeature.DEFAULT_TEST_CACHE_NAME)
+    Cache defaultCache;
 
     @Test
     public void getValue() throws IOException {

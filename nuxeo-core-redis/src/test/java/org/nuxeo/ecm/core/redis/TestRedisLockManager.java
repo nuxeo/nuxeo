@@ -27,8 +27,6 @@ import java.util.Calendar;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Lock;
-import org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor;
-import org.nuxeo.ecm.core.redis.RedisFeature;
 import org.nuxeo.ecm.core.storage.lock.LockManager;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.runtime.api.Framework;
@@ -52,7 +50,8 @@ public class TestRedisLockManager extends NXRuntimeTestCase {
 
     @Test
     public void testRedisLockManager() throws Exception {
-        LockManager lockManager = Framework.getLocalService(LockManagerService.class).getLockManager("default");
+        LockManager lockManager = Framework.getLocalService(
+                LockManagerService.class).getLockManager("default");
         String id = "1234";
 
         // no lock initially present

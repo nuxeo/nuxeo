@@ -2,8 +2,6 @@
 
 <component name="org.nuxeo.ecm.core.cache.CacheServiceImpl">
 
-
-
   <documentation>
     Service providing a unified cache management system.
   </documentation>
@@ -13,7 +11,6 @@
   <service>
     <provide interface="org.nuxeo.ecm.core.cache.CacheService" />
   </service>
-
 
   <extension-point name="caches">
 
@@ -44,7 +41,8 @@
       The Time To Live define in minutes the time before the cache will be
       destroyed
       <p />
-      The concurrency level, number of thread that can access at the same time the cache
+      The concurrency level, number of thread that can access at the same time
+      the cache
     </documentation>
 
     <object class="org.nuxeo.ecm.core.cache.CacheDescriptor" />

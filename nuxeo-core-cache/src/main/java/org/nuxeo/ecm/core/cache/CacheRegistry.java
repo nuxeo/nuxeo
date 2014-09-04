@@ -110,7 +110,8 @@ public final class CacheRegistry extends
     }
 
     public List<CacheAttributesChecker> getCaches() {
-        List<CacheAttributesChecker> res = new ArrayList<CacheAttributesChecker>(caches.size());
+        List<CacheAttributesChecker> res = new ArrayList<CacheAttributesChecker>(
+                caches.size());
         for (CacheDescriptor desc : caches.values()) {
             res.add(desc.cacheChecker);
         }

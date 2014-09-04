@@ -57,9 +57,8 @@ public class RedisConfigurationDescriptor {
     @XNode("host")
     public void setHost(String name) {
         if (hosts.length == 0) {
-            hosts = new RedisConfigurationHostDescriptor[] {
-                    new RedisConfigurationHostDescriptor(name, Protocol.DEFAULT_PORT)
-            };
+            hosts = new RedisConfigurationHostDescriptor[] { new RedisConfigurationHostDescriptor(
+                    name, Protocol.DEFAULT_PORT) };
         } else {
             hosts[0].name = name;
         }
@@ -68,9 +67,8 @@ public class RedisConfigurationDescriptor {
     @XNode("port")
     public void setHost(int port) {
         if (hosts.length == 0) {
-            hosts = new RedisConfigurationHostDescriptor[] {
-                    new RedisConfigurationHostDescriptor("localhost", port)
-            };
+            hosts = new RedisConfigurationHostDescriptor[] { new RedisConfigurationHostDescriptor(
+                    "localhost", port) };
         } else {
             hosts[0].port = port;
         }

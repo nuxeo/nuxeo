@@ -26,14 +26,12 @@ import java.io.Serializable;
  *
  * @since 5.9.6
  */
-public interface Cache  {
-
+public interface Cache {
 
     /**
      * Get cache name as specified in the descriptor
      *
      * @return the cache name
-     *
      * @since 5.9.6
      */
     public String getName();
@@ -43,9 +41,8 @@ public interface Cache  {
      * key is null, but return null
      *
      * @param key the string key
-     * @return the {@link Serializable} value, return null if the key does not exist or if the
-     *         key is null
-     *
+     * @return the {@link Serializable} value, return null if the key does not
+     *         exist or if the key is null
      * @since 5.9.6
      */
     public Serializable get(String key) throws IOException;
@@ -54,24 +51,23 @@ public interface Cache  {
      * Invalidate the given key
      *
      * @param key, the key to remove from the cache, if null will do nothing
-     *
      * @since 5.9.6
      */
     public void invalidate(String key) throws IOException;
 
     /**
      * Invalidate all key-value stored in the cache
-     * @throws IOException
      *
+     * @throws IOException
      * @since 5.9.6
      */
     public void invalidateAll() throws IOException;
 
     /**
      * Put method to store a {@link Serializable} value
+     *
      * @param key the string key, if null, the value will not be stored
      * @param value the value to store, if null, the value will not be stored
-     *
      * @since 5.9.6
      */
     public void put(String key, Serializable value) throws IOException;

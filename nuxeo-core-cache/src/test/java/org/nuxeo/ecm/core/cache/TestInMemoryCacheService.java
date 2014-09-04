@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.cache;
 
 import java.io.IOException;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -31,20 +32,23 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author Maxime Hilaire
- *
  */
-
 @RunWith(FeaturesRunner.class)
-@Features({CacheFeature.class, InMemoryCacheFeature.class})
+@Features({ CacheFeature.class, InMemoryCacheFeature.class })
 public class TestInMemoryCacheService {
 
-    @Inject @Named(CacheFeature.DEFAULT_TEST_CACHE_NAME) Cache defaultCache;
+    @Inject
+    @Named(CacheFeature.DEFAULT_TEST_CACHE_NAME)
+    Cache defaultCache;
 
-    @Inject @Named(InMemoryCacheFeature.MAXSIZE_TEST_CACHE_NAME) Cache maxSizeCache;
+    @Inject
+    @Named(InMemoryCacheFeature.MAXSIZE_TEST_CACHE_NAME)
+    Cache maxSizeCache;
 
     @Test
     public void getGuavaCache() {
-        InMemoryCacheImpl guavaCache = CacheFeature.unwrapImpl(InMemoryCacheImpl.class, defaultCache);
+        InMemoryCacheImpl guavaCache = CacheFeature.unwrapImpl(
+                InMemoryCacheImpl.class, defaultCache);
         Assert.assertNotNull(guavaCache);
     }
 

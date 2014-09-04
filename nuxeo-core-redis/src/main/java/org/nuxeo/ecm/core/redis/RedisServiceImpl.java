@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.redis;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -148,7 +149,8 @@ public class RedisServiceImpl extends DefaultComponent implements
                         toSentinels(desc.hosts), new JedisPoolConfig(),
                         desc.timeout, StringUtils.defaultIfBlank(desc.password,
                                 null), desc.database);
-                executor = new RedisFailoverExecutor(config.timeout, new RedisPoolExecutor(pool, config.prefix));
+                executor = new RedisFailoverExecutor(config.timeout,
+                        new RedisPoolExecutor(pool, config.prefix));
             } catch (Exception cause) {
                 pool = null;
                 config = null;
@@ -206,7 +208,6 @@ public class RedisServiceImpl extends DefaultComponent implements
             config = null;
         }
     }
-
 
     @Override
     public String getPrefix() {

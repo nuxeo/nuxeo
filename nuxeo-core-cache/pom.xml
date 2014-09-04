@@ -1,49 +1,49 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.nuxeo.ecm.core</groupId>
-		<artifactId>nuxeo-core-parent</artifactId>
-		<version>5.9.6-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <groupId>org.nuxeo.ecm.core</groupId>
+    <artifactId>nuxeo-core-parent</artifactId>
+    <version>5.9.6-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>nuxeo-core-cache</artifactId>
-	<name>Nuxeo Core Cache</name>
-	<description>Nuxeo Core: Cache.</description>
+  <artifactId>nuxeo-core-cache</artifactId>
+  <name>Nuxeo Core Cache</name>
+  <description>Nuxeo Core: Cache.</description>
 
-	<dependencies>
+  <dependencies>
 
-		<dependency>
-			<groupId>org.nuxeo.common</groupId>
-			<artifactId>nuxeo-common</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
 
-		<dependency>
-			<groupId>org.nuxeo.runtime</groupId>
-			<artifactId>nuxeo-runtime</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
 
 
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
 
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
 
-		<!-- test scope -->
-		<dependency>
-			<groupId>org.nuxeo.ecm.core</groupId>
-			<artifactId>nuxeo-core-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+    <!-- test scope -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-test</artifactId>
+      <scope>test</scope>
+    </dependency>
 
-	</dependencies>
-  
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>

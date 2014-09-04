@@ -3,10 +3,10 @@
 
   <require>org.nuxeo.ecm.core.work.service</require>
   <require>org.nuxeo.ecm.core.storage.lock.LockManagerService</require>
-  
-  
+
+
   <documentation>
-     Redis configuration service.
+    Redis configuration service.
   </documentation>
 
   <service>
@@ -21,7 +21,7 @@
 
     <documentation>
       Extension allowing the configuration of a Redis instance.
-      <p/>
+      <p />
       Example configuration:
       <code>
         <redis disabled="false">
@@ -35,7 +35,7 @@
       </code>
     </documentation>
 
-    <object class="org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor"/>
+    <object class="org.nuxeo.ecm.core.redis.RedisConfigurationDescriptor" />
 
   </extension-point>
 

@@ -23,7 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 
-@RunWith(ContributableFeaturesRunner. class)
+@RunWith(ContributableFeaturesRunner.class)
 @SuiteClasses(CacheComplianceFixture.class)
 @Features(InMemoryCacheFeature.class)
 public class TestCacheInMemory {

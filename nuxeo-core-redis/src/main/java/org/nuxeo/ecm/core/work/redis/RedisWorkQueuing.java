@@ -125,8 +125,7 @@ public class RedisWorkQueuing implements WorkQueuing {
     @Override
     public void init() {
         redisExecutor = Framework.getLocalService(RedisExecutor.class);
-        redisPrefix = Framework.getLocalService(
-                RedisConfiguration.class).getPrefix();
+        redisPrefix = Framework.getLocalService(RedisConfiguration.class).getPrefix();
         try {
             for (String queueId : getSuspendedQueueIds()) {
                 int n = scheduleSuspendedWork(queueId);
@@ -137,7 +136,6 @@ public class RedisWorkQueuing implements WorkQueuing {
             throw new RuntimeException(e);
         }
     }
-
 
     @Override
     public BlockingQueue<Runnable> initScheduleQueue(String queueId) {

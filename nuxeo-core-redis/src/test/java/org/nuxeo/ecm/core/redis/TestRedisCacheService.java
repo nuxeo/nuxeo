@@ -24,22 +24,19 @@ import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
- * Unit test of cache implementation on top of redis
- *
- * since 5.9.6
+ * Unit test of cache implementation on top of redis since 5.9.6
  */
 @RunWith(ContributableFeaturesRunner.class)
 @Features({ RedisFeature.class })
 @SuiteClasses(CacheComplianceFixture.class)
 public class TestRedisCacheService {
 
-//
-//
-//    @Test
-//    public void testGetCache() {
-//        redisCache = cacheService.getCache(DEFAULT_TEST_CACHE_NAME);
-//        Assert.assertNotNull(redisCache);
-//    }
-
+    //
+    //
+    // @Test
+    // public void testGetCache() {
+    // redisCache = cacheService.getCache(DEFAULT_TEST_CACHE_NAME);
+    // Assert.assertNotNull(redisCache);
+    // }
 
 }

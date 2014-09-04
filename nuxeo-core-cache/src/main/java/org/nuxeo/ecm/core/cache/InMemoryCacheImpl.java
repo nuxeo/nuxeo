@@ -36,12 +36,14 @@ public class InMemoryCacheImpl extends AbstractCache {
     public InMemoryCacheImpl(CacheDescriptor desc) {
         super(desc);
         CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
-        builder =  builder.expireAfterWrite(desc.ttl, TimeUnit.MINUTES);
+        builder = builder.expireAfterWrite(desc.ttl, TimeUnit.MINUTES);
         if (desc.options.containsKey("concurrencyLevel")) {
-            builder = builder.concurrencyLevel(Integer.valueOf(desc.options.get("concurrencyLevel")).intValue());
+            builder = builder.concurrencyLevel(Integer.valueOf(
+                    desc.options.get("concurrencyLevel")).intValue());
         }
         if (desc.options.containsKey("maxSize")) {
-            builder = builder.maximumSize(Integer.valueOf(desc.options.get("maxSize")).intValue());
+            builder = builder.maximumSize(Integer.valueOf(
+                    desc.options.get("maxSize")).intValue());
         }
         cache = builder.build();
     }
@@ -50,12 +52,10 @@ public class InMemoryCacheImpl extends AbstractCache {
 
     protected final Cache<String, Serializable> cache;
 
-
     /**
      * Get the instance cache
      *
      * @return the Guava instance cache used in this nuxeo cache
-     *
      * @since 5.9.6
      */
     public Cache<String, Serializable> getGuavaCache() {

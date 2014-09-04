@@ -146,7 +146,8 @@ public class RedisFeature extends SimpleFeature {
             harness.deployBundle("org.nuxeo.ecm.core.cache");
         }
         harness.deployBundle("org.nuxeo.ecm.core.redis");
-        harness.deployTestContrib("org.nuxeo.ecm.core.redis", RedisFeature.class.getResource("/redis-contribs.xml"));
+        harness.deployTestContrib("org.nuxeo.ecm.core.redis",
+                RedisFeature.class.getResource("/redis-contribs.xml"));
         final RedisConfigurationDescriptor config = getRedisDescriptor();
         Assume.assumeTrue(!config.disabled);
         final RedisServiceImpl redis = Framework.getService(RedisServiceImpl.class);
@@ -155,7 +156,6 @@ public class RedisFeature extends SimpleFeature {
         }
         redis.clear();
     }
-
 
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {

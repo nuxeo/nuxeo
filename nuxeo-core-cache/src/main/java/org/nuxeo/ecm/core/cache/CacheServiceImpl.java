@@ -29,19 +29,16 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
 /**
- *
  * Cache service implementation to manage nuxeo cache
  *
  * @since 5.9.6
  */
-public class CacheServiceImpl extends DefaultComponent implements
-        CacheService {
+public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     public static final ComponentName NAME = new ComponentName(
             CacheServiceImpl.class.getName());
 
     private static final Log log = LogFactory.getLog(CacheServiceImpl.class);
-
 
     protected final CacheRegistry cacheRegistry = new CacheRegistry();
 
@@ -53,7 +50,7 @@ public class CacheServiceImpl extends DefaultComponent implements
     @Override
     public void deactivate(ComponentContext context) {
         if (cacheRegistry.caches.size() > 0) {
-            for (CacheDescriptor desc:cacheRegistry.caches.values()) {
+            for (CacheDescriptor desc : cacheRegistry.caches.values()) {
                 log.warn("Unregistery leaked contribution " + desc.name);
                 cacheRegistry.contributionRemoved(desc.name, desc);
             }
