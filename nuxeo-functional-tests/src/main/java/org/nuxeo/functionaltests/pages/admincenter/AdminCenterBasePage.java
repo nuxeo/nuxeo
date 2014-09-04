@@ -22,6 +22,7 @@ import java.util.List;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.admincenter.monitoring.MonitoringPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -43,6 +44,9 @@ public class AdminCenterBasePage extends AbstractPage {
 
     @FindBy(linkText = "Update Center")
     public WebElement updateCenterLink;
+
+    @FindBy(linkText = "Monitoring")
+    public WebElement monitoringLink;
 
     @FindBy(linkText = "Nuxeo Connect")
     public WebElement nuxeoConnectLink;
@@ -67,6 +71,11 @@ public class AdminCenterBasePage extends AbstractPage {
     public UpdateCenterPage getUpdateCenterHomePage() {
         updateCenterLink.click();
         return asPage(UpdateCenterPage.class);
+    }
+
+    public MonitoringPage getMonitoringPage() {
+        monitoringLink.click();
+        return asPage(MonitoringPage.class);
     }
 
     public SystemHomePage getSystemHomePage() {
