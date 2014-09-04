@@ -11,6 +11,7 @@
  */
 package org.nuxeo.ecm.automation.core;
 
+import org.nuxeo.ecm.automation.AutomationAdmin;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.core.events.EventHandler;
 import org.nuxeo.ecm.automation.core.events.EventHandlerRegistry;
@@ -267,7 +268,8 @@ public class AutomationComponent extends DefaultComponent {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter == AutomationService.class) {
+        if (adapter == AutomationService.class || adapter == AutomationAdmin
+                .class) {
             return adapter.cast(service);
         }
         if (adapter == EventHandlerRegistry.class) {

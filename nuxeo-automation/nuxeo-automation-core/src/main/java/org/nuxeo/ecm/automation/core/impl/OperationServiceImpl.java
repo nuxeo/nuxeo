@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AdapterNotFoundException;
+import org.nuxeo.ecm.automation.AutomationAdmin;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.CompiledChain;
 import org.nuxeo.ecm.automation.InvalidChainException;
@@ -36,7 +37,7 @@ import org.nuxeo.ecm.automation.TypeAdapter;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class OperationServiceImpl implements AutomationService {
+public class OperationServiceImpl implements AutomationService, AutomationAdmin {
 
     protected final OperationTypeRegistry operations;
 
@@ -146,6 +147,7 @@ public class OperationServiceImpl implements AutomationService {
         return chain;
     }
 
+    @Override
     public synchronized void flushCompiledChains() {
         chains.flushCompiledChains();
     }

@@ -11,6 +11,7 @@
 
   <service>
     <provide interface="org.nuxeo.ecm.automation.AutomationService" />
+    <provide interface="org.nuxeo.ecm.automation.AutomationAdmin" />
     <provide
       interface="org.nuxeo.ecm.automation.core.events.EventHandlerRegistry" />
   </service>
