@@ -19,7 +19,7 @@ a.button,
 input.button,
 .action_bar a {
   box-shadow: 0 -2px 3px #f3f3f3 inset;
-  background-color: "button (__FLAVOR__ background)";
+  background: none "button (__FLAVOR__ background)";
   border-radius: 3px;
   border: 1px solid;
   border-color: "button (__FLAVOR__ border)";
@@ -194,11 +194,10 @@ input.tinyButton {
   box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
   display:none;
   list-style: none;
-  margin-top: .5em;
   padding: 0;
   position: absolute;
   right: 0;
-  top: 19px;
+  top: 30px;
   width: 250px;
   z-index: 1001 }
 
