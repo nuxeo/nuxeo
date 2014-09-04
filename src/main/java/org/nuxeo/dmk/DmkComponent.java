@@ -1,3 +1,19 @@
+/*
+ * (C) Copyright 2013-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     slacoin
+ */
 package org.nuxeo.dmk;
 
 import java.io.IOException;
@@ -17,6 +33,7 @@ import javax.management.remote.JMXServiceURL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -28,7 +45,7 @@ import com.sun.jdmk.comm.internal.JDMKServerConnector;
 
 public class DmkComponent extends DefaultComponent {
 
-    protected final Map<String, DmkProtocol> configs = new HashMap<String, DmkProtocol>();
+    protected final Map<String, DmkProtocol> configs = new HashMap<>();
 
     protected HtmlAdaptorServer htmlAdaptor;
 
@@ -45,9 +62,11 @@ public class DmkComponent extends DefaultComponent {
             InstanceAlreadyExistsException, MBeanRegistrationException,
             NotCompliantMBeanException {
         HtmlAdaptorServer adaptor = new HtmlAdaptorServer();
-        adaptor.addUserAuthenticationInfo(new AuthInfo(config.user, config.password));
+        adaptor.addUserAuthenticationInfo(new AuthInfo(config.user,
+                config.password));
         adaptor.setPort(config.port);
-        ObjectName name = new ObjectName("org.nuxeo:type=jmx-adaptor,format=html");
+        ObjectName name = new ObjectName(
+                "org.nuxeo:type=jmx-adaptor,format=html");
         mbs.registerMBean(adaptor, name);
         return adaptor;
     }
@@ -55,7 +74,8 @@ public class DmkComponent extends DefaultComponent {
     protected void destroyAdaptor(HtmlAdaptorServer adaptor)
             throws MalformedObjectNameException, MBeanRegistrationException,
             InstanceNotFoundException {
-        ObjectName name = new ObjectName("org.nuxeo:type=jmx-adaptor,format=html");
+        ObjectName name = new ObjectName(
+                "org.nuxeo:type=jmx-adaptor,format=html");
         mbs.unregisterMBean(name);
         if (!adaptor.isActive()) {
             return;
@@ -72,7 +92,8 @@ public class DmkComponent extends DefaultComponent {
         JDMKServerConnector connector = (JDMKServerConnector) JMXConnectorServerFactory.newJMXConnectorServer(
                 httpURL, null, mbs);
         GenericHttpConnectorServer server = (GenericHttpConnectorServer) connector.getWrapped();
-        server.addUserAuthenticationInfo(new AuthInfo(config.user, config.password));
+        server.addUserAuthenticationInfo(new AuthInfo(config.user,
+                config.password));
         ObjectName name = new ObjectName(
                 "org.nuxeo:type=jmx-connector,protocol=".concat(protocol));
         mbs.registerMBean(connector, name);
@@ -135,19 +156,19 @@ public class DmkComponent extends DefaultComponent {
     public void applicationStarted(ComponentContext context) throws Exception {
         if (configs.containsKey("html")) {
             htmlAdaptor = newAdaptor(configs.get("html"));
-            log.info("jmx html adaptor available at port 8081 (not active, to be started in jmx console)");
+            log.info("JMX HTML adaptor available at port 8081 (not active, to be started in JMX console)");
         }
         if (configs.containsKey("http")) {
             httpConnector = newConnector(configs.get("http"));
-            log.info("jmx http connector available at "
+            log.info("JMX HTTP connector available at "
                     + httpConnector.getAddress()
-                    + " (not active, to be started in jmx console)");
+                    + " (not active, to be started in JMX console)");
         }
         if (configs.containsKey("https")) {
             httpsConnector = newConnector(configs.get("https"));
-            log.info("jmx https connector available at "
+            log.info("JMX HTTPS connector available at "
                     + httpConnector.getAddress()
-                    + " (not active, to be started in jmx console)");
+                    + " (not active, to be started in JMX console)");
         }
     }
 }
