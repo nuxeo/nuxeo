@@ -275,10 +275,13 @@ public class IndexingCommand implements Serializable {
     }
 
     public String[] getSchemas() {
-        if (schemas == null || schemas.size() == 0) {
-            return targetDocument.getSchemas();
+        String[] ret = null;
+        if (schemas != null && schemas.size() > 0) {
+            ret = schemas.toArray(new String[schemas.size()]);
+        } else if (targetDocument != null) {
+            ret = targetDocument.getSchemas();
         }
-        return schemas.toArray(new String[schemas.size()]);
+        return ret;
     }
 
     public void addSchemas(String schema) {
