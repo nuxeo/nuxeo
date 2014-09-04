@@ -31,6 +31,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.google.common.base.Function;
 
 /**
@@ -142,17 +143,23 @@ public class Select2WidgetElement extends WebFragmentImpl {
                     "The select2 is not multiple and you can't remove a specific value");
         }
         final String submittedValueBefore = getSubmittedValue();
+        boolean found =false;
         for (WebElement el : getSelectedValues()) {
-            if (el.getText().endsWith("/" + displayedText)) {
+            if (el.getText().equals(displayedText)) {
                 el.findElement(
                         By.xpath("a[@class='select2-search-choice-close']")).click();
+                found = true;
             }
         }
-        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
-            public Boolean apply(WebDriver driver) {
-                return !submittedValueBefore.equals(getSubmittedValue());
-            }
-        });
+        if (found) {
+            Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+                public Boolean apply(WebDriver driver) {
+                    return !submittedValueBefore.equals(getSubmittedValue());
+                }
+            });
+        } else {
+            throw new ElementNotFoundException("remove link for select2 '" + displayedText + "' item", "", "");
+        }
     }
 
     /**

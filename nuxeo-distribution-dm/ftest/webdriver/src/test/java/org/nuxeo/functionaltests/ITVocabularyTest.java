@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Test;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -124,7 +125,7 @@ public class ITVocabularyTest extends AbstractTest {
 
         // Check that if we remove this deleted entry and save, it is indeed
         // deleted
-        subjectsWidget.removeFromSelection(SAMPLE_SUBJECT_ENTRY_ID);
+        subjectsWidget.removeFromSelection("art/" + SAMPLE_SUBJECT_ENTRY_ID);
         documentBasePage = editTabSubPage.save();
         editTabSubPage = documentBasePage.getEditTab();
         subjectsWidget = new Select2WidgetElement(
@@ -133,14 +134,19 @@ public class ITVocabularyTest extends AbstractTest {
                 true);
         assertEquals(0, subjectsWidget.getSelectedValues().size());
 
+    }
+
+    @After
+    public void tearDown() throws UserNotConnectedException {
+        logout();
         // Let's recreate the entry to leave state as it was
+        DocumentBasePage documentBasePage = login();
         VocabulariesPage newVocabulariesPage = documentBasePage.getAdminCenter().getVocabulariesPage();
-        //newVocabulariesPage = newVocabulariesPage.select(L10N_SUBJECTS);
+        newVocabulariesPage = newVocabulariesPage.select(L10N_SUBJECTS);
         newVocabulariesPage = newVocabulariesPage.addEntry(
                 SAMPLE_SUBJECT_ENTRY_ID, "Art", SAMPLE_SUBJECT_ENTRY_LABEL,
                 "Bande dessinée", false, 10000000);
         assertTrue(newVocabulariesPage.hasEntry(SAMPLE_SUBJECT_ENTRY_ID));
-
     }
 
 }
