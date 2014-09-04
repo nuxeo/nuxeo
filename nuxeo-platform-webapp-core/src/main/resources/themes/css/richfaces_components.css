@@ -7,6 +7,11 @@ Override from RichFaces components styles
 author: lkemen@nuxeo.com
 */
 
+/* =Form tags */
+input, select, textarea,
+button, keygen, isindex, legend, a {
+  font-family: "default (__FLAVOR__ font)" }
+
 /* =Tree */
 a.treeLink,
 a.treeLink:link,
@@ -113,6 +118,58 @@ rich-fileupload-list-overflow table {
 	font-size: 1.1em }
 .rich-fileupload-name-padding b {
   color: "normal.status (__FLAVOR__ color)" }
+
+/* JSF2 Rich file upload */
+.rf-fu {
+  background: none #f8f8f8;
+  border: 1px solid #ddd;
+  border-radius: 3px;}
+
+.rf-fu-hdr {
+  background: none #f8f8f8;
+  border: medium none;}
+
+.rf-fu-btn-add, .rf-fu-btn-upl, .rf-fu-btn-clr {
+  background: none #fff;
+  border: 1px solid #c9c9c9;
+  border-radius: 3px;
+  box-shadow: 0 -2px 3px #f3f3f3 inset;
+  color: #000;
+  cursor: pointer;
+  font-size: 0.95em;
+  font-weight: bold;
+  padding: .3em 0 0 0;
+  text-decoration: none;
+  white-space: nowrap;}
+
+ .rf-fu-lst {
+  background-color: #f8f8f8;}
+
+.rf-fu-itm {
+  background-color: #fff;
+  border-radius: 2px;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+  margin: .3em;
+  padding: 0.3em;}
+
+.rf-fu-itm-lbl {
+  font-size: 1em;
+  font-weight: bold;}
+
+.rf-fu-itm-st {
+  color: #999;
+  font-weight: normal;
+  margin-top: 0;}
+
+.rf-fu-itm-rgh {
+  text-align: right;
+  vertical-align: top;
+  width: 14%;}
+
+#fancybox-content .rf-fu {
+  margin-bottom: 1em;
+  width: 350px;}
 
 /* =Modal Panel */
 .rich-mpnl-mask-div {
