@@ -958,6 +958,7 @@
       <category>SUMMARY_PANEL_RIGHT</category>
       <properties>
         <property name="widgetName">summary_current_document_tagging</property>
+        <property name="disableMultipartForm">true</property>
       </properties>
     </action>
 
