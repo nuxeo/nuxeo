@@ -10,9 +10,11 @@
       suggestion search box instead.
     </documentation>
 
-    <action id="simple_search_box" enabled="false" />
-
-    <action id="suggest_search_box" order="1" type="template">
+    <!-- disable suggest box for now, see NXP-15081 -->
+    <!--
+      <action id="simple_search_box" enabled="false" />
+    -->
+    <action id="suggest_search_box" order="1" type="template" enabled="false">
       <category>SEARCH_ACTIONS</category>
       <filter-id>isSearchEnabled</filter-id>
       <properties>
