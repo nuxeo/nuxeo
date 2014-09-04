@@ -38,7 +38,7 @@ public class SearchAdapter extends DocumentModelListPaginableAdapter {
 
     public static final String NAME = "search";
 
-    public static final  String pageProviderName = "SEARCH_ADAPTER";
+    public static final  String pageProviderName = "REST_API_SEARCH_ADAPTER";
 
     private String extractQueryFromRequest(final HttpServletRequest request) {
         String query = request.getParameter("query");
