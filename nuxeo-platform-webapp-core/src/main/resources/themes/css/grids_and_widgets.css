@@ -126,7 +126,8 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   padding: 0 }
 
 .contextActions .actionLink.button  {
-  margin: 0 .3em 0 0 }
+  margin: 0 .3em 0 0;
+  line-height: normal }
 
 .widgetPanel .widgetPanel,
 .widgetPanel .actionsWidgetPanel {
