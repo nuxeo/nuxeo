@@ -97,7 +97,7 @@ public class TestAutomaticIndexing {
         for (int i = 0; (i < 100) && esa.isIndexingInProgress(); i++) {
             Thread.sleep(100);
         }
-        Assert.assertFalse("Strill indexing in progress",
+        Assert.assertFalse("Still indexing in progress",
                 esa.isIndexingInProgress());
         esa.refresh();
     }

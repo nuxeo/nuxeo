@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.bcel.generic.RET;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -510,13 +511,22 @@ public class ElasticSearchComponent extends DefaultComponent implements
     /**
      * Get the elastic search indexes for searches
      */
-    protected String[] getSearchIndexes() {
-        Collection<String> values = indexNames.values();
-        return values.toArray(new String[values.size()]);
+    protected String[] getSearchIndexes(List<String> searchRepositories) {
+        if (searchRepositories.isEmpty()) {
+            Collection<String> values = indexNames.values();
+            return values.toArray(new String[values.size()]);
+        }
+        String[] ret = new String[searchRepositories.size()];
+        int i = 0;
+        for (String repo: searchRepositories) {
+            ret[i++] = getRepositoryIndex(repo);
+        }
+        return ret;
     }
 
-    protected String getSearchIndexesAsString() {
-        return StringUtils.join(indexNames.values(), ',');
+    protected String getSearchIndexesAsString(NxQueryBuilder query) {
+        return StringUtils.join(getSearchIndexes(query.getSearchRepositories()),
+                ',');
     }
 
     @Override
@@ -739,7 +749,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
         Context stopWatch = searchTimer.time();
         try {
             SearchRequestBuilder request = buildEsSearchRequest(query);
-            logSearchRequest(request);
+            logSearchRequest(request, query);
             SearchResponse response = request.execute().actionGet();
             logSearchResponse(response);
             return response;
@@ -750,7 +760,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
 
     protected SearchRequestBuilder buildEsSearchRequest(NxQueryBuilder query) {
         SearchRequestBuilder request = getClient()
-                .prepareSearch(getSearchIndexes()).setTypes(DOC_TYPE)
+                .prepareSearch(getSearchIndexes(query.getSearchRepositories())).setTypes(
+                        DOC_TYPE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
         if (query.isFetchFromElasticsearch()) {
             // fetch the _source without the binaryfulltext field
@@ -769,11 +780,12 @@ public class ElasticSearchComponent extends DefaultComponent implements
         }
     }
 
-    protected void logSearchRequest(SearchRequestBuilder request) {
+    protected void logSearchRequest(SearchRequestBuilder request,
+            NxQueryBuilder query) {
         if (log.isDebugEnabled()) {
             log.debug(String
                     .format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
-                            getSearchIndexesAsString(), DOC_TYPE,
+                            getSearchIndexesAsString(query), DOC_TYPE,
                             request.toString()));
         }
     }

@@ -67,9 +67,12 @@ public class NxQueryBuilder {
     private boolean fetchFromElasticsearch = false;
     private List<AggregateQuery> aggregates = new ArrayList<AggregateQuery>();
     private static final String AGG_FILTER_SUFFIX = "_filter";
+    private List<String> repositories = new ArrayList<String>();
+    private boolean searchOnAllRepo = false;
 
     public NxQueryBuilder(CoreSession coreSession) {
         session = coreSession;
+        repositories.add(coreSession.getRepositoryName());
         fetchFromElasticsearch = Boolean.parseBoolean(Framework.getProperty(
                 FETCH_DOC_FROM_ES_PROPERTY, "false"));
     }
@@ -373,6 +376,41 @@ public class NxQueryBuilder {
                 principals), FilterBuilders.notFilter(FilterBuilders.inFilter(
                 ACL_FIELD, UNSUPPORTED_ACL)));
         return QueryBuilders.filteredQuery(query, aclFilter);
+    }
+
+    /**
+     * Add a specific repository to search.
+     *
+     * Default search is done on the session repository only.
+     *
+     * @since 5.9.6
+     */
+    public NxQueryBuilder addSearchRepository(String repositoryName) {
+        repositories.add(repositoryName);
+        return this;
+    }
+
+    /**
+     * Search on all available repositories.
+     *
+     * @since 5.9.6
+     */
+    public NxQueryBuilder searchOnAllRepositories() {
+        searchOnAllRepo = true;
+        return this;
+    }
+
+    /**
+     * Return the list of repositories to search, or an empty list
+     * to search on all available repositories;
+     *
+     * @since 5.9.6
+     */
+    public List<String> getSearchRepositories() {
+        if (searchOnAllRepo) {
+            return Collections.<String>emptyList();
+        }
+        return repositories;
     }
 
 }
