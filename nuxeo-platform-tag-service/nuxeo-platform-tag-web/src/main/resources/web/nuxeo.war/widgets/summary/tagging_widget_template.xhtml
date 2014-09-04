@@ -1,9 +1,87 @@
 <div xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:rich="http://richfaces.org/rich">
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:nxu="http://nuxeo.org/nxweb/util"
+	xmlns:nxl="http://nuxeo.org/nxforms/layout"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:rich="http://richfaces.org/rich">
+
+	<c:if test="#{tagServiceEnabled}">
+
+		<c:set var="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+		<c:set var="outputPanelId" value="#{widget.id}_panel" />
+		<c:set var="listRegionId" value="#{widget.id}_listRegion" />
+
+		<c:if test="#{widget.handlingLabels}">
+			<c:if test="#{!empty widget.label}">
+				<ui:include src="/widgets/incl/widget_label_template.xhtml">
+					<ui:param name="labelStyleClass"
+						value="summaryTitle #{widgetProperty_headerStyleClass}" />
+				</ui:include>
+			</c:if>
+			<c:if test="#{empty widget.label}">
+				<ui:include src="/widgets/incl/label_template.xhtml">
+					<ui:param name="label" value="action.view.tagging" />
+					<ui:param name="helpLabel" value="#{widget.helpLabel}" />
+					<ui:param name="translated" value="true" />
+					<ui:param name="required" value="#{widget.required}" />
+					<ui:param name="labelStyleClass"
+						value="summaryTitle #{widgetProperty_headerStyleClass}" />
+				</ui:include>
+			</c:if>
+		</c:if>
+
+		<a4j:jsFunction name="addTagging"
+			action="#{tagSelect2Support.addTagging}">
+			<a4j:param name="param1" assignTo="#{tagSelect2Support.label}" />
+		</a4j:jsFunction>
+
+		<a4j:jsFunction name="removeTagging"
+			action="#{tagSelect2Support.removeTagging}">
+			<a4j:param name="param1" assignTo="#{tagSelect2Support.label}" />
+		</a4j:jsFunction>
+
+		<script>
+          function createNewTag(term, data) {
+            return {
+              id : term,
+              displayLabel : term,
+              newTag : true
+            };
+          }
+
+          function addTagHandler(tag) {
+            return addTagging(tag.id);
+          }
+
+          function removeTagHandler(tag) {
+            return removeTagging(tag.id);
+          }
+
+          function formatSuggestedTags(tag) {
+            if (tag.newTag) {
+              return "&lt;span class='s2newTag'&gt;" + tag.displayLabel + "&lt;/span&gt;"
+            } else {
+              return "&lt;span class='s2existingTag'&gt;" + tag.displayLabel + "&lt;/span&gt;"
+            }
+          }
+        </script>
+
+		<ui:include src="/incl/select2_js.xhtml" />
+
+		<a4j:region>
+			<h:inputHidden id="#{widget.id}_select2" immediate="true"
+				ajaxSingle="true" value="#{documentTagIds}">
+				<f:converter converterId="select2Converter" />
+			</h:inputHidden>
+			<h:inputHidden readonly="true" id="#{widget.id}_select2_init"
+				value="#{resolveDocumentTags}" />
+		</a4j:region>
+
+		<h:inputHidden readonly="true" id="#{widget.id}_select2_params"
+			value="#{tagSelect2Support.encodePrameters(widget)}" />
+
+	</c:if>
 
 </div>
