@@ -77,7 +77,6 @@ import org.elasticsearch.node.NodeBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.filter.InternalFilter;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -89,6 +88,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.AggregateQuery;
@@ -174,7 +174,7 @@ public class ElasticSearchComponent extends DefaultComponent implements
             localConfig = null;
         } else if (EP_INDEX.equals(extensionPoint)) {
             ElasticSearchIndexConfig idx = (ElasticSearchIndexConfig) contribution;
-            ElasticSearchIndexConfig previous = indexes.put(idx.getType(), idx);
+            ElasticSearchIndexConfig previous = indexes.put(idx.getName(), idx);
             idx.merge(previous);
             if (DOC_TYPE.equals(idx.getType())) {
                 log.info("Associate index " + idx.getName()
@@ -910,7 +910,8 @@ public class ElasticSearchComponent extends DefaultComponent implements
                 log.debug("Index " + conf.getName() + " already exists");
                 mappingExists = getClient().admin().indices()
                         .prepareGetMappings(conf.getName()).execute()
-                        .actionGet().getMappings().containsKey(DOC_TYPE);
+                        .actionGet().getMappings().get(conf.getName())
+                        .containsKey(DOC_TYPE);
             } else {
                 if (!Framework.isTestModeSet()) {
                     log.warn(String
@@ -1009,4 +1010,5 @@ public class ElasticSearchComponent extends DefaultComponent implements
     public String[] getExcludeSourceFields() {
         return excludeSourceFields;
     }
+
 }
