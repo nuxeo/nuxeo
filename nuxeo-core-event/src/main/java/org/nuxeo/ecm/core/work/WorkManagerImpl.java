@@ -99,22 +99,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected WorkQueuing queuing = newWorkQueuing(MemoryWorkQueuing.class);
 
-    private ShutdownListener shutdownListener;
-
-    @Override
-    public void activate(ComponentContext context) throws Exception {
-        super.activate(context);
-        shutdownListener = new ShutdownListener();
-        Framework.addListener(shutdownListener);
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) throws Exception {
-        Framework.removeListener(shutdownListener);
-        closeQueuing();
-        super.deactivate(context);
-    }
-
 
     @Override
     public void registerContribution(Object contribution,
@@ -292,6 +276,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public void applicationStarted(ComponentContext context) throws Exception {
+        Framework.addListener(new ShutdownListener());
         init();
     }
 
@@ -316,7 +301,12 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected WorkThreadPoolExecutor getExecutor(String queueId) {
         if (!started) {
-            init();
+            if (Framework.isTestModeSet() && !Framework.getRuntime().isShuttingDown()) {
+                LogFactory.getLog(WorkManagerImpl.class).warn(
+                        "Lazy starting of work manager in test mode");
+                init();
+            }
+            throw new IllegalStateException("Work manager not started, could not access to executors");
         }
         WorkQueueDescriptor workQueueDescriptor;
         synchronized (workQueueDescriptors) {
@@ -393,6 +383,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             if (RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP != event.id) {
                 return;
             }
+            Framework.removeListener(this);
             closeQueuing();
         }
     }
