@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Julien Carsique
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.admin.setup;
@@ -29,6 +28,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,6 +49,8 @@ public class TestSetupWizardActionBean {
     private Map<String, String> parameters, advancedParameters;
 
     private File nuxeoHome, nuxeoConf, expectedNuxeoConf;
+
+    private static final Log log = LogFactory.getLog(TestSetupWizardActionBean.class);
 
     @Before
     public void setUp() throws Exception {
@@ -105,7 +108,7 @@ public class TestSetupWizardActionBean {
                 "postgresql");
         advancedParameters.put("test.default.nuxeo.defaults", "false");
         setupWizardActionBean.saveParameters();
-        System.out.println("Generated nuxeoConf: " + nuxeoConf);
+        log.debug("Generated nuxeoConf: " + nuxeoConf);
         expectedNuxeoConf = FileUtils.getResourceFileFromContext("configurator/nuxeo.conf.expected");
         BufferedReader bfNew = new BufferedReader(new FileReader(nuxeoConf));
         BufferedReader bfExp = new BufferedReader(new FileReader(
@@ -128,5 +131,4 @@ public class TestSetupWizardActionBean {
         bfNew.close();
         bfExp.close();
     }
-
 }
