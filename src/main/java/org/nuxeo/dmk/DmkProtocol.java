@@ -18,6 +18,7 @@ package org.nuxeo.dmk;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
 
 @XObject("protocol")
@@ -33,7 +34,7 @@ public class DmkProtocol {
     public String user = "operator";
 
     @XNode("password")
-    public String password = Framework.getProperty("server.status.key", "pfouh");
+    public String password = Framework.getProperty(ConfigurationGenerator.PARAM_STATUS_KEY);
 
     @Override
     public String toString() {
