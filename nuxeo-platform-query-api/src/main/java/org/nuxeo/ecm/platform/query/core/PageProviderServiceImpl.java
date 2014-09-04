@@ -45,7 +45,11 @@ public class PageProviderServiceImpl extends DefaultComponent implements
     protected PageProviderRegistry providerReg = new PageProviderRegistry();
 
     public PageProviderDefinition getPageProviderDefinition(String name) {
-        return providerReg.getPageProvider(name);
+        PageProviderDefinition def = providerReg.getPageProvider(name);
+        if (def != null) {
+            return def.clone();
+        }
+        return def;
     }
 
     public PageProvider<?> getPageProvider(String name,
