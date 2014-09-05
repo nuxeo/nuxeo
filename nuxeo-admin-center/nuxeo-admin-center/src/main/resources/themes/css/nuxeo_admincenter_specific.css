@@ -6,11 +6,8 @@ Specific styles for the Administrator View
 author: lkemen@nuxeo.com
 */
 
-/* Main fragment*/
-.adminTabsColumn { height: auto!important }
-.adminViewContent { width: 100% }
-.adminViewContent p { padding: .4em 0 }
-.adminContentColumn { padding: 2em }
+.nxMainContainer {
+  background: none "neutral.lighter (__FLAVOR__ background)"; }
 
 /* ActionBar*/
 .actionBar { background-color: #efefef; border-bottom: 1px solid #bde7F3; padding: .9em }
