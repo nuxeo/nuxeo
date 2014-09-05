@@ -145,6 +145,8 @@ public class NuxeoCmisService extends AbstractCmisService {
 
     public static final int DEFAULT_CHANGE_LOG_SIZE = 100;
 
+    public static final int MAX_CHANGE_LOG_SIZE = 1000 * 1000;
+
     public static final int DEFAULT_QUERY_SIZE = 100;
 
     public static final int DEFAULT_MAX_CHILDREN = 100;
@@ -1183,14 +1185,28 @@ public class NuxeoCmisService extends AbstractCmisService {
             if (max <= 0) {
                 max = DEFAULT_CHANGE_LOG_SIZE;
             }
+            if (max > MAX_CHANGE_LOG_SIZE) {
+                max = MAX_CHANGE_LOG_SIZE;
+            }
             List<ObjectData> ods = null;
-            // retry with increasingly larger max if some items are skipped
-            for (int scale = 1;; scale *= 2) {
+            // retry with increasingly larger page size if some items are skipped
+            for (int scale = 1; scale < 128; scale *= 2) {
                 int pageSize = max * scale + 1;
+                if (pageSize < 0) { // overflow
+                    pageSize = Integer.MAX_VALUE;
+                }
                 ods = readAuditLog(repositoryId, minDate, max, pageSize);
                 if (ods != null) {
                     break;
                 }
+                if (pageSize == Integer.MAX_VALUE) {
+                    break;
+                }
+            }
+            if (ods == null) {
+                // couldn't find enough, too many items were skipped
+                ods = Collections.emptyList();
+
             }
             boolean hasMoreItems = ods.size() > max;
             if (hasMoreItems) {
@@ -1225,7 +1241,7 @@ public class NuxeoCmisService extends AbstractCmisService {
         if (reader == null) {
             throw new CmisRuntimeException("Cannot find audit service");
         }
-        List<ObjectData> ods = new ArrayList<ObjectData>(max + 1);
+        List<ObjectData> ods = new ArrayList<ObjectData>();
         String query = "FROM LogEntry log" //
                 + " WHERE log.eventDate >= :minDate" //
                 + "   AND log.eventId IN (:evCreated, :evModified, :evRemoved)" //
