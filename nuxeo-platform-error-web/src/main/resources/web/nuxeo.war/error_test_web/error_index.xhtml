@@ -1,9 +1,16 @@
 <html xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:a4j="http://richfaces.org/a4j">
 
-<title>Test errors in nuxeo jsf</title>
+  <f:view contentType="text/html" />
+  <h:head>
+    <title>Test errors in nuxeo jsf</title>
+  </h:head>
+  <h:outputScript name="js/fixviewstate.js" target="head" />
+  <h:outputScript name="js/fixformtargetframeid.js" target="head" />
+
 <body>
 
 <h3>Test errors in nuxeo jsf</h3>
@@ -84,7 +91,7 @@
   </ul>
 </h:form>
 <h3>Test distributed transaction</h3>
-<a4j:form disableDoubleClickShield="true">
+<h:form disableDoubleClickShield="true">
 <ul>
     <li><a4j:commandLink
       action="#{errorSeamComponent.clearDistributedRollbackEnv}"
@@ -100,8 +107,7 @@
   <li>repository is<h:outputText value="#{errorSeamComponent.dummyDocExists?' not':' '} empty"/></li>
 </ul>
 </a4j:outputPanel>
-</a4j:form>
-      
+</h:form>
 
 </body>
 
