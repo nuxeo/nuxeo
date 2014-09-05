@@ -14,7 +14,7 @@ author: lkemen@nuxeo.com
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-radius: 3px;
   box-sizing: border-box;
-  float: left;
+  display: inline-block;
   font-family: arial,sans-serif;
   font-size: 1em;
   width: 100% }
@@ -23,19 +23,6 @@ author: lkemen@nuxeo.com
   list-style: none outside none;
   margin: 0;
   padding: 0 1em 0 0 }
-
-.tabsBar.vertical ul {
-  list-style: none outside none;
-  margin: 0 -1px 0 8px;
-  padding: 2em 0; }
-
-.verticalTabsColumn {
-  background: transparent url('${basePath}/img/nxbg.png') repeat left top;
-  padding: 0;
-  border-right: 1px solid #eee; }
-
-.verticalTabsContent {
-  padding: 2em; }
 
 .tabsBar li {
   border-width: 1px;
@@ -58,16 +45,6 @@ author: lkemen@nuxeo.com
   color: "gray.dark (__FLAVOR__ color)";
   display: block;
   float: left;
-  padding: .3em .5em .6em;
-  text-decoration: none }
-
-.tabsBar.vertical a,
-.tabsBar.vertical a:visited {
-  background: transparent;
-  border-top: 4px solid transparent;
-  color: "gray.dark (__FLAVOR__ color)";
-  display: block;
-  float: none;
   padding: .3em .5em .6em;
   text-decoration: none }
 
@@ -126,51 +103,63 @@ author: lkemen@nuxeo.com
   text-shadow: none }
 
 /* Vertical tabs in home and admin Center */
-.adminTabsColumn {
-  height: auto!important;
-  padding: 0;
-  border-right: 1px solid #eee; }
-
-.adminTabBlock {
+.verticalTabsColumn {
   height: 100%;
-  margin: 0 }
+  min-height: 500px;
+  padding: 0 }
 
-.adminTabsColumn ul {
+.verticalTabsContent {
+  padding: 2em;
+  min-height: 500px;
+  background-color: #fff;
+  box-shadow: -1px 0 1px rgba(0, 0, 0, 0.1); }
+
+.tabsBar.vertical {
+  background: none 0;
+  border: none; }
+
+.tabsBar.vertical ul {
   margin: 0 -1px 0 8px;
-  padding: 2em 0 }
+  padding: 2em 0; }
 
-.adminTabsColumn li {
+.tabsBar.vertical li {
   font-size: .9em;
   font-weight: bold;
+  border: 1px solid transparent;
+  float: none;
   margin: 0 0 .15em .1em;
   padding: 0 }
 
-.adminTabsColumn li a {
+.tabsBar.vertical li a,
+.tabsBar.vertical li a:visited {
   color: "link (__FLAVOR__ color)";
   display: block;
-  padding: .6em 0 .6em .5em;
+  border-top: none;
+  float: none;
+  padding: .7em 0 .7em .6em;
   text-decoration: none }
 
-.adminTabsColumn li a img {
+.tabsBar.vertical li a img {
   margin: 0 .4em -0.15em 0 }
 
-.adminTabsColumn li:hover,
-.adminTabsColumn li.selected,
-.adminTabsColumn li.selected:hover {
+.tabsBar.vertical li:hover,
+.tabsBar.vertical li.selected,
+.tabsBar.vertical li.selected:hover {
   background-color: #fff;
   margin-left: .2em;
   -moz-transition: margin 0.1s ease-in 0.1s;
   -webkit-transition: margin 0.1s ease-in 0.1s;
   transition: margin 0.1s ease-in 0.1s }
 
-.adminTabsColumn li.selected {
+.tabsBar.vertical li.selected {
   border: 1px solid #eee;
-  border-style: solid none }
+  border-color: #eee transparent }
 
-.adminTabsColumn li:hover a,
-.adminTabsColumn li.selected a {
+.tabsBar.vertical li:hover a,
+.tabsBar.vertical li.selected a {
   border-left: 3px solid;
   border-color: "color.major.stronger (__FLAVOR__ border)";
+  border-top: medium none;
   color: "black (__FLAVOR__ color)" }
 
 /* =Navigation controls */
