@@ -17,23 +17,22 @@
 package org.nuxeo.ecm.core.redis;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
-
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.JedisSentinelPool;
-import redis.clients.jedis.Pipeline;
-import redis.clients.util.Pool;
+import org.osgi.framework.Bundle;
 
 /**
  * Implementation of the Redis Service holding the configured Jedis pool.
@@ -81,10 +80,6 @@ public class RedisServiceImpl extends DefaultComponent implements
 
     protected RedisConfigurationDescriptor config;
 
-    protected Pool<Jedis> pool;
-
-    protected RedisExecutor executor;
-
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
@@ -118,10 +113,12 @@ public class RedisServiceImpl extends DefaultComponent implements
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         if (config != null) {
-            deactivate(config);
+            deactivate();
         }
         this.context = null;
     }
+
+    protected String delsha;
 
     public boolean activate(RedisConfigurationDescriptor desc) {
         log.info("Registering Redis configuration");
@@ -129,84 +126,29 @@ public class RedisServiceImpl extends DefaultComponent implements
         if (desc.disabled) {
             return false;
         }
-        if (desc.hosts.length == 0) {
-            throw new RuntimeException("Missing Redis host");
-        }
-        if (!canConnect(desc.hosts)) {
-            log.info("Disabling redis, cannot connect to server");
+        if (!desc.start()) {
             return false;
         }
         config = desc;
-        if (!desc.isSentinel()) {
-            pool = new JedisPool(new JedisPoolConfig(), desc.hosts[0].name,
-                    desc.hosts[0].port, desc.timeout,
-                    StringUtils.defaultIfBlank(desc.password, null),
-                    desc.database);
-            executor = new RedisPoolExecutor(pool, config.prefix);
-        } else {
-            try {
-                pool = new JedisSentinelPool(desc.master,
-                        toSentinels(desc.hosts), new JedisPoolConfig(),
-                        desc.timeout, StringUtils.defaultIfBlank(desc.password,
-                                null), desc.database);
-                executor = new RedisFailoverExecutor(config.timeout,
-                        new RedisPoolExecutor(pool, config.prefix));
-            } catch (Exception cause) {
-                pool = null;
-                config = null;
-                throw new RuntimeException("Cannot connect to redis", cause);
-            }
+        try {
+            delsha = load("org.nuxeo.ecm.core.redis", "del-keys");
+        } catch (IOException cause) {
+            deactivate();
+            return false;
         }
         return true;
     }
 
-    protected boolean canConnect(RedisConfigurationHostDescriptor[] hosts) {
-        for (RedisConfigurationHostDescriptor host : hosts) {
-            if (canConnect(host.name, host.port)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected boolean canConnect(String name, int port) {
-        try (Jedis jedis = new Jedis(name, port)) {
-            return canPing(jedis);
-        }
-    }
-
-    protected boolean canPing(Jedis jedis) {
-        try {
-            String pong = jedis.ping();
-            return "PONG".equals(pong);
-        } catch (Exception cause) {
-            return false;
-        }
-    }
-
-    protected Set<String> toSentinels(RedisConfigurationHostDescriptor[] hosts) {
-        Set<String> sentinels = new HashSet<String>();
-        for (RedisConfigurationHostDescriptor host : hosts) {
-            sentinels.add(host.name + ":" + host.port);
-        }
-        return sentinels;
-    }
-
-    public void deactivate(RedisConfigurationDescriptor desc) {
-        log.info("Unregistering Redis configuration");
-        deactivate();
-    }
-
     protected void deactivate() {
-        if (pool == null) {
+        if (config == null) {
             return;
         }
         try {
-            pool.destroy();
+            config.stop();
         } finally {
-            pool = null;
             config = null;
         }
+
     }
 
     @Override
@@ -223,28 +165,40 @@ public class RedisServiceImpl extends DefaultComponent implements
         return prefix;
     }
 
-    protected static class DelKeys extends RedisCallable<Void> {
+    public Long clear(final String pattern) throws IOException {
+        return config.executor.execute(new RedisCallable<Long>() {
 
-        @Override
-        public Void call() {
-            Set<String> keys = jedis.keys(prefix + "*");
-            Pipeline pipe = jedis.pipelined();
-            for (String key : keys) {
-                pipe.del(key);
+            @Override
+            public Long call() throws Exception {
+                List<String> keys = Arrays.asList(pattern);
+                List<String> args = Arrays.asList();
+                return (Long) jedis.evalsha(delsha, keys, args);
             }
-            pipe.sync();
-            return null;
-        }
+        });
     }
 
-    public void clear() throws IOException {
-        executor.execute(new DelKeys());
+    @Override
+    public String load(String bundleName, String scriptName) throws IOException {
+        Bundle b = Framework.getRuntime().getBundle(bundleName);
+        URL loc = b.getEntry(scriptName + ".lua");
+        InputStream is = loc.openStream();
+        final StrBuilder builder = new StrBuilder();
+        for (String line : IOUtils.readLines(is)) {
+            builder.appendln(line);
+        }
+        return config.executor.execute(new RedisCallable<String>() {
+
+            @Override
+            public String call() throws Exception {
+                return jedis.scriptLoad(builder.toString());
+            }
+        });
     }
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter.isAssignableFrom(RedisExecutor.class)) {
-            return adapter.cast(executor);
+            return adapter.cast(config.executor);
         }
         return super.getAdapter(adapter);
     }

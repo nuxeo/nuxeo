@@ -22,6 +22,7 @@ import junit.framework.Assert;
 
 import org.junit.Assume;
 import org.nuxeo.ecm.core.cache.CacheFeature;
+import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedConfigurationDescriptor;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -44,7 +45,7 @@ import redis.clients.jedis.Protocol;
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 public class RedisFeature extends SimpleFeature {
 
-    private static final String REDIS_DEFAULT_MODE = "disabled";
+    private static final String REDIS_DEFAULT_MODE = "embedded";
 
     private static final int REDIS_SENTINEL_PORT_OFFSET = 20000;
 
@@ -61,7 +62,7 @@ public class RedisFeature extends SimpleFeature {
     public static final String REDIS_PREFIX_PROP = "nuxeo.test.redis.prefix";
 
     public enum Mode {
-        disabled, server, sentinel
+        disabled, embedded, server, sentinel
     }
 
     public static Mode getMode() {
@@ -97,6 +98,8 @@ public class RedisFeature extends SimpleFeature {
 
     public static RedisConfigurationDescriptor getRedisDescriptor() {
         switch (getMode()) {
+        case embedded:
+            return getRedisEmbeddedServerDescriptor();
         case server:
             return getRedisServerDescriptor();
         case sentinel:
@@ -106,10 +109,15 @@ public class RedisFeature extends SimpleFeature {
         }
     }
 
+    public static RedisConfigurationDescriptor getRedisEmbeddedServerDescriptor() {
+        RedisConfigurationDescriptor desc = new RedisEmbeddedConfigurationDescriptor();
+        desc.prefix = getPrefix();
+        return desc;
+    }
+
     public static RedisConfigurationDescriptor getRedisDisabledDescriptor() {
         RedisConfigurationDescriptor desc = new RedisConfigurationDescriptor();
         desc.disabled = true;
-        desc.prefix = "nuxeo:test";
         return desc;
     }
 
@@ -132,7 +140,7 @@ public class RedisFeature extends SimpleFeature {
 
     public static void clearRedis(RedisConfiguration redisService)
             throws IOException {
-        Framework.getService(RedisServiceImpl.class).clear();
+        Framework.getService(RedisServiceImpl.class).clear(redisService.getPrefix().concat("*"));
     }
 
     public static void setup(RuntimeHarness harness) throws Exception {
@@ -154,7 +162,7 @@ public class RedisFeature extends SimpleFeature {
         if (!redis.activate(config)) {
             Assert.fail("Cannot configure redis pool");
         }
-        redis.clear();
+        redis.clear(config.prefix.concat("*"));
     }
 
     @Override

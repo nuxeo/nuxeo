@@ -16,11 +16,20 @@
  */
 package org.nuxeo.ecm.core.redis;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.JedisSentinelPool;
 import redis.clients.jedis.Protocol;
+import redis.clients.util.Pool;
 
 /**
  * Descriptor for a Redis configuration.
@@ -76,5 +85,88 @@ public class RedisConfigurationDescriptor {
 
     protected boolean isSentinel() {
         return StringUtils.isNotBlank(master);
+    }
+
+    protected Pool<Jedis> pool;
+
+    protected RedisExecutor executor;
+
+    public boolean start() {
+        if (hosts.length == 0) {
+            throw new RuntimeException("Missing Redis host");
+        }
+        if (!canConnect()) {
+            LogFactory.getLog(RedisConfigurationDescriptor.class).info(
+                    "Disabling redis, cannot connect to server");
+            return false;
+        }
+        if (isSentinel()) {
+            return activateSentinel();
+        }
+        return activateServer();
+    }
+
+    protected boolean activateServer() {
+        pool = new JedisPool(new JedisPoolConfig(), hosts[0].name,
+                hosts[0].port, timeout, StringUtils.defaultIfBlank(password,
+                        null), database);
+        executor = new RedisPoolExecutor(pool, prefix);
+        return true;
+    }
+
+    protected boolean activateSentinel() throws RuntimeException {
+        try {
+            pool = new JedisSentinelPool(master, toSentinels(hosts),
+                    new JedisPoolConfig(), timeout, StringUtils.defaultIfBlank(
+                            password, null), database);
+            executor = new RedisFailoverExecutor(failoverTimeout,
+                    new RedisPoolExecutor(pool, prefix));
+        } catch (Exception cause) {
+            throw new RuntimeException("Cannot connect to redis", cause);
+        }
+        return true;
+    }
+
+    protected Set<String> toSentinels(RedisConfigurationHostDescriptor[] hosts) {
+        Set<String> sentinels = new HashSet<String>();
+        for (RedisConfigurationHostDescriptor host : hosts) {
+            sentinels.add(host.name + ":" + host.port);
+        }
+        return sentinels;
+    }
+
+    protected boolean canConnect() {
+        for (RedisConfigurationHostDescriptor host : hosts) {
+            if (canConnect(host.name, host.port)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean canConnect(String name, int port) {
+        try (Jedis jedis = new Jedis(name, port)) {
+            return canPing(jedis);
+        }
+    }
+
+    protected boolean canPing(Jedis jedis) {
+        try {
+            String pong = jedis.ping();
+            return "PONG".equals(pong);
+        } catch (Exception cause) {
+            return false;
+        }
+    }
+
+    public void stop() {
+        if (pool == null) {
+            return;
+        }
+        try {
+            pool.destroy();
+        } finally {
+            pool = null;
+        }
     }
 }

@@ -24,24 +24,20 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.cache.CacheFeature;
 import org.nuxeo.ecm.core.storage.lock.LockManager;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestRedisLockManager extends NXRuntimeTestCase {
-
-    protected RedisConfigurationDescriptor redisConfigurationDescriptor;
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        RedisFeature.setup(this);
-    }
+@RunWith(FeaturesRunner.class)
+@Features({CoreFeature.class, CacheFeature.class, RedisFeature.class})
+public class TestRedisLockManager {
 
     protected static void assertTimeEquals(Calendar expected, Lock lock) {
         assertEquals(expected.getTimeInMillis(),

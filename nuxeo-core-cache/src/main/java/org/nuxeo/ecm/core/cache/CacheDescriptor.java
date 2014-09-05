@@ -24,6 +24,7 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Descriptor of cache contrib
@@ -88,17 +89,17 @@ public class CacheDescriptor {
         } catch (InstantiationException | IllegalAccessException
                 | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
-            throw new RuntimeException("Failed to instantiate class "
+            throw new NuxeoException("Failed to instantiate class "
                     + implClass, e);
         }
     }
 
     public void stop() {
-        if(cacheChecker != null)
-        {
-            cacheChecker.cache = null;
-            cacheChecker = null;
+        if (cacheChecker == null) {
+            return;
         }
+        cacheChecker.cache = null;
+        cacheChecker = null;
     }
 
 }

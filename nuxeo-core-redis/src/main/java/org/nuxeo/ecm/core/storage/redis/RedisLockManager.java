@@ -49,37 +49,6 @@ public class RedisLockManager extends AbstractLockManager {
 
     protected final String redisPrefix;
 
-    private static final String SCRIPT_SET = "" //
-            + "local v = redis.call('GET', KEYS[1]) " //
-            + "if v == false then " //
-            + "  redis.call('SET', KEYS[1], ARGV[1]) " //
-            + "end " //
-            + "return v " //
-            + "";
-
-    private static final String SCRIPT_REMOVE = "" //
-            + "local v = redis.call('GET', KEYS[1]) " //
-            + "if v == false then " //
-            + "  return nil " //
-            + "else " //
-            // unconditional remove if empty owner
-            + "  if ARGV[1] == '' then " //
-            + "    redis.call('DEL', KEYS[1]) " //
-            + "  else " //
-            // check lock owner
-            + "    local i = string.find(v, ':') " //
-            + "    if i == nil then " //
-            + "      return v " // error will be seen by caller
-            + "    end " //
-            // remove if same owner
-            + "    if ARGV[1] == string.sub(v, 1, i-1) then " //
-            + "      redis.call('DEL', KEYS[1]) " //
-            + "    end " //
-            + "  end " //
-            + "  return v " //
-            + "end " //
-            + "";
-
     protected final String repositoryName;
 
     protected RedisExecutor redisExecutor;
@@ -90,6 +59,8 @@ public class RedisLockManager extends AbstractLockManager {
 
     protected String scriptRemoveSha;
 
+    private RedisConfiguration redisConfig;
+
     /**
      * Creates a lock manager for the given repository.
      * <p>
@@ -98,23 +69,18 @@ public class RedisLockManager extends AbstractLockManager {
     public RedisLockManager(String repositoryName) {
         this.repositoryName = repositoryName;
         redisExecutor = Framework.getService(RedisExecutor.class);
-        redisPrefix = Framework.getService(RedisConfiguration.class) + PREFIX
+        redisConfig = Framework.getService(RedisConfiguration.class);
+        redisPrefix = redisConfig.getPrefix() + PREFIX
                 + repositoryName + ':';
-        init();
+        loadScripts();
     }
 
-    protected void init() {
+    public void loadScripts() {
         try {
-            redisExecutor.execute(new RedisCallable<Void>() {
-
-                @Override
-                public Void call() {
-                    scriptSetSha = jedis.scriptLoad(SCRIPT_SET);
-                    scriptRemoveSha = jedis.scriptLoad(SCRIPT_REMOVE);
-                    return null;
-                }
-            });
-        } catch (Exception cause) {
+            scriptSetSha = redisConfig.load("org.nuxeo.ecm.core.redis", "set-lock");
+            scriptRemoveSha = redisConfig.load("org.nuxeo.ecm.core.redis",
+                    "remove-lock");
+        } catch (IOException cause) {
             throw new NuxeoException("Cannot load lock scripts in redis", cause);
         }
     }

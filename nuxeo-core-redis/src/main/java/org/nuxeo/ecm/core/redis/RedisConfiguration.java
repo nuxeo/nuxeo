@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.core.redis;
 
+import java.io.IOException;
+
 /**
  * Service allowing configuration and access to a Redis instance.
  *
@@ -30,5 +32,15 @@ public interface RedisConfiguration {
      * @return the prefix
      */
     String getPrefix();
+
+
+    /**
+     * Load script in redis
+     *
+     * @throws IOException
+     *
+     * @since 5.9.6
+     */
+    String load(String bundle, String name) throws IOException;
 
 }
