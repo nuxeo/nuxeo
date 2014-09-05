@@ -2091,7 +2091,7 @@
         </fields>
       </configuration>
       <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectManyChecboxWidgetTypeHandler
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.SelectManyCheckboxWidgetTypeHandler
       </handler-class>
     </widgetType>
 
