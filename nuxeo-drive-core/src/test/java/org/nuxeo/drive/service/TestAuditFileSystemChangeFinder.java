@@ -220,12 +220,10 @@ public class TestAuditFileSystemChangeFinder {
             doc1.setPropertyValue("file:content", new StringBlob(
                     "The content of file 1."));
             doc1 = session.createDocument(doc1);
-            waitToEnsureDistinctAuditEventDate();
             doc2 = session.createDocumentModel("/folder2", "doc2", "File");
             doc2.setPropertyValue("file:content", new StringBlob(
                     "The content of file 2."));
             doc2 = session.createDocument(doc2);
-            waitToEnsureDistinctAuditEventDate();
             doc3 = session.createDocumentModel("/folder3", "doc3", "File");
             doc3.setPropertyValue("file:content", new StringBlob(
                     "The content of file 3."));
@@ -300,9 +298,7 @@ public class TestAuditFileSystemChangeFinder {
             // Restore a deleted document and move a document in a newly
             // synchronized root
             session.followTransition(doc1.getRef(), "undelete");
-            waitToEnsureDistinctAuditEventDate();
             session.move(doc3.getRef(), folder2.getRef(), null);
-            waitToEnsureDistinctAuditEventDate();
             nuxeoDriveManager.registerSynchronizationRoot(
                     session.getPrincipal(), folder2, session);
         } finally {
@@ -625,7 +621,6 @@ public class TestAuditFileSystemChangeFinder {
             doc1.setPropertyValue("file:content", new StringBlob(
                     "The content of file 1."));
             doc1 = session.createDocument(doc1);
-            waitToEnsureDistinctAuditEventDate();
             doc2 = session.createDocumentModel("/folder2", "doc2", "File");
             doc2.setPropertyValue("file:content", new StringBlob(
                     "The content of file 2."));
@@ -1105,8 +1100,6 @@ public class TestAuditFileSystemChangeFinder {
      */
     protected FileSystemChangeSummary getChangeSummary(Principal principal)
             throws ClientException, InterruptedException {
-        // Wait 1 second as the audit change finder relies on steps of 1 second
-        Thread.sleep(1000);
         Map<String, Set<IdRef>> lastSyncActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(lastSyncActiveRootDefinitions);
         FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(
                 principal, lastSyncActiveRootRefs, lastEventLogId);
@@ -1125,15 +1118,6 @@ public class TestAuditFileSystemChangeFinder {
 
     protected void commitAndWaitForAsyncCompletion() throws Exception {
         commitAndWaitForAsyncCompletion(session);
-    }
-
-    protected void waitToEnsureDistinctAuditEventDate()
-            throws InterruptedException {
-        // Wait 100 ms to avoid random assertion failures due to audit log
-        // entries probably having the same event date to the millisecond.
-        // See https://jira.nuxeo.com/browse/NXP-11964
-        // and https://jira.nuxeo.com/browse/NXP-13811
-        Thread.sleep(100);
     }
 
     protected void dispose(CoreSession session) throws Exception {
