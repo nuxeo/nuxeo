@@ -5,26 +5,8 @@ author: lkemen@nuxeo.com
 */
 
 /* =Main Frame */
-.adminTabsColumn {
-  min-height: 660px;
-  height: auto!important;
-  height: 660px }
-
-.adminViewContent {
-  height: 100%;
-  width: 100% }
-
-.adminContentColumn {
-  padding: 2em }
-
-.adminViewContent h2 {
-  padding: 2em 0 1em }
-
-.adminViewContent p {
-  padding: .4em 0 }
-
-.adminContentColumn .tabsContent {
-  font-size: normal }
+.nxMainContainer {
+  background: none "neutral.lighter (__FLAVOR__ background)"; }
 
 /* =Override GWT styles*/
 body,
