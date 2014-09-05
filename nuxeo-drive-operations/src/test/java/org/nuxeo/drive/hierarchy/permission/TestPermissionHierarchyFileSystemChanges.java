@@ -492,8 +492,6 @@ public class TestPermissionHierarchyFileSystemChanges {
 
     protected List<FileSystemItemChange> getChanges(Principal principal)
             throws ClientException, InterruptedException {
-        // Wait 1 second as the audit change finder relies on steps of 1 second
-        Thread.sleep(1000);
         FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(
                 principal, Collections.<String, Set<IdRef>> emptyMap(),
                 lastEventLogId);
