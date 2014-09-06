@@ -3807,6 +3807,12 @@
         <groupId>org.apache.chemistry.opencmis</groupId>
         <artifactId>chemistry-opencmis-server-bindings</artifactId>
         <version>${chemistry.opencmis.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.chemistry.opencmis</groupId>
