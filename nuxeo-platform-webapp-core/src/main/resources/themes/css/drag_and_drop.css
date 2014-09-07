@@ -23,6 +23,7 @@ author: lkemen@nuxeo.com, tdelprat@nuxeo.com
   height: 250px }
 
 .dropzone {
+  border: 2px solid transparent;
   display: block }
 
 .dropzoneHL {

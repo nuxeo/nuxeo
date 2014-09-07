@@ -263,7 +263,8 @@ ul.visibleList {
 .help,
 .detail {
   color: "gray.medium (__FLAVOR__ color)";
-  font-size: .9em }
+  font-size: 10px;
+  font-weight: normal }
 
 p.detail,
 div.detail {

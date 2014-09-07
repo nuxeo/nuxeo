@@ -11,7 +11,7 @@ author: lkemen@nuxeo.com
 /* =Header */
 .nxHeader {
   background-color: "header (__FLAVOR__ background)";
-  box-shadow: 0 1px 2px #ccc;
+  box-shadow: 1px 0 4px rgba(0,0,0,0.4);
   line-height: initial;
   overflow: auto;
   position: fixed;
@@ -43,22 +43,12 @@ author: lkemen@nuxeo.com
 .nxHeader a:active {
   color: "link.header (__FLAVOR__ color)";
   text-decoration: none;
-  opacity: .6;
   -moz-transition: none;
   -webkit-transition: none;
   transition: none }
 
 .userMenuActions li > .widgetLabel {
-  font-weight: normal;
-  opacity: .6 }
-
-.nxHeader a:hover,
-.nxHeader a:active,
-.nxHeader .logo a:link,
-.nxHeader .logo a:hover,
-.nxHeader .logo a:visited,
-.userMenuActions li:hover > .widgetLabel {
-  opacity: 1 }
+  font-weight: normal }
 
 .nxHeader .actionsWidgetPanel {
   padding: 0 }

@@ -45,7 +45,7 @@ table td {
   background-color: "neutral.light (__FLAVOR__ background)";
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-width: 1px;
-  padding: .6em .4em }
+  padding: .6em .4em .6em 0 }
 
 .dataRowOdd:hover,
 .dataRowEven:hover,
@@ -200,6 +200,7 @@ table.noHover tr:hover {
   text-align: right }
 .actionsColumn img,
 .actionsColumn a {
+  display: inline-block;
   margin: 0 0 0 .2em }
 .actionsColumn .smallButton {
   margin: 0 .2em;

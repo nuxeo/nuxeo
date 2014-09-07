@@ -6,13 +6,12 @@ author: lkemen@nuxeo.com
 /* Container of the main part without header and footer */
 .nxMainContainer {
   font-size: .8em;
-  margin-top: 3.6em;
+  margin-top: 3.4em;
   width: 100% }
 
 /* Left column */
-.column,
-.adminTabsColumn {
-  background: transparent url('${basePath}/img/nxbg.png') repeat left top;
+.column {
+  background-color: #bcdce8;
   width: 18% }
 
 /* Main region */
