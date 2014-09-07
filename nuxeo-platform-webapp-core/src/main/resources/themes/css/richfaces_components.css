@@ -67,59 +67,6 @@ td.dr-tree-i-sel {
   margin: 0 }
 
 /* =FileUpload */
-.rich-fileupload-list-decor {
-  border: 1px solid;
-  border-color: "neutral.lighter (__FLAVOR__ border)";
-  margin: 0 0 1em }
-
-.rich-fileupload-toolbar-decor {
-  border-style: none none solid;
-  border-width: 1px;
-  border-color: "neutral.lighter (__FLAVOR__ border)" }
-
-.rich-fileupload-button,
-.rich-fileupload-button-light,
-.rich-fileupload-button-press {
-  box-shadow: none;
-  background: none 0;
-  background-color: "button (__FLAVOR__ background)";
-  border: none 0;
-  padding: 0 }
-
-.rich-fileupload-button:hover,
-.rich-fileupload-button-light:hover,
-.rich-fileupload-button-press:hover {
-  border-color: "button.hover (__FLAVOR__ border)";
-  box-shadow: 0 -2px 0 #ddd inset; }
-
-.rich-fileupload-button-border {
-  padding: 0;
-  margin: .2em;
-  border-color: "button (__FLAVOR__ border)";
-  border-radius: 3px }
-
-.rich-fileupload-button-border:hover {
-  border: 1px solid;
-  border-color: "button.hover (__FLAVOR__ border)" }
-
-.rich-fileupload-button-content {
-  padding: .1em .5em .1em 1.7em }
-
-.rich-fileupload-table-td {
-  border-color: "neutral.lighter (__FLAVOR__ border)" ;
-  padding: .4em 1em .2em;
-  height: auto }
-
-rich-fileupload-list-overflow table {
-	border-color: "neutral.light (__FLAVOR__ border)" }
-
-.rich-fileupload-name-padding {
-  font-weight: bold;
-	font-size: 1.1em }
-.rich-fileupload-name-padding b {
-  color: "normal.status (__FLAVOR__ color)" }
-
-/* JSF2 Rich file upload */
 .rf-fu {
   background: none #f8f8f8;
   border: 1px solid #ddd;
