@@ -38,8 +38,8 @@
     </div>
   </c:if>
   <c:if test="#{hasMainBlob}">
-    <div class="dropzone" context="mainBlob" id="mainBlobDropZone">
-    <table class="dataTableNoBorder smallTable">
+    <div class="dropzone dropContent" context="mainBlob" id="mainBlobDropZone">
+    <table class="smallTable">
       <tbody>
         <tr>
           <td class="labelColumn">
@@ -92,8 +92,8 @@
   </c:if>
 
   <c:if test="#{hasOtherBlobs}">
-  <div class="dropzone" context="otherBlobs" id="otherBlobsDropZone">
-    <table class="dataTableNoBorder smallTable">
+  <div class="dropzone dropAttachments" context="otherBlobs" id="otherBlobsDropZone">
+    <table class="smallTable">
       <tbody>
         <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
           <tr>

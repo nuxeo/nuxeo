@@ -55,17 +55,49 @@ author: lkemen@nuxeo.com
 .publication_block {
   margin-top: 1.3em }
 
+.content_block,
+.metadata_block {
+  background: none "neutral.lighter (__FLAVOR__ background)";
+  border-radius: 3px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  padding: 1rem;}
+
+.content_block .summaryTitle,
+.metadata_block .summaryTitle {
+  border-top: medium none;
+  padding: 0 0 0.5em }
+
 .content_block .actionsColumn {
-  width: 20% }
+  min-width: 15% }
+
+.content_block .smallTable {
+  width: 100%;}
+
+.content_block .dropContent,
+.content_block .dropAttachments {
+  margin: 0 0 .5rem }
+
+.content_block .smallTable td {
+  padding-left: .3rem }
+
+.content_block .smallTable td.fieldColumn,
+.content_block .smallTable td.actionsColumn {
+  border-top: 1px solid "neutral.lighter (__FLAVOR__ border)"}
+
+.content_block .smallTable tr:first-child td {
+  border-top: none }
 
 .content_block .fieldColumn,
 .tabsContent .radioColumn ~ .fieldColumn {
   max-width: 10em;
   word-wrap: break-word }
 
+.content_block .fieldColumn {
+  font-size: 1.1em;
+  font-weight: bold }
+
 .textBlock,
 .note_content_block {
-  background-color: #fff;
   border: 1px solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   color: "black (__FLAVOR__ color)";
@@ -75,7 +107,10 @@ author: lkemen@nuxeo.com
   padding: 1.4em 1.7em }
 
 .note_content_block {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
   border-radius: 3px;
+  border: none;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
   font-size: 115%;
   text-align: justify }
 
@@ -265,6 +300,23 @@ author: lkemen@nuxeo.com
 
 .comments_block .commentQuote {
   margin: .4em 0 .4em 2em }
+
+.summary .pictureContainer {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  text-align: center;
+  vertical-align: middle }
+
+.summary .note_content_block {
+  margin: 0 }
+
+.summary .labelColumn {
+  font-weight: normal;
+  color: #999 }
+
+.summary .fieldColumn {
+  color: #000 }
 
 /*  =Manage tab */
 .rightsAddLabel {
