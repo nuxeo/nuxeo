@@ -15,12 +15,15 @@ import java.util.Map;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.MessageContext.Scope;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
+import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.server.impl.webservices.AbstractService;
+import org.apache.chemistry.opencmis.server.impl.webservices.CmisWebServicesServlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -42,6 +45,10 @@ public class NuxeoCmisAuthHandler extends CXFAuthHandler implements
     @Override
     public boolean handleMessage(SOAPMessageContext context) {
         boolean res = super.handleMessage(context);
+
+        HttpServletRequest request = (HttpServletRequest) context.get(MessageContext.SERVLET_REQUEST);
+        request.setAttribute(CmisWebServicesServlet.CMIS_VERSION, CmisVersion.CMIS_1_1);
+
         @SuppressWarnings("unchecked")
         Map<String, String> callContextMap = (Map<String, String>) context.get(AbstractService.CALL_CONTEXT_MAP);
         if (callContextMap != null) {
