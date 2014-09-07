@@ -6,7 +6,7 @@ author: lkemen@nuxeo.com
 
 /* =Main Frame */
 .nxMainContainer {
-  background: none "neutral.lighter (__FLAVOR__ background)"; }
+  background: none "color.major.stronger (__FLAVOR__ background)"; }
 
 /* =Override GWT styles*/
 body,
