@@ -14,11 +14,9 @@ author: lkemen@nuxeo.com
   height: 660px }
 
 .nxMainContainer .content {
-  padding: 1em 2em 2em }
+  padding: 1em 3em 3em }
 
 .nxMainContainer .column {
-  background: none 0;
-  border-right: 1px solid #eee;
   font-size: .85em;
   padding: 1.2em .5em }
 
@@ -51,11 +49,12 @@ author: lkemen@nuxeo.com
 
 /* =Clipboard & Worklist */
 .userClipboard {
+  background-color: #fff;
   margin: 0 0 2em }
 
 .userClipboardContent {
   margin: 0;
-  padding: 1.2em 0;
+  padding: 0 1em 1em;
   word-wrap: break-word }
 
 .dropInto,

@@ -58,12 +58,18 @@ author: lkemen@nuxeo.com
 .modularTabs li a:hover,
 .modularTabs li.selected a,
 .modularTabs li.selected a:visited {
-  border-color: "color.major.stronger (__FLAVOR__ border)";
+  border-color: "color.major.strong (__FLAVOR__ border)";
   color: "tabs.selected (__FLAVOR__ color)" }
 
 .tabsBar li:first-child a,
 .modularTabs li:first-child a {
   border-radius: 3px 0 0 }
+
+.column .tabsBar {
+  border-style: none none solid }
+
+.column .tabsBar li:first-child a {
+  border-radius: 0 }
 
 .tabsBar li.selected a {
   font-weight: bold }
@@ -112,7 +118,7 @@ author: lkemen@nuxeo.com
   padding: 2em;
   min-height: 500px;
   background-color: #fff;
-  box-shadow: -1px 0 1px rgba(0, 0, 0, 0.1); }
+  box-shadow: -1px 0 4px rgba(0,0,0,0.4); }
 
 .tabsBar.vertical {
   background: none 0;
@@ -132,7 +138,7 @@ author: lkemen@nuxeo.com
 
 .tabsBar.vertical li a,
 .tabsBar.vertical li a:visited {
-  color: "link (__FLAVOR__ color)";
+  color: #fff;
   display: block;
   border-top: none;
   float: none;
@@ -151,14 +157,10 @@ author: lkemen@nuxeo.com
   -webkit-transition: margin 0.1s ease-in 0.1s;
   transition: margin 0.1s ease-in 0.1s }
 
-.tabsBar.vertical li.selected {
-  border: 1px solid #eee;
-  border-color: #eee transparent }
-
 .tabsBar.vertical li:hover a,
 .tabsBar.vertical li.selected a {
   border-left: 3px solid;
-  border-color: "color.major.stronger (__FLAVOR__ border)";
+  border-color: "color.major.strong (__FLAVOR__ border)";
   border-top: medium none;
   color: "black (__FLAVOR__ color)" }
 
