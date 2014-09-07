@@ -7,7 +7,7 @@ author: lkemen@nuxeo.com
 */
 
 .nxMainContainer {
-  background: none "neutral.lighter (__FLAVOR__ background)"; }
+  background: none "color.major.stronger (__FLAVOR__ background)"; }
 
 /* ActionBar*/
 .actionBar { background-color: #efefef; border-bottom: 1px solid #bde7F3; padding: .9em }
