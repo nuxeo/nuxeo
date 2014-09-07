@@ -55,8 +55,8 @@ String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenCon
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
 boolean disableBackgroundSizeCover = Boolean.TRUE.equals(screenConfig.getDisableBackgroundSizeCover());
 
-String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWidth(), "118");
-String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "26");
+String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWidth(), "113");
+String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "20");
 String logoAlt = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoAlt(), "Nuxeo");
 String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl(), context + "/img/nuxeo_logo.png");
 String currentYear = new DateTime().toString("Y");
@@ -106,9 +106,10 @@ body {
 
 /* Header */
 .topBar {
-  background: #000 none;
+  background: #fff none;
+  box-shadow: 1px 0 4px rgba(0, 0, 0, 0.4);
   width: 100%;
-  height: 36px;
+  height: 40px;
   border: 0;
   <%=headerStyle%>;
 }
@@ -120,7 +121,7 @@ body {
 .labelCorp {
   margin: 0;
   width: 400px;
-  padding-top: 0px
+  padding-top: 0
 }
 
 .labelCorp ul {
@@ -130,16 +131,16 @@ body {
 
 .labelCorp li {
   margin: 0;
-  padding: 0px 8px;
+  padding: 0 8px;
   list-style: none;
   float: right
 }
 
 .labelCorp a {
   text-decoration: none;
-  color: #d7d7d7;
+  color: #213f7d;
   font-size: small;
-  padding-top: 0px
+  padding-top: 0
 }
 
 .labelCorp a:hover {
@@ -153,7 +154,7 @@ body {
   -moz-box-sizing: border-box;
   border-radius: 3px;
   filter: alpha(opacity = 90);
-  opacity: 0.9;
+  opacity: .9;
   padding: 1.5em 1em 1em;
   width: 300px }
 
@@ -161,7 +162,7 @@ body {
   color: #454545;
   font-size: 12px;
   font-weight: bold;
-  padding: 0 0.5em 0 0
+  padding: 0 .5em 0 0
 }
 
 .login_input {
@@ -221,7 +222,7 @@ body {
   display: inline-block;
   font-weight: bold;
   margin: .3em 0;
-  padding: 0.1em 0.2em 0.1em 2em;
+  padding: .1em .2em .1em 2em;
   text-decoration: none;
 }
 
@@ -268,7 +269,7 @@ body {
   font: 12px "Lucida Grande", sans-serif;
   text-align: left;
   color: #454545;
-  margin: 0 0 0.8em
+  margin: 0 0 .8em
 }
 
 /* Footer */
@@ -299,7 +300,7 @@ body {
   width: 365px;
   overflow: auto;
   background-color: #fff;
-  opacity: 0.8;
+  opacity: .8;
   filter: alpha(opacity = 80)
 }
 -->

@@ -339,8 +339,8 @@
       <logo>
         <path>/img/nuxeo_logo.png</path>
         <previewPath>/img/nuxeo_preview_logo_black.png</previewPath>
-        <width>118</width>
-        <height>26</height>
+        <width>113</width>
+        <height>20</height>
         <title>Nuxeo</title>
       </logo>
       <presetsList>
@@ -370,8 +370,8 @@
       <logo>
         <path>/img/nuxeo_logo.png</path>
         <previewPath>/img/nuxeo_preview_logo_black.png</previewPath>
-        <width>118</width>
-        <height>26</height>
+        <width>113</width>
+        <height>20</height>
         <title>Nuxeo</title>
       </logo>
       <presetsList append="true">
