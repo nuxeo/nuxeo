@@ -126,113 +126,129 @@ input.tagInput {
   max-width: 12em;
   min-width: 10em }
 
-/* =Calendar */
-input.rich-calendar-input[type="text"] {
+/* = rich faces calendar input */
+input.rf-cal-inp {
   max-width: 14em;
   width: 80%; }
 
 .inputDate {
   white-space: nowrap }
 
-/* RichFaces calendar styles override */
-table.rich-calendar-exterior {
-  border: 1px solid #ddd;
+/* rfFaces calendar styles override */
+table.rf-cal-extr {
+  border: 1px solid #c6c6c6;
   border-radius: 3px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);}
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);}
 
-table.rich-calendar-exterior tr td {
+table.rf-cal-extr tr td {
   padding: .15em!important;
   vertical-align: middle }
 
-.rich-calendar-tool,
-.rich-calendar-month,
-td.rich-calendar-footer,
-.rich-calendar-toolfooter,
-table.rich-calendar-exterior td.rich-calendar-header {
+.rf-cal-tl,
+.rf-cal-hdr-month,
+td.rf-cal-ftr,
+.rf-cal-tl-ftr,
+table.rf-cal-extr td.rf-cal-hdr {
   background: none repeat scroll 0 0 #fff;
   font-weight: bold;
   padding: 0 }
 
-.rich-calendar-days {
+.rf-cal-day-lbl,
+.rf-cal-week {
   background: none repeat scroll 0 0 #f5f5f5;
   color: #888;
   text-transform: capitalize }
 
-.rich-calendar-week,
-.rich-calendar-weekends {
-  color: #888 }
-
-.rich-calendar-cell,
-.rich-calendar-holly {
-  color: "link (__FLAVOR__ color)" }
-
-.rich-calendar-tool-btn {
-  padding: .25em .2em }
-
-.rich-calendar-holly {
+.rf-cal-holiday {
+  color: #888;
   background-color: #fff }
 
-.rich-calendar-boundary-dates {
+.rf-cal-today {
+  background-color: #eee }
+
+.rf-cal-c {
+  color: "link (__FLAVOR__ color)" }
+
+.rf-cal-tool-btn {
+  padding: .25em .2em }
+
+.rf-cal-boundary-day {
   color: #ddd;
   font-weight: normal }
 
-.rich-calendar-cell {
-  font-weight: bold }
-
-.rich-calendar-tool-btn:hover,
-.rich-calendar-editor-btn-over,
-.rich-calendar-tool-btn-press,
-.rich-calendar-editor-tool-over {
+.rf-cal-tl-btn:hover,
+.rf-cal-edtr-btn-over,
+.rf-cal-btn-press,
+.rf-cal-editor-tool-over {
   border: none }
 
-.rich-calendar-tool-close,
-.rich-calendar-toolfooter:nth-child(2) {
+.rf-cal-edtr-btn-over {
+  background: none }
+
+.rf-cal-btn-close,
+.rf-cal-tl-ftr:nth-child(2) {
   display: none }
 
-.rich-calendar-editor-btn {
+.rf-cal-editor-btn {
   color: #0084c3;
   font-weight: bold }
 
-.rich-calendar-hover,
-.rich-calendar-today,
-.rich-calendar-tool-btn:hover,
-.rich-calendar-tool-btn-hover,
-.rich-calendar-time-btn:hover,
-div.rich-calendar-editor-btn-over,
-.rich-calendar-editor-btn:hover,
-.rich-calendar-editor-tool-over,
-.rich-calendar-editor-btn-selected {
+.rf-cal-hov,
+.rf-cal-tl-btn:hover,
+.rf-cal-time-btn:hover,
+div.rf-cal-editor-btn-hov,
+.rf-cal-edtr-btn:hover,
+.rf-cal-edtr-tl-hov,
+.rf-cal-sel {
   background-color: #0084c3;
   color: #fff }
 
-/* calendar month editor */
-.rich-calendar-editor-layout-shadow,
-.rich-calendar-spinner-buttons {
+.rf-cal-sel {
+  font-weight: bold }
+
+.rf-cal-tl-ftr,
+.rf-cal-tl,
+.rf-cal-hdr-month {
+  padding: 0!important }
+
+.rf-cal-tl-btn {
+  padding: .15em .1em }
+
+/* cal month editor */
+.rf-cal-timepicker-cnt,
+.rf-cal-monthpicker-ok,
+.rf-cal-monthpicker-cancel {
+  background: #fff }
+
+.rf-cal-edtr-layout-shdw,
+.rf-cal-spinner-buttons {
   background: none 0 }
 
-.rich-calendar-time-layout,
-.rich-calendar-date-layout {
+.rf-cal-timepicker-cnt,
+.rf-cal-monthpicker-cnt {
   border: none;
   height: 232px;
   width: 228px }
 
-.rich-calendar-time-layout-fields {
-  padding: 20px !important;
-  vertical-align: middle }
-
-.rich-calendar-editor-container input {
+.rf-cal-sp-inp-ctnr input {
   margin-bottom: 0 }
 
-.rich-calendar-spinner-buttons,
-.rich-calendar-time-layout-fields td {
+.rf-cal-edtr-btn:hover,
+.rf-cal-edtr-btn-sel {
+  border: none;
+  background-color: #0084c3;
+  color: #fff }
+
+.rf-cal-sp-btn,
+.rf-cal-timepicker-inp td {
   background: none 0;
   vertical-align: middle }
 
-.rich-calendar-spinner-up,
-.rich-calendar-spinner-down {
+.rf-cal-sp-up,
+.rf-cal-sp-down {
   cursor: pointer }
 
- .rich-calendar-time-btn {
+.rf-cal-time-btn {
   background-color: #e9e9e9;
   border: medium none;
   border-radius: 3px;
@@ -240,6 +256,7 @@ div.rich-calendar-editor-btn-over,
   margin: .3em;
   padding: .4em }
 
-table.rich-calendar-date-layout td {
+table.rf-cal-monthpicker-cnt td,
+td.rf-cal-timepicker-inp {
   padding: .5em;
   vertical-align: bottom }
