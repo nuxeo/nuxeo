@@ -130,3 +130,27 @@ div.select2-container-disabled span.select2-arrow {
   border-color: #2e9cff;
   box-shadow: 0 0 3px #b5dcff;
   color: "black (__FLAVOR__ color)" }
+
+/* Tags */
+.s2tagContainerCssClass .select2-choices {
+  border-color: transparent;
+  box-shadow: none }
+
+.s2tagContainerCssClass .select2-choices .select2-input.select2-default {
+  background: url("${basePath}/icons/add.png") no-repeat scroll 0 5px transparent !important;
+  padding-left: 1.5em;
+  min-width: 9em }
+
+.s2tagContainerCssClass .select2-choices .select2-input {
+  background: url("${basePath}/icons/add.png") no-repeat scroll 0 5px transparent !important }
+
+.s2tagContainerCssClass .select2-choices .select2-input.select2-focused {
+  background: none !important }
+
+.s2tagContainerCssClass.select2-container-active .select2-choices,
+.s2tagContainerCssClass:hover .select2-choices {
+  border-color: "neutral.light (__FLAVOR__ border)" }
+
+.s2tagDropdownCssClass .select2-result-label .s2newTag {
+  font-weight: bold;
+  color: "success.status (__FLAVOR__ color)" }
