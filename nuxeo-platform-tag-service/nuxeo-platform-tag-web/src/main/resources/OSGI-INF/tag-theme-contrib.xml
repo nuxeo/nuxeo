@@ -13,7 +13,7 @@
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
-    <resource name="collections2Formatter.js">
+    <resource name="tags2Formatter.js">
       <path>scripts/tags2Formatter.js</path>
     </resource>
   </extension>
