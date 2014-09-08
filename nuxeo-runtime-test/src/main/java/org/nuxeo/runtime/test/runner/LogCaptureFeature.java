@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Sun Seng David TAN <stan@nuxeo.com>
+ *     Sun Seng David TAN <stan@nuxeo.com>, slacoin, jcarsique
  */
 package org.nuxeo.runtime.test.runner;
 
@@ -54,9 +54,7 @@ import com.google.inject.Inject;
 public class LogCaptureFeature extends SimpleFeature {
 
     public class NoLogCaptureFilterException extends Exception {
-
         private static final long serialVersionUID = 1L;
-
     }
 
     @Inherited
@@ -70,8 +68,7 @@ public class LogCaptureFeature extends SimpleFeature {
     }
 
     public class Result {
-
-        protected final ArrayList<LoggingEvent> caughtEvents = new ArrayList<LoggingEvent>();
+        protected final ArrayList<LoggingEvent> caughtEvents = new ArrayList<>();
 
         protected boolean noFilterFlag = false;
 
@@ -132,34 +129,73 @@ public class LogCaptureFeature extends SimpleFeature {
         }
     };
 
+    private Filter setupCaptureFiler;
+
     @Override
     public void configure(FeaturesRunner runner, com.google.inject.Binder binder) {
         binder.bind(Result.class).toInstance(myResult);
     };
 
     @Override
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
-
-        FilterWith filterProvider = runner.getConfig(method, FilterWith.class);
-
+    public void beforeSetup(FeaturesRunner runner) throws Exception {
+        super.beforeSetup(runner);
+        FilterWith filterProvider = runner.getConfig(FilterWith.class);
         if (filterProvider.value() == null) {
             return;
         }
         Class<? extends Filter> filterClass = filterProvider.value();
-        logCaptureFilter = filterClass.newInstance();
-        rootLogger.addAppender(logAppender);
+        enable(filterClass);
+    }
+
+    @Override
+    public void afterTeardown(FeaturesRunner runner) throws Exception {
+        disable();
+    }
+
+    @Override
+    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
+            Object test) throws Exception {
+        FilterWith filterProvider = runner.getConfig(method, FilterWith.class);
+        if (filterProvider.value() == null) {
+            return;
+        }
+        Class<? extends Filter> filterClass = filterProvider.value();
+        enable(filterClass);
     }
 
     @Override
     public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method,
             Object test) throws Exception {
-        if (logCaptureFilter == null) {
+        disable();
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    protected void enable(Class<? extends Filter> filterClass)
+            throws InstantiationException, IllegalAccessException {
+        if (logCaptureFilter != null) {
+            setupCaptureFiler = logCaptureFilter;
+        } else {
+            rootLogger.addAppender(logAppender);
+        }
+        logCaptureFilter = filterClass.newInstance();
+    }
+
+    /**
+     * @since 5.9.6
+     */
+    protected void disable() {
+        if (setupCaptureFiler != null) {
+            logCaptureFilter = setupCaptureFiler;
+            setupCaptureFiler = null;
             return;
         }
-        myResult.clear();
-        rootLogger.removeAppender(logAppender);
-        logCaptureFilter = null;
+        if (logCaptureFilter != null) {
+            myResult.clear();
+            rootLogger.removeAppender(logAppender);
+            logCaptureFilter = null;
+        }
     }
 
 }
