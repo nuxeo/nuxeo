@@ -745,6 +745,7 @@
       <category>DAM_SINGLE_ASSET_PANEL_LEFT</category>
       <properties>
         <property name="widgetName">damAssetViewTags</property>
+        <property name="disableMultipartForm">true</property>
       </properties>
       <filter-id>hasAssetFacet</filter-id>
     </action>
