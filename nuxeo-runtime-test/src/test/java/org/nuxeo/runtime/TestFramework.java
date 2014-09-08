@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 5.9.4-JSF2
+ * @since 5.9.6
  */
 public class TestFramework {
 
