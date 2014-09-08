@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.search.theme">
+
+  <require>org.nuxeo.theme.core</require>
+  <require>org.nuxeo.theme.fragments</require>
+  <require>org.nuxeo.theme.html</require>
+  <require>org.nuxeo.theme.jsf</require>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
+
+    <theme>
+      <src>themes/nuxeo-search.xml</src>
+    </theme>
+
+  </extension>
+
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view name="search includes" template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>/search/incl/search_includes.xhtml</template>
+      <!--<resource>nuxeo-search.js</resource>-->
+    </view>
+
+  </extension>
+
+  <!--<extension target="org.nuxeo.theme.services.ThemeService" point="resources">-->
+
+    <!--<resource name="nuxeo-search.js">-->
+      <!--<path>search/scripts/nuxeo-search.js</path>-->
+    <!--</resource>-->
+
+  <!--</extension>-->
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
+
+    <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
+
+      <view id="/search/search.xhtml">
+        <theme>search/default</theme>
+      </view>
+
+    </application>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="search/default">
+      <defaultFlavor>default</defaultFlavor>
+      <styles>
+        <style>basics</style>
+        <style>buttons_and_actions</style>
+        <style>header</style>
+        <style>body</style>
+        <style>footer</style>
+        <style>grids_and_widgets</style>
+        <style>navigation</style>
+        <style>tables</style>
+        <style>forms</style>
+        <style>popups</style>
+        <style>breadcrumb</style>
+        <style>messages_and_tooltips</style>
+        <style>foldable_boxes</style>
+        <style>drag_and_drop</style>
+        <style>richfaces_components</style>
+        <style>tabs_content</style>
+        <style>helpers</style>
+        <style>nuxeo_search_specific</style>
+      </styles>
+    </themePage>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.styling.service" point="styles">
+    <style name="nuxeo_search_specific">
+      <src>themes/css/nuxeo_search_specific.css</src>
+    </style>
+  </extension>
+
+</component>

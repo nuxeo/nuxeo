@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.search.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <!-- Grid layout widgets -->
+    <widget name="searchPanelLeft" type="container">
+      <properties widgetMode="view">
+        <property name="display">block_top</property>
+        <property name="hideSubLabels">true</property>
+        <property name="ajaxPanelId">searchPanelLeft</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>searchForm</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <widget name="searchPanelRight" type="container">
+      <properties widgetMode="view">
+        <property name="display">block_top</property>
+        <property name="hideSubLabels">true</property>
+        <property name="ajaxPanelId">searchPanelRight</property>
+      </properties>
+      <subWidgetRefs>
+        <widget>searchResults</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <!-- Main actions widgets -->
+    <widget name="searchForm" type="documentActions">
+      <properties widgetMode="view">
+        <property name="category">SEARCH_PANEL_LEFT</property>
+      </properties>
+    </widget>
+
+    <widget name="searchResults" type="documentActions">
+      <properties widgetMode="view">
+        <property name="category">SEARCH_PANEL_RIGHT</property>
+      </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">false</control>
+      </controls>
+    </widget>
+
+    <!-- Search form widgets -->
+    <widget name="searchesSelector" type="template">
+      <properties widgetMode="any">
+        <property name="template">
+          /search/widgets/searches_selector_widget_template.xhtml
+        </property>
+        <property name="ajaxReRender">
+          searchPanelLeft searchPanelRight
+        </property>
+      </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+      </controls>
+    </widget>
+
+    <widget name="searchLayout" type="container">
+      <handlingLabels>false</handlingLabels>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <controls mode="any">
+        <control name="requireSurroundingForm">true</control>
+        <property name="useAjaxForm">true</property>
+      </controls>
+      <subWidgetRefs>
+        <widget>searchActions</widget>
+        <widget>searchFilters</widget>
+        <widget>searchActions</widget>
+      </subWidgetRefs>
+    </widget>
+
+    <widget name="searchFilters" type="contentViewSearchLayout">
+      <properties widgetMode="any">
+        <property name="contentViewName">#{searchActions.currentContentViewName}</property>
+      </properties>
+    </widget>
+
+    <widget name="searchActions" type="documentActions">
+      <properties widgetMode="any">
+        <property name="category">SEARCH_FILTER_ACTIONS</property>
+        <property name="actionsDisplay">buttons</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="hideSubLabels">true</property>
+        <property name="styleClass">searchFilterActions</property>
+      </properties>
+    </widget>
+
+    <!-- Search results -->
+    <widget name="searchResultsActions" type="documentActionsWithForms">
+      <properties widgetMode="view">
+        <property name="category">SEARCH_RESULTS_ACTIONS</property>
+        <property name="styleClass">globalActionBar</property>
+        <property name="subStyleClass">contextActions</property>
+        <property name="overallDisplay">horizontal_block</property>
+        <property name="actionStyleClass">button</property>
+        <property name="actionsDisplay">buttons</property>
+        <property name="useAjaxForm">true</property>
+        <property name="ignoreTemplateProperty">true</property>
+        <property name="maxActionsNumber">3</property>
+      </properties>
+    </widget>
+
+    <widget name="searchContentView" type="contentViewWithForms">
+      <properties widgetMode="any">
+        <property name="contentViewName">#{searchActions.currentContentViewName}</property>
+        <property name="showFilterForm">false</property>
+        <property name="useAjaxForm">true</property>
+        <property name="useAjaxPagination">true</property>
+        <property name="styleClass">alignL</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <!-- Search form -->
+    <action id="searchesSelector" type="widget" order="100">
+      <category>SEARCH_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">searchesSelector</property>
+      </properties>
+    </action>
+
+    <action id="searchLayout" type="widget" order="200">
+      <category>SEARCH_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">searchLayout</property>
+      </properties>
+    </action>
+
+    <!-- Search results -->
+    <action id="searchResultsActions" type="widget" order="100">
+      <category>SEARCH_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">searchResultsActions</property>
+      </properties>
+    </action>
+
+    <action id="searchContentView" type="widget" order="200">
+      <category>SEARCH_PANEL_RIGHT</category>
+      <properties>
+        <property name="widgetName">searchContentView</property>
+      </properties>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="gridSearchLayout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_grid_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <properties mode="any">
+            <property name="nxl_gridStyleClass_0">gridStyle2 compactLayout nxSearchForm</property>
+            <property name="nxl_gridStyleClass_1">gridStyle6 nxSearchResults</property>
+          </properties>
+          <widget>searchPanelLeft</widget>
+          <widget>searchPanelRight</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>

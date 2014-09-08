@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Bundle-Name: Nuxeo Search UI
+Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.search.ui;singleton=true
+Nuxeo-Component: OSGI-INF/search-actions-contrib.xml,
+ OSGI-INF/search-auth-contrib.xml,
+ OSGI-INF/search-contentviews-contrib.xml,
+ OSGI-INF/search-core-types-contrib.xml,
+ OSGI-INF/search-layouts-contrib.xml,
+ OSGI-INF/search-pageproviders-contrib.xml,
+ OSGI-INF/search-theme-contrib.xml,
+ OSGI-INF/search-url-service-contrib.xml

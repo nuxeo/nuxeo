@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.search.core.types">
+
+  <require>org.nuxeo.ecm.core.schema.TypeService</require>
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="default_search" prefix="defaults" src="schemas/default_search.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <facet name="Search" perDocumentQuery="false">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="uid" />
+    </facet>
+
+    <!-- For default search -->
+    <doctype name="DefaultSearch" extends="Document">
+      <facet name="Search" />
+      <facet name="ContentViewDisplay" />
+      <facet name="HiddenInNavigation" />
+      <schema name="default_search" />
+    </doctype>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+    <types>
+      <type name="DefaultSearch">default</type>
+    </types>
+  </extension>
+
+</component>

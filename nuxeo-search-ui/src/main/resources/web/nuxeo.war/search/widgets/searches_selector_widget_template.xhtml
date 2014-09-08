@@ -1,0 +1,16 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <a4j:region id="#{widget.id}_region">
+    <h:selectOneMenu
+      value="#{searchActions.currentSelectedSavedSearchId}"
+      id="#{widget.id}" styleClass="langSelect">
+      <a4j:ajax event="change"
+        listener="#{searchActions.refreshAndRewind()}"
+        render="#{widgetProperty_ajaxReRender}" />
+      <f:selectItems value="#{searchActions.allSavedSearchesSelectItems}" />
+    </h:selectOneMenu>
+  </a4j:region>
+
+</div>

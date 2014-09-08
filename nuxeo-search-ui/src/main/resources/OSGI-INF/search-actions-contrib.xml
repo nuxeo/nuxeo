@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.search.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <!-- Main tab actions -->
+
+    <action id="search" link="search" label="label.main.tab.search" order="50"
+      type="template">
+      <category>MAIN_TABS</category>
+      <properties>
+        <property name="template">/search/incl/action/search_main_tab_action_template.xhtml</property>
+      </properties>
+    </action>
+
+    <!-- Search actions -->
+
+    <!--<action id="damSaveSearchAction" link="#{damSearchActions.saveSearch()}"-->
+      <!--label="command.save" order="10">-->
+      <!--<properties>-->
+        <!--<property name="ajaxSupport">true</property>-->
+        <!--<property name="ajaxReRender">-->
+          <!--damPanelLeft-->
+        <!--</property>-->
+      <!--</properties>-->
+    <!--</action>-->
+
+    <action id="submitSearch" link="#{searchActions.refreshAndRewind()}"
+      label="label.search.filter" order="10">
+      <category>SEARCH_FILTER_ACTIONS</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">
+          searchPanelLeft searchPanelRight
+        </property>
+      </properties>
+    </action>
+
+    <action id="clearSearch" link="#{searchActions.clearSearch()}"
+      label="label.search.clear" order="20" immediate="true">
+      <category>SEARCH_FILTER_ACTIONS</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+        <property name="ajaxReRender">
+          searchPanelLeft searchPanelRight
+        </property>
+      </properties>
+    </action>
+
+  </extension>
+
+</component>

@@ -1,0 +1,374 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.search.contentviews">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="default_search">
+      <title>label.search.default</title>
+      <translateTitle>true</translateTitle>
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+        <whereClause docType="DefaultSearch">
+          <fixedPart>
+            ecm:mixinType != 'HiddenInNavigation' AND ecm:isProxy = 0
+            AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+            AND SORTED_COLUMN IS NOT NULL
+          </fixedPart>
+          <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+            <field schema="default_search" name="ecm_fulltext" />
+          </predicate>
+          <predicate parameter="dc:creator" operator="IN">
+            <field schema="default_search" name="dc_creator" />
+          </predicate>
+          <predicate parameter="dc:created" operator="BETWEEN">
+            <field schema="default_search" name="dc_created_min" />
+            <field schema="default_search" name="dc_created_max" />
+          </predicate>
+          <predicate parameter="dc:subjects" operator="STARTSWITH">
+            <field schema="default_search" name="dc_subjects" />
+          </predicate>
+          <predicate parameter="dc:coverage" operator="STARTSWITH">
+            <field schema="default_search" name="dc_coverage" />
+          </predicate>
+          <predicate parameter="ecm:path" operator="STARTSWITH">
+            <field schema="default_search" name="ecm_path" />
+          </predicate>
+          <predicate parameter="ecm:tag" operator="IN">
+            <field schema="default_search" name="ecm_tags" />
+          </predicate>
+          <predicate parameter="collectionMember:collectionIds" operator="IN">
+            <field schema="default_search" name="ecm_collections" />
+          </predicate>
+        </whereClause>
+        <sort column="dc:created" ascending="false" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="default_search_layout" />
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <layout name="document_listing_ajax" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_listing_ajax_compact_2_columns" title="document_listing_compact_2_columns"
+          translateTitle="true" iconPath="/icons/document_listing_compact_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+        <layout name="document_listing_ajax_icon_2_columns" title="document_listing_icon_2_columns"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showCSVExport="true" showPDFExport="false" showSyndicationLinks="true" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+
+      <flags>
+        <flag>SEARCH</flag>
+      </flags>
+    </contentView>
+
+    <!--<contentView name="dam_saved_searches">-->
+
+      <!--<showTitle>false</showTitle>-->
+
+      <!--<coreQueryPageProvider>-->
+        <!--<property name="coreSession">#{documentManager}</property>-->
+        <!--<whereClause docType="AdvancedSearch">-->
+          <!--<predicate parameter="ecm:fulltext" operator="FULLTEXT">-->
+            <!--<field schema="advanced_search" name="fulltext_all" />-->
+          <!--</predicate>-->
+          <!--<predicate parameter="dc:title" operator="FULLTEXT">-->
+            <!--<field schema="advanced_search" name="title" />-->
+          <!--</predicate>-->
+          <!--<predicate parameter="dc:modified" operator="BETWEEN">-->
+            <!--<field schema="advanced_search" name="modified_min" />-->
+            <!--<field schema="advanced_search" name="modified_max" />-->
+          <!--</predicate>-->
+          <!--<fixedPart>-->
+            <!--ecm:mixinType = 'defaultsearch'-->
+            <!--AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0-->
+            <!--AND ecm:currentLifeCycleState != 'deleted'-->
+            <!--AND ecm:parentId = ?-->
+            <!--AND SORTED_COLUMN IS NOT NULL-->
+          <!--</fixedPart>-->
+        <!--</whereClause>-->
+        <!--<parameter>#{userWorkspaceManagerActions.currentUserPersonalWorkspace.id}</parameter>-->
+        <!--<sort column="dc:title" ascending="true" />-->
+        <!--<pageSize>20</pageSize>-->
+      <!--</coreQueryPageProvider>-->
+
+      <!--<searchLayout name="document_content_filter"-->
+        <!--filterDisplayType="quick" />-->
+      <!--<showFilterForm>true</showFilterForm>-->
+
+      <!--<showPageSizeSelector>true</showPageSizeSelector>-->
+      <!--<useGlobalPageSize>false</useGlobalPageSize>-->
+      <!--<refresh>-->
+        <!--<event>documentChanged</event>-->
+        <!--<event>documentChildrenChanged</event>-->
+      <!--</refresh>-->
+      <!--<cacheKey>only_one_cache</cacheKey>-->
+      <!--<cacheSize>1</cacheSize>-->
+
+      <!--<resultLayouts>-->
+        <!--<layout name="document_listing_ajax" title="document_listing"-->
+          <!--translateTitle="true" iconPath="/icons/document_listing_icon.png"-->
+          <!--showCSVExport="true" showPDFExport="true" />-->
+      <!--</resultLayouts>-->
+
+      <!--<selectionList>DAM_SAVED_SEARCHES_CURRENT_SELECTION</selectionList>-->
+      <!--<actions category="DAM_SAVED_SEARCHES_CURRENT_SELECTION_LIST" />-->
+    <!--</contentView>-->
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <!-- widgets for default_search -->
+
+    <widget name="default_text_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.search.textSearch</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="ecm_fulltext" type="text">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <translated>false</translated>
+          <fields>
+            <field>defaults:ecm_fulltext</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="placeholder">
+              #{messages['label.search.text.placeholder']}
+            </property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_date_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.search.dateSearch</label>
+      </labels>
+      <translated>true</translated>
+      <subWidgets>
+        <widget name="dc_creationDate" type="datetimeRange">
+          <labels>
+            <label mode="any">label.dublincore.creationDate</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:dc_created_min</field>
+            <field>defaults:dc_created_max</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="styleClass">dataInputTextDate</property>
+            <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_user_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.search.userSearch</label>
+      </labels>
+      <translated>true</translated>
+      <subWidgets>
+        <widget name="dc_creator" type="multipleUsersSuggestion">
+          <labels>
+            <label mode="any">label.dublincore.creator</label>
+          </labels>
+          <fields>
+            <field>defaults:dc_creator</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="searchType">USER_TYPE</property>
+            <property name="minChars">3</property>
+            <property name="hideHelpLabel">true</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_collection_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.search.collectionSearch</label>
+      </labels>
+      <translated>true</translated>
+      <subWidgets>
+        <widget name="visible_collection" type="multipleDocumentsSuggestion">
+          <labels>
+            <label mode="any">label.collections</label>
+          </labels>
+          <fields>
+            <field>defaults:ecm_collections</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="pageProviderName">default_collection</property>
+            <property name="suggestionFormatter">docSelectionDefaultFormatter</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_categorization_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.search.categorizationSearch</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+      </properties>
+      <subWidgets>
+        <widget name="dc_subjects" type="suggestManyDirectory">
+          <labels>
+            <label mode="any">label.dublincore.subject</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:dc_subjects</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="directoryName">l10nsubjects</property>
+            <property name="dbl10n">true</property>
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="filterParent">true</property>
+            <property name="canSelectParent">true</property>
+          </properties>
+        </widget>
+        <widget name="dc_coverage" type="suggestManyDirectory">
+          <labels>
+            <label mode="any">label.dublincore.coverage</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:dc_coverage</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="directoryName">l10ncoverage</property>
+            <property name="dbl10n">true</property>
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="filterParent">true</property>
+            <property name="canSelectParent">true</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_location_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.search.locationSearch</label>
+      </labels>
+      <translated>true</translated>
+      <subWidgets>
+        <widget name="ecm_path" type="select_path_tree">
+          <labels>
+            <label mode="any">label.search.path</label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:ecm_path</field>
+          </fields>
+          <properties widgetMode="any">
+            <property name="showAllDomains">true</property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+    <widget name="default_tags_search" type="container">
+      <handlingLabels>true</handlingLabels>
+      <labels>
+        <label mode="any">label.search.tagSearch</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="hideSubLabels">true</property>
+      </properties>
+      <subWidgets>
+        <widget name="tags" type="select_tags">
+          <labels>
+            <label mode="any"></label>
+          </labels>
+          <translated>true</translated>
+          <fields>
+            <field>defaults:ecm_tags</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="placeholder">
+              #{messages['label.search.tags.placeholder']}
+            </property>
+          </properties>
+        </widget>
+      </subWidgets>
+    </widget>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="default_search_layout">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>default_text_search</widget>
+        </row>
+        <row>
+          <widget>default_tags_search</widget>
+        </row>
+        <row>
+          <widget>default_date_search</widget>
+        </row>
+        <row>
+          <widget>default_user_search</widget>
+        </row>
+        <row>
+          <widget>default_collection_search</widget>
+        </row>
+        <row>
+          <widget>default_categorization_search</widget>
+        </row>
+        <row>
+          <widget>default_location_search</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+</component>

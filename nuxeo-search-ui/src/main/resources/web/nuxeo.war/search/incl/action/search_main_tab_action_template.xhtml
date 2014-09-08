@@ -1,0 +1,20 @@
+<ui:composition xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <a4j:outputPanel id="searchMainTab_panel" layout="block">
+    <nxd:restDocumentLink document="#{currentDocument}" pattern="search"
+      view="search" addTabInfo="false">
+      <f:param name="contentViewName"
+        value="#{searchActions.currentContentViewName}" />
+      <f:param name="state"
+        value="#{searchActions.getJSONContentViewState()}" />
+      <h:outputText value="#{messages[action.label]}" />
+    </nxd:restDocumentLink>
+  </a4j:outputPanel>
+
+</ui:composition>

@@ -1,0 +1,19 @@
+<c:if test="true"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <a4j:outputPanel id="searchPermanentLink_panel" ajaxRendered="true" layout="block">
+    <c:if test="#{useHtml5DragAndDrop and searchActions.isOnSearchView()}">
+      <nxu:set var="searchPermanentLinkUrl" value="#{searchActions.searchPermanentLinkUrl}" cache="true">
+        <c:if test="#{not empty searchPermanentLinkUrl}">
+          <script type="text/javascript">
+            history.pushState(null, '#{currentDocument.title}', '#{searchPermanentLinkUrl}');
+          </script>
+        </c:if>
+      </nxu:set>
+    </c:if>
+  </a4j:outputPanel>
+
+</c:if>

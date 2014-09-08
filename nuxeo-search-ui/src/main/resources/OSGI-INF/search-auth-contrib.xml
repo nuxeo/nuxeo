@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.search.auth">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>nxsearch/</pattern>
+      </patterns>
+    </startURLPattern>
+
+  </extension>
+
+</component>

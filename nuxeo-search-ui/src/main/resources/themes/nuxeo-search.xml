@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<theme name="search" template-engines="jsf-facelets">
+  <layout>
+    <page name="default" class="nxSearch">
+      <section class="nxHeader">
+        <cell class="logo">
+          <!-- logo -->
+          <fragment type="generic fragment"/>
+        </cell>
+        <cell class="content">
+          <!-- header -->
+          <fragment type="generic fragment"/>
+        </cell>
+        <cell class="includes">
+          <!-- Include -->
+          <fragment type="generic fragment"/>
+          <!-- Search specific Include -->
+          <fragment type="generic fragment"/>
+        </cell>
+      </section>
+      <section class="nxMainContainer">
+        <cell class="content">
+          <!-- main area -->
+          <fragment type="region fragment"/>
+        </cell>
+      </section>
+      <section class="nxFooter">
+        <cell class="content">
+          <fragment type="generic fragment"/>
+        </cell>
+      </section>
+    </page>
+    <page name="popup">
+      <section class="nxMainContainer">
+        <cell class="content">
+          <!-- main area -->
+          <fragment type="region fragment" />
+        </cell>
+      </section>
+    </page>
+  </layout>
+  <properties element="page[1]/section[2]/cell[1]/fragment[1]">
+    <name>body</name>
+    <defaultBody />
+    <defaultSrc />
+  </properties>
+  <properties element="page[2]/section[1]/cell[1]/fragment[1]">
+    <name>body</name>
+    <defaultBody />
+    <defaultSrc />
+  </properties>
+  <formats>
+    <widget element="">
+      <view>theme view</view>
+      <icon>${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
+      <iconIco>${org.nuxeo.ecm.contextPath}/icons/favicon.ico</iconIco>
+      <charset>utf-8</charset>
+    </widget>
+    <widget element="page[1]|page[2]">
+      <view>page frame</view>
+    </widget>
+    <widget element="page[1]/section[1]|page[1]/section[2]|page[1]/section[3]|page[2]/section[1]">
+      <view>section frame</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[1]|page[1]/section[1]/cell[2]|page[1]/section[1]/cell[3]|page[1]/section[2]/cell[1]|page[1]/section[2]/cell[2]|page[1]/section[2]/cell[3]|page[1]/section[3]/cell[1]|page[2]/section[1]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[1]/fragment[1]">
+      <view>Nuxeo DM logo (Galaxy Theme)</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[2]/fragment[1]">
+      <view>Nuxeo header</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[3]/fragment[1]">
+      <view>nuxeo5 includes</view>
+    </widget>
+    <widget element="page[1]/section[1]/cell[3]/fragment[2]">
+      <view>search includes</view>
+    </widget>
+    <widget element="page[1]/section[2]/cell[1]/fragment[1]">
+      <view>facelet region</view>
+    </widget>
+    <widget element="page[1]/section[3]/cell[1]/fragment[1]">
+      <view>Nuxeo footer</view>
+    </widget>
+    <widget element="page[2]/section[1]/cell[1]/fragment[1]">
+      <view>facelet region</view>
+    </widget>
+  </formats>
+</theme>
