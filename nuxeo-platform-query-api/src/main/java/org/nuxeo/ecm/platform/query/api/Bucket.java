@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * http://www.gnu.org/licenses/lgpl.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,8 +19,26 @@ package org.nuxeo.ecm.platform.query.api;
 /**
  * @since 5.9.6
  */
-public interface Bucket {
-    String getKey();
+public class Bucket {
 
-    long getDocCount();
+    protected String key;
+    protected long docCount;
+
+    public Bucket(String key, long docCount) {
+        this.key = key;
+        this.docCount = docCount;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public long getDocCount() {
+        return docCount;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Bucket(%s, %d)", key, docCount);
+    }
 }

@@ -112,8 +112,8 @@
       <aggregates>
         <aggregate id="source_agg" type="terms" parameter="dc:source">
           <field schema="advanced_search" name="source_agg"/>
-          <property name="minDocSize">5</property>
-          <property name="order">terms desc</property>
+          <property name="size">5</property>
+          <property name="otherTermsProp">foo</property>
         </aggregate>
         <aggregate id="coverage_agg" type="histogram" parameter="dc:coverage">
           <field schema="search" name="coverage_agg"/>
@@ -121,22 +121,6 @@
         </aggregate>
         <aggregate id="subject_agg" type="terms" parameter="dc:subjects">
           <field schema="search" name="subjects_agg"/>
-        </aggregate>
-        <aggregate id="size_agg" type="range" parameter="dc:size">
-          <field schema="search" name="size_agg"/>
-          <ranges>
-            <range key="small" to="1024"/>
-            <range key="medium" from="1024" to="4096"/>
-            <range key="big" from="4096"/>
-          </ranges>
-        </aggregate>
-        <aggregate id="modified_agg" type="date_range" parameter="dc:modified">
-          <field schema="search" name="modified_agg"/>
-          <ranges>
-            <range key="small" to="1024"/>
-            <range key="medium" from="1024" to="4096"/>
-            <range key="big" from="4096"/>
-          </ranges>
         </aggregate>
       </aggregates>
     </genericPageProvider>
