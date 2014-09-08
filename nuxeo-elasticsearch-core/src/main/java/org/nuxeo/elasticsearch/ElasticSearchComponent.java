@@ -94,6 +94,8 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.AggregateQuery;
 import org.nuxeo.ecm.platform.query.api.Bucket;
+import org.nuxeo.ecm.platform.query.core.AggregateImpl;
+import org.nuxeo.ecm.platform.query.core.BucketTerm;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -732,10 +734,10 @@ public class ElasticSearchComponent extends DefaultComponent implements
                         .getBuckets();
                 List<Bucket> nxBuckets = new ArrayList<Bucket>(buckets.size());
                 for (MultiBucketsAggregation.Bucket bucket : buckets) {
-                    nxBuckets.add(new Bucket(bucket.getKey(), bucket
+                    nxBuckets.add(new BucketTerm(bucket.getKey(), bucket
                             .getDocCount()));
                 }
-                ret.add(new Aggregate(agg, nxBuckets));
+                ret.add(new AggregateImpl(agg, nxBuckets));
                 break;
             default:
                 // not implemented

@@ -16,6 +16,7 @@
  */
 
 package org.nuxeo.elasticsearch.test.aggregates;
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.SystemUtils;
 import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +40,7 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.core.AggregateDescriptor;
+import org.nuxeo.ecm.platform.query.core.AggregateQueryImpl;
 import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -112,7 +115,7 @@ public class TestAggregates {
 
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document").addAggregate(
-                new AggregateQuery(aggDef, null));
+                new AggregateQueryImpl(aggDef, null));
 
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME);
@@ -161,7 +164,7 @@ public class TestAggregates {
 
         NxQueryBuilder qb = new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document").addAggregate(
-                new AggregateQuery(aggDef, null));
+                new AggregateQueryImpl(aggDef, null));
 
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME);
@@ -218,8 +221,8 @@ public class TestAggregates {
         // model.setProperty("advanced_search", "nature_agg", natures);
         NxQueryBuilder qb = new NxQueryBuilder(session)
                 .nxql("SELECT * FROM Document")
-                .addAggregate(new AggregateQuery(aggDef1, model))
-                .addAggregate(new AggregateQuery(aggDef2, model));
+                .addAggregate(new AggregateQueryImpl(aggDef1, model))
+                .addAggregate(new AggregateQueryImpl(aggDef2, model));
 
         SearchRequestBuilder request = esa.getClient().prepareSearch(IDX_NAME)
                 .setTypes(TYPE_NAME);
@@ -303,12 +306,12 @@ public class TestAggregates {
         List<Aggregate> aggs = pp.getAggregates();
         Assert.assertEquals(3, aggs.size());
         Assert.assertEquals(
-                "Aggregate(source, terms, [Bucket(Source0, 1), Bucket(Source1, 1), Bucket(Source2, 1), Bucket(Source3, 1), Bucket(Source4, 1)])",
+                "AggregateImpl(source, terms, [BucketTerm(Source0, 1), BucketTerm(Source1, 1), BucketTerm(Source2, 1), BucketTerm(Source3, 1), BucketTerm(Source4, 1)])",
                 aggs.get(0).toString());
         Assert.assertEquals(
-                "Aggregate(coverage, terms, [Bucket(Coverage2, 1)])",
+                "AggregateImpl(coverage, terms, [BucketTerm(Coverage2, 1)])",
                 aggs.get(1).toString());
-        Assert.assertEquals("Aggregate(nature, terms, [Bucket(Nature0, 1)])",
+        Assert.assertEquals("AggregateImpl(nature, terms, [BucketTerm(Nature0, 1)])",
                 aggs.get(2).toString());
 
     }
