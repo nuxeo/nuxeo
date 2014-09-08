@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,7 +21,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -90,7 +89,7 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
                 .getPageProviderDefinition("TEST_AGGREGATES");
         List<AggregateDefinition> aggs = ppd.getAggregates();
         assertNotNull(aggs);
-        assertEquals(3, aggs.size());
+        assertEquals(5, aggs.size());
         AggregateDefinition source_agg = aggs.get(0);
         AggregateDefinition coverage_agg = aggs.get(1);
         AggregateDefinition subject_agg = aggs.get(2);
@@ -100,8 +99,8 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
         assertEquals("dc:source", source_agg.getDocumentField());
         assertEquals("advanced_search", source_agg.getSearchField().getSchema());
         assertEquals("source_agg", source_agg.getSearchField().getName());
-        assertTrue(source_agg.getPropertiesAsJson().contains("size"));
-        assertTrue(source_agg.getProperties().containsKey("size"));
+        assertTrue(source_agg.getPropertiesAsJson().contains("minDocSize"));
+        assertTrue(source_agg.getProperties().containsKey("minDocSize"));
 
         assertEquals("coverage_agg", coverage_agg.getId());
         assertEquals("{\"interval\" : 50}", coverage_agg.getPropertiesAsJson());
@@ -129,22 +128,16 @@ public class TestPageProviderAggregates extends SQLRepositoryTestCase {
         assertNotNull(pp);
 
         List<AggregateQuery> qaggs = pp.getAggregatesQuery();
-        assertEquals(3, qaggs.size());
+        assertEquals(5, qaggs.size());
 
         AggregateQuery source_agg = qaggs.get(0);
-        assertEquals("source_agg", source_agg.getId());
-        assertEquals("terms", source_agg.getType());
-        assertEquals("AggregateQuery(source_agg, terms, dc:source, [for search, you know])",
+        assertEquals("AggregateQueryImpl(source_agg, terms, dc:source, [for search, you know])",
                 source_agg.toString());
-
-        assertNotNull(source_agg.getSelection());
-        assertEquals(2, source_agg.getSelection().size());
-        assertEquals("for search", source_agg.getSelection().get(0));
 
         AggregateQuery coverage_agg = qaggs.get(1);
         assertNotNull(coverage_agg.getSelection());
         assertEquals(0, coverage_agg.getSelection().size());
-        assertEquals("AggregateQuery(coverage_agg, histogram, dc:coverage, [])",
+        assertEquals("AggregateQueryImpl(coverage_agg, histogram, dc:coverage, [])",
                 coverage_agg.toString());
     }
 

@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.platform.query.core.AggregateQueryImpl;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
@@ -97,7 +98,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     protected PageProviderChangedListener pageProviderChangedListener;
 
-    protected  List<AggregateQuery> aggregateQuery;
+    protected  List<AggregateQueryImpl> aggregateQuery;
 
     /**
      * Returns the list of current page items.
@@ -878,15 +879,15 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         if (aggregateQuery == null) {
             List<AggregateDefinition> aggDefinitions = definition.getAggregates();
             if (aggDefinitions.isEmpty()) {
-                aggregateQuery = Collections.<AggregateQuery>emptyList();
+                aggregateQuery = Collections.<AggregateQueryImpl>emptyList();
             } else {
-                aggregateQuery = new ArrayList<AggregateQuery>(aggDefinitions.size());
+                aggregateQuery = new ArrayList<AggregateQueryImpl>(aggDefinitions.size());
                 for(AggregateDefinition def: aggDefinitions){
-                    aggregateQuery.add(new AggregateQuery(def, searchDocumentModel));
+                    aggregateQuery.add(new AggregateQueryImpl(def, searchDocumentModel));
                 }
             }
         }
-        return aggregateQuery;
+        return (List<AggregateQuery>)(List<?>) aggregateQuery;
     }
 
     @Override
