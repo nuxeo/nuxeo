@@ -4634,7 +4634,7 @@
         <plugin>
           <groupId>org.nuxeo.build</groupId>
           <artifactId>nuxeo-distribution-tools</artifactId>
-          <version>${ant.assembly.version}</version>
+          <version>2.0</version>
           <extensions>true</extensions>
         </plugin>
         <plugin>
