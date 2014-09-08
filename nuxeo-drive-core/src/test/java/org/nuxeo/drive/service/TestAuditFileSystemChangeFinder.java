@@ -978,6 +978,7 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
+        TransactionHelper.startTransaction();
         try {
             // Check changes, expecting 3:
             // - documentModified
@@ -1003,6 +1004,7 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
+        TransactionHelper.startTransaction();
         try {
             // Check changes, expecting 1: deleted
             List<FileSystemItemChange> changes = getChanges();
@@ -1163,8 +1165,9 @@ public class TestAuditFileSystemChangeFinder {
         session.save();
     }
 
-    protected void cleanUpAuditLog() {
-        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getService(AuditReader.class);
+    protected void cleanUpAuditLog() throws ClientException {
+        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getLocalService(AuditReader.class);
+        TransactionHelper.startTransaction();
         auditService.getOrCreatePersistenceProvider().run(true, new RunVoid() {
             @Override
             public void runWith(EntityManager em) throws ClientException {
@@ -1173,6 +1176,7 @@ public class TestAuditFileSystemChangeFinder {
                 em.createNativeQuery("delete from nxp_logs").executeUpdate();
             }
         });
+        TransactionHelper.commitOrRollbackTransaction();
     }
 
 }

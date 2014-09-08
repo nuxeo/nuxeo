@@ -500,8 +500,9 @@ public class TestPermissionHierarchyFileSystemChanges {
         return changeSummary.getFileSystemChanges();
     }
 
-    protected void cleanUpAuditLog() {
-        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getService(AuditReader.class);
+    protected void cleanUpAuditLog() throws ClientException {
+        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getLocalService(AuditReader.class);
+        TransactionHelper.startTransaction();
         auditService.getOrCreatePersistenceProvider().run(true, new RunVoid() {
             @Override
             public void runWith(EntityManager em) throws ClientException {
@@ -510,6 +511,7 @@ public class TestPermissionHierarchyFileSystemChanges {
                 em.createNativeQuery("delete from nxp_logs").executeUpdate();
             }
         });
+        TransactionHelper.commitOrRollbackTransaction();
     }
 
 }

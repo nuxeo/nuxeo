@@ -254,7 +254,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     @Override
     @SuppressWarnings("unchecked")
     public long getUpperBound() {
-        AuditReader auditService = Framework.getService(AuditReader.class);
+        AuditReader auditService = Framework.getLocalService(AuditReader.class);
         String auditQuery = "from LogEntry log order by log.id desc";
         if (log.isDebugEnabled()) {
             log.debug("Querying audit log for greatest id: " + auditQuery);
