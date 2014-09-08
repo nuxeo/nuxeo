@@ -52,26 +52,22 @@
 
     <a4j:region id="files_region">
       <a4j:outputPanel id="files_panel" layout="block">
-
-        <nxu:inputList value="#{currentDocument.files.files}"
-          id="files_input" model="model">
-
+        <c:forEach id="files_input" items="#{currentDocument.files.files}" var="file" varStatus="counter">
           <div class="simpleBox">
             <a4j:commandLink immediate="true"
-              onclick="if( !confirmRemoveFiles('#{nxu:javaScriptEscape(currentDocument.files.files[model.rowIndex].filename)}')) return false;"
+              onclick="if( !confirmRemoveFiles('#{nxu:javaScriptEscape(currentDocument.files.files[counter.count - 1].filename)}')) return false;"
               actionListener="#{FileManageActions.performAction}"
               id="files_delete" render="document_files_edit"
               bypassUpdates="true">
               <h:graphicImage value="/icons/delete.png" alt="#{messages['command.remove.file']}" />
-              <f:param name="index" value="#{model.rowIndex}" />
+              <f:param name="index" value="#{counter.count - 1}" />
             </a4j:commandLink>
 
-            <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[model.rowIndex].filename)}">
-              <nxh:outputText value="#{currentDocument.files.files[model.rowIndex].filename}" />
+            <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[counter.count - 1].filename)}">
+              <nxh:outputText value="#{currentDocument.files.files[counter.count - 1].filename}" />
             </nxh:outputLink>
           </div>
-
-        </nxu:inputList>
+        </c:forEach>
 
         <h:message styleClass="errorMessage" for="files_input"
           id="files_message" />
