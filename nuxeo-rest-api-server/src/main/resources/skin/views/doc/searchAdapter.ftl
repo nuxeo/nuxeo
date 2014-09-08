@@ -22,7 +22,7 @@
 
 
     {
-      "path": "/path/{docId}/@search",
+      "path": "/id/{docId}/@search",
       "description": "Operation on document's children by its id",
       "operations" : [
         {

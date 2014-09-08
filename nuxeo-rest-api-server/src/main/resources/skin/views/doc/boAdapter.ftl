@@ -89,7 +89,7 @@
 
 
   {
-    "path": "/path/{docId}/@children/@bo/{adapterName}",
+    "path": "/id/{docId}/@children/@bo/{adapterName}",
     "description": "Get the list of business object of the children of a document by its id",
     "operations" : [
     {
