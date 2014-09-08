@@ -6,7 +6,7 @@
   xmlns:f="http://java.sun.com/jsf/core">
 
 
-<a4j:outputPanel ajaxRendered="true" layout="block">
+<a4j:outputPanel layout="block" id="userSessionsMessages">
   <h:messages />
 </a4j:outputPanel> <h:outputText
   value="#{messages['adminsubtab.usersActivity.userSessions.total']}" /><f:verbatim>&amp;nbsp;</f:verbatim>
@@ -29,7 +29,7 @@
         itemLabel="#{messages[itype.label]}" />
     </h:selectOneListbox>
     <div style="display: none;"><a4j:commandButton value="submit"
-      render="usersHttpSessionsListing" /></div>
+      render="usersHttpSessionsListing userSessionsMessages" /></div>
 
   </h:form>
 
