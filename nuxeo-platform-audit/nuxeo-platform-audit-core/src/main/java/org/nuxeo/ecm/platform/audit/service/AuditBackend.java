@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,29 +12,22 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     matic
+ *     Thierry Delprat
  */
-package org.nuxeo.ecm.platform.audit.service.management;
+package org.nuxeo.ecm.platform.audit.service;
 
 import org.nuxeo.ecm.platform.audit.api.Logs;
 
 /**
- * @author matic
+ * Audit Backend SPI
+ * 
+ * @author tiry
+ *
  */
-public class AuditEventMetricMBeanAdapter implements AuditEventMetricMBean {
-
-    protected final Logs service;
-
-    protected final String eventName;
-
-    protected AuditEventMetricMBeanAdapter(Logs service,
-            String name) {
-        this.service = service;
-        this.eventName = name;
-    }
-
-    public Long getCount() {
-        return service.getEventsCount(eventName);        
-    }
-
+public interface AuditBackend extends Logs {
+    
+    void activate(NXAuditEventsService component) throws Exception;
+    
+    void deactivate() throws Exception;
+    
 }

@@ -20,14 +20,12 @@
 package org.nuxeo.ecm.platform.audit;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
-import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
-import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -38,32 +36,20 @@ public class TestServiceAccess  {
 
     @Test
     public void testFullAccess() {
-        NXAuditEvents fullService = Framework.getLocalService(NXAuditEvents.class);
+        Logs fullService = Framework.getLocalService(Logs.class);
         assertNotNull(fullService);
-
-        if (!(fullService instanceof NXAuditEventsService)) {
-            fail("");
-        }
     }
 
     @Test
     public void testReadAccess() {
         AuditReader reader = Framework.getLocalService(AuditReader.class);
         assertNotNull(reader);
-
-        if (!(reader instanceof NXAuditEventsService)) {
-            fail("");
-        }
     }
 
     @Test
     public void testWriteAccess() {
         AuditLogger writer = Framework.getLocalService(AuditLogger.class);
         assertNotNull(writer);
-
-        if (!(writer instanceof NXAuditEventsService)) {
-            fail("");
-        }
     }
 
 }

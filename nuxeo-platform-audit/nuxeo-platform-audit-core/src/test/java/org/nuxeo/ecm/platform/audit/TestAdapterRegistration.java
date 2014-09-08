@@ -17,11 +17,13 @@
 
 package org.nuxeo.ecm.platform.audit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
 import org.nuxeo.runtime.api.Framework;
@@ -45,12 +47,12 @@ public class TestAdapterRegistration extends NXRuntimeTestCase{
 
     @Test
     public void testAuditContribution() throws Exception {
-        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getLocalService(NXAuditEvents.class);
+        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime().getComponent(NXAuditEventsService.NAME);
         assertNotNull(auditService);
-        AdapterDescriptor[] registeredAdapters = auditService.getRegisteredAdapters();
-        assertEquals(1, registeredAdapters.length);
+        Set<AdapterDescriptor> registeredAdapters = auditService.getDocumentAdapters();
+        assertEquals(1, registeredAdapters.size());
 
-        AdapterDescriptor ad = registeredAdapters[0];
+        AdapterDescriptor ad = registeredAdapters.iterator().next();
         assertEquals("myadapter", ad.getName());
 
     }

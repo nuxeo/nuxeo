@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.audit.service.management;
 
 import javax.management.ObjectName;
 
-import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
+import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
@@ -32,14 +32,14 @@ import org.nuxeo.runtime.management.ResourcePublisherService;
  */
 public class AuditEventMetricFactory implements ResourceFactory {
 
-    protected NXAuditEventsService auditService;
+    protected Logs auditService;
 
     protected ResourcePublisherService publisherService;
 
     public void configure(ResourcePublisherService service,
             ResourceFactoryDescriptor descriptor) {
         publisherService = service;
-        auditService = (NXAuditEventsService) Framework.getLocalService(NXAuditEvents.class);
+        auditService = Framework.getLocalService(Logs.class);
     }
 
     public static String formatQualifiedName(String name) {

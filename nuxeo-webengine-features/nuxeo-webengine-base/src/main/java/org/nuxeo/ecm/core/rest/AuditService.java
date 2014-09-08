@@ -26,7 +26,6 @@ import javax.ws.rs.GET;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
-import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.View;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
@@ -47,10 +46,10 @@ import org.nuxeo.runtime.api.Framework;
 @WebAdapter(name = "audits", type = "AuditService", targetType = "Document")
 public class AuditService extends DefaultAdapter {
 
-    protected NXAuditEvents guardedService() {
-        NXAuditEvents service;
+    protected Logs guardedService() {
+        Logs service;
         try {
-            service = Framework.getService(NXAuditEvents.class);
+            service = Framework.getService(Logs.class);
         } catch (Exception e) {
             throw WebException.wrap("Failed to get audit service", e);
         }

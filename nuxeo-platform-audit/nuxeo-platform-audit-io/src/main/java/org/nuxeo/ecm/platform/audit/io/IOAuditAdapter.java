@@ -42,7 +42,6 @@ import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
-import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.io.api.AbstractIOResourceAdapter;
 import org.nuxeo.ecm.platform.io.api.IOResources;
 import org.nuxeo.runtime.api.Framework;
@@ -83,11 +82,11 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         return logService;
     }
 
-    public static NXAuditEvents getNXAuditEventsService() {
+    public static Logs getNXAuditEventsService() {
         try {
-            return Framework.getService(NXAuditEvents.class);
+            return Framework.getService(Logs.class);
         } catch (Exception e) {
-            log.error("Failed to lookup NXAuditEvents service");
+            log.error("Failed to lookup Audit Logs service");
             return null;
         }
     }

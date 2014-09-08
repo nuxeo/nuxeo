@@ -42,8 +42,8 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
-import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.audit.api.Logs;
+import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.management.AuditEventMetricFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ObjectNameFactory;
@@ -56,7 +56,7 @@ import org.nuxeo.runtime.management.ServerLocator;
  */
 public class TestNXAuditEventsService extends SQLRepositoryTestCase {
 
-    private NXAuditEventsService serviceUnderTest;
+    private Logs serviceUnderTest;
 
     protected MBeanServer mbeanServer;
 
@@ -75,7 +75,7 @@ public class TestNXAuditEventsService extends SQLRepositoryTestCase {
                 "nxaudit-tests.xml");
         deployTestContrib("org.nuxeo.ecm.platform.audit.tests",
                 "test-audit-contrib.xml");
-        serviceUnderTest = (NXAuditEventsService) Framework.getLocalService(NXAuditEvents.class);
+        serviceUnderTest = Framework.getLocalService(Logs.class);
         assertNotNull(serviceUnderTest);
         openSession();
         fireFrameworkStarted();
@@ -171,9 +171,12 @@ public class TestNXAuditEventsService extends SQLRepositoryTestCase {
 
     @Test
     public void testLogMiscMessage() throws ClientException {
-        List<String> eventIds = serviceUnderTest.getLoggedEventIds();
+        
+        DefaultAuditBackend backend = (DefaultAuditBackend) serviceUnderTest;
+        
+        List<String> eventIds = backend.getLoggedEventIds();
         int n = eventIds.size();
-
+        
         EventContext ctx = new EventContextImpl(); // not:DocumentEventContext
         Event event = ctx.newEvent("documentModified"); // auditable
         event.setInline(false);
@@ -181,7 +184,7 @@ public class TestNXAuditEventsService extends SQLRepositoryTestCase {
         Framework.getLocalService(EventService.class).fireEvent(event);
         waitForEventsDispatched();
 
-        eventIds = serviceUnderTest.getLoggedEventIds();
+        eventIds = backend.getLoggedEventIds();
         assertEquals(n + 1, eventIds.size());
     }
 

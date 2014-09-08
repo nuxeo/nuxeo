@@ -30,4 +30,6 @@ public interface AuditAdmin {
      */
     long syncLogCreationEntries(String repoId, String path, Boolean recurs)
             throws ClientException;
+    
+    Long getEventsCount(final String eventId);
 }

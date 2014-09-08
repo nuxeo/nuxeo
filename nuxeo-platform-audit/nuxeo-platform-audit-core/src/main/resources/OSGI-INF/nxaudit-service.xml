@@ -18,7 +18,6 @@
   <implementation class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" />
 
   <service>
-    <provide interface="org.nuxeo.ecm.platform.audit.api.NXAuditEvents" />
     <provide interface="org.nuxeo.ecm.platform.audit.api.AuditReader" />
     <provide interface="org.nuxeo.ecm.platform.audit.api.AuditLogger" />
     <provide interface="org.nuxeo.ecm.platform.audit.api.Logs" />
@@ -78,6 +77,15 @@
 
     <object class="org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor" />
   </extension-point>
+  
+  <extension-point name="backend">
+
+    <documentation>
+      Allows to register a backend implementation for the Audit Service
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor" />
+  </extension-point>      
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
     point="event">
@@ -108,6 +116,14 @@
     <event name="documentRestored" />
   </extension>
 
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+    point="backend">
+    
+    <backend class="org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend"/>
+    
+  </extension>
+  
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
 
