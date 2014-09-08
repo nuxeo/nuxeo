@@ -20,8 +20,10 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.el.ELContext;
 
@@ -193,21 +195,25 @@ public class TagSelect2Support {
     }
 
     public String encodeParametersForCurrentDocument(final Widget widget) {
-        JSONObject obj = encodeCommonPrameters(widget);
-        obj.put("onAddEntryHandler", "addTagHandler");
-        obj.put("onRemoveEntryHandler", "removeTagHandler");
-        obj.put("containerCssClass", "s2tagContainerCssClass");
-        obj.put("dropdownCssClass", "s2tagDropdownCssClass");
-        obj.put("createSearchChoice", "createNewTag");
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("onAddEntryHandler", "addTagHandler");
+        parameters.put("onRemoveEntryHandler", "removeTagHandler");
+        parameters.put("containerCssClass", "s2tagContainerCssClass");
+        parameters.put("dropdownCssClass", "s2tagDropdownCssClass");
+        parameters.put("createSearchChoice", "createNewTag");
         if (!widget.getProperties().containsKey("canSelectNewTag")
                 && Boolean.getBoolean((String) widget.getProperties().get(
                         "canSelectNewTag"))) {
-            obj.put("createSearchChoice", "createNewTag");
+            parameters.put("createSearchChoice", "createNewTag");
         }
-        return obj.toString();
+        return encodeCommonPrameters(widget, parameters).toString();
     }
 
     protected JSONObject encodeCommonPrameters(final Widget widget) {
+        return encodeCommonPrameters(widget, null);
+    }
+
+    protected JSONObject encodeCommonPrameters(final Widget widget, final Map<String, String> additionalParameters) {
         JSONObject obj = new JSONObject();
         Map<String, Serializable> widgetProperties = widget.getProperties();
         obj.put("multiple", "true");
@@ -220,6 +226,19 @@ public class TagSelect2Support {
         }
         obj.put(Select2Common.OPERATION_ID, "Tag.Suggestion");
         obj.put(Select2Common.WIDTH, "300px");
+        obj.put(Select2Common.SUGGESTION_FORMATTER, "formatSuggestedTags");
+        JSONArray tokenSeparator = new JSONArray();
+        tokenSeparator.add(",");
+        tokenSeparator.add(" ");
+        obj.put("tokenSeparators", tokenSeparator);
+        if (additionalParameters != null) {
+            for (Entry<String, String> entry : additionalParameters.entrySet()) {
+                obj.put(entry.getKey(), entry.getValue().toString());
+            }
+        }
+        for (Entry<String, Serializable> entry : widgetProperties.entrySet()) {
+            obj.put(entry.getKey(), entry.getValue().toString());
+        }
         if (widgetProperties.containsKey("placeholder")) {
             ELContext elContext = EL.createELContext(
                     SeamActionContext.EL_RESOLVER, new FunctionMapperImpl());
@@ -229,11 +248,6 @@ public class TagSelect2Support {
                     String.class).getValue(elContext);
             obj.put(Select2Common.PLACEHOLDER, placeholder);
         }
-        obj.put(Select2Common.SUGGESTION_FORMATTER, "formatSuggestedTags");
-        JSONArray tokenSeparator = new JSONArray();
-        tokenSeparator.add(",");
-        tokenSeparator.add(" ");
-        obj.put("tokenSeparators", tokenSeparator);
         return obj;
     }
 

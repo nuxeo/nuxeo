@@ -42,32 +42,6 @@
 			<a4j:param name="param1" assignTo="#{tagSelect2Support.label}" />
 		</a4j:jsFunction>
 
-		<script>
-          function createNewTag(term, data) {
-            return {
-              id : term,
-              displayLabel : term,
-              newTag : true
-            };
-          }
-
-          function addTagHandler(tag) {
-            return addTagging(tag.id);
-          }
-
-          function removeTagHandler(tag) {
-            return removeTagging(tag.id);
-          }
-
-          function formatSuggestedTags(tag) {
-            if (tag.newTag) {
-              return "&lt;span class='s2newTag'&gt;" + tag.displayLabel + "&lt;/span&gt;"
-            } else {
-              return "&lt;span class='s2existingTag'&gt;" + tag.displayLabel + "&lt;/span&gt;"
-            }
-          }
-        </script>
-
 		<ui:include src="/incl/select2_js.xhtml" />
 
 		<a4j:region>
