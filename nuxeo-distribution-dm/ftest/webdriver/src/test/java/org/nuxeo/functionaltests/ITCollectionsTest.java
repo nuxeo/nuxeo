@@ -48,8 +48,6 @@ import org.openqa.selenium.WebElement;
  *
  * @since 5.9.3
  */
-// NXP-15004: needs to be adapted for JSF2
-@Ignore
 public class ITCollectionsTest extends AbstractTest {
 
     private final static String WORKSPACE_TITLE = "WorkspaceTitle_"

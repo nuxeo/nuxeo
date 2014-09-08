@@ -300,14 +300,25 @@ public class DocumentBasePage extends AbstractPage {
         Locator.waitUntilGivenFunctionIgnoring(
                 new Function<WebDriver, Boolean>() {
                     public Boolean apply(WebDriver driver) {
-                        return StringUtils.isBlank(driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute(
-                                "disabled"));
+                        if (driver.findElement(By.id("fancybox-content")).isDisplayed()) {
+                            return true;
+                        } else {
+                            if (StringUtils.isNotBlank(driver.findElement(
+                                    By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute(
+                                    "disabled"))) {
+                                return false;
+                            }
+                            driver.findElement(
+                                    By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).click();
+                            if (driver.findElement(By.id("fancybox-content")).isDisplayed()) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
                     }
                 }, StaleElementReferenceException.class);
-        Locator.findElementWaitUntilEnabledAndClick(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID));
-        Locator.waitUntilElementPresent(By.id("fancybox-content"));
-        return getWebFragment(
-                By.id("fancybox-content"),
+        return getWebFragment(By.id("fancybox-content"),
                 AddToCollectionForm.class);
     }
 

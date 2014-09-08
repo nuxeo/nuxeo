@@ -28,7 +28,7 @@ import org.openqa.selenium.support.FindBy;
 public class HomePage extends DocumentBasePage {
 
     @Required
-    @FindBy(xpath = "//div[@class='adminTabBlock']/form/ul")
+    @FindBy(id = "nxw_homeTabs_panel")
     protected WebElement menu;
 
 

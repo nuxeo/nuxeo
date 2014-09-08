@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -216,7 +217,10 @@ public class ContentTabSubPage extends DocumentBasePage {
      */
     public void selectDocumentByIndex(int ... indexes) {
         for (int i : indexes) {
+            AjaxRequestManager a = new AjaxRequestManager(driver);
+            a.watchAjaxRequests();
             getChildDocumentRows().get(i).findElement(By.xpath(CHECK_BOX_XPATH)).click();
+            a.waitForAjaxRequests();
         }
     }
 
