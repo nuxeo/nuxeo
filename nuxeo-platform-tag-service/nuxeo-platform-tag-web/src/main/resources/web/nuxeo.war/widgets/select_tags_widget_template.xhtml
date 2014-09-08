@@ -41,34 +41,18 @@
     <c:if test="#{widget.mode == 'edit'}">
       <a4j:outputPanel id="#{widget.id}_panel" layout="block">
         <span id="#{widget.id}_suggestDiv">
-          <h:inputText id="#{widget.id}_suggest"
-              onkeydown="if (event.keyCode == 13) {return false;}"
-              onclick="#{widgetProperty_onclick}"
-              onchanged="#{widgetProperty_onclick}"
-              placeholder="#{widgetProperty_placeholder}"/>
+            <ui:include src="/incl/select2_js.xhtml" />
+            <a4j:region>
+              <h:inputHidden id="#{widget.id}_select2" immediate="true"
+                ajaxSingle="true" value="#{field}">
+                <f:converter converterId="select2Converter" />
+              </h:inputHidden>
+              <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
+                value="#{tagSelect2Support.resolveTags(field)}" />
+            </a4j:region>
+            <h:inputHidden readonly="true" id="#{widget.id}_select2_params"
+              value="#{tagSelect2Support.encodePrameters(widget)}" />
         </span>
-        <a4j:outputPanel ajaxRendered="false" id="#{widget.id}_listRegion"
-            layout="block">
-          <nxu:inputList id="#{widget.id}_list" value="#{field}" model="model"
-              required="#{widget.required}">
-            <h:panelGroup id="#{widget.id}_listItem">
-            <span class="tag tagLink">
-              <h:outputText value="#{model.rowData}" />
-              <a4j:commandLink immediate="true"
-                  actionListener="#{editableListBean.performAction}"
-                  id="#{widget.id}_delete" render="#{widget.id}_panel"
-                  bypassUpdates="true">
-                <h:graphicImage value="/icons/action_tag_delete.png" />
-                <f:param name="for" value="#{widget.id}_list" />
-                <f:param name="index" value="#{model.rowIndex}" />
-                <f:param name="type" value="remove" />
-              </a4j:commandLink>
-            </span>
-            </h:panelGroup>
-          </nxu:inputList>
-          <h:message styleClass="errorMessage" for="#{widget.id}_list"
-              id="#{widget.id}_message" />
-        </a4j:outputPanel>
       </a4j:outputPanel>
     </c:if>
 

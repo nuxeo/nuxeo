@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
@@ -344,6 +345,24 @@ public class Select2Common {
                         StringUtils.isNotBlank(userGroupType)
                                 && (userGroupType.equals(USER_TYPE) || userGroupType.equals(GROUP_TYPE)));
             }
+        }
+    }
+
+    /**
+     * @since 5.9.4-JSF2-SNAPSHOT
+     */
+    public static String resolveDefaultEntries(final List<String> list) {
+        if (list == null || list.isEmpty()) {
+            return "[]";
+        } else {
+            JSONArray result = new JSONArray();
+            for (String l : list) {
+                JSONObject obj = new JSONObject();
+                obj.element(Select2Common.ID, l);
+                obj.element(Select2Common.LABEL, l);
+                result.add(obj);
+            }
+            return result.toString();
         }
     }
 

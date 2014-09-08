@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.tag.web;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +89,10 @@ public class TagSelect2Support {
             }
             return result.toString();
         }
+    }
+
+    public String resolveTags(final List<String> list) {
+       return Select2Common.resolveDefaultEntries(list);
     }
 
     @Factory(value = "documentTagIds", scope = EVENT)
@@ -182,34 +187,54 @@ public class TagSelect2Support {
         return tagService.isEnabled() ? tagService : null;
     }
 
-    public String encodePrameters(final Widget widget) {
-        JSONObject obj = new JSONObject();
-        obj.put("multiple", "true");
-        obj.put(Select2Common.MIN_CHARS, "1");
-        obj.put(Select2Common.READ_ONLY_PARAM, "false");
-        obj.put("createSearchChoice", "createNewTag");
-        obj.put(Select2Common.OPERATION_ID, "Tag.Suggestion");
-        obj.put(Select2Common.WIDTH, "300px");
-        if (widget.getProperties().containsKey("placeholder")) {
-            ELContext elContext = EL.createELContext(
-                    SeamActionContext.EL_RESOLVER, new FunctionMapperImpl());
-            String placeholder = (String) SeamActionContext.EXPRESSION_FACTORY.createValueExpression(
-                    elContext,
-                    (String) widget.getProperties().get("placeholder"),
-                    String.class).getValue(elContext);
-            obj.put(Select2Common.PLACEHOLDER, placeholder);
-        }
 
+    public String encodePrameters(final Widget widget) {
+        return encodeCommonPrameters(widget).toString();
+    }
+
+    public String encodeParametersForCurrentDocument(final Widget widget) {
+        JSONObject obj = encodeCommonPrameters(widget);
         obj.put("onAddEntryHandler", "addTagHandler");
         obj.put("onRemoveEntryHandler", "removeTagHandler");
         obj.put("containerCssClass", "s2tagContainerCssClass");
         obj.put("dropdownCssClass", "s2tagDropdownCssClass");
+        obj.put("createSearchChoice", "createNewTag");
+        if (!widget.getProperties().containsKey("canSelectNewTag")
+                && Boolean.getBoolean((String) widget.getProperties().get(
+                        "canSelectNewTag"))) {
+            obj.put("createSearchChoice", "createNewTag");
+        }
+        return obj.toString();
+    }
+
+    protected JSONObject encodeCommonPrameters(final Widget widget) {
+        JSONObject obj = new JSONObject();
+        Map<String, Serializable> widgetProperties = widget.getProperties();
+        obj.put("multiple", "true");
+        obj.put(Select2Common.MIN_CHARS, "1");
+        obj.put(Select2Common.READ_ONLY_PARAM, "false");
+        if (widgetProperties.containsKey("canSelectNewTag")
+                && Boolean.getBoolean((String) widgetProperties.get(
+                        "canSelectNewTag"))) {
+            obj.put("createSearchChoice", "createNewTag");
+        }
+        obj.put(Select2Common.OPERATION_ID, "Tag.Suggestion");
+        obj.put(Select2Common.WIDTH, "300px");
+        if (widgetProperties.containsKey("placeholder")) {
+            ELContext elContext = EL.createELContext(
+                    SeamActionContext.EL_RESOLVER, new FunctionMapperImpl());
+            String placeholder = (String) SeamActionContext.EXPRESSION_FACTORY.createValueExpression(
+                    elContext,
+                    (String) widgetProperties.get("placeholder"),
+                    String.class).getValue(elContext);
+            obj.put(Select2Common.PLACEHOLDER, placeholder);
+        }
         obj.put(Select2Common.SUGGESTION_FORMATTER, "formatSuggestedTags");
         JSONArray tokenSeparator = new JSONArray();
         tokenSeparator.add(",");
         tokenSeparator.add(" ");
         obj.put("tokenSeparators", tokenSeparator);
-        return obj.toString();
+        return obj;
     }
 
     public String getLabel() {
