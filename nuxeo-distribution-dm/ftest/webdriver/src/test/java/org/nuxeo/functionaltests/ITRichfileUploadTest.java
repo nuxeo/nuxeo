@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Test;
@@ -30,16 +31,17 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
 
 /**
  * @since 5.9.3
  */
-//NXP-15004: needs to be adapted for JSF2
-@Ignore
 public class ITRichfileUploadTest extends AbstractTest {
 
     protected static final String FILES_TAB_ID = "nxw_TAB_FILES_EDIT";
@@ -81,7 +83,7 @@ public class ITRichfileUploadTest extends AbstractTest {
         Locator.findElementWithTimeoutAndClick(By.id(FILES_TAB_ID));
 
         // check that clear all is not visible
-        assertFalse(driver.findElement(By.xpath(RF_CLEAN_ALL_ID_XPATH)).isDisplayed());
+        assertFalse(Locator.findElementWithTimeout(By.xpath(RF_CLEAN_ALL_ID_XPATH)).isDisplayed());
         // select a file
         final String mockFile1 = getTmpFileToUploadPath("dummy", "test", "txt");
         Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile1);
@@ -135,14 +137,28 @@ public class ITRichfileUploadTest extends AbstractTest {
         Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
         Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(
                 mockFile5);
-        Locator.findElementWithTimeoutAndClick(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
-        Locator.waitUntilElementNotPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
+
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
+                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
+                AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
+                TimeUnit.MILLISECONDS);
+        Function<WebDriver, Boolean> function = new Function<WebDriver, Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                try {
+                    driver.findElement(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH)).click();
+                    return false;
+                } catch (NoSuchElementException e) {
+                    return true;
+                }
+            }
+        };
+        wait.until(function);
+
         // check we have 2 uploaded files
         List<WebElement> uploadedFiles = driver.findElements(By.xpath(NX_UPLOADED_FILES_XPATH));
         assertEquals(2, uploadedFiles.size());
         // remove the first one
-        Locator.findElementWithTimeoutAndClick(
-                By.id("document_files_edit:files_input:0:files_delete"));
+        uploadedFiles.get(0).findElements(By.tagName("a")).get(0).click();
         Alert confirmRemove = driver.switchTo().alert();
         confirmRemove.accept();
         // check we have 1 uploaded file
@@ -164,7 +180,7 @@ public class ITRichfileUploadTest extends AbstractTest {
         clearLinks = driver.findElements(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
         assertEquals(1, clearLinks.size());
         // clear all
-        Locator.findElementWithTimeoutAndClick(By.id(RF_CLEAN_ALL_ID_XPATH));
+        Locator.findElementWithTimeoutAndClick(By.xpath(RF_CLEAN_ALL_ID_XPATH));
         // check submit disappears
         Locator.waitUntilElementNotPresent(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
         // check we have 0 items
