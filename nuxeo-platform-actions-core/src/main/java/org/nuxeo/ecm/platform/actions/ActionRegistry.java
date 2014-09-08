@@ -156,7 +156,7 @@ public class ActionRegistry implements Serializable {
     /**
      * Helper for migration of specific actions.
      *
-     * @since 5.9.4-JSF2
+     * @since 5.9.6
      */
     protected boolean applyCustomCompatibility(String compatType, Action action) {
         if ("admin_rest_document_link".equals(compatType)) {
