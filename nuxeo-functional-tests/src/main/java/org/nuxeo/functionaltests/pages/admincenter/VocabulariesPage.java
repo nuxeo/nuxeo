@@ -152,7 +152,7 @@ public class VocabulariesPage extends AdminCenterBasePage {
 
     /**
      * @since 5.9.3
-     * @since 5.9.4-JSF2: specify the waiter id
+     * @since 5.9.6: specify the waiter id
      */
     protected void waitForLoading(String waiterId) {
         String waiterPath = String.format("//span[@id=\"%s\"]", waiterId);

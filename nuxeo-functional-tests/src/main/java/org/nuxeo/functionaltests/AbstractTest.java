@@ -117,7 +117,7 @@ public abstract class AbstractTest {
     /**
      * Helper to set FF binary path when running tests in eclipse
      *
-     * @since 5.9.4-JSF2
+     * @since 5.9.6
      */
     public static final String FIREFOX_DRIVER_PATH = "";
 

@@ -31,7 +31,7 @@ import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.openqa.selenium.By;
 
 /**
- * @since 5.9.4-JSF2-SNAPSHOT
+ * @since 5.9.6
  */
 public class ITTaggingTest extends AbstractTest {
 
