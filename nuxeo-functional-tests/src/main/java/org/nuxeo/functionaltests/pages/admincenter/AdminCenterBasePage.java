@@ -89,7 +89,7 @@ public class AdminCenterBasePage extends AbstractPage {
     }
 
     public String getSelectedSubTab() {
-        WebElement tab = findElementWithTimeout(By.xpath("//div[@class='tabsBar']//li[@class='selected']/a"));
+        WebElement tab = findElementWithTimeout(By.xpath("//div[@id='nxw_adminCenterSubTabs_panel']//li[@class='selected']//a"));
         if (tab != null) {
             return tab.getText();
         }
@@ -97,7 +97,7 @@ public class AdminCenterBasePage extends AbstractPage {
     }
 
     public AdminCenterBasePage selectSubTab(String text) {
-        WebElement tab = findElementWithTimeout(By.xpath("//div[@class='tabsBar']//li/a[text()='"
+        WebElement tab = findElementWithTimeout(By.xpath("//div[@id='nxw_adminCenterSubTabs_panel']//li/form/a/span[text()='"
                 + text + "']"));
         if (tab != null) {
             tab.click();
@@ -108,7 +108,7 @@ public class AdminCenterBasePage extends AbstractPage {
     }
 
     public List<String> getAvailableSubTabs() {
-        List<WebElement> elements = driver.findElements(By.xpath("//div[@class='tabsBar']//li/a"));
+        List<WebElement> elements = driver.findElements(By.xpath("//div[@id='nxw_adminCenterSubTabs_panel']//li/form/a/span"));
         List<String> tabs = new ArrayList<String>();
 
         for (WebElement el : elements) {
