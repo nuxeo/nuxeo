@@ -132,29 +132,6 @@ public class RenditionServiceImpl extends DefaultComponent implements
         }
     }
 
-    /**
-     * Checks if the given {@code DocumentModel} can be rendered, throws a
-     * {@code RenditionException} if not.
-     */
-    protected void validateSourceDocument(DocumentModel source)
-            throws RenditionException {
-        if (source.isProxy()) {
-            throw new RenditionException("Cannot render a proxy document");
-        }
-
-        BlobHolder bh = source.getAdapter(BlobHolder.class);
-        if (bh == null) {
-            throw new RenditionException("No main file attached",
-                    "label.cannot.render.without.main.blob");
-        }
-
-        try {
-            bh.getBlob();
-        } catch (ClientException e) {
-            throw new RenditionException("Error while retrieving Main Blob", e);
-        }
-    }
-
     protected DocumentRef createVersionIfNeeded(DocumentModel source,
             CoreSession session) throws ClientException {
         DocumentRef versionRef;
@@ -277,8 +254,6 @@ public class RenditionServiceImpl extends DefaultComponent implements
     public Rendition getRendition(DocumentModel doc, String renditionName,
             boolean store) throws RenditionException {
 
-        validateSourceDocument(doc);
-
         RenditionDefinition renditionDefinition = renditionDefinitions.get(renditionName);
         if (renditionDefinition == null) {
             String message = "The rendition definition '%s' is not registered";
@@ -286,6 +261,10 @@ public class RenditionServiceImpl extends DefaultComponent implements
                     "label.rendition.not.defined");
         }
 
+        if (!renditionDefinition.getProvider().isAvailable(doc, renditionDefinition)) {
+            throw new RenditionException("Rendition " + renditionName + " not available for this doc " + doc.getId());
+        }
+        
         DocumentModel stored = null;
         try {
             if (!doc.isCheckedOut()) {

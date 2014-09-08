@@ -48,6 +48,13 @@ public class RenditionDefinition {
 
     @XNode("operationChain")
     protected String operationChain;
+    
+    
+    /**
+     * @since 5.9.6
+     */
+    @XNode("allowEmptyBlob")
+    protected boolean allowEmptyBlob = false;
 
     @XNode("@class")
     protected Class<? extends RenditionProvider> providerClass;
@@ -103,4 +110,8 @@ public class RenditionDefinition {
         return contentType;
     }
 
+    public boolean isEmptyBlobAllowed() {
+        return allowEmptyBlob;
+    }
+    
 }

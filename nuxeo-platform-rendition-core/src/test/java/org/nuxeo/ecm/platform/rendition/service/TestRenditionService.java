@@ -103,12 +103,12 @@ public class TestRenditionService {
         assertEquals("label.rendition.pdf", rd.getLabel());
         assertTrue(rd.isEnabled());
 
-        assertTrue(renditionServiceImpl.renditionDefinitions.containsKey("renditionDefinitionWithUndefinedOperationChain"));
-        rd = renditionServiceImpl.renditionDefinitions.get("renditionDefinitionWithUndefinedOperationChain");
+        assertTrue(renditionServiceImpl.renditionDefinitions.containsKey("renditionDefinitionWithCustomOperationChain"));
+        rd = renditionServiceImpl.renditionDefinitions.get("renditionDefinitionWithCustomOperationChain");
         assertNotNull(rd);
-        assertEquals("renditionDefinitionWithUndefinedOperationChain",
+        assertEquals("renditionDefinitionWithCustomOperationChain",
                 rd.getName());
-        assertEquals("undefinedOperationChain", rd.getOperationChain());
+        assertEquals("PDFRendition", rd.getOperationChain());
     }
 
     @Test
@@ -118,9 +118,8 @@ public class TestRenditionService {
         file.setPropertyValue("dc:title", "TestFile");
         file = session.createDocument(file);
 
-        // no blob => rendition list should be empty
         List<RenditionDefinition> renditionDefinitions = renditionService.getAvailableRenditionDefinitions(file);
-        assertTrue(renditionDefinitions.size() == 0);
+        assertEquals(1, renditionDefinitions.size());
 
         // add a blob
         StringBlob blob = new StringBlob("I am a Blob");
@@ -129,7 +128,7 @@ public class TestRenditionService {
 
         // rendition should be available now
         renditionDefinitions = renditionService.getAvailableRenditionDefinitions(file);
-        assertTrue(renditionDefinitions.size() > 0);
+        assertEquals(2, renditionDefinitions.size());
 
     }
 
@@ -337,7 +336,7 @@ public class TestRenditionService {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
         renditionService.storeRendition(file,
-                "renditionDefinitionWithUndefinedOperationChain");
+                "renditionDefinitionWithCustomOperationChain");
     }
 
     @Test

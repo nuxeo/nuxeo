@@ -3,6 +3,8 @@ package org.nuxeo.ecm.platform.rendition.extension;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -15,16 +17,44 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DefaultAutomationRenditionProvider implements RenditionProvider {
 
+    protected static final Log log = LogFactory.getLog(DefaultAutomationRenditionProvider.class);
+
     @Override
     public boolean isAvailable(DocumentModel doc, RenditionDefinition def) {
-        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+
+        String chain = def.getOperationChain();
+        if (chain == null) {
+            log.error("Can not run Automation rendition if chain is not defined");
+            return false;
+        }
+        AutomationService as = Framework.getLocalService(AutomationService.class);
+
         try {
-            if (bh == null || bh.getBlob() == null) {
+            if (as.getOperationChain(chain) == null) {
+                log.error("Chain " + chain
+                        + " is not defined : rendition can not be used");
                 return false;
             }
         } catch (Exception e) {
+            log.error("Unable to test Rendition availability", e);
             return false;
         }
+        
+        if (!def.isEmptyBlobAllowed()) {
+            BlobHolder bh = doc.getAdapter(BlobHolder.class);
+            if (bh==null) {
+                return false;
+            }
+            try {
+                Blob blob = bh.getBlob();
+                if (blob==null) {
+                    return false;
+                }
+            } catch  (Exception e) {
+                log.error("Unable to get Blob to test Rendition availability", e);
+                return false;
+            }
+        }        
         return true;
     }
 

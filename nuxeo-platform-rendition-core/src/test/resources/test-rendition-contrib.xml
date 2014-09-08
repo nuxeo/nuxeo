@@ -3,10 +3,19 @@
 
   <require>org.nuxeo.ecm.platform.rendition.contrib</require>
 
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="PDFRendition">
+      <operation id="Blob.ToPDF">
+      </operation>
+    </chain>
+  </extension>
+ 
   <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService" point="renditionDefinitions">
-    <renditionDefinition name="renditionDefinitionWithUndefinedOperationChain" enable="true">
+    <renditionDefinition name="renditionDefinitionWithCustomOperationChain" enable="true">
       <label>label.rendition.pdf</label>
-      <operationChain>undefinedOperationChain</operationChain>
+      <operationChain>PDFRendition</operationChain>
+      <allowEmptyBlob>true</allowEmptyBlob>
     </renditionDefinition>
   </extension>
 
