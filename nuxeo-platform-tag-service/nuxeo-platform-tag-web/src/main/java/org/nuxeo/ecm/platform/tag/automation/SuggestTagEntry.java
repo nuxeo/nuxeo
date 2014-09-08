@@ -41,9 +41,7 @@ import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 
 /**
- *
- *
- * @since 5.9.4-JSF2-SNAPSHOT
+ * @since 5.9.6
  */
 @Operation(id = SuggestTagEntry.ID, category = Constants.CAT_SERVICES, label = "Get tag suggestion", description = "Get tag suggestion")
 public class SuggestTagEntry {

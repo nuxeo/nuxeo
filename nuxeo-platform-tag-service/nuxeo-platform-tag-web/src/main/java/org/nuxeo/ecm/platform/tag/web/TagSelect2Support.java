@@ -54,7 +54,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 5.9.4-JSF2-SNAPSHOT
+ * @since 5.9.6
  */
 @Name("tagSelect2Support")
 @Scope(EVENT)
