@@ -199,7 +199,7 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
      * Joins two strings to get a valid reRender attribute for ajax components.
      *
      * @since 5.7
-     * @deprecated since 5.9.4-JSF2: use {@link #joinRender(String, String)}
+     * @deprecated since 5.9.6: use {@link #joinRender(String, String)}
      *             instead.
      */
     @Deprecated

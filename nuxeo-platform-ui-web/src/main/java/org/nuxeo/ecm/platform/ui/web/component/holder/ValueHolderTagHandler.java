@@ -112,7 +112,7 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
      * is called (as component has not been restored yet, so its value is not
      * available to be exposed in the tree view being built).
      *
-     * @since 5.9.4-JSF2
+     * @since 5.9.6
      */
     protected Object retrieveValueToExpose(FaceletContext context,
             UIComponent comp) {

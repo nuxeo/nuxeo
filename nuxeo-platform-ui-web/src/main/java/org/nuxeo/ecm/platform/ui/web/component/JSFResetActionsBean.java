@@ -119,7 +119,7 @@ public class JSFResetActionsBean {
      * Looks up the parent naming container for the component source of the
      * action event, and reset components recursively within this container.
      *
-     * @since 5.9.4-JSF2
+     * @since 5.9.6
      */
     public void resetComponents(AjaxBehaviorEvent event) {
         resetComponents((FacesEvent) event);

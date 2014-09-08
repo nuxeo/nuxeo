@@ -256,7 +256,7 @@
       <helpLabels>
         <label mode="any">
           Boolean stating if the tabs bar should be hidden in case there is only one tab.
-          Defaults to false, available since 5.9.4-JSF2.
+          Defaults to false, available since 5.9.6.
         </label>
       </helpLabels>
       <fields>

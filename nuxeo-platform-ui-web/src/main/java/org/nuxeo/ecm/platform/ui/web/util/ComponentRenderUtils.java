@@ -35,7 +35,7 @@ import javax.faces.context.FacesContext;
  * <p>
  * Most of helpers come from RichFaces 3.3.1 code (aligned on JSF 1.2).
  *
- * @since 5.9.4-JSF2
+ * @since 5.9.6
  */
 public class ComponentRenderUtils {
 

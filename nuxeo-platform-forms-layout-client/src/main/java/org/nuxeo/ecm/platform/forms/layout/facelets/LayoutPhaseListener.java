@@ -30,7 +30,7 @@ import javax.faces.event.PhaseListener;
  * Process is done twice on ajax requests, when performing phase restore and
  * then phase render response => empty the map before rendering response.
  *
- * @since 5.9.4-JSF2
+ * @since 5.9.6
  */
 public class LayoutPhaseListener implements PhaseListener {
 

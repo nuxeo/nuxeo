@@ -810,7 +810,7 @@ public final class Functions {
     /**
      * Joins two strings to get a valid render attribute for ajax components.
      *
-     * @since 5.9.4-JSF2
+     * @since 5.9.6
      */
     public static String joinRender(String render1, String render2) {
         if (StringUtils.isBlank(render1) && StringUtils.isBlank(render2)) {

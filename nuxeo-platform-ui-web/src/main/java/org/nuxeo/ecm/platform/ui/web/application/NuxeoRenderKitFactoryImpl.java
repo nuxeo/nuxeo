@@ -20,7 +20,7 @@ package org.nuxeo.ecm.platform.ui.web.application;
 import com.sun.faces.renderkit.RenderKitFactoryImpl;
 
 /**
- * @since 5.9.4-JSF2
+ * @since 5.9.6
  */
 public class NuxeoRenderKitFactoryImpl extends RenderKitFactoryImpl {
 

@@ -449,7 +449,7 @@
       <helpLabels>
         <label mode="any">
           Specific view to use for the rest document link.
-          Available since 5.9.4-JSF2.
+          Available since 5.9.6.
         </label>
       </helpLabels>
       <fields>
@@ -467,7 +467,7 @@
       <helpLabels>
         <label mode="any">
           Specific pattern to use for the rest document link.
-          Available since 5.9.4-JSF2.
+          Available since 5.9.6.
         </label>
       </helpLabels>
       <fields>

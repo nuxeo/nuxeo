@@ -68,7 +68,7 @@ import org.jboss.seam.core.Conversation;
 import com.sun.faces.renderkit.ServerSideStateHelper;
 
 /**
- * @since 5.9.4-JSF2
+ * @since 5.9.6
  */
 public class NuxeoServerSideStateHelper extends ServerSideStateHelper {
 

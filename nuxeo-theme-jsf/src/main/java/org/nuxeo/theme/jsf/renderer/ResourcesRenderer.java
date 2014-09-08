@@ -40,7 +40,7 @@ import com.sun.faces.renderkit.html_basic.ScriptStyleBaseRenderer;
 /**
  * Renderer for {@link UIResources} component.
  *
- * @since 5.9.4-JSF2
+ * @since 5.9.6
  */
 @ResourceDependencies({
         @ResourceDependency(library = "javax.faces", name = "jsf.js"),

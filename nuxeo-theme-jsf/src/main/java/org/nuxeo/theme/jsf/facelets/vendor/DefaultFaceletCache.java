@@ -63,7 +63,7 @@ import com.sun.faces.util.FacesLogger;
  * (and then breaking the refresh mechanism)</li>
  * </ul>
  *
- * @since 5.9.4-JSF2: copy/paste of default implementation because constructor
+ * @since 5.9.6: copy/paste of default implementation because constructor
  *        is package private, and changing private DefaultFacelet
  *        implementation references to {@link Facelet}, and for bufix/adapt.
  */

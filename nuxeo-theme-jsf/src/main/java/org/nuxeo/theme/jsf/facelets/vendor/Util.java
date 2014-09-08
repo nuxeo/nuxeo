@@ -58,7 +58,7 @@ import com.sun.faces.util.FacesLogger;
  * <p>
  * Patch getLastModified for theme behaviour.
  *
- * @since 5.9.4-JSF2
+ * @since 5.9.6
  */
 public class Util {
 

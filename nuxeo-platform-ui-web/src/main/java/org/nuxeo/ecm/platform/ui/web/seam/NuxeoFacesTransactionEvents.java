@@ -39,7 +39,7 @@ import org.jboss.seam.transaction.Transaction;
  * components.xml.
  *
  * @see FacesTransactionEvents
- * @since 5.9.4-JSF2
+ * @since 5.9.6
  */
 @Name("nuxeoFacesTransactionEvents")
 @Scope(APPLICATION)

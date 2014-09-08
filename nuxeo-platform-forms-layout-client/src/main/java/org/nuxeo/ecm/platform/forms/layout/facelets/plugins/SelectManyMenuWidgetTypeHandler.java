@@ -25,7 +25,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 
 /**
- * @since 5.9.4-JSF2
+ * @since 5.9.6
  */
 public class SelectManyMenuWidgetTypeHandler extends
         AbstractSelectWidgetTypeHandler {
