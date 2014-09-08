@@ -38,6 +38,8 @@ import com.google.common.base.Function;
 /**
  * @since 5.9.3
  */
+//NXP-15004: needs to be adapted for JSF2
+@Ignore
 public class ITRichfileUploadTest extends AbstractTest {
 
     protected static final String FILES_TAB_ID = "nxw_TAB_FILES_EDIT";
